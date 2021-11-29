@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -16,7 +15,7 @@ import 'navigation_request.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
-typedef void WebViewCreatedCallback(WebViewController controller);
+typedef WebViewCreatedCallback = void Function(WebViewController controller);
 
 /// Decides how to handle a specific navigation request.
 ///
@@ -24,20 +23,20 @@ typedef void WebViewCreatedCallback(WebViewController controller);
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef FutureOr<NavigationDecision> NavigationDelegate(
+typedef NavigationDelegate = FutureOr<NavigationDecision> Function(
     NavigationRequest navigation);
 
 /// Signature for when a [WebView] has started loading a page.
-typedef void PageStartedCallback(String url);
+typedef PageStartedCallback = void Function(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
-typedef void PageFinishedCallback(String url);
+typedef PageFinishedCallback = void Function(String url);
 
 /// Signature for when a [WebView] is loading a page.
-typedef void PageLoadingCallback(int progress);
+typedef PageLoadingCallback = void Function(int progress);
 
 /// Signature for when a [WebView] has failed to load a resource.
-typedef void WebResourceErrorCallback(WebResourceError error);
+typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
 /// A web view widget for showing html content.
 ///
@@ -55,7 +54,6 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.initialCookies = const [],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -95,9 +93,6 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
-
-  /// The initial cookies to set.
-  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -264,7 +259,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated:
           (WebViewPlatformController? webViewPlatformController) {
-        WebViewController controller = WebViewController._(
+        final WebViewController controller = WebViewController._(
           widget,
           webViewPlatformController!,
           _javascriptChannelRegistry,
@@ -283,7 +278,6 @@ class _WebViewState extends State<WebView> {
             _javascriptChannelRegistry.channels.keys.toSet(),
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
-        cookies: widget.initialCookies,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
@@ -553,7 +547,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = const WebSetting<String?>.absent();
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
@@ -651,36 +645,10 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     }
   }
 
+  @override
   void onWebResourceError(WebResourceError error) {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
-    }
-  }
-}
-
-class WebViewCookieManager extends WebViewCookieManagerPlatform {
-  static WebViewCookieManager? _instance;
-
-  static WebViewCookieManager get instance =>
-      _instance ??= WebViewCookieManager._();
-
-  WebViewCookieManager._();
-
-  @override
-  Future<bool> clearCookies() async {
-    if (Platform.isIOS) {
-      return WebViewIOSCookieManager.instance.clearCookies();
-    } else {
-      return super.clearCookies();
-    }
-  }
-
-  @override
-  Future<void> setCookie(WebViewCookie cookie) {
-    if (Platform.isIOS) {
-      return WebViewIOSCookieManager.instance.setCookie(cookie);
-    } else {
-      return super.setCookie(cookie);
     }
   }
 }

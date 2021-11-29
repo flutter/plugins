@@ -16,8 +16,6 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *mockBinaryMessenger;
 
-@property(strong, nonatomic) FLTCookieManager *mockCookieManager;
-
 @end
 
 @implementation FLTWebViewTests
@@ -25,7 +23,6 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 - (void)setUp {
   [super setUp];
   self.mockBinaryMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
-  self.mockCookieManager = OCMClassMock(FLTCookieManager.class);
 }
 
 - (void)testCanInitFLTWebViewController {
@@ -38,8 +35,8 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 }
 
 - (void)testCanInitFLTWebViewFactory {
-  FLTWebViewFactory *factory = [[FLTWebViewFactory alloc] initWithMessenger:self.mockBinaryMessenger
-                                                              cookieManager:self.mockCookieManager];
+  FLTWebViewFactory *factory =
+      [[FLTWebViewFactory alloc] initWithMessenger:self.mockBinaryMessenger];
   XCTAssertNotNil(factory);
 }
 
@@ -651,7 +648,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testOnLoadRequestReturnsErrorResultForInvalidRequest {
+- (void)testOnLoadRequestReturnsErroResultForInvalidRequest {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -698,23 +695,6 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   // Verify
   OCMVerify([mockView loadRequest:[OCMArg any]]);
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
-}
-
-- (void)testCreateWithFrameShouldSetCookiesOnIOS11 {
-  if (@available(iOS 11, *)) {
-    // Setup
-    FLTWebViewFactory *factory =
-        [[FLTWebViewFactory alloc] initWithMessenger:self.mockBinaryMessenger
-                                       cookieManager:self.mockCookieManager];
-    NSArray<NSDictionary *> *cookies =
-        @[ @{@"name" : @"foo", @"value" : @"bar", @"domain" : @"flutter.dev", @"path" : @"/"} ];
-    // Run
-    [factory createWithFrame:CGRectMake(0, 0, 300, 400)
-              viewIdentifier:1
-                   arguments:@{@"cookies" : cookies}];
-    // Verify
-    OCMVerify([_mockCookieManager setCookiesForData:cookies]);
-  }
 }
 
 @end
