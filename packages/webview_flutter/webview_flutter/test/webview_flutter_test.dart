@@ -955,7 +955,7 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
-              userAgent: WebSetting<String?>.of(null),
+              userAgent: const WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
               zoomEnabled: true,
             ),
