@@ -23,17 +23,17 @@ void main() {
     serializedRequest = request.toJson();
     expect(serializedRequest['uri'], 'https://flutter.dev');
     expect(serializedRequest['method'], 'get');
-    expect(serializedRequest['headers'], {});
+    expect(serializedRequest['headers'], <String, String>{});
     expect(serializedRequest['body'], null);
     // Test serialization of headers and body
     request = WebViewRequest(
       uri: Uri.parse('https://flutter.dev'),
       method: WebViewRequestMethod.get,
-      headers: {'foo': 'bar'},
+      headers: <String, String>{'foo': 'bar'},
       body: Uint8List.fromList('Example Body'.codeUnits),
     );
     serializedRequest = request.toJson();
-    expect(serializedRequest['headers'], {'foo': 'bar'});
+    expect(serializedRequest['headers'], <String, String>{'foo': 'bar'});
     expect(serializedRequest['body'], 'Example Body'.codeUnits);
   });
 }
