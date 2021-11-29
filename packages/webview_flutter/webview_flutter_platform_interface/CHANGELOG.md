@@ -1,3 +1,9 @@
+## 1.6.0
+
+* Adds platform interface for cookie manager.
+* Deprecates `clearCookies` in WebViewPlatform in favour of `CookieManager#clearCookies`.
+* Expanded `CreationParams` to include cookies to be set at webview creation.
+
 ## 1.5.1
 
 * Reverts the addition of `onUrlChanged`, which was unintentionally a breaking

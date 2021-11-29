@@ -6,3 +6,4 @@ export 'javascript_channel_registry.dart';
 export 'webview_platform.dart';
 export 'webview_platform_callbacks_handler.dart';
 export 'webview_platform_controller.dart';
+export 'webview_cookie_manager.dart';

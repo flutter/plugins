@@ -213,6 +213,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         .then<bool>((dynamic result) => result!);
   }
 
+  /// Method channel implementation for [WebViewPlatform.setCookie].
+  static Future<void> setCookie(WebViewCookie cookie) {
+    return _cookieManagerChannel.invokeMethod<void>(
+        'setCookie', cookie.toJson());
+  }
+
   static Map<String, dynamic> _webSettingsToMap(WebSettings? settings) {
     final Map<String, dynamic> map = <String, dynamic>{};
     void _addIfNonNull(String key, dynamic value) {
@@ -257,6 +263,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
+      'cookies':
+          creationParams.cookies.map((cookie) => cookie.toJson()).toList()
     };
   }
 }
