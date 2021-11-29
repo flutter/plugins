@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -55,7 +54,6 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.initialCookies = const [],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -95,9 +93,6 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
-
-  /// The initial cookies to set.
-  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -283,7 +278,6 @@ class _WebViewState extends State<WebView> {
             _javascriptChannelRegistry.channels.keys.toSet(),
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
-        cookies: widget.initialCookies,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
@@ -654,33 +648,6 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onWebResourceError(WebResourceError error) {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
-    }
-  }
-}
-
-class WebViewCookieManager extends WebViewCookieManagerPlatform {
-  static WebViewCookieManager? _instance;
-
-  static WebViewCookieManager get instance =>
-      _instance ??= WebViewCookieManager._();
-
-  WebViewCookieManager._();
-
-  @override
-  Future<bool> clearCookies() async {
-    if (Platform.isIOS) {
-      return WebViewIOSCookieManager.instance.clearCookies();
-    } else {
-      return super.clearCookies();
-    }
-  }
-
-  @override
-  Future<void> setCookie(WebViewCookie cookie) {
-    if (Platform.isIOS) {
-      return WebViewIOSCookieManager.instance.setCookie(cookie);
-    } else {
-      return super.setCookie(cookie);
     }
   }
 }

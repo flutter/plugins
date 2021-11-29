@@ -10,15 +10,12 @@
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
-  FLTCookieManager* _cookieManager;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
-                    cookieManager:(FLTCookieManager*)cookieManager {
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   self = [super init];
   if (self) {
     _messenger = messenger;
-    _cookieManager = cookieManager;
   }
   return self;
 }
@@ -30,10 +27,6 @@
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
-  if (@available(iOS 11.0, *)) {
-    [_cookieManager setCookiesForData:args[@"cookies"]];
-  }
-
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args

@@ -1,8 +1,6 @@
-## 2.5.0
+## NEXT
 
 * Integration test fixes.
-* Updates compileSdkVersion to 31.
-* Implemented new cookie manager for setting cookies and providing initial cookies.
 
 ## 2.4.0
 
