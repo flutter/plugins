@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'navigation_decision.dart';
@@ -61,6 +63,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.initialCookies = const [],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -102,6 +105,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The initial cookies to set.
+  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -287,6 +293,7 @@ class _WebViewState extends State<WebView> {
             _javascriptChannelRegistry.channels.keys.toSet(),
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
+        cookies: widget.initialCookies,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
@@ -630,4 +637,31 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     userAgent: WebSetting<String?>.of(widget.userAgent),
     zoomEnabled: widget.zoomEnabled,
   );
+}
+
+class WebViewCookieManager extends WebViewCookieManagerPlatform {
+  static WebViewCookieManager? _instance;
+
+  static WebViewCookieManager get instance =>
+      _instance ??= WebViewCookieManager._();
+
+  WebViewCookieManager._();
+
+  @override
+  Future<bool> clearCookies() async {
+    if (Platform.isAndroid) {
+      return WebViewAndroidCookieManager.instance.clearCookies();
+    } else {
+      return super.clearCookies();
+    }
+  }
+
+  @override
+  Future<void> setCookie(WebViewCookie cookie) {
+    if (Platform.isAndroid) {
+      return WebViewAndroidCookieManager.instance.setCookie(cookie);
+    } else {
+      return super.setCookie(cookie);
+    }
+  }
 }

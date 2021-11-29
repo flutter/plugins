@@ -1,4 +1,4 @@
-## NEXT
+## 2.4.0
 
 * Updates to webview_flutter_platform_interface version 1.5.2.
 
@@ -6,6 +6,7 @@
 
 * Adds explanation on how to generate the pigeon communication layer and mockito mock objects.
 * Updates compileSdkVersion to 31.
+* Implemented new cookie manager for setting cookies and providing initial cookies.
 
 ## 2.3.0
 

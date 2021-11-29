@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart';
@@ -65,5 +66,6 @@ class AndroidWebView implements WebViewPlatform {
   }
 
   @override
-  Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
+  Future<bool> clearCookies() =>
+      WebViewAndroidCookieManager.instance.clearCookies();
 }
