@@ -14,6 +14,6 @@ class NavigationRequest {
 
   @override
   String toString() {
-    return 'NavigationRequest(url: $url, isForMainFrame: $isForMainFrame)';
+    return '$runtimeType(url: $url, isForMainFrame: $isForMainFrame)';
   }
 }
