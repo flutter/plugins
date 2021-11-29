@@ -266,8 +266,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
-      'cookies':
-          creationParams.cookies.map((cookie) => cookie.toJson()).toList()
+      'cookies': creationParams.cookies
+          .map((WebViewCookie cookie) => cookie.toJson())
+          .toList()
     };
   }
 }
