@@ -70,9 +70,7 @@ void main() {
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: hasNavigationDelegate,
               hasProgressTracking: hasProgressTracking,
             )),
@@ -123,9 +121,7 @@ void main() {
           creationParams: CreationParams(
             initialUrl: 'https://www.google.com',
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -142,9 +138,7 @@ void main() {
           creationParams: CreationParams(
             userAgent: 'MyUserAgent',
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -160,9 +154,7 @@ void main() {
             autoMediaPlaybackPolicy:
                 AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -177,9 +169,7 @@ void main() {
           creationParams: CreationParams(
             autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -194,9 +184,7 @@ void main() {
           creationParams: CreationParams(
             javascriptChannelNames: <String>{'a', 'b'},
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -214,9 +202,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 javascriptMode: JavascriptMode.unrestricted,
                 hasNavigationDelegate: false,
               ),
@@ -231,9 +217,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 hasNavigationDelegate: true,
               ),
             ),
@@ -248,9 +232,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 debuggingEnabled: true,
                 hasNavigationDelegate: false,
               ),
@@ -265,9 +247,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.of('myUserAgent'),
+                userAgent: const WebSetting<String?>.of('myUserAgent'),
                 hasNavigationDelegate: false,
               ),
             ),
@@ -281,9 +261,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 zoomEnabled: false,
                 hasNavigationDelegate: false,
               ),

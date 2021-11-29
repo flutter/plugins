@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates to webview_flutter_platform_interface version 1.5.2.
+
 ## 2.3.1
 
 * Adds explanation on how to generate the pigeon communication layer and mockito mock objects.
