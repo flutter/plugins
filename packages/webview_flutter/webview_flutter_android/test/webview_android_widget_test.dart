@@ -70,7 +70,7 @@ void main() {
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: hasNavigationDelegate,
               hasProgressTracking: hasProgressTracking,
             )),
@@ -121,7 +121,7 @@ void main() {
           creationParams: CreationParams(
             initialUrl: 'https://www.google.com',
             webSettings: WebSettings(
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -138,7 +138,7 @@ void main() {
           creationParams: CreationParams(
             userAgent: 'MyUserAgent',
             webSettings: WebSettings(
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -154,7 +154,7 @@ void main() {
             autoMediaPlaybackPolicy:
                 AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -169,7 +169,7 @@ void main() {
           creationParams: CreationParams(
             autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
             webSettings: WebSettings(
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -184,7 +184,7 @@ void main() {
           creationParams: CreationParams(
             javascriptChannelNames: <String>{'a', 'b'},
             webSettings: WebSettings(
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -202,7 +202,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 javascriptMode: JavascriptMode.unrestricted,
                 hasNavigationDelegate: false,
               ),
@@ -217,7 +217,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 hasNavigationDelegate: true,
               ),
             ),
@@ -232,7 +232,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 debuggingEnabled: true,
                 hasNavigationDelegate: false,
               ),
@@ -247,7 +247,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                userAgent: WebSetting<String?>.of('myUserAgent'),
+                userAgent: const WebSetting<String?>.of('myUserAgent'),
                 hasNavigationDelegate: false,
               ),
             ),
@@ -261,7 +261,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 zoomEnabled: false,
                 hasNavigationDelegate: false,
               ),
