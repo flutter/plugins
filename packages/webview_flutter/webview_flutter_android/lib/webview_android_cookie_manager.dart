@@ -8,14 +8,6 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 /// Handles all cookie operations for the current platform.
 class WebViewAndroidCookieManager extends WebViewCookieManagerPlatform {
-  WebViewAndroidCookieManager._();
-
-  static WebViewAndroidCookieManager? _instance;
-
-  /// Obtain a singleton instance for [WebViewAndroidCookieManager].
-  static WebViewAndroidCookieManager get instance =>
-      _instance ??= WebViewAndroidCookieManager._();
-
   @override
   Future<bool> clearCookies() =>
       android_webview.CookieManager.instance.clearCookies();

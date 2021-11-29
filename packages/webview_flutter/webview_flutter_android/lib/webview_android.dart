@@ -67,5 +67,5 @@ class AndroidWebView implements WebViewPlatform {
 
   @override
   Future<bool> clearCookies() =>
-      WebViewAndroidCookieManager.instance.clearCookies();
+      WebViewCookieManagerPlatform.instance!.clearCookies();
 }

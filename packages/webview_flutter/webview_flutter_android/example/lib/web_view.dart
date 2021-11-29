@@ -639,29 +639,18 @@ WebSettings _webSettingsFromWidget(WebView widget) {
   );
 }
 
+/// App-facing cookie manager that exposes the correct platform implementation.
 class WebViewCookieManager extends WebViewCookieManagerPlatform {
-  static WebViewCookieManager? _instance;
-
-  static WebViewCookieManager get instance =>
-      _instance ??= WebViewCookieManager._();
-
   WebViewCookieManager._();
 
-  @override
-  Future<bool> clearCookies() async {
-    if (Platform.isAndroid) {
-      return WebViewAndroidCookieManager.instance.clearCookies();
+  /// Returns an instance of the cookie manager for the current platform.
+  static WebViewCookieManagerPlatform get instance {
+    if (WebViewCookieManagerPlatform.instance == null && Platform.isAndroid) {
+      WebViewCookieManagerPlatform.instance = WebViewAndroidCookieManager();
     } else {
-      return super.clearCookies();
+      throw AssertionError(
+          'This platform is currently unsupported for webview_flutter_android.');
     }
-  }
-
-  @override
-  Future<void> setCookie(WebViewCookie cookie) {
-    if (Platform.isAndroid) {
-      return WebViewAndroidCookieManager.instance.setCookie(cookie);
-    } else {
-      return super.setCookie(cookie);
-    }
+    return WebViewCookieManagerPlatform.instance!;
   }
 }

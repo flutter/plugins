@@ -283,7 +283,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     addJavascriptChannels(creationParams.javascriptChannelNames);
 
     creationParams.cookies
-        .forEach(WebViewAndroidCookieManager.instance.setCookie);
+        .forEach(WebViewCookieManagerPlatform.instance!.setCookie);
   }
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
