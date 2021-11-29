@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updates Android compileSdkVersion to 31.
+* Updates code for analyzer changes.
 
 ## 0.6.0+8
 
