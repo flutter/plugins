@@ -63,6 +63,6 @@ abstract class WebViewPlatform {
   @Deprecated('Use `WebViewCookieManagerPlatform.clearCookies` instead.')
   Future<bool> clearCookies() {
     throw UnimplementedError(
-        "WebView clearCookies is not implemented on the current platform");
+        'WebView clearCookies is not implemented on the current platform');
   }
 }

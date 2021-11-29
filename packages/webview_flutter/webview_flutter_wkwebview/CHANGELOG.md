@@ -1,6 +1,8 @@
 ## NEXT
 
+* Migrates from `analysis_options_legacy.yaml` to `analysis_options.yaml`.
 * Integration test fixes.
+* Updates to webview_flutter_platform_interface version 1.5.2.
 
 ## 2.4.0
 
