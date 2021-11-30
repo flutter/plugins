@@ -1,6 +1,15 @@
-## 2.3.0
+## 2.4.0
 
 * Add an option to set the background color of the webview.
+
+## 2.3.1
+
+* Adds explanation on how to generate the pigeon communication layer and mockito mock objects.
+* Updates compileSdkVersion to 31.
+
+## 2.3.0
+
+* Replaces platform implementation with API built with pigeon.
 
 ## 2.2.1
 
@@ -17,13 +26,12 @@ when it is created without Hybrid Composition.
 
 ## 2.0.15
 
-* Added Overrides in  FlutterWebView.java 
-  
+* Added Overrides in  FlutterWebView.java
+
 ## 2.0.14
 
-* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package). 
+* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package).
 
 ## 2.0.13
 
 * Extract Android implementation from `webview_flutter`.
-

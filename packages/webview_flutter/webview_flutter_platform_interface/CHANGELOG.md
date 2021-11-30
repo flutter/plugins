@@ -1,6 +1,15 @@
-## 1.5.0
+## 1.6.0
 
 * Add an option to set the background color of the webview.
+
+## 1.5.1
+
+* Reverts the addition of `onUrlChanged`, which was unintentionally a breaking
+  change.
+
+## 1.5.0
+
+* Added `onUrlChanged` callback to platform callback handler.
 
 ## 1.4.0
 

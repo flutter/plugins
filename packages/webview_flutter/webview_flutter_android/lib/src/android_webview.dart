@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
@@ -86,7 +88,9 @@ class WebView {
   /// Returns null if no page has been loaded.
   Future<String?> getUrl() async {
     final String result = await api.getUrlFromInstance(this);
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -138,7 +142,9 @@ class WebView {
       this,
       javascriptString,
     );
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -148,7 +154,9 @@ class WebView {
   /// Returns null if no page has been loaded.
   Future<String?> getTitle() async {
     final String result = await api.getTitleFromInstance(this);
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -252,6 +260,11 @@ class WebView {
     );
     WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
     return api.setWebChromeClientFromInstance(this, client);
+  }
+
+  /// Sets the background color of this WebView.
+  Future<void> setBackgroundColor(Color color) {
+    return api.setBackgroundColorFromInstance(this, color.value);
   }
 
   /// Releases all resources used by the [WebView].

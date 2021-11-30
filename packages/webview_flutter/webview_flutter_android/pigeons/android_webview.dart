@@ -71,6 +71,8 @@ abstract class WebViewHostApi {
   void setDownloadListener(int instanceId, int listenerInstanceId);
 
   void setWebChromeClient(int instanceId, int clientInstanceId);
+
+  void setBackgroundColor(int instanceId, int color);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')

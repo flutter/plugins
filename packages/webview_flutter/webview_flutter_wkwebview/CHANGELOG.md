@@ -1,6 +1,8 @@
 ## 2.5.0
 
-* Add an option to set the background color of the webview.
+* Adds an option to set the background color of the webview.
+* Migrates from `analysis_options_legacy.yaml` to `analysis_options.yaml`.
+* Integration test fixes.
 
 ## 2.4.0
 
@@ -20,7 +22,7 @@
 
 ## 2.0.14
 
-* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package). 
+* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package).
 
 ## 2.0.13
 

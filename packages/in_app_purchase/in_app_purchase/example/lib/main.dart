@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'consumable_store.dart';
 
 void main() {
@@ -88,7 +88,7 @@ class _MyAppState extends State<_MyApp> {
 
     if (Platform.isIOS) {
       var iosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
     }
 
@@ -137,7 +137,7 @@ class _MyAppState extends State<_MyApp> {
   void dispose() {
     if (Platform.isIOS) {
       var iosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       iosPlatformAddition.setDelegate(null);
     }
     _subscription.cancel();
@@ -477,9 +477,9 @@ class _MyAppState extends State<_MyApp> {
       }
     }
     if (Platform.isIOS) {
-      var iapIosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
-      await iapIosPlatformAddition.showPriceConsentIfNeeded();
+      var iapStoreKitPlatformAddition = _inAppPurchase
+          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+      await iapStoreKitPlatformAddition.showPriceConsentIfNeeded();
     }
   }
 

@@ -35,9 +35,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   private final InstanceManager instanceManager;
   private final WebViewProxy webViewProxy;
-  private final Context context;
   // Only used with WebView using virtual displays.
   @Nullable private final View containerView;
+
+  private Context context;
 
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
@@ -317,6 +318,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     this.containerView = containerView;
   }
 
+  /**
+   * Sets the context to construct {@link WebView}s.
+   *
+   * @param context the new context.
+   */
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
   @Override
   public void create(Long instanceId, Boolean useHybridComposition) {
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
@@ -335,9 +345,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   @Override
   public void dispose(Long instanceId) {
-    final WebView instance = (WebView) instanceManager.removeInstanceWithId(instanceId);
+    final WebView instance = (WebView) instanceManager.getInstance(instanceId);
     if (instance != null) {
       ((Releasable) instance).release();
+      instanceManager.removeInstance(instance);
     }
   }
 
@@ -465,5 +476,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
+  }
+
+  @Override
+  public void setBackgroundColor(Long instanceId, Long color) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.setBackgroundColor(color.intValue());
   }
 }

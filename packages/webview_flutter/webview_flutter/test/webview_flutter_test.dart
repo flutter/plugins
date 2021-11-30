@@ -935,20 +935,22 @@ void main() {
         creationParams: true,
       ).single;
 
-      expect(params.backgroundColor, isNull);
+      expect(params.backgroundColor, null);
     });
 
     testWidgets('Can be transparent', (WidgetTester tester) async {
       const transparentColor = Color(0x00000000);
 
-      await tester.pumpWidget(const WebView(backgroundColor: transparentColor));
+      await tester.pumpWidget(const WebView(
+        backgroundColor: transparentColor,
+      ));
 
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
       ).single;
 
-      expect(params.backgroundColor!.value, transparentColor.value);
+      expect(params.backgroundColor, transparentColor);
     });
   });
 
