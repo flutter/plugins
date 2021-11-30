@@ -170,10 +170,10 @@ void main() {
           isMethodCall(
             'loadRequest',
             arguments: <String, dynamic>{
-              'request': {
+              'request': <String, dynamic>{
                 'uri': 'https://test.url',
                 'method': 'get',
-                'headers': {},
+                'headers': <String, String>{},
                 'body': null,
               }
             },
@@ -186,7 +186,7 @@ void main() {
       await webViewPlatform.loadRequest(WebViewRequest(
         uri: Uri.parse('https://test.url'),
         method: WebViewRequestMethod.get,
-        headers: {'foo': 'bar'},
+        headers: <String, String>{'foo': 'bar'},
         body: Uint8List.fromList('hello world'.codeUnits),
       ));
 
@@ -196,10 +196,10 @@ void main() {
           isMethodCall(
             'loadRequest',
             arguments: <String, dynamic>{
-              'request': {
+              'request': <String, dynamic>{
                 'uri': 'https://test.url',
                 'method': 'get',
-                'headers': {'foo': 'bar'},
+                'headers': <String, String>{'foo': 'bar'},
                 'body': 'hello world'.codeUnits,
               }
             },
@@ -311,7 +311,7 @@ void main() {
 
     test('updateSettings', () async {
       final WebSettings settings =
-          WebSettings(userAgent: WebSetting<String?>.of('Dart Test'));
+          WebSettings(userAgent: const WebSetting<String?>.of('Dart Test'));
       await webViewPlatform.updateSettings(settings);
 
       expect(
@@ -329,7 +329,7 @@ void main() {
 
     test('updateSettings all parameters', () async {
       final WebSettings settings = WebSettings(
-        userAgent: WebSetting<String?>.of('Dart Test'),
+        userAgent: const WebSetting<String?>.of('Dart Test'),
         javascriptMode: JavascriptMode.disabled,
         hasNavigationDelegate: true,
         hasProgressTracking: true,
@@ -362,7 +362,7 @@ void main() {
 
     test('updateSettings without settings', () async {
       final WebSettings settings =
-          WebSettings(userAgent: WebSetting<String?>.absent());
+          WebSettings(userAgent: const WebSetting<String?>.absent());
       await webViewPlatform.updateSettings(settings);
 
       expect(

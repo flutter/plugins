@@ -14,14 +14,14 @@ flutter:
       android:
         default_package: in_app_purchase_android
       ios:
-        default_package: in_app_purchase_ios
+        default_package: in_app_purchase_storekit
 
 dependencies:
   flutter:
     sdk: flutter
   in_app_purchase_platform_interface: ^1.0.0
-  in_app_purchase_android: ^0.2.0
-  in_app_purchase_ios: ^0.2.0
+  in_app_purchase_android: ^0.2.1
+  in_app_purchase_storekit: ^0.2.0
 
 dev_dependencies:
   flutter_driver:

@@ -18,7 +18,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter_platform_interface: ^1.3.0
+  webview_flutter_platform_interface: ^1.5.2
 
 dev_dependencies:
   flutter_driver:
