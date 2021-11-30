@@ -149,6 +149,24 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   WebViewAndroidWebViewClient get webViewClient => _webViewClient;
 
   @override
+  Future<void> loadHtmlString(String html, {String? baseUrl}) {
+    return webView.loadDataWithBaseUrl(
+      baseUrl: baseUrl,
+      data: html,
+      mimeType: 'text/html',
+    );
+  }
+
+  @override
+  Future<void> loadFile(String absoluteFilePath) {
+    final String url = absoluteFilePath.startsWith('file://')
+        ? absoluteFilePath
+        : 'file://$absoluteFilePath';
+
+    return webView.loadUrl(url, <String, String>{});
+  }
+
+  @override
   Future<void> loadUrl(
     String url,
     Map<String, String>? headers,
