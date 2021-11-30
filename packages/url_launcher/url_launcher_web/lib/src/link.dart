@@ -272,7 +272,11 @@ class LinkViewController extends PlatformViewController {
 int? getViewIdFromTarget(html.Event event) {
   final html.Element? linkElement = getLinkElementFromTarget(event);
   if (linkElement != null) {
-    return getProperty<int>(linkElement, linkViewIdProperty);
+    // TODO(stuartmorgan): Remove this ignore (and change to getProperty<int>)
+    // once the templated version is available on stable. On master (2.8) this
+    // is already not necessary.
+    // ignore: return_of_invalid_type
+    return getProperty(linkElement, linkViewIdProperty);
   }
   return null;
 }
