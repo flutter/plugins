@@ -645,11 +645,13 @@ class WebViewCookieManager extends WebViewCookieManagerPlatform {
 
   /// Returns an instance of the cookie manager for the current platform.
   static WebViewCookieManagerPlatform get instance {
-    if (WebViewCookieManagerPlatform.instance == null && Platform.isAndroid) {
-      WebViewCookieManagerPlatform.instance = WebViewAndroidCookieManager();
-    } else {
-      throw AssertionError(
-          'This platform is currently unsupported for webview_flutter_android.');
+    if (WebViewCookieManagerPlatform.instance == null) {
+      if (Platform.isAndroid) {
+        WebViewCookieManagerPlatform.instance = WebViewAndroidCookieManager();
+      } else {
+        throw AssertionError(
+            'This platform is currently unsupported for webview_flutter_android.');
+      }
     }
     return WebViewCookieManagerPlatform.instance!;
   }
