@@ -23,13 +23,13 @@ void main() {
   test('clearCookies should call android_webview.clearCookies', () {
     when(android_webview.CookieManager.instance.clearCookies())
         .thenAnswer((_) => Future<bool>.value(true));
-    WebViewAndroidCookieManager.instance.clearCookies();
+    WebViewAndroidCookieManager().clearCookies();
     verify(android_webview.CookieManager.instance.clearCookies());
   });
 
   test('setCookie should throw ArgumentError for cookie with invalid path', () {
     expect(
-      () => WebViewAndroidCookieManager.instance.setCookie(const WebViewCookie(
+      () => WebViewAndroidCookieManager().setCookie(const WebViewCookie(
         name: 'foo',
         value: 'bar',
         domain: 'flutter.dev',
@@ -42,7 +42,7 @@ void main() {
   test(
       'setCookie should call android_webview.csetCookie with properly formatted cookie value',
       () {
-    WebViewAndroidCookieManager.instance.setCookie(const WebViewCookie(
+    WebViewAndroidCookieManager().setCookie(const WebViewCookie(
       name: 'foo&',
       value: 'bar@',
       domain: 'flutter.dev',

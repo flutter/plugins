@@ -3,7 +3,6 @@ package io.flutter.plugins.webviewflutter;
 import android.os.Build;
 import android.webkit.CookieManager;
 
-
 class CookieManagerHostApiImpl implements GeneratedAndroidWebView.CookieManagerHostApi {
   @Override
   public void clearCookies(GeneratedAndroidWebView.Result<Boolean> result) {
