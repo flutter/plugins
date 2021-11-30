@@ -9,6 +9,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Environment;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.common.util.concurrent.FutureCallback;
@@ -55,6 +56,8 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
     void getStorageDirectory(@NonNull Result result);
 
+    void getDownloadsDirectory(@NonNull Result result);
+
     void getExternalCacheDirectories(@NonNull Result result);
 
     void getExternalStorageDirectories(@NonNull String directoryName, @NonNull Result result);
@@ -82,6 +85,10 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
     public void getStorageDirectory(@NonNull Result result) {
       executeInBackground(() -> getPathProviderStorageDirectory(), result);
+    }
+
+    public void getDownloadsDirectory(@NonNull Result result) {
+      executeInBackground(() -> getPathProviderDownloadsDirectory(), result);
     }
 
     public void getExternalCacheDirectories(@NonNull Result result) {
@@ -134,6 +141,10 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
     public void getStorageDirectory(@NonNull Result result) {
       result.success(getPathProviderStorageDirectory());
+    }
+
+    public void getDownloadsDirectory(@NonNull Result result) {
+      result.success(getPathProviderDownloadsDirectory());
     }
 
     public void getExternalCacheDirectories(@NonNull Result result) {
@@ -206,6 +217,9 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
       case "getStorageDirectory":
         impl.getStorageDirectory(result);
         break;
+      case "getDownloadsDirectory":
+        impl.getDownloadsDirectory(result);
+        break;
       case "getExternalCacheDirectories":
         impl.getExternalCacheDirectories(result);
         break;
@@ -240,6 +254,10 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
       return null;
     }
     return dir.getAbsolutePath();
+  }
+
+  private String getPathProviderDownloadsDirectory() {
+    return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
   }
 
   private List<String> getPathProviderExternalCacheDirectories() {

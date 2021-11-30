@@ -210,7 +210,7 @@ Future<List<Directory>?> getExternalStorageDirectories({
 /// Path to the directory where downloaded files can be stored.
 /// This is typically only relevant on desktop operating systems.
 ///
-/// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
+/// On iOS, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
 Future<Directory?> getDownloadsDirectory() async {
   final String? path = await _platform.getDownloadsPath();
