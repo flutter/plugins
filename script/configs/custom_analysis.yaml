@@ -23,7 +23,6 @@
 - ios_platform_images
 - local_auth
 - video_player
-- webview_flutter/webview_flutter
 
 # These plugins are deprecated in favor of the Community Plus versions, and
 # will be removed from the repo once the critical support window has passed,
