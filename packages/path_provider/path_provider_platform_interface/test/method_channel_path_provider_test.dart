@@ -192,9 +192,20 @@ void main() {
       expect(result, kDownloadsPath);
     });
 
-    test('getDownloadsPath  non-macos fails', () async {
+    test('getDownloadsPath Android succeeds', () async {
       methodChannelPathProvider.setMockPathProviderPlatform(
           FakePlatform(operatingSystem: 'android'));
+      final String? result = await methodChannelPathProvider.getDownloadsPath();
+      expect(
+        log,
+        <Matcher>[isMethodCall('getDownloadsDirectory', arguments: null)],
+      );
+      expect(result, kDownloadsPath);
+    });
+
+    test('getDownloadsPath iOS fails', () async {
+      methodChannelPathProvider
+          .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
       try {
         await methodChannelPathProvider.getDownloadsPath();
         fail('should throw UnsupportedError');
