@@ -90,10 +90,7 @@ public class MethodCallHandlerTest {
   @Before
   public void setUp() {
     MockitoAnnotations.openMocks(this);
-    factory =
-        (@NonNull Context context,
-            @NonNull MethodChannel channel,
-            boolean enablePendingPurchases) -> mockBillingClient;
+    factory = (@NonNull Context context, @NonNull MethodChannel channel) -> mockBillingClient;
     methodChannelHandler = new MethodCallHandlerImpl(activity, context, mockMethodChannel, factory);
     when(mockActivityPluginBinding.getActivity()).thenReturn(activity);
   }
@@ -153,7 +150,6 @@ public class MethodCallHandlerTest {
   public void startConnection_multipleCalls() {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
-    arguments.put("enablePendingPurchases", true);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -191,7 +187,6 @@ public class MethodCallHandlerTest {
     final int disconnectCallbackHandle = 22;
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", disconnectCallbackHandle);
-    arguments.put("enablePendingPurchases", true);
     MethodCall connectCall = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -865,7 +860,6 @@ public class MethodCallHandlerTest {
   private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
-    arguments.put("enablePendingPurchases", true);
     MethodCall call = new MethodCall(START_CONNECTION, arguments);
     ArgumentCaptor<BillingClientStateListener> captor =
         ArgumentCaptor.forClass(BillingClientStateListener.class);
@@ -880,7 +874,6 @@ public class MethodCallHandlerTest {
     if (arguments == null) {
       arguments = new HashMap<>();
       arguments.put("handle", 1);
-      arguments.put("enablePendingPurchases", true);
     }
     if (result == null) {
       result = mock(Result.class);
