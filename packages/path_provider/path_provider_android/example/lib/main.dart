@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final PathProviderPlatform provider = PathProviderPlatform.instance;
   Future<String?>? _tempDirectory;
   Future<String?>? _appSupportDirectory;
+  Future<String?>? _downloadsDirectory;
   Future<String?>? _appDocumentsDirectory;
   Future<String?>? _externalDocumentsDirectory;
   Future<List<String>?>? _externalStorageDirectories;
@@ -90,6 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _requestDownloadsDirectory() {
+    setState(() {
+      _downloadsDirectory = provider.getDownloadsPath();
+    });
+  }
+
   void _requestExternalStorageDirectory() {
     setState(() {
       _externalDocumentsDirectory = provider.getExternalStoragePath();
@@ -141,6 +148,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 child: const Text('Get Application Support Directory'),
                 onPressed: _requestAppSupportDirectory,
+              ),
+            ),
+            FutureBuilder<String?>(
+                future: _downloadsDirectory, builder: _buildDirectory),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                child: const Text('Get Downloads Directory'),
+                onPressed: _requestDownloadsDirectory,
               ),
             ),
             FutureBuilder<String?>(
