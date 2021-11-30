@@ -85,8 +85,8 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
                 (BuildContext context, PlatformViewController controller) {
               return PlatformViewSurface(
                 controller: controller,
-                gestureRecognizers:
-                    Set<Factory<OneSequenceGestureRecognizer>>(),
+                gestureRecognizers: const <
+                    Factory<OneSequenceGestureRecognizer>>{},
                 hitTestBehavior: PlatformViewHitTestBehavior.transparent,
               );
             },
@@ -123,7 +123,8 @@ class LinkViewController extends PlatformViewController {
     return controller;
   }
 
-  static Map<int, LinkViewController> _instances = <int, LinkViewController>{};
+  static final Map<int, LinkViewController> _instances =
+      <int, LinkViewController>{};
 
   static html.Element _viewFactory(int viewId) {
     return _instances[viewId]!._element;
@@ -131,7 +132,7 @@ class LinkViewController extends PlatformViewController {
 
   static int? _hitTestedViewId;
 
-  static late StreamSubscription _clickSubscription;
+  static late StreamSubscription<html.MouseEvent> _clickSubscription;
 
   static void _onGlobalClick(html.MouseEvent event) {
     final int? viewId = getViewIdFromTarget(event);
@@ -271,6 +272,10 @@ class LinkViewController extends PlatformViewController {
 int? getViewIdFromTarget(html.Event event) {
   final html.Element? linkElement = getLinkElementFromTarget(event);
   if (linkElement != null) {
+    // TODO(stuartmorgan): Remove this ignore (and change to getProperty<int>)
+    // once the templated version is available on stable. On master (2.8) this
+    // is already not necessary.
+    // ignore: return_of_invalid_type
     return getProperty(linkElement, linkViewIdProperty);
   }
   return null;
