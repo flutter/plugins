@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Updated getDownloadsDirectory platform compatibility
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.

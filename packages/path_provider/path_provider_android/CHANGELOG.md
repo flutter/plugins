@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Added implementation of getDownloadsDirectory
+
 ## 2.0.9
 
 * Updates Android compileSdkVersion to 31.
