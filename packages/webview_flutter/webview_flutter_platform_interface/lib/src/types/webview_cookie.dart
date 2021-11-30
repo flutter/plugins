@@ -37,7 +37,7 @@ class WebViewCookie {
   /// https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.1
   final String path;
 
-  /// Serializes a [WebViewCookie] to a Map<String, String>.
+  /// Serializes the [WebViewCookie] to a Map<String, String>.
   Map<String, String> toJson() {
     return <String, String>{
       'name': name,
