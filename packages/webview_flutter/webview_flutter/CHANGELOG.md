@@ -1,7 +1,9 @@
-## NEXT
+## 2.4.0
 
 * Updates example app Android compileSdkVersion to 31.
 * Integration test fixes.
+* Added `setCookie` to CookieManager.
+* CreationParams now supports setting `initialCookies`.
 
 ## 2.3.1
 
