@@ -337,6 +337,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
 @property(assign, nonatomic) CMTime videoTimeOffset;
 @property(assign, nonatomic) CMTime audioTimeOffset;
+// Format used for video and image streaming.
 @property(assign, nonatomic) FourCharCode videoFormat;
 @property(nonatomic) CMMotionManager *motionManager;
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
@@ -370,7 +371,6 @@ NSString *const errorMethod = @"error";
   _focusMode = FocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
-  // Format used for video and image streaming.
   _videoFormat = kCVPixelFormatType_32BGRA;
 
   NSError *localError = nil;
