@@ -343,7 +343,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     final http.Response response =
         await http.Response.fromStream(await baseClient.send(req));
 
-    // If it's a redirection, follow it
+    // If it's a redirection, follow it.
     if (response.statusCode >= 300 &&
         response.statusCode < 400 &&
         response.headers.containsKey('location')) {
