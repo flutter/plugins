@@ -24,6 +24,22 @@ abstract class WebViewHostApi {
 
   void dispose(int instanceId);
 
+  void loadData(
+    int instanceId,
+    String data,
+    String mimeType,
+    String encoding,
+  );
+
+  void loadDataWithBaseUrl(
+    int instanceId,
+    String baseUrl,
+    String data,
+    String mimeType,
+    String encoding,
+    String historyUrl,
+  );
+
   void loadUrl(
     int instanceId,
     String url,

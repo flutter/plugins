@@ -22,7 +22,6 @@ void main() {
 
   setUp(() {
     billingClient = BillingClient((PurchasesResultWrapper _) {});
-    billingClient.enablePendingPurchases();
     stubPlatform.reset();
   });
 
@@ -90,10 +89,7 @@ void main() {
       );
       await billingClient.startConnection(onBillingServiceDisconnected: () {});
       final MethodCall call = stubPlatform.previousCallMatching(methodName);
-      expect(
-          call.arguments,
-          equals(
-              <dynamic, dynamic>{'handle': 0, 'enablePendingPurchases': true}));
+      expect(call.arguments, equals(<dynamic, dynamic>{'handle': 0}));
     });
 
     test('handles method channel returning null', () async {

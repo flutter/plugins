@@ -109,6 +109,40 @@ class WebViewHostApiImpl extends WebViewHostApi {
     instanceManager.removeInstance(instance);
   }
 
+  /// Helper method to convert the instances ids to objects.
+  Future<void> loadDataFromInstance(
+    WebView instance,
+    String data,
+    String mimeType,
+    String encoding,
+  ) {
+    return loadData(
+      instanceManager.getInstanceId(instance)!,
+      data,
+      mimeType,
+      encoding,
+    );
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> loadDataWithBaseUrlFromInstance(
+    WebView instance,
+    String baseUrl,
+    String data,
+    String mimeType,
+    String encoding,
+    String historyUrl,
+  ) {
+    return loadDataWithBaseUrl(
+      instanceManager.getInstanceId(instance)!,
+      baseUrl,
+      data,
+      mimeType,
+      encoding,
+      historyUrl,
+    );
+  }
+
   /// Helper method to convert instances ids to objects.
   Future<void> loadUrlFromInstance(
     WebView instance,

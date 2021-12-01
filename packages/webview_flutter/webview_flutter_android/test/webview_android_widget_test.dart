@@ -70,9 +70,7 @@ void main() {
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: hasNavigationDelegate,
               hasProgressTracking: hasProgressTracking,
             )),
@@ -123,9 +121,7 @@ void main() {
           creationParams: CreationParams(
             initialUrl: 'https://www.google.com',
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -142,9 +138,7 @@ void main() {
           creationParams: CreationParams(
             userAgent: 'MyUserAgent',
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -160,9 +154,7 @@ void main() {
             autoMediaPlaybackPolicy:
                 AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -177,9 +169,7 @@ void main() {
           creationParams: CreationParams(
             autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -194,9 +184,7 @@ void main() {
           creationParams: CreationParams(
             javascriptChannelNames: <String>{'a', 'b'},
             webSettings: WebSettings(
-              // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-              // ignore: prefer_const_constructors
-              userAgent: WebSetting<String?>.absent(),
+              userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -214,9 +202,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 javascriptMode: JavascriptMode.unrestricted,
                 hasNavigationDelegate: false,
               ),
@@ -231,9 +217,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 hasNavigationDelegate: true,
               ),
             ),
@@ -248,9 +232,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 debuggingEnabled: true,
                 hasNavigationDelegate: false,
               ),
@@ -265,9 +247,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.of('myUserAgent'),
+                userAgent: const WebSetting<String?>.of('myUserAgent'),
                 hasNavigationDelegate: false,
               ),
             ),
@@ -281,9 +261,7 @@ void main() {
             tester,
             creationParams: CreationParams(
               webSettings: WebSettings(
-                // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-                // ignore: prefer_const_constructors
-                userAgent: WebSetting<String?>.absent(),
+                userAgent: const WebSetting<String?>.absent(),
                 zoomEnabled: false,
                 hasNavigationDelegate: false,
               ),
@@ -296,6 +274,60 @@ void main() {
     });
 
     group('$WebViewPlatformController', () {
+      testWidgets('loadFile without "file://" prefix',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String filePath = '/path/to/file.html';
+        await testController.loadFile(filePath);
+
+        verify(mockWebView.loadUrl(
+          'file://$filePath',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets('loadFile with "file://" prefix',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadFile('file:///path/to/file.html');
+
+        verify(mockWebView.loadUrl(
+          'file:///path/to/file.html',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets('loadHtmlString without base URL',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String htmlString = '<html><body>Test data.</body></html>';
+        await testController.loadHtmlString(htmlString);
+
+        verify(mockWebView.loadDataWithBaseUrl(
+          data: htmlString,
+          mimeType: 'text/html',
+        ));
+      });
+
+      testWidgets('loadHtmlString with base URL', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String htmlString = '<html><body>Test data.</body></html>';
+        await testController.loadHtmlString(
+          htmlString,
+          baseUrl: 'https://flutter.dev',
+        );
+
+        verify(mockWebView.loadDataWithBaseUrl(
+          baseUrl: 'https://flutter.dev',
+          data: htmlString,
+          mimeType: 'text/html',
+        ));
+      });
+
       testWidgets('loadUrl', (WidgetTester tester) async {
         await buildWidget(tester);
 

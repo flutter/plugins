@@ -129,6 +129,70 @@ class WebViewHostApi {
     }
   }
 
+  Future<void> loadData(int arg_instanceId, String arg_data,
+      String arg_mimeType, String arg_encoding) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewHostApi.loadData', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(
+            <Object>[arg_instanceId, arg_data, arg_mimeType, arg_encoding])
+        as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> loadDataWithBaseUrl(
+      int arg_instanceId,
+      String arg_baseUrl,
+      String arg_data,
+      String arg_mimeType,
+      String arg_encoding,
+      String arg_historyUrl) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewHostApi.loadDataWithBaseUrl', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object>[
+      arg_instanceId,
+      arg_baseUrl,
+      arg_data,
+      arg_mimeType,
+      arg_encoding,
+      arg_historyUrl
+    ]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
   Future<void> loadUrl(int arg_instanceId, String arg_url,
       Map<String?, String?> arg_headers) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(

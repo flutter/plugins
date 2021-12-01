@@ -1,6 +1,11 @@
-## 2.4.0
+## 2.5.0
 
 * Add an option to set the background color of the webview.
+
+## 2.4.0
+
+* Adds support for Android's `WebView.loadData` and `WebView.loadDataWithBaseUrl` methods and implements the `loadFile` and `loadHtmlString` methods from the platform interface.
+* Updates to webview_flutter_platform_interface version 1.5.2.
 
 ## 2.3.1
 
