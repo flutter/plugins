@@ -276,14 +276,17 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     }
 
     webView.settings.setMediaPlaybackRequiresUserGesture(
-      creationParams.autoMediaPlaybackPolicy !=
-          AutoMediaPlaybackPolicy.always_allow,
+      creationParams.autoMediaPlaybackPolicy != AutoMediaPlaybackPolicy.always_allow,
     );
 
     addJavascriptChannels(creationParams.javascriptChannelNames);
 
-    creationParams.cookies
-        .forEach(WebViewCookieManagerPlatform.instance!.setCookie);
+    /// TODO (BeMacized): Remove once platform implementations
+    /// are able to register themselves (Flutter >=2.8).
+    /// https://github.com/flutter/flutter/issues/94224
+    WebViewCookieManagerPlatform.instance ??= WebViewAndroidCookieManager();
+
+    creationParams.cookies.forEach(WebViewCookieManagerPlatform.instance!.setCookie);
   }
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
