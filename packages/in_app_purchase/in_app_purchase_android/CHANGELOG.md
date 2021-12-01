@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Fix `PurchaseStatus` return `error` when user upgrades subscription by deferred proration mode.
+
 ## 0.2.1
 
 * Deprecated the `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases()` method and `InAppPurchaseAndroidPlatformAddition.enablePendingPurchase` property. Since Google Play no longer accepts App submissions that don't support pending purchases it is no longer necessary to acknowledge this through code.
