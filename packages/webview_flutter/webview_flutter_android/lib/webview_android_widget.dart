@@ -324,11 +324,11 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   Future<void> _dispose() => webView.release();
 
-  // As the http package does currently not expose the resulting url when
+  // The http package currently does not expose the resulting url when
   // automatically following redirects. Because of this, redirects have to be
   // followed manually so that the final url can be tracked. Once this
-  // functionality has been implemented in the http package,
-  // this method should be removed.
+  // functionality has been implemented in the http package, this method
+  // should be removed.
   // https://github.com/dart-lang/http/issues/556
   // https://github.com/dart-lang/http/issues/293
   Future<_HTTPResponseWithFinalUrl> _postUrlAndFollowRedirects(Uri uri,
