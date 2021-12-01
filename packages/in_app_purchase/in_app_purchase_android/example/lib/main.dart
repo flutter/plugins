@@ -15,11 +15,6 @@ import 'consumable_store.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // For play billing library 2.0 on Android, it is mandatory to call
-  // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
-  // as part of initializing the app.
-  InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-
   // When using the Android plugin directly it is mandatory to register
   // the plugin as default instance as part of initializing the app.
   InAppPurchaseAndroidPlatform.registerPlatform();

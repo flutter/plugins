@@ -15,7 +15,7 @@ import 'navigation_request.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
-typedef void WebViewCreatedCallback(WebViewController controller);
+typedef WebViewCreatedCallback = void Function(WebViewController controller);
 
 /// Decides how to handle a specific navigation request.
 ///
@@ -23,20 +23,20 @@ typedef void WebViewCreatedCallback(WebViewController controller);
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef FutureOr<NavigationDecision> NavigationDelegate(
+typedef NavigationDelegate = FutureOr<NavigationDecision> Function(
     NavigationRequest navigation);
 
 /// Signature for when a [WebView] has started loading a page.
-typedef void PageStartedCallback(String url);
+typedef PageStartedCallback = void Function(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
-typedef void PageFinishedCallback(String url);
+typedef PageFinishedCallback = void Function(String url);
 
 /// Signature for when a [WebView] is loading a page.
-typedef void PageLoadingCallback(int progress);
+typedef PageLoadingCallback = void Function(int progress);
 
 /// Signature for when a [WebView] has failed to load a resource.
-typedef void WebResourceErrorCallback(WebResourceError error);
+typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
 /// A web view widget for showing html content.
 ///
@@ -259,7 +259,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated:
           (WebViewPlatformController? webViewPlatformController) {
-        WebViewController controller = WebViewController._(
+        final WebViewController controller = WebViewController._(
           widget,
           webViewPlatformController!,
           _javascriptChannelRegistry,
@@ -305,6 +305,35 @@ class WebViewController {
 
   WebView _widget;
 
+  /// Loads the file located on the specified [absoluteFilePath].
+  ///
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(
+    String absoluteFilePath,
+  ) {
+    assert(absoluteFilePath.isNotEmpty);
+    return _webViewPlatformController.loadFile(absoluteFilePath);
+  }
+
+  /// Loads the supplied HTML string.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) {
+    assert(html.isNotEmpty);
+    return _webViewPlatformController.loadHtmlString(
+      html,
+      baseUrl: baseUrl,
+    );
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
@@ -320,6 +349,11 @@ class WebViewController {
     assert(url != null);
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
+  }
+
+  /// Loads a page by making the specified request.
+  Future<void> loadRequest(WebViewRequest request) async {
+    return _webViewPlatformController.loadRequest(request);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
@@ -513,7 +547,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = const WebSetting<String?>.absent();
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
@@ -611,6 +645,7 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     }
   }
 
+  @override
   void onWebResourceError(WebResourceError error) {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);

@@ -1,5 +1,19 @@
 ## NEXT
 
+- Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+
+## 0.7.3
+
+- `native-test` now builds unit tests before running them on Windows and Linux,
+  matching the behavior of other platforms.
+- Adds `--log-timing` to add timing information to package headers in looping
+  commands.
+- Adds a `--check-for-missing-changes` flag to `version-check` that requires
+  version updates (except for recognized exemptions) and CHANGELOG changes when
+  modifying packages, unless the PR description explains why it's not needed.
+
+## 0.7.2
+
 - Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
 - `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
   have unit tests, rather than skipping them.
@@ -15,6 +29,8 @@
   length.
 - Fix `license-check` when run on Windows with line ending conversion enabled.
 - Fixed `pubspec-check` on Windows.
+- Add support for `main` as a primary branch. `master` continues to work for
+  compatibility.
 
 ## 0.7.1
 
