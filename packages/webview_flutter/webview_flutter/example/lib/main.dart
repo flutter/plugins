@@ -108,7 +108,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
-          backgroundColor: Color(0x00000000),
+          backgroundColor: const Color(0x00000000),
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -172,7 +172,7 @@ class SampleMenu extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<MenuOptions>(
-          key: ValueKey('ShowPopupMenu'),
+          key: const ValueKey<String>('ShowPopupMenu'),
           onSelected: (MenuOptions value) {
             switch (value) {
               case MenuOptions.showUserAgent:
@@ -232,7 +232,7 @@ class SampleMenu extends StatelessWidget {
               child: Text('Navigation Delegate example'),
             ),
             const PopupMenuItem<MenuOptions>(
-              key: ValueKey('ShowTransparentBackgroundExample'),
+              key: ValueKey<String>('ShowTransparentBackgroundExample'),
               value: MenuOptions.transparentBackground,
               child: Text('Transparent background example'),
             ),
@@ -312,7 +312,7 @@ class SampleMenu extends StatelessWidget {
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
-  void _onTransparentBackground(
+  Future<void> _onTransparentBackground(
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
