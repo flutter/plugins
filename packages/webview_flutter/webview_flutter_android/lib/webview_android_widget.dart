@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart' as android_webview;
@@ -175,6 +177,46 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   }
 
   @override
+  Future<void> loadRequest(
+    WebViewRequest request,
+  ) async {
+    switch (request.method) {
+      case WebViewRequestMethod.get:
+        return loadUrl(request.uri.toString(), request.headers);
+      case WebViewRequestMethod.post:
+        // If the request requires no additional headers, postUrl can be used directly.
+        if (request.headers.isEmpty) {
+          return webView.postUrl(
+              request.uri.toString(), request.body ?? Uint8List(0));
+        }
+        // Otherwise, the request has to be made manually.
+        else {
+          final _HTTPResponseWithFinalUrl responseWithUrl =
+              await _postUrlAndFollowRedirects(
+            request.uri,
+            headers: request.headers,
+            body: request.body ?? Uint8List(0),
+          );
+          final http.Response response = responseWithUrl.response;
+
+          final String baseUrl = responseWithUrl.finalUrl;
+          final String mimeType =
+              response.headers['content-type'] ?? 'text/html';
+
+          return webView.loadDataWithBaseUrl(
+            data: response.body,
+            baseUrl: baseUrl,
+            mimeType: mimeType,
+          );
+        }
+      default:
+        throw UnimplementedError(
+          'This version of webview_android_widget currently has no implementation for HTTP method ${request.method.serialize()} in loadRequest.',
+        );
+    }
+  }
+
+  @override
   Future<String?> currentUrl() => webView.getUrl();
 
   @override
@@ -281,6 +323,41 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<int> getScrollY() => webView.getScrollY();
 
   Future<void> _dispose() => webView.release();
+
+  // As the http package does currently not expose the resulting url when
+  // automatically following redirects. Because of this, redirects have to be
+  // followed manually so that the final url can be tracked. Once this
+  // functionality has been implemented in the http package,
+  // this method should be removed.
+  // https://github.com/dart-lang/http/issues/556
+  // https://github.com/dart-lang/http/issues/293
+  Future<_HTTPResponseWithFinalUrl> _postUrlAndFollowRedirects(Uri uri,
+      {Map<String, String>? headers,
+      Uint8List? body,
+      int redirections = 0}) async {
+    final http.Request req = http.Request('POST', uri)
+      ..followRedirects = false
+      ..bodyBytes = body ?? <int>[];
+    req.headers.addAll(headers ?? <String, String>{});
+    final http.Client baseClient = http.Client();
+    final http.Response response =
+        await http.Response.fromStream(await baseClient.send(req));
+
+    // If it's a redirection, follow it
+    if (response.statusCode >= 300 &&
+        response.statusCode < 400 &&
+        response.headers.containsKey('location')) {
+      // Maximum of 20 redirections (Default in Chrome & Firefox).
+      if (redirections >= 20) {
+        throw const HttpException('Maximum amount of redirections reached.');
+      }
+      final Uri redirectUri = Uri.parse(response.headers['location']!);
+      return _postUrlAndFollowRedirects(redirectUri,
+          headers: headers, body: body, redirections: redirections + 1);
+    }
+
+    return _HTTPResponseWithFinalUrl(response, uri.toString());
+  }
 
   void _setCreationParams(CreationParams creationParams) {
     final WebSettings? webSettings = creationParams.webSettings;
@@ -635,4 +712,11 @@ class WebViewProxy {
   Future<void> setWebContentsDebuggingEnabled(bool enabled) {
     return android_webview.WebView.setWebContentsDebuggingEnabled(true);
   }
+}
+
+class _HTTPResponseWithFinalUrl {
+  _HTTPResponseWithFinalUrl(this.response, this.finalUrl);
+
+  final http.Response response;
+  final String finalUrl;
 }
