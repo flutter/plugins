@@ -73,6 +73,26 @@ void main() {
       );
     });
 
+    test('loadFlutterAsset', () async {
+      await webViewPlatform.loadFlutterAsset(
+        'folder/asset.html',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadFlutterAsset',
+            arguments: 'folder/asset.html',
+          ),
+        ],
+      );
+    });
+
+    test('loadFlutterAsset with empty key', () async {
+      expect(() => webViewPlatform.loadFlutterAsset(''), throwsAssertionError);
+    });
+
     test('loadHtmlString without base URL', () async {
       await webViewPlatform.loadHtmlString(
         'Test HTML string',

@@ -1,3 +1,7 @@
+## 1.6.0
+
+* Adds the `loadFlutterAsset` method to the platform interface.
+
 ## 1.5.2
 
 * Mirgrates from analysis_options_legacy.yaml to the more strict analysis_options.yaml.
