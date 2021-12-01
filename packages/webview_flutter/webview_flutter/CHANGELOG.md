@@ -1,6 +1,9 @@
-## 2.4.0
+## 2.5.0
 
 * Adds an option to set the background color of the webview.
+
+## 2.4.0
+
 * Updates example app Android compileSdkVersion to 31.
 * Integration test fixes.
 * Updates code for new analysis options.
