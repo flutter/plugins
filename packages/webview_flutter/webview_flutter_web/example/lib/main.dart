@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'web_view.dart';
 
 void main() {
-  runApp(MaterialApp(home: _WebViewExample()));
+  runApp(const MaterialApp(home: _WebViewExample()));
 }
 
 class _WebViewExample extends StatefulWidget {

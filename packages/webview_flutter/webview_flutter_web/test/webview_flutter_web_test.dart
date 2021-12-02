@@ -15,9 +15,9 @@ void main() {
   group('WebWebViewPlatform', () {
     test('build returns a HtmlElementView', () {
       // Setup
-      var platform = WebWebViewPlatform();
+      final WebWebViewPlatform platform = WebWebViewPlatform();
       // Run
-      var widget = platform.build(
+      final Widget widget = platform.build(
         context: MockBuildContext(),
         creationParams: CreationParams(),
         webViewPlatformCallbacksHandler: MockWebViewPlatformCallbacksHandler(),
@@ -31,10 +31,10 @@ void main() {
   group('WebWebViewPlatformController', () {
     test('loadUrl sets url on iframe src attribute', () {
       // Setup
-      var mockElement = MockIFrameElement();
-      var controller = WebWebViewPlatformController(
+      final MockIFrameElement mockElement = MockIFrameElement();
+      final WebWebViewPlatformController controller =
+          WebWebViewPlatformController(
         mockElement,
-        MockWebViewPlatformCallbacksHandler(),
       );
       // Run
       controller.loadUrl('test url', null);

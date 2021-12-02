@@ -4,6 +4,8 @@
 
 import 'dart:html' as html;
 
+// ignore_for_file: camel_case_types, avoid_classes_with_only_static_members
+
 // Fake interface for the logic that this package needs from (web-only) dart:ui.
 // This is conditionally exported so the analyzer sees these methods as available.
 

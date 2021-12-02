@@ -11,7 +11,7 @@ import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
-typedef void WebViewCreatedCallback(WebViewController controller);
+typedef WebViewCreatedCallback = void Function(WebViewController controller);
 
 /// A web view widget for showing html content.
 ///
@@ -33,23 +33,12 @@ class WebView extends StatefulWidget {
     this.initialUrl,
   }) : super(key: key);
 
-  static WebViewPlatform _platform = WebWebViewPlatform();
-
   /// The WebView platform that's used by this WebView.
   ///
-  /// The default value is [AndroidWebView].
-  static WebViewPlatform get platform => _platform;
-
-  /// Sets a custom [WebViewPlatform].
-  ///
+  /// The default value is [WebWebViewPlatform].
   /// This property can be set to use a custom platform implementation for WebViews.
-  ///
   /// Setting `platform` doesn't affect [WebView]s that were already created.
-  ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
-  static set platform(WebViewPlatform platform) {
-    _platform = platform;
-  }
+  static WebViewPlatform platform = WebWebViewPlatform();
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback? onWebViewCreated;
@@ -86,7 +75,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated:
           (WebViewPlatformController? webViewPlatformController) {
-        WebViewController controller = WebViewController(
+        final WebViewController controller = WebViewController(
           widget,
           webViewPlatformController!,
         );
@@ -101,7 +90,8 @@ class _WebViewState extends State<WebView> {
         initialUrl: widget.initialUrl,
         webSettings: _webSettingsFromWidget(widget),
       ),
-      javascriptChannelRegistry: JavascriptChannelRegistry({}),
+      javascriptChannelRegistry:
+          JavascriptChannelRegistry(<JavascriptChannel>{}),
     );
   }
 }
@@ -112,29 +102,20 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   @override
   FutureOr<bool> onNavigationRequest(
       {required String url, required bool isForMainFrame}) {
-    // TODO: implement onNavigationRequest
     throw UnimplementedError();
   }
 
   @override
-  void onPageFinished(String url) {
-    // TODO: implement onPageFinished
-  }
+  void onPageFinished(String url) {}
 
   @override
-  void onPageStarted(String url) {
-    // TODO: implement onPageStarted
-  }
+  void onPageStarted(String url) {}
 
   @override
-  void onProgress(int progress) {
-    // TODO: implement onProgress
-  }
+  void onProgress(int progress) {}
 
   @override
-  void onWebResourceError(WebResourceError error) {
-    // TODO: implement onWebResourceError
-  }
+  void onWebResourceError(WebResourceError error) {}
 }
 
 /// Controls a [WebView].
@@ -341,7 +322,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = WebSetting<String?>.absent();
     bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
@@ -393,8 +374,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     debuggingEnabled: false,
     gestureNavigationEnabled: false,
     allowsInlineMediaPlayback: true,
-    // TODO: Verify accuracy
-    userAgent: WebSetting.of(''),
+    userAgent: WebSetting<String?>.of(''),
     zoomEnabled: false,
   );
 }
