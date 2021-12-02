@@ -4,6 +4,7 @@
 
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
+import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -24,7 +25,10 @@ const int _exitCannotUpdatePubspec = 4;
 /// plugin.
 class PathifyCommand extends PluginCommand {
   /// Creates an instance of the pathify command.
-  PathifyCommand(Directory packagesDir) : super(packagesDir) {
+  PathifyCommand(
+    Directory packagesDir, {
+    GitDir? gitDir,
+  }) : super(packagesDir, gitDir: gitDir) {
     argParser.addMultiOption(_targetPackagesArg,
         help: 'The names of the packages to convert to dependencies.\n'
             'Ignored if --$_targetNonBreakingUpdatePackagesArg is passed.',
@@ -68,8 +72,8 @@ class PathifyCommand extends PluginCommand {
       if (await _addDependencyOverridesIfNecessary(
           pubspec, localPackageTargets)) {
         // Print the relative path of the changed pubspec.
-        final String displayPath = p.posix.joinAll(
-            path.split(path.relative(pubspec.path, from: repoRootPath)));
+        final String displayPath = p.posix.joinAll(path
+            .split(path.relative(pubspec.absolute.path, from: repoRootPath)));
         print('  Modified $displayPath');
       }
     }
@@ -137,7 +141,8 @@ class PathifyCommand extends PluginCommand {
       final String commonBasePath = packagesDir.path;
       // Find the relative path to the common base.
       final int packageDepth = path
-          .split(path.relative(pubspecFile.parent.path, from: commonBasePath))
+          .split(path.relative(pubspecFile.parent.absolute.path,
+              from: commonBasePath))
           .length;
       final List<String> relativeBasePathComponents =
           List<String>.filled(packageDepth, '..');
@@ -158,8 +163,7 @@ dependency_overrides:
                 from: commonBasePath));
         newPubspecContents += '''
   $packageName:
-    path:
-      ${p.posix.joinAll(<String>[
+    path: ${p.posix.joinAll(<String>[
               ...relativeBasePathComponents,
               ...repoRelativePathComponents,
             ])}
@@ -218,8 +222,9 @@ dependency_overrides:
       return false;
     }
 
-    final String pubspecGitPath = p.posix.joinAll(path.split(
-        path.relative(package.pubspecFile.path, from: (await gitDir).path)));
+    final String pubspecGitPath = p.posix.joinAll(path.split(path.relative(
+        package.pubspecFile.absolute.path,
+        from: (await gitDir).path)));
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
     final Version? previousVersion =
         await gitVersionFinder.getPackageVersion(pubspecGitPath);
@@ -227,6 +232,13 @@ dependency_overrides:
       // The plugin is new, so nothing can be depending on it yet.
       return false;
     }
-    return pubspec.version != previousVersion;
+    final Version newVersion = pubspec.version!;
+    if ((newVersion.major > 0 && newVersion.major != previousVersion.major) ||
+        (newVersion.major == 0 && newVersion.minor != previousVersion.minor)) {
+      // Breaking changes aren't targetted since they won't be picked up
+      // automatically.
+      return false;
+    }
+    return newVersion != previousVersion;
   }
 }
