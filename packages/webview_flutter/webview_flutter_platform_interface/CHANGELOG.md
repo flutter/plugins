@@ -1,6 +1,16 @@
-## 1.6.0
+## 1.7.0
 
 * Adds the `loadFlutterAsset` method to the platform interface.
+
+## 1.6.1
+
+* Revert deprecation of `clearCookies` in WebViewPlatform for later deprecation.
+
+## 1.6.0
+
+* Adds platform interface for cookie manager.
+* Deprecates `clearCookies` in WebViewPlatform in favour of `CookieManager#clearCookies`.
+* Expanded `CreationParams` to include cookies to be set at webview creation.
 
 ## 1.5.2
 

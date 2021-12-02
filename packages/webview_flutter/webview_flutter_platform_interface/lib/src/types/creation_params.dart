@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:webview_flutter_platform_interface/src/types/types.dart';
+
 import 'auto_media_playback_policy.dart';
 import 'web_settings.dart';
 
@@ -20,6 +22,7 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.cookies = const <WebViewCookie>[],
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -53,8 +56,11 @@ class CreationParams {
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
+  /// The initial set of cookies to set before the webview does its first load.
+  final List<WebViewCookie> cookies;
+
   @override
   String toString() {
-    return 'CreationParams(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return 'CreationParams(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, cookies: $cookies)';
   }
 }
