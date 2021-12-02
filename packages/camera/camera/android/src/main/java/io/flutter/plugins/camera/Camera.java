@@ -584,10 +584,10 @@ class Camera
 
     try {
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
-          captureSession.stopRepeating();
+        captureSession.stopRepeating();
       } else {
-          captureSession.stopRepeating();
-          captureSession.abortCaptures();
+        captureSession.stopRepeating();
+        captureSession.abortCaptures();
       }
       Log.i(TAG, "sending capture request");
       captureSession.capture(stillBuilder.build(), captureCallback, backgroundHandler);
