@@ -1,3 +1,7 @@
+## 1.6.1
+
+* Revert deprecation of `clearCookies` in WebViewPlatform for later deprecation.
+
 ## 1.6.0
 
 * Adds platform interface for cookie manager.
