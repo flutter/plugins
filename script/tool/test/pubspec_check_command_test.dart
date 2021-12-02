@@ -38,7 +38,7 @@ String _headerSection(
     'flutter',
     if (isPlugin) 'plugins' else 'packages',
     'tree',
-    'master',
+    'main',
     'packages',
     repositoryPath,
   ];

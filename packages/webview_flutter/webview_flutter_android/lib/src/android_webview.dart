@@ -29,6 +29,8 @@ const String _nullStringIdentifier = '<null-value>';
 /// To learn more about WebView and alternatives for serving web content, read
 /// the documentation on
 /// [Web-based content](https://developer.android.com/guide/webapps).
+///
+/// When a [WebView] is no longer needed [release] must be called.
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
@@ -40,9 +42,6 @@ class WebView {
   static WebViewHostApiImpl api = WebViewHostApiImpl();
 
   WebViewClient? _currentWebViewClient;
-  DownloadListener? _currentDownloadListener;
-  WebChromeClient? _currentWebChromeClient;
-  Set<JavaScriptChannel> _javaScriptChannels = <JavaScriptChannel>{};
 
   /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
   ///
@@ -67,6 +66,95 @@ class WebView {
     return api.setWebContentsDebuggingEnabled(enabled);
   }
 
+  /// Loads the given data into this WebView using a 'data' scheme URL.
+  ///
+  /// Note that JavaScript's same origin policy means that script running in a
+  /// page loaded using this method will be unable to access content loaded
+  /// using any scheme other than 'data', including 'http(s)'. To avoid this
+  /// restriction, use [loadDataWithBaseURL()] with an appropriate base URL.
+  ///
+  /// The [encoding] parameter specifies whether the data is base64 or URL
+  /// encoded. If the data is base64 encoded, the value of the encoding
+  /// parameter must be `'base64'`. HTML can be encoded with
+  /// `base64.encode(bytes)` like so:
+  /// ```dart
+  /// import 'dart:convert';
+  ///
+  /// final unencodedHtml = '''
+  ///   <html><body>'%28' is the code for '('</body></html>
+  /// ''';
+  /// final encodedHtml = base64.encode(utf8.encode(unencodedHtml));
+  /// print(encodedHtml);
+  /// ```
+  ///
+  /// The [mimeType] parameter specifies the format of the data. If WebView
+  /// can't handle the specified MIME type, it will download the data. If
+  /// `null`, defaults to 'text/html'.
+  Future<void> loadData({
+    required String data,
+    String? mimeType,
+    String? encoding,
+  }) {
+    return api.loadDataFromInstance(
+      this,
+      data,
+      mimeType ?? _nullStringIdentifier,
+      encoding ?? _nullStringIdentifier,
+    );
+  }
+
+  /// Loads the given data into this WebView.
+  ///
+  /// The [baseUrl] is used as base URL for the content. It is used  both to
+  /// resolve relative URLs and when applying JavaScript's same origin policy.
+  ///
+  /// The [historyUrl] is used for the history entry.
+  ///
+  /// The [mimeType] parameter specifies the format of the data. If WebView
+  /// can't handle the specified MIME type, it will download the data. If
+  /// `null`, defaults to 'text/html'.
+  ///
+  /// Note that content specified in this way can access local device files (via
+  /// 'file' scheme URLs) only if baseUrl specifies a scheme other than 'http',
+  /// 'https', 'ftp', 'ftps', 'about' or 'javascript'.
+  ///
+  /// If the base URL uses the data scheme, this method is equivalent to calling
+  /// [loadData] and the [historyUrl] is ignored, and the data will be treated
+  /// as part of a data: URL, including the requirement that the content be
+  /// URL-encoded or base64 encoded. If the base URL uses any other scheme, then
+  /// the data will be loaded into the WebView as a plain string (i.e. not part
+  /// of a data URL) and any URL-encoded entities in the string will not be
+  /// decoded.
+  ///
+  /// Note that the [baseUrl] is sent in the 'Referer' HTTP header when
+  /// requesting subresources (images, etc.) of the page loaded using this
+  /// method.
+  ///
+  /// If a valid HTTP or HTTPS base URL is not specified in [baseUrl], then
+  /// content loaded using this method will have a `window.origin` value of
+  /// `"null"`. This must not be considered to be a trusted origin by the
+  /// application or by any JavaScript code running inside the WebView (for
+  /// example, event sources in DOM event handlers or web messages), because
+  /// malicious content can also create frames with a null origin. If you need
+  /// to identify the main frame's origin in a trustworthy way, you should use a
+  /// valid HTTP or HTTPS base URL to set the origin.
+  Future<void> loadDataWithBaseUrl({
+    String? baseUrl,
+    required String data,
+    String? mimeType,
+    String? encoding,
+    String? historyUrl,
+  }) {
+    return api.loadDataWithBaseUrlFromInstance(
+      this,
+      baseUrl ?? _nullStringIdentifier,
+      data,
+      mimeType ?? _nullStringIdentifier,
+      encoding ?? _nullStringIdentifier,
+      historyUrl ?? _nullStringIdentifier,
+    );
+  }
+
   /// Loads the given URL with additional HTTP headers, specified as a map from name to value.
   ///
   /// Note that if this map contains any of the headers that are set by default
@@ -87,7 +175,9 @@ class WebView {
   /// Returns null if no page has been loaded.
   Future<String?> getUrl() async {
     final String result = await api.getUrlFromInstance(this);
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -139,7 +229,9 @@ class WebView {
       this,
       javascriptString,
     );
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -149,7 +241,9 @@ class WebView {
   /// Returns null if no page has been loaded.
   Future<String?> getTitle() async {
     final String result = await api.getTitleFromInstance(this);
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -187,18 +281,8 @@ class WebView {
   ///
   /// This will replace the current handler.
   Future<void> setWebViewClient(WebViewClient webViewClient) {
-    final WebViewClient? currentWebViewClient = _currentWebViewClient;
-
-    if (webViewClient == currentWebViewClient) {
-      return Future<void>.value();
-    }
-
-    if (currentWebViewClient != null) {
-      WebViewClient.api.disposeFromInstance(currentWebViewClient);
-    }
-
-    WebViewClient.api.createFromInstance(webViewClient);
     _currentWebViewClient = webViewClient;
+    WebViewClient.api.createFromInstance(webViewClient);
     return api.setWebViewClientFromInstance(this, webViewClient);
   }
 
@@ -227,7 +311,6 @@ class WebView {
   /// content is ever loaded into the WebView even inside an iframe.
   Future<void> addJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
     JavaScriptChannel.api.createFromInstance(javaScriptChannel);
-    _javaScriptChannels.add(javaScriptChannel);
     return api.addJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
@@ -236,27 +319,15 @@ class WebView {
   /// Note that the removal will not be reflected in JavaScript until the page
   /// is next (re)loaded. See [addJavaScriptChannel].
   Future<void> removeJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
-    _javaScriptChannels.remove(javaScriptChannel);
-    api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
-    return JavaScriptChannel.api.disposeFromInstance(javaScriptChannel);
+    JavaScriptChannel.api.createFromInstance(javaScriptChannel);
+    return api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
   ///
   /// This will replace the current handler.
   Future<void> setDownloadListener(DownloadListener listener) {
-    final DownloadListener? currentDownloadListener = _currentDownloadListener;
-
-    if (listener == currentDownloadListener) {
-      return Future<void>.value();
-    }
-
-    if (currentDownloadListener != null) {
-      DownloadListener.api.disposeFromInstance(currentDownloadListener);
-    }
-
     DownloadListener.api.createFromInstance(listener);
-    _currentDownloadListener = listener;
     return api.setDownloadListenerFromInstance(this, listener);
   }
 
@@ -266,25 +337,25 @@ class WebView {
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
   Future<void> setWebChromeClient(WebChromeClient client) {
-    final WebChromeClient? currentWebChromeClient = _currentWebChromeClient;
-
-    if (client == currentWebChromeClient) {
-      return Future<void>.value();
-    }
-
-    if (currentWebChromeClient != null) {
-      WebChromeClient.api.disposeFromInstance(currentWebChromeClient);
-    }
-
-    final WebViewClient? currentWebViewClient = _currentWebViewClient;
+    // WebView requires a WebViewClient because of a bug fix that makes
+    // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
+    // window is opened. This is to make sure a url opened by `Window.open` has
+    // a secure url.
     assert(
-      currentWebViewClient != null,
+      _currentWebViewClient != null,
       "Can't set a WebChromeClient without setting a WebViewClient first.",
     );
-
-    WebChromeClient.api.createFromInstance(client, currentWebViewClient!);
-    _currentWebChromeClient = client;
+    WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
     return api.setWebChromeClientFromInstance(this, client);
+  }
+
+  /// Releases all resources used by the [WebView].
+  ///
+  /// Any methods called after [release] will throw an exception.
+  Future<void> release() {
+    _currentWebViewClient = null;
+    WebSettings.api.disposeFromInstance(settings);
+    return api.disposeFromInstance(this);
   }
 }
 
@@ -332,7 +403,7 @@ class WebSettings {
   ///
   /// The default is false.
   Future<void> setSupportMultipleWindows(bool support) {
-    return api.setSupportZoomFromInstance(this, support);
+    return api.setSupportMultipleWindowsFromInstance(this, support);
   }
 
   /// Tells the WebView to enable JavaScript execution.
@@ -423,7 +494,9 @@ class WebSettings {
 /// See [WebView.addJavaScriptChannel].
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
-  JavaScriptChannel(this.channelName);
+  JavaScriptChannel(this.channelName) {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+  }
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
   @visibleForTesting
@@ -433,61 +506,95 @@ abstract class JavaScriptChannel {
   final String channelName;
 
   /// Callback method when javaScript calls `postMessage` on the object instance passed.
-  void postMessage(String message) {}
+  void postMessage(String message);
 }
 
 /// Receive various notifications and requests for [WebView].
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
-  WebViewClient({this.shouldOverrideUrlLoading = true});
+  WebViewClient({this.shouldOverrideUrlLoading = true}) {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+  }
 
   /// User authentication failed on server.
-  static const int errorAuthentication = 0xfffffffc;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_AUTHENTICATION
+  static const int errorAuthentication = -4;
 
   /// Malformed URL.
-  static const int errorBadUrl = 0xfffffff4;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_BAD_URL
+  static const int errorBadUrl = -12;
 
   /// Failed to connect to the server.
-  static const int errorConnect = 0xfffffffa;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_CONNECT
+  static const int errorConnect = -6;
 
   /// Failed to perform SSL handshake.
-  static const int errorFailedSslHandshake = 0xfffffff5;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_FAILED_SSL_HANDSHAKE
+  static const int errorFailedSslHandshake = -11;
 
   /// Generic file error.
-  static const int errorFile = 0xfffffff3;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_FILE
+  static const int errorFile = -13;
 
   /// File not found.
-  static const int errorFileNotFound = 0xfffffff2;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_FILE_NOT_FOUND
+  static const int errorFileNotFound = -14;
 
   /// Server or proxy hostname lookup failed.
-  static const int errorHostLookup = 0xfffffffe;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_HOST_LOOKUP
+  static const int errorHostLookup = -2;
 
   /// Failed to read or write to the server.
-  static const int errorIO = 0xfffffff9;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_IO
+  static const int errorIO = -7;
 
   /// User authentication failed on proxy.
-  static const int errorProxyAuthentication = 0xfffffffb;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_PROXY_AUTHENTICATION
+  static const int errorProxyAuthentication = -5;
 
   /// Too many redirects.
-  static const int errorRedirectLoop = 0xfffffff7;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_REDIRECT_LOOP
+  static const int errorRedirectLoop = -9;
 
   /// Connection timed out.
-  static const int errorTimeout = 0xfffffff8;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_TIMEOUT
+  static const int errorTimeout = -8;
 
   /// Too many requests during this load.
-  static const int errorTooManyRequests = 0xfffffff1;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_TOO_MANY_REQUESTS
+  static const int errorTooManyRequests = -15;
 
   /// Generic error.
-  static const int errorUnknown = 0xffffffff;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNKNOWN
+  static const int errorUnknown = -1;
 
   /// Resource load was canceled by Safe Browsing.
-  static const int errorUnsafeResource = 0xfffffff0;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNSAFE_RESOURCE
+  static const int errorUnsafeResource = -16;
 
   /// Unsupported authentication scheme (not basic or digest).
-  static const int errorUnsupportedAuthScheme = 0xfffffffd;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNSUPPORTED_AUTH_SCHEME
+  static const int errorUnsupportedAuthScheme = -3;
 
   /// Unsupported URI scheme.
-  static const int errorUnsupportedScheme = 0xfffffff6;
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNSUPPORTED_SCHEME
+  static const int errorUnsupportedScheme = -10;
 
   /// Pigeon Host Api implementation for [WebViewClient].
   @visibleForTesting
@@ -573,6 +680,11 @@ abstract class WebViewClient {
 
 /// The interface to be used when content can not be handled by the rendering engine for [WebView], and should be downloaded instead.
 abstract class DownloadListener {
+  /// Constructs a [DownloadListener].
+  DownloadListener() {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+  }
+
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
   static DownloadListenerHostApiImpl api = DownloadListenerHostApiImpl();
@@ -589,12 +701,17 @@ abstract class DownloadListener {
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
 abstract class WebChromeClient {
+  /// Constructs a [WebChromeClient].
+  WebChromeClient() {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+  }
+
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
   static WebChromeClientHostApiImpl api = WebChromeClientHostApiImpl();
 
   /// Notify the host application that a file should be downloaded.
-  void onProgressChanged(WebView webView, int progress);
+  void onProgressChanged(WebView webView, int progress) {}
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.
@@ -609,24 +726,24 @@ class WebResourceRequest {
     required this.requestHeaders,
   });
 
-  /// Gets the URL for which the resource request was made.
+  /// The URL for which the resource request was made.
   final String url;
 
-  /// Gets whether the request was made in order to fetch the main frame's document.
-  final isForMainFrame;
+  /// Whether the request was made in order to fetch the main frame's document.
+  final bool isForMainFrame;
 
-  /// Gets whether the request was a result of a server-side redirect.
+  /// Whether the request was a result of a server-side redirect.
   ///
   /// Only supported on Android version >= 24.
   final bool? isRedirect;
 
-  /// Gets whether a gesture (such as a click) was associated with the request.
+  /// Whether a gesture (such as a click) was associated with the request.
   final bool hasGesture;
 
-  /// Gets the method associated with the request, for example "GET".
+  /// The method associated with the request, for example "GET".
   final String method;
 
-  /// Gets the headers associated with the request.
+  /// The headers associated with the request.
   final Map<String, String> requestHeaders;
 }
 

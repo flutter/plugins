@@ -36,9 +36,6 @@ target 'Runner' do
     # Pods for testing
     pod 'OCMock', '~> 3.8.1'
   end
-  target 'RunnerUITests' do
-    inherit! :search_paths
-  end
 end
 
 post_install do |installer|
