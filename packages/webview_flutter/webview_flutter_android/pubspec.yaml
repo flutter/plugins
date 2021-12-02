@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter_platform_interface: ^1.6.0
+  webview_flutter_platform_interface: ^1.7.0
 
 dev_dependencies:
   build_runner: ^2.1.4

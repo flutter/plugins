@@ -590,6 +590,26 @@ void main() {
         ],
       );
     });
+
+    test('setCookie', () async {
+      await MethodChannelWebViewPlatform.setCookie(const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'flutter.dev'));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'setCookie',
+            arguments: <String, String>{
+              'name': 'foo',
+              'value': 'bar',
+              'domain': 'flutter.dev',
+              'path': '/',
+            },
+          ),
+        ],
+      );
+    });
   });
 }
 

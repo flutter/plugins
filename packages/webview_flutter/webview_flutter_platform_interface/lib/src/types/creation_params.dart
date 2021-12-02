@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/widgets.dart';
+import 'package:webview_flutter_platform_interface/src/types/types.dart';
+
 import 'auto_media_playback_policy.dart';
 import 'web_settings.dart';
 
@@ -22,6 +24,7 @@ class CreationParams {
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.backgroundColor,
+    this.cookies = const <WebViewCookie>[],
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -60,8 +63,11 @@ class CreationParams {
   /// When null the platform's webview default background color is used.
   final Color? backgroundColor;
 
+  /// The initial set of cookies to set before the webview does its first load.
+  final List<WebViewCookie> cookies;
+
   @override
   String toString() {
-    return 'CreationParams(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return 'CreationParams(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, backgroundColor: $backgroundColor, cookies: $cookies)';
   }
 }

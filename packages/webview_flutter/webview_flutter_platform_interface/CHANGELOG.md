@@ -1,6 +1,12 @@
-## 1.6.0
+## 1.7.0
 
 * Add an option to set the background color of the webview.
+
+## 1.6.0
+
+* Adds platform interface for cookie manager.
+* Deprecates `clearCookies` in WebViewPlatform in favour of `CookieManager#clearCookies`.
+* Expanded `CreationParams` to include cookies to be set at webview creation.
 
 ## 1.5.2
 
