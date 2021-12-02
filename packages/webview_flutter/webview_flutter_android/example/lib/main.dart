@@ -300,7 +300,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onClearCookies(
       WebViewController controller, BuildContext context) async {
-    final bool hadCookies = await WebView.platform.clearCookies();
+    final bool hadCookies = await WebViewCookieManager.instance.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
       message = 'There are no cookies.';

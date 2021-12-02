@@ -299,9 +299,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
     addJavascriptChannels(creationParams.javascriptChannelNames);
 
-    /// TODO (BeMacized): Remove once platform implementations
-    /// are able to register themselves (Flutter >=2.8).
-    /// https://github.com/flutter/flutter/issues/94224
+    // TODO(BeMacized): Remove once platform implementations
+    // are able to register themselves (Flutter >=2.8),
+    // https://github.com/flutter/flutter/issues/94224
     WebViewCookieManagerPlatform.instance ??= WebViewAndroidCookieManager();
 
     creationParams.cookies.forEach(WebViewCookieManagerPlatform.instance!.setCookie);

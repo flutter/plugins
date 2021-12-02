@@ -366,6 +366,7 @@ class CookieManager {
 
   static CookieManager? _instance;
 
+  /// Gets the globally set CookieManager instance.
   static CookieManager get instance => _instance ??= CookieManager._();
 
   /// Setter for the singleton value, for testing purposes only.

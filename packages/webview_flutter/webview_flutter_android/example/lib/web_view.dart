@@ -63,7 +63,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.initialCookies = const [],
+    this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
