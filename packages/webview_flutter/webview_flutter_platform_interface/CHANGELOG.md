@@ -1,3 +1,9 @@
+## 1.6.0
+
+* Adds platform interface for cookie manager.
+* Deprecates `clearCookies` in WebViewPlatform in favour of `CookieManager#clearCookies`.
+* Expanded `CreationParams` to include cookies to be set at webview creation.
+
 ## 1.5.2
 
 * Mirgrates from analysis_options_legacy.yaml to the more strict analysis_options.yaml.
