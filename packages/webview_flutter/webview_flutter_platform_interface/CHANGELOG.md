@@ -1,3 +1,7 @@
+## 1.7.0
+
+* Add an option to set the background color of the webview.
+
 ## 1.6.1
 
 * Revert deprecation of `clearCookies` in WebViewPlatform for later deprecation.
