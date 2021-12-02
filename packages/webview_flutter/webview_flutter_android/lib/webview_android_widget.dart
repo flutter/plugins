@@ -298,6 +298,11 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
           AutoMediaPlaybackPolicy.always_allow,
     );
 
+    final Color? backgroundColor = creationParams.backgroundColor;
+    if (backgroundColor != null) {
+      webView.setBackgroundColor(backgroundColor);
+    }
+
     addJavascriptChannels(creationParams.javascriptChannelNames);
   }
 
