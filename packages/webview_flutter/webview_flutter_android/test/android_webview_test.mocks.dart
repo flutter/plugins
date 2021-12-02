@@ -245,6 +245,19 @@ class MockTestWebViewHostApi extends _i1.Mock
       super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
           returnValueForMissingStub: null);
   @override
+  void loadData(
+          int? instanceId, String? data, String? mimeType, String? encoding) =>
+      super.noSuchMethod(
+          Invocation.method(#loadData, [instanceId, data, mimeType, encoding]),
+          returnValueForMissingStub: null);
+  @override
+  void loadDataWithBaseUrl(int? instanceId, String? baseUrl, String? data,
+          String? mimeType, String? encoding, String? historyUrl) =>
+      super.noSuchMethod(
+          Invocation.method(#loadDataWithBaseUrl,
+              [instanceId, baseUrl, data, mimeType, encoding, historyUrl]),
+          returnValueForMissingStub: null);
+  @override
   void loadUrl(int? instanceId, String? url, Map<String?, String?>? headers) =>
       super.noSuchMethod(
           Invocation.method(#loadUrl, [instanceId, url, headers]),
@@ -377,6 +390,31 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   _i2.WebSettings get settings =>
       (super.noSuchMethod(Invocation.getter(#settings),
           returnValue: _FakeWebSettings_0()) as _i2.WebSettings);
+  @override
+  _i4.Future<void> loadData(
+          {String? data, String? mimeType, String? encoding}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadData, [],
+              {#data: data, #mimeType: mimeType, #encoding: encoding}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> loadDataWithBaseUrl(
+          {String? baseUrl,
+          String? data,
+          String? mimeType,
+          String? encoding,
+          String? historyUrl}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadDataWithBaseUrl, [], {
+            #baseUrl: baseUrl,
+            #data: data,
+            #mimeType: mimeType,
+            #encoding: encoding,
+            #historyUrl: historyUrl
+          }),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   _i4.Future<void> loadUrl(String? url, Map<String, String>? headers) =>
       (super.noSuchMethod(Invocation.method(#loadUrl, [url, headers]),

@@ -40,7 +40,9 @@ class _WebViewExampleState extends State<WebViewExample> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    if (Platform.isAndroid) {
+      WebView.platform = SurfaceAndroidWebView();
+    }
   }
 
   @override
@@ -64,7 +66,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             _controller.complete(webViewController);
           },
           onProgress: (int progress) {
-            print("WebView is loading (progress : $progress%)");
+            print('WebView is loading (progress : $progress%)');
           },
           javascriptChannels: <JavascriptChannel>{
             _toasterJavascriptChannel(context),
@@ -207,7 +209,7 @@ class SampleMenu extends StatelessWidget {
     );
   }
 
-  void _onShowUserAgent(
+  Future<void> _onShowUserAgent(
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
@@ -215,7 +217,7 @@ class SampleMenu extends StatelessWidget {
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onListCookies(
+  Future<void> _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
         await controller.runJavascriptReturningResult('document.cookie');
@@ -232,7 +234,8 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onAddToCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onAddToCache(
+      WebViewController controller, BuildContext context) async {
     await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     // ignore: deprecated_member_use
@@ -241,21 +244,23 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onListCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onListCache(
+      WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Toaster.postMessage(caches))');
   }
 
-  void _onClearCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onClearCache(
+      WebViewController controller, BuildContext context) async {
     await controller.clearCache();
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
-      content: Text("Cache cleared."),
+      content: Text('Cache cleared.'),
     ));
   }
 
-  void _onClearCookies(BuildContext context) async {
+  Future<void> _onClearCookies(BuildContext context) async {
     final bool hadCookies = await cookieManager.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
@@ -267,7 +272,7 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onNavigationDelegateExample(
+  Future<void> _onNavigationDelegateExample(
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
@@ -316,7 +321,7 @@ class NavigationControls extends StatelessWidget {
                       } else {
                         // ignore: deprecated_member_use
                         Scaffold.of(context).showSnackBar(
-                          const SnackBar(content: Text("No back history item")),
+                          const SnackBar(content: Text('No back history item')),
                         );
                         return;
                       }
@@ -333,7 +338,7 @@ class NavigationControls extends StatelessWidget {
                         // ignore: deprecated_member_use
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text("No forward history item")),
+                              content: Text('No forward history item')),
                         );
                         return;
                       }
