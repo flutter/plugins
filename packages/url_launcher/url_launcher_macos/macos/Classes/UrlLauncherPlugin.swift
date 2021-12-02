@@ -9,9 +9,18 @@ import Foundation
 public protocol SystemURLHandler {
 
   /// Opens the location at the specified URL.
+  ///
+  /// - Parameters:
+  ///   - url: A URL specifying the location to open.
+  /// - Returns: true if the location was successfully opened; otherwise, false.
   func open(_ url: URL) -> Bool
 
   /// Returns the URL to the default app that would be opened.
+  ///
+  /// - Parameters:
+  ///   - toOpen: The URL of the file to open.
+  /// - Returns: The URL of the default app that would open the specified url.
+  ///   Returns nil if no app is able to open the URL, or if the file URL does not exist.
   func urlForApplication(toOpen: URL) -> URL?
 }
 
