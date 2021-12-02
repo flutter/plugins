@@ -346,6 +346,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       return;
     }
     // The player may be initialized but still needs to determine the duration.
+    // Fixes https://github.com/flutter/flutter/issues/87334
     if ([self duration] == 0 || [self duration] == TIME_UNSET) {
       return;
     }

@@ -1,7 +1,8 @@
-## NEXT
+## 2.2.8
 
 * Fixes integration tests.
 * Updates Android compileSdkVersion to 31.
+* Fix playing local file get illegal duration occasionally on iOS #87334
 
 ## 2.2.7
 
