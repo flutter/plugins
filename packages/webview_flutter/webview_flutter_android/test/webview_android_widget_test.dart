@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
@@ -25,6 +28,7 @@ import 'webview_android_widget_test.mocks.dart';
   JavascriptChannelRegistry,
   WebViewPlatformCallbacksHandler,
   WebViewProxy,
+  http.Client
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +46,7 @@ void main() {
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
 
     late WebViewAndroidPlatformController testController;
+    late MockClient mockHttpClient;
 
     setUp(() {
       mockWebView = MockWebView();
@@ -55,6 +60,7 @@ void main() {
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
+      mockHttpClient = MockClient();
     });
 
     // Builds a AndroidWebViewWidget with default parameters.
@@ -79,6 +85,7 @@ void main() {
         webViewProxy: mockWebViewProxy,
         onBuildWidget: (WebViewAndroidPlatformController controller) {
           testController = controller;
+          testController.httpClient = mockHttpClient;
           return Container();
         },
       ));
@@ -340,6 +347,208 @@ void main() {
           'https://www.google.com',
           <String, String>{'a': 'header'},
         ));
+      });
+
+      group('postUrlAndFollowRedirects', () {
+        http.StreamedResponse _buildStreamedResponse(
+                Map<String, dynamic> data) =>
+            http.StreamedResponse(
+              Stream<List<int>>.value(
+                  (data['body'] as String? ?? '').codeUnits),
+              data['status'] as int,
+              headers: (data['headers'] ?? <String, String>{})
+                  as Map<String, String>,
+            );
+        http.Request _buildRequest(Map<String, dynamic> data) {
+          final http.Request req = http.Request(
+            'POST',
+            Uri.parse(data['url'] as String),
+          )
+            ..followRedirects = false
+            ..body = data['body'] as String? ?? '';
+          req.headers.addAll(
+              data['headers'] as Map<String, String>? ?? <String, String>{});
+          return req;
+        }
+
+        Future<void> withXRedirects(int redirects) async {
+          assert(redirects >= 1);
+          // Setup
+          final List<http.Request> requests = <Map<String, dynamic>>[
+            for (int i = 1; i <= redirects + 1; i++)
+              <String, dynamic>{
+                'url': 'https://origin-$i',
+                'headers': <String, String>{'a': 'header'}
+              },
+          ].map(_buildRequest).toList();
+          final List<http.StreamedResponse> responses = <Map<String, dynamic>>[
+            for (int i = 2; i <= redirects + 1; i++)
+              <String, dynamic>{
+                'status': 300,
+                'headers': <String, String>{'location': 'https://origin-$i'}
+              },
+            <String, dynamic>{
+              'body': 'Response Data',
+              'status': 200,
+              'headers': <String, String>{'content-type': 'text/html'}
+            }
+          ].map(_buildStreamedResponse).toList();
+          final List<http.Request> requestLog = <http.Request>[];
+          when(mockHttpClient.send(any))
+              .thenAnswer((Invocation invocation) async {
+            requestLog.add(invocation.positionalArguments[0] as http.Request);
+            return responses.removeAt(0);
+          });
+
+          // Run
+          final HTTPResponseWithUrl responseWithUrl = await testController
+              .postUrlAndFollowRedirects(Uri.parse(requests[0].url.toString()),
+                  headers: requests[0].headers, body: requests[0].bodyBytes);
+
+          // Verify
+          expect(requestLog.length, equals(requests.length));
+          for (int i = 0; i < requestLog.length; i++) {
+            expect(requestLog[i], _EqualsHttpRequest(requests[i]));
+          }
+          expect(
+              responseWithUrl.url, equals('https://origin-${redirects + 1}'));
+          expect(responseWithUrl.response.body, equals('Response Data'));
+          expect(responseWithUrl.response.statusCode, equals(200));
+          expect(responseWithUrl.response.headers,
+              equals(<String, String>{'content-type': 'text/html'}));
+        }
+
+        testWidgets('Succeeds without redirect', (WidgetTester tester) async {
+          // Setup
+          await buildWidget(tester);
+          when(mockHttpClient.send(any)).thenAnswer(
+            (_) async => http.StreamedResponse(
+              Stream<List<int>>.value('Response Data'.codeUnits),
+              200,
+              headers: <String, String>{'content-type': 'text/html'},
+            ),
+          );
+          // Run
+          final HTTPResponseWithUrl responseWithUrl = await testController
+              .postUrlAndFollowRedirects(Uri.parse('https://www.google.com'),
+                  headers: <String, String>{'a': 'header'},
+                  body: Uint8List.fromList('Test Body'.codeUnits));
+          // Verify
+          final http.Request expectedRequest =
+              http.Request('POST', Uri.parse('https://www.google.com'))
+                ..followRedirects = false
+                ..bodyBytes = Uint8List.fromList('Test Body'.codeUnits);
+          expectedRequest.headers.addAll(<String, String>{'a': 'header'});
+          verify(mockHttpClient
+              .send(argThat(_EqualsHttpRequest(expectedRequest))));
+          expect(responseWithUrl.url, equals('https://www.google.com'));
+          expect(responseWithUrl.response.body, equals('Response Data'));
+          expect(responseWithUrl.response.statusCode, equals(200));
+          expect(responseWithUrl.response.headers,
+              equals(<String, String>{'content-type': 'text/html'}));
+        });
+
+        testWidgets('Succeeds with 1 redirect', (WidgetTester tester) async {
+          await buildWidget(tester);
+          withXRedirects(1);
+        });
+
+        testWidgets('Succeeds with 2 redirects', (WidgetTester tester) async {
+          await buildWidget(tester);
+          withXRedirects(2);
+        });
+
+        testWidgets('Fails after 20 redirects', (WidgetTester tester) async {
+          await buildWidget(tester);
+          expect(() => withXRedirects(20),
+              throwsA(const TypeMatcher<HttpException>()));
+        });
+      });
+
+      group('loadRequest', () {
+        testWidgets('GET without headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+          ));
+
+          verify(mockWebView.loadUrl(
+            'https://www.google.com',
+            <String, String>{},
+          ));
+        });
+
+        testWidgets('GET with headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+            headers: <String, String>{'a': 'header'},
+          ));
+
+          verify(mockWebView.loadUrl(
+            'https://www.google.com',
+            <String, String>{'a': 'header'},
+          ));
+        });
+
+        testWidgets('POST without headers or body',
+            (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.post,
+          ));
+
+          verify(mockWebView.postUrl(
+            'https://www.google.com',
+            Uint8List(0),
+          ));
+        });
+
+        testWidgets('POST without headers with body',
+            (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          final Uint8List body = Uint8List.fromList('Test Body'.codeUnits);
+
+          await testController.loadRequest(WebViewRequest(
+              uri: Uri.parse('https://www.google.com'),
+              method: WebViewRequestMethod.post,
+              body: body));
+
+          verify(mockWebView.postUrl(
+            'https://www.google.com',
+            body,
+          ));
+        });
+
+        testWidgets('POST with headers and body', (WidgetTester tester) async {
+          // Setup
+          await buildWidget(tester);
+          when(mockHttpClient.send(any)).thenAnswer((_) async =>
+              http.StreamedResponse(
+                  Stream<List<int>>.value('Response Data'.codeUnits), 200,
+                  headers: <String, String>{'content-type': 'text/html'}));
+          final Uint8List body = Uint8List.fromList('Test Body'.codeUnits);
+          final Map<String, String> headers = <String, String>{'a': 'header'};
+          // Run
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.post,
+            body: body,
+            headers: headers,
+          ));
+          // Verify
+          verify(mockWebView.loadDataWithBaseUrl(
+              data: 'Response Data',
+              baseUrl: 'https://www.google.com',
+              mimeType: 'text/html'));
+        });
       });
 
       testWidgets('currentUrl', (WidgetTester tester) async {
@@ -616,4 +825,22 @@ void main() {
       });
     });
   });
+}
+
+class _EqualsHttpRequest extends Matcher {
+  const _EqualsHttpRequest(this._expected);
+
+  final http.Request _expected;
+
+  @override
+  bool matches(
+      covariant http.Request actual, Map<dynamic, dynamic> matchState) {
+    return equals(_expected.url).matches(actual.url, matchState) &&
+        equals(_expected.headers).matches(actual.headers, matchState) &&
+        equals(_expected.method).matches(actual.method, matchState) &&
+        equals(_expected.bodyBytes).matches(actual.bodyBytes, matchState);
+  }
+
+  @override
+  Description describe(Description description) => description.add('matches');
 }

@@ -122,6 +122,8 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   late WebViewAndroidWebViewClient _webViewClient;
 
+  http.Client _httpClient = http.Client();
+
   /// Represents the WebView maintained by platform code.
   late final android_webview.WebView webView;
 
@@ -149,6 +151,12 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Receive various notifications and requests for [android_webview.WebView].
   @visibleForTesting
   WebViewAndroidWebViewClient get webViewClient => _webViewClient;
+
+  /// Sets the HTTP client used for making requests on the dart side.
+  @visibleForTesting
+  set httpClient(http.Client httpClient) {
+    _httpClient = httpClient;
+  }
 
   @override
   Future<void> loadHtmlString(String html, {String? baseUrl}) {
@@ -191,15 +199,15 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         }
         // Otherwise, the request has to be made manually.
         else {
-          final _HTTPResponseWithFinalUrl responseWithUrl =
-              await _postUrlAndFollowRedirects(
+          final HTTPResponseWithUrl responseWithUrl =
+              await postUrlAndFollowRedirects(
             request.uri,
             headers: request.headers,
             body: request.body ?? Uint8List(0),
           );
           final http.Response response = responseWithUrl.response;
 
-          final String baseUrl = responseWithUrl.finalUrl;
+          final String baseUrl = responseWithUrl.url;
           final String mimeType =
               response.headers['content-type'] ?? 'text/html';
 
@@ -331,7 +339,12 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   // should be removed.
   // https://github.com/dart-lang/http/issues/556
   // https://github.com/dart-lang/http/issues/293
-  Future<_HTTPResponseWithFinalUrl> _postUrlAndFollowRedirects(Uri uri,
+  /// Makes a POST request and automatically follows any redirections
+  /// while keeping track of the new location. Returns the final response
+  /// together with the url of the final redirection.
+  /// This method is only publicly visible for testing purposes.
+  @visibleForTesting
+  Future<HTTPResponseWithUrl> postUrlAndFollowRedirects(Uri uri,
       {Map<String, String>? headers,
       Uint8List? body,
       int redirections = 0}) async {
@@ -339,24 +352,24 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
       ..followRedirects = false
       ..bodyBytes = body ?? <int>[];
     req.headers.addAll(headers ?? <String, String>{});
-    final http.Client baseClient = http.Client();
     final http.Response response =
-        await http.Response.fromStream(await baseClient.send(req));
+        await http.Response.fromStream(await _httpClient.send(req));
 
     // If it's a redirection, follow it.
     if (response.statusCode >= 300 &&
         response.statusCode < 400 &&
         response.headers.containsKey('location')) {
+      redirections++;
       // Maximum of 20 redirections (Default in Chrome & Firefox).
       if (redirections >= 20) {
         throw const HttpException('Maximum amount of redirections reached.');
       }
       final Uri redirectUri = Uri.parse(response.headers['location']!);
-      return _postUrlAndFollowRedirects(redirectUri,
-          headers: headers, body: body, redirections: redirections + 1);
+      return postUrlAndFollowRedirects(redirectUri,
+          headers: headers, body: body, redirections: redirections);
     }
 
-    return _HTTPResponseWithFinalUrl(response, uri.toString());
+    return HTTPResponseWithUrl(response, uri.toString());
   }
 
   void _setCreationParams(CreationParams creationParams) {
@@ -714,9 +727,16 @@ class WebViewProxy {
   }
 }
 
-class _HTTPResponseWithFinalUrl {
-  _HTTPResponseWithFinalUrl(this.response, this.finalUrl);
+/// Wrapper class for bundling a http response with the url it came from.
+/// This class is only publicly visible for testing purposes.
+@visibleForTesting
+class HTTPResponseWithUrl {
+  /// Constructs a [HTTPResponseWithUrl].
+  HTTPResponseWithUrl(this.response, this.url);
 
+  /// The response object.
   final http.Response response;
-  final String finalUrl;
+
+  /// The url the response came from.
+  final String url;
 }
