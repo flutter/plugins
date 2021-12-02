@@ -38,13 +38,25 @@ void main() {
                 code: 'loadFile_failed',
                 message: 'Failed loading file.',
                 details: null);
+          } else if (methodCall.arguments == 'some error') {
+            throw PlatformException(
+              code: 'some_error',
+              message: 'Some error occurred.',
+              details: null,
+            );
           }
           return null;
         case 'loadFlutterAsset':
           if (methodCall.arguments == 'invalid key') {
             throw PlatformException(
-              code: 'loadFlutterAsset_failed',
+              code: 'loadFlutterAsset_invalidKey',
               message: 'Failed loading asset.',
+              details: null,
+            );
+          } else if (methodCall.arguments == 'some error') {
+            throw PlatformException(
+              code: 'some_error',
+              message: 'Some error occurred.',
               details: null,
             );
           }
@@ -103,6 +115,19 @@ void main() {
       );
     });
 
+    test('loadFile with some error.', () async {
+      expect(
+        () => webViewPlatform.loadFile('some error'),
+        throwsA(
+          isA<PlatformException>().having(
+            (PlatformException error) => error.message,
+            'message',
+            'Some error occurred.',
+          ),
+        ),
+      );
+    });
+
     test('loadFlutterAsset', () async {
       await webViewPlatform.loadFlutterAsset(
         'folder/asset.html',
@@ -131,6 +156,19 @@ void main() {
             (ArgumentError error) => error.message,
             'message',
             'Failed loading asset.',
+          ),
+        ),
+      );
+    });
+
+    test('loadFlutterAsset with some error.', () async {
+      expect(
+        () => webViewPlatform.loadFlutterAsset('some error'),
+        throwsA(
+          isA<PlatformException>().having(
+            (PlatformException error) => error.message,
+            'message',
+            'Some error occurred.',
           ),
         ),
       );

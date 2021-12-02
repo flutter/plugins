@@ -103,7 +103,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     try {
       return await _channel.invokeMethod<void>('loadFlutterAsset', key);
     } on PlatformException catch (ex) {
-      if (ex.code == 'loadFlutterAsset_failed') {
+      if (ex.code == 'loadFlutterAsset_invalidKey') {
         throw ArgumentError(ex.message);
       }
 
