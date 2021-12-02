@@ -173,6 +173,16 @@ public class GeneratedAndroidWebView {
 
     void dispose(Long instanceId);
 
+    void loadData(Long instanceId, String data, String mimeType, String encoding);
+
+    void loadDataWithBaseUrl(
+        Long instanceId,
+        String baseUrl,
+        String data,
+        String mimeType,
+        String encoding,
+        String historyUrl);
+
     void loadUrl(Long instanceId, String url, Map<String, String> headers);
 
     String getUrl(Long instanceId);
@@ -264,6 +274,96 @@ public class GeneratedAndroidWebView {
                     throw new NullPointerException("instanceIdArg unexpectedly null.");
                   }
                   api.dispose(instanceIdArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.WebViewHostApi.loadData", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  String dataArg = (String) args.get(1);
+                  if (dataArg == null) {
+                    throw new NullPointerException("dataArg unexpectedly null.");
+                  }
+                  String mimeTypeArg = (String) args.get(2);
+                  if (mimeTypeArg == null) {
+                    throw new NullPointerException("mimeTypeArg unexpectedly null.");
+                  }
+                  String encodingArg = (String) args.get(3);
+                  if (encodingArg == null) {
+                    throw new NullPointerException("encodingArg unexpectedly null.");
+                  }
+                  api.loadData(instanceIdArg.longValue(), dataArg, mimeTypeArg, encodingArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.WebViewHostApi.loadDataWithBaseUrl",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  String baseUrlArg = (String) args.get(1);
+                  if (baseUrlArg == null) {
+                    throw new NullPointerException("baseUrlArg unexpectedly null.");
+                  }
+                  String dataArg = (String) args.get(2);
+                  if (dataArg == null) {
+                    throw new NullPointerException("dataArg unexpectedly null.");
+                  }
+                  String mimeTypeArg = (String) args.get(3);
+                  if (mimeTypeArg == null) {
+                    throw new NullPointerException("mimeTypeArg unexpectedly null.");
+                  }
+                  String encodingArg = (String) args.get(4);
+                  if (encodingArg == null) {
+                    throw new NullPointerException("encodingArg unexpectedly null.");
+                  }
+                  String historyUrlArg = (String) args.get(5);
+                  if (historyUrlArg == null) {
+                    throw new NullPointerException("historyUrlArg unexpectedly null.");
+                  }
+                  api.loadDataWithBaseUrl(
+                      instanceIdArg.longValue(),
+                      baseUrlArg,
+                      dataArg,
+                      mimeTypeArg,
+                      encodingArg,
+                      historyUrlArg);
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));

@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Updates code for new analysis options.
+
 ## 2.0.4
 
 * Add `implements` to pubspec.

@@ -14,30 +14,29 @@ class InAppPurchaseAndroidPlatformAddition
     extends InAppPurchasePlatformAddition {
   /// Creates a [InAppPurchaseAndroidPlatformAddition] which uses the supplied
   /// `BillingClient` to provide Android specific features.
-  InAppPurchaseAndroidPlatformAddition(this._billingClient) {
-    assert(
-      _enablePendingPurchase,
-      'enablePendingPurchases() must be called when initializing the application and before you access the [InAppPurchase.instance].',
-    );
-
-    _billingClient.enablePendingPurchases();
-  }
+  InAppPurchaseAndroidPlatformAddition(this._billingClient);
 
   /// Whether pending purchase is enabled.
   ///
+  ///  **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application. From now on
+  /// this is handled internally and the [enablePendingPurchase] property will
+  /// always return `true`.
+  ///
+  // ignore: deprecated_member_use_from_same_package
   /// See also [enablePendingPurchases] for more on pending purchases.
-  static bool get enablePendingPurchase => _enablePendingPurchase;
-  static bool _enablePendingPurchase = false;
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
+  static bool get enablePendingPurchase => true;
 
   /// Enable the [InAppPurchaseConnection] to handle pending purchases.
   ///
-  /// This method is required to be called when initialize the application.
-  /// It is to acknowledge your application has been updated to support pending purchases.
-  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
-  /// for more details.
-  /// Failure to call this method before access [instance] will throw an exception.
+  /// **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application.
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
   static void enablePendingPurchases() {
-    _enablePendingPurchase = true;
+    // No-op, until it is time to completely remove this method from the API.
   }
 
   final BillingClient _billingClient;
