@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -551,6 +552,32 @@ void main() {
           ),
         ],
       );
+    });
+
+    test('backgroundColor is null by default', () {
+      final CreationParams creationParams = CreationParams(
+        webSettings: WebSettings(
+          userAgent: const WebSetting<String?>.of('Dart Test'),
+        ),
+      );
+      final Map<String, dynamic> creationParamsMap =
+          MethodChannelWebViewPlatform.creationParamsToMap(creationParams);
+
+      expect(creationParamsMap['backgroundColor'], null);
+    });
+
+    test('backgroundColor is converted to an int', () {
+      const Color whiteColor = Color(0xFFFFFFFF);
+      final CreationParams creationParams = CreationParams(
+        backgroundColor: whiteColor,
+        webSettings: WebSettings(
+          userAgent: const WebSetting<String?>.of('Dart Test'),
+        ),
+      );
+      final Map<String, dynamic> creationParamsMap =
+          MethodChannelWebViewPlatform.creationParamsToMap(creationParams);
+
+      expect(creationParamsMap['backgroundColor'], whiteColor.value);
     });
   });
 
