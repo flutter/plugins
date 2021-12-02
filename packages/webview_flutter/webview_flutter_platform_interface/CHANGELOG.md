@@ -1,6 +1,10 @@
-## 1.7.0
+## 1.8.0
 
 * Adds the `loadFlutterAsset` method to the platform interface.
+
+## 1.7.0
+
+* Add an option to set the background color of the webview.
 
 ## 1.6.1
 
