@@ -100,7 +100,7 @@ class RunnerTests: XCTestCase {
 
     let call = FlutterMethodCall(
       methodName: "launch",
-      arguments: ["url": "example://flutter.dev"])
+      arguments: ["url": "schemethatdoesnotexist://flutter.dev"])
 
     pluginWithStubWorkspace.handle(
       call,
