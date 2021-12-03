@@ -357,21 +357,23 @@ abstract class PluginCommand extends Command<void> {
           await for (final FileSystemEntity subdir
               in entity.list(followLinks: false)) {
             if (_isDartPackage(subdir)) {
-              // If --plugin=my_plugin is passed, then match all federated
-              // plugins under 'my_plugin'. Also match if the exact plugin is
-              // passed.
-              final String relativePath =
-                  path.relative(subdir.path, from: dir.path);
-              final String packageName = path.basename(subdir.path);
-              final String basenamePath = path.basename(entity.path);
+              // There are three ways for a federated plugin to match:
+              // - package name (path_provider_android)
+              // - fully specified name (path_provider/path_provider_android)
+              // - group name (path_provider), which matches all packages in
+              //   the group
+              final Set<String> possibleMatches = <String>{
+                path.basename(subdir.path), // package name
+                path.basename(entity.path), // group name
+                path.relative(subdir.path, from: dir.path), // fully specified
+              };
               if (plugins.isEmpty ||
-                  plugins.contains(relativePath) ||
-                  plugins.contains(basenamePath)) {
+                  plugins.intersection(possibleMatches).isNotEmpty) {
                 yield PackageEnumerationEntry(
                     RepositoryPackage(subdir as Directory),
-                    excluded: excludedPluginNames.contains(basenamePath) ||
-                        excludedPluginNames.contains(packageName) ||
-                        excludedPluginNames.contains(relativePath));
+                    excluded: excludedPluginNames
+                        .intersection(possibleMatches)
+                        .isNotEmpty);
               }
             }
           }
