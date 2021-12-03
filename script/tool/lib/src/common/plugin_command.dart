@@ -331,7 +331,7 @@ abstract class PluginCommand extends Command<void> {
       final List<String> changedFiles =
           await gitVersionFinder.getChangedFiles();
       if (!_changesRequireFullTest(changedFiles)) {
-        plugins = _getChangedPackages(changedFiles);
+        plugins = _getChangedPackageNames(changedFiles);
       }
     }
 
@@ -432,17 +432,48 @@ abstract class PluginCommand extends Command<void> {
     return gitVersionFinder;
   }
 
-  // Returns packages that have been changed given a list of changed files.
+  // Returns the names of packages that have been changed given a list of
+  // changed files.
+  //
+  // The names will either be the actual package names, or potentially
+  // group/name specifiers (for example, path_provider/path_provider) for
+  // packages in federated plugins.
   //
   // The paths must use POSIX separators (e.g., as provided by git output).
-  Set<String> _getChangedPackages(List<String> changedFiles) {
+  Set<String> _getChangedPackageNames(List<String> changedFiles) {
     final Set<String> packages = <String>{};
+
+    // A helper function that returns true if candidateName looks like an
+    // implementation package of a plugin called pluginName. Used to determine
+    // if .../packages/parentName/candidatePackageName/...
+    // looks like a path in a federated plugin package (candidatePackageName)
+    // rather than a top-level package (parentName).
+    bool isFederatedPackage(String candidatePackageName, String parentName) {
+      return candidatePackageName == parentName ||
+          candidatePackageName.startsWith('${parentName}_');
+    }
+
     for (final String path in changedFiles) {
       final List<String> pathComponents = p.posix.split(path);
       final int packagesIndex =
           pathComponents.indexWhere((String element) => element == 'packages');
       if (packagesIndex != -1) {
-        packages.add(pathComponents[packagesIndex + 1]);
+        // Find the name of the directory directly under packages. This is
+        // either the name of the package, or a plugin group directory for
+        // a federated plugin.
+        final String topLevelName = pathComponents[packagesIndex + 1];
+        String packageName = topLevelName;
+        if (packagesIndex + 2 < pathComponents.length &&
+            isFederatedPackage(
+                pathComponents[packagesIndex + 2], topLevelName)) {
+          // This looks like a federated package; use the full specifier if
+          // the name would be ambiguous (i.e., for the app-facing package).
+          packageName = pathComponents[packagesIndex + 2];
+          if (packageName == topLevelName) {
+            packageName = '$topLevelName/$packageName';
+          }
+        }
+        packages.add(packageName);
       }
     }
     if (packages.isEmpty) {
