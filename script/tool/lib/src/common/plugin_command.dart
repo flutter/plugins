@@ -347,7 +347,8 @@ abstract class PluginCommand extends Command<void> {
       print('Running for all packages that have uncommitted changes\n');
       // _changesRequireFullTest is deliberately not used here, as this flag is
       // intended for use in CI to re-test packages changed by 'pathify'.
-      packages = _getChangedPackages(await gitVersionFinder.getChangedFiles());
+      packages = _getChangedPackages(
+          await gitVersionFinder.getChangedFiles(includeUncommitted: true));
       // For the same reason, empty is not treated as "all packages" as it is
       // for other flags.
       if (packages.isEmpty) {
