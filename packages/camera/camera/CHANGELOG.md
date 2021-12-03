@@ -1,3 +1,7 @@
+##  0.9.4+6
+
+* Fixes bug resulting in a `CameraAccessException` that prevents image capture on certain devices running Android 7/8.
+
 ##  0.9.4+5
 
 * Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
