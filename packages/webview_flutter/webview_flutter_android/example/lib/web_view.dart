@@ -363,6 +363,28 @@ class WebViewController {
 
   WebView _widget;
 
+  /// Loads the file located on the specified [absoluteFilePath].
+  ///
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(String absoluteFilePath) {
+    return _webViewPlatformController.loadFile(absoluteFilePath);
+  }
+
+  /// Loads the supplied HTML string.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtmlString(String html, {String? baseUrl}) {
+    return _webViewPlatformController.loadHtmlString(
+      html,
+      baseUrl: baseUrl,
+    );
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
@@ -568,9 +590,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
-    // ignore: prefer_const_constructors
-    WebSetting<String?> userAgent = WebSetting<String?>.absent();
+    WebSetting<String?> userAgent = const WebSetting<String?>.absent();
     bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;

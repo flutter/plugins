@@ -21,7 +21,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
     return _channel.invokeMethod<bool>(
       'canLaunch',
       <String, Object>{'url': url},
-    ).then((value) => value ?? false);
+    ).then((bool? value) => value ?? false);
   }
 
   @override
@@ -51,6 +51,6 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
         'universalLinksOnly': universalLinksOnly,
         'headers': headers,
       },
-    ).then((value) => value ?? false);
+    ).then((bool? value) => value ?? false);
   }
 }
