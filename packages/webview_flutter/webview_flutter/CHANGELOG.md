@@ -1,5 +1,8 @@
-## NEXT
+## 3.0.0
 
+* **BREAKING CHANGE**: On Android, hybrid composition (SurfaceAndroidWebView)
+  is now the default. The previous default, virtual display, can be specified
+  with `WebView.platform = AndroidWebView()`
 * Updates example app Android compileSdkVersion to 31.
 * Integration test fixes.
 * Updates code for new analysis options.

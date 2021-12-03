@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import '../platform_interface.dart';
@@ -114,12 +114,12 @@ class WebView extends StatefulWidget {
 
   /// The WebView platform that's used by this WebView.
   ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  /// The default value is [SurfaceAndroidWebView] on Android and [CupertinoWebView] on iOS.
   static WebViewPlatform get platform {
     if (_platform == null) {
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
-          _platform = AndroidWebView();
+          _platform = SurfaceAndroidWebView();
           break;
         case TargetPlatform.iOS:
           _platform = CupertinoWebView();
