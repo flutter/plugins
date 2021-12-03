@@ -1,6 +1,8 @@
 ## NEXT
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+- Adds a `pathify` command to convert inter-repo package dependencies to
+  path-based dependencies.
 
 ## 0.7.3
 
