@@ -46,6 +46,12 @@ abstract class WebViewHostApi {
     Map<String, String> headers,
   );
 
+  void postUrl(
+    int instanceId,
+    String url,
+    Uint8List data,
+  );
+
   String getUrl(int instanceId);
 
   bool canGoBack(int instanceId);

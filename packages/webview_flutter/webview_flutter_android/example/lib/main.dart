@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -158,6 +159,7 @@ enum _MenuOptions {
   navigationDelegate,
   loadLocalFile,
   loadHtmlString,
+  doPostRequest,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -201,6 +203,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.loadHtmlString:
                 _onLoadHtmlStringExample(controller.data!, context);
                 break;
+              case _MenuOptions.doPostRequest:
+                _onDoPostRequest(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -240,6 +245,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.loadLocalFile,
               child: Text('Load local file'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.doPostRequest,
+              child: Text('Post Request'),
             ),
           ],
         );
@@ -328,6 +337,17 @@ class _SampleMenu extends StatelessWidget {
   Future<void> _onLoadHtmlStringExample(
       WebViewController controller, BuildContext context) async {
     await controller.loadHtmlString(kExamplePage);
+  }
+
+  Future<void> _onDoPostRequest(
+      WebViewController controller, BuildContext context) async {
+    final WebViewRequest request = WebViewRequest(
+      uri: Uri.parse('https://httpbin.org/post'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar', 'Content-Type': 'text/plain'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+    await controller.loadRequest(request);
   }
 
   Widget _getCookieList(String cookies) {
