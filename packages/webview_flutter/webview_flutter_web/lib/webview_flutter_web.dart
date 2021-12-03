@@ -161,4 +161,22 @@ class WebWebViewPlatformController implements WebViewPlatformController {
   Future<void> updateSettings(WebSettings setting) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> loadFile(String absoluteFilePath) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> loadRequest(WebViewRequest request) {
+    throw UnimplementedError();
+  }
 }

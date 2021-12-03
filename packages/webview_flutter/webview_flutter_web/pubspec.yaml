@@ -21,7 +21,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  webview_flutter_platform_interface: ^1.2.0
+  webview_flutter_platform_interface: ^1.7.0
 
 dev_dependencies:
   flutter_driver:
