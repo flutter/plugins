@@ -84,7 +84,31 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<void> loadFile(String absoluteFilePath) async {
     assert(absoluteFilePath != null);
-    return _channel.invokeMethod<void>('loadFile', absoluteFilePath);
+
+    try {
+      return await _channel.invokeMethod<void>('loadFile', absoluteFilePath);
+    } on PlatformException catch (ex) {
+      if (ex.code == 'loadFile_failed') {
+        throw ArgumentError(ex.message);
+      }
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> loadFlutterAsset(String key) async {
+    assert(key.isNotEmpty);
+
+    try {
+      return await _channel.invokeMethod<void>('loadFlutterAsset', key);
+    } on PlatformException catch (ex) {
+      if (ex.code == 'loadFlutterAsset_invalidKey') {
+        throw ArgumentError(ex.message);
+      }
+
+      rethrow;
+    }
   }
 
   @override
