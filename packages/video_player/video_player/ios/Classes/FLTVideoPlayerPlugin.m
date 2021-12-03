@@ -347,7 +347,15 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
     // The player may be initialized but still needs to determine the duration.
     // Fixes https://github.com/flutter/flutter/issues/87334
-    if ([self duration] == 0 || [self duration] == TIME_UNSET) {
+    BOOL isTypeNormal = true;
+    if([[_player currentItem].asset isKindOfClass:[AVURLAsset class]]){
+      NSURL* url = ((AVURLAsset*)[_player currentItem].asset).URL;
+      NSString* path = url.path;
+      if ([path hasSuffix:@".m3u8"]){
+        isTypeNormal = false;
+      }
+    }
+    if ([self duration] == 0 || (isTypeNormal && [self duration] == TIME_UNSET)) {
       return;
     }
 
