@@ -1,3 +1,7 @@
+## 1.9.0
+
+* Deprecates `clearCookies`
+
 ## 1.8.0
 
 * Adds the `loadFlutterAsset` method to the platform interface.
