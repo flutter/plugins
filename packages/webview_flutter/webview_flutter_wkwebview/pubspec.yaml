@@ -18,9 +18,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-# TODO (BeMacized): Update dependency when changes have been merged and published.
-  webview_flutter_platform_interface:
-    path: ../webview_flutter_platform_interface
+  webview_flutter_platform_interface: ^1.7.0
 
 dev_dependencies:
   flutter_driver:
