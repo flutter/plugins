@@ -894,7 +894,7 @@ void main() {
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, primaryUrl);
     });
-  }, skip: !Platform.isAndroid);
+  }, skip: !Platform.isAndroid || _skipDueToIssue86757);
 
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
