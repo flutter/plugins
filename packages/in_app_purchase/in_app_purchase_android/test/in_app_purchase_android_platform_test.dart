@@ -724,7 +724,6 @@ void main() {
           ));
       await iapAndroidPlatform.buyNonConsumable(purchaseParam: purchaseParam);
 
-      // Verify that the result has an error for the failed consumption
       PurchaseDetails result = await completer.future;
       expect(result.status, PurchaseStatus.purchased);
     });
