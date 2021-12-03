@@ -33,6 +33,35 @@ void main() {
         case 'canGoBack':
         case 'canGoForward':
           return true;
+        case 'loadFile':
+          if (methodCall.arguments == 'invalid file') {
+            throw PlatformException(
+                code: 'loadFile_failed',
+                message: 'Failed loading file.',
+                details: null);
+          } else if (methodCall.arguments == 'some error') {
+            throw PlatformException(
+              code: 'some_error',
+              message: 'Some error occurred.',
+              details: null,
+            );
+          }
+          return null;
+        case 'loadFlutterAsset':
+          if (methodCall.arguments == 'invalid key') {
+            throw PlatformException(
+              code: 'loadFlutterAsset_invalidKey',
+              message: 'Failed loading asset.',
+              details: null,
+            );
+          } else if (methodCall.arguments == 'some error') {
+            throw PlatformException(
+              code: 'some_error',
+              message: 'Some error occurred.',
+              details: null,
+            );
+          }
+          return null;
         case 'runJavascriptReturningResult':
         case 'evaluateJavascript':
           return methodCall.arguments as String;
@@ -71,6 +100,78 @@ void main() {
             arguments: '/folder/asset.html',
           ),
         ],
+      );
+    });
+
+    test('loadFile with invalid file', () async {
+      expect(
+        () => webViewPlatform.loadFile('invalid file'),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            'Failed loading file.',
+          ),
+        ),
+      );
+    });
+
+    test('loadFile with some error.', () async {
+      expect(
+        () => webViewPlatform.loadFile('some error'),
+        throwsA(
+          isA<PlatformException>().having(
+            (PlatformException error) => error.message,
+            'message',
+            'Some error occurred.',
+          ),
+        ),
+      );
+    });
+
+    test('loadFlutterAsset', () async {
+      await webViewPlatform.loadFlutterAsset(
+        'folder/asset.html',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadFlutterAsset',
+            arguments: 'folder/asset.html',
+          ),
+        ],
+      );
+    });
+
+    test('loadFlutterAsset with empty key', () async {
+      expect(() => webViewPlatform.loadFlutterAsset(''), throwsAssertionError);
+    });
+
+    test('loadFlutterAsset with invalid key', () async {
+      expect(
+        () => webViewPlatform.loadFlutterAsset('invalid key'),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            'Failed loading asset.',
+          ),
+        ),
+      );
+    });
+
+    test('loadFlutterAsset with some error.', () async {
+      expect(
+        () => webViewPlatform.loadFlutterAsset('some error'),
+        throwsA(
+          isA<PlatformException>().having(
+            (PlatformException error) => error.message,
+            'message',
+            'Some error occurred.',
+          ),
+        ),
       );
     });
 
