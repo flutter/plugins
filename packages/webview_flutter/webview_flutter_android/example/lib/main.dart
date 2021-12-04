@@ -66,24 +66,24 @@ const String kExamplePage = '''
 ''';
 
 const String kTransparentBackgroundPage = '''
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Transparent background test</title>
-  </head>
-  <style type="text/css">
-    body { background: transparent; margin: 0; padding: 0; }
-    #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
-    #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
-    p { text-align: center; }
-  </style>
-  <body>
-    <div id="container">
-      <p>Transparent background test</p>
-      <div id="shape"></div>
-    </div>
-  </body>
-  </html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transparent background test</title>
+</head>
+<style type="text/css">
+  body { background: transparent; margin: 0; padding: 0; }
+  #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+  #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
+  p { text-align: center; }
+</style>
+<body>
+  <div id="container">
+    <p>Transparent background test</p>
+    <div id="shape"></div>
+  </div>
+</body>
+</html>
 ''';
 
 class _WebViewExample extends StatefulWidget {
@@ -395,9 +395,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onTransparentBackground(
       WebViewController controller, BuildContext context) async {
-    final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
-    await controller.loadUrl('data:text/html;base64,$contentBase64');
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 }
 
