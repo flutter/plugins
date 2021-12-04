@@ -97,6 +97,7 @@ file2/file2.cc
 ''';
     final GitVersionFinder finder = GitVersionFinder(gitDir, customBaseSha);
     await finder.getChangedFiles(includeUncommitted: true);
+    // The call should not have HEAD as a final argument like the default diff.
     verify(gitDir.runCommand(<String>['diff', '--name-only', customBaseSha]));
   });
 }

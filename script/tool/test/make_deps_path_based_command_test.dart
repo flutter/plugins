@@ -8,7 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
-import 'package:flutter_plugin_tools/src/pathify_command.dart';
+import 'package:flutter_plugin_tools/src/make_deps_path_based_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -40,9 +40,11 @@ void main() {
     });
 
     processRunner = RecordingProcessRunner();
-    final PathifyCommand command = PathifyCommand(packagesDir, gitDir: gitDir);
+    final MakeDepsPathBasedCommand command =
+        MakeDepsPathBasedCommand(packagesDir, gitDir: gitDir);
 
-    runner = CommandRunner<void>('pathify_command', 'Test for $PathifyCommand');
+    runner = CommandRunner<void>(
+        'make-deps-path-based_command', 'Test for $MakeDepsPathBasedCommand');
     runner.addCommand(command);
   });
 
@@ -60,17 +62,24 @@ void main() {
   }
 
   test('no-ops for no plugins', () async {
-    createFakePackage('foo', packagesDir);
+    RepositoryPackage(createFakePackage('foo', packagesDir, isFlutter: true));
+    final RepositoryPackage packageBar = RepositoryPackage(
+        createFakePackage('bar', packagesDir, isFlutter: true));
+    _addDependencies(packageBar, <String>['foo']);
+    final String originalPubspecContents =
+        packageBar.pubspecFile.readAsStringSync();
 
     final List<String> output =
-        await runCapturingPrint(runner, <String>['pathify']);
+        await runCapturingPrint(runner, <String>['make-deps-path-based']);
 
     expect(
       output,
       containsAllInOrder(<Matcher>[
-        contains('No target packages'),
+        contains('No target dependencies'),
       ]),
     );
+    // The 'foo' reference should not have been modified.
+    expect(packageBar.pubspecFile.readAsStringSync(), originalPubspecContents);
   });
 
   test('rewrites references', () async {
@@ -98,8 +107,10 @@ void main() {
       'bar_platform_interface',
     ]);
 
-    final List<String> output = await runCapturingPrint(runner,
-        <String>['pathify', '--target-packages=bar,bar_platform_interface']);
+    final List<String> output = await runCapturingPrint(runner, <String>[
+      'make-deps-path-based',
+      '--target-dependencies=bar,bar_platform_interface'
+    ]);
 
     expect(
         output,
@@ -133,7 +144,7 @@ void main() {
         ]));
   });
 
-  group('target-non-breaking-update-packages', () {
+  group('target-dependencies-with-non-breaking-updates', () {
     test('no-ops for no published changes', () async {
       final Directory package = createFakePackage('foo', packagesDir);
 
@@ -149,13 +160,15 @@ void main() {
             stdout: RepositoryPackage(package).pubspecFile.readAsStringSync()),
       ];
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['pathify', '--target-non-breaking-update-packages']);
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('No target packages'),
+          contains('No target dependencies'),
         ]),
       );
     });
@@ -179,8 +192,10 @@ void main() {
         MockProcess(stdout: gitPubspecContents),
       ];
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['pathify', '--target-non-breaking-update-packages']);
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
 
       expect(
         output,
@@ -209,8 +224,10 @@ void main() {
         MockProcess(stdout: gitPubspecContents),
       ];
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['pathify', '--target-non-breaking-update-packages']);
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
 
       expect(
         output,
@@ -239,13 +256,15 @@ void main() {
         MockProcess(stdout: gitPubspecContents),
       ];
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['pathify', '--target-non-breaking-update-packages']);
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('No target packages'),
+          contains('No target dependencies'),
         ]),
       );
     });
@@ -269,13 +288,15 @@ void main() {
         MockProcess(stdout: gitPubspecContents),
       ];
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['pathify', '--target-non-breaking-update-packages']);
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('No target packages'),
+          contains('No target dependencies'),
         ]),
       );
     });

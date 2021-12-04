@@ -23,29 +23,33 @@ const int _exitCannotUpdatePubspec = 4;
 /// where a non-breaking change to a platform interface package of a federated
 /// plugin would cause post-publish analyzer failures in another package of that
 /// plugin.
-class PathifyCommand extends PluginCommand {
-  /// Creates an instance of the pathify command.
-  PathifyCommand(
+class MakeDepsPathBasedCommand extends PluginCommand {
+  /// Creates an instance of the command to convert selected dependencies to
+  /// path-based.
+  MakeDepsPathBasedCommand(
     Directory packagesDir, {
     GitDir? gitDir,
   }) : super(packagesDir, gitDir: gitDir) {
-    argParser.addMultiOption(_targetPackagesArg,
-        help: 'The names of the packages to convert to dependencies.\n'
-            'Ignored if --$_targetNonBreakingUpdatePackagesArg is passed.',
+    argParser.addMultiOption(_targetDependenciesArg,
+        help:
+            'The names of the packages to convert to path-based dependencies.\n'
+            'Ignored if --$_targetDependenciesWithNonBreakingUpdatesArg is '
+            'passed.',
         valueHelp: 'some_package');
     argParser.addFlag(
-      _targetNonBreakingUpdatePackagesArg,
-      help: 'Causes all pacakges that have non-breaking version changes '
-          'relative to the git base to be treated as target packages.',
+      _targetDependenciesWithNonBreakingUpdatesArg,
+      help: 'Causes all packages that have non-breaking version changes '
+          'when compared against the git base to be treated as target '
+          'packages.',
     );
   }
 
-  static const String _targetPackagesArg = 'target-packages';
-  static const String _targetNonBreakingUpdatePackagesArg =
-      'target-non-breaking-update-packages';
+  static const String _targetDependenciesArg = 'target-dependencies';
+  static const String _targetDependenciesWithNonBreakingUpdatesArg =
+      'target-dependencies-with-non-breaking-updates';
 
   @override
-  final String name = 'pathify';
+  final String name = 'make-deps-path-based';
 
   @override
   final String description =
@@ -53,24 +57,24 @@ class PathifyCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final Set<String> targetPackages =
-        getBoolArg(_targetNonBreakingUpdatePackagesArg)
+    final Set<String> targetDependencies =
+        getBoolArg(_targetDependenciesWithNonBreakingUpdatesArg)
             ? await _getNonBreakingUpdatePackages()
-            : getStringListArg(_targetPackagesArg).toSet();
+            : getStringListArg(_targetDependenciesArg).toSet();
 
-    if (targetPackages.isEmpty) {
-      print('No target packages; nothing to do.');
+    if (targetDependencies.isEmpty) {
+      print('No target dependencies; nothing to do.');
       return;
     }
-    print('Rewriting references to: ${targetPackages.join(', ')}...');
+    print('Rewriting references to: ${targetDependencies.join(', ')}...');
 
-    final Map<String, RepositoryPackage> localPackageTargets =
-        _findLocalPackages(targetPackages);
+    final Map<String, RepositoryPackage> localDependencyPackages =
+        _findLocalPackages(targetDependencies);
 
     final String repoRootPath = (await gitDir).path;
     for (final File pubspec in await _getAllPubspecs()) {
       if (await _addDependencyOverridesIfNecessary(
-          pubspec, localPackageTargets)) {
+          pubspec, localDependencyPackages)) {
         // Print the relative path of the changed pubspec.
         final String displayPath = p.posix.joinAll(path
             .split(path.relative(pubspec.absolute.path, from: repoRootPath)));
@@ -118,12 +122,13 @@ class PathifyCommand extends PluginCommand {
     return targets;
   }
 
-  /// If [pubspecFile] has any dependencies on packages in [packageTargets],
-  /// adds dependency_overrides entries to redirect them to packageTargets.
+  /// If [pubspecFile] has any dependencies on packages in [localDependencies],
+  /// adds dependency_overrides entries to redirect them to the local version
+  /// using path-based dependencies.
   ///
   /// Returns true if any changes were made.
-  Future<bool> _addDependencyOverridesIfNecessary(
-      File pubspecFile, Map<String, RepositoryPackage> packageTargets) async {
+  Future<bool> _addDependencyOverridesIfNecessary(File pubspecFile,
+      Map<String, RepositoryPackage> localDependencies) async {
     final String pubspecContents = pubspecFile.readAsStringSync();
     final Pubspec pubspec = Pubspec.parse(pubspecContents);
     // Fail if there are any dependency overrides already. If support for that
@@ -135,8 +140,8 @@ class PathifyCommand extends PluginCommand {
       throw ToolExit(_exitCannotUpdatePubspec);
     }
 
-    final Iterable<String> packagesToOverride = pubspec.dependencies.keys
-        .where((String packageName) => packageTargets.containsKey(packageName));
+    final Iterable<String> packagesToOverride = pubspec.dependencies.keys.where(
+        (String packageName) => localDependencies.containsKey(packageName));
     if (packagesToOverride.isNotEmpty) {
       final String commonBasePath = packagesDir.path;
       // Find the relative path to the common base.
@@ -157,9 +162,9 @@ class PathifyCommand extends PluginCommand {
 dependency_overrides:
 ''';
       for (final String packageName in packagesToOverride) {
-        // Find the relative path from the common base to the local pacakge.
+        // Find the relative path from the common base to the local package.
         final List<String> repoRelativePathComponents = path.split(
-            path.relative(packageTargets[packageName]!.directory.path,
+            path.relative(localDependencies[packageName]!.directory.path,
                 from: commonBasePath));
         newPubspecContents += '''
   $packageName:
