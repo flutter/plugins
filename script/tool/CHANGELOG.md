@@ -1,10 +1,14 @@
 ## NEXT
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+- Adds a `make-deps-path-based` command to convert inter-repo package
+  dependencies to path-based dependencies.
+- Adds a (hidden) `--run-on-dirty-packages` flag for use with
+  `make-deps-path-based` in CI.
 - `--packages` now allows using a federated plugin's package as a target without
   fully specifying it (if it is not the same as the plugin's name). E.g.,
   `--packages=path_provide_ios` now works.
-- `--run-on changed-packages` now includes only the changed packages in a
+- `--run-on-changed-packages` now includes only the changed packages in a
   federated plugin, not all packages in that plugin.
 
 ## 0.7.3
