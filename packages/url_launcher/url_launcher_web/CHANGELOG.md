@@ -1,3 +1,6 @@
+## 2.0.6
+
+* Marks the `Link` widget as invisible so it can be optimized by the engine.
 ## 2.0.5
 
 * Updates code for new analysis options.
