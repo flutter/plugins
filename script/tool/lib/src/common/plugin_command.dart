@@ -467,7 +467,7 @@ abstract class PluginCommand extends Command<void> {
   Set<String> _getChangedPackageNames(List<String> changedFiles) {
     final Set<String> packages = <String>{};
 
-    // A helper function that returns true if candidateName looks like an
+    // A helper function that returns true if candidatePackageName looks like an
     // implementation package of a plugin called pluginName. Used to determine
     // if .../packages/parentName/candidatePackageName/...
     // looks like a path in a federated plugin package (candidatePackageName)
