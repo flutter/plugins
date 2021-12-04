@@ -381,9 +381,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onTransparentBackground(
       WebViewController controller, BuildContext context) async {
-    final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
-    await controller.loadUrl('data:text/html;base64,$contentBase64');
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 
   static Future<String> _prepareLocalFile() async {
