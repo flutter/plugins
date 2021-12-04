@@ -123,13 +123,12 @@ class PublishCheckCommand extends PackageLoopingCommand {
   }
 
   Pubspec? _tryParsePubspec(RepositoryPackage package) {
-    final File pubspecFile = package.pubspecFile;
-
     try {
-      return Pubspec.parse(pubspecFile.readAsStringSync());
+      return package.parsePubspec();
     } on Exception catch (exception) {
       print(
-        'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}',
+        'Failed to parse `pubspec.yaml` at ${package.pubspecFile.path}: '
+        '$exception',
       );
       return null;
     }

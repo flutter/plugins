@@ -1,6 +1,10 @@
 ## NEXT
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+- Adds a `make-deps-path-based` command to convert inter-repo package
+  dependencies to path-based dependencies.
+- Adds a (hidden) `--run-on-dirty-packages` flag for use with
+  `make-deps-path-based` in CI.
 
 ## 0.7.3
 

@@ -178,8 +178,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       final RepositoryPackage package = entry.package;
       final Directory pluginDirectory = package.directory;
       final String pluginName = pluginDirectory.basename;
-      final File pubspecFile = package.pubspecFile;
-      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      final Pubspec pubspec = package.parsePubspec();
 
       if (pubspec.publishTo != 'none') {
         pathDependencies[pluginName] = PathDependency(pluginDirectory.path);
