@@ -101,10 +101,10 @@
     NSNumber* backgroundColorNSNumber = args[@"backgroundColor"];
     if ([backgroundColorNSNumber isKindOfClass:[NSNumber class]]) {
       int backgroundColorInt = [backgroundColorNSNumber intValue];
-      UIColor* backgroundColor = [UIColor colorWithRed:(backgroundColorInt >> 16 & 0xff) / 255.f
-                                                 green:(backgroundColorInt >> 8 & 0xff) / 255.f
-                                                  blue:(backgroundColorInt & 0xff) / 255.f
-                                                 alpha:(backgroundColorInt >> 24 & 0xff) / 255.f];
+      UIColor* backgroundColor = [UIColor colorWithRed:(backgroundColorInt >> 16 & 0xff) / 255.0
+                                                 green:(backgroundColorInt >> 8 & 0xff) / 255.0
+                                                  blue:(backgroundColorInt & 0xff) / 255.0
+                                                 alpha:(backgroundColorInt >> 24 & 0xff) / 255.0];
       _webView.opaque = NO;
       _webView.backgroundColor = UIColor.clearColor;
       _webView.scrollView.backgroundColor = backgroundColor;
