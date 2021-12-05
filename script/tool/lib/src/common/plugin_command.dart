@@ -75,30 +75,43 @@ abstract class PluginCommand extends Command<void> {
         help: 'Run the command on changed packages/plugins.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
-            'The packages excluded with $_excludeArg is also excluded even if changed.\n'
-            'See $_kBaseSha if a custom base is needed to determine the diff.\n\n'
+            'Packages excluded with $_excludeArg are excluded even if changed.\n'
+            'See $_baseShaArg if a custom base is needed to determine the diff.\n\n'
             'Cannot be combined with $_packagesArg.\n');
+    argParser.addFlag(_runOnDirtyPackagesArg,
+        help:
+            'Run the command on packages with changes that have not been committed.\n'
+            'Packages excluded with $_excludeArg are excluded even if changed.\n'
+            'Cannot be combined with $_packagesArg.\n',
+        hide: true);
     argParser.addFlag(_packagesForBranchArg,
         help:
             'This runs on all packages (equivalent to no package selection flag)\n'
-            'on master, and behaves like --run-on-changed-packages on any other branch.\n\n'
+            'on main (or master), and behaves like --run-on-changed-packages on '
+            'any other branch.\n\n'
             'Cannot be combined with $_packagesArg.\n\n'
             'This is intended for use in CI.\n',
         hide: true);
-    argParser.addOption(_kBaseSha,
+    argParser.addOption(_baseShaArg,
         help: 'The base sha used to determine git diff. \n'
             'This is useful when $_runOnChangedPackagesArg is specified.\n'
             'If not specified, merge-base is used as base sha.');
+    argParser.addFlag(_logTimingArg,
+        help: 'Logs timing information.\n\n'
+            'Currently only logs per-package timing for multi-package commands, '
+            'but more information may be added in the future.');
   }
 
-  static const String _pluginsArg = 'plugins';
-  static const String _packagesArg = 'packages';
-  static const String _shardIndexArg = 'shardIndex';
-  static const String _shardCountArg = 'shardCount';
+  static const String _baseShaArg = 'base-sha';
   static const String _excludeArg = 'exclude';
-  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _logTimingArg = 'log-timing';
+  static const String _packagesArg = 'packages';
   static const String _packagesForBranchArg = 'packages-for-branch';
-  static const String _kBaseSha = 'base-sha';
+  static const String _pluginsArg = 'plugins';
+  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _runOnDirtyPackagesArg = 'run-on-dirty-packages';
+  static const String _shardCountArg = 'shardCount';
+  static const String _shardIndexArg = 'shardIndex';
 
   /// The directory containing the plugin packages.
   final Directory packagesDir;
@@ -181,6 +194,11 @@ abstract class PluginCommand extends Command<void> {
   List<String> getStringListArg(String key) {
     return (argResults![key] as List<String>?) ?? <String>[];
   }
+
+  /// If true, commands should log timing information that might be useful in
+  /// analyzing their runtime (e.g., the per-package time for multi-package
+  /// commands).
+  bool get shouldLogTiming => getBoolArg(_logTimingArg);
 
   void _checkSharding() {
     final int? shardIndex = int.tryParse(getStringArg(_shardIndexArg));
@@ -278,6 +296,7 @@ abstract class PluginCommand extends Command<void> {
     final Set<String> packageSelectionFlags = <String>{
       _packagesArg,
       _runOnChangedPackagesArg,
+      _runOnDirtyPackagesArg,
       _packagesForBranchArg,
     };
     if (packageSelectionFlags
@@ -289,7 +308,7 @@ abstract class PluginCommand extends Command<void> {
       throw ToolExit(exitInvalidArguments);
     }
 
-    Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
+    Set<String> packages = Set<String>.from(getStringListArg(_packagesArg));
 
     final bool runOnChangedPackages;
     if (getBoolArg(_runOnChangedPackagesArg)) {
@@ -301,7 +320,7 @@ abstract class PluginCommand extends Command<void> {
             'only be used in a git repository.');
         throw ToolExit(exitInvalidArguments);
       } else {
-        runOnChangedPackages = branch != 'master';
+        runOnChangedPackages = branch != 'master' && branch != 'main';
         // Log the mode for auditing what was intended to run.
         print('--$_packagesForBranchArg: running on '
             '${runOnChangedPackages ? 'changed' : 'all'} packages');
@@ -320,7 +339,21 @@ abstract class PluginCommand extends Command<void> {
       final List<String> changedFiles =
           await gitVersionFinder.getChangedFiles();
       if (!_changesRequireFullTest(changedFiles)) {
-        plugins = _getChangedPackages(changedFiles);
+        packages = _getChangedPackages(changedFiles);
+      }
+    } else if (getBoolArg(_runOnDirtyPackagesArg)) {
+      final GitVersionFinder gitVersionFinder =
+          GitVersionFinder(await gitDir, 'HEAD');
+      print('Running for all packages that have uncommitted changes\n');
+      // _changesRequireFullTest is deliberately not used here, as this flag is
+      // intended for use in CI to re-test packages changed by
+      // 'make-deps-path-based'.
+      packages = _getChangedPackages(
+          await gitVersionFinder.getChangedFiles(includeUncommitted: true));
+      // For the same reason, empty is not treated as "all packages" as it is
+      // for other flags.
+      if (packages.isEmpty) {
+        return;
       }
     }
 
@@ -336,7 +369,7 @@ abstract class PluginCommand extends Command<void> {
           in dir.list(followLinks: false)) {
         // A top-level Dart package is a plugin package.
         if (_isDartPackage(entity)) {
-          if (plugins.isEmpty || plugins.contains(p.basename(entity.path))) {
+          if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
                 excluded: excludedPluginNames.contains(entity.basename));
@@ -353,9 +386,9 @@ abstract class PluginCommand extends Command<void> {
                   path.relative(subdir.path, from: dir.path);
               final String packageName = path.basename(subdir.path);
               final String basenamePath = path.basename(entity.path);
-              if (plugins.isEmpty ||
-                  plugins.contains(relativePath) ||
-                  plugins.contains(basenamePath)) {
+              if (packages.isEmpty ||
+                  packages.contains(relativePath) ||
+                  packages.contains(basenamePath)) {
                 yield PackageEnumerationEntry(
                     RepositoryPackage(subdir as Directory),
                     excluded: excludedPluginNames.contains(basenamePath) ||
@@ -410,11 +443,11 @@ abstract class PluginCommand extends Command<void> {
     return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
-  /// Retrieve an instance of [GitVersionFinder] based on `_kBaseSha` and [gitDir].
+  /// Retrieve an instance of [GitVersionFinder] based on `_baseShaArg` and [gitDir].
   ///
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
-    final String baseSha = getStringArg(_kBaseSha);
+    final String baseSha = getStringArg(_baseShaArg);
 
     final GitVersionFinder gitVersionFinder =
         GitVersionFinder(await gitDir, baseSha);

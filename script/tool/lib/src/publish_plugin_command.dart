@@ -217,16 +217,15 @@ class PublishPluginCommand extends PackageLoopingCommand {
   /// In cases where a non-null result is returned, that should be returned
   /// as the final result for the package, without further processing.
   Future<PackageResult?> _checkNeedsRelease(RepositoryPackage package) async {
-    final File pubspecFile = package.pubspecFile;
-    if (!pubspecFile.existsSync()) {
+    if (!package.pubspecFile.existsSync()) {
       logWarning('''
-The pubspec file at ${pubspecFile.path} does not exist. Publishing will not happen for ${pubspecFile.parent.basename}.
+The pubspec file for ${package.displayName} does not exist, so no publishing will happen.
 Safe to ignore if the package is deleted in this commit.
 ''');
       return PackageResult.skip('package deleted');
     }
 
-    final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+    final Pubspec pubspec = package.parsePubspec();
 
     if (pubspec.name == 'flutter_plugin_tools') {
       // Ignore flutter_plugin_tools package when running publishing through flutter_plugin_tools.
