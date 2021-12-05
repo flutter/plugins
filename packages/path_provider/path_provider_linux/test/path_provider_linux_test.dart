@@ -37,18 +37,19 @@ void main() {
 
   test('getApplicationSupportPath', () async {
     final PathProviderPlatform plugin = PathProviderLinux.private(
-        executableName: 'test', applicationId: 'com.example.Test');
-    // Note this will fail if ${xdg.dataHome.path}/test exists on the local filesystem.
+        executableName: 'path_provider_linux_test_binary',
+        applicationId: 'com.example.Test');
+    // Note this will fail if ${xdg.dataHome.path}/path_provider_linux_test_binary exists on the local filesystem.
     expect(await plugin.getApplicationSupportPath(),
         '${xdg.dataHome.path}/com.example.Test');
   });
 
   test('getApplicationSupportPath uses executable name if no application Id',
       () async {
-    final PathProviderPlatform plugin =
-        PathProviderLinux.private(executableName: 'test');
-    expect(
-        await plugin.getApplicationSupportPath(), '${xdg.dataHome.path}/test');
+    final PathProviderPlatform plugin = PathProviderLinux.private(
+        executableName: 'path_provider_linux_test_binary');
+    expect(await plugin.getApplicationSupportPath(),
+        '${xdg.dataHome.path}/path_provider_linux_test_binary');
   });
 
   test('getApplicationDocumentsPath', () async {
