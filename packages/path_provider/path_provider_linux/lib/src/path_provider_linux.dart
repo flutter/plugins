@@ -86,12 +86,7 @@ class PathProviderLinux extends PathProviderPlatform {
   // Gets the unique ID for this application.
   Future<String> _getId() async {
     _applicationId ??= getApplicationId();
-
-    if (_applicationId != null) {
-      return _applicationId!;
-    }
-
-    // Fall back to using the executable name.
-    return await _getExecutableName();
+    // If no application ID then fall back to using the executable name.
+    return _applicationId ?? await _getExecutableName();
   }
 }
