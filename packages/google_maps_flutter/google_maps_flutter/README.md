@@ -6,8 +6,7 @@ A Flutter plugin that provides a [Google Maps](https://developers.google.com/map
 
 ## Usage
 
-To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
-Google Maps is only usable inside of a widget with bounded size. Using in an undbounded widget will cause the application to crash
+To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).  Google Maps is only usable inside of a widget with bounded size. Using in an undbounded widget will cause the application to crash
 
 ## Getting Started
 
