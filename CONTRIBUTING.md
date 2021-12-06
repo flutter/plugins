@@ -24,15 +24,6 @@ Additional resources specific to the plugins repository:
   for more information about how to make PRs for this repository, especially when
   changing federated plugins.
 
-## Important note
-
-As of January 2021, we are no longer accepting non-critical PRs for the
-[deprecated plugins](./README.md#deprecated), as all new development should
-happen in the Flutter Community Plus replacements. If you have a PR for
-something other than a critical issue (crashes, build failures, security issues)
-in one of those pluigns, please [submit it to the Flutter Community Plus
-replacement](https://github.com/fluttercommunity/plus_plugins/pulls) instead.
-
 ## Other notes
 
 ### Style
