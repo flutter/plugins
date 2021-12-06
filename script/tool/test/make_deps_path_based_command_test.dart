@@ -173,6 +173,29 @@ void main() {
       );
     });
 
+    test('no-ops for no deleted packages', () async {
+      final String changedFileOutput = <File>[
+        // A change for a file that's not on disk simulates a deletion.
+        packagesDir.childDirectory('foo').childFile('pubspec.yaml'),
+      ].map((File file) => file.path).join('\n');
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(stdout: changedFileOutput),
+      ];
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Skipping foo; deleted.'),
+          contains('No target dependencies'),
+        ]),
+      );
+    });
+
     test('includes bugfix version changes as targets', () async {
       const String newVersion = '1.0.1';
       final Directory package =

@@ -81,7 +81,8 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       // Count the top-level plugin as changed.
       _changedPlugins.add(packageName);
       if (relativeComponents[0] == packageName ||
-          relativeComponents[0].startsWith('${packageName}_')) {
+          (relativeComponents.length > 1 &&
+              relativeComponents[0].startsWith('${packageName}_'))) {
         packageName = relativeComponents.removeAt(0);
       }
 
@@ -178,6 +179,10 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       String pubspecRepoRelativePosixPath) async {
     final File pubspecFile = childFileWithSubcomponents(
         packagesDir.parent, p.posix.split(pubspecRepoRelativePosixPath));
+    if (!pubspecFile.existsSync()) {
+      // If the package was deleted, nothing will be published.
+      return false;
+    }
     final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
     if (pubspec.publishTo == 'none') {
       return false;
