@@ -514,6 +514,10 @@ class WebViewController {
   }
 
   /// Loads a page by making the specified request.
+  ///
+  /// Android only:
+  /// When making a POST request, headers are ignored. As a workaround, make
+  /// the request manually and load the response data using [loadHTMLString].
   Future<void> loadRequest(WebViewRequest request) async {
     return _webViewPlatformController.loadRequest(request);
   }
