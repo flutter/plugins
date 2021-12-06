@@ -183,6 +183,8 @@ class WebWebViewPlatformController implements WebViewPlatformController {
   }
 
   /// Makes a specific HTTP request ands loads the response in the webview.
+  /// The request must be to the same-domain of your Flutter App
+  /// (or be CORS-enabled) for this to work.
   ///
   /// [WebViewRequest.method] must be one of the supported HTTP methods
   /// in [WebViewRequestMethod].
