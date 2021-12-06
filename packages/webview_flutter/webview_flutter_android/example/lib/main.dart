@@ -344,7 +344,6 @@ class _SampleMenu extends StatelessWidget {
     final WebViewRequest request = WebViewRequest(
       uri: Uri.parse('https://httpbin.org/post'),
       method: WebViewRequestMethod.post,
-      headers: <String, String>{'foo': 'bar', 'Content-Type': 'text/plain'},
       body: Uint8List.fromList('Test Body'.codeUnits),
     );
     await controller.loadRequest(request);

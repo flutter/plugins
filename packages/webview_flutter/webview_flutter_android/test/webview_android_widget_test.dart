@@ -416,23 +416,6 @@ void main() {
             body,
           ));
         });
-
-        testWidgets('POST ignores headers', (WidgetTester tester) async {
-          await buildWidget(tester);
-
-          final Uint8List body = Uint8List.fromList('Test Body'.codeUnits);
-
-          await testController.loadRequest(WebViewRequest(
-              uri: Uri.parse('https://www.google.com'),
-              method: WebViewRequestMethod.post,
-              headers: <String, String>{'foo': 'bar'},
-              body: body));
-
-          verify(mockWebView.postUrl(
-            'https://www.google.com',
-            body,
-          ));
-        });
       });
 
       testWidgets('currentUrl', (WidgetTester tester) async {
