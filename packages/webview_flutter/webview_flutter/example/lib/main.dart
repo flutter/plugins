@@ -343,9 +343,10 @@ class SampleMenu extends StatelessWidget {
 
   static Future<String> _prepareLocalFile() async {
     final String tmpDir = (await getTemporaryDirectory()).path;
-    final File indexFile = File('$tmpDir/www/index.html');
+    final File indexFile = File(
+        <String>{tmpDir, 'www', 'index.html'}.join(Platform.pathSeparator));
 
-    await Directory('$tmpDir/www').create(recursive: true);
+    await indexFile.create(recursive: true);
     await indexFile.writeAsString(kLocalExamplePage);
 
     return indexFile.path;
