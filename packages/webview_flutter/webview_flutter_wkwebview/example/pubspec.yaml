@@ -34,3 +34,5 @@ flutter:
   assets:
     - assets/sample_audio.ogg
     - assets/sample_video.mp4
+    - assets/www/index.html
+    - assets/www/styles/style.css
