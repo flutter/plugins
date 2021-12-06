@@ -109,13 +109,25 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      tool_script:
+      analyze_tool_script:
         - cd script/tool
         - dart analyze --fatal-infos
-      script:
+      analyze_script:
         # DO NOT change the custom-analysis argument here without changing the Dart repo.
         # See the comment in script/configs/custom_analysis.yaml for details.
         - ./script/tool_runner.sh analyze --custom-analysis=script/configs/custom_analysis.yaml
+      pathified_analyze_script:
+        # Re-run analysis with path-based dependencies to ensure that publishing
+        # the changes won't break analysis of other packages in the respository
+        # that depend on it.
+        - ./script/tool_runner.sh make-deps-path-based --target-dependencies-with-non-breaking-updates
+        # This uses --run-on-dirty-packages rather than --packages-for-branch
+        # since only the packages changed by 'make-deps-path-based' need to be
+        # checked.
+        - dart $PLUGIN_TOOL analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
+        # Restore the tree to a clean state, to avoid accidental issues if
+        # other script steps are added to this task.
+        - git checkout .
     ### Android tasks ###
     - name: android-build_all_plugins
       env:

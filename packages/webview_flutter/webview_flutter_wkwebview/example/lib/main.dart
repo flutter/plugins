@@ -37,6 +37,27 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
+const String kTransparentBackgroundPage = '''
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transparent background test</title>
+</head>
+<style type="text/css">
+  body { background: transparent; margin: 0; padding: 0; }
+  #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+  #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
+  p { text-align: center; }
+</style>
+<body>
+  <div id="container">
+    <p>Transparent background test</p>
+    <div id="shape"></div>
+  </div>
+</body>
+</html>
+''';
+
 const String kLocalFileExamplePage = '''
 <!DOCTYPE html>
 <html lang="en">
@@ -47,8 +68,8 @@ const String kLocalFileExamplePage = '''
 
 <h1>Local demo page</h1>
 <p>
-  This is an example page used to demonstrate how to load a local file or HTML 
-  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
+  This is an example page used to demonstrate how to load a local file or HTML
+  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter
   webview</a> plugin.
 </p>
 
@@ -70,6 +91,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF4CAF50),
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -96,6 +118,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
+          backgroundColor: const Color(0x80000000),
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -146,6 +169,7 @@ enum _MenuOptions {
   loadLocalFile,
   loadHtmlString,
   doPostRequest,
+  transparentBackground,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -160,6 +184,7 @@ class _SampleMenu extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<_MenuOptions>(
+          key: const ValueKey<String>('ShowPopupMenu'),
           onSelected: (_MenuOptions value) {
             switch (value) {
               case _MenuOptions.showUserAgent:
@@ -191,6 +216,9 @@ class _SampleMenu extends StatelessWidget {
                 break;
               case _MenuOptions.doPostRequest:
                 _onDoPostRequest(controller.data!, context);
+                break;
+              case _MenuOptions.transparentBackground:
+                _onTransparentBackground(controller.data!, context);
                 break;
             }
           },
@@ -235,6 +263,11 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.doPostRequest,
               child: Text('Post Request'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              key: ValueKey<String>('ShowTransparentBackgroundExample'),
+              value: _MenuOptions.transparentBackground,
+              child: Text('Transparent background example'),
             ),
           ],
         );
@@ -344,6 +377,11 @@ class _SampleMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: cookieWidgets.toList(),
     );
+  }
+
+  Future<void> _onTransparentBackground(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 
   static Future<String> _prepareLocalFile() async {
