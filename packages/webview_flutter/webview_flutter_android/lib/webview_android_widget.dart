@@ -175,6 +175,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   }
 
   @override
+
   /// Makes a specific HTTP request ands loads the response in the webview.
   ///
   /// [WebViewRequest.method] must be one of the supported HTTP methods
@@ -194,6 +195,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<void> loadRequest(
     WebViewRequest request,
   ) async {
+    if (!request.uri.hasScheme) {
+      throw ArgumentError('WebViewRequest#uri is required to have a scheme.');
+    }
     switch (request.method) {
       case WebViewRequestMethod.get:
         return webView.loadUrl(request.uri.toString(), request.headers);

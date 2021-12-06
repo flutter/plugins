@@ -344,6 +344,20 @@ void main() {
       });
 
       group('loadRequest', () {
+        testWidgets('Throws ArgumentError for empty scheme',
+            (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          expect(
+              () async => await testController.loadRequest(
+                    WebViewRequest(
+                      uri: Uri.parse('www.google.com'),
+                      method: WebViewRequestMethod.get,
+                    ),
+                  ),
+              throwsA(const TypeMatcher<ArgumentError>()));
+        });
+
         testWidgets('GET without headers', (WidgetTester tester) async {
           await buildWidget(tester);
 
