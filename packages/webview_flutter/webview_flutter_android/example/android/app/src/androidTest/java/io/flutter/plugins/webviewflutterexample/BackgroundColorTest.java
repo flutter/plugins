@@ -18,6 +18,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.screenshot.ScreenCapture;
 import androidx.test.runner.screenshot.Screenshot;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ public class BackgroundColorTest {
     ActivityScenario.launch(DriverExtensionActivity.class);
   }
 
+  @Ignore("Doesn't run in Firebase Test Lab: https://github.com/flutter/flutter/issues/94748")
   @Test
   public void backgroundColor() {
     onFlutterWidget(withValueKey("ShowPopupMenu")).perform(click());
