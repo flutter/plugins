@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/driver_extension.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -16,6 +17,11 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'navigation_decision.dart';
 import 'navigation_request.dart';
 import 'web_view.dart';
+
+void appMain() {
+  enableFlutterDriverExtension();
+  main();
+}
 
 void main() {
   // Configure the [WebView] to use the [SurfaceAndroidWebView]
@@ -59,6 +65,27 @@ const String kExamplePage = '''
 </html>
 ''';
 
+const String kTransparentBackgroundPage = '''
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transparent background test</title>
+</head>
+<style type="text/css">
+  body { background: transparent; margin: 0; padding: 0; }
+  #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+  #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
+  p { text-align: center; }
+</style>
+<body>
+  <div id="container">
+    <p>Transparent background test</p>
+    <div id="shape"></div>
+  </div>
+</body>
+</html>
+''';
+
 class _WebViewExample extends StatefulWidget {
   const _WebViewExample({Key? key}) : super(key: key);
 
@@ -73,6 +100,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF4CAF50),
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -109,6 +137,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
           javascriptChannels: _createJavascriptChannels(context),
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
+          backgroundColor: const Color(0x80000000),
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -158,6 +187,7 @@ enum _MenuOptions {
   navigationDelegate,
   loadLocalFile,
   loadHtmlString,
+  transparentBackground,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -172,6 +202,7 @@ class _SampleMenu extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<_MenuOptions>(
+          key: const ValueKey<String>('ShowPopupMenu'),
           onSelected: (_MenuOptions value) {
             switch (value) {
               case _MenuOptions.showUserAgent:
@@ -200,6 +231,9 @@ class _SampleMenu extends StatelessWidget {
                 break;
               case _MenuOptions.loadHtmlString:
                 _onLoadHtmlStringExample(controller.data!, context);
+                break;
+              case _MenuOptions.transparentBackground:
+                _onTransparentBackground(controller.data!, context);
                 break;
             }
           },
@@ -240,6 +274,11 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.loadLocalFile,
               child: Text('Load local file'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              key: ValueKey<String>('ShowTransparentBackgroundExample'),
+              value: _MenuOptions.transparentBackground,
+              child: Text('Transparent background example'),
             ),
           ],
         );
@@ -352,6 +391,11 @@ class _SampleMenu extends StatelessWidget {
     await indexFile.writeAsString(kExamplePage);
 
     return indexFile.path;
+  }
+
+  Future<void> _onTransparentBackground(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 }
 
