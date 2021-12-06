@@ -513,7 +513,18 @@ class WebViewController {
     return _webViewPlatformController.loadUrl(url, headers);
   }
 
-  /// Loads a page by making the specified request.
+  /// Makes a specific HTTP request ands loads the response in the webview.
+  ///
+  /// [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in [WebViewRequestMethod].
+  ///
+  /// If [WebViewRequest.headers] is not empty, its key-value pairs will be
+  /// added as the headers for the request.
+  ///
+  /// If [WebViewRequest.body] is not null, it will be added as the body
+  /// for the request.
+  ///
+  /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
   ///
   /// Android only:
   /// When making a POST request, headers are ignored. As a workaround, make
