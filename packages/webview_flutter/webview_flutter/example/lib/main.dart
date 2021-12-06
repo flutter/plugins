@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
@@ -24,6 +25,25 @@ The navigation delegate is set to block navigation to the youtube website.
 <ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
 <ul><a href="https://www.google.com/">https://www.google.com/</a></ul>
 </ul>
+</body>
+</html>
+''';
+
+const String kLocalExamplePage = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Load file or HTML string example</title>
+</head>
+<body>
+
+<h1>Local demo page</h1>
+<p>
+  This is an example page used to demonstrate how to load a local file or HTML 
+  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
+  webview</a> plugin.
+</p>
+
 </body>
 </html>
 ''';
@@ -133,6 +153,8 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  loadLocalFile,
+  loadHtmlString,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -171,6 +193,12 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case MenuOptions.loadLocalFile:
+                _onLoadLocalFileExample(controller.data!, context);
+                break;
+              case MenuOptions.loadHtmlString:
+                _onLoadHtmlStringExample(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -202,6 +230,14 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.loadHtmlString,
+              child: Text('Load HTML string'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.loadLocalFile,
+              child: Text('Load local file'),
             ),
           ],
         );
@@ -279,6 +315,18 @@ class SampleMenu extends StatelessWidget {
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
+  Future<void> _onLoadLocalFileExample(
+      WebViewController controller, BuildContext context) async {
+    final String pathToIndex = await _prepareLocalFile();
+
+    await controller.loadFile(pathToIndex);
+  }
+
+  Future<void> _onLoadHtmlStringExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kLocalExamplePage);
+  }
+
   Widget _getCookieList(String cookies) {
     if (cookies == null || cookies == '""') {
       return Container();
@@ -291,6 +339,17 @@ class SampleMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: cookieWidgets.toList(),
     );
+  }
+
+  static Future<String> _prepareLocalFile() async {
+    final String tmpDir = (await getTemporaryDirectory()).path;
+    final File indexFile = File(
+        <String>{tmpDir, 'www', 'index.html'}.join(Platform.pathSeparator));
+
+    await indexFile.create(recursive: true);
+    await indexFile.writeAsString(kLocalExamplePage);
+
+    return indexFile.path;
   }
 }
 

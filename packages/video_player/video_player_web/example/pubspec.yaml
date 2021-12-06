@@ -1,4 +1,4 @@
-name: connectivity_for_web_integration_tests
+name: video_player_for_web_integration_tests
 publish_to: none
 
 environment:
