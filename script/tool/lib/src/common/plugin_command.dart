@@ -75,9 +75,15 @@ abstract class PluginCommand extends Command<void> {
         help: 'Run the command on changed packages/plugins.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
-            'The packages excluded with $_excludeArg is also excluded even if changed.\n'
+            'Packages excluded with $_excludeArg are excluded even if changed.\n'
             'See $_baseShaArg if a custom base is needed to determine the diff.\n\n'
             'Cannot be combined with $_packagesArg.\n');
+    argParser.addFlag(_runOnDirtyPackagesArg,
+        help:
+            'Run the command on packages with changes that have not been committed.\n'
+            'Packages excluded with $_excludeArg are excluded even if changed.\n'
+            'Cannot be combined with $_packagesArg.\n',
+        hide: true);
     argParser.addFlag(_packagesForBranchArg,
         help:
             'This runs on all packages (equivalent to no package selection flag)\n'
@@ -103,6 +109,7 @@ abstract class PluginCommand extends Command<void> {
   static const String _packagesForBranchArg = 'packages-for-branch';
   static const String _pluginsArg = 'plugins';
   static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _runOnDirtyPackagesArg = 'run-on-dirty-packages';
   static const String _shardCountArg = 'shardCount';
   static const String _shardIndexArg = 'shardIndex';
 
@@ -289,6 +296,7 @@ abstract class PluginCommand extends Command<void> {
     final Set<String> packageSelectionFlags = <String>{
       _packagesArg,
       _runOnChangedPackagesArg,
+      _runOnDirtyPackagesArg,
       _packagesForBranchArg,
     };
     if (packageSelectionFlags
@@ -300,7 +308,7 @@ abstract class PluginCommand extends Command<void> {
       throw ToolExit(exitInvalidArguments);
     }
 
-    Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
+    Set<String> packages = Set<String>.from(getStringListArg(_packagesArg));
 
     final bool runOnChangedPackages;
     if (getBoolArg(_runOnChangedPackagesArg)) {
@@ -331,7 +339,21 @@ abstract class PluginCommand extends Command<void> {
       final List<String> changedFiles =
           await gitVersionFinder.getChangedFiles();
       if (!_changesRequireFullTest(changedFiles)) {
-        plugins = _getChangedPackages(changedFiles);
+        packages = _getChangedPackages(changedFiles);
+      }
+    } else if (getBoolArg(_runOnDirtyPackagesArg)) {
+      final GitVersionFinder gitVersionFinder =
+          GitVersionFinder(await gitDir, 'HEAD');
+      print('Running for all packages that have uncommitted changes\n');
+      // _changesRequireFullTest is deliberately not used here, as this flag is
+      // intended for use in CI to re-test packages changed by
+      // 'make-deps-path-based'.
+      packages = _getChangedPackages(
+          await gitVersionFinder.getChangedFiles(includeUncommitted: true));
+      // For the same reason, empty is not treated as "all packages" as it is
+      // for other flags.
+      if (packages.isEmpty) {
+        return;
       }
     }
 
@@ -347,7 +369,7 @@ abstract class PluginCommand extends Command<void> {
           in dir.list(followLinks: false)) {
         // A top-level Dart package is a plugin package.
         if (_isDartPackage(entity)) {
-          if (plugins.isEmpty || plugins.contains(p.basename(entity.path))) {
+          if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
                 excluded: excludedPluginNames.contains(entity.basename));
@@ -364,9 +386,9 @@ abstract class PluginCommand extends Command<void> {
                   path.relative(subdir.path, from: dir.path);
               final String packageName = path.basename(subdir.path);
               final String basenamePath = path.basename(entity.path);
-              if (plugins.isEmpty ||
-                  plugins.contains(relativePath) ||
-                  plugins.contains(basenamePath)) {
+              if (packages.isEmpty ||
+                  packages.contains(relativePath) ||
+                  packages.contains(basenamePath)) {
                 yield PackageEnumerationEntry(
                     RepositoryPackage(subdir as Directory),
                     excluded: excludedPluginNames.contains(basenamePath) ||

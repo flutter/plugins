@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
@@ -356,6 +357,11 @@ class WebView {
     );
     WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
     return api.setWebChromeClientFromInstance(this, client);
+  }
+
+  /// Sets the background color of this WebView.
+  Future<void> setBackgroundColor(Color color) {
+    return api.setBackgroundColorFromInstance(this, color.value);
   }
 
   /// Releases all resources used by the [WebView].

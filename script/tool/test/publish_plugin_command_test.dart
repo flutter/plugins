@@ -675,7 +675,7 @@ void main() {
             contains('Running `pub publish ` in ${pluginDir1.path}...'),
             contains('Published plugin1 successfully!'),
             contains(
-                'The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n'),
+                'The pubspec file for plugin2/plugin2 does not exist, so no publishing will happen.\nSafe to ignore if the package is deleted in this commit.\n'),
             contains('SKIPPING: package deleted'),
             contains('skipped (with warning)'),
           ]));

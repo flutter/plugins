@@ -8,6 +8,7 @@
 
 import 'dart:async' as _i5;
 import 'dart:typed_data' as _i4;
+import 'dart:ui' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
@@ -341,6 +342,10 @@ class MockTestWebViewHostApi extends _i1.Mock
               #setWebChromeClient, [instanceId, clientInstanceId]),
           returnValueForMissingStub: null);
   @override
+  void setBackgroundColor(int? instanceId, int? color) => super.noSuchMethod(
+      Invocation.method(#setBackgroundColor, [instanceId, color]),
+      returnValueForMissingStub: null);
+  @override
   String toString() => super.toString();
 }
 
@@ -496,6 +501,11 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i5.Future<void> setWebChromeClient(_i2.WebChromeClient? client) =>
       (super.noSuchMethod(Invocation.method(#setWebChromeClient, [client]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<void> setBackgroundColor(_i6.Color? color) =>
+      (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override

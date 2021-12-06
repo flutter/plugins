@@ -31,10 +31,16 @@ class GitVersionFinder {
   }
 
   /// Get a list of all the changed files.
-  Future<List<String>> getChangedFiles() async {
+  Future<List<String>> getChangedFiles(
+      {bool includeUncommitted = false}) async {
     final String baseSha = await getBaseSha();
     final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', baseSha, 'HEAD']);
+        .runCommand(<String>[
+      'diff',
+      '--name-only',
+      baseSha,
+      if (!includeUncommitted) 'HEAD'
+    ]);
     final String changedFilesStdout = changedFilesCommand.stdout.toString();
     if (changedFilesStdout.isEmpty) {
       return <String>[];
