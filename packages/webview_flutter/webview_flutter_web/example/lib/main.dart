@@ -32,7 +32,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
-        actions: [
+        actions: <Widget>[
           _SampleMenu(_controller.future),
         ],
       ),
@@ -69,8 +69,7 @@ class _SampleMenu extends StatelessWidget {
                 break;
             }
           },
-          itemBuilder: (BuildContext context) =>
-          <PopupMenuItem<_MenuOptions>>[
+          itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.doPostRequest,
               child: Text('Post Request'),
@@ -91,5 +90,4 @@ class _SampleMenu extends StatelessWidget {
     );
     await controller.loadRequest(request);
   }
-
 }

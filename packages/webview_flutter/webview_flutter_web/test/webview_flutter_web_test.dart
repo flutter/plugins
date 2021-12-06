@@ -44,7 +44,8 @@ void main() {
     test('loadUrl sets url on iframe src attribute', () {
       // Setup
       final MockIFrameElement mockElement = MockIFrameElement();
-      final WebWebViewPlatformController controller = WebWebViewPlatformController(
+      final WebWebViewPlatformController controller =
+          WebWebViewPlatformController(
         mockElement,
       );
       // Run
@@ -56,7 +57,8 @@ void main() {
     test('loadHtmlString loads html into iframe', () {
       // Setup
       final MockIFrameElement mockElement = MockIFrameElement();
-      final WebWebViewPlatformController controller = WebWebViewPlatformController(
+      final WebWebViewPlatformController controller =
+          WebWebViewPlatformController(
         mockElement,
       );
       // Run
@@ -69,7 +71,8 @@ void main() {
       test('loadRequest throws ArgumentError on missing scheme', () {
         // Setup
         final MockIFrameElement mockElement = MockIFrameElement();
-        final WebWebViewPlatformController controller = WebWebViewPlatformController(
+        final WebWebViewPlatformController controller =
+            WebWebViewPlatformController(
           mockElement,
         );
         // Run & Verify
@@ -83,16 +86,20 @@ void main() {
             throwsA(const TypeMatcher<ArgumentError>()));
       });
 
-      test('loadRequest makes request and loads response into iframe', () async {
+      test('loadRequest makes request and loads response into iframe',
+          () async {
         // Setup
         final MockIFrameElement mockElement = MockIFrameElement();
-        final WebWebViewPlatformController controller = WebWebViewPlatformController(
+        final WebWebViewPlatformController controller =
+            WebWebViewPlatformController(
           mockElement,
         );
         final MockHttpRequest mockHttpRequest = MockHttpRequest();
-        when(mockHttpRequest.getResponseHeader('content-type')).thenReturn('text/plain');
+        when(mockHttpRequest.getResponseHeader('content-type'))
+            .thenReturn('text/plain');
         when(mockHttpRequest.responseText).thenReturn('test data');
-        final MockHttpRequestFactory mockHttpRequestFactory = MockHttpRequestFactory();
+        final MockHttpRequestFactory mockHttpRequestFactory =
+            MockHttpRequestFactory();
         when(mockHttpRequestFactory.request(
           any,
           method: anyNamed('method'),
@@ -115,7 +122,8 @@ void main() {
           requestHeaders: <String, String>{'Foo': 'Bar'},
           sendData: Uint8List.fromList('test body'.codeUnits),
         ));
-        verify(mockElement.src = 'data:text/plain,' + Uri.encodeFull('test data'));
+        verify(
+            mockElement.src = 'data:text/plain,' + Uri.encodeFull('test data'));
       });
     });
   });

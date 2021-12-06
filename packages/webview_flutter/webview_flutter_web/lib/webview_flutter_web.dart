@@ -182,8 +182,6 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     _element.src = 'data:text/html,' + Uri.encodeFull(html);
   }
 
-  @override
-
   /// Makes a specific HTTP request ands loads the response in the webview.
   ///
   /// [WebViewRequest.method] must be one of the supported HTTP methods
@@ -196,15 +194,20 @@ class WebWebViewPlatformController implements WebViewPlatformController {
   /// for the request.
   ///
   /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
+  @override
   Future<void> loadRequest(WebViewRequest request) async {
     if (!request.uri.hasScheme) {
       throw ArgumentError('WebViewRequest#uri is required to have a scheme.');
     }
-    final HttpRequest httpReq = await _httpRequestFactory.request(request.uri.toString(),
-        method: request.method.serialize(), requestHeaders: request.headers, sendData: request.body);
-    final String contentType = httpReq.getResponseHeader('content-type') ?? 'text/html';
-    print(contentType);
-    _element.src = 'data:$contentType,' + Uri.encodeFull(httpReq.responseText ?? '');
+    final HttpRequest httpReq = await _httpRequestFactory.request(
+        request.uri.toString(),
+        method: request.method.serialize(),
+        requestHeaders: request.headers,
+        sendData: request.body);
+    final String contentType =
+        httpReq.getResponseHeader('content-type') ?? 'text/html';
+    _element.src =
+        'data:$contentType,' + Uri.encodeFull(httpReq.responseText ?? '');
   }
 }
 
