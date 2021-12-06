@@ -1,10 +1,2 @@
-# Deprecated; no plan to backfill the missing files
-- android_intent
-- connectivity/connectivity
-- device_info/device_info
-- sensors
-- share
-- wifi_info_flutter/wifi_info_flutter
-
 # No integration tests to run:
 - espresso

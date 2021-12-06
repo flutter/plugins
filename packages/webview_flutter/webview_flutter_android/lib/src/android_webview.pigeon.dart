@@ -708,6 +708,31 @@ class WebViewHostApi {
       return;
     }
   }
+
+  Future<void> setBackgroundColor(int arg_instanceId, int arg_color) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewHostApi.setBackgroundColor', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object>[arg_instanceId, arg_color]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
 }
 
 class _WebSettingsHostApiCodec extends StandardMessageCodec {

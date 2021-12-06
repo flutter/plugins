@@ -46,6 +46,7 @@ abstract class TestWebViewHostApi {
   void removeJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
   void setDownloadListener(int instanceId, int listenerInstanceId);
   void setWebChromeClient(int instanceId, int clientInstanceId);
+  void setBackgroundColor(int instanceId, int color);
   static void setup(TestWebViewHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -573,6 +574,28 @@ abstract class TestWebViewHostApi {
           assert(arg_clientInstanceId != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.setWebChromeClient was null, expected non-null int.');
           api.setWebChromeClient(arg_instanceId!, arg_clientInstanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebViewHostApi.setBackgroundColor', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setBackgroundColor was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setBackgroundColor was null, expected non-null int.');
+          final int? arg_color = (args[1] as int?);
+          assert(arg_color != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setBackgroundColor was null, expected non-null int.');
+          api.setBackgroundColor(arg_instanceId!, arg_color!);
           return <Object?, Object?>{};
         });
       }
