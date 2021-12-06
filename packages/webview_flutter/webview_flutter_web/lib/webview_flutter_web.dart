@@ -211,6 +211,11 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     _element.src =
         'data:$contentType,' + Uri.encodeFull(httpReq.responseText ?? '');
   }
+
+  @override
+  Future<void> loadFlutterAsset(String key) {
+    throw UnimplementedError();
+  }
 }
 
 /// Factory class for creating [HttpRequest] instances.
