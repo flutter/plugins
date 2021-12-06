@@ -156,6 +156,7 @@ enum _MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  loadFlutterAsset,
   loadLocalFile,
   loadHtmlString,
 }
@@ -195,6 +196,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case _MenuOptions.loadFlutterAsset:
+                _onLoadFlutterAssetExample(controller.data!, context);
+                break;
               case _MenuOptions.loadLocalFile:
                 _onLoadLocalFileExample(controller.data!, context);
                 break;
@@ -232,6 +236,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.loadFlutterAsset,
+              child: Text('Load Flutter Asset'),
             ),
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.loadHtmlString,
@@ -316,6 +324,11 @@ class _SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  Future<void> _onLoadFlutterAssetExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadFlutterAsset('assets/sample_video.mp4');
   }
 
   Future<void> _onLoadLocalFileExample(
