@@ -26,18 +26,19 @@ public class FlutterAssetManagerHostApiImplTest {
   public void setUp() {
     mockFlutterAssetManager = mock(FlutterAssetManager.class);
 
-    testFlutterAssetManagerHostApiImpl = new FlutterAssetManagerHostApiImpl(mockFlutterAssetManager);
+    testFlutterAssetManagerHostApiImpl =
+        new FlutterAssetManagerHostApiImpl(mockFlutterAssetManager);
   }
 
   @Test
   public void list() {
     try {
       when(mockFlutterAssetManager.list("test/path"))
-          .thenReturn(new String[]{"index.html", "styles.css"});
+          .thenReturn(new String[] {"index.html", "styles.css"});
       List<String> actualFilePaths = testFlutterAssetManagerHostApiImpl.list("test/path");
       verify(mockFlutterAssetManager).list("test/path");
       assertArrayEquals(new String[] {"index.html", "styles.css"}, actualFilePaths.toArray());
-    } catch(IOException ex) {
+    } catch (IOException ex) {
       fail();
     }
   }
@@ -45,8 +46,7 @@ public class FlutterAssetManagerHostApiImplTest {
   @Test(expected = RuntimeException.class)
   public void list_should_convert_io_exception_to_runtime_exception() {
     try {
-      when(mockFlutterAssetManager.list("test/path"))
-          .thenThrow(new IOException());
+      when(mockFlutterAssetManager.list("test/path")).thenThrow(new IOException());
       testFlutterAssetManagerHostApiImpl.list("test/path");
     } catch (IOException ex) {
       fail();
@@ -55,10 +55,10 @@ public class FlutterAssetManagerHostApiImplTest {
 
   @Test
   public void getAssetFilePathByName() {
-    when(mockFlutterAssetManager.getAssetFilePathByName("index.html")).thenReturn("flutter_assets/index.html");
+    when(mockFlutterAssetManager.getAssetFilePathByName("index.html"))
+        .thenReturn("flutter_assets/index.html");
     String filePath = testFlutterAssetManagerHostApiImpl.getAssetFilePathByName("index.html");
     verify(mockFlutterAssetManager).getAssetFilePathByName("index.html");
     assertEquals("flutter_assets/index.html", filePath);
   }
-
 }

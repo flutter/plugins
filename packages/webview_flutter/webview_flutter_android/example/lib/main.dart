@@ -328,7 +328,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onLoadFlutterAssetExample(
       WebViewController controller, BuildContext context) async {
-    await controller.loadFlutterAsset('assets/sample_video.mp4');
+    await controller.loadFlutterAsset('assets/www/index.html');
   }
 
   Future<void> _onLoadLocalFileExample(

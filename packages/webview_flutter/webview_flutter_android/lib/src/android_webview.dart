@@ -5,8 +5,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
-import 'android_webview_api_impls.dart';
 import 'android_webview.pigeon.dart';
+import 'android_webview_api_impls.dart';
 
 // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
 // Workaround to represent null Strings since pigeon doesn't support null

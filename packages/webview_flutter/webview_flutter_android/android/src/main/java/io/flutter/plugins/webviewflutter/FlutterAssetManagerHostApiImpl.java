@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.content.Context;
 import android.webkit.WebView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FlutterAssetManagerHostApi;
 import java.io.IOException;
@@ -19,9 +18,7 @@ import java.util.List;
 public class FlutterAssetManagerHostApiImpl implements FlutterAssetManagerHostApi {
   final FlutterAssetManager flutterAssetManager;
 
-  /**
-   * Constructs a new instance of {@link FlutterAssetManagerHostApiImpl}.
-   */
+  /** Constructs a new instance of {@link FlutterAssetManagerHostApiImpl}. */
   public FlutterAssetManagerHostApiImpl(FlutterAssetManager flutterAssetManager) {
     this.flutterAssetManager = flutterAssetManager;
   }

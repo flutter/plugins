@@ -338,7 +338,7 @@ void main() {
         verify(mockWebView.loadUrl(
           'file:///android_asset/flutter_assets/$assetKey',
           <String, String>{},
-        ));        
+        ));
       });
 
       testWidgets(

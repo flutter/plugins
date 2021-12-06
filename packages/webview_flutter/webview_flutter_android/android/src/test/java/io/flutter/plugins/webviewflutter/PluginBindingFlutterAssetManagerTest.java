@@ -29,18 +29,19 @@ public class PluginBindingFlutterAssetManagerTest {
     mockAssetManager = mock(AssetManager.class);
     mockFlutterAssets = mock(FlutterAssets.class);
 
-    tesPluginBindingFlutterAssetManager = new PluginBindingFlutterAssetManager(mockAssetManager, mockFlutterAssets);
+    tesPluginBindingFlutterAssetManager =
+        new PluginBindingFlutterAssetManager(mockAssetManager, mockFlutterAssets);
   }
 
   @Test
   public void list() {
     try {
       when(mockAssetManager.list("test/path"))
-          .thenReturn(new String[]{"index.html", "styles.css"});
+          .thenReturn(new String[] {"index.html", "styles.css"});
       String[] actualFilePaths = tesPluginBindingFlutterAssetManager.list("test/path");
       verify(mockAssetManager).list("test/path");
       assertArrayEquals(new String[] {"index.html", "styles.css"}, actualFilePaths);
-    } catch(IOException ex) {
+    } catch (IOException ex) {
       fail();
     }
   }

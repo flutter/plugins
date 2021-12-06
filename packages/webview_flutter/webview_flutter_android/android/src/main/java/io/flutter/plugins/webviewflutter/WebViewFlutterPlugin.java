@@ -64,8 +64,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
             registrar.activity(),
             registrar.view(),
             new FlutterAssetManager.RegistrarFlutterAssetManager(
-                registrar.context().getAssets(),
-                registrar));
+                registrar.context().getAssets(), registrar));
     new FlutterCookieManager(registrar.messenger());
   }
 
@@ -117,8 +116,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
         new WebSettingsHostApiImpl(
             instanceManager, new WebSettingsHostApiImpl.WebSettingsCreator()));
     FlutterAssetManagerHostApi.setup(
-        binaryMessenger,
-        new FlutterAssetManagerHostApiImpl(flutterAssetManager));
+        binaryMessenger, new FlutterAssetManagerHostApiImpl(flutterAssetManager));
   }
 
   @Override
@@ -130,8 +128,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
         binding.getApplicationContext(),
         null,
         new FlutterAssetManager.PluginBindingFlutterAssetManager(
-            binding.getApplicationContext().getAssets(),
-            binding.getFlutterAssets()));
+            binding.getApplicationContext().getAssets(), binding.getFlutterAssets()));
   }
 
   @Override

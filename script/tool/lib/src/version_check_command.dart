@@ -463,10 +463,8 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
   }
 
   Pubspec? _tryParsePubspec(RepositoryPackage package) {
-    final File pubspecFile = package.pubspecFile;
-
     try {
-      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      final Pubspec pubspec = package.parsePubspec();
       return pubspec;
     } on Exception catch (exception) {
       printError('${indentation}Failed to parse `pubspec.yaml`: $exception}');

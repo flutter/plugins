@@ -24,24 +24,25 @@ public class RegistrarFlutterAssetManagerTest {
   @Mock Registrar mockRegistrar;
 
   RegistrarFlutterAssetManager testRegistrarFlutterAssetManager;
-  
+
   @Before
   public void setUp() {
     mockAssetManager = mock(AssetManager.class);
     mockRegistrar = mock(Registrar.class);
 
-    testRegistrarFlutterAssetManager = new RegistrarFlutterAssetManager(mockAssetManager, mockRegistrar);
+    testRegistrarFlutterAssetManager =
+        new RegistrarFlutterAssetManager(mockAssetManager, mockRegistrar);
   }
 
   @Test
   public void list() {
     try {
       when(mockAssetManager.list("test/path"))
-          .thenReturn(new String[]{"index.html", "styles.css"});
+          .thenReturn(new String[] {"index.html", "styles.css"});
       String[] actualFilePaths = testRegistrarFlutterAssetManager.list("test/path");
       verify(mockAssetManager).list("test/path");
       assertArrayEquals(new String[] {"index.html", "styles.css"}, actualFilePaths);
-    } catch(IOException ex) {
+    } catch (IOException ex) {
       fail();
     }
   }

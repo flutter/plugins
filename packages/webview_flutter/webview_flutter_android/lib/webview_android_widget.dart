@@ -5,11 +5,9 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart' as android_webview;
-import 'src/android_webview.pigeon.dart';
 
 /// Creates a [Widget] with a [android_webview.WebView].
 class WebViewAndroidWidget extends StatefulWidget {
@@ -100,7 +98,8 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
-    @visibleForTesting this.flutterAssetManager = const android_webview.FlutterAssetManager(),
+    @visibleForTesting
+        this.flutterAssetManager = const android_webview.FlutterAssetManager(),
   })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
         super(callbacksHandler) {
     webView = webViewProxy.createWebView(

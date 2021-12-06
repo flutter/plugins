@@ -1,3 +1,7 @@
+## 2.5.0
+
+* Adds implementation of the `loadFlutterAsset` method from the platform interface.
+
 ## 2.4.0
 
 * Adds support for Android's `WebView.loadData` and `WebView.loadDataWithBaseUrl` methods and implements the `loadFile` and `loadHtmlString` methods from the platform interface.
