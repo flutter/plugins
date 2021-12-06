@@ -43,6 +43,18 @@ public class FlutterAssetManagerHostApiImplTest {
     }
   }
 
+  @Test
+  public void list_returns_empty_list_when_no_results() {
+    try {
+      when(mockFlutterAssetManager.list("test/path")).thenReturn(null);
+      List<String> actualFilePaths = testFlutterAssetManagerHostApiImpl.list("test/path");
+      verify(mockFlutterAssetManager).list("test/path");
+      assertArrayEquals(new String[] {}, actualFilePaths.toArray());
+    } catch (IOException ex) {
+      fail();
+    }
+  }
+
   @Test(expected = RuntimeException.class)
   public void list_should_convert_io_exception_to_runtime_exception() {
     try {

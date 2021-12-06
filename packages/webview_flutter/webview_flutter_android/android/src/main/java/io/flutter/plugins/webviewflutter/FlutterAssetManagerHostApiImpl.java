@@ -7,6 +7,7 @@ package io.flutter.plugins.webviewflutter;
 import android.webkit.WebView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FlutterAssetManagerHostApi;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +28,11 @@ public class FlutterAssetManagerHostApiImpl implements FlutterAssetManagerHostAp
   public List<String> list(String path) {
     try {
       String[] paths = flutterAssetManager.list(path);
+
+      if (paths == null) {
+        return new ArrayList<>();
+      }
+
       return Arrays.asList(paths);
     } catch (IOException ex) {
       throw new RuntimeException(ex.getMessage());
