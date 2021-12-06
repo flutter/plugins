@@ -1,6 +1,6 @@
 ## 0.2.2
 
-* Fix `PurchaseStatus` return `error` when user upgrades subscription by deferred proration mode.
+* Fixes the `purchaseStream` incorrectly reporting `PurchaseStatus.error` when user upgrades subscription by deferred proration mode.
 
 ## 0.2.1
 
