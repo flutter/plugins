@@ -1,3 +1,9 @@
+## 5.0.0
+
+* **BREAKING CHANGES**:
+  * Updates to extending `PlatformInterface`. Removes `isMock`, in favor of the
+    now-standard `MockPlatformInterfaceMixin`.
+
 ## 4.2.0
 
 * Add `contentUri` to `DataSourceType`.
