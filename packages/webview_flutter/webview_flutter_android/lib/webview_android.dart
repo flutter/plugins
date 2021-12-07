@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart';
@@ -66,6 +65,11 @@ class AndroidWebView implements WebViewPlatform {
   }
 
   @override
-  Future<bool> clearCookies() =>
-      WebViewCookieManagerPlatform.instance!.clearCookies();
+  Future<bool> clearCookies() {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      throw Exception(
+          'Could not clear cookies as no implementation for WebViewCookieManagerPlatform has been registered.');
+    }
+    return WebViewCookieManagerPlatform.instance!.clearCookies();
+  }
 }

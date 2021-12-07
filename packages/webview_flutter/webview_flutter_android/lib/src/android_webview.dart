@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
@@ -67,6 +70,95 @@ class WebView {
     return api.setWebContentsDebuggingEnabled(enabled);
   }
 
+  /// Loads the given data into this WebView using a 'data' scheme URL.
+  ///
+  /// Note that JavaScript's same origin policy means that script running in a
+  /// page loaded using this method will be unable to access content loaded
+  /// using any scheme other than 'data', including 'http(s)'. To avoid this
+  /// restriction, use [loadDataWithBaseURL()] with an appropriate base URL.
+  ///
+  /// The [encoding] parameter specifies whether the data is base64 or URL
+  /// encoded. If the data is base64 encoded, the value of the encoding
+  /// parameter must be `'base64'`. HTML can be encoded with
+  /// `base64.encode(bytes)` like so:
+  /// ```dart
+  /// import 'dart:convert';
+  ///
+  /// final unencodedHtml = '''
+  ///   <html><body>'%28' is the code for '('</body></html>
+  /// ''';
+  /// final encodedHtml = base64.encode(utf8.encode(unencodedHtml));
+  /// print(encodedHtml);
+  /// ```
+  ///
+  /// The [mimeType] parameter specifies the format of the data. If WebView
+  /// can't handle the specified MIME type, it will download the data. If
+  /// `null`, defaults to 'text/html'.
+  Future<void> loadData({
+    required String data,
+    String? mimeType,
+    String? encoding,
+  }) {
+    return api.loadDataFromInstance(
+      this,
+      data,
+      mimeType ?? _nullStringIdentifier,
+      encoding ?? _nullStringIdentifier,
+    );
+  }
+
+  /// Loads the given data into this WebView.
+  ///
+  /// The [baseUrl] is used as base URL for the content. It is used  both to
+  /// resolve relative URLs and when applying JavaScript's same origin policy.
+  ///
+  /// The [historyUrl] is used for the history entry.
+  ///
+  /// The [mimeType] parameter specifies the format of the data. If WebView
+  /// can't handle the specified MIME type, it will download the data. If
+  /// `null`, defaults to 'text/html'.
+  ///
+  /// Note that content specified in this way can access local device files (via
+  /// 'file' scheme URLs) only if baseUrl specifies a scheme other than 'http',
+  /// 'https', 'ftp', 'ftps', 'about' or 'javascript'.
+  ///
+  /// If the base URL uses the data scheme, this method is equivalent to calling
+  /// [loadData] and the [historyUrl] is ignored, and the data will be treated
+  /// as part of a data: URL, including the requirement that the content be
+  /// URL-encoded or base64 encoded. If the base URL uses any other scheme, then
+  /// the data will be loaded into the WebView as a plain string (i.e. not part
+  /// of a data URL) and any URL-encoded entities in the string will not be
+  /// decoded.
+  ///
+  /// Note that the [baseUrl] is sent in the 'Referer' HTTP header when
+  /// requesting subresources (images, etc.) of the page loaded using this
+  /// method.
+  ///
+  /// If a valid HTTP or HTTPS base URL is not specified in [baseUrl], then
+  /// content loaded using this method will have a `window.origin` value of
+  /// `"null"`. This must not be considered to be a trusted origin by the
+  /// application or by any JavaScript code running inside the WebView (for
+  /// example, event sources in DOM event handlers or web messages), because
+  /// malicious content can also create frames with a null origin. If you need
+  /// to identify the main frame's origin in a trustworthy way, you should use a
+  /// valid HTTP or HTTPS base URL to set the origin.
+  Future<void> loadDataWithBaseUrl({
+    String? baseUrl,
+    required String data,
+    String? mimeType,
+    String? encoding,
+    String? historyUrl,
+  }) {
+    return api.loadDataWithBaseUrlFromInstance(
+      this,
+      baseUrl ?? _nullStringIdentifier,
+      data,
+      mimeType ?? _nullStringIdentifier,
+      encoding ?? _nullStringIdentifier,
+      historyUrl ?? _nullStringIdentifier,
+    );
+  }
+
   /// Loads the given URL with additional HTTP headers, specified as a map from name to value.
   ///
   /// Note that if this map contains any of the headers that are set by default
@@ -76,6 +168,13 @@ class WebView {
   /// Also see compatibility note on [evaluateJavascript].
   Future<void> loadUrl(String url, Map<String, String> headers) {
     return api.loadUrlFromInstance(this, url, headers);
+  }
+
+  /// Loads the URL with postData using "POST" method into this WebView.
+  ///
+  /// If url is not a network URL, it will be loaded with [loadUrl] instead, ignoring the postData param.
+  Future<void> postUrl(String url, Uint8List data) {
+    return api.postUrlFromInstance(this, url, data);
   }
 
   /// Gets the URL for the current page.
@@ -261,6 +360,11 @@ class WebView {
     return api.setWebChromeClientFromInstance(this, client);
   }
 
+  /// Sets the background color of this WebView.
+  Future<void> setBackgroundColor(Color color) {
+    return api.setBackgroundColorFromInstance(this, color.value);
+  }
+
   /// Releases all resources used by the [WebView].
   ///
   /// Any methods called after [release] will throw an exception.
@@ -277,6 +381,7 @@ class CookieManager {
 
   static CookieManager? _instance;
 
+  /// Gets the globally set CookieManager instance.
   static CookieManager get instance => _instance ??= CookieManager._();
 
   /// Setter for the singleton value, for testing purposes only.
@@ -308,6 +413,8 @@ class CookieManager {
   Future<void> setCookie(String url, String value) => api.setCookie(url, value);
 
   /// Removes all cookies.
+  ///
+  /// The returned future resolves to true if any cookies were removed.
   Future<bool> clearCookies() => api.clearCookies();
 }
 
@@ -714,4 +821,24 @@ class WebResourceError {
 
   /// Describes the error.
   final String description;
+}
+
+/// Manages Flutter assets that are part of Android's app bundle.
+class FlutterAssetManager {
+  /// Constructs the [FlutterAssetManager].
+  const FlutterAssetManager();
+
+  /// Pigeon Host Api implementation for [FlutterAssetManager].
+  @visibleForTesting
+  static FlutterAssetManagerHostApi api = FlutterAssetManagerHostApi();
+
+  /// Lists all assets at the given path.
+  ///
+  /// The assets are returned as a `List<String>`. The `List<String>` only
+  /// contains files which are direct childs
+  Future<List<String?>> list(String path) => api.list(path);
+
+  /// Gets the relative file path to the Flutter asset with the given name.
+  Future<String> getAssetFilePathByName(String name) =>
+      api.getAssetFilePathByName(name);
 }

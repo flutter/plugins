@@ -353,9 +353,39 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
+  public void loadData(Long instanceId, String data, String mimeType, String encoding) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.loadData(
+        data, parseNullStringIdentifier(mimeType), parseNullStringIdentifier(encoding));
+  }
+
+  @Override
+  public void loadDataWithBaseUrl(
+      Long instanceId,
+      String baseUrl,
+      String data,
+      String mimeType,
+      String encoding,
+      String historyUrl) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.loadDataWithBaseURL(
+        parseNullStringIdentifier(baseUrl),
+        data,
+        parseNullStringIdentifier(mimeType),
+        parseNullStringIdentifier(encoding),
+        parseNullStringIdentifier(historyUrl));
+  }
+
+  @Override
   public void loadUrl(Long instanceId, String url, Map<String, String> headers) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.loadUrl(url, headers);
+  }
+
+  @Override
+  public void postUrl(Long instanceId, String url, byte[] data) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.postUrl(url, data);
   }
 
   @Override
@@ -476,5 +506,20 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
+  }
+
+  @Override
+  public void setBackgroundColor(Long instanceId, Long color) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.setBackgroundColor(color.intValue());
+  }
+
+  @Nullable
+  private static String parseNullStringIdentifier(String value) {
+    if (value.equals(nullStringIdentifier)) {
+      return null;
+    }
+
+    return value;
   }
 }

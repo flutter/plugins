@@ -23,6 +23,7 @@ import 'android_webview_test.mocks.dart';
   TestWebSettingsHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
+  TestAssetManagerHostApi,
   WebChromeClient,
   WebView,
   WebViewClient,
@@ -57,6 +58,61 @@ void main() {
       test('setWebContentsDebuggingEnabled', () {
         WebView.setWebContentsDebuggingEnabled(true);
         verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+      });
+
+      test('loadData', () {
+        webView.loadData(
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+        );
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          'text/plain',
+          'base64',
+        ));
+      });
+
+      test('loadData with null values', () {
+        webView.loadData(data: 'hello', mimeType: null, encoding: null);
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          '<null-value>',
+          '<null-value>',
+        ));
+      });
+
+      test('loadDataWithBaseUrl', () {
+        webView.loadDataWithBaseUrl(
+          baseUrl: 'https://base.url',
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+          historyUrl: 'https://history.url',
+        );
+
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          'https://base.url',
+          'hello',
+          'text/plain',
+          'base64',
+          'https://history.url',
+        ));
+      });
+
+      test('loadDataWithBaseUrl with null values', () {
+        webView.loadDataWithBaseUrl(data: 'hello');
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          '<null-value>',
+          'hello',
+          '<null-value>',
+          '<null-value>',
+          '<null-value>',
+        ));
       });
 
       test('loadUrl', () {

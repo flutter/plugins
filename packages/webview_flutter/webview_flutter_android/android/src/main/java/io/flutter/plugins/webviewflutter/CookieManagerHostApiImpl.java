@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Build;
@@ -7,11 +11,13 @@ class CookieManagerHostApiImpl implements GeneratedAndroidWebView.CookieManagerH
   @Override
   public void clearCookies(GeneratedAndroidWebView.Result<Boolean> result) {
     CookieManager cookieManager = CookieManager.getInstance();
-    final boolean hasCookies = cookieManager.hasCookies();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      cookieManager.removeAllCookies(value -> result.success(hasCookies));
+      cookieManager.removeAllCookies(result::success);
     } else {
-      cookieManager.removeAllCookie();
+      final boolean hasCookies = cookieManager.hasCookies();
+      if (hasCookies) {
+        cookieManager.removeAllCookie();
+      }
       result.success(hasCookies);
     }
   }

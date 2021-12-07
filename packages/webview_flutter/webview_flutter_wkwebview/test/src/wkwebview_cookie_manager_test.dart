@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/wkwebview_cookie_manager.dart';
 
-main() {
+void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const MethodChannel cookieChannel =
       MethodChannel('plugins.flutter.io/cookie_manager');
@@ -52,7 +52,7 @@ main() {
       <Matcher>[
         isMethodCall(
           'setCookie',
-          arguments: {
+          arguments: <String, String>{
             'name': 'foo',
             'value': 'bar',
             'domain': 'flutter.dev',
