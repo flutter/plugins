@@ -131,6 +131,40 @@ void main() {
     expect(() => controller!.loadFile(''), throwsAssertionError);
   });
 
+  testWidgets('Load Flutter asset', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadFlutterAsset('assets/index.html');
+
+    verify(mockWebViewPlatformController.loadFlutterAsset(
+      'assets/index.html',
+    ));
+  });
+
+  testWidgets('Load Flutter asset with empty key', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadFlutterAsset(''), throwsAssertionError);
+  });
+
   testWidgets('Load HTML string without base URL', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
