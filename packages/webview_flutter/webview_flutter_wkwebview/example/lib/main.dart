@@ -89,6 +89,11 @@ class _WebViewExampleState extends State<_WebViewExample> {
       Completer<WebViewController>();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF4CAF50),
@@ -104,7 +109,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialUrl: 'https://flutter.dev/',
           onWebViewCreated: (WebViewController controller) {
             _controller.complete(controller);
           },
@@ -169,6 +174,7 @@ enum _MenuOptions {
   loadLocalFile,
   loadHtmlString,
   doPostRequest,
+  setCookie,
   transparentBackground,
 }
 
@@ -217,6 +223,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.doPostRequest:
                 _onDoPostRequest(controller.data!, context);
                 break;
+              case _MenuOptions.setCookie:
+                _onSetCookie(controller.data!, context);
+                break;
               case _MenuOptions.transparentBackground:
                 _onTransparentBackground(controller.data!, context);
                 break;
@@ -263,6 +272,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.doPostRequest,
               child: Text('Post Request'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.setCookie,
+              child: Text('Set Cookie'),
             ),
             const PopupMenuItem<_MenuOptions>(
               key: ValueKey<String>('ShowTransparentBackgroundExample'),
@@ -363,6 +376,15 @@ class _SampleMenu extends StatelessWidget {
       body: Uint8List.fromList('Test Body'.codeUnits),
     );
     await controller.loadRequest(request);
+  }
+
+  Future<void> _onSetCookie(
+      WebViewController controller, BuildContext context) async {
+    await WebViewCookieManager.instance.setCookie(
+      const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
+    );
+    await controller.loadUrl('https://httpbin.org/anything');
   }
 
   Widget _getCookieList(String cookies) {

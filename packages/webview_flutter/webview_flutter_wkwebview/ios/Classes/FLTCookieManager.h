@@ -9,6 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTCookieManager : NSObject <FlutterPlugin>
 
++ (FLTCookieManager*)instance;
+
+- (void)setCookiesForData:(NSArray<NSDictionary*>*)cookies;
+
+- (void)setCookieForData:(NSDictionary*)cookie;
+
 @end
 
 NS_ASSUME_NONNULL_END

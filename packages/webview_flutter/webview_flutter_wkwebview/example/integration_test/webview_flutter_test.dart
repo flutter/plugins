@@ -1161,16 +1161,7 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return _runJavascriptReturningResult(controller, 'navigator.userAgent;');
-}
-
-Future<String> _runJavascriptReturningResult(
-    WebViewController controller, String js) async {
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.runJavascriptReturningResult(js);
-  }
-  return jsonDecode(await controller.runJavascriptReturningResult(js))
-      as String;
+  return await controller.runJavascriptReturningResult('navigator.userAgent;');
 }
 
 class ResizableWebView extends StatefulWidget {
