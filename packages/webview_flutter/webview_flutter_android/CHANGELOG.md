@@ -1,3 +1,7 @@
+## 2.8.0
+
+* Implements new cookie manager for setting cookies and providing initial cookies.
+
 ## 2.7.0
 
 * Adds support for the `loadRequest` method from the platform interface.

@@ -6,14 +6,15 @@
 // in webview_flutter_android/test/android_webview_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i5;
-import 'dart:typed_data' as _i4;
-import 'dart:ui' as _i6;
+import 'dart:async' as _i4;
+import 'dart:typed_data' as _i6;
+import 'dart:ui' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
+import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
 
-import 'android_webview.pigeon.dart' as _i3;
+import 'android_webview.pigeon.dart' as _i5;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -25,6 +26,28 @@ import 'android_webview.pigeon.dart' as _i3;
 // ignore_for_file: camel_case_types
 
 class _FakeWebSettings_0 extends _i1.Fake implements _i2.WebSettings {}
+
+/// A class which mocks [CookieManagerHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCookieManagerHostApi extends _i1.Mock
+    implements _i3.CookieManagerHostApi {
+  MockCookieManagerHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<bool> clearCookies() =>
+      (super.noSuchMethod(Invocation.method(#clearCookies, []),
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+  @override
+  _i4.Future<void> setCookie(String? arg_url, String? arg_value) =>
+      (super.noSuchMethod(Invocation.method(#setCookie, [arg_url, arg_value]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  String toString() => super.toString();
+}
 
 /// A class which mocks [DownloadListener].
 ///
@@ -69,7 +92,7 @@ class MockJavaScriptChannel extends _i1.Mock implements _i2.JavaScriptChannel {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestDownloadListenerHostApi extends _i1.Mock
-    implements _i3.TestDownloadListenerHostApi {
+    implements _i5.TestDownloadListenerHostApi {
   MockTestDownloadListenerHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -86,7 +109,7 @@ class MockTestDownloadListenerHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestJavaScriptChannelHostApi extends _i1.Mock
-    implements _i3.TestJavaScriptChannelHostApi {
+    implements _i5.TestJavaScriptChannelHostApi {
   MockTestJavaScriptChannelHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -103,7 +126,7 @@ class MockTestJavaScriptChannelHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebChromeClientHostApi extends _i1.Mock
-    implements _i3.TestWebChromeClientHostApi {
+    implements _i5.TestWebChromeClientHostApi {
   MockTestWebChromeClientHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -121,7 +144,7 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebSettingsHostApi extends _i1.Mock
-    implements _i3.TestWebSettingsHostApi {
+    implements _i5.TestWebSettingsHostApi {
   MockTestWebSettingsHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -195,7 +218,7 @@ class MockTestWebSettingsHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebViewClientHostApi extends _i1.Mock
-    implements _i3.TestWebViewClientHostApi {
+    implements _i5.TestWebViewClientHostApi {
   MockTestWebViewClientHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -213,7 +236,7 @@ class MockTestWebViewClientHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebViewHostApi extends _i1.Mock
-    implements _i3.TestWebViewHostApi {
+    implements _i5.TestWebViewHostApi {
   MockTestWebViewHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -246,7 +269,7 @@ class MockTestWebViewHostApi extends _i1.Mock
           Invocation.method(#loadUrl, [instanceId, url, headers]),
           returnValueForMissingStub: null);
   @override
-  void postUrl(int? instanceId, String? url, _i4.Uint8List? data) =>
+  void postUrl(int? instanceId, String? url, _i6.Uint8List? data) =>
       super.noSuchMethod(Invocation.method(#postUrl, [instanceId, url, data]),
           returnValueForMissingStub: null);
   @override
@@ -279,12 +302,12 @@ class MockTestWebViewHostApi extends _i1.Mock
           Invocation.method(#clearCache, [instanceId, includeDiskFiles]),
           returnValueForMissingStub: null);
   @override
-  _i5.Future<String> evaluateJavascript(
+  _i4.Future<String> evaluateJavascript(
           int? instanceId, String? javascriptString) =>
       (super.noSuchMethod(
           Invocation.method(
               #evaluateJavascript, [instanceId, javascriptString]),
-          returnValue: Future<String>.value('')) as _i5.Future<String>);
+          returnValue: Future<String>.value('')) as _i4.Future<String>);
   @override
   String getTitle(int? instanceId) =>
       (super.noSuchMethod(Invocation.method(#getTitle, [instanceId]),
@@ -353,7 +376,7 @@ class MockTestWebViewHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestAssetManagerHostApi extends _i1.Mock
-    implements _i3.TestAssetManagerHostApi {
+    implements _i5.TestAssetManagerHostApi {
   MockTestAssetManagerHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -403,15 +426,15 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
       (super.noSuchMethod(Invocation.getter(#settings),
           returnValue: _FakeWebSettings_0()) as _i2.WebSettings);
   @override
-  _i5.Future<void> loadData(
+  _i4.Future<void> loadData(
           {String? data, String? mimeType, String? encoding}) =>
       (super.noSuchMethod(
           Invocation.method(#loadData, [],
               {#data: data, #mimeType: mimeType, #encoding: encoding}),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> loadDataWithBaseUrl(
+  _i4.Future<void> loadDataWithBaseUrl(
           {String? baseUrl,
           String? data,
           String? mimeType,
@@ -426,114 +449,114 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
             #historyUrl: historyUrl
           }),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> loadUrl(String? url, Map<String, String>? headers) =>
+  _i4.Future<void> loadUrl(String? url, Map<String, String>? headers) =>
       (super.noSuchMethod(Invocation.method(#loadUrl, [url, headers]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> postUrl(String? url, _i4.Uint8List? data) =>
+  _i4.Future<void> postUrl(String? url, _i6.Uint8List? data) =>
       (super.noSuchMethod(Invocation.method(#postUrl, [url, data]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<String?> getUrl() =>
+  _i4.Future<String?> getUrl() =>
       (super.noSuchMethod(Invocation.method(#getUrl, []),
-          returnValue: Future<String?>.value()) as _i5.Future<String?>);
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
   @override
-  _i5.Future<bool> canGoBack() =>
+  _i4.Future<bool> canGoBack() =>
       (super.noSuchMethod(Invocation.method(#canGoBack, []),
-          returnValue: Future<bool>.value(false)) as _i5.Future<bool>);
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
   @override
-  _i5.Future<bool> canGoForward() =>
+  _i4.Future<bool> canGoForward() =>
       (super.noSuchMethod(Invocation.method(#canGoForward, []),
-          returnValue: Future<bool>.value(false)) as _i5.Future<bool>);
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
   @override
-  _i5.Future<void> goBack() =>
+  _i4.Future<void> goBack() =>
       (super.noSuchMethod(Invocation.method(#goBack, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> goForward() =>
+  _i4.Future<void> goForward() =>
       (super.noSuchMethod(Invocation.method(#goForward, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> reload() =>
+  _i4.Future<void> reload() =>
       (super.noSuchMethod(Invocation.method(#reload, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> clearCache(bool? includeDiskFiles) =>
+  _i4.Future<void> clearCache(bool? includeDiskFiles) =>
       (super.noSuchMethod(Invocation.method(#clearCache, [includeDiskFiles]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<String?> evaluateJavascript(String? javascriptString) => (super
+  _i4.Future<String?> evaluateJavascript(String? javascriptString) => (super
       .noSuchMethod(Invocation.method(#evaluateJavascript, [javascriptString]),
-          returnValue: Future<String?>.value()) as _i5.Future<String?>);
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
   @override
-  _i5.Future<String?> getTitle() =>
+  _i4.Future<String?> getTitle() =>
       (super.noSuchMethod(Invocation.method(#getTitle, []),
-          returnValue: Future<String?>.value()) as _i5.Future<String?>);
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
   @override
-  _i5.Future<void> scrollTo(int? x, int? y) =>
+  _i4.Future<void> scrollTo(int? x, int? y) =>
       (super.noSuchMethod(Invocation.method(#scrollTo, [x, y]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> scrollBy(int? x, int? y) =>
+  _i4.Future<void> scrollBy(int? x, int? y) =>
       (super.noSuchMethod(Invocation.method(#scrollBy, [x, y]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<int> getScrollX() =>
+  _i4.Future<int> getScrollX() =>
       (super.noSuchMethod(Invocation.method(#getScrollX, []),
-          returnValue: Future<int>.value(0)) as _i5.Future<int>);
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
   @override
-  _i5.Future<int> getScrollY() =>
+  _i4.Future<int> getScrollY() =>
       (super.noSuchMethod(Invocation.method(#getScrollY, []),
-          returnValue: Future<int>.value(0)) as _i5.Future<int>);
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
   @override
-  _i5.Future<void> setWebViewClient(_i2.WebViewClient? webViewClient) =>
+  _i4.Future<void> setWebViewClient(_i2.WebViewClient? webViewClient) =>
       (super.noSuchMethod(Invocation.method(#setWebViewClient, [webViewClient]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> addJavaScriptChannel(
+  _i4.Future<void> addJavaScriptChannel(
           _i2.JavaScriptChannel? javaScriptChannel) =>
       (super.noSuchMethod(
           Invocation.method(#addJavaScriptChannel, [javaScriptChannel]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> removeJavaScriptChannel(
+  _i4.Future<void> removeJavaScriptChannel(
           _i2.JavaScriptChannel? javaScriptChannel) =>
       (super.noSuchMethod(
           Invocation.method(#removeJavaScriptChannel, [javaScriptChannel]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> setDownloadListener(_i2.DownloadListener? listener) =>
+  _i4.Future<void> setDownloadListener(_i2.DownloadListener? listener) =>
       (super.noSuchMethod(Invocation.method(#setDownloadListener, [listener]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> setWebChromeClient(_i2.WebChromeClient? client) =>
+  _i4.Future<void> setWebChromeClient(_i2.WebChromeClient? client) =>
       (super.noSuchMethod(Invocation.method(#setWebChromeClient, [client]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> setBackgroundColor(_i6.Color? color) =>
+  _i4.Future<void> setBackgroundColor(_i7.Color? color) =>
       (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i5.Future<void> release() =>
+  _i4.Future<void> release() =>
       (super.noSuchMethod(Invocation.method(#release, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   String toString() => super.toString();
 }

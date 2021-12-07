@@ -162,6 +162,94 @@ public class GeneratedAndroidWebView {
     void error(Throwable error);
   }
 
+  private static class CookieManagerHostApiCodec extends StandardMessageCodec {
+    public static final CookieManagerHostApiCodec INSTANCE = new CookieManagerHostApiCodec();
+
+    private CookieManagerHostApiCodec() {}
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface CookieManagerHostApi {
+    void clearCookies(Result<Boolean> result);
+
+    void setCookie(String url, String value);
+
+    /** The codec used by CookieManagerHostApi. */
+    static MessageCodec<Object> getCodec() {
+      return CookieManagerHostApiCodec.INSTANCE;
+    }
+
+    /**
+     * Sets up an instance of `CookieManagerHostApi` to handle messages through the
+     * `binaryMessenger`.
+     */
+    static void setup(BinaryMessenger binaryMessenger, CookieManagerHostApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.CookieManagerHostApi.clearCookies",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  Result<Boolean> resultCallback =
+                      new Result<Boolean>() {
+                        public void success(Boolean result) {
+                          wrapped.put("result", result);
+                          reply.reply(wrapped);
+                        }
+
+                        public void error(Throwable error) {
+                          wrapped.put("error", wrapError(error));
+                          reply.reply(wrapped);
+                        }
+                      };
+
+                  api.clearCookies(resultCallback);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                  reply.reply(wrapped);
+                }
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CookieManagerHostApi.setCookie", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  String urlArg = (String) args.get(0);
+                  if (urlArg == null) {
+                    throw new NullPointerException("urlArg unexpectedly null.");
+                  }
+                  String valueArg = (String) args.get(1);
+                  if (valueArg == null) {
+                    throw new NullPointerException("valueArg unexpectedly null.");
+                  }
+                  api.setCookie(urlArg, valueArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
   private static class WebViewHostApiCodec extends StandardMessageCodec {
     public static final WebViewHostApiCodec INSTANCE = new WebViewHostApiCodec();
 

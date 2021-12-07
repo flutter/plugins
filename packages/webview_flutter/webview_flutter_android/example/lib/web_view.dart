@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'navigation_decision.dart';
@@ -61,6 +63,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -103,6 +106,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The initial cookies to set.
+  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -295,6 +301,7 @@ class _WebViewState extends State<WebView> {
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
         backgroundColor: widget.backgroundColor,
+        cookies: widget.initialCookies,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
@@ -673,4 +680,22 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     userAgent: WebSetting<String?>.of(widget.userAgent),
     zoomEnabled: widget.zoomEnabled,
   );
+}
+
+/// App-facing cookie manager that exposes the correct platform implementation.
+class WebViewCookieManager extends WebViewCookieManagerPlatform {
+  WebViewCookieManager._();
+
+  /// Returns an instance of the cookie manager for the current platform.
+  static WebViewCookieManagerPlatform get instance {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      if (Platform.isAndroid) {
+        WebViewCookieManagerPlatform.instance = WebViewAndroidCookieManager();
+      } else {
+        throw AssertionError(
+            'This platform is currently unsupported for webview_flutter_android.');
+      }
+    }
+    return WebViewCookieManagerPlatform.instance!;
+  }
 }
