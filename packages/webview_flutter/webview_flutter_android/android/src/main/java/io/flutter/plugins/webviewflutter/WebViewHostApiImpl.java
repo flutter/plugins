@@ -502,6 +502,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
   }
 
+  @Override
+  public void setBackgroundColor(Long instanceId, Long color) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.setBackgroundColor(color.intValue());
+  }
+
   @Nullable
   private static String parseNullStringIdentifier(String value) {
     if (value.equals(nullStringIdentifier)) {

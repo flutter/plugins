@@ -71,6 +71,7 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
+    this.backgroundColor,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
@@ -232,6 +233,12 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// The background color of the [WebView].
+  ///
+  /// When `null` the platform's webview default background color is used. By
+  /// default [backgroundColor] is `null`.
+  final Color? backgroundColor;
+
   @override
   _WebViewState createState() => _WebViewState();
 }
@@ -284,6 +291,7 @@ class _WebViewState extends State<WebView> {
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
         cookies: widget.initialCookies,
+        backgroundColor: widget.backgroundColor,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
