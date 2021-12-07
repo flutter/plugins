@@ -29,6 +29,25 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
+const String kLocalExamplePage = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Load file or HTML string example</title>
+</head>
+<body>
+
+<h1>Local demo page</h1>
+<p>
+  This is an example page used to demonstrate how to load a local file or HTML 
+  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
+  webview</a> plugin.
+</p>
+
+</body>
+</html>
+''';
+
 const String kTransparentBackgroundPage = '''
   <!DOCTYPE html>
   <html>
@@ -48,25 +67,6 @@ const String kTransparentBackgroundPage = '''
     </div>
   </body>
   </html>
-''';
-
-const String kLocalExamplePage = '''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>Load file or HTML string example</title>
-</head>
-<body>
-
-<h1>Local demo page</h1>
-<p>
-  This is an example page used to demonstrate how to load a local file or HTML 
-  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
-  webview</a> plugin.
-</p>
-
-</body>
-</html>
 ''';
 
 class WebViewExample extends StatefulWidget {
@@ -176,9 +176,9 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
-  transparentBackground,
   loadLocalFile,
   loadHtmlString,
+  transparentBackground,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -218,14 +218,14 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
-              case MenuOptions.transparentBackground:
-                _onTransparentBackground(controller.data!, context);
-                break;
               case MenuOptions.loadLocalFile:
                 _onLoadLocalFileExample(controller.data!, context);
                 break;
               case MenuOptions.loadHtmlString:
                 _onLoadHtmlStringExample(controller.data!, context);
+                break;
+              case MenuOptions.transparentBackground:
+                _onTransparentBackground(controller.data!, context);
                 break;
             }
           },
@@ -260,17 +260,17 @@ class SampleMenu extends StatelessWidget {
               child: Text('Navigation Delegate example'),
             ),
             const PopupMenuItem<MenuOptions>(
-              key: ValueKey<String>('ShowTransparentBackgroundExample'),
-              value: MenuOptions.transparentBackground,
-              child: Text('Transparent background example'),
-            ),
-            const PopupMenuItem<MenuOptions>(
               value: MenuOptions.loadHtmlString,
               child: Text('Load HTML string'),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.loadLocalFile,
               child: Text('Load local file'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              key: ValueKey<String>('ShowTransparentBackgroundExample'),
+              value: MenuOptions.transparentBackground,
+              child: Text('Transparent background example'),
             ),
           ],
         );
@@ -348,13 +348,6 @@ class SampleMenu extends StatelessWidget {
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
-  Future<void> _onTransparentBackground(
-      WebViewController controller, BuildContext context) async {
-    final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
-    await controller.loadUrl('data:text/html;base64,$contentBase64');
-  }
-
   Future<void> _onLoadLocalFileExample(
       WebViewController controller, BuildContext context) async {
     final String pathToIndex = await _prepareLocalFile();
@@ -365,6 +358,11 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onLoadHtmlStringExample(
       WebViewController controller, BuildContext context) async {
     await controller.loadHtmlString(kLocalExamplePage);
+  }
+
+  Future<void> _onTransparentBackground(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 
   Widget _getCookieList(String cookies) {
