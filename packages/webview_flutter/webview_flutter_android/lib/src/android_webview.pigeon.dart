@@ -63,6 +63,72 @@ class WebResourceErrorData {
   }
 }
 
+class _CookieManagerHostApiCodec extends StandardMessageCodec {
+  const _CookieManagerHostApiCodec();
+}
+
+class CookieManagerHostApi {
+  /// Constructor for [CookieManagerHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  CookieManagerHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _CookieManagerHostApiCodec();
+
+  Future<bool> clearCookies() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CookieManagerHostApi.clearCookies', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return (replyMap['result'] as bool?)!;
+    }
+  }
+
+  Future<void> setCookie(String arg_url, String arg_value) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CookieManagerHostApi.setCookie', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object>[arg_url, arg_value]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
 class _WebViewHostApiCodec extends StandardMessageCodec {
   const _WebViewHostApiCodec();
 }

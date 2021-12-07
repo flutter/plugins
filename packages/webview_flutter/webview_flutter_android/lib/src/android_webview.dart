@@ -375,6 +375,49 @@ class WebView {
   }
 }
 
+/// Manages cookies globally for all webviews.
+class CookieManager {
+  CookieManager._();
+
+  static CookieManager? _instance;
+
+  /// Gets the globally set CookieManager instance.
+  static CookieManager get instance => _instance ??= CookieManager._();
+
+  /// Setter for the singleton value, for testing purposes only.
+  @visibleForTesting
+  static set instance(CookieManager value) => _instance = value;
+
+  /// Pigeon Host Api implementation for [CookieManager].
+  @visibleForTesting
+  static CookieManagerHostApi api = CookieManagerHostApi();
+
+  /// Sets a single cookie (key-value pair) for the given URL. Any existing
+  /// cookie with the same host, path and name will be replaced with the new
+  /// cookie. The cookie being set will be ignored if it is expired. To set
+  /// multiple cookies, your application should invoke this method multiple
+  /// times.
+  ///
+  /// The value parameter must follow the format of the Set-Cookie HTTP
+  /// response header defined by RFC6265bis. This is a key-value pair of the
+  /// form "key=value", optionally followed by a list of cookie attributes
+  /// delimited with semicolons (ex. "key=value; Max-Age=123"). Please consult
+  /// the RFC specification for a list of valid attributes.
+  ///
+  /// Note: if specifying a value containing the "Secure" attribute, url must
+  /// use the "https://" scheme.
+  ///
+  /// Params:
+  /// url – the URL for which the cookie is to be set
+  /// value – the cookie as a string, using the format of the 'Set-Cookie' HTTP response header
+  Future<void> setCookie(String url, String value) => api.setCookie(url, value);
+
+  /// Removes all cookies.
+  ///
+  /// The returned future resolves to true if any cookies were removed.
+  Future<bool> clearCookies() => api.clearCookies();
+}
+
 /// Manages settings state for a [WebView].
 ///
 /// When a WebView is first created, it obtains a set of default settings. These
