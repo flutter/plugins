@@ -11,11 +11,13 @@ class CookieManagerHostApiImpl implements GeneratedAndroidWebView.CookieManagerH
   @Override
   public void clearCookies(GeneratedAndroidWebView.Result<Boolean> result) {
     CookieManager cookieManager = CookieManager.getInstance();
-    final boolean hasCookies = cookieManager.hasCookies();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      cookieManager.removeAllCookies(value -> result.success(hasCookies));
+      cookieManager.removeAllCookies(result::success);
     } else {
-      cookieManager.removeAllCookie();
+      final boolean hasCookies = cookieManager.hasCookies();
+      if (hasCookies) {
+        cookieManager.removeAllCookie();
+      }
       result.success(hasCookies);
     }
   }

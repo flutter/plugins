@@ -398,6 +398,8 @@ class CookieManager {
   Future<void> setCookie(String url, String value) => api.setCookie(url, value);
 
   /// Removes all cookies.
+  ///
+  /// The returned future resolves to true if any cookies were removed.
   Future<bool> clearCookies() => api.clearCookies();
 }
 

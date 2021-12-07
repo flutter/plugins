@@ -158,6 +158,7 @@ enum _MenuOptions {
   navigationDelegate,
   loadLocalFile,
   loadHtmlString,
+  setCookie,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -201,6 +202,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.loadHtmlString:
                 _onLoadHtmlStringExample(controller.data!, context);
                 break;
+              case _MenuOptions.setCookie:
+                _onSetCookie(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -240,6 +244,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.loadLocalFile,
               child: Text('Load local file'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.setCookie,
+              child: Text('Set Cookie'),
             ),
           ],
         );
@@ -309,6 +317,15 @@ class _SampleMenu extends StatelessWidget {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(message),
     ));
+  }
+
+  Future<void> _onSetCookie(
+      WebViewController controller, BuildContext context) async {
+    await WebViewCookieManager.instance.setCookie(
+      const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
+    );
+    await controller.loadUrl('https://httpbin.org/anything');
   }
 
   Future<void> _onNavigationDelegateExample(
