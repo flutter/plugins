@@ -7,8 +7,7 @@
 // Do not manually edit this file.
 
 import 'dart:async' as _i4;
-import 'dart:typed_data' as _i6;
-import 'dart:ui' as _i7;
+import 'dart:ui' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
@@ -269,10 +268,6 @@ class MockTestWebViewHostApi extends _i1.Mock
           Invocation.method(#loadUrl, [instanceId, url, headers]),
           returnValueForMissingStub: null);
   @override
-  void postUrl(int? instanceId, String? url, _i6.Uint8List? data) =>
-      super.noSuchMethod(Invocation.method(#postUrl, [instanceId, url, data]),
-          returnValueForMissingStub: null);
-  @override
   String getUrl(int? instanceId) =>
       (super.noSuchMethod(Invocation.method(#getUrl, [instanceId]),
           returnValue: '') as String);
@@ -456,11 +451,6 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> postUrl(String? url, _i6.Uint8List? data) =>
-      (super.noSuchMethod(Invocation.method(#postUrl, [url, data]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
-  @override
   _i4.Future<String?> getUrl() =>
       (super.noSuchMethod(Invocation.method(#getUrl, []),
           returnValue: Future<String?>.value()) as _i4.Future<String?>);
@@ -548,7 +538,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> setBackgroundColor(_i7.Color? color) =>
+  _i4.Future<void> setBackgroundColor(_i6.Color? color) =>
       (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
