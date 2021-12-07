@@ -382,6 +382,14 @@ class WebViewController {
     return _webViewPlatformController.loadFile(absoluteFilePath);
   }
 
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// Throws an ArgumentError if [key] is not part of the specified assets
+  /// in the pubspec.yaml file.
+  Future<void> loadFlutterAsset(String key) {
+    return _webViewPlatformController.loadFlutterAsset(key);
+  }
+
   /// Loads the supplied HTML string.
   ///
   /// The [baseUrl] parameter is used when resolving relative URLs within the

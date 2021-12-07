@@ -1,6 +1,10 @@
-## 2.6.0
+## 2.7.0
 
 * Adds support for the `loadRequest` method from the platform interface.
+
+## 2.6.0
+
+* Adds implementation of the `loadFlutterAsset` method from the platform interface.
 
 ## 2.5.0
 
