@@ -87,6 +87,8 @@ abstract class WebViewHostApi {
   void setDownloadListener(int instanceId, int listenerInstanceId);
 
   void setWebChromeClient(int instanceId, int clientInstanceId);
+
+  void setBackgroundColor(int instanceId, int color);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
@@ -189,6 +191,13 @@ abstract class DownloadListenerFlutterApi {
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
 abstract class WebChromeClientHostApi {
   void create(int instanceId, int webViewClientInstanceId);
+}
+
+@HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
+abstract class FlutterAssetManagerHostApi {
+  List<String> list(String path);
+
+  String getAssetFilePathByName(String name);
 }
 
 @FlutterApi()

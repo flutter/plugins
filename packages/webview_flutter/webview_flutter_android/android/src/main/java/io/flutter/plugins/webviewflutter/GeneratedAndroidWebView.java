@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Generated class from Pigeon. */
@@ -222,6 +223,8 @@ public class GeneratedAndroidWebView {
     void setDownloadListener(Long instanceId, Long listenerInstanceId);
 
     void setWebChromeClient(Long instanceId, Long clientInstanceId);
+
+    void setBackgroundColor(Long instanceId, Long color);
 
     /** The codec used by WebViewHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -948,6 +951,37 @@ public class GeneratedAndroidWebView {
                   }
                   api.setWebChromeClient(
                       instanceIdArg.longValue(), clientInstanceIdArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.WebViewHostApi.setBackgroundColor",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  Number colorArg = (Number) args.get(1);
+                  if (colorArg == null) {
+                    throw new NullPointerException("colorArg unexpectedly null.");
+                  }
+                  api.setBackgroundColor(instanceIdArg.longValue(), colorArg.longValue());
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
@@ -1870,6 +1904,84 @@ public class GeneratedAndroidWebView {
                   }
                   api.create(instanceIdArg.longValue(), webViewClientInstanceIdArg.longValue());
                   wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class FlutterAssetManagerHostApiCodec extends StandardMessageCodec {
+    public static final FlutterAssetManagerHostApiCodec INSTANCE =
+        new FlutterAssetManagerHostApiCodec();
+
+    private FlutterAssetManagerHostApiCodec() {}
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface FlutterAssetManagerHostApi {
+    List<String> list(String path);
+
+    String getAssetFilePathByName(String name);
+
+    /** The codec used by FlutterAssetManagerHostApi. */
+    static MessageCodec<Object> getCodec() {
+      return FlutterAssetManagerHostApiCodec.INSTANCE;
+    }
+
+    /**
+     * Sets up an instance of `FlutterAssetManagerHostApi` to handle messages through the
+     * `binaryMessenger`.
+     */
+    static void setup(BinaryMessenger binaryMessenger, FlutterAssetManagerHostApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.FlutterAssetManagerHostApi.list", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  String pathArg = (String) args.get(0);
+                  if (pathArg == null) {
+                    throw new NullPointerException("pathArg unexpectedly null.");
+                  }
+                  List<String> output = api.list(pathArg);
+                  wrapped.put("result", output);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.FlutterAssetManagerHostApi.getAssetFilePathByName",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  String nameArg = (String) args.get(0);
+                  if (nameArg == null) {
+                    throw new NullPointerException("nameArg unexpectedly null.");
+                  }
+                  String output = api.getAssetFilePathByName(nameArg);
+                  wrapped.put("result", output);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }

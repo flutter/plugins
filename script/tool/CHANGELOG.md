@@ -10,6 +10,9 @@
   `--packages=path_provide_ios` now works.
 - `--run-on-changed-packages` now includes only the changed packages in a
   federated plugin, not all packages in that plugin.
+- Fix `federation-safety-check` handling of plugin deletion, and of top-level
+  files in unfederated plugins whose names match federated plugin heuristics
+  (e.g., `packages/foo/foo_android.iml`).
 
 ## 0.7.3
 
