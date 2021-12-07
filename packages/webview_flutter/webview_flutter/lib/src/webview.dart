@@ -746,8 +746,6 @@ class CookieManager {
 
   /// Clears all cookies for all [WebView] instances.
   ///
-  /// This is a no op on iOS versions below 9.
-  ///
   /// Returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() =>
       WebViewCookieManagerPlatform.instance!.clearCookies();
