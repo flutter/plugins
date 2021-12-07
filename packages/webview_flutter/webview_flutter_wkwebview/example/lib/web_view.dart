@@ -228,11 +228,10 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
-  /// The background color of the webview.
+  /// The background color of the [WebView].
   ///
-  /// When null the platform's webview default background color is used.
-  ///
-  /// By default `backgroundColor` is null.
+  /// When `null` the platform's webview default background color is used. By
+  /// default [backgroundColor] is `null`.
   final Color? backgroundColor;
 
   @override

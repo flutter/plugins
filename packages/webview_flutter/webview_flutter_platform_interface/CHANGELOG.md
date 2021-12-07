@@ -1,6 +1,14 @@
+## 1.8.0
+
+* Adds the `loadFlutterAsset` method to the platform interface.
+
 ## 1.7.0
 
 * Add an option to set the background color of the webview.
+
+## 1.6.1
+
+* Revert deprecation of `clearCookies` in WebViewPlatform for later deprecation.
 
 ## 1.6.0
 

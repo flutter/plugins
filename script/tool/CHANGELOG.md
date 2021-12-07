@@ -1,6 +1,13 @@
 ## NEXT
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+- Adds a `make-deps-path-based` command to convert inter-repo package
+  dependencies to path-based dependencies.
+- Adds a (hidden) `--run-on-dirty-packages` flag for use with
+  `make-deps-path-based` in CI.
+- Fix `federation-safety-check` handling of plugin deletion, and of top-level
+  files in unfederated plugins whose names match federated plugin heuristics
+  (e.g., `packages/foo/foo_android.iml`).
 
 ## 0.7.3
 

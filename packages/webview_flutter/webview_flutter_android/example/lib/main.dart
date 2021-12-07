@@ -66,24 +66,24 @@ const String kExamplePage = '''
 ''';
 
 const String kTransparentBackgroundPage = '''
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Transparent background test</title>
-  </head>
-  <style type="text/css">
-    body { background: transparent; margin: 0; padding: 0; }
-    #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
-    #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
-    p { text-align: center; }
-  </style>
-  <body>
-    <div id="container">
-      <p>Transparent background test</p>
-      <div id="shape"></div>
-    </div>
-  </body>
-  </html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transparent background test</title>
+</head>
+<style type="text/css">
+  body { background: transparent; margin: 0; padding: 0; }
+  #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+  #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
+  p { text-align: center; }
+</style>
+<body>
+  <div id="container">
+    <p>Transparent background test</p>
+    <div id="shape"></div>
+  </div>
+</body>
+</html>
 ''';
 
 class _WebViewExample extends StatefulWidget {
@@ -100,7 +100,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: const Color(0xFF4CAF50),
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -185,6 +185,7 @@ enum _MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  loadFlutterAsset,
   loadLocalFile,
   loadHtmlString,
   transparentBackground,
@@ -226,6 +227,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case _MenuOptions.loadFlutterAsset:
+                _onLoadFlutterAssetExample(controller.data!, context);
+                break;
               case _MenuOptions.loadLocalFile:
                 _onLoadLocalFileExample(controller.data!, context);
                 break;
@@ -266,6 +270,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.loadFlutterAsset,
+              child: Text('Load Flutter Asset'),
             ),
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.loadHtmlString,
@@ -357,6 +365,11 @@ class _SampleMenu extends StatelessWidget {
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
+  Future<void> _onLoadFlutterAssetExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadFlutterAsset('assets/www/index.html');
+  }
+
   Future<void> _onLoadLocalFileExample(
       WebViewController controller, BuildContext context) async {
     final String pathToIndex = await _prepareLocalFile();
@@ -395,9 +408,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onTransparentBackground(
       WebViewController controller, BuildContext context) async {
-    final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
-    await controller.loadUrl('data:text/html;base64,$contentBase64');
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 }
 

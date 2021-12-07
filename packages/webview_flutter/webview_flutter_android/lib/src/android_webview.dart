@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
+import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 
 // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
@@ -769,4 +770,24 @@ class WebResourceError {
 
   /// Describes the error.
   final String description;
+}
+
+/// Manages Flutter assets that are part of Android's app bundle.
+class FlutterAssetManager {
+  /// Constructs the [FlutterAssetManager].
+  const FlutterAssetManager();
+
+  /// Pigeon Host Api implementation for [FlutterAssetManager].
+  @visibleForTesting
+  static FlutterAssetManagerHostApi api = FlutterAssetManagerHostApi();
+
+  /// Lists all assets at the given path.
+  ///
+  /// The assets are returned as a `List<String>`. The `List<String>` only
+  /// contains files which are direct childs
+  Future<List<String?>> list(String path) => api.list(path);
+
+  /// Gets the relative file path to the Flutter asset with the given name.
+  Future<String> getAssetFilePathByName(String name) =>
+      api.getAssetFilePathByName(name);
 }
