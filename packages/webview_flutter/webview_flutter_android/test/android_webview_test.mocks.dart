@@ -8,6 +8,7 @@
 
 import 'dart:async' as _i5;
 import 'dart:typed_data' as _i4;
+import 'dart:ui' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
@@ -341,6 +342,31 @@ class MockTestWebViewHostApi extends _i1.Mock
               #setWebChromeClient, [instanceId, clientInstanceId]),
           returnValueForMissingStub: null);
   @override
+  void setBackgroundColor(int? instanceId, int? color) => super.noSuchMethod(
+      Invocation.method(#setBackgroundColor, [instanceId, color]),
+      returnValueForMissingStub: null);
+  @override
+  String toString() => super.toString();
+}
+
+/// A class which mocks [TestAssetManagerHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestAssetManagerHostApi extends _i1.Mock
+    implements _i3.TestAssetManagerHostApi {
+  MockTestAssetManagerHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  List<String?> list(String? path) =>
+      (super.noSuchMethod(Invocation.method(#list, [path]),
+          returnValue: <String?>[]) as List<String?>);
+  @override
+  String getAssetFilePathByName(String? name) =>
+      (super.noSuchMethod(Invocation.method(#getAssetFilePathByName, [name]),
+          returnValue: '') as String);
+  @override
   String toString() => super.toString();
 }
 
@@ -496,6 +522,11 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i5.Future<void> setWebChromeClient(_i2.WebChromeClient? client) =>
       (super.noSuchMethod(Invocation.method(#setWebChromeClient, [client]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<void> setBackgroundColor(_i6.Color? color) =>
+      (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override

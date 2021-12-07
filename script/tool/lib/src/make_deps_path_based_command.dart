@@ -196,19 +196,27 @@ dependency_overrides:
   Future<Set<String>> _getNonBreakingUpdatePackages() async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
     final String baseSha = await gitVersionFinder.getBaseSha();
-    print('Finding changed packages relative to "$baseSha"\n');
+    print('Finding changed packages relative to "$baseSha"...');
 
     final Set<String> changedPackages = <String>{};
-    for (final String path in await gitVersionFinder.getChangedFiles()) {
+    for (final String changedPath in await gitVersionFinder.getChangedFiles()) {
       // Git output always uses Posix paths.
-      final List<String> allComponents = p.posix.split(path);
+      final List<String> allComponents = p.posix.split(changedPath);
       // Only pubspec changes are potential publishing events.
       if (allComponents.last != 'pubspec.yaml' ||
           allComponents.contains('example')) {
         continue;
       }
       final RepositoryPackage package =
-          RepositoryPackage(packagesDir.fileSystem.file(path).parent);
+          RepositoryPackage(packagesDir.fileSystem.file(changedPath).parent);
+      // Ignored deleted packages, as they won't be published.
+      if (!package.pubspecFile.existsSync()) {
+        final String directoryName = p.posix.joinAll(path.split(path.relative(
+            package.directory.absolute.path,
+            from: packagesDir.path)));
+        print('  Skipping $directoryName; deleted.');
+        continue;
+      }
       final String packageName = package.parsePubspec().name;
       if (!await _hasNonBreakingVersionChange(package)) {
         // Log packages that had pubspec changes but weren't included for ease

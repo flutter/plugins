@@ -47,6 +47,7 @@ abstract class TestWebViewHostApi {
   void removeJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
   void setDownloadListener(int instanceId, int listenerInstanceId);
   void setWebChromeClient(int instanceId, int clientInstanceId);
+  void setBackgroundColor(int instanceId, int color);
   static void setup(TestWebViewHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -603,6 +604,28 @@ abstract class TestWebViewHostApi {
         });
       }
     }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebViewHostApi.setBackgroundColor', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setBackgroundColor was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setBackgroundColor was null, expected non-null int.');
+          final int? arg_color = (args[1] as int?);
+          assert(arg_color != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setBackgroundColor was null, expected non-null int.');
+          api.setBackgroundColor(arg_instanceId!, arg_color!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
   }
 }
 
@@ -1053,6 +1076,59 @@ abstract class TestWebChromeClientHostApi {
               'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null, expected non-null int.');
           api.create(arg_instanceId!, arg_webViewClientInstanceId!);
           return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestAssetManagerHostApiCodec extends StandardMessageCodec {
+  const _TestAssetManagerHostApiCodec();
+}
+
+abstract class TestAssetManagerHostApi {
+  static const MessageCodec<Object?> codec = _TestAssetManagerHostApiCodec();
+
+  List<String?> list(String path);
+  String getAssetFilePathByName(String name);
+  static void setup(TestAssetManagerHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.FlutterAssetManagerHostApi.list', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FlutterAssetManagerHostApi.list was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_path = (args[0] as String?);
+          assert(arg_path != null,
+              'Argument for dev.flutter.pigeon.FlutterAssetManagerHostApi.list was null, expected non-null String.');
+          final List<String?> output = api.list(arg_path!);
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.FlutterAssetManagerHostApi.getAssetFilePathByName',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FlutterAssetManagerHostApi.getAssetFilePathByName was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_name = (args[0] as String?);
+          assert(arg_name != null,
+              'Argument for dev.flutter.pigeon.FlutterAssetManagerHostApi.getAssetFilePathByName was null, expected non-null String.');
+          final String output = api.getAssetFilePathByName(arg_name!);
+          return <Object?, Object?>{'result': output};
         });
       }
     }

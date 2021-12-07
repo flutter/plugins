@@ -1,5 +1,10 @@
-## NEXT
+## 2.5.0
 
+* Adds an option to set the background color of the webview.
+
+## 2.4.0
+
+* Adds support for the `loadFile` and `loadHtmlString` methods.
 * Updates example app Android compileSdkVersion to 31.
 * Integration test fixes.
 * Updates code for new analysis options.
