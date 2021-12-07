@@ -180,6 +180,79 @@ void main() {
       expect(command.plugins, unorderedEquals(<String>[]));
     });
 
+    test(
+        'explicitly specifying the plugin (group) name of a federated plugin '
+        'should include all plugins in the group', () async {
+      processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
+        MockProcess(stdout: '''
+packages/plugin1/plugin1/plugin1.dart
+'''),
+      ];
+      final Directory pluginGroup = packagesDir.childDirectory('plugin1');
+      final Directory appFacingPackage =
+          createFakePlugin('plugin1', pluginGroup);
+      final Directory platformInterfacePackage =
+          createFakePlugin('plugin1_platform_interface', pluginGroup);
+      final Directory implementationPackage =
+          createFakePlugin('plugin1_web', pluginGroup);
+
+      await runCapturingPrint(
+          runner, <String>['sample', '--base-sha=main', '--packages=plugin1']);
+
+      expect(
+          command.plugins,
+          unorderedEquals(<String>[
+            appFacingPackage.path,
+            platformInterfacePackage.path,
+            implementationPackage.path
+          ]));
+    });
+
+    test(
+        'specifying the app-facing package of a federated plugin using its '
+        'fully qualified name should include only that package', () async {
+      processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
+        MockProcess(stdout: '''
+packages/plugin1/plugin1/plugin1.dart
+'''),
+      ];
+      final Directory pluginGroup = packagesDir.childDirectory('plugin1');
+      final Directory appFacingPackage =
+          createFakePlugin('plugin1', pluginGroup);
+      createFakePlugin('plugin1_platform_interface', pluginGroup);
+      createFakePlugin('plugin1_web', pluginGroup);
+
+      await runCapturingPrint(runner,
+          <String>['sample', '--base-sha=main', '--packages=plugin1/plugin1']);
+
+      expect(command.plugins, unorderedEquals(<String>[appFacingPackage.path]));
+    });
+
+    test(
+        'specifying a package of a federated plugin by its name should '
+        'include only that package', () async {
+      processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
+        MockProcess(stdout: '''
+packages/plugin1/plugin1/plugin1.dart
+'''),
+      ];
+      final Directory pluginGroup = packagesDir.childDirectory('plugin1');
+
+      createFakePlugin('plugin1', pluginGroup);
+      final Directory platformInterfacePackage =
+          createFakePlugin('plugin1_platform_interface', pluginGroup);
+      createFakePlugin('plugin1_web', pluginGroup);
+
+      await runCapturingPrint(runner, <String>[
+        'sample',
+        '--base-sha=main',
+        '--packages=plugin1_platform_interface'
+      ]);
+
+      expect(command.plugins,
+          unorderedEquals(<String>[platformInterfacePackage.path]));
+    });
+
     group('conflicting package selection', () {
       test('does not allow --packages with --run-on-changed-packages',
           () async {
@@ -442,7 +515,7 @@ packages/plugin1/plugin1_web/plugin1_web.dart
       });
 
       test(
-          'changing one plugin in a federated group should include all plugins in the group',
+          'changing one plugin in a federated group should only include that plugin',
           () async {
         processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
           MockProcess(stdout: '''
@@ -451,17 +524,13 @@ packages/plugin1/plugin1/plugin1.dart
         ];
         final Directory plugin1 =
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
-        final Directory plugin2 = createFakePlugin('plugin1_platform_interface',
+        createFakePlugin('plugin1_platform_interface',
             packagesDir.childDirectory('plugin1'));
-        final Directory plugin3 = createFakePlugin(
-            'plugin1_web', packagesDir.childDirectory('plugin1'));
+        createFakePlugin('plugin1_web', packagesDir.childDirectory('plugin1'));
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
-        expect(
-            command.plugins,
-            unorderedEquals(
-                <String>[plugin1.path, plugin2.path, plugin3.path]));
+        expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
 
       test('--exclude flag works with --run-on-changed-packages', () async {

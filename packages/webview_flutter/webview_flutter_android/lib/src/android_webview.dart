@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -167,6 +168,13 @@ class WebView {
   /// Also see compatibility note on [evaluateJavascript].
   Future<void> loadUrl(String url, Map<String, String> headers) {
     return api.loadUrlFromInstance(this, url, headers);
+  }
+
+  /// Loads the URL with postData using "POST" method into this WebView.
+  ///
+  /// If url is not a network URL, it will be loaded with [loadUrl] instead, ignoring the postData param.
+  Future<void> postUrl(String url, Uint8List data) {
+    return api.postUrlFromInstance(this, url, data);
   }
 
   /// Gets the URL for the current page.
