@@ -182,6 +182,7 @@ enum MenuOptions {
   loadFlutterAsset,
   loadHtmlString,
   transparentBackground,
+  setCookie,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -236,6 +237,9 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.transparentBackground:
                 _onTransparentBackground(controller.data!, context);
                 break;
+              case MenuOptions.setCookie:
+                _onSetCookie(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -288,6 +292,10 @@ class SampleMenu extends StatelessWidget {
               key: ValueKey<String>('ShowTransparentBackgroundExample'),
               value: MenuOptions.transparentBackground,
               child: Text('Transparent background example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.setCookie,
+              child: Text('Set cookie'),
             ),
           ],
         );
@@ -363,6 +371,15 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  Future<void> _onSetCookie(
+      WebViewController controller, BuildContext context) async {
+    await CookieManager().setCookie(
+      const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
+    );
+    await controller.loadUrl('https://httpbin.org/anything');
   }
 
   Future<void> _onDoPostRequest(
