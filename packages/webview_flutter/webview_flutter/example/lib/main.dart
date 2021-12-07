@@ -179,6 +179,7 @@ enum MenuOptions {
   navigationDelegate,
   doPostRequest,
   loadLocalFile,
+  loadFlutterAsset,
   loadHtmlString,
   transparentBackground,
 }
@@ -225,6 +226,9 @@ class SampleMenu extends StatelessWidget {
                 break;
               case MenuOptions.loadLocalFile:
                 _onLoadLocalFileExample(controller.data!, context);
+                break;
+              case MenuOptions.loadFlutterAsset:
+                _onLoadFlutterAssetExample(controller.data!, context);
                 break;
               case MenuOptions.loadHtmlString:
                 _onLoadHtmlStringExample(controller.data!, context);
@@ -275,6 +279,10 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.loadLocalFile,
               child: Text('Load local file'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.loadFlutterAsset,
+              child: Text('Load Flutter Asset'),
             ),
             const PopupMenuItem<MenuOptions>(
               key: ValueKey<String>('ShowTransparentBackgroundExample'),
@@ -373,6 +381,11 @@ class SampleMenu extends StatelessWidget {
     final String pathToIndex = await _prepareLocalFile();
 
     await controller.loadFile(pathToIndex);
+  }
+
+  Future<void> _onLoadFlutterAssetExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadFlutterAsset('assets/www/index.html');
   }
 
   Future<void> _onLoadHtmlStringExample(
