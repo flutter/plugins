@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
@@ -13,9 +15,9 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import 'webview_flutter_test.mocks.dart';
 
-typedef void VoidCallback();
+typedef VoidCallback = void Function();
 
-@GenerateMocks([WebViewPlatform, WebViewPlatformController])
+@GenerateMocks(<Type>[WebViewPlatform, WebViewPlatformController])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -37,7 +39,8 @@ void main() {
       gestureRecognizers: anyNamed('gestureRecognizers'),
     )).thenAnswer((Invocation invocation) {
       final WebViewPlatformCreatedCallback onWebViewPlatformCreated =
-          invocation.namedArguments[Symbol('onWebViewPlatformCreated')];
+          invocation.namedArguments[const Symbol('onWebViewPlatformCreated')]
+              as WebViewPlatformCreatedCallback;
       return TestPlatformWebView(
         mockWebViewPlatformController: mockWebViewPlatformController,
         onWebViewPlatformCreated: onWebViewPlatformCreated,
@@ -57,12 +60,12 @@ void main() {
   });
 
   testWidgets('Initial url', (WidgetTester tester) async {
-    await tester.pumpWidget(WebView(initialUrl: 'https://youtube.com'));
+    await tester.pumpWidget(const WebView(initialUrl: 'https://youtube.com'));
 
     final CreationParams params = captureBuildArgs(
       mockWebViewPlatform,
       creationParams: true,
-    ).single;
+    ).single as CreationParams;
 
     expect(params.initialUrl, 'https://youtube.com');
   });
@@ -75,7 +78,7 @@ void main() {
     final CreationParams unrestrictedparams = captureBuildArgs(
       mockWebViewPlatform,
       creationParams: true,
-    ).single;
+    ).single as CreationParams;
 
     expect(
       unrestrictedparams.webSettings!.javascriptMode,
@@ -89,9 +92,101 @@ void main() {
     final CreationParams disabledparams = captureBuildArgs(
       mockWebViewPlatform,
       creationParams: true,
-    ).single;
+    ).single as CreationParams;
 
     expect(disabledparams.webSettings!.javascriptMode, JavascriptMode.disabled);
+  });
+
+  testWidgets('Load file', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadFile('/test/path/index.html');
+
+    verify(mockWebViewPlatformController.loadFile(
+      '/test/path/index.html',
+    ));
+  });
+
+  testWidgets('Load file with empty path', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadFile(''), throwsAssertionError);
+  });
+
+  testWidgets('Load HTML string without base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString('<p>This is a test paragraph.</p>');
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+    ));
+  });
+
+  testWidgets('Load HTML string with base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    );
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    ));
+  });
+
+  testWidgets('Load HTML string with empty string',
+      (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadHtmlString(''), throwsAssertionError);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
@@ -129,7 +224,7 @@ void main() {
     final CreationParams params = captureBuildArgs(
       mockWebViewPlatform,
       creationParams: true,
-    ).single;
+    ).single as CreationParams;
 
     expect(params.initialUrl, isNull);
 
@@ -160,7 +255,30 @@ void main() {
     ));
   });
 
-  testWidgets("Clear Cache", (WidgetTester tester) async {
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+
+    final WebViewRequest req = WebViewRequest(
+      uri: Uri.parse('https://flutter.dev'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+
+    await controller!.loadRequest(req);
+
+    verify(mockWebViewPlatformController.loadRequest(req));
+  });
+
+  testWidgets('Clear Cache', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -399,7 +517,7 @@ void main() {
   });
 
   testWidgets('Cookies can be set', (WidgetTester tester) async {
-    const cookie =
+    const WebViewCookie cookie =
         WebViewCookie(name: 'foo', value: 'bar', domain: 'flutter.dev');
 
     await tester.pumpWidget(
@@ -429,7 +547,7 @@ void main() {
     final CreationParams params = captureBuildArgs(
       mockWebViewPlatform,
       creationParams: true,
-    ).single;
+    ).single as CreationParams;
 
     expect(params.javascriptChannelNames,
         unorderedEquals(<String>['Tts', 'Alarm']));
@@ -498,7 +616,7 @@ void main() {
     final JavascriptChannelRegistry channelRegistry = captureBuildArgs(
       mockWebViewPlatform,
       javascriptChannelRegistry: true,
-    ).first;
+    ).first as JavascriptChannelRegistry;
 
     expect(
       channelRegistry.channels.keys,
@@ -541,7 +659,7 @@ void main() {
     final JavascriptChannelRegistry channelRegistry = captureBuildArgs(
       mockWebViewPlatform,
       javascriptChannelRegistry: true,
-    ).last;
+    ).last as JavascriptChannelRegistry;
 
     expect(channelRegistry.channels.keys, unorderedEquals(<String>['Tts']));
   });
@@ -570,7 +688,7 @@ void main() {
     final JavascriptChannelRegistry channelRegistry = captureBuildArgs(
       mockWebViewPlatform,
       javascriptChannelRegistry: true,
-    ).single;
+    ).single as JavascriptChannelRegistry;
 
     expect(ttsMessagesReceived, isEmpty);
     expect(alarmMessagesReceived, isEmpty);
@@ -595,7 +713,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).single;
+      ).single as WebViewPlatformCallbacksHandler;
 
       handler.onPageStarted('https://youtube.com');
 
@@ -611,7 +729,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).single;
+      ).single as WebViewPlatformCallbacksHandler;
 
       // The platform side will always invoke a call for onPageStarted. This is
       // to test that it does not crash on a null callback.
@@ -636,7 +754,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).last;
+      ).last as WebViewPlatformCallbacksHandler;
       handler.onPageStarted('https://youtube.com');
 
       expect(returnedUrl, 'https://youtube.com');
@@ -657,7 +775,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).single;
+      ).single as WebViewPlatformCallbacksHandler;
       handler.onPageFinished('https://youtube.com');
 
       expect(returnedUrl, 'https://youtube.com');
@@ -672,7 +790,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).single;
+      ).single as WebViewPlatformCallbacksHandler;
       // The platform side will always invoke a call for onPageFinished. This is
       // to test that it does not crash on a null callback.
       handler.onPageFinished('https://youtube.com');
@@ -696,7 +814,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).last;
+      ).last as WebViewPlatformCallbacksHandler;
       handler.onPageFinished('https://youtube.com');
 
       expect(returnedUrl, 'https://youtube.com');
@@ -717,7 +835,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).single;
+      ).single as WebViewPlatformCallbacksHandler;
       handler.onProgress(50);
 
       expect(loadingProgress, 50);
@@ -732,7 +850,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).single;
+      ).single as WebViewPlatformCallbacksHandler;
 
       // This is to test that it does not crash on a null callback.
       handler.onProgress(50);
@@ -756,7 +874,7 @@ void main() {
       final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
         mockWebViewPlatform,
         webViewPlatformCallbacksHandler: true,
-      ).last;
+      ).last as WebViewPlatformCallbacksHandler;
       handler.onProgress(50);
 
       expect(loadingProgress, 50);
@@ -772,7 +890,7 @@ void main() {
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
-      ).single;
+      ).single as CreationParams;
 
       expect(params.webSettings!.hasNavigationDelegate, false);
 
@@ -785,7 +903,7 @@ void main() {
       final WebSettings updateSettings =
           verify(mockWebViewPlatformController.updateSettings(captureAny))
               .captured
-              .single;
+              .single as WebSettings;
 
       expect(updateSettings.hasNavigationDelegate, true);
     });
@@ -809,10 +927,11 @@ void main() {
         webViewPlatformCallbacksHandler: true,
       );
 
-      final CreationParams params = args[0];
+      final CreationParams params = args[0] as CreationParams;
       expect(params.webSettings!.hasNavigationDelegate, true);
 
-      final WebViewPlatformCallbacksHandler handler = args[1];
+      final WebViewPlatformCallbacksHandler handler =
+          args[1] as WebViewPlatformCallbacksHandler;
 
       // The navigation delegate only allows navigation to https://flutter.dev
       // so we should still be in https://youtube.com.
@@ -847,7 +966,7 @@ void main() {
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
-      ).single;
+      ).single as CreationParams;
 
       expect(params.webSettings!.debuggingEnabled, true);
     });
@@ -858,7 +977,7 @@ void main() {
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
-      ).single;
+      ).single as CreationParams;
 
       expect(params.webSettings!.debuggingEnabled, false);
     });
@@ -875,7 +994,7 @@ void main() {
       final WebSettings enabledSettings =
           verify(mockWebViewPlatformController.updateSettings(captureAny))
               .captured
-              .last;
+              .last as WebSettings;
       expect(enabledSettings.debuggingEnabled, true);
 
       await tester.pumpWidget(WebView(
@@ -886,7 +1005,7 @@ void main() {
       final WebSettings disabledSettings =
           verify(mockWebViewPlatformController.updateSettings(captureAny))
               .captured
-              .last;
+              .last as WebSettings;
       expect(disabledSettings.debuggingEnabled, false);
     });
   });
@@ -900,7 +1019,7 @@ void main() {
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
-      ).single;
+      ).single as CreationParams;
 
       expect(params.webSettings!.zoomEnabled, isTrue);
     });
@@ -911,7 +1030,7 @@ void main() {
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
-      ).single;
+      ).single as CreationParams;
 
       expect(params.webSettings!.zoomEnabled, isTrue);
     });
@@ -928,7 +1047,7 @@ void main() {
       final WebSettings enabledSettings =
           verify(mockWebViewPlatformController.updateSettings(captureAny))
               .captured
-              .last;
+              .last as WebSettings;
       // Zoom defaults to true, so no changes are made to settings.
       expect(enabledSettings.zoomEnabled, isNull);
 
@@ -940,8 +1059,36 @@ void main() {
       final WebSettings disabledSettings =
           verify(mockWebViewPlatformController.updateSettings(captureAny))
               .captured
-              .last;
+              .last as WebSettings;
       expect(disabledSettings.zoomEnabled, isFalse);
+    });
+  });
+
+  group('Background color', () {
+    testWidgets('Defaults to null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, null);
+    });
+
+    testWidgets('Can be transparent', (WidgetTester tester) async {
+      const Color transparentColor = Color(0x00000000);
+
+      await tester.pumpWidget(const WebView(
+        backgroundColor: transparentColor,
+      ));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, transparentColor);
     });
   });
 
@@ -972,7 +1119,7 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
-              userAgent: WebSetting<String?>.of(null),
+              userAgent: const WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
               zoomEnabled: true,
             ),
@@ -1013,7 +1160,7 @@ void main() {
     final CreationParams params = captureBuildArgs(
       mockWebViewPlatform,
       creationParams: true,
-    ).single;
+    ).single as CreationParams;
 
     expect(params.webSettings!.userAgent.value, isNull);
 
@@ -1026,7 +1173,7 @@ void main() {
     final WebSettings settings =
         verify(mockWebViewPlatformController.updateSettings(captureAny))
             .captured
-            .last;
+            .last as WebSettings;
     expect(settings.userAgent.value, 'UA');
   });
 }
@@ -1081,7 +1228,7 @@ class TestPlatformWebViewState extends State<TestPlatformWebView> {
   @override
   void initState() {
     super.initState();
-    WebViewPlatformCreatedCallback? onWebViewPlatformCreated =
+    final WebViewPlatformCreatedCallback? onWebViewPlatformCreated =
         widget.onWebViewPlatformCreated;
     if (onWebViewPlatformCreated != null) {
       onWebViewPlatformCreated(widget.mockWebViewPlatformController);

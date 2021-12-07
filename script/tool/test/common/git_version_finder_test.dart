@@ -88,6 +88,18 @@ file2/file2.cc
     verify(gitDir
         .runCommand(<String>['diff', '--name-only', customBaseSha, 'HEAD']));
   });
+
+  test('include uncommitted files if requested', () async {
+    const String customBaseSha = 'aklsjdcaskf12312';
+    gitDiffResponse = '''
+file1/pubspec.yaml
+file2/file2.cc
+''';
+    final GitVersionFinder finder = GitVersionFinder(gitDir, customBaseSha);
+    await finder.getChangedFiles(includeUncommitted: true);
+    // The call should not have HEAD as a final argument like the default diff.
+    verify(gitDir.runCommand(<String>['diff', '--name-only', customBaseSha]));
+  });
 }
 
 class MockProcessResult extends Mock implements ProcessResult {}

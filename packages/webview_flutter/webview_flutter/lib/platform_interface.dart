@@ -22,4 +22,6 @@ export 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
         WebSettings,
         WebResourceError,
         WebResourceErrorType,
-        WebViewCookie;
+        WebViewCookie,
+        WebViewRequest,
+        WebViewRequestMethod;
