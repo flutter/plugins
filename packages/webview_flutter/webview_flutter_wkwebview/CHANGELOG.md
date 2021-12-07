@@ -1,7 +1,7 @@
 ## 2.5.0
 
 * Integration test fixes.
-* Implemented new cookie manager for setting cookies and providing initial cookies.
+* Implements new cookie manager for setting cookies and providing initial cookies.
 
 ## 2.4.0
 
