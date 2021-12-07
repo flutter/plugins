@@ -193,6 +193,13 @@ abstract class WebChromeClientHostApi {
   void create(int instanceId, int webViewClientInstanceId);
 }
 
+@HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
+abstract class FlutterAssetManagerHostApi {
+  List<String> list(String path);
+
+  String getAssetFilePathByName(String name);
+}
+
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
   void dispose(int instanceId);

@@ -27,6 +27,28 @@ class _FakeJavascriptChannelRegistry_1 extends _i1.Fake
 
 class _FakeWebView_2 extends _i1.Fake implements _i2.WebView {}
 
+/// A class which mocks [FlutterAssetManager].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFlutterAssetManager extends _i1.Mock
+    implements _i2.FlutterAssetManager {
+  MockFlutterAssetManager() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<List<String?>> list(String? path) =>
+      (super.noSuchMethod(Invocation.method(#list, [path]),
+              returnValue: Future<List<String?>>.value(<String?>[]))
+          as _i4.Future<List<String?>>);
+  @override
+  _i4.Future<String> getAssetFilePathByName(String? name) =>
+      (super.noSuchMethod(Invocation.method(#getAssetFilePathByName, [name]),
+          returnValue: Future<String>.value('')) as _i4.Future<String>);
+  @override
+  String toString() => super.toString();
+}
+
 /// A class which mocks [WebSettings].
 ///
 /// See the documentation for Mockito's code generation for more information.
