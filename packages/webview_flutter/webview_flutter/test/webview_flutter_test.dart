@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
@@ -88,6 +90,98 @@ void main() {
     expect(disabledparams.webSettings!.javascriptMode, JavascriptMode.disabled);
   });
 
+  testWidgets('Load file', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadFile('/test/path/index.html');
+
+    verify(mockWebViewPlatformController.loadFile(
+      '/test/path/index.html',
+    ));
+  });
+
+  testWidgets('Load file with empty path', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadFile(''), throwsAssertionError);
+  });
+
+  testWidgets('Load HTML string without base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString('<p>This is a test paragraph.</p>');
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+    ));
+  });
+
+  testWidgets('Load HTML string with base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    );
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    ));
+  });
+
+  testWidgets('Load HTML string with empty string',
+      (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadHtmlString(''), throwsAssertionError);
+  });
+
   testWidgets('Load url', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
@@ -152,6 +246,29 @@ void main() {
       'https://flutter.io',
       <String, String>{'CACHE-CONTROL': 'ABC'},
     ));
+  });
+
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+
+    final WebViewRequest req = WebViewRequest(
+      uri: Uri.parse('https://flutter.dev'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+
+    await controller!.loadRequest(req);
+
+    verify(mockWebViewPlatformController.loadRequest(req));
   });
 
   testWidgets('Clear Cache', (WidgetTester tester) async {
@@ -925,6 +1042,34 @@ void main() {
               .captured
               .last as WebSettings;
       expect(disabledSettings.zoomEnabled, isFalse);
+    });
+  });
+
+  group('Background color', () {
+    testWidgets('Defaults to null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, null);
+    });
+
+    testWidgets('Can be transparent', (WidgetTester tester) async {
+      const Color transparentColor = Color(0x00000000);
+
+      await tester.pumpWidget(const WebView(
+        backgroundColor: transparentColor,
+      ));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, transparentColor);
     });
   });
 

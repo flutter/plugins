@@ -1,6 +1,10 @@
-## 2.6.0
+## 2.7.0
 
 * Adds implementation of the `loadFlutterAsset` method from the platform interface.
+
+## 2.6.0
+
+* Implements new cookie manager for setting cookies and providing initial cookies.
 
 ## 2.5.0
 

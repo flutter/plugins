@@ -18,6 +18,14 @@ class WebResourceErrorData {
   String? description;
 }
 
+@HostApi()
+abstract class CookieManagerHostApi {
+  @async
+  bool clearCookies();
+
+  void setCookie(String url, String value);
+}
+
 @HostApi(dartHostTestHandler: 'TestWebViewHostApi')
 abstract class WebViewHostApi {
   void create(int instanceId, bool useHybridComposition);
@@ -44,6 +52,12 @@ abstract class WebViewHostApi {
     int instanceId,
     String url,
     Map<String, String> headers,
+  );
+
+  void postUrl(
+    int instanceId,
+    String url,
+    Uint8List data,
   );
 
   String getUrl(int instanceId);
@@ -87,6 +101,8 @@ abstract class WebViewHostApi {
   void setDownloadListener(int instanceId, int listenerInstanceId);
 
   void setWebChromeClient(int instanceId, int clientInstanceId);
+
+  void setBackgroundColor(int instanceId, int color);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
@@ -189,6 +205,13 @@ abstract class DownloadListenerFlutterApi {
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
 abstract class WebChromeClientHostApi {
   void create(int instanceId, int webViewClientInstanceId);
+}
+
+@HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
+abstract class FlutterAssetManagerHostApi {
+  List<String> list(String path);
+
+  String getAssetFilePathByName(String name);
 }
 
 @FlutterApi()

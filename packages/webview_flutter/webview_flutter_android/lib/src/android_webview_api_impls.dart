@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 
 import 'android_webview.dart';
@@ -153,6 +155,15 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
+  Future<void> postUrlFromInstance(
+    WebView instance,
+    String url,
+    Uint8List data,
+  ) {
+    return postUrl(instanceManager.getInstanceId(instance)!, url, data);
+  }
+
+  /// Helper method to convert instances ids to objects.
   Future<String> getUrlFromInstance(WebView instance) {
     return getUrl(instanceManager.getInstanceId(instance)!);
   }
@@ -277,6 +288,11 @@ class WebViewHostApiImpl extends WebViewHostApi {
       instanceManager.getInstanceId(instance)!,
       instanceManager.getInstanceId(client)!,
     );
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setBackgroundColorFromInstance(WebView instance, int color) {
+    return setBackgroundColor(instanceManager.getInstanceId(instance)!, color);
   }
 }
 
