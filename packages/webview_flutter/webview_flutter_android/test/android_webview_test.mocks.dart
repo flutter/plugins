@@ -340,6 +340,27 @@ class MockTestWebViewHostApi extends _i1.Mock
   String toString() => super.toString();
 }
 
+/// A class which mocks [TestAssetManagerHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestAssetManagerHostApi extends _i1.Mock
+    implements _i3.TestAssetManagerHostApi {
+  MockTestAssetManagerHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  List<String?> list(String? path) =>
+      (super.noSuchMethod(Invocation.method(#list, [path]),
+          returnValue: <String?>[]) as List<String?>);
+  @override
+  String getAssetFilePathByName(String? name) =>
+      (super.noSuchMethod(Invocation.method(#getAssetFilePathByName, [name]),
+          returnValue: '') as String);
+  @override
+  String toString() => super.toString();
+}
+
 /// A class which mocks [WebChromeClient].
 ///
 /// See the documentation for Mockito's code generation for more information.

@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart' as android_webview;
@@ -20,6 +19,8 @@ class WebViewAndroidWidget extends StatefulWidget {
     required this.javascriptChannelRegistry,
     required this.onBuildWidget,
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
+    @visibleForTesting
+        this.flutterAssetManager = const android_webview.FlutterAssetManager(),
   });
 
   /// Initial parameters used to setup the WebView.
@@ -47,6 +48,11 @@ class WebViewAndroidWidget extends StatefulWidget {
   /// This should only be changed for testing purposes.
   final WebViewProxy webViewProxy;
 
+  /// Manages access to Flutter assets that are part of the Android App bundle.
+  ///
+  /// This should only be changed for testing purposes.
+  final android_webview.FlutterAssetManager flutterAssetManager;
+
   /// Callback to build a widget once [android_webview.WebView] has been initialized.
   final Widget Function(WebViewAndroidPlatformController controller)
       onBuildWidget;
@@ -67,6 +73,7 @@ class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
       callbacksHandler: widget.callbacksHandler,
       javascriptChannelRegistry: widget.javascriptChannelRegistry,
       webViewProxy: widget.webViewProxy,
+      flutterAssetManager: widget.flutterAssetManager,
     );
   }
 
@@ -91,6 +98,8 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
+    @visibleForTesting
+        this.flutterAssetManager = const android_webview.FlutterAssetManager(),
   })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
         super(callbacksHandler) {
     webView = webViewProxy.createWebView(
@@ -134,6 +143,11 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// This should only be changed for testing purposes.
   final WebViewProxy webViewProxy;
 
+  /// Manages access to Flutter assets that are part of the Android App bundle.
+  ///
+  /// This should only be changed for testing purposes.
+  final android_webview.FlutterAssetManager flutterAssetManager;
+
   /// Receives callbacks when content should be downloaded instead.
   @visibleForTesting
   late final WebViewAndroidDownloadListener downloadListener =
@@ -164,6 +178,28 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         : 'file://$absoluteFilePath';
 
     return webView.loadUrl(url, <String, String>{});
+  }
+
+  @override
+  Future<void> loadFlutterAsset(String key) async {
+    final String assetFilePath =
+        await flutterAssetManager.getAssetFilePathByName(key);
+    final List<String> pathElements = assetFilePath.split('/');
+    final String fileName = pathElements.removeLast();
+    final List<String?> paths =
+        await flutterAssetManager.list(pathElements.join('/'));
+
+    if (!paths.contains(fileName)) {
+      throw ArgumentError(
+        'Asset for key "$key" not found.',
+        'key',
+      );
+    }
+
+    return webView.loadUrl(
+      'file:///android_asset/$assetFilePath',
+      <String, String>{},
+    );
   }
 
   @override
