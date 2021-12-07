@@ -1,3 +1,7 @@
+## 2.7.0
+
+* Adds support for the `loadFlutterAsset` method.
+
 ## 2.6.0
 
 * Adds support for the `loadRequest` method.
