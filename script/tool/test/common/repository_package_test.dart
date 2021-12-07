@@ -5,6 +5,7 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:test/test.dart';
 
 import '../util.dart';
@@ -153,6 +154,25 @@ void main() {
       expect(RepositoryPackage(plugin).isFederated, true);
       expect(RepositoryPackage(plugin).isPlatformInterface, false);
       expect(RepositoryPackage(plugin).isPlatformImplementation, true);
+    });
+  });
+
+  group('pubspec', () {
+    test('file', () async {
+      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
+
+      final File pubspecFile = RepositoryPackage(plugin).pubspecFile;
+
+      expect(pubspecFile.path, plugin.childFile('pubspec.yaml').path);
+    });
+
+    test('parsing', () async {
+      final Directory plugin = createFakePlugin('a_plugin', packagesDir,
+          examples: <String>['example1', 'example2']);
+
+      final Pubspec pubspec = RepositoryPackage(plugin).parsePubspec();
+
+      expect(pubspec.name, 'a_plugin');
     });
   });
 }
