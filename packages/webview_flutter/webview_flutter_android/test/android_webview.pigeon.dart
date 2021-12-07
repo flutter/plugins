@@ -27,6 +27,7 @@ abstract class TestWebViewHostApi {
   void loadDataWithBaseUrl(int instanceId, String baseUrl, String data,
       String mimeType, String encoding, String historyUrl);
   void loadUrl(int instanceId, String url, Map<String?, String?> headers);
+  void postUrl(int instanceId, String url, Uint8List data);
   String getUrl(int instanceId);
   bool canGoBack(int instanceId);
   bool canGoForward(int instanceId);
@@ -176,6 +177,31 @@ abstract class TestWebViewHostApi {
           assert(arg_headers != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.loadUrl was null, expected non-null Map<String?, String?>.');
           api.loadUrl(arg_instanceId!, arg_url!, arg_headers!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebViewHostApi.postUrl', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.postUrl was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.postUrl was null, expected non-null int.');
+          final String? arg_url = (args[1] as String?);
+          assert(arg_url != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.postUrl was null, expected non-null String.');
+          final Uint8List? arg_data = (args[2] as Uint8List?);
+          assert(arg_data != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.postUrl was null, expected non-null Uint8List.');
+          api.postUrl(arg_instanceId!, arg_url!, arg_data!);
           return <Object?, Object?>{};
         });
       }

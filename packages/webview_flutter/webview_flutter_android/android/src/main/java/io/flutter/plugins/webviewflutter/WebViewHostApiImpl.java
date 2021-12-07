@@ -383,6 +383,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
+  public void postUrl(Long instanceId, String url, byte[] data) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.postUrl(url, data);
+  }
+
+  @Override
   public String getUrl(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     final String result = webView.getUrl();
