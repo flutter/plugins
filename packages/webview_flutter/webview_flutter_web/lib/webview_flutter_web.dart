@@ -182,20 +182,6 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     _element.src = 'data:text/html,' + Uri.encodeFull(html);
   }
 
-  /// Makes a specific HTTP request ands loads the response in the webview.
-  /// The request must be to the same-domain of your Flutter App
-  /// (or be CORS-enabled) for this to work.
-  ///
-  /// [WebViewRequest.method] must be one of the supported HTTP methods
-  /// in [WebViewRequestMethod].
-  ///
-  /// If [WebViewRequest.headers] is not empty, its key-value pairs will be
-  /// added as the headers for the request.
-  ///
-  /// If [WebViewRequest.body] is not null, it will be added as the body
-  /// for the request.
-  ///
-  /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
   @override
   Future<void> loadRequest(WebViewRequest request) async {
     if (!request.uri.hasScheme) {
