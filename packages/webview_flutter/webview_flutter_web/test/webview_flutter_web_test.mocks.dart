@@ -735,11 +735,11 @@ class MockIFrameElement extends _i1.Mock implements _i2.IFrameElement {
       .noSuchMethod(Invocation.method(#removeAttributeNS, [namespaceURI, name]),
           returnValueForMissingStub: null);
   @override
-  void setAttribute(String? name, String? value) =>
+  void setAttribute(String? name, Object? value) =>
       super.noSuchMethod(Invocation.method(#setAttribute, [name, value]),
           returnValueForMissingStub: null);
   @override
-  void setAttributeNS(String? namespaceURI, String? name, String? value) =>
+  void setAttributeNS(String? namespaceURI, String? name, Object? value) =>
       super.noSuchMethod(
           Invocation.method(#setAttributeNS, [namespaceURI, name, value]),
           returnValueForMissingStub: null);
