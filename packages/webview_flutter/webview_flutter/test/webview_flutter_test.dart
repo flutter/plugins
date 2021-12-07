@@ -23,10 +23,12 @@ void main() {
 
   late MockWebViewPlatform mockWebViewPlatform;
   late MockWebViewPlatformController mockWebViewPlatformController;
+  late MockWebViewCookieManagerPlatform mockWebViewCookieManagerPlatform;
 
   setUp(() {
     mockWebViewPlatformController = MockWebViewPlatformController();
     mockWebViewPlatform = MockWebViewPlatform();
+    mockWebViewCookieManagerPlatform = MockWebViewCookieManagerPlatform();
     when(mockWebViewPlatform.build(
       context: anyNamed('context'),
       creationParams: anyNamed('creationParams'),
@@ -46,6 +48,11 @@ void main() {
     });
 
     WebView.platform = mockWebViewPlatform;
+    WebViewCookieManagerPlatform.instance = mockWebViewCookieManagerPlatform;
+  });
+
+  tearDown(() {
+    mockWebViewCookieManagerPlatform.reset();
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
@@ -499,9 +506,6 @@ void main() {
   });
 
   testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
-    when(mockWebViewPlatform.clearCookies())
-        .thenAnswer((_) => Future<bool>.value(true));
-
     await tester.pumpWidget(
       const WebView(
         initialUrl: 'https://flutter.io',
@@ -510,6 +514,21 @@ void main() {
     final CookieManager cookieManager = CookieManager();
     final bool hasCookies = await cookieManager.clearCookies();
     expect(hasCookies, true);
+  });
+
+  testWidgets('Cookies can be set', (WidgetTester tester) async {
+    const WebViewCookie cookie =
+        WebViewCookie(name: 'foo', value: 'bar', domain: 'flutter.dev');
+
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final CookieManager cookieManager = CookieManager();
+    await cookieManager.setCookie(cookie);
+    expect(mockWebViewCookieManagerPlatform.setCookieCalls,
+        <WebViewCookie>[cookie]);
   });
 
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
@@ -1306,5 +1325,21 @@ class MatchesCreationParams extends Matcher {
             .matches(creationParams.webSettings!, matchState) &&
         orderedEquals(_creationParams.javascriptChannelNames)
             .matches(creationParams.javascriptChannelNames, matchState);
+  }
+}
+
+class MockWebViewCookieManagerPlatform extends WebViewCookieManagerPlatform {
+  List<WebViewCookie> setCookieCalls = <WebViewCookie>[];
+
+  @override
+  Future<bool> clearCookies() async => true;
+
+  @override
+  Future<void> setCookie(WebViewCookie cookie) async {
+    setCookieCalls.add(cookie);
+  }
+
+  void reset() {
+    setCookieCalls = <WebViewCookie>[];
   }
 }

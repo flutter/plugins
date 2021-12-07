@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import '../platform_interface.dart';
@@ -79,6 +82,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -149,6 +153,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The initial cookies to set.
+  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -365,6 +372,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
     backgroundColor: widget.backgroundColor,
+    cookies: widget.initialCookies,
   );
 }
 
@@ -779,16 +787,32 @@ class CookieManager {
     return _instance ??= CookieManager._();
   }
 
-  CookieManager._();
+  CookieManager._() {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      if (Platform.isAndroid) {
+        WebViewCookieManagerPlatform.instance = WebViewAndroidCookieManager();
+      } else if (Platform.isIOS) {
+        WebViewCookieManagerPlatform.instance = WKWebViewCookieManager();
+      } else {
+        throw AssertionError(
+            'This platform is currently unsupported by webview_flutter.');
+      }
+    }
+  }
 
   static CookieManager? _instance;
 
   /// Clears all cookies for all [WebView] instances.
   ///
-  /// This is a no op on iOS version smaller than 9.
-  ///
   /// Returns true if cookies were present before clearing, else false.
-  Future<bool> clearCookies() => WebView.platform.clearCookies();
+  Future<bool> clearCookies() =>
+      WebViewCookieManagerPlatform.instance!.clearCookies();
+
+  /// Sets a cookie for all [WebView] instances.
+  ///
+  /// This is a no op on iOS versions below 11.
+  Future<void> setCookie(WebViewCookie cookie) =>
+      WebViewCookieManagerPlatform.instance!.setCookie(cookie);
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

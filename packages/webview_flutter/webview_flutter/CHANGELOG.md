@@ -1,3 +1,8 @@
+## 2.7.0
+
+* Adds `setCookie` to CookieManager.
+* CreationParams now supports setting `initialCookies`.
+
 ## 2.6.0
 
 * Adds support for the `loadRequest` method.
