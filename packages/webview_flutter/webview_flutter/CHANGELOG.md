@@ -1,6 +1,6 @@
 ## 2.7.0
 
-* Added `setCookie` to CookieManager.
+* Adds `setCookie` to CookieManager.
 * CreationParams now supports setting `initialCookies`.
 
 ## 2.6.0
