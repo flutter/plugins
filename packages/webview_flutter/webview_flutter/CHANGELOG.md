@@ -1,3 +1,7 @@
+## 2.8.0
+
+* Adds support for the `loadFlutterAsset` method.
+
 ## 2.7.0
 
 * Adds `setCookie` to CookieManager.
