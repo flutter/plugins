@@ -1,4 +1,4 @@
-## 2.7.0
+## 2.8.0
 
 * Implements new cookie manager for setting cookies and providing initial cookies.
 
