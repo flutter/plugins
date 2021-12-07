@@ -1,3 +1,7 @@
+## 2.6.0
+
+* Adds support for the `loadRequest` method.
+
 ## 2.5.0
 
 * Adds an option to set the background color of the webview.

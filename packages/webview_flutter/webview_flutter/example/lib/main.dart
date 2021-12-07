@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -176,6 +177,7 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  doPostRequest,
   loadLocalFile,
   loadHtmlString,
   transparentBackground,
@@ -218,6 +220,9 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case MenuOptions.doPostRequest:
+                _onDoPostRequest(controller.data!, context);
+                break;
               case MenuOptions.loadLocalFile:
                 _onLoadLocalFileExample(controller.data!, context);
                 break;
@@ -258,6 +263,10 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.doPostRequest,
+              child: Text('Post Request'),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.loadHtmlString,
@@ -346,6 +355,17 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  Future<void> _onDoPostRequest(
+      WebViewController controller, BuildContext context) async {
+    final WebViewRequest request = WebViewRequest(
+      uri: Uri.parse('https://httpbin.org/post'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar', 'Content-Type': 'text/plain'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+    await controller.loadRequest(request);
   }
 
   Future<void> _onLoadLocalFileExample(
