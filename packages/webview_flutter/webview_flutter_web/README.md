@@ -16,5 +16,5 @@ Nothing else is currently supported.
 
 ### Depend on the package
 
-This package is not an endorsed implementation of the google_maps_flutter plugin yet, so you'll need to
+This package is not an endorsed implementation of the `webview_flutter` plugin yet, so you'll need to
 [add it explicitly](https://pub.dev/packages/webview_flutter_web/install).
