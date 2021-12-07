@@ -163,6 +163,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadFile"]) {
     [self onLoadFile:call result:result];
+  } else if ([[call method] isEqualToString:@"loadFlutterAsset"]) {
+    [self onLoadFlutterAsset:call result:result];
   } else if ([[call method] isEqualToString:@"loadHtmlString"]) {
     [self onLoadHtmlString:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
@@ -241,6 +243,34 @@
   NSURL* baseUrl = [url URLByDeletingLastPathComponent];
 
   [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
+  result(nil);
+}
+
+- (void)onLoadFlutterAsset:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadFlutterAsset_invalidKey"
+                               message:@"Supplied asset key is not valid."
+                               details:error]);
+    return;
+  }
+
+  NSString* assetKey = [call arguments];
+  NSString* assetFilePath = [FlutterDartProject lookupKeyForAsset:assetKey];
+  NSURL* url = [[NSBundle mainBundle] URLForResource:[assetFilePath stringByDeletingPathExtension]
+                                       withExtension:assetFilePath.pathExtension];
+
+  if (!url) {
+    result([FlutterError
+        errorWithCode:@"loadFlutterAsset_invalidKey"
+              message:@"Failed parsing file path for supplied key."
+              details:[NSString
+                          stringWithFormat:@"Failed to convert path '%@' into NSURL for key '%@'.",
+                                           assetFilePath, assetKey]]);
+    return;
+  }
+
+  [_webView loadFileURL:url allowingReadAccessToURL:[url URLByDeletingLastPathComponent]];
   result(nil);
 }
 

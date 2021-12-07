@@ -164,7 +164,120 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
 }
 
-- (void)testLoadFileSucceedsWithBaseUrl {
+- (void)testLoadFlutterAssetSucceeds {
+  NSBundle *mockBundle = OCMPartialMock([NSBundle mainBundle]);
+  NSString *filePath = [FlutterDartProject lookupKeyForAsset:@"assets/file.html"];
+  NSURL *url = [NSURL URLWithString:[@"file:///" stringByAppendingString:filePath]];
+  [OCMStub([mockBundle URLForResource:[filePath stringByDeletingPathExtension]
+                        withExtension:@"html"]) andReturn:(url)];
+
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return successful result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFlutterAsset"
+                                                             arguments:@"assets/file.html"]
+                    result:^(id _Nullable result) {
+                      XCTAssertNil(result);
+                      [resultExpectation fulfill];
+                    }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:1.0];
+  OCMVerify([mockWebView loadFileURL:url
+             allowingReadAccessToURL:[url URLByDeletingLastPathComponent]]);
+}
+
+- (void)testLoadFlutterAssetFailsWithInvalidKey {
+  NSArray *resultExpectations = @[
+    [self expectationWithDescription:@"Should return failed result when argument is nil."],
+    [self expectationWithDescription:
+              @"Should return failed result when argument is not of type NSString*."],
+    [self expectationWithDescription:
+              @"Should return failed result when argument is an empty string."],
+  ];
+
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFlutterAsset"
+                                                             arguments:nil]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadFlutterAsset_invalidKey"
+                                              message:@"Supplied asset key is not valid."
+                                              details:@"Argument is nil."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[0] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFlutterAsset"
+                                                             arguments:@(10)]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadFlutterAsset_invalidKey"
+                                              message:@"Supplied asset key is not valid."
+                                              details:@"Argument is not of type NSString."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[1] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFlutterAsset"
+                                                             arguments:@""]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadFlutterAsset_invalidKey"
+                                              message:@"Supplied asset key is not valid."
+                                              details:@"Argument contains an empty string."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[2] fulfill];
+                    }];
+
+  [self waitForExpectations:resultExpectations timeout:1.0];
+  OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
+}
+
+- (void)testLoadFlutterAssetFailsWithParsingError {
+  NSBundle *mockBundle = OCMPartialMock([NSBundle mainBundle]);
+  NSString *filePath = [FlutterDartProject lookupKeyForAsset:@"assets/file.html"];
+  [OCMStub([mockBundle URLForResource:[filePath stringByDeletingPathExtension]
+                        withExtension:@"html"]) andReturn:(nil)];
+
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return failed result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFlutterAsset"
+                                                     arguments:@"assets/file.html"]
+            result:^(id _Nullable result) {
+              FlutterError *expected = [FlutterError
+                  errorWithCode:@"loadFlutterAsset_invalidKey"
+                        message:@"Failed parsing file path for supplied key."
+                        details:[NSString
+                                    stringWithFormat:
+                                        @"Failed to convert path '%@' into NSURL for key '%@'.",
+                                        filePath, @"assets/file.html"]];
+              [FLTWebViewTests assertFlutterError:result withExpected:expected];
+              [resultExpectation fulfill];
+            }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:1.0];
+  OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
+}
+
+- (void)testLoadHtmlStringSucceedsWithBaseUrl {
   NSURL *baseUrl = [NSURL URLWithString:@"https://flutter.dev"];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"Should return successful result over the method channel."];
@@ -189,7 +302,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   OCMVerify([mockWebView loadHTMLString:@"some HTML string" baseURL:baseUrl]);
 }
 
-- (void)testLoadFileSucceedsWithoutBaseUrl {
+- (void)testLoadHtmlStringSucceedsWithoutBaseUrl {
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"Should return successful result over the method channel."];
   FLTWebViewController *controller =
