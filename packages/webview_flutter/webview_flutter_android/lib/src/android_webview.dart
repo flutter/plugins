@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
@@ -348,6 +350,11 @@ class WebView {
     );
     WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
     return api.setWebChromeClientFromInstance(this, client);
+  }
+
+  /// Sets the background color of this WebView.
+  Future<void> setBackgroundColor(Color color) {
+    return api.setBackgroundColorFromInstance(this, color.value);
   }
 
   /// Releases all resources used by the [WebView].
@@ -806,4 +813,24 @@ class WebResourceError {
 
   /// Describes the error.
   final String description;
+}
+
+/// Manages Flutter assets that are part of Android's app bundle.
+class FlutterAssetManager {
+  /// Constructs the [FlutterAssetManager].
+  const FlutterAssetManager();
+
+  /// Pigeon Host Api implementation for [FlutterAssetManager].
+  @visibleForTesting
+  static FlutterAssetManagerHostApi api = FlutterAssetManagerHostApi();
+
+  /// Lists all assets at the given path.
+  ///
+  /// The assets are returned as a `List<String>`. The `List<String>` only
+  /// contains files which are direct childs
+  Future<List<String?>> list(String path) => api.list(path);
+
+  /// Gets the relative file path to the Flutter asset with the given name.
+  Future<String> getAssetFilePathByName(String name) =>
+      api.getAssetFilePathByName(name);
 }

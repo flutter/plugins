@@ -23,6 +23,7 @@ import 'android_webview_test.mocks.dart';
   TestWebSettingsHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
+  TestAssetManagerHostApi,
   WebChromeClient,
   WebView,
   WebViewClient,

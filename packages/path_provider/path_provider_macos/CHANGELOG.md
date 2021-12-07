@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Switches to a package-internal implementation of the platform interface.
+
 ## 2.0.3
 
 * Fixes link in README.
