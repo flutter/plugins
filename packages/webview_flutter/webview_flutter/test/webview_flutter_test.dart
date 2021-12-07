@@ -1020,6 +1020,34 @@ void main() {
     });
   });
 
+  group('Background color', () {
+    testWidgets('Defaults to null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, null);
+    });
+
+    testWidgets('Can be transparent', (WidgetTester tester) async {
+      const Color transparentColor = Color(0x00000000);
+
+      await tester.pumpWidget(const WebView(
+        backgroundColor: transparentColor,
+      ));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, transparentColor);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUp(() {
       WebView.platform = MyWebViewPlatform();

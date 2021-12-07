@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -405,6 +406,81 @@ void main() {
           'https://www.google.com',
           <String, String>{'a': 'header'},
         ));
+      });
+
+      group('loadRequest', () {
+        testWidgets('Throws ArgumentError for empty scheme',
+            (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          expect(
+              () async => await testController.loadRequest(
+                    WebViewRequest(
+                      uri: Uri.parse('www.google.com'),
+                      method: WebViewRequestMethod.get,
+                    ),
+                  ),
+              throwsA(const TypeMatcher<ArgumentError>()));
+        });
+
+        testWidgets('GET without headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+          ));
+
+          verify(mockWebView.loadUrl(
+            'https://www.google.com',
+            <String, String>{},
+          ));
+        });
+
+        testWidgets('GET with headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+            headers: <String, String>{'a': 'header'},
+          ));
+
+          verify(mockWebView.loadUrl(
+            'https://www.google.com',
+            <String, String>{'a': 'header'},
+          ));
+        });
+
+        testWidgets('POST without body', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.post,
+          ));
+
+          verify(mockWebView.postUrl(
+            'https://www.google.com',
+            Uint8List(0),
+          ));
+        });
+
+        testWidgets('POST with body', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          final Uint8List body = Uint8List.fromList('Test Body'.codeUnits);
+
+          await testController.loadRequest(WebViewRequest(
+              uri: Uri.parse('https://www.google.com'),
+              method: WebViewRequestMethod.post,
+              body: body));
+
+          verify(mockWebView.postUrl(
+            'https://www.google.com',
+            body,
+          ));
+        });
       });
 
       testWidgets('currentUrl', (WidgetTester tester) async {
