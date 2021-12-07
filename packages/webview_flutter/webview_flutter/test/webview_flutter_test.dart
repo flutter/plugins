@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
@@ -244,6 +246,29 @@ void main() {
       'https://flutter.io',
       <String, String>{'CACHE-CONTROL': 'ABC'},
     ));
+  });
+
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+
+    final WebViewRequest req = WebViewRequest(
+      uri: Uri.parse('https://flutter.dev'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+
+    await controller!.loadRequest(req);
+
+    verify(mockWebViewPlatformController.loadRequest(req));
   });
 
   testWidgets('Clear Cache', (WidgetTester tester) async {
