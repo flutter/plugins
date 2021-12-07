@@ -186,6 +186,8 @@ public class GeneratedAndroidWebView {
 
     void loadUrl(Long instanceId, String url, Map<String, String> headers);
 
+    void postUrl(Long instanceId, String url, byte[] data);
+
     String getUrl(Long instanceId);
 
     Boolean canGoBack(Long instanceId);
@@ -400,6 +402,39 @@ public class GeneratedAndroidWebView {
                     throw new NullPointerException("headersArg unexpectedly null.");
                   }
                   api.loadUrl(instanceIdArg.longValue(), urlArg, headersArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.WebViewHostApi.postUrl", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  String urlArg = (String) args.get(1);
+                  if (urlArg == null) {
+                    throw new NullPointerException("urlArg unexpectedly null.");
+                  }
+                  byte[] dataArg = (byte[]) args.get(2);
+                  if (dataArg == null) {
+                    throw new NullPointerException("dataArg unexpectedly null.");
+                  }
+                  api.postUrl(instanceIdArg.longValue(), urlArg, dataArg);
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));

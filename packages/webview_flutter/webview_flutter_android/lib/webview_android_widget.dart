@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -208,6 +209,28 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     Map<String, String>? headers,
   ) {
     return webView.loadUrl(url, headers ?? <String, String>{});
+  }
+
+  /// When making a POST request, headers are ignored. As a workaround, make
+  /// the request manually and load the response data using [loadHTMLString].
+  @override
+  Future<void> loadRequest(
+    WebViewRequest request,
+  ) async {
+    if (!request.uri.hasScheme) {
+      throw ArgumentError('WebViewRequest#uri is required to have a scheme.');
+    }
+    switch (request.method) {
+      case WebViewRequestMethod.get:
+        return webView.loadUrl(request.uri.toString(), request.headers);
+      case WebViewRequestMethod.post:
+        return webView.postUrl(
+            request.uri.toString(), request.body ?? Uint8List(0));
+      default:
+        throw UnimplementedError(
+          'This version of webview_android_widget currently has no implementation for HTTP method ${request.method.serialize()} in loadRequest.',
+        );
+    }
   }
 
   @override

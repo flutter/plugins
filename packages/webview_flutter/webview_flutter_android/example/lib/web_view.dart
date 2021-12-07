@@ -418,6 +418,11 @@ class WebViewController {
     return _webViewPlatformController.loadUrl(url, headers);
   }
 
+  /// Loads a page by making the specified request.
+  Future<void> loadRequest(WebViewRequest request) async {
+    return _webViewPlatformController.loadRequest(request);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.
