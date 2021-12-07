@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:html' as html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -36,8 +37,12 @@ void main() {
       ),
     );
     await controllerCompleter.future;
-    // Since the URL can't be checked on web, there's no expectation. This is
-    // just a sanity check that the call completes.
+
+    // Assert an iframe has been rendered to the DOM with the correct src attribute.
+    final html.IFrameElement? element =
+        html.document.querySelector('iframe') as html.IFrameElement?;
+    expect(element, isNotNull);
+    expect(element!.src, primaryUrl);
   });
 
   testWidgets('loadUrl', (WidgetTester tester) async {
@@ -57,7 +62,11 @@ void main() {
     );
     final WebViewController controller = await controllerCompleter.future;
     await controller.loadUrl(secondaryUrl);
-    // Since the URL can't be checked on web, there's no expectation. This is
-    // just a sanity check that the call completes.
+
+    // Assert an iframe has been rendered to the DOM with the correct src attribute.
+    final html.IFrameElement? element =
+        html.document.querySelector('iframe') as html.IFrameElement?;
+    expect(element, isNotNull);
+    expect(element!.src, secondaryUrl);
   });
 }
