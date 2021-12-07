@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -54,6 +55,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -94,6 +96,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The initial cookies to set.
+  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -285,6 +290,7 @@ class _WebViewState extends State<WebView> {
             _javascriptChannelRegistry.channels.keys.toSet(),
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
+        cookies: widget.initialCookies,
         backgroundColor: widget.backgroundColor,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
@@ -658,5 +664,23 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
     }
+  }
+}
+
+/// App-facing cookie manager that exposes the correct platform implementation.
+class WebViewCookieManager extends WebViewCookieManagerPlatform {
+  WebViewCookieManager._();
+
+  /// Returns an instance of the cookie manager for the current platform.
+  static WebViewCookieManagerPlatform get instance {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      if (Platform.isIOS) {
+        WebViewCookieManagerPlatform.instance = WKWebViewCookieManager();
+      } else {
+        throw AssertionError(
+            'This platform is currently unsupported for webview_flutter_wkwebview.');
+      }
+    }
+    return WebViewCookieManagerPlatform.instance!;
   }
 }
