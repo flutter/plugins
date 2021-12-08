@@ -1,8 +1,11 @@
+## 2.0.10
+
+* Removes obsolete manual registration of Windows and Linux implementations.
+
 ## 2.0.9
 
 * Fixes newly enabled analyzer options.
 * Updates example app Android compileSdkVersion to 31.
-
 * Moved Android and iOS implementations to federated packages.
 
 ## 2.0.8
