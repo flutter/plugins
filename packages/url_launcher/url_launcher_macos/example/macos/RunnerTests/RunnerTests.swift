@@ -23,6 +23,7 @@ class StubWorkspace: SystemURLHandler {
 class RunnerTests: XCTestCase {
 
   func testCanLaunchSuccessReturnsTrue() throws {
+    let expectation = XCTestExpectation(description: "Check if the URL can be launched")
     let plugin = UrlLauncherPlugin()
 
     let call = FlutterMethodCall(
@@ -33,10 +34,14 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertEqual(result as? Bool, true)
+        expectation.fulfill()
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 
   func testCanLaunchNoAppIsAbleToOpenUrlReturnsFalse() throws {
+    let expectation = XCTestExpectation(description: "Check if the URL can be launched")
     let plugin = UrlLauncherPlugin()
 
     let call = FlutterMethodCall(
@@ -47,10 +52,14 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertEqual(result as? Bool, false)
+        expectation.fulfill()
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 
   func testCanLaunchInvalidUrlReturnsFalse() throws {
+    let expectation = XCTestExpectation(description: "Check if the URL can be launched")
     let plugin = UrlLauncherPlugin()
 
     let call = FlutterMethodCall(
@@ -61,10 +70,14 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertEqual(result as? Bool, false)
+        expectation.fulfill()
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 
   func testCanLaunchMissingArgumentReturnsFlutterError() throws {
+    let expectation = XCTestExpectation(description: "Check if the URL can be launched")
     let plugin = UrlLauncherPlugin()
 
     let call = FlutterMethodCall(
@@ -75,10 +88,14 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertTrue(result is FlutterError)
+        expectation.fulfill()
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 
   func testLaunchSuccessReturnsTrue() throws {
+    let expectation = XCTestExpectation(description: "Try to open the URL")
     let workspace = StubWorkspace()
     let pluginWithStubWorkspace = UrlLauncherPlugin(workspace)
 
@@ -90,10 +107,14 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertEqual(result as? Bool, true)
+        expectation.fulfill()
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 
   func testLaunchNoAppIsAbleToOpenUrlReturnsFalse() throws {
+    let expectation = XCTestExpectation(description: "Try to open the URL")
     let workspace = StubWorkspace()
     workspace.isSuccessful = false
     let pluginWithStubWorkspace = UrlLauncherPlugin(workspace)
@@ -106,10 +127,14 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertEqual(result as? Bool, false)
+        expectation.fulfill()
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 
   func testLaunchMissingArgumentReturnsFlutterError() throws {
+    let expectation = XCTestExpectation(description: "Try to open the URL")
     let workspace = StubWorkspace()
     let pluginWithStubWorkspace = UrlLauncherPlugin(workspace)
 
@@ -122,5 +147,7 @@ class RunnerTests: XCTestCase {
       result: { (result: Any?) -> Void in
         XCTAssertTrue(result is FlutterError)
       })
+
+    wait(for: [expectation], timeout: 10.0)
   }
 }
