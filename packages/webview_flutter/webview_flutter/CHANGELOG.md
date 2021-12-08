@@ -1,3 +1,9 @@
+## 3.0.0
+
+* **BREAKING CHANGE**: On Android, hybrid composition (SurfaceAndroidWebView)
+  is now the default. The previous default, virtual display, can be specified
+  with `WebView.platform = AndroidWebView()`
+
 ## 2.8.0
 
 * Adds support for the `loadFlutterAsset` method.
