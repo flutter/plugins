@@ -437,6 +437,17 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
       enabled,
     );
   }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setAllowFileAccessFromInstance(
+    WebSettings instance,
+    bool enabled,
+  ) {
+    return setAllowFileAccess(
+      instanceManager.getInstanceId(instance)!,
+      enabled,
+    );
+  }
 }
 
 /// Host api implementation for [JavaScriptChannel].

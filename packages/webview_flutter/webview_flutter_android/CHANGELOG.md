@@ -1,3 +1,7 @@
+## 2.8.1
+
+* Adds the `WebSettings.setAllowFileAccess()` method and ensure that file access is allowed when the `WebViewAndroidWidget.loadFile()` method is executed.
+
 ## 2.8.0
 
 * Implements new cookie manager for setting cookies and providing initial cookies.

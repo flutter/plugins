@@ -304,6 +304,15 @@ void main() {
         ));
       });
 
+      testWidgets('loadFile should setAllowFileAccess to true',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadFile('file:///path/to/file.html');
+
+        verify(mockWebSettings.setAllowFileAccess(true));
+      });
+
       testWidgets('loadFlutterAsset', (WidgetTester tester) async {
         await buildWidget(tester);
         const String assetKey = 'test_assets/index.html';
