@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Removes the instructions on initializing the plugin since this functionality is deprecated.
+
 ## 2.0.0
 
 * **BREAKING CHANGES**:
