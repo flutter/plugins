@@ -1,5 +1,6 @@
-## NEXT
+## 1.1.9
 
+* Updates code for analysis option changes.
 * Updates Android compileSdkVersion to 31.
 
 ## 1.1.8
