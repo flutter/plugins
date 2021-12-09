@@ -160,7 +160,7 @@ class LocalAuthentication {
     final List<String> result = (await _channel.invokeListMethod<String>(
           'getAvailableBiometrics',
         )) ??
-        [];
+        <String>[];
     final List<BiometricType> biometrics = <BiometricType>[];
     for (final String value in result) {
       switch (value) {

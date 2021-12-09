@@ -45,7 +45,9 @@ class _MyAppState extends State<MyApp> {
       canCheckBiometrics = false;
       print(e);
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _canCheckBiometrics = canCheckBiometrics;
@@ -60,7 +62,9 @@ class _MyAppState extends State<MyApp> {
       availableBiometrics = <BiometricType>[];
       print(e);
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _availableBiometrics = availableBiometrics;
@@ -89,7 +93,9 @@ class _MyAppState extends State<MyApp> {
       });
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(
         () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
@@ -120,7 +126,9 @@ class _MyAppState extends State<MyApp> {
       });
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     final String message = authenticated ? 'Authorized' : 'Not Authorized';
     setState(() {
@@ -128,7 +136,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _cancelAuthentication() async {
+  Future<void> _cancelAuthentication() async {
     await auth.stopAuthentication();
     setState(() => _isAuthenticating = false);
   }
@@ -142,10 +150,10 @@ class _MyAppState extends State<MyApp> {
         ),
         body: ListView(
           padding: const EdgeInsets.only(top: 30),
-          children: [
+          children: <Widget>[
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 if (_supportState == _SupportState.unknown)
                   const CircularProgressIndicator()
                 else if (_supportState == _SupportState.supported)
@@ -171,7 +179,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: _cancelAuthentication,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: const <Widget>[
                         Text('Cancel Authentication'),
                         Icon(Icons.cancel),
                       ],
@@ -179,11 +187,11 @@ class _MyAppState extends State<MyApp> {
                   )
                 else
                   Column(
-                    children: [
+                    children: <Widget>[
                       ElevatedButton(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: const <Widget>[
                             Text('Authenticate'),
                             Icon(Icons.perm_device_information),
                           ],
@@ -193,7 +201,7 @@ class _MyAppState extends State<MyApp> {
                       ElevatedButton(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
+                          children: <Widget>[
                             Text(_isAuthenticating
                                 ? 'Cancel'
                                 : 'Authenticate: biometrics only'),
