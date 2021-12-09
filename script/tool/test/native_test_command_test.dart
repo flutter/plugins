@@ -8,10 +8,12 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/cmake.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/native_test_command.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -53,6 +55,16 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   }
 };
 
+const String _fakeCmakeCommand = 'path/to/cmake';
+
+void _createFakeCMakeCache(Directory pluginDir, Platform platform) {
+  final CMakeProject project = CMakeProject(pluginDir.childDirectory('example'),
+      platform: platform, buildMode: 'Release');
+  final File cache = project.buildDirectory.childFile('CMakeCache.txt');
+  cache.createSync(recursive: true);
+  cache.writeAsStringSync('CMAKE_COMMAND:INTERNAL=$_fakeCmakeCommand');
+}
+
 // TODO(stuartmorgan): Rework these tests to use a mock Xcode instead of
 // doing all the process mocking and validation.
 void main() {
@@ -67,7 +79,10 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      mockPlatform = MockPlatform(isMacOS: true);
+      // iOS and macOS tests expect macOS, Linux tests expect Linux; nothing
+      // needs to distinguish between Linux and macOS, so set both to true to
+      // allow them to share a setup group.
+      mockPlatform = MockPlatform(isMacOS: true, isLinux: true);
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
       final NativeTestCommand command = NativeTestCommand(packagesDir,
@@ -131,6 +146,26 @@ void main() {
             'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
           ],
           package.path);
+    }
+
+    // Returns the ProcessCall to expect for build the Linux unit tests for the
+    // given plugin.
+    ProcessCall _getLinuxBuildCall(Directory pluginDir) {
+      return ProcessCall(
+          'cmake',
+          <String>[
+            '--build',
+            pluginDir
+                .childDirectory('example')
+                .childDirectory('build')
+                .childDirectory('linux')
+                .childDirectory('x64')
+                .childDirectory('release')
+                .path,
+            '--target',
+            'unit_tests'
+          ],
+          null);
     }
 
     test('fails if no platforms are provided', () async {
@@ -844,15 +879,16 @@ void main() {
     });
 
     group('Linux', () {
-      test('runs unit tests', () async {
+      test('builds and runs unit tests', () async {
         const String testBinaryRelativePath =
-            'build/linux/foo/release/bar/plugin_test';
+            'build/linux/x64/release/bar/plugin_test';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
           kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -874,15 +910,16 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
+              _getLinuxBuildCall(pluginDirectory),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });
 
       test('only runs release unit tests', () async {
         const String debugTestBinaryRelativePath =
-            'build/linux/foo/debug/bar/plugin_test';
+            'build/linux/x64/debug/bar/plugin_test';
         const String releaseTestBinaryRelativePath =
-            'build/linux/foo/release/bar/plugin_test';
+            'build/linux/x64/release/bar/plugin_test';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$debugTestBinaryRelativePath',
@@ -890,6 +927,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File releaseTestBinary = childFileWithSubcomponents(
             pluginDirectory,
@@ -909,15 +947,15 @@ void main() {
           ]),
         );
 
-        // Only the release version should be run.
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
+              _getLinuxBuildCall(pluginDirectory),
               ProcessCall(releaseTestBinary.path, const <String>[], null),
             ]));
       });
 
-      test('fails if there are no unit tests', () async {
+      test('fails if CMake has not been configured', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
               kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
@@ -936,22 +974,56 @@ void main() {
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('No test binaries found.'),
+            contains('plugin:\n'
+                '    Examples must be built before testing.')
           ]),
         );
 
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
+      test('fails if there are no unit tests', () async {
+        final Directory pluginDirectory = createFakePlugin(
+            'plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--linux',
+          '--no-integration',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No test binaries found.'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              _getLinuxBuildCall(pluginDirectory),
+            ]));
+      });
+
       test('fails if a unit test fails', () async {
         const String testBinaryRelativePath =
-            'build/linux/foo/release/bar/plugin_test';
+            'build/linux/x64/release/bar/plugin_test';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
           kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -979,6 +1051,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
+              _getLinuxBuildCall(pluginDirectory),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });
@@ -1524,16 +1597,37 @@ void main() {
       runner.addCommand(command);
     });
 
+    // Returns the ProcessCall to expect for build the Windows unit tests for
+    // the given plugin.
+    ProcessCall _getWindowsBuildCall(Directory pluginDir) {
+      return ProcessCall(
+          _fakeCmakeCommand,
+          <String>[
+            '--build',
+            pluginDir
+                .childDirectory('example')
+                .childDirectory('build')
+                .childDirectory('windows')
+                .path,
+            '--target',
+            'unit_tests',
+            '--config',
+            'Debug'
+          ],
+          null);
+    }
+
     group('Windows', () {
       test('runs unit tests', () async {
         const String testBinaryRelativePath =
-            'build/windows/foo/Release/bar/plugin_test.exe';
+            'build/windows/Debug/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -1555,15 +1649,16 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
+              _getWindowsBuildCall(pluginDirectory),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });
 
-      test('only runs release unit tests', () async {
+      test('only runs debug unit tests', () async {
         const String debugTestBinaryRelativePath =
-            'build/windows/foo/Debug/bar/plugin_test.exe';
+            'build/windows/Debug/bar/plugin_test.exe';
         const String releaseTestBinaryRelativePath =
-            'build/windows/foo/Release/bar/plugin_test.exe';
+            'build/windows/Release/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$debugTestBinaryRelativePath',
@@ -1571,10 +1666,10 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
-        final File releaseTestBinary = childFileWithSubcomponents(
-            pluginDirectory,
-            <String>['example', ...releaseTestBinaryRelativePath.split('/')]);
+        final File debugTestBinary = childFileWithSubcomponents(pluginDirectory,
+            <String>['example', ...debugTestBinaryRelativePath.split('/')]);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -1590,15 +1685,15 @@ void main() {
           ]),
         );
 
-        // Only the release version should be run.
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(releaseTestBinary.path, const <String>[], null),
+              _getWindowsBuildCall(pluginDirectory),
+              ProcessCall(debugTestBinary.path, const <String>[], null),
             ]));
       });
 
-      test('fails if there are no unit tests', () async {
+      test('fails if CMake has not been configured', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
               kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
@@ -1617,22 +1712,56 @@ void main() {
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('No test binaries found.'),
+            contains('plugin:\n'
+                '    Examples must be built before testing.')
           ]),
         );
 
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
+      test('fails if there are no unit tests', () async {
+        final Directory pluginDirectory = createFakePlugin(
+            'plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+            });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--windows',
+          '--no-integration',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No test binaries found.'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              _getWindowsBuildCall(pluginDirectory),
+            ]));
+      });
+
       test('fails if a unit test fails', () async {
         const String testBinaryRelativePath =
-            'build/windows/foo/Release/bar/plugin_test.exe';
+            'build/windows/Debug/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -1660,6 +1789,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
+              _getWindowsBuildCall(pluginDirectory),
               ProcessCall(testBinary.path, const <String>[], null),
             ]));
       });

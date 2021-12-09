@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <FLTCookieManager.h>
 #import <Flutter/Flutter.h>
 #import <WebKit/WebKit.h>
 
@@ -27,10 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView*)view;
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
+
 @end
 
 @interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
+                    cookieManager:(FLTCookieManager*)cookieManager;
 @end
 
 NS_ASSUME_NONNULL_END

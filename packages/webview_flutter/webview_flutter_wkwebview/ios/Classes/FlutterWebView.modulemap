@@ -1,0 +1,11 @@
+framework module webview_flutter_wkwebview {
+  umbrella header "webview-umbrella.h"
+  
+  export *
+  module * { export * }
+
+  explicit module Test {
+    header "FlutterWebView_Test.h"
+    header "FLTCookieManager_Test.h"
+  }
+}
