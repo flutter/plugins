@@ -2,37 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-typedef void VoidCallback();
+import 'webview_flutter_test.mocks.dart';
 
+typedef VoidCallback = void Function();
+
+@GenerateMocks(<Type>[WebViewPlatform, WebViewPlatformController])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final _FakePlatformViewsController fakePlatformViewsController =
-      _FakePlatformViewsController();
-
-  final _FakeCookieManager _fakeCookieManager = _FakeCookieManager();
-
-  setUpAll(() {
-    SystemChannels.platform_views.setMockMethodCallHandler(
-        fakePlatformViewsController.fakePlatformViewsMethodHandler);
-    SystemChannels.platform
-        .setMockMethodCallHandler(_fakeCookieManager.onMethodCall);
-  });
+  late MockWebViewPlatform mockWebViewPlatform;
+  late MockWebViewPlatformController mockWebViewPlatformController;
+  late MockWebViewCookieManagerPlatform mockWebViewCookieManagerPlatform;
 
   setUp(() {
-    fakePlatformViewsController.reset();
-    _fakeCookieManager.reset();
+    mockWebViewPlatformController = MockWebViewPlatformController();
+    mockWebViewPlatform = MockWebViewPlatform();
+    mockWebViewCookieManagerPlatform = MockWebViewCookieManagerPlatform();
+    when(mockWebViewPlatform.build(
+      context: anyNamed('context'),
+      creationParams: anyNamed('creationParams'),
+      webViewPlatformCallbacksHandler:
+          anyNamed('webViewPlatformCallbacksHandler'),
+      javascriptChannelRegistry: anyNamed('javascriptChannelRegistry'),
+      onWebViewPlatformCreated: anyNamed('onWebViewPlatformCreated'),
+      gestureRecognizers: anyNamed('gestureRecognizers'),
+    )).thenAnswer((Invocation invocation) {
+      final WebViewPlatformCreatedCallback onWebViewPlatformCreated =
+          invocation.namedArguments[const Symbol('onWebViewPlatformCreated')]
+              as WebViewPlatformCreatedCallback;
+      return TestPlatformWebView(
+        mockWebViewPlatformController: mockWebViewPlatformController,
+        onWebViewPlatformCreated: onWebViewPlatformCreated,
+      );
+    });
+
+    WebView.platform = mockWebViewPlatform;
+    WebViewCookieManagerPlatform.instance = mockWebViewCookieManagerPlatform;
+  });
+
+  tearDown(() {
+    mockWebViewCookieManagerPlatform.reset();
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
@@ -40,35 +60,167 @@ void main() {
   });
 
   testWidgets('Initial url', (WidgetTester tester) async {
-    late WebViewController controller;
+    await tester.pumpWidget(const WebView(initialUrl: 'https://youtube.com'));
+
+    final CreationParams params = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single as CreationParams;
+
+    expect(params.initialUrl, 'https://youtube.com');
+  });
+
+  testWidgets('Javascript mode', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final CreationParams unrestrictedparams = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single as CreationParams;
+
+    expect(
+      unrestrictedparams.webSettings!.javascriptMode,
+      JavascriptMode.unrestricted,
+    );
+
+    await tester.pumpWidget(const WebView(
+      javascriptMode: JavascriptMode.disabled,
+    ));
+
+    final CreationParams disabledparams = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single as CreationParams;
+
+    expect(disabledparams.webSettings!.javascriptMode, JavascriptMode.disabled);
+  });
+
+  testWidgets('Load file', (WidgetTester tester) async {
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
-        initialUrl: 'https://youtube.com',
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
       ),
     );
 
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    expect(controller, isNotNull);
+
+    await controller!.loadFile('/test/path/index.html');
+
+    verify(mockWebViewPlatformController.loadFile(
+      '/test/path/index.html',
+    ));
   });
 
-  testWidgets('Javascript mode', (WidgetTester tester) async {
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-      javascriptMode: JavascriptMode.unrestricted,
+  testWidgets('Load file with empty path', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadFile(''), throwsAssertionError);
+  });
+
+  testWidgets('Load Flutter asset', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadFlutterAsset('assets/index.html');
+
+    verify(mockWebViewPlatformController.loadFlutterAsset(
+      'assets/index.html',
     ));
+  });
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
+  testWidgets('Load Flutter asset with empty key', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
 
-    expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
+    expect(controller, isNotNull);
 
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-      javascriptMode: JavascriptMode.disabled,
+    expect(() => controller!.loadFlutterAsset(''), throwsAssertionError);
+  });
+
+  testWidgets('Load HTML string without base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString('<p>This is a test paragraph.</p>');
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
     ));
-    expect(platformWebView.javascriptMode, JavascriptMode.disabled);
+  });
+
+  testWidgets('Load HTML string with base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    );
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    ));
+  });
+
+  testWidgets('Load HTML string with empty string',
+      (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadHtmlString(''), throwsAssertionError);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
@@ -85,7 +237,10 @@ void main() {
 
     await controller!.loadUrl('https://flutter.io');
 
-    expect(await controller!.currentUrl(), 'https://flutter.io');
+    verify(mockWebViewPlatformController.loadUrl(
+      'https://flutter.io',
+      argThat(isNull),
+    ));
   });
 
   testWidgets('Invalid urls', (WidgetTester tester) async {
@@ -100,14 +255,15 @@ void main() {
 
     expect(controller, isNotNull);
 
-    expect(await controller!.currentUrl(), isNull);
+    final CreationParams params = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single as CreationParams;
+
+    expect(params.initialUrl, isNull);
 
     expect(() => controller!.loadUrl(''), throwsA(anything));
-    expect(await controller!.currentUrl(), isNull);
-
-    // Missing schema.
     expect(() => controller!.loadUrl('flutter.io'), throwsA(anything));
-    expect(await controller!.currentUrl(), isNull);
   });
 
   testWidgets('Headers in loadUrl', (WidgetTester tester) async {
@@ -126,11 +282,37 @@ void main() {
       'CACHE-CONTROL': 'ABC'
     };
     await controller!.loadUrl('https://flutter.io', headers: headers);
-    expect(await controller!.currentUrl(), equals('https://flutter.io'));
+
+    verify(mockWebViewPlatformController.loadUrl(
+      'https://flutter.io',
+      <String, String>{'CACHE-CONTROL': 'ABC'},
+    ));
   });
 
-  testWidgets("Can't go back before loading a page",
-      (WidgetTester tester) async {
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+
+    final WebViewRequest req = WebViewRequest(
+      uri: Uri.parse('https://flutter.dev'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+
+    await controller!.loadRequest(req);
+
+    verify(mockWebViewPlatformController.loadRequest(req));
+  });
+
+  testWidgets('Clear Cache', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -141,48 +323,16 @@ void main() {
     );
 
     expect(controller, isNotNull);
-
-    final bool canGoBackNoPageLoaded = await controller!.canGoBack();
-
-    expect(canGoBackNoPageLoaded, false);
-  });
-
-  testWidgets("Clear Cache", (WidgetTester tester) async {
-    WebViewController? controller;
-    await tester.pumpWidget(
-      WebView(
-        onWebViewCreated: (WebViewController webViewController) {
-          controller = webViewController;
-        },
-      ),
-    );
-
-    expect(controller, isNotNull);
-    expect(fakePlatformViewsController.lastCreatedView!.hasCache, true);
 
     await controller!.clearCache();
 
-    expect(fakePlatformViewsController.lastCreatedView!.hasCache, false);
-  });
-
-  testWidgets("Can't go back with no history", (WidgetTester tester) async {
-    WebViewController? controller;
-    await tester.pumpWidget(
-      WebView(
-        initialUrl: 'https://flutter.io',
-        onWebViewCreated: (WebViewController webViewController) {
-          controller = webViewController;
-        },
-      ),
-    );
-
-    expect(controller, isNotNull);
-    final bool canGoBackFirstPageLoaded = await controller!.canGoBack();
-
-    expect(canGoBackFirstPageLoaded, false);
+    verify(mockWebViewPlatformController.clearCache());
   });
 
   testWidgets('Can go back', (WidgetTester tester) async {
+    when(mockWebViewPlatformController.canGoBack())
+        .thenAnswer((_) => Future<bool>.value(true));
+
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -194,15 +344,13 @@ void main() {
     );
 
     expect(controller, isNotNull);
-
-    await controller!.loadUrl('https://www.google.com');
-    final bool canGoBackSecondPageLoaded = await controller!.canGoBack();
-
-    expect(canGoBackSecondPageLoaded, true);
+    expect(controller!.canGoBack(), completion(true));
   });
 
-  testWidgets("Can't go forward before loading a page",
-      (WidgetTester tester) async {
+  testWidgets("Can't go forward", (WidgetTester tester) async {
+    when(mockWebViewPlatformController.canGoForward())
+        .thenAnswer((_) => Future<bool>.value(false));
+
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -213,47 +361,7 @@ void main() {
     );
 
     expect(controller, isNotNull);
-
-    final bool canGoForwardNoPageLoaded = await controller!.canGoForward();
-
-    expect(canGoForwardNoPageLoaded, false);
-  });
-
-  testWidgets("Can't go forward with no history", (WidgetTester tester) async {
-    WebViewController? controller;
-    await tester.pumpWidget(
-      WebView(
-        initialUrl: 'https://flutter.io',
-        onWebViewCreated: (WebViewController webViewController) {
-          controller = webViewController;
-        },
-      ),
-    );
-
-    expect(controller, isNotNull);
-    final bool canGoForwardFirstPageLoaded = await controller!.canGoForward();
-
-    expect(canGoForwardFirstPageLoaded, false);
-  });
-
-  testWidgets('Can go forward', (WidgetTester tester) async {
-    WebViewController? controller;
-    await tester.pumpWidget(
-      WebView(
-        initialUrl: 'https://flutter.io',
-        onWebViewCreated: (WebViewController webViewController) {
-          controller = webViewController;
-        },
-      ),
-    );
-
-    expect(controller, isNotNull);
-
-    await controller!.loadUrl('https://youtube.com');
-    await controller!.goBack();
-    final bool canGoForwardFirstPageBacked = await controller!.canGoForward();
-
-    expect(canGoForwardFirstPageBacked, true);
+    expect(controller!.canGoForward(), completion(false));
   });
 
   testWidgets('Go back', (WidgetTester tester) async {
@@ -267,17 +375,8 @@ void main() {
       ),
     );
 
-    expect(controller, isNotNull);
-
-    expect(await controller!.currentUrl(), 'https://youtube.com');
-
-    await controller!.loadUrl('https://flutter.io');
-
-    expect(await controller!.currentUrl(), 'https://flutter.io');
-
     await controller!.goBack();
-
-    expect(await controller!.currentUrl(), 'https://youtube.com');
+    verify(mockWebViewPlatformController.goBack());
   });
 
   testWidgets('Go forward', (WidgetTester tester) async {
@@ -292,23 +391,14 @@ void main() {
     );
 
     expect(controller, isNotNull);
-
-    expect(await controller!.currentUrl(), 'https://youtube.com');
-
-    await controller!.loadUrl('https://flutter.io');
-
-    expect(await controller!.currentUrl(), 'https://flutter.io');
-
-    await controller!.goBack();
-
-    expect(await controller!.currentUrl(), 'https://youtube.com');
-
     await controller!.goForward();
-
-    expect(await controller!.currentUrl(), 'https://flutter.io');
+    verify(mockWebViewPlatformController.goForward());
   });
 
   testWidgets('Current URL', (WidgetTester tester) async {
+    when(mockWebViewPlatformController.currentUrl())
+        .thenAnswer((_) => Future<String>.value('https://youtube.com'));
+
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -319,17 +409,6 @@ void main() {
     );
 
     expect(controller, isNotNull);
-
-    // Test a WebView without an explicitly set first URL.
-    expect(await controller!.currentUrl(), isNull);
-
-    await controller!.loadUrl('https://youtube.com');
-    expect(await controller!.currentUrl(), 'https://youtube.com');
-
-    await controller!.loadUrl('https://flutter.io');
-    expect(await controller!.currentUrl(), 'https://flutter.io');
-
-    await controller!.goBack();
     expect(await controller!.currentUrl(), 'https://youtube.com');
   });
 
@@ -344,23 +423,14 @@ void main() {
       ),
     );
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
-
-    expect(platformWebView.currentUrl, 'https://flutter.io');
-    expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
-
     await controller.reload();
-
-    expect(platformWebView.currentUrl, 'https://flutter.io');
-    expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
-
-    await controller.loadUrl('https://youtube.com');
-
-    expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
+    verify(mockWebViewPlatformController.reload());
   });
 
   testWidgets('evaluate Javascript', (WidgetTester tester) async {
+    when(mockWebViewPlatformController.evaluateJavascript('fake js string'))
+        .thenAnswer((_) => Future<String>.value('fake js string'));
+
     late WebViewController controller;
     await tester.pumpWidget(
       WebView(
@@ -371,10 +441,11 @@ void main() {
         },
       ),
     );
+
     expect(
         // ignore: deprecated_member_use_from_same_package
-        await controller.evaluateJavascript("fake js string"),
-        "fake js string",
+        await controller.evaluateJavascript('fake js string'),
+        'fake js string',
         reason: 'should get the argument');
   });
 
@@ -409,8 +480,7 @@ void main() {
       ),
     );
     await controller.runJavascript('fake js string');
-    expect(fakePlatformViewsController.lastCreatedView?.lastRunJavaScriptString,
-        'fake js string');
+    verify(mockWebViewPlatformController.runJavascript('fake js string'));
   });
 
   testWidgets('runJavaScript with JavascriptMode disabled',
@@ -432,6 +502,10 @@ void main() {
   });
 
   testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
+    when(mockWebViewPlatformController
+            .runJavascriptReturningResult('fake js string'))
+        .thenAnswer((_) => Future<String>.value('fake js string'));
+
     late WebViewController controller;
     await tester.pumpWidget(
       WebView(
@@ -442,8 +516,8 @@ void main() {
         },
       ),
     );
-    expect(await controller.runJavascriptReturningResult("fake js string"),
-        "fake js string",
+    expect(await controller.runJavascriptReturningResult('fake js string'),
+        'fake js string',
         reason: 'should get the argument');
   });
 
@@ -476,18 +550,19 @@ void main() {
     expect(hasCookies, true);
   });
 
-  testWidgets('Second cookie clear does not have cookies',
-      (WidgetTester tester) async {
+  testWidgets('Cookies can be set', (WidgetTester tester) async {
+    const WebViewCookie cookie =
+        WebViewCookie(name: 'foo', value: 'bar', domain: 'flutter.dev');
+
     await tester.pumpWidget(
       const WebView(
         initialUrl: 'https://flutter.io',
       ),
     );
     final CookieManager cookieManager = CookieManager();
-    final bool hasCookies = await cookieManager.clearCookies();
-    expect(hasCookies, true);
-    final bool hasCookiesSecond = await cookieManager.clearCookies();
-    expect(hasCookiesSecond, false);
+    await cookieManager.setCookie(cookie);
+    expect(mockWebViewCookieManagerPlatform.setCookieCalls,
+        <WebViewCookie>[cookie]);
   });
 
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
@@ -503,10 +578,12 @@ void main() {
       ),
     );
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
+    final CreationParams params = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single as CreationParams;
 
-    expect(platformWebView.javascriptChannelNames,
+    expect(params.javascriptChannelNames,
         unorderedEquals(<String>['Tts', 'Alarm']));
   });
 
@@ -570,11 +647,15 @@ void main() {
       ),
     );
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
+    final JavascriptChannelRegistry channelRegistry = captureBuildArgs(
+      mockWebViewPlatform,
+      javascriptChannelRegistry: true,
+    ).first as JavascriptChannelRegistry;
 
-    expect(platformWebView.javascriptChannelNames,
-        unorderedEquals(<String>['Tts', 'Alarm2', 'Alarm3']));
+    expect(
+      channelRegistry.channels.keys,
+      unorderedEquals(<String>['Tts', 'Alarm2', 'Alarm3']),
+    );
   });
 
   testWidgets('Remove all JavaScript channels and then add',
@@ -609,11 +690,12 @@ void main() {
       ),
     );
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
+    final JavascriptChannelRegistry channelRegistry = captureBuildArgs(
+      mockWebViewPlatform,
+      javascriptChannelRegistry: true,
+    ).last as JavascriptChannelRegistry;
 
-    expect(platformWebView.javascriptChannelNames,
-        unorderedEquals(<String>['Tts']));
+    expect(channelRegistry.channels.keys, unorderedEquals(<String>['Tts']));
   });
 
   testWidgets('JavaScript channel messages', (WidgetTester tester) async {
@@ -637,14 +719,16 @@ void main() {
       ),
     );
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
+    final JavascriptChannelRegistry channelRegistry = captureBuildArgs(
+      mockWebViewPlatform,
+      javascriptChannelRegistry: true,
+    ).single as JavascriptChannelRegistry;
 
     expect(ttsMessagesReceived, isEmpty);
     expect(alarmMessagesReceived, isEmpty);
 
-    platformWebView.fakeJavascriptPostMessage('Tts', 'Hello');
-    platformWebView.fakeJavascriptPostMessage('Tts', 'World');
+    channelRegistry.onJavascriptChannelMessage('Tts', 'Hello');
+    channelRegistry.onJavascriptChannelMessage('Tts', 'World');
 
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
@@ -660,12 +744,14 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).single as WebViewPlatformCallbacksHandler;
 
-      platformWebView.fakeOnPageStartedCallback();
+      handler.onPageStarted('https://youtube.com');
 
-      expect(platformWebView.currentUrl, returnedUrl);
+      expect(returnedUrl, 'https://youtube.com');
     });
 
     testWidgets('onPageStarted is null', (WidgetTester tester) async {
@@ -674,12 +760,14 @@ void main() {
         onPageStarted: null,
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).single as WebViewPlatformCallbacksHandler;
 
       // The platform side will always invoke a call for onPageStarted. This is
       // to test that it does not crash on a null callback.
-      platformWebView.fakeOnPageStartedCallback();
+      handler.onPageStarted('https://youtube.com');
     });
 
     testWidgets('onPageStarted changed', (WidgetTester tester) async {
@@ -697,12 +785,13 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).last as WebViewPlatformCallbacksHandler;
+      handler.onPageStarted('https://youtube.com');
 
-      platformWebView.fakeOnPageStartedCallback();
-
-      expect(platformWebView.currentUrl, returnedUrl);
+      expect(returnedUrl, 'https://youtube.com');
     });
   });
 
@@ -717,12 +806,13 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).single as WebViewPlatformCallbacksHandler;
+      handler.onPageFinished('https://youtube.com');
 
-      platformWebView.fakeOnPageFinishedCallback();
-
-      expect(platformWebView.currentUrl, returnedUrl);
+      expect(returnedUrl, 'https://youtube.com');
     });
 
     testWidgets('onPageFinished is null', (WidgetTester tester) async {
@@ -731,12 +821,13 @@ void main() {
         onPageFinished: null,
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
-
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).single as WebViewPlatformCallbacksHandler;
       // The platform side will always invoke a call for onPageFinished. This is
       // to test that it does not crash on a null callback.
-      platformWebView.fakeOnPageFinishedCallback();
+      handler.onPageFinished('https://youtube.com');
     });
 
     testWidgets('onPageFinished changed', (WidgetTester tester) async {
@@ -754,12 +845,13 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).last as WebViewPlatformCallbacksHandler;
+      handler.onPageFinished('https://youtube.com');
 
-      platformWebView.fakeOnPageFinishedCallback();
-
-      expect(platformWebView.currentUrl, returnedUrl);
+      expect(returnedUrl, 'https://youtube.com');
     });
   });
 
@@ -774,10 +866,11 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView? platformWebView =
-          fakePlatformViewsController.lastCreatedView;
-
-      platformWebView?.fakeOnProgressCallback(50);
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).single as WebViewPlatformCallbacksHandler;
+      handler.onProgress(50);
 
       expect(loadingProgress, 50);
     });
@@ -788,11 +881,13 @@ void main() {
         onProgress: null,
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).single as WebViewPlatformCallbacksHandler;
 
       // This is to test that it does not crash on a null callback.
-      platformWebView.fakeOnProgressCallback(50);
+      handler.onProgress(50);
     });
 
     testWidgets('onLoadingProgress changed', (WidgetTester tester) async {
@@ -810,10 +905,11 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
-
-      platformWebView.fakeOnProgressCallback(50);
+      final WebViewPlatformCallbacksHandler handler = captureBuildArgs(
+        mockWebViewPlatform,
+        webViewPlatformCallbacksHandler: true,
+      ).last as WebViewPlatformCallbacksHandler;
+      handler.onProgress(50);
 
       expect(loadingProgress, 50);
     });
@@ -825,10 +921,12 @@ void main() {
         initialUrl: 'https://youtube.com',
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
 
-      expect(platformWebView.hasNavigationDelegate, false);
+      expect(params.webSettings!.hasNavigationDelegate, false);
 
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
@@ -836,7 +934,12 @@ void main() {
             NavigationDecision.navigate,
       ));
 
-      expect(platformWebView.hasNavigationDelegate, true);
+      final WebSettings updateSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .single as WebSettings;
+
+      expect(updateSettings.hasNavigationDelegate, true);
     });
 
     testWidgets('Block navigation', (WidgetTester tester) async {
@@ -852,22 +955,39 @@ void main() {
                 : NavigationDecision.prevent;
           }));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final List<dynamic> args = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+        webViewPlatformCallbacksHandler: true,
+      );
 
-      expect(platformWebView.hasNavigationDelegate, true);
+      final CreationParams params = args[0] as CreationParams;
+      expect(params.webSettings!.hasNavigationDelegate, true);
 
-      platformWebView.fakeNavigate('https://www.google.com');
+      final WebViewPlatformCallbacksHandler handler =
+          args[1] as WebViewPlatformCallbacksHandler;
+
       // The navigation delegate only allows navigation to https://flutter.dev
       // so we should still be in https://youtube.com.
-      expect(platformWebView.currentUrl, 'https://youtube.com');
+      expect(
+        handler.onNavigationRequest(
+          url: 'https://www.google.com',
+          isForMainFrame: true,
+        ),
+        completion(false),
+      );
+
       expect(navigationRequests.length, 1);
       expect(navigationRequests[0].url, 'https://www.google.com');
       expect(navigationRequests[0].isForMainFrame, true);
 
-      platformWebView.fakeNavigate('https://flutter.dev');
-      await tester.pump();
-      expect(platformWebView.currentUrl, 'https://flutter.dev');
+      expect(
+        handler.onNavigationRequest(
+          url: 'https://flutter.dev',
+          isForMainFrame: true,
+        ),
+        completion(true),
+      );
     });
   });
 
@@ -877,41 +997,50 @@ void main() {
         debuggingEnabled: true,
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
 
-      expect(platformWebView.debuggingEnabled, true);
+      expect(params.webSettings!.debuggingEnabled, true);
     });
 
     testWidgets('defaults to false', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView());
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
 
-      expect(platformWebView.debuggingEnabled, false);
+      expect(params.webSettings!.debuggingEnabled, false);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
       final GlobalKey key = GlobalKey();
       await tester.pumpWidget(WebView(key: key));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
-
       await tester.pumpWidget(WebView(
         key: key,
         debuggingEnabled: true,
       ));
 
-      expect(platformWebView.debuggingEnabled, true);
+      final WebSettings enabledSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .last as WebSettings;
+      expect(enabledSettings.debuggingEnabled, true);
 
       await tester.pumpWidget(WebView(
         key: key,
         debuggingEnabled: false,
       ));
 
-      expect(platformWebView.debuggingEnabled, false);
+      final WebSettings disabledSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .last as WebSettings;
+      expect(disabledSettings.debuggingEnabled, false);
     });
   });
 
@@ -921,46 +1050,84 @@ void main() {
         zoomEnabled: true,
       ));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
 
-      expect(platformWebView.zoomEnabled, isTrue);
+      expect(params.webSettings!.zoomEnabled, isTrue);
     });
 
     testWidgets('defaults to true', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView());
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
 
-      expect(platformWebView.zoomEnabled, isTrue);
+      expect(params.webSettings!.zoomEnabled, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
       final GlobalKey key = GlobalKey();
       await tester.pumpWidget(WebView(key: key));
 
-      final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView!;
-
       await tester.pumpWidget(WebView(
         key: key,
         zoomEnabled: true,
       ));
 
-      expect(platformWebView.zoomEnabled, isTrue);
+      final WebSettings enabledSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .last as WebSettings;
+      // Zoom defaults to true, so no changes are made to settings.
+      expect(enabledSettings.zoomEnabled, isNull);
 
       await tester.pumpWidget(WebView(
         key: key,
         zoomEnabled: false,
       ));
 
-      expect(platformWebView.zoomEnabled, isFalse);
+      final WebSettings disabledSettings =
+          verify(mockWebViewPlatformController.updateSettings(captureAny))
+              .captured
+              .last as WebSettings;
+      expect(disabledSettings.zoomEnabled, isFalse);
+    });
+  });
+
+  group('Background color', () {
+    testWidgets('Defaults to null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, null);
+    });
+
+    testWidgets('Can be transparent', (WidgetTester tester) async {
+      const Color transparentColor = Color(0x00000000);
+
+      await tester.pumpWidget(const WebView(
+        backgroundColor: transparentColor,
+      ));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, transparentColor);
     });
   });
 
   group('Custom platform implementation', () {
-    setUpAll(() {
+    setUp(() {
       WebView.platform = MyWebViewPlatform();
     });
     tearDownAll(() {
@@ -986,7 +1153,7 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
-              userAgent: WebSetting<String?>.of(null),
+              userAgent: const WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
               zoomEnabled: true,
             ),
@@ -1017,16 +1184,19 @@ void main() {
       expect(platform.lastRequestHeaders, headers);
     });
   });
+
   testWidgets('Set UserAgent', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
       javascriptMode: JavascriptMode.unrestricted,
     ));
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView!;
+    final CreationParams params = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single as CreationParams;
 
-    expect(platformWebView.userAgent, isNull);
+    expect(params.webSettings!.userAgent.value, isNull);
 
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
@@ -1034,264 +1204,74 @@ void main() {
       userAgent: 'UA',
     ));
 
-    expect(platformWebView.userAgent, 'UA');
+    final WebSettings settings =
+        verify(mockWebViewPlatformController.updateSettings(captureAny))
+            .captured
+            .last as WebSettings;
+    expect(settings.userAgent.value, 'UA');
   });
 }
 
-class FakePlatformWebView {
-  FakePlatformWebView(int? id, Map<dynamic, dynamic> params) {
-    if (params.containsKey('initialUrl')) {
-      final String? initialUrl = params['initialUrl'];
-      if (initialUrl != null) {
-        history.add(initialUrl);
-        currentPosition++;
-      }
-    }
-    if (params.containsKey('javascriptChannelNames')) {
-      javascriptChannelNames =
-          List<String>.from(params['javascriptChannelNames']);
-    }
-    javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
-    hasNavigationDelegate =
-        params['settings']['hasNavigationDelegate'] ?? false;
-    debuggingEnabled = params['settings']['debuggingEnabled'];
-    userAgent = params['settings']['userAgent'];
-    zoomEnabled = params['settings']['zoomEnabled'] ?? true;
-    channel = MethodChannel(
-        'plugins.flutter.io/webview_$id', const StandardMethodCodec());
-    channel.setMockMethodCallHandler(onMethodCall);
-  }
-
-  late MethodChannel channel;
-
-  List<String?> history = <String?>[];
-  int currentPosition = -1;
-  int amountOfReloadsOnCurrentUrl = 0;
-  bool hasCache = true;
-
-  String? get currentUrl => history.isEmpty ? null : history[currentPosition];
-  JavascriptMode? javascriptMode;
-  List<String>? javascriptChannelNames;
-
-  bool? hasNavigationDelegate;
-  bool? debuggingEnabled;
-  String? userAgent;
-  bool? zoomEnabled;
-
-  String? lastRunJavaScriptString;
-
-  Future<dynamic> onMethodCall(MethodCall call) {
-    switch (call.method) {
-      case 'loadUrl':
-        final Map<dynamic, dynamic> request = call.arguments;
-        _loadUrl(request['url']);
-        return Future<void>.sync(() {});
-      case 'updateSettings':
-        if (call.arguments['jsMode'] != null) {
-          javascriptMode = JavascriptMode.values[call.arguments['jsMode']];
-        }
-        if (call.arguments['hasNavigationDelegate'] != null) {
-          hasNavigationDelegate = call.arguments['hasNavigationDelegate'];
-        }
-        if (call.arguments['debuggingEnabled'] != null) {
-          debuggingEnabled = call.arguments['debuggingEnabled'];
-        }
-        userAgent = call.arguments['userAgent'];
-        if (call.arguments['zoomEnabled'] != null) {
-          zoomEnabled = call.arguments['zoomEnabled'];
-        }
-        break;
-      case 'canGoBack':
-        return Future<bool>.sync(() => currentPosition > 0);
-      case 'canGoForward':
-        return Future<bool>.sync(() => currentPosition < history.length - 1);
-      case 'goBack':
-        currentPosition = max(-1, currentPosition - 1);
-        return Future<void>.sync(() {});
-      case 'goForward':
-        currentPosition = min(history.length - 1, currentPosition + 1);
-        return Future<void>.sync(() {});
-      case 'reload':
-        amountOfReloadsOnCurrentUrl++;
-        return Future<void>.sync(() {});
-      case 'currentUrl':
-        return Future<String?>.value(currentUrl);
-      case 'runJavascriptReturningResult':
-      case 'evaluateJavascript':
-        lastRunJavaScriptString = call.arguments;
-        return Future<dynamic>.value(call.arguments);
-      case 'runJavascript':
-        lastRunJavaScriptString = call.arguments;
-        return Future<void>.sync(() {});
-      case 'addJavascriptChannels':
-        final List<String> channelNames = List<String>.from(call.arguments);
-        javascriptChannelNames!.addAll(channelNames);
-        break;
-      case 'removeJavascriptChannels':
-        final List<String> channelNames = List<String>.from(call.arguments);
-        javascriptChannelNames!
-            .removeWhere((String channel) => channelNames.contains(channel));
-        break;
-      case 'clearCache':
-        hasCache = false;
-        return Future<void>.sync(() {});
-    }
-    return Future<void>.sync(() {});
-  }
-
-  void fakeJavascriptPostMessage(String jsChannel, String message) {
-    final StandardMethodCodec codec = const StandardMethodCodec();
-    final Map<String, dynamic> arguments = <String, dynamic>{
-      'channel': jsChannel,
-      'message': message
-    };
-    final ByteData data = codec
-        .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
-    _ambiguate(ServicesBinding.instance)!
-        .defaultBinaryMessenger
-        .handlePlatformMessage(channel.name, data, (ByteData? data) {});
-  }
-
-  // Fakes a main frame navigation that was initiated by the webview, e.g when
-  // the user clicks a link in the currently loaded page.
-  void fakeNavigate(String url) {
-    if (!hasNavigationDelegate!) {
-      print('no navigation delegate');
-      _loadUrl(url);
-      return;
-    }
-    final StandardMethodCodec codec = const StandardMethodCodec();
-    final Map<String, dynamic> arguments = <String, dynamic>{
-      'url': url,
-      'isForMainFrame': true
-    };
-    final ByteData data =
-        codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    _ambiguate(ServicesBinding.instance)!
-        .defaultBinaryMessenger
-        .handlePlatformMessage(channel.name, data, (ByteData? data) {
-      final bool allow = codec.decodeEnvelope(data!);
-      if (allow) {
-        _loadUrl(url);
-      }
-    });
-  }
-
-  void fakeOnPageStartedCallback() {
-    final StandardMethodCodec codec = const StandardMethodCodec();
-
-    final ByteData data = codec.encodeMethodCall(MethodCall(
-      'onPageStarted',
-      <dynamic, dynamic>{'url': currentUrl},
-    ));
-
-    _ambiguate(ServicesBinding.instance)!
-        .defaultBinaryMessenger
-        .handlePlatformMessage(
-          channel.name,
-          data,
-          (ByteData? data) {},
-        );
-  }
-
-  void fakeOnPageFinishedCallback() {
-    final StandardMethodCodec codec = const StandardMethodCodec();
-
-    final ByteData data = codec.encodeMethodCall(MethodCall(
-      'onPageFinished',
-      <dynamic, dynamic>{'url': currentUrl},
-    ));
-
-    _ambiguate(ServicesBinding.instance)!
-        .defaultBinaryMessenger
-        .handlePlatformMessage(
-          channel.name,
-          data,
-          (ByteData? data) {},
-        );
-  }
-
-  void fakeOnProgressCallback(int progress) {
-    final StandardMethodCodec codec = const StandardMethodCodec();
-
-    final ByteData data = codec.encodeMethodCall(MethodCall(
-      'onProgress',
-      <dynamic, dynamic>{'progress': progress},
-    ));
-
-    _ambiguate(ServicesBinding.instance)!
-        .defaultBinaryMessenger
-        .handlePlatformMessage(channel.name, data, (ByteData? data) {});
-  }
-
-  void _loadUrl(String? url) {
-    history = history.sublist(0, currentPosition + 1);
-    history.add(url);
-    currentPosition++;
-    amountOfReloadsOnCurrentUrl = 0;
-  }
+List<dynamic> captureBuildArgs(
+  MockWebViewPlatform mockWebViewPlatform, {
+  bool context = false,
+  bool creationParams = false,
+  bool webViewPlatformCallbacksHandler = false,
+  bool javascriptChannelRegistry = false,
+  bool onWebViewPlatformCreated = false,
+  bool gestureRecognizers = false,
+}) {
+  return verify(mockWebViewPlatform.build(
+    context: context ? captureAnyNamed('context') : anyNamed('context'),
+    creationParams: creationParams
+        ? captureAnyNamed('creationParams')
+        : anyNamed('creationParams'),
+    webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler
+        ? captureAnyNamed('webViewPlatformCallbacksHandler')
+        : anyNamed('webViewPlatformCallbacksHandler'),
+    javascriptChannelRegistry: javascriptChannelRegistry
+        ? captureAnyNamed('javascriptChannelRegistry')
+        : anyNamed('javascriptChannelRegistry'),
+    onWebViewPlatformCreated: onWebViewPlatformCreated
+        ? captureAnyNamed('onWebViewPlatformCreated')
+        : anyNamed('onWebViewPlatformCreated'),
+    gestureRecognizers: gestureRecognizers
+        ? captureAnyNamed('gestureRecognizers')
+        : anyNamed('gestureRecognizers'),
+  )).captured;
 }
 
-class _FakePlatformViewsController {
-  FakePlatformWebView? lastCreatedView;
+// This Widget ensures that onWebViewPlatformCreated is only called once when
+// making multiple calls to `WidgetTester.pumpWidget` with different parameters
+// for the WebView.
+class TestPlatformWebView extends StatefulWidget {
+  const TestPlatformWebView({
+    Key? key,
+    required this.mockWebViewPlatformController,
+    this.onWebViewPlatformCreated,
+  }) : super(key: key);
 
-  Future<dynamic> fakePlatformViewsMethodHandler(MethodCall call) {
-    switch (call.method) {
-      case 'create':
-        final Map<dynamic, dynamic> args = call.arguments;
-        final Map<dynamic, dynamic> params = _decodeParams(args['params'])!;
-        lastCreatedView = FakePlatformWebView(
-          args['id'],
-          params,
-        );
-        return Future<int>.sync(() => 1);
-      default:
-        return Future<void>.sync(() {});
+  final MockWebViewPlatformController mockWebViewPlatformController;
+  final WebViewPlatformCreatedCallback? onWebViewPlatformCreated;
+
+  @override
+  State<StatefulWidget> createState() => TestPlatformWebViewState();
+}
+
+class TestPlatformWebViewState extends State<TestPlatformWebView> {
+  @override
+  void initState() {
+    super.initState();
+    final WebViewPlatformCreatedCallback? onWebViewPlatformCreated =
+        widget.onWebViewPlatformCreated;
+    if (onWebViewPlatformCreated != null) {
+      onWebViewPlatformCreated(widget.mockWebViewPlatformController);
     }
   }
 
-  void reset() {
-    lastCreatedView = null;
-  }
-}
-
-Map<dynamic, dynamic>? _decodeParams(Uint8List paramsMessage) {
-  final ByteBuffer buffer = paramsMessage.buffer;
-  final ByteData messageBytes = buffer.asByteData(
-    paramsMessage.offsetInBytes,
-    paramsMessage.lengthInBytes,
-  );
-  return const StandardMessageCodec().decodeMessage(messageBytes);
-}
-
-class _FakeCookieManager {
-  _FakeCookieManager() {
-    final MethodChannel channel = const MethodChannel(
-      'plugins.flutter.io/cookie_manager',
-      StandardMethodCodec(),
-    );
-    channel.setMockMethodCallHandler(onMethodCall);
-  }
-
-  bool hasCookies = true;
-
-  Future<bool> onMethodCall(MethodCall call) {
-    switch (call.method) {
-      case 'clearCookies':
-        bool hadCookies = false;
-        if (hasCookies) {
-          hadCookies = true;
-          hasCookies = false;
-        }
-        return Future<bool>.sync(() {
-          return hadCookies;
-        });
-    }
-    return Future<bool>.sync(() => true);
-  }
-
-  void reset() {
-    hasCookies = true;
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
 
@@ -1382,9 +1362,18 @@ class MatchesCreationParams extends Matcher {
   }
 }
 
-/// This allows a value of type T or T? to be treated as a value of type T?.
-///
-/// We use this so that APIs that have become non-nullable can still be used
-/// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
-T? _ambiguate<T>(T? value) => value;
+class MockWebViewCookieManagerPlatform extends WebViewCookieManagerPlatform {
+  List<WebViewCookie> setCookieCalls = <WebViewCookie>[];
+
+  @override
+  Future<bool> clearCookies() async => true;
+
+  @override
+  Future<void> setCookie(WebViewCookie cookie) async {
+    setCookieCalls.add(cookie);
+  }
+
+  void reset() {
+    setCookieCalls = <WebViewCookie>[];
+  }
+}

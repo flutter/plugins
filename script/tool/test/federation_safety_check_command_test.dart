@@ -352,4 +352,64 @@ void main() {
       ]),
     );
   });
+
+  test('handles top-level files that match federated package heuristics',
+      () async {
+    final Directory plugin = createFakePlugin('foo', packagesDir);
+
+    final String changedFileOutput = <File>[
+      // This should be picked up as a change to 'foo', and not crash.
+      plugin.childFile('foo_bar.baz'),
+    ].map((File file) => file.path).join('\n');
+    processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      MockProcess(stdout: changedFileOutput),
+    ];
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['federation-safety-check']);
+
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('Running for foo...'),
+      ]),
+    );
+  });
+
+  test('handles deletion of an entire plugin', () async {
+    // Simulate deletion, in the form of diffs for packages that don't exist in
+    // the filesystem.
+    final String changedFileOutput = <File>[
+      packagesDir.childDirectory('foo').childFile('pubspec.yaml'),
+      packagesDir
+          .childDirectory('foo')
+          .childDirectory('lib')
+          .childFile('foo.dart'),
+      packagesDir
+          .childDirectory('foo_platform_interface')
+          .childFile('pubspec.yaml'),
+      packagesDir
+          .childDirectory('foo_platform_interface')
+          .childDirectory('lib')
+          .childFile('foo.dart'),
+      packagesDir.childDirectory('foo_web').childFile('pubspec.yaml'),
+      packagesDir
+          .childDirectory('foo_web')
+          .childDirectory('lib')
+          .childFile('foo.dart'),
+    ].map((File file) => file.path).join('\n');
+    processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      MockProcess(stdout: changedFileOutput),
+    ];
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['federation-safety-check']);
+
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('Ran for 0 package(s)'),
+      ]),
+    );
+  });
 }
