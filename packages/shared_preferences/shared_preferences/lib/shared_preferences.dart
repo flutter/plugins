@@ -3,14 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meta/meta.dart';
-import 'package:shared_preferences_linux/shared_preferences_linux.dart';
-import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
-import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -21,28 +16,9 @@ class SharedPreferences {
 
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences>? _completer;
-  static bool _manualDartRegistrationNeeded = true;
 
-  static SharedPreferencesStorePlatform get _store {
-    // TODO(egarciad): Remove once auto registration lands on Flutter stable.
-    // https://github.com/flutter/flutter/issues/81421.
-    if (_manualDartRegistrationNeeded) {
-      // Only do the initial registration if it hasn't already been overridden
-      // with a non-default instance.
-      if (!kIsWeb &&
-          SharedPreferencesStorePlatform.instance
-              is MethodChannelSharedPreferencesStore) {
-        if (Platform.isLinux) {
-          SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
-        } else if (Platform.isWindows) {
-          SharedPreferencesStorePlatform.instance = SharedPreferencesWindows();
-        }
-      }
-      _manualDartRegistrationNeeded = false;
-    }
-
-    return SharedPreferencesStorePlatform.instance;
-  }
+  static SharedPreferencesStorePlatform get _store =>
+      SharedPreferencesStorePlatform.instance;
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///
