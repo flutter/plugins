@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     auth.isDeviceSupported().then(
-          (isSupported) => setState(() => _supportState = isSupported
+          (bool isSupported) => setState(() => _supportState = isSupported
               ? _SupportState.supported
               : _SupportState.unsupported),
         );
@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
       print(e);
       setState(() {
         _isAuthenticating = false;
-        _authorized = "Error - ${e.message}";
+        _authorized = 'Error - ${e.message}';
       });
       return;
     }
@@ -116,7 +116,7 @@ class _MyAppState extends State<MyApp> {
       print(e);
       setState(() {
         _isAuthenticating = false;
-        _authorized = "Error - ${e.message}";
+        _authorized = 'Error - ${e.message}';
       });
       return;
     }
@@ -147,62 +147,63 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (_supportState == _SupportState.unknown)
-                  CircularProgressIndicator()
+                  const CircularProgressIndicator()
                 else if (_supportState == _SupportState.supported)
-                  Text("This device is supported")
+                  const Text('This device is supported')
                 else
-                  Text("This device is not supported"),
-                Divider(height: 100),
+                  const Text('This device is not supported'),
+                const Divider(height: 100),
                 Text('Can check biometrics: $_canCheckBiometrics\n'),
                 ElevatedButton(
                   child: const Text('Check biometrics'),
                   onPressed: _checkBiometrics,
                 ),
-                Divider(height: 100),
+                const Divider(height: 100),
                 Text('Available biometrics: $_availableBiometrics\n'),
                 ElevatedButton(
                   child: const Text('Get available biometrics'),
                   onPressed: _getAvailableBiometrics,
                 ),
-                Divider(height: 100),
+                const Divider(height: 100),
                 Text('Current State: $_authorized\n'),
-                (_isAuthenticating)
-                    ? ElevatedButton(
-                        onPressed: _cancelAuthentication,
+                if (_isAuthenticating)
+                  ElevatedButton(
+                    onPressed: _cancelAuthentication,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text('Cancel Authentication'),
+                        Icon(Icons.cancel),
+                      ],
+                    ),
+                  )
+                else
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text('Authenticate'),
+                            Icon(Icons.perm_device_information),
+                          ],
+                        ),
+                        onPressed: _authenticate,
+                      ),
+                      ElevatedButton(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Cancel Authentication"),
-                            Icon(Icons.cancel),
+                            Text(_isAuthenticating
+                                ? 'Cancel'
+                                : 'Authenticate: biometrics only'),
+                            const Icon(Icons.fingerprint),
                           ],
                         ),
-                      )
-                    : Column(
-                        children: [
-                          ElevatedButton(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('Authenticate'),
-                                Icon(Icons.perm_device_information),
-                              ],
-                            ),
-                            onPressed: _authenticate,
-                          ),
-                          ElevatedButton(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(_isAuthenticating
-                                    ? 'Cancel'
-                                    : 'Authenticate: biometrics only'),
-                                Icon(Icons.fingerprint),
-                              ],
-                            ),
-                            onPressed: _authenticateWithBiometrics,
-                          ),
-                        ],
+                        onPressed: _authenticateWithBiometrics,
                       ),
+                    ],
+                  ),
               ],
             ),
           ],

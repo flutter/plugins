@@ -30,7 +30,7 @@ void main() {
       log.clear();
     });
 
-    group("With device auth fail over", () {
+    group('With device auth fail over', () {
       test('authenticate with no args on Android.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
         await localAuthentication.authenticate(
@@ -108,7 +108,7 @@ void main() {
       });
     });
 
-    group("With biometrics only", () {
+    group('With biometrics only', () {
       test('authenticate with no args on Android.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
         await localAuthentication.authenticate(
