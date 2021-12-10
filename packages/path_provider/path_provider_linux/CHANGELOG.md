@@ -1,3 +1,8 @@
+## 2.1.3
+
+* Change getApplicationSupportPath from using executable name to application ID (if provided).
+  * If the executable name based directory exists, continue to use that so existing applications continue with the same behaviour.
+
 ## 2.1.2
 
 * Fixes link in README.

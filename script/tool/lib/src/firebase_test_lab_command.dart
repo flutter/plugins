@@ -127,14 +127,22 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
           '${example.displayName} does not support Android.');
     }
 
-    if (!androidDirectory
+    final Directory uiTestDirectory = androidDirectory
         .childDirectory('app')
         .childDirectory('src')
-        .childDirectory('androidTest')
-        .existsSync()) {
+        .childDirectory('androidTest');
+    if (!uiTestDirectory.existsSync()) {
       printError('No androidTest directory found.');
       return PackageResult.fail(
           <String>['No tests ran (use --exclude if this is intentional).']);
+    }
+
+    // Ensure that the Dart integration tests will be run, not just native UI
+    // tests.
+    if (!await _testsContainDartIntegrationTestRunner(uiTestDirectory)) {
+      printError('No integration_test runner found. '
+          'See the integration_test package README for setup instructions.');
+      return PackageResult.fail(<String>['No integration_test runner.']);
     }
 
     // Ensures that gradle wrapper exists
@@ -279,5 +287,20 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         .where((FileSystemEntity file) =>
             file is File && file.basename.endsWith('_test.dart'))
         .cast<File>();
+  }
+
+  /// Returns true if any of the test files in [uiTestDirectory] contain the
+  /// annotation that means that the test will reports the results of running
+  /// the Dart integration tests.
+  Future<bool> _testsContainDartIntegrationTestRunner(
+      Directory uiTestDirectory) async {
+    return uiTestDirectory
+        .list(recursive: true, followLinks: false)
+        .where((FileSystemEntity entity) => entity is File)
+        .cast<File>()
+        .any((File file) {
+      return file.basename.endsWith('.java') &&
+          file.readAsStringSync().contains('@RunWith(FlutterTestRunner.class)');
+    });
   }
 }

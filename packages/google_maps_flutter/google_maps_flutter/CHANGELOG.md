@@ -1,6 +1,6 @@
 ## NEXT
 
-* Updates example app Android compileSdkVersion to 31.
+* Updates Android compileSdkVersion to 31.
 
 ## 2.1.1
 

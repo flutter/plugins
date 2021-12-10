@@ -29,8 +29,6 @@ void main() {
   setUp(() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
 
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-
     const String debugMessage = 'dummy message';
     final BillingResponse responseCode = BillingResponse.ok;
     final BillingResultWrapper expectedBillingResult = BillingResultWrapper(

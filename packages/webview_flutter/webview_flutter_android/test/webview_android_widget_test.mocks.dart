@@ -7,10 +7,12 @@
 // Do not manually edit this file.
 
 import 'dart:async' as _i4;
+import 'dart:typed_data' as _i5;
+import 'dart:ui' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
-import 'package:webview_flutter_android/webview_android_widget.dart' as _i5;
+import 'package:webview_flutter_android/webview_android_widget.dart' as _i7;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     as _i3;
 
@@ -29,6 +31,28 @@ class _FakeJavascriptChannelRegistry_1 extends _i1.Fake
     implements _i3.JavascriptChannelRegistry {}
 
 class _FakeWebView_2 extends _i1.Fake implements _i2.WebView {}
+
+/// A class which mocks [FlutterAssetManager].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFlutterAssetManager extends _i1.Mock
+    implements _i2.FlutterAssetManager {
+  MockFlutterAssetManager() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<List<String?>> list(String? path) =>
+      (super.noSuchMethod(Invocation.method(#list, [path]),
+              returnValue: Future<List<String?>>.value(<String?>[]))
+          as _i4.Future<List<String?>>);
+  @override
+  _i4.Future<String> getAssetFilePathByName(String? name) =>
+      (super.noSuchMethod(Invocation.method(#getAssetFilePathByName, [name]),
+          returnValue: Future<String>.value('')) as _i4.Future<String>);
+  @override
+  String toString() => super.toString();
+}
 
 /// A class which mocks [WebSettings].
 ///
@@ -116,8 +140,38 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
       (super.noSuchMethod(Invocation.getter(#settings),
           returnValue: _FakeWebSettings_0()) as _i2.WebSettings);
   @override
+  _i4.Future<void> loadData(
+          {String? data, String? mimeType, String? encoding}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadData, [],
+              {#data: data, #mimeType: mimeType, #encoding: encoding}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> loadDataWithBaseUrl(
+          {String? baseUrl,
+          String? data,
+          String? mimeType,
+          String? encoding,
+          String? historyUrl}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadDataWithBaseUrl, [], {
+            #baseUrl: baseUrl,
+            #data: data,
+            #mimeType: mimeType,
+            #encoding: encoding,
+            #historyUrl: historyUrl
+          }),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
   _i4.Future<void> loadUrl(String? url, Map<String, String>? headers) =>
       (super.noSuchMethod(Invocation.method(#loadUrl, [url, headers]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> postUrl(String? url, _i5.Uint8List? data) =>
+      (super.noSuchMethod(Invocation.method(#postUrl, [url, data]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
@@ -208,6 +262,11 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
+  _i4.Future<void> setBackgroundColor(_i6.Color? color) =>
+      (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
   _i4.Future<void> release() =>
       (super.noSuchMethod(Invocation.method(#release, []),
           returnValue: Future<void>.value(),
@@ -220,7 +279,7 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebViewAndroidDownloadListener extends _i1.Mock
-    implements _i5.WebViewAndroidDownloadListener {
+    implements _i7.WebViewAndroidDownloadListener {
   MockWebViewAndroidDownloadListener() {
     _i1.throwOnMissingStub(this);
   }
@@ -246,7 +305,7 @@ class MockWebViewAndroidDownloadListener extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebViewAndroidJavaScriptChannel extends _i1.Mock
-    implements _i5.WebViewAndroidJavaScriptChannel {
+    implements _i7.WebViewAndroidJavaScriptChannel {
   MockWebViewAndroidJavaScriptChannel() {
     _i1.throwOnMissingStub(this);
   }
@@ -272,7 +331,7 @@ class MockWebViewAndroidJavaScriptChannel extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebViewAndroidWebChromeClient extends _i1.Mock
-    implements _i5.WebViewAndroidWebChromeClient {
+    implements _i7.WebViewAndroidWebChromeClient {
   MockWebViewAndroidWebChromeClient() {
     _i1.throwOnMissingStub(this);
   }
@@ -289,7 +348,7 @@ class MockWebViewAndroidWebChromeClient extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebViewAndroidWebViewClient extends _i1.Mock
-    implements _i5.WebViewAndroidWebViewClient {
+    implements _i7.WebViewAndroidWebViewClient {
   MockWebViewAndroidWebViewClient() {
     _i1.throwOnMissingStub(this);
   }
@@ -421,7 +480,7 @@ class MockWebViewPlatformCallbacksHandler extends _i1.Mock
 /// A class which mocks [WebViewProxy].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockWebViewProxy extends _i1.Mock implements _i5.WebViewProxy {
+class MockWebViewProxy extends _i1.Mock implements _i7.WebViewProxy {
   MockWebViewProxy() {
     _i1.throwOnMissingStub(this);
   }
