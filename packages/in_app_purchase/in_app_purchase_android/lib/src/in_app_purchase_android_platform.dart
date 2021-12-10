@@ -270,13 +270,17 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     if (purchases.isNotEmpty) {
       return Future.wait(purchases);
     } else {
+      PurchaseStatus status = PurchaseStatus.error;
+      if (resultWrapper.responseCode == BillingResponse.userCanceled) {
+        status = PurchaseStatus.canceled;
+      } else if (resultWrapper.responseCode == BillingResponse.ok) {
+        status = PurchaseStatus.purchased;
+      }
       return [
         PurchaseDetails(
             purchaseID: '',
             productID: '',
-            status: resultWrapper.responseCode == BillingResponse.userCanceled
-                ? PurchaseStatus.canceled
-                : PurchaseStatus.error,
+            status: status,
             transactionDate: null,
             verificationData: PurchaseVerificationData(
                 localVerificationData: '',
