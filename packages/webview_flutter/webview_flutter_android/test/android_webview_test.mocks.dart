@@ -7,11 +7,14 @@
 // Do not manually edit this file.
 
 import 'dart:async' as _i4;
+import 'dart:typed_data' as _i6;
+import 'dart:ui' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
+import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
 
-import 'android_webview.pigeon.dart' as _i3;
+import 'android_webview.pigeon.dart' as _i5;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -23,6 +26,28 @@ import 'android_webview.pigeon.dart' as _i3;
 // ignore_for_file: camel_case_types
 
 class _FakeWebSettings_0 extends _i1.Fake implements _i2.WebSettings {}
+
+/// A class which mocks [CookieManagerHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCookieManagerHostApi extends _i1.Mock
+    implements _i3.CookieManagerHostApi {
+  MockCookieManagerHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<bool> clearCookies() =>
+      (super.noSuchMethod(Invocation.method(#clearCookies, []),
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+  @override
+  _i4.Future<void> setCookie(String? arg_url, String? arg_value) =>
+      (super.noSuchMethod(Invocation.method(#setCookie, [arg_url, arg_value]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  String toString() => super.toString();
+}
 
 /// A class which mocks [DownloadListener].
 ///
@@ -67,7 +92,7 @@ class MockJavaScriptChannel extends _i1.Mock implements _i2.JavaScriptChannel {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestDownloadListenerHostApi extends _i1.Mock
-    implements _i3.TestDownloadListenerHostApi {
+    implements _i5.TestDownloadListenerHostApi {
   MockTestDownloadListenerHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -84,7 +109,7 @@ class MockTestDownloadListenerHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestJavaScriptChannelHostApi extends _i1.Mock
-    implements _i3.TestJavaScriptChannelHostApi {
+    implements _i5.TestJavaScriptChannelHostApi {
   MockTestJavaScriptChannelHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -101,7 +126,7 @@ class MockTestJavaScriptChannelHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebChromeClientHostApi extends _i1.Mock
-    implements _i3.TestWebChromeClientHostApi {
+    implements _i5.TestWebChromeClientHostApi {
   MockTestWebChromeClientHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -119,7 +144,7 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebSettingsHostApi extends _i1.Mock
-    implements _i3.TestWebSettingsHostApi {
+    implements _i5.TestWebSettingsHostApi {
   MockTestWebSettingsHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -193,7 +218,7 @@ class MockTestWebSettingsHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebViewClientHostApi extends _i1.Mock
-    implements _i3.TestWebViewClientHostApi {
+    implements _i5.TestWebViewClientHostApi {
   MockTestWebViewClientHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -211,7 +236,7 @@ class MockTestWebViewClientHostApi extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTestWebViewHostApi extends _i1.Mock
-    implements _i3.TestWebViewHostApi {
+    implements _i5.TestWebViewHostApi {
   MockTestWebViewHostApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -226,9 +251,26 @@ class MockTestWebViewHostApi extends _i1.Mock
       super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
           returnValueForMissingStub: null);
   @override
+  void loadData(
+          int? instanceId, String? data, String? mimeType, String? encoding) =>
+      super.noSuchMethod(
+          Invocation.method(#loadData, [instanceId, data, mimeType, encoding]),
+          returnValueForMissingStub: null);
+  @override
+  void loadDataWithBaseUrl(int? instanceId, String? baseUrl, String? data,
+          String? mimeType, String? encoding, String? historyUrl) =>
+      super.noSuchMethod(
+          Invocation.method(#loadDataWithBaseUrl,
+              [instanceId, baseUrl, data, mimeType, encoding, historyUrl]),
+          returnValueForMissingStub: null);
+  @override
   void loadUrl(int? instanceId, String? url, Map<String?, String?>? headers) =>
       super.noSuchMethod(
           Invocation.method(#loadUrl, [instanceId, url, headers]),
+          returnValueForMissingStub: null);
+  @override
+  void postUrl(int? instanceId, String? url, _i6.Uint8List? data) =>
+      super.noSuchMethod(Invocation.method(#postUrl, [instanceId, url, data]),
           returnValueForMissingStub: null);
   @override
   String getUrl(int? instanceId) =>
@@ -323,6 +365,31 @@ class MockTestWebViewHostApi extends _i1.Mock
               #setWebChromeClient, [instanceId, clientInstanceId]),
           returnValueForMissingStub: null);
   @override
+  void setBackgroundColor(int? instanceId, int? color) => super.noSuchMethod(
+      Invocation.method(#setBackgroundColor, [instanceId, color]),
+      returnValueForMissingStub: null);
+  @override
+  String toString() => super.toString();
+}
+
+/// A class which mocks [TestAssetManagerHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestAssetManagerHostApi extends _i1.Mock
+    implements _i5.TestAssetManagerHostApi {
+  MockTestAssetManagerHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  List<String?> list(String? path) =>
+      (super.noSuchMethod(Invocation.method(#list, [path]),
+          returnValue: <String?>[]) as List<String?>);
+  @override
+  String getAssetFilePathByName(String? name) =>
+      (super.noSuchMethod(Invocation.method(#getAssetFilePathByName, [name]),
+          returnValue: '') as String);
+  @override
   String toString() => super.toString();
 }
 
@@ -359,8 +426,38 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
       (super.noSuchMethod(Invocation.getter(#settings),
           returnValue: _FakeWebSettings_0()) as _i2.WebSettings);
   @override
+  _i4.Future<void> loadData(
+          {String? data, String? mimeType, String? encoding}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadData, [],
+              {#data: data, #mimeType: mimeType, #encoding: encoding}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> loadDataWithBaseUrl(
+          {String? baseUrl,
+          String? data,
+          String? mimeType,
+          String? encoding,
+          String? historyUrl}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadDataWithBaseUrl, [], {
+            #baseUrl: baseUrl,
+            #data: data,
+            #mimeType: mimeType,
+            #encoding: encoding,
+            #historyUrl: historyUrl
+          }),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
   _i4.Future<void> loadUrl(String? url, Map<String, String>? headers) =>
       (super.noSuchMethod(Invocation.method(#loadUrl, [url, headers]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> postUrl(String? url, _i6.Uint8List? data) =>
+      (super.noSuchMethod(Invocation.method(#postUrl, [url, data]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
@@ -448,6 +545,11 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
   @override
   _i4.Future<void> setWebChromeClient(_i2.WebChromeClient? client) =>
       (super.noSuchMethod(Invocation.method(#setWebChromeClient, [client]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> setBackgroundColor(_i7.Color? color) =>
+      (super.noSuchMethod(Invocation.method(#setBackgroundColor, [color]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override

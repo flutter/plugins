@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
@@ -15,13 +14,6 @@ import 'consumable_store.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    // For play billing library 2.0 on Android, it is mandatory to call
-    // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
-    // as part of initializing the app.
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-  }
 
   runApp(_MyApp());
 }

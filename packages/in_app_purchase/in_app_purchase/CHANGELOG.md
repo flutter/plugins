@@ -1,13 +1,17 @@
-## NEXT
-
-* Fixes integration tests.
-* Updates example app Android compileSdkVersion to 31.
+## 2.0.0
 
 * **BREAKING CHANGES**:
+  * Adds a new `PurchaseStatus` named `canceled`. This means developers can distinguish between an error and user cancellation.
+  * Updates `restorePurchases` to emit an empty list of purchases on StoreKit when there are no purchases to restore (same as Android).
   * Renames `in_app_purchase_ios` to `in_app_purchase_storekit`.
   * Renames `InAppPurchaseIosPlatform` to `InAppPurchaseStoreKitPlatform`.
   * Renames `InAppPurchaseIosPlatformAddition` to
     `InAppPurchaseStoreKitPlatformAddition`.
+
+* Deprecates the `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases()` method and `InAppPurchaseAndroidPlatformAddition.enablePendingPurchase` property.
+* Adds support for promotional offers on the store_kit_wrappers Dart API.
+* Fixes integration tests.
+* Updates example app Android compileSdkVersion to 31.
 
 ## 1.0.9
 

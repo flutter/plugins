@@ -1,3 +1,7 @@
+## 2.0.9
+
+* Updates Android compileSdkVersion to 31.
+
 ## 2.0.8
 
 * Updates example app Android compileSdkVersion to 31.

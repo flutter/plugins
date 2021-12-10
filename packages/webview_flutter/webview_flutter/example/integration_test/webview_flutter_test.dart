@@ -204,7 +204,7 @@ void main() {
     );
 
     resizeButtonTapped = true;
-    await tester.tap(find.byKey(const ValueKey('resizeButton')));
+    await tester.tap(find.byKey(const ValueKey<String>('resizeButton')));
     await tester.pumpAndSettle();
     expect(buttonTapResizeCompleter.future, completes);
   });
@@ -460,10 +460,10 @@ void main() {
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
+      final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -494,7 +494,7 @@ void main() {
           ),
         ),
       );
-      WebViewController controller = await controllerCompleter.future;
+      final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
       // Pump once to trigger the video play.
@@ -503,7 +503,7 @@ void main() {
       // Makes sure we get the correct event that indicates the video is actually playing.
       await videoPlaying.future;
 
-      String fullScreen =
+      final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
@@ -512,10 +512,10 @@ void main() {
     testWidgets(
         'Video plays full screen when allowsInlineMediaPlayback is false',
         (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
+      final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -546,7 +546,7 @@ void main() {
           ),
         ),
       );
-      WebViewController controller = await controllerCompleter.future;
+      final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
       // Pump once to trigger the video play.
@@ -555,7 +555,7 @@ void main() {
       // Makes sure we get the correct event that indicates the video is actually playing.
       await videoPlaying.future;
 
-      String fullScreen =
+      final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
     }, skip: Platform.isAndroid);
@@ -733,7 +733,7 @@ void main() {
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
-    final String getTitleTest = '''
+    const String getTitleTest = '''
         <!DOCTYPE html><html>
         <head><title>Some title</title>
         </head>
@@ -753,6 +753,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -770,6 +771,12 @@ void main() {
     await pageStarted.future;
     await pageLoaded.future;
 
+    // On at least iOS, it does not appear to be guaranteed that the native
+    // code has the title when the page load completes. Execute some JavaScript
+    // before checking the title to ensure that the page has been fully parsed
+    // and processed.
+    await controller.runJavascript('1;');
+
     final String? title = await controller.getTitle();
     expect(title, 'Some title');
   });
@@ -777,7 +784,7 @@ void main() {
   group('Programmatic Scroll', () {
     // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      final String scrollTestPage = '''
+      const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -824,7 +831,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      await tester.pumpAndSettle(Duration(seconds: 3));
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       int scrollPosX = await controller.getScrollX();
       int scrollPosY = await controller.getScrollY();
@@ -853,195 +860,44 @@ void main() {
     }, skip: Platform.isAndroid && _skipDueToIssue86757);
   });
 
-  group('SurfaceAndroidWebView', () {
+  // Minimial end-to-end testing of the legacy Android implementation.
+  group('AndroidWebView (virtual display)', () {
     setUpAll(() {
-      WebView.platform = SurfaceAndroidWebView();
+      WebView.platform = AndroidWebView();
     });
 
     tearDownAll(() {
       WebView.platform = null;
     });
 
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
-    testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      final String scrollTestPage = '''
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              body {
-                height: 100%;
-                width: 100%;
-              }
-              #container{
-                width:5000px;
-                height:5000px;
-            }
-            </style>
-          </head>
-          <body>
-            <div id="container"/>
-          </body>
-        </html>
-      ''';
-
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
-
-      final Completer<void> pageLoaded = Completer<void>();
+    testWidgets('initialUrl', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-
+      final Completer<void> loadCompleter = Completer<void>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
-            initialUrl:
-                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
             onPageFinished: (String url) {
-              pageLoaded.complete(null);
+              loadCompleter.complete();
             },
           ),
         ),
       );
-
       final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-
-      await tester.pumpAndSettle(Duration(seconds: 3));
-
-      // Check scrollTo()
-      const int X_SCROLL = 123;
-      const int Y_SCROLL = 321;
-
-      await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      int scrollPosX = await controller.getScrollX();
-      int scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL, scrollPosX);
-      expect(Y_SCROLL, scrollPosY);
-
-      // Check scrollBy() (on top of scrollTo())
-      await controller.scrollBy(X_SCROLL, Y_SCROLL);
-      scrollPosX = await controller.getScrollX();
-      scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL * 2, scrollPosX);
-      expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
-
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
-    testWidgets('inputs are scrolled into view when focused',
-        (WidgetTester tester) async {
-      final String scrollTestPage = '''
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              input {
-                margin: 10000px 0;
-              }
-              #viewport {
-                position: fixed;
-                top:0;
-                bottom:0;
-                left:0;
-                right:0;
-              }
-            </style>
-          </head>
-          <body>
-            <div id="viewport"></div>
-            <input type="text" id="inputEl">
-          </body>
-        </html>
-      ''';
-
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
-
-      final Completer<void> pageLoaded = Completer<void>();
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-
-      await tester.runAsync(() async {
-        await tester.pumpWidget(
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: WebView(
-                initialUrl:
-                    'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
-                onWebViewCreated: (WebViewController controller) {
-                  controllerCompleter.complete(controller);
-                },
-                onPageFinished: (String url) {
-                  pageLoaded.complete(null);
-                },
-                javascriptMode: JavascriptMode.unrestricted,
-              ),
-            ),
-          ),
-        );
-        await Future.delayed(Duration(milliseconds: 20));
-        await tester.pump();
-      });
-
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-      final String viewportRectJSON = await _runJavascriptReturningResult(
-          controller, 'JSON.stringify(viewport.getBoundingClientRect())');
-      final Map<String, dynamic> viewportRectRelativeToViewport =
-          jsonDecode(viewportRectJSON);
-
-      // Check that the input is originally outside of the viewport.
-
-      final String initialInputClientRectJSON =
-          await _runJavascriptReturningResult(
-              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-      final Map<String, dynamic> initialInputClientRectRelativeToViewport =
-          jsonDecode(initialInputClientRectJSON);
-
-      expect(
-          initialInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
-          isFalse);
-
-      await controller.runJavascript('inputEl.focus()');
-
-      // Check that focusing the input brought it into view.
-
-      final String lastInputClientRectJSON =
-          await _runJavascriptReturningResult(
-              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-      final Map<String, dynamic> lastInputClientRectRelativeToViewport =
-          jsonDecode(lastInputClientRectJSON);
-
-      expect(
-          lastInputClientRectRelativeToViewport['top'] >=
-              viewportRectRelativeToViewport['top'],
-          isTrue);
-      expect(
-          lastInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
-          isTrue);
-
-      expect(
-          lastInputClientRectRelativeToViewport['left'] >=
-              viewportRectRelativeToViewport['left'],
-          isTrue);
-      expect(
-          lastInputClientRectRelativeToViewport['right'] <=
-              viewportRectRelativeToViewport['right'],
-          isTrue);
-    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
-  });
+      await loadCompleter.future;
+      final String? currentUrl = await controller.currentUrl();
+      expect(currentUrl, primaryUrl);
+    });
+  }, skip: !Platform.isAndroid || _skipDueToIssue86757);
 
   group('NavigationDelegate', () {
-    final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
+    const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
         base64Encode(const Utf8Encoder().convert(blankPage));
 
@@ -1137,7 +993,7 @@ void main() {
     testWidgets(
       'onWebResourceError only called for main frame',
       (WidgetTester tester) async {
-        final String iframeTest = '''
+        const String iframeTest = '''
         <!DOCTYPE html>
         <html>
         <head>
@@ -1350,7 +1206,7 @@ void main() {
   testWidgets(
     'JavaScript does not run in parent window',
     (WidgetTester tester) async {
-      final String iframe = '''
+      const String iframe = '''
         <!DOCTYPE html>
         <script>
           window.onload = () => {
@@ -1436,11 +1292,13 @@ Future<String> _runJavascriptReturningResult(
   if (defaultTargetPlatform == TargetPlatform.iOS) {
     return await controller.runJavascriptReturningResult(js);
   }
-  return jsonDecode(await controller.runJavascriptReturningResult(js));
+  return jsonDecode(await controller.runJavascriptReturningResult(js))
+      as String;
 }
 
 class ResizableWebView extends StatefulWidget {
-  ResizableWebView({required this.onResize, required this.onPageFinished});
+  const ResizableWebView(
+      {required this.onResize, required this.onPageFinished});
 
   final JavascriptMessageHandler onResize;
   final VoidCallback onPageFinished;
@@ -1495,14 +1353,14 @@ class ResizableWebViewState extends State<ResizableWebView> {
             ),
           ),
           TextButton(
-            key: Key('resizeButton'),
+            key: const Key('resizeButton'),
             onPressed: () {
               setState(() {
                 webViewWidth += 100.0;
                 webViewHeight += 100.0;
               });
             },
-            child: Text('ResizeButton'),
+            child: const Text('ResizeButton'),
           ),
         ],
       ),

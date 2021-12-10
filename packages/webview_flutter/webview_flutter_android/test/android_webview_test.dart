@@ -14,6 +14,7 @@ import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  CookieManagerHostApi,
   DownloadListener,
   JavaScriptChannel,
   TestDownloadListenerHostApi,
@@ -22,6 +23,7 @@ import 'android_webview_test.mocks.dart';
   TestWebSettingsHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
+  TestAssetManagerHostApi,
   WebChromeClient,
   WebView,
   WebViewClient,
@@ -56,6 +58,61 @@ void main() {
       test('setWebContentsDebuggingEnabled', () {
         WebView.setWebContentsDebuggingEnabled(true);
         verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+      });
+
+      test('loadData', () {
+        webView.loadData(
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+        );
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          'text/plain',
+          'base64',
+        ));
+      });
+
+      test('loadData with null values', () {
+        webView.loadData(data: 'hello', mimeType: null, encoding: null);
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          '<null-value>',
+          '<null-value>',
+        ));
+      });
+
+      test('loadDataWithBaseUrl', () {
+        webView.loadDataWithBaseUrl(
+          baseUrl: 'https://base.url',
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+          historyUrl: 'https://history.url',
+        );
+
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          'https://base.url',
+          'hello',
+          'text/plain',
+          'base64',
+          'https://history.url',
+        ));
+      });
+
+      test('loadDataWithBaseUrl with null values', () {
+        webView.loadDataWithBaseUrl(data: 'hello');
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          '<null-value>',
+          'hello',
+          '<null-value>',
+          '<null-value>',
+          '<null-value>',
+        ));
       });
 
       test('loadUrl', () {
@@ -589,6 +646,22 @@ void main() {
         );
         verify(mockWebChromeClient.onProgressChanged(mockWebView, 76));
       });
+    });
+  });
+
+  group('CookieManager', () {
+    test('setCookie calls setCookie on CookieManagerHostApi', () {
+      CookieManager.api = MockCookieManagerHostApi();
+      CookieManager.instance.setCookie('foo', 'bar');
+      verify(CookieManager.api.setCookie('foo', 'bar'));
+    });
+
+    test('clearCookies calls clearCookies on CookieManagerHostApi', () {
+      CookieManager.api = MockCookieManagerHostApi();
+      when(CookieManager.api.clearCookies())
+          .thenAnswer((_) => Future<bool>.value(true));
+      CookieManager.instance.clearCookies();
+      verify(CookieManager.api.clearCookies());
     });
   });
 }

@@ -1,4 +1,4 @@
-gcp_credentials: ENCRYPTED[!48cff44dd32e9cc412d4d381c7fe68d373ca04cf2639f8192d21cb1a9ab5e21129651423a1cf88f3fd7fe2125c1cabd9!]
+gcp_credentials: ENCRYPTED[!cc769765170bebc37e0556e2da5915ca64ee37f4ec8c966ec147e2f59578b476c99e457eafce4e2f8b1a4e305f7096b8!]
 
 # Don't run on release tags since it creates O(n^2) tasks where n is the
 # number of plugins
@@ -75,16 +75,16 @@ task:
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
         # For pre-submit, pass the PR description to the script to allow for
-        # platform version breaking version change justifications.
-        # For post-submit, ignore platform version breaking version changes.
-        # The PR description isn't reliably part of the commit message, so using
-        # the same flags as for presubmit would likely result in false-positive
-        # post-submit failures.
+        # version check overrides.
+        # For post-submit, ignore platform version breaking version changes and
+        # missing version/CHANGELOG detection; the PR description isn't reliably
+        # part of the commit message, so using the same flags as for presubmit
+        # would likely result in false-positive post-submit failures.
         - if [[ $CIRRUS_PR == "" ]]; then
         -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
         - else
         -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
-        -   ./script/tool_runner.sh version-check --change-description-file="$CHANGE_DESC"
+        -   ./script/tool_runner.sh version-check --check-for-missing-changes --change-description-file="$CHANGE_DESC"
         - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
@@ -109,13 +109,25 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      tool_script:
+      analyze_tool_script:
         - cd script/tool
         - dart analyze --fatal-infos
-      script:
+      analyze_script:
         # DO NOT change the custom-analysis argument here without changing the Dart repo.
         # See the comment in script/configs/custom_analysis.yaml for details.
         - ./script/tool_runner.sh analyze --custom-analysis=script/configs/custom_analysis.yaml
+      pathified_analyze_script:
+        # Re-run analysis with path-based dependencies to ensure that publishing
+        # the changes won't break analysis of other packages in the respository
+        # that depend on it.
+        - ./script/tool_runner.sh make-deps-path-based --target-dependencies-with-non-breaking-updates
+        # This uses --run-on-dirty-packages rather than --packages-for-branch
+        # since only the packages changed by 'make-deps-path-based' need to be
+        # checked.
+        - dart $PLUGIN_TOOL analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
+        # Restore the tree to a clean state, to avoid accidental issues if
+        # other script steps are added to this task.
+        - git checkout .
     ### Android tasks ###
     - name: android-build_all_plugins
       env:
@@ -285,7 +297,7 @@ task:
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --ios
       native_test_script:
-        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --exclude=script/configs/exclude_native_ios.yaml
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
@@ -313,6 +325,6 @@ task:
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --macos
       native_test_script:
-        - ./script/tool_runner.sh native-test --macos --exclude=script/configs/exclude_native_macos.yaml
+        - ./script/tool_runner.sh native-test --macos
       drive_script:
         - ./script/tool_runner.sh drive-examples --macos
