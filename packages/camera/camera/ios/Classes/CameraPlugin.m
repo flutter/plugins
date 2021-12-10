@@ -327,7 +327,8 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(assign, nonatomic) BOOL skipStreamingImages;
+@property(assign, nonatomic) int maxStreamingFrameStack;
+@property(assign, nonatomic) int streamingFrameStack;
 @property(assign, nonatomic) BOOL isPreviewPaused;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
@@ -606,8 +607,8 @@ NSString *const errorMethod = @"error";
     return;
   }
   if (_isStreamingImages) {
-    if (_imageStreamHandler.eventSink && !_skipStreamingImages) {
-      _skipStreamingImages = YES;
+    if (_imageStreamHandler.eventSink && (_maxStreamingFrameStack < 1 || _streamingFrameStack < _maxStreamingFrameStack)) {
+      _streamingFrameStack++;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -1112,7 +1113,7 @@ NSString *const errorMethod = @"error";
   [result sendSuccessWithData:@(offset)];
 }
 
-- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger frameStack:(int)frameStack {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
@@ -1122,7 +1123,8 @@ NSString *const errorMethod = @"error";
     [eventChannel setStreamHandler:_imageStreamHandler];
 
     _isStreamingImages = YES;
-    _skipStreamingImages = NO;
+    _streamingFrameStack = 0;
+    _maxStreamingFrameStack = frameStack;
   } else {
     [_methodChannel invokeMethod:errorMethod
                        arguments:@"Images from camera are already streaming!"];
@@ -1427,13 +1429,14 @@ NSString *const errorMethod = @"error";
       }];
     }
   } else if ([@"startImageStream" isEqualToString:call.method]) {
-    [_camera startImageStreamWithMessenger:_messenger];
+    NSNumber *frameStack = call.arguments[@"frameStack"];
+    [_camera startImageStreamWithMessenger:_messenger frameStack:[frameStack intValue]];
     [result sendSuccess];
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     [result sendSuccess];
   } else if ([@"receivedImageStreamData" isEqualToString:call.method]) {
-    _camera.skipStreamingImages = NO;
+    _camera.streamingFrameStack--;
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;

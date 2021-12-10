@@ -403,6 +403,11 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// have significant frame rate drops for [CameraPreview] on lower end
   /// devices.
   ///
+  /// On older iOS devices, frames pending processing can exhaust the memory
+  /// and cause crashes. In this case, you can use [frameStack] to limit
+  /// the maximum number of frames pending processing. The default value is 0,
+  /// which means there is no limit.
+  ///
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
   ///
@@ -410,7 +415,8 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// platforms won't be supported in current setup).
   ///
   // TODO(bmparr): Add settings for resolution and fps.
-  Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
+  Future<void> startImageStream(onLatestImageAvailable onAvailable,
+      {int frameStack = 0}) async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
     _throwIfNotInitialized("startImageStream");
@@ -428,7 +434,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await _channel.invokeMethod<void>('startImageStream');
+      await _channel
+          .invokeMethod<void>('startImageStream', {'frameStack': frameStack});
       value = value.copyWith(isStreamingImages: true);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -438,7 +445,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     _imageStreamSubscription =
         cameraEventChannel.receiveBroadcastStream().listen(
       (dynamic imageData) {
-        if (defaultTargetPlatform == TargetPlatform.iOS) {
+        if (defaultTargetPlatform == TargetPlatform.iOS && frameStack > 0) {
           try {
             _channel.invokeMethod<void>('receivedImageStreamData');
           } on PlatformException catch (e) {
