@@ -607,7 +607,8 @@ NSString *const errorMethod = @"error";
     return;
   }
   if (_isStreamingImages) {
-    if (_imageStreamHandler.eventSink && (_maxStreamingFrameStack < 1 || _streamingFrameStack < _maxStreamingFrameStack)) {
+    if (_imageStreamHandler.eventSink &&
+        (_maxStreamingFrameStack < 1 || _streamingFrameStack < _maxStreamingFrameStack)) {
       _streamingFrameStack++;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
@@ -1113,7 +1114,8 @@ NSString *const errorMethod = @"error";
   [result sendSuccessWithData:@(offset)];
 }
 
-- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger frameStack:(int)frameStack {
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                           frameStack:(int)frameStack {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
