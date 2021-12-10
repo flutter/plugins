@@ -7,9 +7,9 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_linux/src/get_application_id_real.dart';
 
-class FakeGioUtils implements GioUtils {
-  int? application = 0;
-  Pointer<Utf8>? applicationId = nullptr;
+class _FakeGioUtils implements GioUtils {
+  int? application;
+  Pointer<Utf8>? applicationId;
 
   @override
   bool libraryIsPresent = false;
@@ -22,9 +22,10 @@ class FakeGioUtils implements GioUtils {
 }
 
 void main() {
-  final FakeGioUtils fakeGio = FakeGioUtils();
+  late _FakeGioUtils fakeGio;
 
   setUp(() {
+    fakeGio = _FakeGioUtils();
     gioUtilsOverride = fakeGio;
   });
 

@@ -55,7 +55,7 @@ class GioUtils {
   }
 }
 
-/// Allows overriding the defaul GioUtils instance with a fake for testing.
+/// Allows overriding the default GioUtils instance with a fake for testing.
 @visibleForTesting
 GioUtils? gioUtilsOverride;
 
