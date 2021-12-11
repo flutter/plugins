@@ -828,8 +828,8 @@ NSString *const errorMethod = @"error";
     }
     _isRecording = YES;
     _isRecordingPaused = NO;
-    _videoTimeOffset = CMTimeMake(0, 1);
-    _audioTimeOffset = CMTimeMake(0, 1);
+    _videoTimeOffset = CMTimeMakeWithSeconds(1, 10);
+    _audioTimeOffset = CMTimeMakeWithSeconds(1, 10);
     _videoIsDisconnected = NO;
     _audioIsDisconnected = NO;
     [result sendSuccess];
