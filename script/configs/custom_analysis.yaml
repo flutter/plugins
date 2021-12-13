@@ -27,7 +27,6 @@
 - in_app_purchase/in_app_purchase_android
 - in_app_purchase/in_app_purchase_storekit
 - ios_platform_images
-- local_auth
 - video_player/video_player
 - video_player/video_player_platform_interface
 - video_player/video_player_web
