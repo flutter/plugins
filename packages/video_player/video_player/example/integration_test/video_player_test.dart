@@ -68,8 +68,8 @@ void main() {
         expect(networkController.value.position,
             (Duration position) => position > const Duration(seconds: 0));
 
-        await expectLater(started, completes);
-        await expectLater(ended, completes);
+        await expectLater(started.future, completes);
+        await expectLater(ended.future, completes);
       },
       skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
     );
