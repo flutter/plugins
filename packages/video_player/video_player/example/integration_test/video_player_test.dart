@@ -48,17 +48,13 @@ void main() {
         await networkController.setVolume(0);
         final Completer<void> started = Completer();
         final Completer<void> ended = Completer();
-        bool startedBuffering = false;
-        bool endedBuffering = false;
         networkController.addListener(() {
-          if (networkController.value.isBuffering && !startedBuffering) {
-            startedBuffering = true;
+          if (!started.isCompleted && networkController.value.isBuffering) {
             started.complete();
           }
-          if (startedBuffering &&
+          if (started.isCompleted &&
               !networkController.value.isBuffering &&
-              !endedBuffering) {
-            endedBuffering = true;
+              !ended.isCompleted) {
             ended.complete();
           }
         });
@@ -72,11 +68,8 @@ void main() {
         expect(networkController.value.position,
             (Duration position) => position > const Duration(seconds: 0));
 
-        await started;
-        expect(startedBuffering, true);
-
-        await ended;
-        expect(endedBuffering, true);
+        await expectLater(started, completes);
+        await expectLater(ended, completes);
       },
       skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
     );

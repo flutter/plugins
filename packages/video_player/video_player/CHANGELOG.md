@@ -2,6 +2,7 @@
 
 * Fixes integration tests.
 * Updates Android compileSdkVersion to 31.
+* Minor test changes.
 
 ## 2.2.7
 
