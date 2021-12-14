@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:camera_platform_interface/src/types/focus_mode.dart';
+import 'package:meta/meta.dart';
 
 import '../../camera_platform_interface.dart';
 
@@ -22,11 +23,12 @@ import '../../camera_platform_interface.dart';
 /// See below for examples: `CameraClosingEvent`, `CameraErrorEvent`...
 /// These events are more semantic and more pleasant to use than raw generics.
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
+@immutable
 abstract class CameraEvent {
   /// Build a Camera Event, that relates a `cameraId`.
   ///
   /// The `cameraId` is the ID of the camera that triggered the event.
-  CameraEvent(this.cameraId) : assert(cameraId != null);
+  const CameraEvent(this.cameraId) : assert(cameraId != null);
 
   /// The ID of the Camera this event is associated to.
   final int cameraId;
@@ -49,7 +51,7 @@ class CameraInitializedEvent extends CameraEvent {
   ///
   /// The `previewWidth` represents the width of the generated preview in pixels.
   /// The `previewHeight` represents the height of the generated preview in pixels.
-  CameraInitializedEvent(
+  const CameraInitializedEvent(
     int cameraId,
     this.previewWidth,
     this.previewHeight,
@@ -132,7 +134,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
   ///
   /// The `captureWidth` represents the width of the resulting image in pixels.
   /// The `captureHeight` represents the height of the resulting image in pixels.
-  CameraResolutionChangedEvent(
+  const CameraResolutionChangedEvent(
     int cameraId,
     this.captureWidth,
     this.captureHeight,
@@ -177,7 +179,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
 class CameraClosingEvent extends CameraEvent {
   /// Build a CameraClosing event triggered from the camera represented by
   /// `cameraId`.
-  CameraClosingEvent(int cameraId) : super(cameraId);
+  const CameraClosingEvent(int cameraId) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraClosingEvent]
   /// class.
@@ -198,6 +200,9 @@ class CameraClosingEvent extends CameraEvent {
           runtimeType == other.runtimeType;
 
   @override
+  // This is here even though it just calls super to make it less likely that
+  // operator== would be changed without changing `hashCode`.
+  // ignore: unnecessary_overrides
   int get hashCode => super.hashCode;
 }
 
@@ -207,7 +212,7 @@ class CameraErrorEvent extends CameraEvent {
   /// `cameraId`.
   ///
   /// The `description` represents the error occured on the camera.
-  CameraErrorEvent(int cameraId, this.description) : super(cameraId);
+  const CameraErrorEvent(int cameraId, this.description) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraErrorEvent]
   /// class.
@@ -244,7 +249,7 @@ class VideoRecordedEvent extends CameraEvent {
   /// The `file` represents the file of the video.
   /// The `maxVideoDuration` shows if a maxVideoDuration shows if a maximum
   /// video duration was set.
-  VideoRecordedEvent(int cameraId, this.file, this.maxVideoDuration)
+  const VideoRecordedEvent(int cameraId, this.file, this.maxVideoDuration)
       : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [VideoRecordedEvent]

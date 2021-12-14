@@ -4,6 +4,7 @@
 
 import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 /// Generic Event coming from the native side of Camera,
 /// not related to a specific camera module.
@@ -18,12 +19,16 @@ import 'package:flutter/services.dart';
 /// See below for examples: `DeviceOrientationChangedEvent`...
 /// These events are more semantic and more pleasant to use than raw generics.
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
-abstract class DeviceEvent {}
+@immutable
+abstract class DeviceEvent {
+  /// Creates a new device event.
+  const DeviceEvent();
+}
 
 /// The [DeviceOrientationChangedEvent] is fired every time the orientation of the device UI changes.
 class DeviceOrientationChangedEvent extends DeviceEvent {
   /// Build a new orientation changed event.
-  DeviceOrientationChangedEvent(this.orientation);
+  const DeviceOrientationChangedEvent(this.orientation);
 
   /// Converts the supplied [Map] to an instance of the [DeviceOrientationChangedEvent]
   /// class.
