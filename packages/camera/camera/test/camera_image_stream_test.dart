@@ -104,8 +104,9 @@ void main() {
 
     await cameraController.startImageStream((image) => null);
 
-    expect(cameraChannelMock.log,
-        <Matcher>[isMethodCall('startImageStream', arguments: null)]);
+    expect(cameraChannelMock.log, <Matcher>[
+      isMethodCall('startImageStream', arguments: {'frameStack': 0})
+    ]);
     expect(streamChannelMock.log,
         <Matcher>[isMethodCall('listen', arguments: null)]);
   });
@@ -196,7 +197,7 @@ void main() {
     await cameraController.stopImageStream();
 
     expect(cameraChannelMock.log, <Matcher>[
-      isMethodCall('startImageStream', arguments: null),
+      isMethodCall('startImageStream', arguments: {'frameStack': 0}),
       isMethodCall('stopImageStream', arguments: null)
     ]);
 
