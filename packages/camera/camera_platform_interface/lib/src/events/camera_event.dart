@@ -162,7 +162,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CameraResolutionChangedEvent &&
-          super == (other) &&
+          super == other &&
           runtimeType == other.runtimeType &&
           captureWidth == other.captureWidth &&
           captureHeight == other.captureHeight;
@@ -192,11 +192,12 @@ class CameraClosingEvent extends CameraEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      super == (other) &&
+      super == other &&
           other is CameraClosingEvent &&
           runtimeType == other.runtimeType;
 
   @override
+  // TODO: implement hashCode
   int get hashCode => super.hashCode;
 }
 
@@ -227,7 +228,7 @@ class CameraErrorEvent extends CameraEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      super == (other) &&
+      super == other &&
           other is CameraErrorEvent &&
           runtimeType == other.runtimeType &&
           description == other.description;

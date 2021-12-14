@@ -9,7 +9,7 @@ class MethodChannelMock {
   final Duration? delay;
   final MethodChannel methodChannel;
   final Map<String, dynamic> methods;
-  final log = <MethodCall>[];
+  final List<MethodCall> log = <MethodCall>[];
 
   MethodChannelMock({
     required String channelName,
