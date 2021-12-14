@@ -26,7 +26,7 @@ void main() {
 
   group('CameraDescription tests', () {
     test('Constructor should initialize all properties', () {
-      final CameraDescription description = CameraDescription(
+      const CameraDescription description = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -38,12 +38,12 @@ void main() {
     });
 
     test('equals should return true if objects are the same', () {
-      final CameraDescription firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
       );
-      final CameraDescription secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -53,12 +53,12 @@ void main() {
     });
 
     test('equals should return false if name is different', () {
-      final CameraDescription firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
       );
-      final CameraDescription secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Testing',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -68,12 +68,12 @@ void main() {
     });
 
     test('equals should return false if lens direction is different', () {
-      final CameraDescription firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
       );
-      final CameraDescription secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.back,
         sensorOrientation: 90,
@@ -83,12 +83,12 @@ void main() {
     });
 
     test('equals should return true if sensor orientation is different', () {
-      final CameraDescription firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 0,
       );
-      final CameraDescription secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -98,7 +98,7 @@ void main() {
     });
 
     test('hashCode should match hashCode of all properties', () {
-      final CameraDescription description = CameraDescription(
+      const CameraDescription description = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 0,

@@ -151,7 +151,7 @@ void main() {
       // Act & Assert
       expect(
         () => cameraPlatform.createCamera(
-          CameraDescription(
+          const CameraDescription(
             name: 'back',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 0,

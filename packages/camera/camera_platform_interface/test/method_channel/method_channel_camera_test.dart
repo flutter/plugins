@@ -37,7 +37,7 @@ void main() {
 
         // Act
         final int cameraId = await camera.createCamera(
-          CameraDescription(
+          const CameraDescription(
               name: 'Test',
               lensDirection: CameraLensDirection.back,
               sensorOrientation: 0),
@@ -75,7 +75,7 @@ void main() {
         // Act
         expect(
           () => camera.createCamera(
-            CameraDescription(
+            const CameraDescription(
               name: 'Test',
               lensDirection: CameraLensDirection.back,
               sensorOrientation: 0,
@@ -109,7 +109,7 @@ void main() {
         // Act
         expect(
           () => camera.createCamera(
-            CameraDescription(
+            const CameraDescription(
               name: 'Test',
               lensDirection: CameraLensDirection.back,
               sensorOrientation: 0,
@@ -139,7 +139,7 @@ void main() {
             });
         final MethodChannelCamera camera = MethodChannelCamera();
         final int cameraId = await camera.createCamera(
-          CameraDescription(
+          const CameraDescription(
             name: 'Test',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 0,
@@ -186,7 +186,7 @@ void main() {
 
         final MethodChannelCamera camera = MethodChannelCamera();
         final int cameraId = await camera.createCamera(
-          CameraDescription(
+          const CameraDescription(
             name: 'Test',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 0,
@@ -234,7 +234,7 @@ void main() {
         );
         camera = MethodChannelCamera();
         cameraId = await camera.createCamera(
-          CameraDescription(
+          const CameraDescription(
             name: 'Test',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 0,
@@ -371,7 +371,7 @@ void main() {
             StreamQueue<DeviceOrientationChangedEvent>(eventStream);
 
         // Emit test events
-        final DeviceOrientationChangedEvent event =
+        const DeviceOrientationChangedEvent event =
             DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
         await camera.handleDeviceMethodCall(
             MethodCall('orientation_changed', event.toJson()));
@@ -404,7 +404,7 @@ void main() {
         );
         camera = MethodChannelCamera();
         cameraId = await camera.createCamera(
-          CameraDescription(
+          const CameraDescription(
             name: 'Test',
             lensDirection: CameraLensDirection.back,
             sensorOrientation: 0,

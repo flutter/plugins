@@ -11,7 +11,7 @@ void main() {
 
   group('DeviceOrientationChangedEvent tests', () {
     test('Constructor should initialize all properties', () {
-      final DeviceOrientationChangedEvent event =
+      const DeviceOrientationChangedEvent event =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
       expect(event.orientation, DeviceOrientation.portraitUp);
@@ -19,7 +19,7 @@ void main() {
 
     test('fromJson should initialize all properties', () {
       final DeviceOrientationChangedEvent event =
-          DeviceOrientationChangedEvent.fromJson(<String, dynamic>{
+          DeviceOrientationChangedEvent.fromJson(const <String, dynamic>{
         'orientation': 'portraitUp',
       });
 
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('toJson should return a map with all fields', () {
-      final DeviceOrientationChangedEvent event =
+      const DeviceOrientationChangedEvent event =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
       final Map<String, dynamic> jsonMap = event.toJson();
@@ -37,25 +37,25 @@ void main() {
     });
 
     test('equals should return true if objects are the same', () {
-      final DeviceOrientationChangedEvent firstEvent =
+      const DeviceOrientationChangedEvent firstEvent =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
-      final DeviceOrientationChangedEvent secondEvent =
+      const DeviceOrientationChangedEvent secondEvent =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
       expect(firstEvent == secondEvent, true);
     });
 
     test('equals should return false if orientation is different', () {
-      final DeviceOrientationChangedEvent firstEvent =
+      const DeviceOrientationChangedEvent firstEvent =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
-      final DeviceOrientationChangedEvent secondEvent =
+      const DeviceOrientationChangedEvent secondEvent =
           DeviceOrientationChangedEvent(DeviceOrientation.landscapeLeft);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('hashCode should match hashCode of all properties', () {
-      final DeviceOrientationChangedEvent event =
+      const DeviceOrientationChangedEvent event =
           DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
       final int expectedHashCode = event.orientation.hashCode;
 
