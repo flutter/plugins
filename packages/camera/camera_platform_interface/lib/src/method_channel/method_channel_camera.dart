@@ -21,6 +21,14 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
 /// An implementation of [CameraPlatform] that uses method channels.
 class MethodChannelCamera extends CameraPlatform {
+  /// Construct a new method channel camera instance.
+  MethodChannelCamera() {
+    const MethodChannel channel =
+        MethodChannel('flutter.io/cameraPlugin/device');
+    channel.setMethodCallHandler(
+        (MethodCall call) => handleDeviceMethodCall(call));
+  }
+
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
 
   /// The controller we need to broadcast the different events coming
@@ -48,14 +56,6 @@ class MethodChannelCamera extends CameraPlatform {
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
       cameraEventStreamController.stream
           .where((CameraEvent event) => event.cameraId == cameraId);
-
-  /// Construct a new method channel camera instance.
-  MethodChannelCamera() {
-    const MethodChannel channel =
-        MethodChannel('flutter.io/cameraPlugin/device');
-    channel.setMethodCallHandler(
-        (MethodCall call) => handleDeviceMethodCall(call));
-  }
 
   @override
   Future<List<CameraDescription>> availableCameras() async {

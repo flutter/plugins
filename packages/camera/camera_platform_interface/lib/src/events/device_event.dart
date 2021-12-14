@@ -22,9 +22,6 @@ abstract class DeviceEvent {}
 
 /// The [DeviceOrientationChangedEvent] is fired every time the orientation of the device UI changes.
 class DeviceOrientationChangedEvent extends DeviceEvent {
-  /// The new orientation of the device
-  final DeviceOrientation orientation;
-
   /// Build a new orientation changed event.
   DeviceOrientationChangedEvent(this.orientation);
 
@@ -33,6 +30,9 @@ class DeviceOrientationChangedEvent extends DeviceEvent {
   DeviceOrientationChangedEvent.fromJson(Map<String, dynamic> json)
       : orientation =
             deserializeDeviceOrientation(json['orientation']! as String);
+
+  /// The new orientation of the device
+  final DeviceOrientation orientation;
 
   /// Converts the [DeviceOrientationChangedEvent] instance into a [Map] instance that
   /// can be serialized to JSON.

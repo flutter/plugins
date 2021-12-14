@@ -23,13 +23,13 @@ import '../../camera_platform_interface.dart';
 /// These events are more semantic and more pleasant to use than raw generics.
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
 abstract class CameraEvent {
-  /// The ID of the Camera this event is associated to.
-  final int cameraId;
-
   /// Build a Camera Event, that relates a `cameraId`.
   ///
   /// The `cameraId` is the ID of the camera that triggered the event.
   CameraEvent(this.cameraId) : assert(cameraId != null);
+
+  /// The ID of the Camera this event is associated to.
+  final int cameraId;
 
   @override
   bool operator ==(Object other) =>
@@ -44,24 +44,6 @@ abstract class CameraEvent {
 
 /// An event fired when the camera has finished initializing.
 class CameraInitializedEvent extends CameraEvent {
-  /// The width of the preview in pixels.
-  final double previewWidth;
-
-  /// The height of the preview in pixels.
-  final double previewHeight;
-
-  /// The default exposure mode
-  final ExposureMode exposureMode;
-
-  /// The default focus mode
-  final FocusMode focusMode;
-
-  /// Whether setting exposure points is supported.
-  final bool exposurePointSupported;
-
-  /// Whether setting focus points is supported.
-  final bool focusPointSupported;
-
   /// Build a CameraInitialized event triggered from the camera represented by
   /// `cameraId`.
   ///
@@ -88,6 +70,24 @@ class CameraInitializedEvent extends CameraEvent {
         focusMode = deserializeFocusMode(json['focusMode']! as String),
         focusPointSupported = (json['focusPointSupported'] as bool?) ?? false,
         super(json['cameraId']! as int);
+
+  /// The width of the preview in pixels.
+  final double previewWidth;
+
+  /// The height of the preview in pixels.
+  final double previewHeight;
+
+  /// The default exposure mode
+  final ExposureMode exposureMode;
+
+  /// The default focus mode
+  final FocusMode focusMode;
+
+  /// Whether setting exposure points is supported.
+  final bool exposurePointSupported;
+
+  /// Whether setting focus points is supported.
+  final bool focusPointSupported;
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
   /// can be serialized to JSON.
@@ -127,12 +127,6 @@ class CameraInitializedEvent extends CameraEvent {
 
 /// An event fired when the resolution preset of the camera has changed.
 class CameraResolutionChangedEvent extends CameraEvent {
-  /// The capture width in pixels.
-  final double captureWidth;
-
-  /// The capture height in pixels.
-  final double captureHeight;
-
   /// Build a CameraResolutionChanged event triggered from the camera
   /// represented by `cameraId`.
   ///
@@ -150,6 +144,12 @@ class CameraResolutionChangedEvent extends CameraEvent {
       : captureWidth = json['captureWidth']! as double,
         captureHeight = json['captureHeight']! as double,
         super(json['cameraId']! as int);
+
+  /// The capture width in pixels.
+  final double captureWidth;
+
+  /// The capture height in pixels.
+  final double captureHeight;
 
   /// Converts the [CameraResolutionChangedEvent] instance into a [Map] instance
   /// that can be serialized to JSON.
@@ -203,9 +203,6 @@ class CameraClosingEvent extends CameraEvent {
 
 /// An event fired when an error occured while operating the camera.
 class CameraErrorEvent extends CameraEvent {
-  /// Description of the error.
-  final String description;
-
   /// Build a CameraError event triggered from the camera represented by
   /// `cameraId`.
   ///
@@ -217,6 +214,9 @@ class CameraErrorEvent extends CameraEvent {
   CameraErrorEvent.fromJson(Map<String, dynamic> json)
       : description = json['description']! as String,
         super(json['cameraId']! as int);
+
+  /// Description of the error.
+  final String description;
 
   /// Converts the [CameraErrorEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
@@ -239,12 +239,6 @@ class CameraErrorEvent extends CameraEvent {
 
 /// An event fired when a video has finished recording.
 class VideoRecordedEvent extends CameraEvent {
-  /// XFile of the recorded video.
-  final XFile file;
-
-  /// Maximum duration of the recorded video.
-  final Duration? maxVideoDuration;
-
   /// Build a VideoRecordedEvent triggered from the camera with the `cameraId`.
   ///
   /// The `file` represents the file of the video.
@@ -261,6 +255,12 @@ class VideoRecordedEvent extends CameraEvent {
             ? Duration(milliseconds: json['maxVideoDuration'] as int)
             : null,
         super(json['cameraId']! as int);
+
+  /// XFile of the recorded video.
+  final XFile file;
+
+  /// Maximum duration of the recorded video.
+  final Duration? maxVideoDuration;
 
   /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
