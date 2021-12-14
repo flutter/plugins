@@ -21,7 +21,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
 /// An implementation of [CameraPlatform] that uses method channels.
 class MethodChannelCamera extends CameraPlatform {
-  final Map<int, MethodChannel> _channels = {};
+  final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
 
   /// The controller we need to broadcast the different events coming
   /// from handleMethodCall, specific to camera events.
@@ -114,7 +114,7 @@ class MethodChannelCamera extends CameraPlatform {
       return channel;
     });
 
-    final Completer _completer = Completer();
+    final Completer<void> _completer = Completer<void>();
 
     onCameraInitialized(cameraId).first.then((CameraInitializedEvent value) {
       _completer.complete();

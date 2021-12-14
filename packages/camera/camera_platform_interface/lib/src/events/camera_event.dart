@@ -90,7 +90,7 @@ class CameraInitializedEvent extends CameraEvent {
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
   /// can be serialized to JSON.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, Object>{
         'cameraId': cameraId,
         'previewWidth': previewWidth,
         'previewHeight': previewHeight,
@@ -152,7 +152,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
 
   /// Converts the [CameraResolutionChangedEvent] instance into a [Map] instance
   /// that can be serialized to JSON.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, Object>{
         'cameraId': cameraId,
         'captureWidth': captureWidth,
         'captureHeight': captureHeight,
@@ -185,7 +185,7 @@ class CameraClosingEvent extends CameraEvent {
 
   /// Converts the [CameraClosingEvent] instance into a [Map] instance that can
   /// be serialized to JSON.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, Object>{
         'cameraId': cameraId,
       };
 
@@ -197,7 +197,6 @@ class CameraClosingEvent extends CameraEvent {
           runtimeType == other.runtimeType;
 
   @override
-  // TODO: implement hashCode
   int get hashCode => super.hashCode;
 }
 
@@ -220,7 +219,7 @@ class CameraErrorEvent extends CameraEvent {
 
   /// Converts the [CameraErrorEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, Object>{
         'cameraId': cameraId,
         'description': description,
       };
@@ -264,7 +263,7 @@ class VideoRecordedEvent extends CameraEvent {
 
   /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, Object?>{
         'cameraId': cameraId,
         'path': file.path,
         'maxVideoDuration': maxVideoDuration?.inMilliseconds

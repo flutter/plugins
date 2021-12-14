@@ -35,7 +35,7 @@ class DeviceOrientationChangedEvent extends DeviceEvent {
 
   /// Converts the [DeviceOrientationChangedEvent] instance into a [Map] instance that
   /// can be serialized to JSON.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, Object>{
         'orientation': serializeDeviceOrientation(orientation),
       };
 

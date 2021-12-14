@@ -19,7 +19,7 @@ class MethodChannelMock {
     methodChannel.setMockMethodCallHandler(_handler);
   }
 
-  Future _handler(MethodCall methodCall) async {
+  Future<dynamic> _handler(MethodCall methodCall) async {
     log.add(methodCall);
 
     if (!methods.containsKey(methodCall.method)) {
@@ -27,13 +27,13 @@ class MethodChannelMock {
           '${methodCall.method} on channel ${methodChannel.name}');
     }
 
-    return Future.delayed(delay ?? Duration.zero, () {
-      final result = methods[methodCall.method];
+    return Future<dynamic>.delayed(delay ?? Duration.zero, () {
+      final dynamic result = methods[methodCall.method];
       if (result is Exception) {
         throw result;
       }
 
-      return Future.value(result);
+      return Future<dynamic>.value(result);
     });
   }
 }
