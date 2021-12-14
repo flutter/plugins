@@ -247,6 +247,7 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+        CHROME_NO_SANDBOX: true
       install_script:
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
