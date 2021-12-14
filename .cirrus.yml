@@ -195,7 +195,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[!c9446a7b11d5520c2ebce3c64ccc82fe6d146272cb06a4a4590e22c389f33153f951347a25422522df1a81fe2f085e9a!]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[!cc769765170bebc37e0556e2da5915ca64ee37f4ec8c966ec147e2f59578b476c99e457eafce4e2f8b1a4e305f7096b8!]
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
