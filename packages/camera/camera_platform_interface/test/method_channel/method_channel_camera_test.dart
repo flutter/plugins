@@ -82,7 +82,8 @@ void main() {
           ),
           throwsA(
             isA<CameraException>()
-                .having((CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
+                .having(
+                    (CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
                 .having((CameraException e) => e.description, 'description',
                     'Mock error message used during testing.'),
           ),
@@ -113,7 +114,8 @@ void main() {
           ),
           throwsA(
             isA<CameraException>()
-                .having((CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
+                .having(
+                    (CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
                 .having((CameraException e) => e.description, 'description',
                     'Mock error message used during testing.'),
           ),
@@ -252,7 +254,8 @@ void main() {
         // Act
         final Stream<CameraInitializedEvent> eventStream =
             camera.onCameraInitialized(cameraId);
-        final StreamQueue<CameraInitializedEvent> streamQueue = StreamQueue(eventStream);
+        final StreamQueue<CameraInitializedEvent> streamQueue =
+            StreamQueue(eventStream);
 
         // Emit test events
         final CameraInitializedEvent event = CameraInitializedEvent(
@@ -278,11 +281,14 @@ void main() {
         // Act
         final Stream<CameraResolutionChangedEvent> resolutionStream =
             camera.onCameraResolutionChanged(cameraId);
-        final StreamQueue<CameraResolutionChangedEvent> streamQueue = StreamQueue(resolutionStream);
+        final StreamQueue<CameraResolutionChangedEvent> streamQueue =
+            StreamQueue(resolutionStream);
 
         // Emit test events
-        final CameraResolutionChangedEvent fhdEvent = CameraResolutionChangedEvent(cameraId, 1920, 1080);
-        final CameraResolutionChangedEvent uhdEvent = CameraResolutionChangedEvent(cameraId, 3840, 2160);
+        final CameraResolutionChangedEvent fhdEvent =
+            CameraResolutionChangedEvent(cameraId, 1920, 1080);
+        final CameraResolutionChangedEvent uhdEvent =
+            CameraResolutionChangedEvent(cameraId, 3840, 2160);
         await camera.handleCameraMethodCall(
             MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
         await camera.handleCameraMethodCall(
@@ -306,7 +312,8 @@ void main() {
         // Act
         final Stream<CameraClosingEvent> eventStream =
             camera.onCameraClosing(cameraId);
-        final StreamQueue<CameraClosingEvent> streamQueue = StreamQueue(eventStream);
+        final StreamQueue<CameraClosingEvent> streamQueue =
+            StreamQueue(eventStream);
 
         // Emit test events
         final CameraClosingEvent event = CameraClosingEvent(cameraId);
@@ -328,11 +335,14 @@ void main() {
 
       test('Should receive camera error events', () async {
         // Act
-        final Stream<CameraErrorEvent> errorStream = camera.onCameraError(cameraId);
-        final StreamQueue<CameraErrorEvent> streamQueue = StreamQueue(errorStream);
+        final Stream<CameraErrorEvent> errorStream =
+            camera.onCameraError(cameraId);
+        final StreamQueue<CameraErrorEvent> streamQueue =
+            StreamQueue(errorStream);
 
         // Emit test events
-        final CameraErrorEvent event = CameraErrorEvent(cameraId, 'Error Description');
+        final CameraErrorEvent event =
+            CameraErrorEvent(cameraId, 'Error Description');
         await camera.handleCameraMethodCall(
             MethodCall('error', event.toJson()), cameraId);
         await camera.handleCameraMethodCall(
@@ -351,8 +361,10 @@ void main() {
 
       test('Should receive device orientation change events', () async {
         // Act
-        final Stream<DeviceOrientationChangedEvent> eventStream = camera.onDeviceOrientationChanged();
-        final StreamQueue<DeviceOrientationChangedEvent> streamQueue = StreamQueue(eventStream);
+        final Stream<DeviceOrientationChangedEvent> eventStream =
+            camera.onDeviceOrientationChanged();
+        final StreamQueue<DeviceOrientationChangedEvent> streamQueue =
+            StreamQueue(eventStream);
 
         // Emit test events
         final DeviceOrientationChangedEvent event =
@@ -457,7 +469,8 @@ void main() {
           camera.availableCameras,
           throwsA(
             isA<CameraException>()
-                .having((CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
+                .having(
+                    (CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
                 .having((CameraException e) => e.description, 'description',
                     'Mock error message used during testing.'),
           ),
@@ -675,7 +688,8 @@ void main() {
         );
 
         // Act
-        final double minExposureOffset = await camera.getMinExposureOffset(cameraId);
+        final double minExposureOffset =
+            await camera.getMinExposureOffset(cameraId);
 
         // Assert
         expect(minExposureOffset, 2.0);
@@ -694,7 +708,8 @@ void main() {
         );
 
         // Act
-        final double maxExposureOffset = await camera.getMaxExposureOffset(cameraId);
+        final double maxExposureOffset =
+            await camera.getMaxExposureOffset(cameraId);
 
         // Assert
         expect(maxExposureOffset, 2.0);
@@ -713,7 +728,8 @@ void main() {
         );
 
         // Act
-        final double stepSize = await camera.getExposureOffsetStepSize(cameraId);
+        final double stepSize =
+            await camera.getExposureOffsetStepSize(cameraId);
 
         // Assert
         expect(stepSize, 0.25);
@@ -732,7 +748,8 @@ void main() {
         );
 
         // Act
-        final double actualOffset = await camera.setExposureOffset(cameraId, 0.5);
+        final double actualOffset =
+            await camera.setExposureOffset(cameraId, 0.5);
 
         // Assert
         expect(actualOffset, 0.6);
@@ -806,8 +823,8 @@ void main() {
         final MethodChannelCamera camera = MethodChannelCamera();
 
         expect(
-            () =>
-                camera.handleCameraMethodCall(const MethodCall('unknown_method'), 1),
+            () => camera.handleCameraMethodCall(
+                const MethodCall('unknown_method'), 1),
             throwsA(isA<MissingPluginException>()));
       });
 

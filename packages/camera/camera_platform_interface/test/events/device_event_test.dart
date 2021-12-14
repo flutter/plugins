@@ -11,13 +11,15 @@ void main() {
 
   group('DeviceOrientationChangedEvent tests', () {
     test('Constructor should initialize all properties', () {
-      final DeviceOrientationChangedEvent event = DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
+      final DeviceOrientationChangedEvent event =
+          DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
       expect(event.orientation, DeviceOrientation.portraitUp);
     });
 
     test('fromJson should initialize all properties', () {
-      final DeviceOrientationChangedEvent event = DeviceOrientationChangedEvent.fromJson(<String, dynamic>{
+      final DeviceOrientationChangedEvent event =
+          DeviceOrientationChangedEvent.fromJson(<String, dynamic>{
         'orientation': 'portraitUp',
       });
 
@@ -25,7 +27,8 @@ void main() {
     });
 
     test('toJson should return a map with all fields', () {
-      final DeviceOrientationChangedEvent event = DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
+      final DeviceOrientationChangedEvent event =
+          DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
       final Map<String, dynamic> jsonMap = event.toJson();
 
@@ -52,7 +55,8 @@ void main() {
     });
 
     test('hashCode should match hashCode of all properties', () {
-      final DeviceOrientationChangedEvent event = DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
+      final DeviceOrientationChangedEvent event =
+          DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
       final int expectedHashCode = event.orientation.hashCode;
 
       expect(event.hashCode, expectedHashCode);

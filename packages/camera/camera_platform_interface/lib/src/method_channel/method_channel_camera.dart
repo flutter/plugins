@@ -51,7 +51,8 @@ class MethodChannelCamera extends CameraPlatform {
 
   /// Construct a new method channel camera instance.
   MethodChannelCamera() {
-    const MethodChannel channel = MethodChannel('flutter.io/cameraPlugin/device');
+    const MethodChannel channel =
+        MethodChannel('flutter.io/cameraPlugin/device');
     channel.setMethodCallHandler(
         (MethodCall call) => handleDeviceMethodCall(call));
   }
@@ -106,7 +107,8 @@ class MethodChannelCamera extends CameraPlatform {
     ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
   }) {
     _channels.putIfAbsent(cameraId, () {
-      final MethodChannel channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
+      final MethodChannel channel =
+          MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
           (MethodCall call) => handleCameraMethodCall(call, cameraId));
       return channel;
