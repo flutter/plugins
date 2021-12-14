@@ -1,6 +1,10 @@
+## 0.3.2+1
+
+* Report the map ready when the bounds, projection and tilt of the map are ready, instead of `tilesloaded`.
+
 ## 0.3.2
 
-Add `onDragStart` and `onDrag` to `Marker`
+* Add `onDragStart` and `onDrag` to `Marker`
 
 ## 0.3.1
 

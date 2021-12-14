@@ -40,6 +40,7 @@ void main() {
       controller = MockGoogleMapController();
       plugin = GoogleMapsPlugin();
       reportedMapIdCompleter = Completer<int>();
+      numberOnPlatformViewCreatedCalls = 0;
     });
 
     group('init/dispose', () {

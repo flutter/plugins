@@ -185,10 +185,18 @@ class GoogleMapController {
 
   // Funnels map gmap events into the plugin's stream controller.
   void _attachMapEvents(gmaps.GMap map) {
-    map.onTilesloaded.first.then((event) {
-      // Report the map as ready to go the first time the tiles load
+    // Report the map ready when the bounds, projection and tilt of the map are ready...
+    Future.wait([
+      map.onBoundsChanged.firstWhere((_) => map.bounds != null),
+      map.onProjectionChanged.firstWhere((_) => map.projection != null),
+      map.onTiltChanged.firstWhere((_) => map.tilt != null),
+    ])
+    // ...plus one more JS tick.
+    .then((_) => Future.delayed(Duration(milliseconds: 0)))
+    .then((_) {
       _streamController.add(WebMapReadyEvent(_mapId));
     });
+
     map.onClick.listen((event) {
       assert(event.latLng != null);
       _streamController.add(
