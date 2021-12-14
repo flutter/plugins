@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     auth.isDeviceSupported().then(
-          (isSupported) => setState(() => _supportState = isSupported
+          (bool isSupported) => setState(() => _supportState = isSupported
               ? _SupportState.supported
               : _SupportState.unsupported),
         );
@@ -45,7 +45,9 @@ class _MyAppState extends State<MyApp> {
       canCheckBiometrics = false;
       print(e);
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _canCheckBiometrics = canCheckBiometrics;
@@ -60,7 +62,9 @@ class _MyAppState extends State<MyApp> {
       availableBiometrics = <BiometricType>[];
       print(e);
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _availableBiometrics = availableBiometrics;
@@ -85,11 +89,13 @@ class _MyAppState extends State<MyApp> {
       print(e);
       setState(() {
         _isAuthenticating = false;
-        _authorized = "Error - ${e.message}";
+        _authorized = 'Error - ${e.message}';
       });
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(
         () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
@@ -116,11 +122,13 @@ class _MyAppState extends State<MyApp> {
       print(e);
       setState(() {
         _isAuthenticating = false;
-        _authorized = "Error - ${e.message}";
+        _authorized = 'Error - ${e.message}';
       });
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     final String message = authenticated ? 'Authorized' : 'Not Authorized';
     setState(() {
@@ -128,7 +136,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _cancelAuthentication() async {
+  Future<void> _cancelAuthentication() async {
     await auth.stopAuthentication();
     setState(() => _isAuthenticating = false);
   }
@@ -142,67 +150,68 @@ class _MyAppState extends State<MyApp> {
         ),
         body: ListView(
           padding: const EdgeInsets.only(top: 30),
-          children: [
+          children: <Widget>[
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 if (_supportState == _SupportState.unknown)
-                  CircularProgressIndicator()
+                  const CircularProgressIndicator()
                 else if (_supportState == _SupportState.supported)
-                  Text("This device is supported")
+                  const Text('This device is supported')
                 else
-                  Text("This device is not supported"),
-                Divider(height: 100),
+                  const Text('This device is not supported'),
+                const Divider(height: 100),
                 Text('Can check biometrics: $_canCheckBiometrics\n'),
                 ElevatedButton(
                   child: const Text('Check biometrics'),
                   onPressed: _checkBiometrics,
                 ),
-                Divider(height: 100),
+                const Divider(height: 100),
                 Text('Available biometrics: $_availableBiometrics\n'),
                 ElevatedButton(
                   child: const Text('Get available biometrics'),
                   onPressed: _getAvailableBiometrics,
                 ),
-                Divider(height: 100),
+                const Divider(height: 100),
                 Text('Current State: $_authorized\n'),
-                (_isAuthenticating)
-                    ? ElevatedButton(
-                        onPressed: _cancelAuthentication,
+                if (_isAuthenticating)
+                  ElevatedButton(
+                    onPressed: _cancelAuthentication,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const <Widget>[
+                        Text('Cancel Authentication'),
+                        Icon(Icons.cancel),
+                      ],
+                    ),
+                  )
+                else
+                  Column(
+                    children: <Widget>[
+                      ElevatedButton(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text("Cancel Authentication"),
-                            Icon(Icons.cancel),
+                          children: const <Widget>[
+                            Text('Authenticate'),
+                            Icon(Icons.perm_device_information),
                           ],
                         ),
-                      )
-                    : Column(
-                        children: [
-                          ElevatedButton(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('Authenticate'),
-                                Icon(Icons.perm_device_information),
-                              ],
-                            ),
-                            onPressed: _authenticate,
-                          ),
-                          ElevatedButton(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(_isAuthenticating
-                                    ? 'Cancel'
-                                    : 'Authenticate: biometrics only'),
-                                Icon(Icons.fingerprint),
-                              ],
-                            ),
-                            onPressed: _authenticateWithBiometrics,
-                          ),
-                        ],
+                        onPressed: _authenticate,
                       ),
+                      ElevatedButton(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(_isAuthenticating
+                                ? 'Cancel'
+                                : 'Authenticate: biometrics only'),
+                            const Icon(Icons.fingerprint),
+                          ],
+                        ),
+                        onPressed: _authenticateWithBiometrics,
+                      ),
+                    ],
+                  ),
               ],
             ),
           ],
