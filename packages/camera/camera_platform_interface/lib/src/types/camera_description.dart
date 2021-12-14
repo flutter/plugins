@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
 /// The direction the camera is facing.
@@ -54,6 +55,7 @@ class CameraDescription {
 
   @override
   String toString() {
-    return '$runtimeType($name, $lensDirection, $sensorOrientation)';
+    return '${objectRuntimeType(this, 'CameraDescription')}('
+        '$name, $lensDirection, $sensorOrientation)';
   }
 }
