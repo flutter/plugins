@@ -69,9 +69,10 @@ class MethodChannelCamera extends CameraPlatform {
 
       return cameras.map((Map<dynamic, dynamic> camera) {
         return CameraDescription(
-          name: camera['name'],
-          lensDirection: parseCameraLensDirection(camera['lensFacing']),
-          sensorOrientation: camera['sensorOrientation'],
+          name: camera['name']! as String,
+          lensDirection:
+              parseCameraLensDirection(camera['lensFacing']! as String),
+          sensorOrientation: camera['sensorOrientation']! as int,
         );
       }).toList();
     } on PlatformException catch (e) {
@@ -95,7 +96,7 @@ class MethodChannelCamera extends CameraPlatform {
         'enableAudio': enableAudio,
       });
 
-      return reply!['cameraId'];
+      return reply!['cameraId']! as int;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -466,7 +467,8 @@ class MethodChannelCamera extends CameraPlatform {
     switch (call.method) {
       case 'orientation_changed':
         deviceEventStreamController.add(DeviceOrientationChangedEvent(
-            deserializeDeviceOrientation(call.arguments['orientation'])));
+            deserializeDeviceOrientation(
+                call.arguments['orientation']! as String)));
         break;
       default:
         throw MissingPluginException();
@@ -483,19 +485,19 @@ class MethodChannelCamera extends CameraPlatform {
       case 'initialized':
         cameraEventStreamController.add(CameraInitializedEvent(
           cameraId,
-          call.arguments['previewWidth'],
-          call.arguments['previewHeight'],
-          deserializeExposureMode(call.arguments['exposureMode']),
-          call.arguments['exposurePointSupported'],
-          deserializeFocusMode(call.arguments['focusMode']),
-          call.arguments['focusPointSupported'],
+          call.arguments['previewWidth']! as double,
+          call.arguments['previewHeight']! as double,
+          deserializeExposureMode(call.arguments['exposureMode']! as String),
+          call.arguments['exposurePointSupported']! as bool,
+          deserializeFocusMode(call.arguments['focusMode']! as String),
+          call.arguments['focusPointSupported']! as bool,
         ));
         break;
       case 'resolution_changed':
         cameraEventStreamController.add(CameraResolutionChangedEvent(
           cameraId,
-          call.arguments['captureWidth'],
-          call.arguments['captureHeight'],
+          call.arguments['captureWidth']! as double,
+          call.arguments['captureHeight']! as double,
         ));
         break;
       case 'camera_closing':
@@ -506,16 +508,17 @@ class MethodChannelCamera extends CameraPlatform {
       case 'video_recorded':
         cameraEventStreamController.add(VideoRecordedEvent(
           cameraId,
-          XFile(call.arguments['path']),
+          XFile(call.arguments['path']! as String),
           call.arguments['maxVideoDuration'] != null
-              ? Duration(milliseconds: call.arguments['maxVideoDuration'])
+              ? Duration(
+                  milliseconds: call.arguments['maxVideoDuration']! as int)
               : null,
         ));
         break;
       case 'error':
         cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
-          call.arguments['description'],
+          call.arguments['description']! as String,
         ));
         break;
       default:

@@ -80,13 +80,14 @@ class CameraInitializedEvent extends CameraEvent {
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
   /// class.
   CameraInitializedEvent.fromJson(Map<String, dynamic> json)
-      : previewWidth = json['previewWidth'],
-        previewHeight = json['previewHeight'],
-        exposureMode = deserializeExposureMode(json['exposureMode']),
-        exposurePointSupported = json['exposurePointSupported'] ?? false,
-        focusMode = deserializeFocusMode(json['focusMode']),
-        focusPointSupported = json['focusPointSupported'] ?? false,
-        super(json['cameraId']);
+      : previewWidth = json['previewWidth']! as double,
+        previewHeight = json['previewHeight']! as double,
+        exposureMode = deserializeExposureMode(json['exposureMode']! as String),
+        exposurePointSupported =
+            (json['exposurePointSupported'] as bool?) ?? false,
+        focusMode = deserializeFocusMode(json['focusMode']! as String),
+        focusPointSupported = (json['focusPointSupported'] as bool?) ?? false,
+        super(json['cameraId']! as int);
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
   /// can be serialized to JSON.
@@ -146,9 +147,9 @@ class CameraResolutionChangedEvent extends CameraEvent {
   /// Converts the supplied [Map] to an instance of the
   /// [CameraResolutionChangedEvent] class.
   CameraResolutionChangedEvent.fromJson(Map<String, dynamic> json)
-      : captureWidth = json['captureWidth'],
-        captureHeight = json['captureHeight'],
-        super(json['cameraId']);
+      : captureWidth = json['captureWidth']! as double,
+        captureHeight = json['captureHeight']! as double,
+        super(json['cameraId']! as int);
 
   /// Converts the [CameraResolutionChangedEvent] instance into a [Map] instance
   /// that can be serialized to JSON.
@@ -181,7 +182,7 @@ class CameraClosingEvent extends CameraEvent {
   /// Converts the supplied [Map] to an instance of the [CameraClosingEvent]
   /// class.
   CameraClosingEvent.fromJson(Map<String, dynamic> json)
-      : super(json['cameraId']);
+      : super(json['cameraId']! as int);
 
   /// Converts the [CameraClosingEvent] instance into a [Map] instance that can
   /// be serialized to JSON.
@@ -214,8 +215,8 @@ class CameraErrorEvent extends CameraEvent {
   /// Converts the supplied [Map] to an instance of the [CameraErrorEvent]
   /// class.
   CameraErrorEvent.fromJson(Map<String, dynamic> json)
-      : description = json['description'],
-        super(json['cameraId']);
+      : description = json['description']! as String,
+        super(json['cameraId']! as int);
 
   /// Converts the [CameraErrorEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
@@ -255,11 +256,11 @@ class VideoRecordedEvent extends CameraEvent {
   /// Converts the supplied [Map] to an instance of the [VideoRecordedEvent]
   /// class.
   VideoRecordedEvent.fromJson(Map<String, dynamic> json)
-      : file = XFile(json['path']),
+      : file = XFile(json['path']! as String),
         maxVideoDuration = json['maxVideoDuration'] != null
             ? Duration(milliseconds: json['maxVideoDuration'] as int)
             : null,
-        super(json['cameraId']);
+        super(json['cameraId']! as int);
 
   /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.

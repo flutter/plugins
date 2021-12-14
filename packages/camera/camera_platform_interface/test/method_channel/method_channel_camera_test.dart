@@ -48,7 +48,7 @@ void main() {
         expect(cameraMockChannel.log, <Matcher>[
           isMethodCall(
             'create',
-            arguments: <String, Object>{
+            arguments: <String, Object?>{
               'cameraName': 'Test',
               'resolutionPreset': 'high',
               'enableAudio': false
@@ -166,7 +166,7 @@ void main() {
           anything,
           isMethodCall(
             'initialize',
-            arguments: <String, Object>{
+            arguments: <String, Object?>{
               'cameraId': 1,
               'imageFormatGroup': 'unknown',
             },
@@ -215,7 +215,7 @@ void main() {
           anything,
           isMethodCall(
             'dispose',
-            arguments: <String, Object>{'cameraId': 1},
+            arguments: <String, Object?>{'cameraId': 1},
           ),
         ]);
       });
@@ -456,10 +456,10 @@ void main() {
         expect(cameras.length, returnData.length);
         for (int i = 0; i < returnData.length; i++) {
           final CameraDescription cameraDescription = CameraDescription(
-            name: returnData[i]['name'],
-            lensDirection:
-                parseCameraLensDirection(returnData[i]['lensFacing']),
-            sensorOrientation: returnData[i]['sensorOrientation'],
+            name: returnData[i]['name']! as String,
+            lensDirection: parseCameraLensDirection(
+                returnData[i]['lensFacing']! as String),
+            sensorOrientation: returnData[i]['sensorOrientation']! as int,
           );
           expect(cameras[i], cameraDescription);
         }
@@ -502,7 +502,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('takePicture', arguments: <String, Object>{
+          isMethodCall('takePicture', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -537,7 +537,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('startVideoRecording', arguments: <String, Object>{
+          isMethodCall('startVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
             'maxVideoDuration': null,
           }),
@@ -560,7 +560,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('startVideoRecording', arguments: <String, Object>{
+          isMethodCall('startVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
             'maxVideoDuration': 10000
           }),
@@ -579,7 +579,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('stopVideoRecording', arguments: <String, Object>{
+          isMethodCall('stopVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -598,7 +598,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('pauseVideoRecording', arguments: <String, Object>{
+          isMethodCall('pauseVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -616,7 +616,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('resumeVideoRecording', arguments: <String, Object>{
+          isMethodCall('resumeVideoRecording', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -637,20 +637,22 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('setFlashMode', arguments: <String, Object>{
+          isMethodCall('setFlashMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'torch'
           }),
-          isMethodCall('setFlashMode', arguments: <String, Object>{
+          isMethodCall('setFlashMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'always'
           }),
-          isMethodCall('setFlashMode', arguments: <String, Object>{
+          isMethodCall('setFlashMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'auto'
           }),
-          isMethodCall('setFlashMode',
-              arguments: <String, Object>{'cameraId': cameraId, 'mode': 'off'}),
+          isMethodCall('setFlashMode', arguments: <String, Object?>{
+            'cameraId': cameraId,
+            'mode': 'off'
+          }),
         ]);
       });
 
@@ -667,11 +669,11 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('setExposureMode', arguments: <String, Object>{
+          isMethodCall('setExposureMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'auto'
           }),
-          isMethodCall('setExposureMode', arguments: <String, Object>{
+          isMethodCall('setExposureMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'locked'
           }),
@@ -691,13 +693,13 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('setExposurePoint', arguments: <String, Object>{
+          isMethodCall('setExposurePoint', arguments: <String, Object?>{
             'cameraId': cameraId,
             'x': 0.5,
             'y': 0.5,
             'reset': false
           }),
-          isMethodCall('setExposurePoint', arguments: <String, Object>{
+          isMethodCall('setExposurePoint', arguments: <String, Object?>{
             'cameraId': cameraId,
             'x': null,
             'y': null,
@@ -720,7 +722,7 @@ void main() {
         // Assert
         expect(minExposureOffset, 2.0);
         expect(channel.log, <Matcher>[
-          isMethodCall('getMinExposureOffset', arguments: <String, Object>{
+          isMethodCall('getMinExposureOffset', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -740,7 +742,7 @@ void main() {
         // Assert
         expect(maxExposureOffset, 2.0);
         expect(channel.log, <Matcher>[
-          isMethodCall('getMaxExposureOffset', arguments: <String, Object>{
+          isMethodCall('getMaxExposureOffset', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -760,9 +762,10 @@ void main() {
         // Assert
         expect(stepSize, 0.25);
         expect(channel.log, <Matcher>[
-          isMethodCall('getExposureOffsetStepSize', arguments: <String, Object>{
-            'cameraId': cameraId,
-          }),
+          isMethodCall('getExposureOffsetStepSize',
+              arguments: <String, Object?>{
+                'cameraId': cameraId,
+              }),
         ]);
       });
 
@@ -780,7 +783,7 @@ void main() {
         // Assert
         expect(actualOffset, 0.6);
         expect(channel.log, <Matcher>[
-          isMethodCall('setExposureOffset', arguments: <String, Object>{
+          isMethodCall('setExposureOffset', arguments: <String, Object?>{
             'cameraId': cameraId,
             'offset': 0.5,
           }),
@@ -800,11 +803,11 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('setFocusMode', arguments: <String, Object>{
+          isMethodCall('setFocusMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'auto'
           }),
-          isMethodCall('setFocusMode', arguments: <String, Object>{
+          isMethodCall('setFocusMode', arguments: <String, Object?>{
             'cameraId': cameraId,
             'mode': 'locked'
           }),
@@ -824,13 +827,13 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('setFocusPoint', arguments: <String, Object>{
+          isMethodCall('setFocusPoint', arguments: <String, Object?>{
             'cameraId': cameraId,
             'x': 0.5,
             'y': 0.5,
             'reset': false
           }),
-          isMethodCall('setFocusPoint', arguments: <String, Object>{
+          isMethodCall('setFocusPoint', arguments: <String, Object?>{
             'cameraId': cameraId,
             'x': null,
             'y': null,
@@ -871,7 +874,7 @@ void main() {
         // Assert
         expect(maxZoomLevel, 10.0);
         expect(channel.log, <Matcher>[
-          isMethodCall('getMaxZoomLevel', arguments: <String, Object>{
+          isMethodCall('getMaxZoomLevel', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -890,7 +893,7 @@ void main() {
         // Assert
         expect(maxZoomLevel, 1.0);
         expect(channel.log, <Matcher>[
-          isMethodCall('getMinZoomLevel', arguments: <String, Object>{
+          isMethodCall('getMinZoomLevel', arguments: <String, Object?>{
             'cameraId': cameraId,
           }),
         ]);
@@ -909,7 +912,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('setZoomLevel',
-              arguments: <String, Object>{'cameraId': cameraId, 'zoom': 2.0}),
+              arguments: <String, Object?>{'cameraId': cameraId, 'zoom': 2.0}),
         ]);
       });
 
@@ -949,7 +952,7 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('lockCaptureOrientation', arguments: <String, Object>{
+          isMethodCall('lockCaptureOrientation', arguments: <String, Object?>{
             'cameraId': cameraId,
             'orientation': 'portraitUp'
           }),
@@ -969,7 +972,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('unlockCaptureOrientation',
-              arguments: <String, Object>{'cameraId': cameraId}),
+              arguments: <String, Object?>{'cameraId': cameraId}),
         ]);
       });
 
@@ -986,7 +989,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('pausePreview',
-              arguments: <String, Object>{'cameraId': cameraId}),
+              arguments: <String, Object?>{'cameraId': cameraId}),
         ]);
       });
 
@@ -1003,7 +1006,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('resumePreview',
-              arguments: <String, Object>{'cameraId': cameraId}),
+              arguments: <String, Object?>{'cameraId': cameraId}),
         ]);
       });
     });
