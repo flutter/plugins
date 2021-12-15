@@ -10,9 +10,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const String kTemporaryPath = 'temporaryPath';
   const String kApplicationSupportPath = 'applicationSupportPath';
-  const String kLibraryPath = 'libraryPath';
   const String kApplicationDocumentsPath = 'applicationDocumentsPath';
-  const String kDownloadsPath = 'downloadsPath';
+  const String kStoragePath = 'storagePath';
+  const List<String> kExternalCachePaths = <String>['externalCachePath'];
+  const List<String> kExternalStoragePaths = <String>['externalStoragePath'];
 
   group('PathProviderAndroid', () {
     late PathProviderAndroid pathProvider;
@@ -29,12 +30,14 @@ void main() {
             return kTemporaryPath;
           case 'getApplicationSupportDirectory':
             return kApplicationSupportPath;
-          case 'getLibraryDirectory':
-            return kLibraryPath;
           case 'getApplicationDocumentsDirectory':
             return kApplicationDocumentsPath;
-          case 'getDownloadsDirectory':
-            return kDownloadsPath;
+          case 'getStorageDirectory':
+            return kStoragePath;
+          case 'getExternalCacheDirectories':
+            return kExternalCachePaths;
+          case 'getExternalStorageDirectories':
+            return kExternalStoragePaths;
           default:
             return null;
         }
@@ -65,15 +68,6 @@ void main() {
       expect(path, kApplicationSupportPath);
     });
 
-    test('getLibraryPath', () async {
-      final String? path = await pathProvider.getLibraryPath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getLibraryDirectory', arguments: null)],
-      );
-      expect(path, kLibraryPath);
-    });
-
     test('getApplicationDocumentsPath', () async {
       final String? path = await pathProvider.getApplicationDocumentsPath();
       expect(
@@ -85,27 +79,41 @@ void main() {
       expect(path, kApplicationDocumentsPath);
     });
 
-    test('getDownloadsPath', () async {
-      final String? result = await pathProvider.getDownloadsPath();
+    test('getExternalStoragePath', () async {
+      final String? result = await pathProvider.getExternalStoragePath();
       expect(
         log,
-        <Matcher>[isMethodCall('getDownloadsDirectory', arguments: null)],
+        <Matcher>[isMethodCall('getStorageDirectory', arguments: null)],
       );
-      expect(result, kDownloadsPath);
+      expect(result, kStoragePath);
     });
 
-    test('getExternalCachePaths throws', () async {
-      expect(pathProvider.getExternalCachePaths(), throwsA(isUnsupportedError));
-    });
-
-    test('getExternalStoragePath throws', () async {
+    test('getExternalCachePaths', () async {
+      final List<String>? result = await pathProvider.getExternalCachePaths();
       expect(
-          pathProvider.getExternalStoragePath(), throwsA(isUnsupportedError));
+        log,
+        <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
+      );
+      expect(result, kExternalCachePaths);
     });
 
-    test('getExternalStoragePaths throws', () async {
+    test('getExternalStoragePaths', () async {
+      final List<String>? result = await pathProvider.getExternalStoragePaths();
       expect(
-          pathProvider.getExternalStoragePaths(), throwsA(isUnsupportedError));
+        log,
+        <Matcher>[
+          isMethodCall('getExternalStorageDirectories', arguments: null)
+        ],
+      );
+      expect(result, kExternalStoragePaths);
+    });
+
+    test('getLibraryPath throws', () async {
+      expect(pathProvider.getLibraryPath(), throwsA(isUnsupportedError));
+    });
+
+    test('getDownloadsPath throws', () async {
+      expect(pathProvider.getDownloadsPath(), throwsA(isUnsupportedError));
     });
   });
 }

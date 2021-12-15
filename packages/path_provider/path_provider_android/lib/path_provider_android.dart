@@ -30,7 +30,7 @@ class PathProviderAndroid extends PathProviderPlatform {
 
   @override
   Future<String?> getLibraryPath() {
-    return methodChannel.invokeMethod<String>('getLibraryDirectory');
+    throw UnsupportedError('getLibraryPath is not supported on Android');
   }
 
   @override
@@ -41,25 +41,25 @@ class PathProviderAndroid extends PathProviderPlatform {
 
   @override
   Future<String?> getExternalStoragePath() async {
-    throw UnsupportedError(
-        'getExternalStoragePath is not supported on Android');
+    return methodChannel.invokeMethod<String>('getStorageDirectory');
   }
 
   @override
   Future<List<String>?> getExternalCachePaths() async {
-    throw UnsupportedError('getExternalCachePaths is not supported on Android');
+    return methodChannel
+        .invokeMethod<List<String>>('getExternalCacheDirectories');
   }
 
   @override
   Future<List<String>?> getExternalStoragePaths({
     StorageDirectory? type,
   }) async {
-    throw UnsupportedError(
-        'getExternalStoragePaths is not supported on Android');
+    return methodChannel
+        .invokeMethod<List<String>>('getExternalStorageDirectories');
   }
 
   @override
   Future<String?> getDownloadsPath() {
-    return methodChannel.invokeMethod<String>('getDownloadsDirectory');
+    throw UnsupportedError('getDownloadsPath is not supported on Android');
   }
 }
