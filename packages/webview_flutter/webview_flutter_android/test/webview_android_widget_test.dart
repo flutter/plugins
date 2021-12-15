@@ -483,6 +483,31 @@ void main() {
         });
       });
 
+      testWidgets('update userAgentString', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        reset(mockWebSettings);
+
+        await testController.updateSettings(WebSettings(
+          userAgent: const WebSetting<String>.absent(),
+        ));
+
+        verifyNever(mockWebSettings.setUserAgentString(any));
+      });
+
+      testWidgets('update null userAgentString with empty string',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        reset(mockWebSettings);
+
+        await testController.updateSettings(WebSettings(
+          userAgent: const WebSetting<String?>.of(null),
+        ));
+
+        verify(mockWebSettings.setUserAgentString(''));
+      });
+
       testWidgets('currentUrl', (WidgetTester tester) async {
         await buildWidget(tester);
 
