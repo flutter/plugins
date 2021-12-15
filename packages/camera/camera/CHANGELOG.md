@@ -1,6 +1,7 @@
-## NEXT
+## 0.9.4+7
 
-* Minor internal code cleanup.
+* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.  
+* Minor iOS internal code cleanup.
 
 ## 0.9.4+6
 

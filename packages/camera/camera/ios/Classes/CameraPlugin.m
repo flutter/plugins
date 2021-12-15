@@ -1322,9 +1322,7 @@ NSString *const errorMethod = @"error";
 @property(readonly, nonatomic) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 @end
 
-@implementation CameraPlugin {
-  dispatch_queue_t _captureSessionQueue;
-}
+@implementation CameraPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -1341,6 +1339,7 @@ NSString *const errorMethod = @"error";
   NSAssert(self, @"super init cannot be nil");
   _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
+  _captureSessionQueue = dispatch_queue_create("io.flutter.camera.captureSessionQueue", NULL);
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
   return self;
@@ -1385,10 +1384,6 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (_captureSessionQueue == nil) {
-    _captureSessionQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
-  }
-
   // Invoke the plugin on another dispatch queue to avoid blocking the UI.
   dispatch_async(_captureSessionQueue, ^{
     FLTThreadSafeFlutterResult *threadSafeResult =
@@ -1507,7 +1502,6 @@ NSString *const errorMethod = @"error";
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:cameraId];
       [_camera close];
-      _captureSessionQueue = nil;
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       [_camera setUpCaptureSessionForAudio];
