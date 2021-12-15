@@ -251,7 +251,6 @@ task:
         CHROME_DIR: /tmp/web_chromium/
         CHROME_BINARY_DIR: $CHROME_DIR/chrome-linux
         CHROME_EXECUTABLE: $CHROME_BINARY_DIR/chrome
-        PATH: $CHROME_BINARY_DIR:$PATH
       install_script:
         - ./script/install_chromium.sh "$CHROME_DIR"
         - git clone https://github.com/flutter/web_installers.git
@@ -259,6 +258,11 @@ task:
         - dart pub get
       chromedriver_background_script:
         - cd web_installers/packages/web_drivers/
+        # web_driver_installer only looks for google-chrome, so will find the
+        # system installation. Add a symlink and path override so that it finds
+        # the version installed by install_chromium.sh instead.
+        - export PATH=$CHROME_BINARY_DIR:$PATH
+        - ln -s "$CHROME_EXECUTABLE" "$CHROME_BINARY_DIR"/google-chrome
         - dart lib/web_driver_installer.dart chromedriver --install-only
         - ./chromedriver/chromedriver --port=4444
       build_script:
