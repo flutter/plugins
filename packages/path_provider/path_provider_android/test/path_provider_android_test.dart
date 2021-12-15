@@ -108,12 +108,22 @@ void main() {
       expect(result, kExternalStoragePaths);
     });
 
-    test('getLibraryPath throws', () async {
-      expect(pathProvider.getLibraryPath(), throwsA(isUnsupportedError));
+    test('getLibraryPath fails', () async {
+      try {
+        await pathProvider.getLibraryPath();
+        fail('should throw UnsupportedError');
+      } catch (e) {
+        expect(e, isUnsupportedError);
+      }
     });
 
-    test('getDownloadsPath throws', () async {
-      expect(pathProvider.getDownloadsPath(), throwsA(isUnsupportedError));
+    test('getDownloadsPath fails', () async {
+      try {
+        await pathProvider.getDownloadsPath();
+        fail('should throw UnsupportedError');
+      } catch (e) {
+        expect(e, isUnsupportedError);
+      }
     });
   });
 }

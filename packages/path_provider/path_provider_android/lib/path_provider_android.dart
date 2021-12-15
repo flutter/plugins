@@ -13,7 +13,7 @@ class PathProviderAndroid extends PathProviderPlatform {
   MethodChannel methodChannel =
       const MethodChannel('plugins.flutter.io/path_provider_android');
 
-  /// Registers this class as the default instance of [PathProviderPlatform]
+  /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {
     PathProviderPlatform.instance = PathProviderAndroid();
   }
@@ -40,22 +40,24 @@ class PathProviderAndroid extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getExternalStoragePath() async {
+  Future<String?> getExternalStoragePath() {
     return methodChannel.invokeMethod<String>('getStorageDirectory');
   }
 
   @override
-  Future<List<String>?> getExternalCachePaths() async {
+  Future<List<String>?> getExternalCachePaths() {
     return methodChannel
-        .invokeMethod<List<String>>('getExternalCacheDirectories');
+        .invokeListMethod<String>('getExternalCacheDirectories');
   }
 
   @override
   Future<List<String>?> getExternalStoragePaths({
     StorageDirectory? type,
   }) async {
-    return methodChannel
-        .invokeMethod<List<String>>('getExternalStorageDirectories');
+    return methodChannel.invokeListMethod<String>(
+      'getExternalStorageDirectories',
+      <String, dynamic>{'type': type?.index},
+    );
   }
 
   @override
