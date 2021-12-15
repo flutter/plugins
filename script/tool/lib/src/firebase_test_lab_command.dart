@@ -176,30 +176,22 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       final String testRunId = getStringArg('test-run-id');
       final String resultsDir =
           'plugins_android_test/${package.displayName}/$buildId/$testRunId/${resultsCounter++}/';
-      final List<String> args = <String>[
-        'firebase',
-        'test',
-        'android',
-        'run',
-        '--type',
-        'instrumentation',
-        '--app',
-        'build/app/outputs/apk/debug/app-debug.apk',
-        '--test',
-        'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
-        '--timeout',
-        '7m',
-        '--results-bucket=${getStringArg('results-bucket')}',
-        '--results-dir=$resultsDir',
-      ];
-      for (final String device in getStringListArg('device')) {
-        args.addAll(<String>['--device', device]);
-      }
-      final int exitCode = await processRunner.runAndStream('gcloud', args,
-          workingDir: example.directory);
 
-      if (exitCode != 0) {
-        printError('Test failure for $testName');
+      // Automatically retry failures; there is significant flake with these
+      // tests whose cause isn't yet understood, and having to re-run the
+      // entire shard for a flake in any one test is extremely slow. This should
+      // be removed once the root cause of the flake is understood.
+      // See https://github.com/flutter/flutter/issues/95063
+      const int maxRetries = 2;
+      bool passing = false;
+      for (int i = 1; i <= maxRetries && !passing; ++i) {
+        if (i > 1) {
+          logWarning('$testName failed on attempt ${i - 1}. Retrying...');
+        }
+        passing = await _runFirebaseTest(example, test, resultsDir: resultsDir);
+      }
+      if (!passing) {
+        printError('Test failure for $testName after $maxRetries attempts');
         errors.add('$testName failed tests');
       }
     }
@@ -236,6 +228,42 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       }
     }
     return true;
+  }
+
+  /// Runs [test] from [example] as a Firebase Test Lab test, returning true if
+  /// the test passed.
+  ///
+  /// [resultsDir] should be a unique-to-the-test-run directory to store the
+  /// results on the server.
+  Future<bool> _runFirebaseTest(
+    RepositoryPackage example,
+    File test, {
+    required String resultsDir,
+  }) async {
+    final List<String> args = <String>[
+      'firebase',
+      'test',
+      'android',
+      'run',
+      '--type',
+      'instrumentation',
+      '--app',
+      'build/app/outputs/apk/debug/app-debug.apk',
+      '--test',
+      'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
+      '--timeout',
+      '7m',
+      '--results-bucket=${getStringArg('results-bucket')}',
+      '--results-dir=$resultsDir',
+      for (final String device in getStringListArg('device')) ...<String>[
+        '--device',
+        device
+      ],
+    ];
+    final int exitCode = await processRunner.runAndStream('gcloud', args,
+        workingDir: example.directory);
+
+    return exitCode == 0;
   }
 
   /// Builds [target] using Gradle in the given [project]. Assumes Gradle is
