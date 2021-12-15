@@ -10,6 +10,9 @@ readonly TARGET_DIR=$1
 # The build of Chromium used to test web functionality.
 #
 # Chromium builds can be located here: https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/
+#
+# When updating this, the ChromeDriver version passed to web_driver_installer
+# in .cirrus.yaml must be updated as well.
 CHROMIUM_BUILD=768968
 
 mkdir "$TARGET_DIR"
