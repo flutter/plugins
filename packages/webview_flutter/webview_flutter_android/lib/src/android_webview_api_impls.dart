@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 
 import 'android_webview.dart';
@@ -150,6 +152,15 @@ class WebViewHostApiImpl extends WebViewHostApi {
     Map<String, String> headers,
   ) {
     return loadUrl(instanceManager.getInstanceId(instance)!, url, headers);
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> postUrlFromInstance(
+    WebView instance,
+    String url,
+    Uint8List data,
+  ) {
+    return postUrl(instanceManager.getInstanceId(instance)!, url, data);
   }
 
   /// Helper method to convert instances ids to objects.

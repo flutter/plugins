@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -167,6 +168,13 @@ class WebView {
   /// Also see compatibility note on [evaluateJavascript].
   Future<void> loadUrl(String url, Map<String, String> headers) {
     return api.loadUrlFromInstance(this, url, headers);
+  }
+
+  /// Loads the URL with postData using "POST" method into this WebView.
+  ///
+  /// If url is not a network URL, it will be loaded with [loadUrl] instead, ignoring the postData param.
+  Future<void> postUrl(String url, Uint8List data) {
+    return api.postUrlFromInstance(this, url, data);
   }
 
   /// Gets the URL for the current page.
@@ -365,6 +373,49 @@ class WebView {
     WebSettings.api.disposeFromInstance(settings);
     return api.disposeFromInstance(this);
   }
+}
+
+/// Manages cookies globally for all webviews.
+class CookieManager {
+  CookieManager._();
+
+  static CookieManager? _instance;
+
+  /// Gets the globally set CookieManager instance.
+  static CookieManager get instance => _instance ??= CookieManager._();
+
+  /// Setter for the singleton value, for testing purposes only.
+  @visibleForTesting
+  static set instance(CookieManager value) => _instance = value;
+
+  /// Pigeon Host Api implementation for [CookieManager].
+  @visibleForTesting
+  static CookieManagerHostApi api = CookieManagerHostApi();
+
+  /// Sets a single cookie (key-value pair) for the given URL. Any existing
+  /// cookie with the same host, path and name will be replaced with the new
+  /// cookie. The cookie being set will be ignored if it is expired. To set
+  /// multiple cookies, your application should invoke this method multiple
+  /// times.
+  ///
+  /// The value parameter must follow the format of the Set-Cookie HTTP
+  /// response header defined by RFC6265bis. This is a key-value pair of the
+  /// form "key=value", optionally followed by a list of cookie attributes
+  /// delimited with semicolons (ex. "key=value; Max-Age=123"). Please consult
+  /// the RFC specification for a list of valid attributes.
+  ///
+  /// Note: if specifying a value containing the "Secure" attribute, url must
+  /// use the "https://" scheme.
+  ///
+  /// Params:
+  /// url – the URL for which the cookie is to be set
+  /// value – the cookie as a string, using the format of the 'Set-Cookie' HTTP response header
+  Future<void> setCookie(String url, String value) => api.setCookie(url, value);
+
+  /// Removes all cookies.
+  ///
+  /// The returned future resolves to true if any cookies were removed.
+  Future<bool> clearCookies() => api.clearCookies();
 }
 
 /// Manages settings state for a [WebView].
