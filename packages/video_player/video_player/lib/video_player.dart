@@ -761,9 +761,17 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == VideoPlayerController.kUninitializedTextureId
         ? Container()
+        : videoPlayerWidgetWithCorrectRotation();
+  }
+
+  Widget videoPlayerWidgetWithCorrectRotation() {
+    var playerWidget = _videoPlayerPlatform.buildView(_textureId);
+    var rotation = widget.controller.value.rotationCorrection;
+    return rotation == 0
+        ? playerWidget
         : Transform.rotate(
-            angle: widget.controller.value.rotationCorrection,
-            child: _videoPlayerPlatform.buildView(_textureId),
+            angle: rotation,
+            child: playerWidget,
           );
   }
 }

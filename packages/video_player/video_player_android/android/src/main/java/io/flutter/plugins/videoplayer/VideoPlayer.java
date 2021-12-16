@@ -134,6 +134,7 @@ final class VideoPlayer {
   }
 
   @VisibleForTesting
+  /** Constructor for mock VideoPlayer in tests. Only sets field values (no additional set up). */
   VideoPlayer(
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
