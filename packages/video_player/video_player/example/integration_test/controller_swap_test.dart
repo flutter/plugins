@@ -17,11 +17,18 @@ void main() {
   testWidgets(
     'can substitute one controller by another without crashing',
     (WidgetTester tester) async {
+      // Use WebM for web to allow CI to use Chromium.
+      // TODO(stuartmorgan): Use a controlled, in-repo source for these. See
+      // https://github.com/flutter/flutter/issues/95420
+      final String videoUrl = kIsWeb
+          ? 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
+          : 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+
       VideoPlayerController controller = VideoPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        videoUrl,
       );
       VideoPlayerController another = VideoPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        videoUrl,
       );
       await controller.initialize();
       await another.initialize();

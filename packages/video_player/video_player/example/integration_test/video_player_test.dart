@@ -22,8 +22,11 @@ void main() {
   tearDown(() async => _controller.dispose());
 
   group('asset videos', () {
+    // Use WebM for web to allow CI to use Chromium.
+    final String videoAssetKey =
+        kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
     setUp(() {
-      _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
+      _controller = VideoPlayerController.asset(videoAssetKey);
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {
@@ -32,47 +35,10 @@ void main() {
       expect(_controller.value.isInitialized, true);
       expect(_controller.value.position, const Duration(seconds: 0));
       expect(_controller.value.isPlaying, false);
+      // The WebM version has a slightly different duration than the MP4.
       expect(_controller.value.duration,
-          const Duration(seconds: 7, milliseconds: 540));
+          const Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
     });
-
-    testWidgets(
-      'reports buffering status',
-      (WidgetTester tester) async {
-        VideoPlayerController networkController = VideoPlayerController.network(
-          'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-        );
-        await networkController.initialize();
-        // Mute to allow playing without DOM interaction on Web.
-        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-        await networkController.setVolume(0);
-        final Completer<void> started = Completer();
-        final Completer<void> ended = Completer();
-        networkController.addListener(() {
-          if (!started.isCompleted && networkController.value.isBuffering) {
-            started.complete();
-          }
-          if (started.isCompleted &&
-              !networkController.value.isBuffering &&
-              !ended.isCompleted) {
-            ended.complete();
-          }
-        });
-
-        await networkController.play();
-        await networkController.seekTo(const Duration(seconds: 5));
-        await tester.pumpAndSettle(_playDuration);
-        await networkController.pause();
-
-        expect(networkController.value.isPlaying, false);
-        expect(networkController.value.position,
-            (Duration position) => position > const Duration(seconds: 0));
-
-        await expectLater(started.future, completes);
-        await expectLater(ended.future, completes);
-      },
-      skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
-    );
 
     testWidgets(
       'live stream duration != 0',
@@ -221,23 +187,82 @@ void main() {
         skip: kIsWeb || // Web does not support local assets.
             // Extremely flaky on iOS: https://github.com/flutter/flutter/issues/86915
             defaultTargetPlatform == TargetPlatform.iOS);
+  });
+
+  group('file-based videos', () {
+    setUp(() async {
+      // Use WebM for web to allow CI to use Chromium.
+      final String sourceAssetKey =
+          kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
+
+      // Load the data from the asset.
+      String tempDir = (await getTemporaryDirectory()).path;
+      ByteData bytes = await rootBundle.load(sourceAssetKey);
+
+      // Write it to a file to use as a source.
+      final String filename = sourceAssetKey.split('/').last;
+      File file = File('$tempDir/$filename');
+      await file.writeAsBytes(bytes.buffer.asInt8List());
+
+      _controller = VideoPlayerController.file(file);
+    });
 
     testWidgets('test video player using static file() method as constructor',
         (WidgetTester tester) async {
-      String tempDir = (await getTemporaryDirectory()).path;
-      ByteData bytes = await rootBundle.load('assets/Butterfly-209.mp4');
+      await _controller.initialize();
 
-      File file = File('$tempDir/Butterfly-209.mp4');
-      await file.writeAsBytes(bytes.buffer.asInt8List());
+      await _controller.play();
+      expect(_controller.value.isPlaying, true);
 
-      VideoPlayerController fileController = VideoPlayerController.file(file);
-      await fileController.initialize();
-
-      await fileController.play();
-      expect(fileController.value.isPlaying, true);
-
-      await fileController.pause();
-      expect(fileController.value.isPlaying, false);
+      await _controller.pause();
+      expect(_controller.value.isPlaying, false);
     }, skip: kIsWeb);
+  });
+
+  group('network videos', () {
+    // Use WebM for web to allow CI to use Chromium.
+    // TODO(stuartmorgan): Use a controlled, in-repo source for these. See
+    // https://github.com/flutter/flutter/issues/95420
+    final String videoUrl = kIsWeb
+        ? 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
+        : 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+    setUp(() {
+      _controller = VideoPlayerController.network(videoUrl);
+    });
+
+    testWidgets(
+      'reports buffering status',
+      (WidgetTester tester) async {
+        await _controller.initialize();
+        // Mute to allow playing without DOM interaction on Web.
+        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+        await _controller.setVolume(0);
+        final Completer<void> started = Completer();
+        final Completer<void> ended = Completer();
+        _controller.addListener(() {
+          if (!started.isCompleted && _controller.value.isBuffering) {
+            started.complete();
+          }
+          if (started.isCompleted &&
+              !_controller.value.isBuffering &&
+              !ended.isCompleted) {
+            ended.complete();
+          }
+        });
+
+        await _controller.play();
+        await _controller.seekTo(const Duration(seconds: 5));
+        await tester.pumpAndSettle(_playDuration);
+        await _controller.pause();
+
+        expect(_controller.value.isPlaying, false);
+        expect(_controller.value.position,
+            (Duration position) => position > const Duration(seconds: 0));
+
+        await expectLater(started.future, completes);
+        await expectLater(ended.future, completes);
+      },
+      skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
+    );
   });
 }
