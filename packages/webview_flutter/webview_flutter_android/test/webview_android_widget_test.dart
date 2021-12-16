@@ -483,7 +483,8 @@ void main() {
         });
       });
 
-      testWidgets('update userAgentString', (WidgetTester tester) async {
+      testWidgets('no update to userAgentString when there is no change',
+          (WidgetTester tester) async {
         await buildWidget(tester);
 
         reset(mockWebSettings);
