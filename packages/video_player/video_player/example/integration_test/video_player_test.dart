@@ -48,7 +48,7 @@ void main() {
       expect(_controller.value.isPlaying, false);
       // The WebM version has a slightly different duration than the MP4.
       expect(_controller.value.duration,
-          const Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
+          Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
     });
 
     testWidgets(
