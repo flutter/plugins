@@ -5,15 +5,17 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_android/path_provider_android.dart';
+import 'package:path_provider_platform_interface/src/enums.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const String kTemporaryPath = 'temporaryPath';
   const String kApplicationSupportPath = 'applicationSupportPath';
+  const String kLibraryPath = 'libraryPath';
   const String kApplicationDocumentsPath = 'applicationDocumentsPath';
-  const String kStoragePath = 'storagePath';
-  const List<String> kExternalCachePaths = <String>['externalCachePath'];
-  const List<String> kExternalStoragePaths = <String>['externalStoragePath'];
+  const String kExternalCachePaths = 'externalCachePaths';
+  const String kExternalStoragePaths = 'externalStoragePaths';
+  const String kDownloadsPath = 'downloadsPath';
 
   group('PathProviderAndroid', () {
     late PathProviderAndroid pathProvider;
@@ -30,14 +32,16 @@ void main() {
             return kTemporaryPath;
           case 'getApplicationSupportDirectory':
             return kApplicationSupportPath;
+          case 'getLibraryDirectory':
+            return kLibraryPath;
           case 'getApplicationDocumentsDirectory':
             return kApplicationDocumentsPath;
-          case 'getStorageDirectory':
-            return kStoragePath;
-          case 'getExternalCacheDirectories':
-            return kExternalCachePaths;
           case 'getExternalStorageDirectories':
-            return kExternalStoragePaths;
+            return <String>[kExternalStoragePaths];
+          case 'getExternalCacheDirectories':
+            return <String>[kExternalCachePaths];
+          case 'getDownloadsDirectory':
+            return kDownloadsPath;
           default:
             return null;
         }
@@ -79,14 +83,27 @@ void main() {
       expect(path, kApplicationDocumentsPath);
     });
 
-    test('getExternalStoragePath', () async {
-      final String? result = await pathProvider.getExternalStoragePath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getStorageDirectory', arguments: null)],
-      );
-      expect(result, kStoragePath);
-    });
+    for (final StorageDirectory? type in <StorageDirectory?>[
+      null,
+      ...StorageDirectory.values
+    ]) {
+      test('getExternalStoragePaths (type: $type) android succeeds', () async {
+        final List<String>? result =
+            await pathProvider.getExternalStoragePaths(type: type);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'getExternalStorageDirectories',
+              arguments: <String, dynamic>{'type': type?.index},
+            )
+          ],
+        );
+
+        expect(result!.length, 1);
+        expect(result.first, kExternalStoragePaths);
+      });
+    } // end of for-loop
 
     test('getExternalCachePaths', () async {
       final List<String>? result = await pathProvider.getExternalCachePaths();
