@@ -18,6 +18,14 @@ class WebResourceErrorData {
   String? description;
 }
 
+@HostApi()
+abstract class CookieManagerHostApi {
+  @async
+  bool clearCookies();
+
+  void setCookie(String url, String value);
+}
+
 @HostApi(dartHostTestHandler: 'TestWebViewHostApi')
 abstract class WebViewHostApi {
   void create(int instanceId, bool useHybridComposition);
@@ -44,6 +52,12 @@ abstract class WebViewHostApi {
     int instanceId,
     String url,
     Map<String, String> headers,
+  );
+
+  void postUrl(
+    int instanceId,
+    String url,
+    Uint8List data,
   );
 
   String getUrl(int instanceId);

@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
@@ -189,6 +190,8 @@ enum _MenuOptions {
   loadLocalFile,
   loadHtmlString,
   transparentBackground,
+  doPostRequest,
+  setCookie,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -239,6 +242,12 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.transparentBackground:
                 _onTransparentBackground(controller.data!, context);
                 break;
+              case _MenuOptions.doPostRequest:
+                _onDoPostRequest(controller.data!, context);
+                break;
+              case _MenuOptions.setCookie:
+                _onSetCookie(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -287,6 +296,14 @@ class _SampleMenu extends StatelessWidget {
               key: ValueKey<String>('ShowTransparentBackgroundExample'),
               value: _MenuOptions.transparentBackground,
               child: Text('Transparent background example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.doPostRequest,
+              child: Text('Post Request'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.setCookie,
+              child: Text('Set Cookie'),
             ),
           ],
         );
@@ -347,7 +364,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onClearCookies(
       WebViewController controller, BuildContext context) async {
-    final bool hadCookies = await WebView.platform.clearCookies();
+    final bool hadCookies = await WebViewCookieManager.instance.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
       message = 'There are no cookies.';
@@ -356,6 +373,15 @@ class _SampleMenu extends StatelessWidget {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(message),
     ));
+  }
+
+  Future<void> _onSetCookie(
+      WebViewController controller, BuildContext context) async {
+    await WebViewCookieManager.instance.setCookie(
+      const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
+    );
+    await controller.loadUrl('https://httpbin.org/anything');
   }
 
   Future<void> _onNavigationDelegateExample(
@@ -380,6 +406,16 @@ class _SampleMenu extends StatelessWidget {
   Future<void> _onLoadHtmlStringExample(
       WebViewController controller, BuildContext context) async {
     await controller.loadHtmlString(kExamplePage);
+  }
+
+  Future<void> _onDoPostRequest(
+      WebViewController controller, BuildContext context) async {
+    final WebViewRequest request = WebViewRequest(
+      uri: Uri.parse('https://httpbin.org/post'),
+      method: WebViewRequestMethod.post,
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+    await controller.loadRequest(request);
   }
 
   Widget _getCookieList(String cookies) {
