@@ -13,6 +13,8 @@
 - Fix `federation-safety-check` handling of plugin deletion, and of top-level
   files in unfederated plugins whose names match federated plugin heuristics
   (e.g., `packages/foo/foo_android.iml`).
+- Add an auto-retry for failed Firebase Test Lab tests as a short-term patch
+  for flake issues.
 
 ## 0.7.3
 
