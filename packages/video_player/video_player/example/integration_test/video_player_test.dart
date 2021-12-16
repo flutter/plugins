@@ -16,17 +16,28 @@ import 'package:video_player/video_player.dart';
 
 const Duration _playDuration = Duration(seconds: 1);
 
+// Use WebM for web to allow CI to use Chromium.
+final String _videoAssetKey =
+    kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
+
+// Returns the URL to load an asset from this example app as a network source.
+String getUrlForAssetAsNetworkSource(String assetKey) {
+  return 'https://github.com/flutter/plugins/blob/'
+      // This hash can be rolled forward to pick up newly-added assets.
+      'cba393233e559c925a4daf71b06b4bb01c606762'
+      '/packages/video_player/video_player/example/'
+      '$assetKey'
+      '?raw=true';
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   late VideoPlayerController _controller;
   tearDown(() async => _controller.dispose());
 
   group('asset videos', () {
-    // Use WebM for web to allow CI to use Chromium.
-    final String videoAssetKey =
-        kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
     setUp(() {
-      _controller = VideoPlayerController.asset(videoAssetKey);
+      _controller = VideoPlayerController.asset(_videoAssetKey);
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {
@@ -191,16 +202,12 @@ void main() {
 
   group('file-based videos', () {
     setUp(() async {
-      // Use WebM for web to allow CI to use Chromium.
-      final String sourceAssetKey =
-          kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
-
       // Load the data from the asset.
       String tempDir = (await getTemporaryDirectory()).path;
-      ByteData bytes = await rootBundle.load(sourceAssetKey);
+      ByteData bytes = await rootBundle.load(_videoAssetKey);
 
       // Write it to a file to use as a source.
-      final String filename = sourceAssetKey.split('/').last;
+      final String filename = _videoAssetKey.split('/').last;
       File file = File('$tempDir/$filename');
       await file.writeAsBytes(bytes.buffer.asInt8List());
 
@@ -220,13 +227,13 @@ void main() {
   });
 
   group('network videos', () {
-    // Use WebM for web to allow CI to use Chromium.
-    // TODO(stuartmorgan): Use a controlled, in-repo source for these. See
-    // https://github.com/flutter/flutter/issues/95420
-    final String videoUrl = kIsWeb
-        ? 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
-        : 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
     setUp(() {
+      // TODO(stuartmorgan): Remove this conditional and update the hash in
+      // getUrlForAssetAsNetworkSource as a follow-up, once the webm asset is
+      // checked in.
+      final String videoUrl = kIsWeb
+          ? 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
+          : getUrlForAssetAsNetworkSource(_videoAssetKey);
       _controller = VideoPlayerController.network(videoUrl);
     });
 
