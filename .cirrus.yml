@@ -249,7 +249,7 @@ task:
           CHANNEL: "stable"
         CHROME_NO_SANDBOX: true
         CHROME_DIR: /tmp/web_chromium/
-        CHROME_EXECUTABLE: $CHROME_BINARY_DIR/chrome-linux/chrome
+        CHROME_EXECUTABLE: $CHROME_DIR/chrome-linux/chrome
       install_script:
         - ./script/install_chromium.sh "$CHROME_DIR"
         - git clone https://github.com/flutter/web_installers.git
