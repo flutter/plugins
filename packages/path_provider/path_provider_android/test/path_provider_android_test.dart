@@ -72,6 +72,15 @@ void main() {
       expect(path, kApplicationSupportPath);
     });
 
+    test('getLibraryPath fails', () async {
+      try {
+        await pathProvider.getLibraryPath();
+        fail('should throw UnsupportedError');
+      } catch (e) {
+        expect(e, isUnsupportedError);
+      }
+    });
+
     test('getApplicationDocumentsPath', () async {
       final String? path = await pathProvider.getApplicationDocumentsPath();
       expect(
@@ -81,6 +90,16 @@ void main() {
         ],
       );
       expect(path, kApplicationDocumentsPath);
+    });
+
+    test('getExternalCachePaths succeeds', () async {
+      final List<String>? result = await pathProvider.getExternalCachePaths();
+      expect(
+        log,
+        <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
+      );
+      expect(result!.length, 1);
+      expect(result.first, kExternalCachePaths);
     });
 
     for (final StorageDirectory? type in <StorageDirectory?>[
@@ -104,36 +123,6 @@ void main() {
         expect(result.first, kExternalStoragePaths);
       });
     } // end of for-loop
-
-    test('getExternalCachePaths succeeds', () async {
-      final List<String>? result = await pathProvider.getExternalCachePaths();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
-      );
-      expect(result!.length, 1);
-      expect(result.first, kExternalCachePaths);
-    });
-
-    test('getExternalStoragePaths', () async {
-      final List<String>? result = await pathProvider.getExternalStoragePaths();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getExternalStorageDirectories', arguments: null)
-        ],
-      );
-      expect(result, kExternalStoragePaths);
-    });
-
-    test('getLibraryPath fails', () async {
-      try {
-        await pathProvider.getLibraryPath();
-        fail('should throw UnsupportedError');
-      } catch (e) {
-        expect(e, isUnsupportedError);
-      }
-    });
 
     test('getDownloadsPath fails', () async {
       try {
