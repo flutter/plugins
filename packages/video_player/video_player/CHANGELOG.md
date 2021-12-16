@@ -1,5 +1,8 @@
-## NEXT
+## 2.2.8
 
+* Changes the way the `VideoPlayerPlatform` instance is cached in the
+  controller, so that it's no longer impossible to change after the first use.
+* Updates unit tests to be self-contained.
 * Fixes integration tests.
 * Updates Android compileSdkVersion to 31.
 * Fixes a flaky integration test.
