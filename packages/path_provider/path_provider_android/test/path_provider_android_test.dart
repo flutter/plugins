@@ -105,13 +105,14 @@ void main() {
       });
     } // end of for-loop
 
-    test('getExternalCachePaths', () async {
+    test('getExternalCachePaths succeeds', () async {
       final List<String>? result = await pathProvider.getExternalCachePaths();
       expect(
         log,
         <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
       );
-      expect(result, kExternalCachePaths);
+      expect(result!.length, 1);
+      expect(result.first, kExternalCachePaths);
     });
 
     test('getExternalStoragePaths', () async {
