@@ -68,24 +68,6 @@ class HeatmapUpdates {
   /// Set of Heatmaps to be changed in this update.
   late Set<Heatmap> heatmapsToChange;
 
-  /// Converts this object to something serializable in JSON.
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> updateMap = <String, dynamic>{};
-
-    void addIfNonNull(String fieldName, dynamic value) {
-      if (value != null) {
-        updateMap[fieldName] = value;
-      }
-    }
-
-    addIfNonNull('heatmapsToAdd', serializeHeatmapSet(heatmapsToAdd));
-    addIfNonNull('heatmapsToChange', serializeHeatmapSet(heatmapsToChange));
-    addIfNonNull('heatmapIdsToRemove',
-        heatmapIdsToRemove.map<dynamic>((HeatmapId m) => m.value).toList());
-
-    return updateMap;
-  }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

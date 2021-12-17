@@ -217,35 +217,6 @@ class Heatmap {
     );
   }
 
-  /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
-
-    void addIfPresent(String fieldName, dynamic value) {
-      if (value != null) {
-        json[fieldName] = value;
-      }
-    }
-
-    addIfPresent('heatmapId', heatmapId.value);
-    addIfPresent('opacity', opacity);
-    addIfPresent('radius', radius);
-    addIfPresent('fadeIn', fadeIn);
-    addIfPresent('transparency', transparency);
-    addIfPresent('visible', visible);
-    addIfPresent('zIndex', zIndex);
-
-    if (gradient != null) {
-      json['gradient'] = gradient?.toJson();
-    }
-
-    if (points != null) {
-      json['points'] = pointsToJson();
-    }
-
-    return json;
-  }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

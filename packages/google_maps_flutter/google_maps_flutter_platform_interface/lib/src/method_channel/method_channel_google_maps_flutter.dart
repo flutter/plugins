@@ -332,8 +332,26 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     assert(heatmapUpdates != null);
     return channel(mapId).invokeMethod<void>(
       'heatmaps#update',
-      heatmapUpdates.toJson(),
+      _heatMapUpdatesToJson(heatmapUpdates),
     );
+  }
+
+
+  Map<String, dynamic> _heatMapUpdatesToJson(HeatmapUpdates heatmapUpdates) {
+    final Map<String, dynamic> updateMap = <String, dynamic>{};
+
+    void addIfNonNull(String fieldName, dynamic value) {
+      if (value != null) {
+        updateMap[fieldName] = value;
+      }
+    }
+
+    addIfNonNull('heatmapsToAdd', serializeHeatmapSet(heatmapUpdates.heatmapsToAdd));
+    addIfNonNull('heatmapsToChange', serializeHeatmapSet(heatmapUpdates.heatmapsToChange));
+    addIfNonNull('heatmapIdsToRemove',
+        heatmapUpdates.heatmapIdsToRemove.map<dynamic>((HeatmapId m) => m.value).toList());
+
+    return updateMap;
   }
 
   @override
