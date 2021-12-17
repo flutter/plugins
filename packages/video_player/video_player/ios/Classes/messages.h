@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTPositionMessage;
 @class FLTMixWithOthersMessage;
 
+
 @interface FLTTextureMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber *textureId;
 @end
@@ -53,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTMixWithOthersMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber *mixWithOthers;
+@property(nonatomic, strong, nullable) NSNumber *ambient;
 @end
 
 @protocol FLTVideoPlayerApi
