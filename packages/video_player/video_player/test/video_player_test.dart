@@ -880,7 +880,7 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> setMixWithOthers(bool mixWithOthers) async {
+  Future<void> setMixWithOthers(bool mixWithOthers, bool ambient) async {
     calls.add('setMixWithOthers');
   }
 }
