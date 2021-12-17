@@ -27,7 +27,7 @@ class HeatmapId {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final HeatmapId typedOther = other;
+    final HeatmapId typedOther = other as HeatmapId;
     return value == typedOther.value;
   }
 
@@ -45,7 +45,7 @@ class HeatmapId {
 class WeightedLatLng {
   /// Creates an immutable object representing a [WeightedLatLng].
   WeightedLatLng({
-    @required this.point,
+    required this.point,
     this.intensity = 1,
   });
 
@@ -62,9 +62,6 @@ class WeightedLatLng {
 
   /// Initialize a HeatmapGradient from an array.
   static WeightedLatLng fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
     return WeightedLatLng(point: json[0], intensity: json[1]);
   }
 
@@ -72,7 +69,7 @@ class WeightedLatLng {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final WeightedLatLng typedOther = other;
+    final WeightedLatLng typedOther = other as WeightedLatLng;
     return point == typedOther.point && intensity == typedOther.intensity;
   }
 
@@ -90,8 +87,8 @@ class WeightedLatLng {
 class HeatmapGradient {
   /// Creates an immutable object representing a [HeatmapGradient]
   HeatmapGradient({
-    @required this.colors,
-    @required this.startPoints,
+    required this.colors,
+    required this.startPoints,
     this.colorMapSize = 256,
   });
 
@@ -115,9 +112,6 @@ class HeatmapGradient {
 
   /// Initialize a HeatmapGradient from an array.
   static HeatmapGradient fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
     return HeatmapGradient(
         colors: json[0].map((dynamic value) => Color(value)).toList(),
         startPoints: json[1],
@@ -128,7 +122,7 @@ class HeatmapGradient {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final HeatmapGradient typedOther = other;
+    final HeatmapGradient typedOther = other as HeatmapGradient;
     return listEquals(colors, typedOther.colors) &&
         listEquals(startPoints, typedOther.startPoints) &&
         colorMapSize == typedOther.colorMapSize;
@@ -148,7 +142,7 @@ class HeatmapGradient {
 class Heatmap {
   /// Creates an immutable object representing a heatmap on the map.
   const Heatmap({
-    @required this.heatmapId,
+    required this.heatmapId,
     this.points = const <WeightedLatLng>[],
     this.gradient,
     this.opacity = 0.7,
@@ -166,7 +160,7 @@ class Heatmap {
   final List<WeightedLatLng> points;
 
   /// The gradient of the heatmap points.
-  final HeatmapGradient gradient;
+  final HeatmapGradient? gradient;
 
   /// The opacity of the heatmap points.
   final double opacity;
@@ -193,14 +187,14 @@ class Heatmap {
   /// Creates a new [Heatmap] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Heatmap copyWith({
-    List<WeightedLatLng> pointsParam,
-    HeatmapGradient gradientParam,
-    double opacityParam,
-    int radiusParam,
-    bool fadeInParam,
-    double transparencyParam,
-    bool visibleParam,
-    int zIndexParam,
+    List<WeightedLatLng>? pointsParam,
+    HeatmapGradient? gradientParam,
+    double? opacityParam,
+    int? radiusParam,
+    bool? fadeInParam,
+    double? transparencyParam,
+    bool? visibleParam,
+    int? zIndexParam,
   }) {
     return Heatmap(
       heatmapId: heatmapId,
@@ -242,7 +236,7 @@ class Heatmap {
     addIfPresent('zIndex', zIndex);
 
     if (gradient != null) {
-      json['gradient'] = gradient.toJson();
+      json['gradient'] = gradient?.toJson();
     }
 
     if (points != null) {
@@ -256,7 +250,7 @@ class Heatmap {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Heatmap typedOther = other;
+    final Heatmap typedOther = other as Heatmap;
     return heatmapId == typedOther.heatmapId &&
         listEquals(points, typedOther.points) &&
         gradient == typedOther.gradient &&

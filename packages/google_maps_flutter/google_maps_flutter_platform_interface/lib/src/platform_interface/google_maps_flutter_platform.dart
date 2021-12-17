@@ -150,7 +150,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> updateHeatmaps(
       HeatmapUpdates heatmapUpdates, {
-        @required int mapId,
+        required int mapId,
       }) {
     throw UnimplementedError('updateHeatmaps() has not been implemented.');
   }

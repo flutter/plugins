@@ -15,8 +15,5 @@ Map<HeatmapId, Heatmap> keyByHeatmapId(Iterable<Heatmap> heatmaps) {
 
 /// Converts a Set of Heatmaps into something serializable in JSON.
 List<Map<String, dynamic>> serializeHeatmapSet(Set<Heatmap> heatmaps) {
-  if (heatmaps == null) {
-    return null;
-  }
   return heatmaps.map<Map<String, dynamic>>((Heatmap p) => p.toJson()).toList();
 }

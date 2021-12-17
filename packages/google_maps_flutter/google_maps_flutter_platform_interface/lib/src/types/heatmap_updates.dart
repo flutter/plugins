@@ -30,7 +30,7 @@ class HeatmapUpdates {
     final Set<HeatmapId> currentHeatmapIds = currentHeatmaps.keys.toSet();
 
     Heatmap idToCurrentHeatmap(HeatmapId id) {
-      return currentHeatmaps[id];
+      return currentHeatmaps[id]!;
     }
 
     final Set<HeatmapId> _heatmapIdsToRemove =
@@ -44,7 +44,7 @@ class HeatmapUpdates {
     /// Returns `true` if [current] is not equals to previous one with the
     /// same id.
     bool hasChanged(Heatmap current) {
-      final Heatmap previous = previousHeatmaps[current.heatmapId];
+      final Heatmap previous = previousHeatmaps[current.heatmapId]!;
       return current != previous;
     }
 
@@ -60,13 +60,13 @@ class HeatmapUpdates {
   }
 
   /// Set of Heatmaps to be added in this update.
-  Set<Heatmap> heatmapsToAdd;
+  late Set<Heatmap> heatmapsToAdd;
 
   /// Set of HeatmapIds to be removed in this update.
-  Set<HeatmapId> heatmapIdsToRemove;
+  late Set<HeatmapId> heatmapIdsToRemove;
 
   /// Set of Heatmaps to be changed in this update.
-  Set<Heatmap> heatmapsToChange;
+  late Set<Heatmap> heatmapsToChange;
 
   /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
@@ -90,7 +90,7 @@ class HeatmapUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final HeatmapUpdates typedOther = other;
+    final HeatmapUpdates typedOther = other as HeatmapUpdates;
     return setEquals(heatmapsToAdd, typedOther.heatmapsToAdd) &&
         setEquals(heatmapIdsToRemove, typedOther.heatmapIdsToRemove) &&
         setEquals(heatmapsToChange, typedOther.heatmapsToChange);
