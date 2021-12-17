@@ -1,3 +1,6 @@
+## 4.2.1
+* Add ambient mode to `VideoPlayerOptions`
+
 ## 4.2.0
 
 * Add `contentUri` to `DataSourceType`.
