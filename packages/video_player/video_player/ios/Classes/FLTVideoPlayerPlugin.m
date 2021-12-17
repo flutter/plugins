@@ -626,10 +626,27 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
                    error:(FlutterError* _Nullable __autoreleasing*)error {
   if ([input.mixWithOthers boolValue]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
-                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
-                                           error:nil];
+    if ([input.ambient boolValue]) {
+      if (@available(iOS 12.0, *)) {
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
+                                                mode:AVAudioSessionModeVoicePrompt
+                                             options:AVAudioSessionCategoryOptionMixWithOthers
+                                               error:nil];
+      } else {
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
+                                         withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                               error:nil];
+      }
+    } else {
+      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                       withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                             error:nil];
+    }
   } else {
+    if ([input.ambient boolValue]) {
+      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+      return;
+    }
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
   }
 }
