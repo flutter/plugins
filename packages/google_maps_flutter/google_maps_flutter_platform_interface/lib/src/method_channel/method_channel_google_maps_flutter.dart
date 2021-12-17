@@ -326,16 +326,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> updateHeatmaps(
-      HeatmapUpdates heatmapUpdates, {
-        required int mapId,
-      }) {
+    HeatmapUpdates heatmapUpdates, {
+    required int mapId,
+  }) {
     assert(heatmapUpdates != null);
     return channel(mapId).invokeMethod<void>(
       'heatmaps#update',
       _heatMapUpdatesToJson(heatmapUpdates),
     );
   }
-
 
   Map<String, dynamic> _heatMapUpdatesToJson(HeatmapUpdates heatmapUpdates) {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -346,10 +345,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       }
     }
 
-    addIfNonNull('heatmapsToAdd', serializeHeatmapSet(heatmapUpdates.heatmapsToAdd));
-    addIfNonNull('heatmapsToChange', serializeHeatmapSet(heatmapUpdates.heatmapsToChange));
-    addIfNonNull('heatmapIdsToRemove',
-        heatmapUpdates.heatmapIdsToRemove.map<dynamic>((HeatmapId m) => m.value).toList());
+    addIfNonNull(
+        'heatmapsToAdd', serializeHeatmapSet(heatmapUpdates.heatmapsToAdd));
+    addIfNonNull('heatmapsToChange',
+        serializeHeatmapSet(heatmapUpdates.heatmapsToChange));
+    addIfNonNull(
+        'heatmapIdsToRemove',
+        heatmapUpdates.heatmapIdsToRemove
+            .map<dynamic>((HeatmapId m) => m.value)
+            .toList());
 
     return updateMap;
   }

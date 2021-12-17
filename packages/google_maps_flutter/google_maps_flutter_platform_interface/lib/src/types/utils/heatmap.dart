@@ -17,7 +17,9 @@ Map<HeatmapId, Heatmap> keyByHeatmapId(Iterable<Heatmap> heatmaps) {
 
 /// Converts a Set of Heatmaps into something serializable in JSON.
 List<Map<String, dynamic>> serializeHeatmapSet(Set<Heatmap> heatmaps) {
-  return heatmaps.map<Map<String, dynamic>>((Heatmap p) => _heatmapToJson(p)).toList();
+  return heatmaps
+      .map<Map<String, dynamic>>((Heatmap p) => _heatmapToJson(p))
+      .toList();
 }
 
 /// Converts this object to something serializable in JSON.
@@ -61,7 +63,6 @@ dynamic _heatmapPointsToJson(Heatmap heatmap) {
 dynamic _weightedLatLngToJson(WeightedLatLng weightedPoint) {
   return <dynamic>[weightedPoint.point.toJson(), weightedPoint.intensity];
 }
-
 
 /// Converts this object to something serializable in JSON.
 dynamic _gradientToJson(HeatmapGradient gradient) {

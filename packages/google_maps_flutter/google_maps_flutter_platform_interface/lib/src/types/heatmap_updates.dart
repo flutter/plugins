@@ -15,7 +15,6 @@ import 'types.dart';
 class HeatmapUpdates {
   /// Computes [HeatmapUpdates] given previous and current [Heatmap]s.
   HeatmapUpdates.from(Set<Heatmap> previous, Set<Heatmap> current) {
-
     final Map<HeatmapId, Heatmap> previousHeatmaps = keyByHeatmapId(previous);
     final Map<HeatmapId, Heatmap> currentHeatmaps = keyByHeatmapId(current);
 

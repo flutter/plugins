@@ -46,7 +46,8 @@ void main() {
       expect(heatmap, equals(cloneHeatmap));
 
       // Check it actually created a new object
-      expect(identityHashCode(heatmap) == identityHashCode(cloneHeatmap), isFalse);
+      expect(
+          identityHashCode(heatmap) == identityHashCode(cloneHeatmap), isFalse);
     });
   });
 }

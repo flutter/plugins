@@ -66,7 +66,8 @@ void main() {
 
       expect(heatmapUpdates.heatmapsToAdd, equals(Set<Heatmap>.identity()));
       expect(heatmapUpdates.heatmapsToAdd, equals(Set<Heatmap>.identity()));
-      expect(heatmapUpdates.heatmapsToChange.first.heatmapId, equals(HeatmapId("test1")));
+      expect(heatmapUpdates.heatmapsToChange.first.heatmapId,
+          equals(HeatmapId("test1")));
     });
   });
 }
