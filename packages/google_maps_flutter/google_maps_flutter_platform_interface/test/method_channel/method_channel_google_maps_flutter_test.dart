@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -121,6 +122,37 @@ void main() {
       expect((await markerDragStream.next).value.value, equals("drag-marker"));
       expect((await markerDragEndStream.next).value.value,
           equals("drag-end-marker"));
+    });
+    test('heatmap updates are passed to the correct channel', () async {
+      const int mapId = 1;
+
+      final MethodChannelGoogleMapsFlutter maps =
+          MethodChannelGoogleMapsFlutter();
+      configureMockMap(maps, mapId: mapId,
+          handler: (MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'heatmaps#update':
+            return null;
+        }
+      });
+
+      final previousHeatmaps = Set<Heatmap>();
+      final currentHeatmaps = Set<Heatmap>.from([
+        Heatmap(
+          heatmapId: HeatmapId("test1"),
+          gradient: HeatmapGradient(
+              colors: [Color(0xFF2e6e8e), Color(0xFF21908c)],
+              startPoints: [0.25, 0.75]),
+          points: [WeightedLatLng(point: LatLng(1, 1), intensity: 20)],
+        )
+      ]);
+      HeatmapUpdates heatmapUpdates =
+          HeatmapUpdates.from(previousHeatmaps, currentHeatmaps);
+
+      await maps.updateHeatmaps(heatmapUpdates, mapId: mapId);
+      expect(log, <String>[
+        'heatmaps#update',
+      ]);
     });
   });
 }
