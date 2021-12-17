@@ -321,7 +321,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         break;
     }
 
-    if (videoPlayerOptions?.mixWithOthers != null) {
+    if (videoPlayerOptions == null) {
+      await _videoPlayerPlatform
+          .setMixWithOthers(false, false);
+    } else {
       await _videoPlayerPlatform
           .setMixWithOthers(videoPlayerOptions!.mixWithOthers, videoPlayerOptions!.ambient);
     }
