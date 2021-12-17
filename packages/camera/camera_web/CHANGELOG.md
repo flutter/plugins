@@ -1,3 +1,7 @@
+## 0.2.1+2
+
+* Fix cameraNotReadable error that prevented access to the camera on some Android devices when initializing a camera.
+
 ## 0.2.1+1
 
 * Update usage documentation.
