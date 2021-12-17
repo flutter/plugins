@@ -1,3 +1,7 @@
+## 2.8.2
+
+* Adds the `WebSettings.setAllowFileAccess()` method and ensure that file access is allowed when the `WebViewAndroidWidget.loadFile()` method is executed.
+
 ## 2.8.1
 
 * Fixes bug where the default user agent string was being set for every rebuild. See
