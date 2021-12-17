@@ -15,13 +15,6 @@ import 'types.dart';
 class HeatmapUpdates {
   /// Computes [HeatmapUpdates] given previous and current [Heatmap]s.
   HeatmapUpdates.from(Set<Heatmap> previous, Set<Heatmap> current) {
-    if (previous == null) {
-      previous = Set<Heatmap>.identity();
-    }
-
-    if (current == null) {
-      current = Set<Heatmap>.identity();
-    }
 
     final Map<HeatmapId, Heatmap> previousHeatmaps = keyByHeatmapId(previous);
     final Map<HeatmapId, Heatmap> currentHeatmaps = keyByHeatmapId(current);
@@ -67,25 +60,4 @@ class HeatmapUpdates {
 
   /// Set of Heatmaps to be changed in this update.
   late Set<Heatmap> heatmapsToChange;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final HeatmapUpdates typedOther = other as HeatmapUpdates;
-    return setEquals(heatmapsToAdd, typedOther.heatmapsToAdd) &&
-        setEquals(heatmapIdsToRemove, typedOther.heatmapIdsToRemove) &&
-        setEquals(heatmapsToChange, typedOther.heatmapsToChange);
-  }
-
-  @override
-  int get hashCode =>
-      hashValues(heatmapsToAdd, heatmapIdsToRemove, heatmapsToChange);
-
-  @override
-  String toString() {
-    return 'HeatmapUpdates{heatmapsToAdd: $heatmapsToAdd, '
-        'heatmapIdsToRemove: $heatmapIdsToRemove, '
-        'heatmapsToChange: $heatmapsToChange}';
-  }
 }

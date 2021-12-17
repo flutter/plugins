@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart' show Color;
 import 'package:meta/meta.dart' show immutable;
@@ -33,11 +31,6 @@ class HeatmapId {
 
   @override
   int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'HeatmapId{value: $value}';
-  }
 }
 
 /// A pair of latitude and longitude coordinates, stored as degrees with a given intensity.
@@ -61,14 +54,6 @@ class WeightedLatLng {
     if (other.runtimeType != runtimeType) return false;
     final WeightedLatLng typedOther = other as WeightedLatLng;
     return point == typedOther.point && intensity == typedOther.intensity;
-  }
-
-  @override
-  int get hashCode => hashValues(point, intensity);
-
-  @override
-  String toString() {
-    return 'WeightedLatLng{point: ${point.toString()}, intensity: $intensity}';
   }
 }
 
@@ -99,14 +84,6 @@ class HeatmapGradient {
     return listEquals(colors, typedOther.colors) &&
         listEquals(startPoints, typedOther.startPoints) &&
         colorMapSize == typedOther.colorMapSize;
-  }
-
-  @override
-  int get hashCode => hashValues(colors, startPoints, colorMapSize);
-
-  @override
-  String toString() {
-    return 'HeatmapGradient{colors: ${colors.toString()}, startPoints: ${startPoints.toString()}, colorMapSize: ${colorMapSize.toString()}}';
   }
 }
 
@@ -205,7 +182,4 @@ class Heatmap {
         visible == typedOther.visible &&
         zIndex == typedOther.zIndex;
   }
-
-  @override
-  int get hashCode => heatmapId.hashCode;
 }
