@@ -323,7 +323,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     if (videoPlayerOptions?.mixWithOthers != null) {
       await _videoPlayerPlatform
-          .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
+          .setMixWithOthers(videoPlayerOptions!.mixWithOthers, videoPlayerOptions!.ambient);
     }
 
     _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
