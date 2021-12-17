@@ -166,14 +166,13 @@ void main() {
   });
 
   testWidgets('no transform when rotationCorrection is zero',
-          (WidgetTester tester) async {
-        final FakeController controller = FakeController.value(VideoPlayerValue(
-            duration: Duration.zero,
-            rotationCorrection: 0));
-        controller.textureId = 1;
-        await tester.pumpWidget(VideoPlayer(controller));
-        expect(find.byType(Transform), findsNothing);
-      });
+      (WidgetTester tester) async {
+    final FakeController controller = FakeController.value(
+        VideoPlayerValue(duration: Duration.zero, rotationCorrection: 0));
+    controller.textureId = 1;
+    await tester.pumpWidget(VideoPlayer(controller));
+    expect(find.byType(Transform), findsNothing);
+  });
 
   group('ClosedCaption widget', () {
     testWidgets('uses a default text style', (WidgetTester tester) async {

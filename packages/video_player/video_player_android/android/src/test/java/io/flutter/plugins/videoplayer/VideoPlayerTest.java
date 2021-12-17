@@ -160,12 +160,12 @@ public class VideoPlayerTest {
     Format format = new Format.Builder().setRotationDegrees(180).build();
     SimpleExoPlayer mockExoPlayer = mock(SimpleExoPlayer.class);
     when(mockExoPlayer.getVideoFormat()).thenReturn(format);
-    final VideoPlayer player = new VideoPlayer(
+    final VideoPlayer player =
+        new VideoPlayer(
             mock(EventChannel.class),
             mock(TextureRegistry.SurfaceTextureEntry.class),
             mock(VideoPlayerOptions.class),
-            mockExoPlayer
-    );
+            mockExoPlayer);
     QueuingEventSink mockEventSink = mock(QueuingEventSink.class);
     player.eventSink = mockEventSink;
     player.isInitialized = true;
@@ -174,8 +174,8 @@ public class VideoPlayerTest {
 
     ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
     verify(mockEventSink).success(eventCaptor.capture());
-    @SuppressWarnings("unchecked") Map<String, Object> capturedEventMap =
-            (Map<String, Object>) eventCaptor.getValue();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> capturedEventMap = (Map<String, Object>) eventCaptor.getValue();
     assertEquals(Math.PI, capturedEventMap.get("rotationCorrection"));
   }
 
@@ -184,12 +184,12 @@ public class VideoPlayerTest {
     Format format = new Format.Builder().setRotationDegrees(90).build();
     SimpleExoPlayer mockExoPlayer = mock(SimpleExoPlayer.class);
     when(mockExoPlayer.getVideoFormat()).thenReturn(format);
-    final VideoPlayer player = new VideoPlayer(
+    final VideoPlayer player =
+        new VideoPlayer(
             mock(EventChannel.class),
             mock(TextureRegistry.SurfaceTextureEntry.class),
             mock(VideoPlayerOptions.class),
-            mockExoPlayer
-    );
+            mockExoPlayer);
     QueuingEventSink mockEventSink = mock(QueuingEventSink.class);
     player.eventSink = mockEventSink;
     player.isInitialized = true;
@@ -198,8 +198,8 @@ public class VideoPlayerTest {
 
     ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
     verify(mockEventSink).success(eventCaptor.capture());
-    @SuppressWarnings("unchecked") Map<String, Object> capturedEventMap =
-            (Map<String, Object>) eventCaptor.getValue();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> capturedEventMap = (Map<String, Object>) eventCaptor.getValue();
     assertFalse(capturedEventMap.containsKey("rotationCorrection"));
   }
 }
