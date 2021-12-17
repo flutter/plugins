@@ -40,6 +40,7 @@ class CreateMessage {
 
 class MixWithOthersMessage {
   bool mixWithOthers;
+  bool ambient;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
