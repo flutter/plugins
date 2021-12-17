@@ -1,3 +1,8 @@
+## 2.8.1
+
+* Fixes bug where the default user agent string was being set for every rebuild. See
+  https://github.com/flutter/flutter/issues/94847.
+
 ## 2.8.0
 
 * Implements new cookie manager for setting cookies and providing initial cookies.
