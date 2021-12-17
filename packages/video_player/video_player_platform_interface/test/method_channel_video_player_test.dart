@@ -196,13 +196,20 @@ void main() {
     });
 
     test('setMixWithOthers', () async {
-      await player.setMixWithOthers(true);
+      await player.setMixWithOthers(true, false);
       expect(log.log.last, 'setMixWithOthers');
       expect(log.mixWithOthersMessage?.mixWithOthers, true);
+      expect(log.mixWithOthersMessage?.ambient, false);
 
-      await player.setMixWithOthers(false);
+      await player.setMixWithOthers(false, false);
       expect(log.log.last, 'setMixWithOthers');
       expect(log.mixWithOthersMessage?.mixWithOthers, false);
+      expect(log.mixWithOthersMessage?.ambient, false);
+
+      await player.setMixWithOthers(false, true);
+      expect(log.log.last, 'setMixWithOthers');
+      expect(log.mixWithOthersMessage?.mixWithOthers, false);
+      expect(log.mixWithOthersMessage?.ambient, true);
     });
 
     test('setVolume', () async {
