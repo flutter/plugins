@@ -32,7 +32,7 @@ void setMockPathProviderPlatform(Platform platform) {
 class LocalAuthentication {
   /// The `authenticateWithBiometrics` method has been deprecated.
   /// Use `authenticate` with `biometricOnly: true` instead
-  @Deprecated("Use `authenticate` with `biometricOnly: true` instead")
+  @Deprecated('Use `authenticate` with `biometricOnly: true` instead')
   Future<bool> authenticateWithBiometrics({
     required String localizedReason,
     bool useErrorDialogs = true,
@@ -160,9 +160,9 @@ class LocalAuthentication {
     final List<String> result = (await _channel.invokeListMethod<String>(
           'getAvailableBiometrics',
         )) ??
-        [];
+        <String>[];
     final List<BiometricType> biometrics = <BiometricType>[];
-    result.forEach((String value) {
+    for (final String value in result) {
       switch (value) {
         case 'face':
           biometrics.add(BiometricType.face);
@@ -176,7 +176,7 @@ class LocalAuthentication {
         case 'undefined':
           break;
       }
-    });
+    }
     return biometrics;
   }
 }
