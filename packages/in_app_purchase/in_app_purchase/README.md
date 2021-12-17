@@ -54,7 +54,6 @@ See also the codelab for [in-app purchases in Flutter](https://codelabs.develope
 
 This section has examples of code for the following tasks:
 
-* [Initializing the plugin](#initializing-the-plugin)
 * [Listening to purchase updates](#listening-to-purchase-updates)
 * [Connecting to the underlying store](#connecting-to-the-underlying-store)
 * [Loading products for sale](#loading-products-for-sale)
@@ -64,27 +63,6 @@ This section has examples of code for the following tasks:
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
 * [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
 * [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
-
-### Initializing the plugin
-
-The following initialization code is required for Google Play:
-
-```dart
-// Import `in_app_purchase_android.dart` to be able to access the
-// `InAppPurchaseAndroidPlatformAddition` class.
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:flutter/foundation.dart';
-
-void main() {
-  // Inform the plugin that this app supports pending purchases on Android.
-  // An error will occur on Android if you access the plugin `instance`
-  // without this call.
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-  }
-  runApp(MyApp());
-}
-```
 
 **Note:** It is not necessary to depend on `com.android.billingclient:billing` in your own app's `android/app/build.gradle` file. If you choose to do so know that conflicts might occur.
 

@@ -860,192 +860,41 @@ void main() {
     }, skip: Platform.isAndroid && _skipDueToIssue86757);
   });
 
-  group('SurfaceAndroidWebView', () {
+  // Minimial end-to-end testing of the legacy Android implementation.
+  group('AndroidWebView (virtual display)', () {
     setUpAll(() {
-      WebView.platform = SurfaceAndroidWebView();
+      WebView.platform = AndroidWebView();
     });
 
     tearDownAll(() {
       WebView.platform = null;
     });
 
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
-    testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      const String scrollTestPage = '''
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              body {
-                height: 100%;
-                width: 100%;
-              }
-              #container{
-                width:5000px;
-                height:5000px;
-            }
-            </style>
-          </head>
-          <body>
-            <div id="container"/>
-          </body>
-        </html>
-      ''';
-
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
-
-      final Completer<void> pageLoaded = Completer<void>();
+    testWidgets('initialUrl', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-
+      final Completer<void> loadCompleter = Completer<void>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
-            initialUrl:
-                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
             onPageFinished: (String url) {
-              pageLoaded.complete(null);
+              loadCompleter.complete();
             },
           ),
         ),
       );
-
       final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-
-      await tester.pumpAndSettle(const Duration(seconds: 3));
-
-      // Check scrollTo()
-      const int X_SCROLL = 123;
-      const int Y_SCROLL = 321;
-
-      await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      int scrollPosX = await controller.getScrollX();
-      int scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL, scrollPosX);
-      expect(Y_SCROLL, scrollPosY);
-
-      // Check scrollBy() (on top of scrollTo())
-      await controller.scrollBy(X_SCROLL, Y_SCROLL);
-      scrollPosX = await controller.getScrollX();
-      scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL * 2, scrollPosX);
-      expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
-
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
-    testWidgets('inputs are scrolled into view when focused',
-        (WidgetTester tester) async {
-      const String scrollTestPage = '''
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              input {
-                margin: 10000px 0;
-              }
-              #viewport {
-                position: fixed;
-                top:0;
-                bottom:0;
-                left:0;
-                right:0;
-              }
-            </style>
-          </head>
-          <body>
-            <div id="viewport"></div>
-            <input type="text" id="inputEl">
-          </body>
-        </html>
-      ''';
-
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
-
-      final Completer<void> pageLoaded = Completer<void>();
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-
-      await tester.runAsync(() async {
-        await tester.pumpWidget(
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: WebView(
-                initialUrl:
-                    'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
-                onWebViewCreated: (WebViewController controller) {
-                  controllerCompleter.complete(controller);
-                },
-                onPageFinished: (String url) {
-                  pageLoaded.complete(null);
-                },
-                javascriptMode: JavascriptMode.unrestricted,
-              ),
-            ),
-          ),
-        );
-        await Future<dynamic>.delayed(const Duration(milliseconds: 20));
-        await tester.pump();
-      });
-
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-      final String viewportRectJSON = await _runJavascriptReturningResult(
-          controller, 'JSON.stringify(viewport.getBoundingClientRect())');
-      final Map<String, dynamic> viewportRectRelativeToViewport =
-          jsonDecode(viewportRectJSON) as Map<String, dynamic>;
-
-      // Check that the input is originally outside of the viewport.
-
-      final String initialInputClientRectJSON =
-          await _runJavascriptReturningResult(
-              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-      final Map<String, dynamic> initialInputClientRectRelativeToViewport =
-          jsonDecode(initialInputClientRectJSON) as Map<String, dynamic>;
-
-      expect(
-          initialInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
-          isFalse);
-
-      await controller.runJavascript('inputEl.focus()');
-
-      // Check that focusing the input brought it into view.
-
-      final String lastInputClientRectJSON =
-          await _runJavascriptReturningResult(
-              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-      final Map<String, dynamic> lastInputClientRectRelativeToViewport =
-          jsonDecode(lastInputClientRectJSON) as Map<String, dynamic>;
-
-      expect(
-          lastInputClientRectRelativeToViewport['top'] >=
-              viewportRectRelativeToViewport['top'],
-          isTrue);
-      expect(
-          lastInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
-          isTrue);
-
-      expect(
-          lastInputClientRectRelativeToViewport['left'] >=
-              viewportRectRelativeToViewport['left'],
-          isTrue);
-      expect(
-          lastInputClientRectRelativeToViewport['right'] <=
-              viewportRectRelativeToViewport['right'],
-          isTrue);
-    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
-  });
+      await loadCompleter.future;
+      final String? currentUrl = await controller.currentUrl();
+      expect(currentUrl, primaryUrl);
+    });
+  }, skip: !Platform.isAndroid || _skipDueToIssue86757);
 
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';

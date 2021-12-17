@@ -42,5 +42,6 @@ _incrementCounter() async {
 You can populate `SharedPreferences` with initial values in your tests by running this code:
 
 ```dart
-SharedPreferences.setMockInitialValues (Map<String, dynamic> values);
+Map<String, Object> values = <String, Object>{'counter': 1};
+SharedPreferences.setMockInitialValues(values);
 ```

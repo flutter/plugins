@@ -209,6 +209,12 @@ public class WebViewTest {
   }
 
   @Test
+  public void postUrl() {
+    testHostApiImpl.postUrl(0L, "https://www.google.com", new byte[] {0x01, 0x02});
+    verify(mockWebView).postUrl("https://www.google.com", new byte[] {0x01, 0x02});
+  }
+
+  @Test
   public void getUrl() {
     when(mockWebView.getUrl()).thenReturn("https://www.google.com");
     assertEquals(testHostApiImpl.getUrl(0L), "https://www.google.com");

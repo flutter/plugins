@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  android_webview.FlutterAssetManager,
   android_webview.WebSettings,
   android_webview.WebView,
   WebViewAndroidDownloadListener,
@@ -30,6 +32,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$WebViewAndroidWidget', () {
+    late MockFlutterAssetManager mockFlutterAssetManager;
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
     late MockWebViewProxy mockWebViewProxy;
@@ -44,6 +47,7 @@ void main() {
     late WebViewAndroidPlatformController testController;
 
     setUp(() {
+      mockFlutterAssetManager = MockFlutterAssetManager();
       mockWebView = MockWebView();
       mockWebSettings = MockWebSettings();
       when(mockWebView.settings).thenReturn(mockWebSettings);
@@ -77,6 +81,7 @@ void main() {
         callbacksHandler: mockCallbacksHandler,
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
+        flutterAssetManager: mockFlutterAssetManager,
         onBuildWidget: (WebViewAndroidPlatformController controller) {
           testController = controller;
           return Container();
@@ -299,6 +304,67 @@ void main() {
         ));
       });
 
+      testWidgets('loadFlutterAsset', (WidgetTester tester) async {
+        await buildWidget(tester);
+        const String assetKey = 'test_assets/index.html';
+
+        when(mockFlutterAssetManager.getAssetFilePathByName(assetKey))
+            .thenAnswer(
+                (_) => Future<String>.value('flutter_assets/$assetKey'));
+        when(mockFlutterAssetManager.list('flutter_assets/test_assets'))
+            .thenAnswer(
+                (_) => Future<List<String>>.value(<String>['index.html']));
+
+        await testController.loadFlutterAsset(assetKey);
+
+        verify(mockWebView.loadUrl(
+          'file:///android_asset/flutter_assets/$assetKey',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets('loadFlutterAsset with file in root',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+        const String assetKey = 'index.html';
+
+        when(mockFlutterAssetManager.getAssetFilePathByName(assetKey))
+            .thenAnswer(
+                (_) => Future<String>.value('flutter_assets/$assetKey'));
+        when(mockFlutterAssetManager.list('flutter_assets')).thenAnswer(
+            (_) => Future<List<String>>.value(<String>['index.html']));
+
+        await testController.loadFlutterAsset(assetKey);
+
+        verify(mockWebView.loadUrl(
+          'file:///android_asset/flutter_assets/$assetKey',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets(
+          'loadFlutterAsset throws ArgumentError when asset does not exists',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+        const String assetKey = 'test_assets/index.html';
+
+        when(mockFlutterAssetManager.getAssetFilePathByName(assetKey))
+            .thenAnswer(
+                (_) => Future<String>.value('flutter_assets/$assetKey'));
+        when(mockFlutterAssetManager.list('flutter_assets/test_assets'))
+            .thenAnswer((_) => Future<List<String>>.value(<String>['']));
+
+        expect(
+          () => testController.loadFlutterAsset(assetKey),
+          throwsA(
+            isA<ArgumentError>()
+                .having((ArgumentError error) => error.name, 'name', 'key')
+                .having((ArgumentError error) => error.message, 'message',
+                    'Asset for key "$assetKey" not found.'),
+          ),
+        );
+      });
+
       testWidgets('loadHtmlString without base URL',
           (WidgetTester tester) async {
         await buildWidget(tester);
@@ -340,6 +406,81 @@ void main() {
           'https://www.google.com',
           <String, String>{'a': 'header'},
         ));
+      });
+
+      group('loadRequest', () {
+        testWidgets('Throws ArgumentError for empty scheme',
+            (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          expect(
+              () async => await testController.loadRequest(
+                    WebViewRequest(
+                      uri: Uri.parse('www.google.com'),
+                      method: WebViewRequestMethod.get,
+                    ),
+                  ),
+              throwsA(const TypeMatcher<ArgumentError>()));
+        });
+
+        testWidgets('GET without headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+          ));
+
+          verify(mockWebView.loadUrl(
+            'https://www.google.com',
+            <String, String>{},
+          ));
+        });
+
+        testWidgets('GET with headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+            headers: <String, String>{'a': 'header'},
+          ));
+
+          verify(mockWebView.loadUrl(
+            'https://www.google.com',
+            <String, String>{'a': 'header'},
+          ));
+        });
+
+        testWidgets('POST without body', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.post,
+          ));
+
+          verify(mockWebView.postUrl(
+            'https://www.google.com',
+            Uint8List(0),
+          ));
+        });
+
+        testWidgets('POST with body', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          final Uint8List body = Uint8List.fromList('Test Body'.codeUnits);
+
+          await testController.loadRequest(WebViewRequest(
+              uri: Uri.parse('https://www.google.com'),
+              method: WebViewRequestMethod.post,
+              body: body));
+
+          verify(mockWebView.postUrl(
+            'https://www.google.com',
+            body,
+          ));
+        });
       });
 
       testWidgets('currentUrl', (WidgetTester tester) async {
