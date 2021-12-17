@@ -208,6 +208,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   @Override
   public void setMixWithOthers(MixWithOthersMessage arg) {
     options.mixWithOthers = arg.getMixWithOthers();
+    options.ambient = arg.getAmbient();
   }
 
   private interface KeyForAssetFn {

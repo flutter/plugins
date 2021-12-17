@@ -297,25 +297,37 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class MixWithOthersMessage {
     private Boolean mixWithOthers;
+    private Boolean ambient;
 
     public Boolean getMixWithOthers() {
       return mixWithOthers;
+    }
+
+    public Boolean getAmbient() {
+      return ambient;
     }
 
     public void setMixWithOthers(Boolean setterArg) {
       this.mixWithOthers = setterArg;
     }
 
+    public void setAmbient(Boolean setterArg) {
+      this.ambient = setterArg;
+    }
+
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("mixWithOthers", mixWithOthers);
+      toMapResult.put("ambient", ambient);
       return toMapResult;
     }
 
     static MixWithOthersMessage fromMap(HashMap map) {
       MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
       Object mixWithOthers = map.get("mixWithOthers");
+      Object ambient = map.get("ambient");
       fromMapResult.mixWithOthers = (Boolean) mixWithOthers;
+      fromMapResult.ambient = (Boolean) ambient;
       return fromMapResult;
     }
   }
