@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/material.dart';
+
 import '../types.dart';
 
 /// Converts an [Iterable] of Heatmaps in a Map of HeatmapId -> Heatmap.
@@ -37,12 +39,35 @@ dynamic _heatmapToJson(Heatmap heatmap) {
   addIfPresent('zIndex', heatmap.zIndex);
 
   if (heatmap.gradient != null) {
-    json['gradient'] = heatmap.gradient?.toJson();
+    json['gradient'] = _gradientToJson(heatmap.gradient);
   }
 
   if (heatmap.points != null) {
-    json['points'] = heatmap.pointsToJson();
+    json['points'] = _heatmapPointsToJson(heatmap);
   }
 
   return json;
+}
+
+/// Converts this heatmap's points to something serializable in JSON.
+dynamic _heatmapPointsToJson(Heatmap heatmap) {
+  final List<dynamic> result = <dynamic>[];
+  for (final WeightedLatLng point in heatmap.points) {
+    result.add(_weightedLatLngToJson(point));
+  }
+  return result;
+}
+
+dynamic _weightedLatLngToJson(WeightedLatLng weightedPoint) {
+  return <dynamic>[weightedPoint.point.toJson(), weightedPoint.intensity];
+}
+
+
+/// Converts this object to something serializable in JSON.
+dynamic _gradientToJson(HeatmapGradient gradient) {
+  return <dynamic>[
+    gradient.colors.map((Color c) => c.value).toList(),
+    gradient.startPoints,
+    gradient.colorMapSize
+  ];
 }

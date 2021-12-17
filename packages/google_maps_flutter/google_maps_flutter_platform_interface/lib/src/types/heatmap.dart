@@ -6,7 +6,7 @@ import 'dart:ui' show hashValues;
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart' show Color;
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
 
@@ -55,16 +55,6 @@ class WeightedLatLng {
   /// The intensity of the [WeightedLatLng].
   final int intensity;
 
-  /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    return <dynamic>[point.toJson(), intensity];
-  }
-
-  /// Initialize a HeatmapGradient from an array.
-  static WeightedLatLng fromJson(dynamic json) {
-    return WeightedLatLng(point: json[0], intensity: json[1]);
-  }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -101,23 +91,6 @@ class HeatmapGradient {
   /// Size of a color map for the heatmap.
   final int colorMapSize;
 
-  /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    return <dynamic>[
-      colors.map((Color c) => c.value).toList(),
-      startPoints,
-      colorMapSize
-    ];
-  }
-
-  /// Initialize a HeatmapGradient from an array.
-  static HeatmapGradient fromJson(dynamic json) {
-    return HeatmapGradient(
-        colors: json[0].map((dynamic value) => Color(value)).toList(),
-        startPoints: json[1],
-        colorMapSize: json[2]);
-  }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -143,8 +116,8 @@ class Heatmap {
   /// Creates an immutable object representing a heatmap on the map.
   const Heatmap({
     required this.heatmapId,
+    required this.gradient,
     this.points = const <WeightedLatLng>[],
-    this.gradient,
     this.opacity = 0.7,
     this.radius = 20,
     this.fadeIn = true,
@@ -160,7 +133,7 @@ class Heatmap {
   final List<WeightedLatLng> points;
 
   /// The gradient of the heatmap points.
-  final HeatmapGradient? gradient;
+  final HeatmapGradient gradient;
 
   /// The opacity of the heatmap points.
   final double opacity;
@@ -235,13 +208,4 @@ class Heatmap {
 
   @override
   int get hashCode => heatmapId.hashCode;
-
-  /// Converts this object's [points] to something serializable in JSON.
-  dynamic pointsToJson() {
-    final List<dynamic> result = <dynamic>[];
-    for (final WeightedLatLng point in points) {
-      result.add(point.toJson());
-    }
-    return result;
-  }
 }
