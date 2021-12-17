@@ -116,7 +116,7 @@ abstract class VideoPlayerPlatform {
   }
 
   /// Sets the audio mode to mix with other sources
-  Future<void> setMixWithOthers(bool mixWithOthers) {
+  Future<void> setMixWithOthers(bool mixWithOthers, bool ambient) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
@@ -360,6 +360,13 @@ class VideoPlayerOptions {
   /// currently no way to implement this feature in this platform).
   final bool mixWithOthers;
 
+  /// Set this to true to mix the video players audio with other audio sources
+  /// within the app as well as background audio from other apps.
+  ///
+  /// Note: This option will be silently ignored in the web platform (there is
+  /// currently no way to implement this feature in this platform).
+  final bool ambient;
+
   /// set additional optional player settings
-  VideoPlayerOptions({this.mixWithOthers = false});
+  VideoPlayerOptions({this.mixWithOthers = false, this.ambient = false});
 }
