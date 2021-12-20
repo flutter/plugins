@@ -1,3 +1,11 @@
+## 4.2.1
+
+* Added rotation on Android for videos recorded in landscapeRight Fixes [#60327](https://github.com/flutter/flutter/issues/60327).
+
+## 4.2.0
+
+* Add `contentUri` to `DataSourceType`.
+
 ## 4.1.0
 
 * Add `httpHeaders` to `DataSource`
@@ -29,7 +37,7 @@
 
 ## 2.1.0
 
-* Add VideoPlayerOptions with audo mix mode
+* Add VideoPlayerOptions with audio mix mode
 
 ## 2.0.2
 

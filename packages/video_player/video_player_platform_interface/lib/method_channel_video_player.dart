@@ -42,6 +42,9 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       case DataSourceType.file:
         message.uri = dataSource.uri;
         break;
+      case DataSourceType.contentUri:
+        message.uri = dataSource.uri;
+        break;
     }
 
     TextureMessage response = await _api.create(message);
@@ -108,6 +111,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
             duration: Duration(milliseconds: map['duration']),
             size: Size(map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0),
+            rotationCorrection: map['rotationCorrection']?.toDouble() ?? 0.0,
           );
         case 'completed':
           return VideoEvent(
