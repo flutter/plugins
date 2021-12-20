@@ -20,6 +20,9 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		E0C6E2002770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C6E1FD2770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m */; };
+		E0C6E2012770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C6E1FE2770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m */; };
+		E0C6E2022770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C6E1FF2770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m */; };
 		E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */; };
 		F6EE622F2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */; };
 /* End PBXBuildFile section */
@@ -74,6 +77,9 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C5CC6CAD53AD388B2694F3A /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A24F9E418BA48BCC7409B117 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		E0C6E1FD2770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeMethodChannelTests.m; sourceTree = "<group>"; };
+		E0C6E1FE2770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeTextureRegistryTests.m; sourceTree = "<group>"; };
+		E0C6E1FF2770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeEventChannelTests.m; sourceTree = "<group>"; };
 		E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraPreviewPauseTests.m; sourceTree = "<group>"; };
 		F63F9EED27143B19002479BF /* MockFLTThreadSafeFlutterResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MockFLTThreadSafeFlutterResult.h; sourceTree = "<group>"; };
 		F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockFLTThreadSafeFlutterResult.m; sourceTree = "<group>"; };
@@ -107,6 +113,9 @@
 				03BB766C2665316900CE5A93 /* Info.plist */,
 				033B94BD269C40A200B4DF97 /* CameraMethodChannelTests.m */,
 				03F6F8B126CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m */,
+				E0C6E1FF2770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m */,
+				E0C6E1FD2770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m */,
+				E0C6E1FE2770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m */,
 				E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */,
 				F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */,
 				F63F9EED27143B19002479BF /* MockFLTThreadSafeFlutterResult.h */,
@@ -239,7 +248,7 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
 					03BB76672665316900CE5A93 = {
@@ -378,6 +387,9 @@
 				E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */,
 				F6EE622F2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m in Sources */,
 				334733EA2668111C00DCC49E /* CameraOrientationTests.m in Sources */,
+				E0C6E2022770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m in Sources */,
+				E0C6E2012770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m in Sources */,
+				E0C6E2002770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

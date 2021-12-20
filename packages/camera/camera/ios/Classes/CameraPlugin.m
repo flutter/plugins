@@ -10,7 +10,10 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
+#import "FLTThreadSafeEventChannel.h"
 #import "FLTThreadSafeFlutterResult.h"
+#import "FLTThreadSafeMethodChannel.h"
+#import "FLTThreadSafeTextureRegistry.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -305,7 +308,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
 @property BOOL enableAudio;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
-@property(nonatomic) FlutterMethodChannel *methodChannel;
+@property(nonatomic) FLTThreadSafeMethodChannel *methodChannel;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
@@ -1115,9 +1118,11 @@ NSString *const errorMethod = @"error";
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
                                   binaryMessenger:messenger];
+    FLTThreadSafeEventChannel *threadSafeEventChannel =
+        [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
     _imageStreamHandler = [[FLTImageStreamHandler alloc] init];
-    [eventChannel setStreamHandler:_imageStreamHandler];
+    [threadSafeEventChannel setStreamHandler:_imageStreamHandler];
 
     _isStreamingImages = YES;
   } else {
@@ -1285,10 +1290,10 @@ NSString *const errorMethod = @"error";
 @end
 
 @interface CameraPlugin ()
-@property(readonly, nonatomic) NSObject<FlutterTextureRegistry> *registry;
+@property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, nonatomic) FLTCam *camera;
-@property(readonly, nonatomic) FlutterMethodChannel *deviceEventMethodChannel;
+@property(readonly, nonatomic) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 @end
 
 @implementation CameraPlugin {
@@ -1308,7 +1313,7 @@ NSString *const errorMethod = @"error";
                        messenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _registry = registry;
+  _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
@@ -1316,9 +1321,11 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)initDeviceEventMethodChannel {
-  _deviceEventMethodChannel =
+  FlutterMethodChannel *methodChannel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/cameraPlugin/device"
                                   binaryMessenger:_messenger];
+  _deviceEventMethodChannel =
+      [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
 }
 
 - (void)startOrientationListener {
@@ -1417,7 +1424,7 @@ NSString *const errorMethod = @"error";
       if (_camera) {
         [_camera close];
       }
-      int64_t textureId = [self.registry registerTexture:cam];
+      int64_t textureId = [self.registry registerTextureSync:cam];
       _camera = cam;
       [result sendSuccessWithData:@{
         @"cameraId" : @(textureId),
@@ -1446,8 +1453,10 @@ NSString *const errorMethod = @"error";
           methodChannelWithName:[NSString stringWithFormat:@"flutter.io/cameraPlugin/camera%lu",
                                                            (unsigned long)cameraId]
                 binaryMessenger:_messenger];
-      _camera.methodChannel = methodChannel;
-      [methodChannel
+      FLTThreadSafeMethodChannel *threadSafeMethodChannel =
+          [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
+      _camera.methodChannel = threadSafeMethodChannel;
+      [threadSafeMethodChannel
           invokeMethod:@"initialized"
              arguments:@{
                @"previewWidth" : @(_camera.previewSize.width),
