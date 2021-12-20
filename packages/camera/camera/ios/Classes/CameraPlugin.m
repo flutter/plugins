@@ -526,8 +526,8 @@ NSString *const errorMethod = @"error";
 }
 
 - (BOOL)supportsAVCaptureSessionPreset:(AVCaptureSessionPreset)preset {
-    return [_captureDevice supportsAVCaptureSessionPreset:preset] &&
-           [_captureSession canSetSessionPreset:preset];
+  return [_captureDevice supportsAVCaptureSessionPreset:preset] &&
+         [_captureSession canSetSessionPreset:preset];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
