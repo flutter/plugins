@@ -50,6 +50,7 @@ void main() {
       bool hasNavigationDelegate = false,
       bool hasProgressTracking = false,
       bool useHybridComposition = false,
+      String systemVersion = '14.0',
     }) async {
       await tester.pumpWidget(WebViewCupertinoWidget(
         creationParams: creationParams ??
@@ -63,7 +64,7 @@ void main() {
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
         configuration: mockWebViewConfiguration,
-        systemVersion: 14.0,
+        systemVersion: systemVersion,
         onBuildWidget: (WebViewCupertinoPlatformController controller) {
           return Container();
         },
@@ -91,7 +92,7 @@ void main() {
 
         // Workaround to test setters with mockito. This code is generated with
         // the mock, but there is no way to access it.
-        await untilCalled<dynamic>(mockWebViewConfiguration.noSuchMethod(
+        verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
           Invocation.setter(#mediaTypesRequiringUserActionForPlayback,
               <web_kit.AudiovisualMediaType>{web_kit.AudiovisualMediaType.all}),
           returnValueForMissingStub: null,
@@ -112,7 +113,7 @@ void main() {
 
         // Workaround to test setters with mockito. This code is generated with
         // the mock, but there is no way to access it.
-        await untilCalled<dynamic>(mockWebViewConfiguration.noSuchMethod(
+        verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
           Invocation.setter(
               #mediaTypesRequiringUserActionForPlayback,
               <web_kit.AudiovisualMediaType>{
@@ -121,6 +122,56 @@ void main() {
           returnValueForMissingStub: null,
         ));
       });
+
+      testWidgets(
+        'autoMediaPlaybackPolicy true with systemVersion < 10.0',
+            (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            systemVersion: '9.5',
+            creationParams: CreationParams(
+              autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy
+                  .require_user_action_for_all_media_types,
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          // Workaround to test setters with mockito. This code is generated with
+          // the mock, but there is no way to access it.
+          verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
+            Invocation.setter(#requiresUserActionForMediaPlayback, true),
+            returnValueForMissingStub: null,
+          ));
+        },
+      );
+
+      testWidgets(
+        'autoMediaPlaybackPolicy true with systemVersion < 9.0',
+            (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            systemVersion: '8.5',
+            creationParams: CreationParams(
+              autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy
+                  .require_user_action_for_all_media_types,
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          // Workaround to test setters with mockito. This code is generated with
+          // the mock, but there is no way to access it.
+          verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
+            Invocation.setter(#mediaPlaybackRequiresUserAction, true),
+            returnValueForMissingStub: null,
+          ));
+        },
+      );
 
       group('$WebSettings', () {
         testWidgets('allowsInlineMediaPlayback', (WidgetTester tester) async {
@@ -136,7 +187,7 @@ void main() {
 
           // Workaround to test setters with mockito. This code is generated with
           // the mock, but there is no way to access it.
-          await untilCalled<dynamic>(mockWebViewConfiguration.noSuchMethod(
+          verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
             Invocation.setter(#allowsInlineMediaPlayback, true),
             returnValueForMissingStub: null,
           ));

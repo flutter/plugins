@@ -19,6 +19,7 @@ dependencies:
   device_info_plus: ^3.1.1
   flutter:
     sdk: flutter
+  pub_semver: ^2.1.0
   webview_flutter_platform_interface: ^1.8.0
 
 dev_dependencies:
