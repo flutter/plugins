@@ -204,7 +204,7 @@ class WebViewCupertinoPlatformController extends WebViewPlatformController {
       final int minor = parts.length >= 2 ? int.parse(parts[1]) : 0;
       final int patch = parts.length >= 3 ? int.parse(parts[2]) : 0;
       version = Version(major, minor, patch);
-    } catch(e) {
+    } catch (e) {
       rethrow;
     }
 
