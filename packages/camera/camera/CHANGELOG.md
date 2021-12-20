@@ -1,3 +1,7 @@
+##  0.9.4+6
+
+* Fix iOS crash when selecting an unsupported AVCaptureSessionPresetHigh.
+
 ##  0.9.4+5
 
 * Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
