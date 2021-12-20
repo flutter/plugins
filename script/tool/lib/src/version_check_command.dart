@@ -577,7 +577,9 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
             'repository policy. If this is a false positive, please '
             'add a line starting with\n'
             '$_missingVersionChangeJustificationMarker\n'
-            'to your PR description with an explanation of why it is exempt.');
+            'to your PR description with an explanation of why it is exempt.'
+            'If editing PR description does not work, try rehashing your '
+            'commit to trigger the upload.\n');
         return 'Missing version change';
       }
     }
