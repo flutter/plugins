@@ -1,4 +1,8 @@
-##  0.9.4+5
+## NEXT
+
+* Fixed a crash in iOS when using image stream due to threading issue. 
+
+## 0.9.4+5
 
 * Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
 * Fixes integration tests.
