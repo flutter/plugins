@@ -4,10 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <camera/CameraPlugin.h>
-#import <camera/FLTThreadSafeEventChannel.h>
 #import <camera/FLTThreadSafeFlutterResult.h>
-#import <camera/FLTThreadSafeMethodChannel.h>
-#import <camera/FLTThreadSafeTextureRegistry.h>
 
 FOUNDATION_EXPORT double cameraVersionNumber;
 FOUNDATION_EXPORT const unsigned char cameraVersionString[];
