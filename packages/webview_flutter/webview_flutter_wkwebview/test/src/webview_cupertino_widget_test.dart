@@ -43,7 +43,7 @@ void main() {
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
     });
 
-    // Builds a AndroidWebViewWidget with default parameters.
+    // Builds a WebViewCupertinoWidget with default parameters.
     Future<void> buildWidget(
       WidgetTester tester, {
       CreationParams? creationParams,
@@ -125,7 +125,7 @@ void main() {
 
       testWidgets(
         'autoMediaPlaybackPolicy true with systemVersion < 10.0',
-            (WidgetTester tester) async {
+        (WidgetTester tester) async {
           await buildWidget(
             tester,
             systemVersion: '9.5',
@@ -150,7 +150,7 @@ void main() {
 
       testWidgets(
         'autoMediaPlaybackPolicy true with systemVersion < 9.0',
-            (WidgetTester tester) async {
+        (WidgetTester tester) async {
           await buildWidget(
             tester,
             systemVersion: '8.5',
