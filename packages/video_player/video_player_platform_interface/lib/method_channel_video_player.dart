@@ -139,9 +139,9 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> setMixWithOthers(bool mixWithOthers) {
+  Future<void> setMixWithOthers(bool mixWithOthers, bool ambient) {
     return _api.setMixWithOthers(
-      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
+      MixWithOthersMessage()..mixWithOthers = mixWithOthers..ambient = ambient,
     );
   }
 

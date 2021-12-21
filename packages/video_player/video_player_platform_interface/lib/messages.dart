@@ -132,17 +132,20 @@ class PositionMessage {
 
 class MixWithOthersMessage {
   bool? mixWithOthers;
+  bool? ambient;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['mixWithOthers'] = mixWithOthers;
+    pigeonMap['ambient'] = ambient;
     return pigeonMap;
   }
 
   static MixWithOthersMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return MixWithOthersMessage()
-      ..mixWithOthers = pigeonMap['mixWithOthers'] as bool?;
+      ..mixWithOthers = pigeonMap['mixWithOthers'] as bool?
+      ..ambient = pigeonMap['ambient'] as bool?;
   }
 }
 
