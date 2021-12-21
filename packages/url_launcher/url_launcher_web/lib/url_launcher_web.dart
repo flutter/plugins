@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:html' as html;
-import 'src/shims/dart_ui.dart' as ui;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
@@ -12,9 +11,10 @@ import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 import 'src/link.dart';
+import 'src/shims/dart_ui.dart' as ui;
 import 'src/third_party/platform_detect/browser.dart';
 
-const _safariTargetTopSchemes = {
+const Set<String> _safariTargetTopSchemes = <String>{
   'mailto',
   'tel',
   'sms',
@@ -28,20 +28,20 @@ bool _isSafariTargetTopScheme(String url) =>
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
 class UrlLauncherPlugin extends UrlLauncherPlatform {
-  html.Window _window;
-  bool _isSafari = false;
-
-  // The set of schemes that can be handled by the plugin
-  static final _supportedSchemes = {
-    'http',
-    'https',
-  }.union(_safariTargetTopSchemes);
-
   /// A constructor that allows tests to override the window object used by the plugin.
   UrlLauncherPlugin({@visibleForTesting html.Window? debugWindow})
       : _window = debugWindow ?? html.window {
     _isSafari = navigatorIsSafari(_window.navigator);
   }
+
+  final html.Window _window;
+  bool _isSafari = false;
+
+  // The set of schemes that can be handled by the plugin
+  static final Set<String> _supportedSchemes = <String>{
+    'http',
+    'https',
+  }.union(_safariTargetTopSchemes);
 
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
@@ -61,7 +61,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   html.WindowBase openNewWindow(String url, {String? webOnlyWindowName}) {
     // We need to open mailto, tel and sms urls on the _top window context on safari browsers.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
-    final target = webOnlyWindowName ??
+    final String target = webOnlyWindowName ??
         ((_isSafari && _isSafariTargetTopScheme(url)) ? '_top' : '');
     return _window.open(url, target);
   }

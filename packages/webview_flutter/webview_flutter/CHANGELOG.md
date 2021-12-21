@@ -1,6 +1,32 @@
-## NEXT
+## 3.0.0
 
+* **BREAKING CHANGE**: On Android, hybrid composition (SurfaceAndroidWebView)
+  is now the default. The previous default, virtual display, can be specified
+  with `WebView.platform = AndroidWebView()`
+
+## 2.8.0
+
+* Adds support for the `loadFlutterAsset` method.
+
+## 2.7.0
+
+* Adds `setCookie` to CookieManager.
+* CreationParams now supports setting `initialCookies`.
+
+## 2.6.0
+
+* Adds support for the `loadRequest` method.
+
+## 2.5.0
+
+* Adds an option to set the background color of the webview.
+
+## 2.4.0
+
+* Adds support for the `loadFile` and `loadHtmlString` methods.
 * Updates example app Android compileSdkVersion to 31.
+* Integration test fixes.
+* Updates code for new analysis options.
 
 ## 2.3.1
 

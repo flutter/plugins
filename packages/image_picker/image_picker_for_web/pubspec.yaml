@@ -23,8 +23,8 @@ dependencies:
     sdk: flutter
   image_picker_platform_interface: ^2.2.0
   meta: ^1.3.0
+  pedantic: ^1.10.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.10.0
