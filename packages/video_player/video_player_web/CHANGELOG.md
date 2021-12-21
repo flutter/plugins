@@ -1,3 +1,6 @@
+## 2.0.6
+* Supports 'ambinet' mode
+
 ## 2.0.5
 
 * Adds compatibility with `video_player_platform_interface` 5.0, which does not
