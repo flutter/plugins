@@ -1,6 +1,6 @@
 ## 2.2.10
 
-* iOS: Update texture on `seekTo`.
+* iOS: Updates texture on `seekTo`.
 
 ## 2.2.9
 
