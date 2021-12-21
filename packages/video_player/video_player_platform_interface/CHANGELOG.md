@@ -1,6 +1,6 @@
 ## 5.1.1
 
-* Adds rotation on Android for videos recorded in landscapeRight ([#60327](https://github.com/flutter/flutter/issues/60327)).
+* Adds `rotationCorrection` (for Android playing videos recorded in landscapeRight [#60327](https://github.com/flutter/flutter/issues/60327)).
 
 ## 5.1.0
 
