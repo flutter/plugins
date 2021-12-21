@@ -199,15 +199,21 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
 + (FLTMixWithOthersMessage *)fromMap:(NSDictionary *)dict {
   FLTMixWithOthersMessage *result = [[FLTMixWithOthersMessage alloc] init];
   result.mixWithOthers = dict[@"mixWithOthers"];
+  result.ambient = dict[@"ambient"];
   if ((NSNull *)result.mixWithOthers == [NSNull null]) {
     result.mixWithOthers = nil;
+  }
+  if ((NSNull *)result.ambient == [NSNull null]) {
+    result.ambient = nil;
   }
   return result;
 }
 - (NSDictionary *)toMap {
   return [NSDictionary
       dictionaryWithObjectsAndKeys:(self.mixWithOthers != nil ? self.mixWithOthers : [NSNull null]),
-                                   @"mixWithOthers", nil];
+                                   @"mixWithOthers",
+                                   (self.ambient != nil ? self.ambient : [NSNull null]), @"ambient",
+                                   nil];
 }
 @end
 
