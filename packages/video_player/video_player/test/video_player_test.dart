@@ -793,9 +793,9 @@ void main() {
   test('setMixWithOthers', () async {
     final VideoPlayerController controller = VideoPlayerController.file(
         File(''),
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true, ambient: true));
     await controller.initialize();
-    expect(controller.videoPlayerOptions!.mixWithOthers, true);
+    expect(controller.videoPlayerOptions!.mixWithOthers && controller.videoPlayerOptions!.ambient, true);
   });
 }
 
@@ -880,7 +880,7 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> setMixWithOthers(bool mixWithOthers) async {
+  Future<void> setMixWithOthers(bool mixWithOthers, bool ambient) async {
     calls.add('setMixWithOthers');
   }
 }
