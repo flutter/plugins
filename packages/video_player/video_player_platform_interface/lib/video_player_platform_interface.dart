@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'method_channel_video_player.dart';
 
@@ -15,24 +18,37 @@ import 'method_channel_video_player.dart';
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [VideoPlayerPlatform] methods.
-abstract class VideoPlayerPlatform extends PlatformInterface {
-  /// Constructs a VideoPlayerPlatform.
-  VideoPlayerPlatform() : super(token: _token);
-
-  static final Object _token = Object();
+abstract class VideoPlayerPlatform {
+  /// Only mock implementations should set this to true.
+  ///
+  /// Mockito mocks are implementing this class with `implements` which is forbidden for anything
+  /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
+  /// skip the verification that the class isn't implemented with `implements`.
+  @visibleForTesting
+  bool get isMock => false;
 
   static VideoPlayerPlatform _instance = MethodChannelVideoPlayer();
 
   /// The default instance of [VideoPlayerPlatform] to use.
   ///
-  /// Defaults to [MethodChannelVideoPlayer].
-  static VideoPlayerPlatform get instance => _instance;
-
   /// Platform-specific plugins should override this with their own
   /// platform-specific class that extends [VideoPlayerPlatform] when they
   /// register themselves.
+  ///
+  /// Defaults to [MethodChannelVideoPlayer].
+  static VideoPlayerPlatform get instance => _instance;
+
+  // TODO(amirh): Extract common platform interface logic.
+  // https://github.com/flutter/flutter/issues/43368
   static set instance(VideoPlayerPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    if (!instance.isMock) {
+      try {
+        instance._verifyProvidesDefaultImplementations();
+      } on NoSuchMethodError catch (_) {
+        throw AssertionError(
+            'Platform interfaces must not be implemented with `implements`');
+      }
+    }
     _instance = instance;
   }
 
@@ -103,6 +119,14 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+
+  // This method makes sure that VideoPlayer isn't implemented with `implements`.
+  //
+  // See class doc for more details on why implementing this class is forbidden.
+  //
+  // This private method is called by the instance setter, which fails if the class is
+  // implemented with `implements`.
+  void _verifyProvidesDefaultImplementations() {}
 }
 
 /// Description of the data source used to create an instance of
@@ -198,12 +222,13 @@ class VideoEvent {
   ///
   /// The [eventType] argument is required.
   ///
-  /// Depending on the [eventType], the [duration], [size] and [buffered]
-  /// arguments can be null.
+  /// Depending on the [eventType], the [duration], [size],
+  /// [rotationCorrection], and [buffered] arguments can be null.
   VideoEvent({
     required this.eventType,
     this.duration,
     this.size,
+    this.rotationCorrection,
     this.buffered,
   });
 
@@ -220,6 +245,11 @@ class VideoEvent {
   /// Only used if [eventType] is [VideoEventType.initialized].
   final Size? size;
 
+  /// Radians to rotate the video so it is displayed correctly.
+  ///
+  /// Only used if [eventType] is [VideoEventType.initialized].
+  final double? rotationCorrection;
+
   /// Buffered parts of the video.
   ///
   /// Only used if [eventType] is [VideoEventType.bufferingUpdate].
@@ -233,6 +263,7 @@ class VideoEvent {
             eventType == other.eventType &&
             duration == other.duration &&
             size == other.size &&
+            rotationCorrection == other.rotationCorrection &&
             listEquals(buffered, other.buffered);
   }
 
@@ -241,6 +272,7 @@ class VideoEvent {
       eventType.hashCode ^
       duration.hashCode ^
       size.hashCode ^
+      rotationCorrection.hashCode ^
       buffered.hashCode;
 }
 
