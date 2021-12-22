@@ -188,7 +188,8 @@ void main() {
 }
 
 // Workaround to test setters with mockito. This code is generated with
-// the mock, but there is no way to access it.
+// the mock, but there is no way to access it. See
+// https://github.com/dart-lang/mockito/issues/498
 void mockitoVerifySetterWorkaround(
   Mock mock,
   Symbol memberName,
