@@ -1,3 +1,7 @@
+## 2.2.10
+
+* iOS: Updates texture on `seekTo`.
+
 ## 2.2.9
 
 * Adds compatibility with `video_player_platform_interface` 5.0, which does not
