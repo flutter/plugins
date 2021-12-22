@@ -90,13 +90,11 @@ void main() {
           ),
         );
 
-        // Workaround to test setters with mockito. This code is generated with
-        // the mock, but there is no way to access it.
-        verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
-          Invocation.setter(#mediaTypesRequiringUserActionForPlayback,
-              <web_kit.AudiovisualMediaType>{web_kit.AudiovisualMediaType.all}),
-          returnValueForMissingStub: null,
-        ));
+        mockitoVerifySetterWorkaround(
+          mockWebViewConfiguration,
+          #mediaTypesRequiringUserActionForPlayback,
+          <web_kit.AudiovisualMediaType>{web_kit.AudiovisualMediaType.all},
+        );
       });
 
       testWidgets('autoMediaPlaybackPolicy false', (WidgetTester tester) async {
@@ -111,16 +109,11 @@ void main() {
           ),
         );
 
-        // Workaround to test setters with mockito. This code is generated with
-        // the mock, but there is no way to access it.
-        verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
-          Invocation.setter(
-              #mediaTypesRequiringUserActionForPlayback,
-              <web_kit.AudiovisualMediaType>{
-                web_kit.AudiovisualMediaType.none
-              }),
-          returnValueForMissingStub: null,
-        ));
+        mockitoVerifySetterWorkaround(
+          mockWebViewConfiguration,
+          #mediaTypesRequiringUserActionForPlayback,
+          <web_kit.AudiovisualMediaType>{web_kit.AudiovisualMediaType.none},
+        );
       });
 
       testWidgets(
@@ -139,12 +132,11 @@ void main() {
             ),
           );
 
-          // Workaround to test setters with mockito. This code is generated with
-          // the mock, but there is no way to access it.
-          verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
-            Invocation.setter(#requiresUserActionForMediaPlayback, true),
-            returnValueForMissingStub: null,
-          ));
+          mockitoVerifySetterWorkaround(
+            mockWebViewConfiguration,
+            #requiresUserActionForMediaPlayback,
+            true,
+          );
         },
       );
 
@@ -164,12 +156,11 @@ void main() {
             ),
           );
 
-          // Workaround to test setters with mockito. This code is generated with
-          // the mock, but there is no way to access it.
-          verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
-            Invocation.setter(#mediaPlaybackRequiresUserAction, true),
-            returnValueForMissingStub: null,
-          ));
+          mockitoVerifySetterWorkaround(
+            mockWebViewConfiguration,
+            #mediaPlaybackRequiresUserAction,
+            true,
+          );
         },
       );
 
@@ -185,14 +176,26 @@ void main() {
             ),
           );
 
-          // Workaround to test setters with mockito. This code is generated with
-          // the mock, but there is no way to access it.
-          verify<dynamic>(mockWebViewConfiguration.noSuchMethod(
-            Invocation.setter(#allowsInlineMediaPlayback, true),
-            returnValueForMissingStub: null,
-          ));
+          mockitoVerifySetterWorkaround(
+            mockWebViewConfiguration,
+            #allowsInlineMediaPlayback,
+            true,
+          );
         });
       });
     });
   });
+}
+
+// Workaround to test setters with mockito. This code is generated with
+// the mock, but there is no way to access it.
+void mockitoVerifySetterWorkaround(
+  Mock mock,
+  Symbol memberName,
+  Object? argument,
+) {
+  verify<dynamic>(mock.noSuchMethod(
+    Invocation.setter(memberName, argument),
+    returnValueForMissingStub: null,
+  ));
 }
