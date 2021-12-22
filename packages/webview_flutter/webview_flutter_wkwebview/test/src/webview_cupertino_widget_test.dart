@@ -90,11 +90,11 @@ void main() {
           ),
         );
 
-        mockitoVerifySetterWorkaround(
-          mockWebViewConfiguration,
-          #mediaTypesRequiringUserActionForPlayback,
-          <web_kit.AudiovisualMediaType>{web_kit.AudiovisualMediaType.all},
-        );
+        verify(
+            mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
+                <web_kit.AudiovisualMediaType>{
+          web_kit.AudiovisualMediaType.all,
+        });
       });
 
       testWidgets('autoMediaPlaybackPolicy false', (WidgetTester tester) async {
@@ -109,11 +109,11 @@ void main() {
           ),
         );
 
-        mockitoVerifySetterWorkaround(
-          mockWebViewConfiguration,
-          #mediaTypesRequiringUserActionForPlayback,
-          <web_kit.AudiovisualMediaType>{web_kit.AudiovisualMediaType.none},
-        );
+        verify(
+            mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
+                <web_kit.AudiovisualMediaType>{
+          web_kit.AudiovisualMediaType.none,
+        });
       });
 
       testWidgets(
@@ -132,10 +132,8 @@ void main() {
             ),
           );
 
-          mockitoVerifySetterWorkaround(
-            mockWebViewConfiguration,
-            #requiresUserActionForMediaPlayback,
-            true,
+          verify(
+            mockWebViewConfiguration.requiresUserActionForMediaPlayback = true,
           );
         },
       );
@@ -156,10 +154,8 @@ void main() {
             ),
           );
 
-          mockitoVerifySetterWorkaround(
-            mockWebViewConfiguration,
-            #mediaPlaybackRequiresUserAction,
-            true,
+          verify(
+            mockWebViewConfiguration.mediaPlaybackRequiresUserAction = true,
           );
         },
       );
@@ -176,27 +172,9 @@ void main() {
             ),
           );
 
-          mockitoVerifySetterWorkaround(
-            mockWebViewConfiguration,
-            #allowsInlineMediaPlayback,
-            true,
-          );
+          verify(mockWebViewConfiguration.allowsInlineMediaPlayback = true);
         });
       });
     });
   });
-}
-
-// Workaround to test setters with mockito. This code is generated with
-// the mock, but there is no way to access it. See
-// https://github.com/dart-lang/mockito/issues/498
-void mockitoVerifySetterWorkaround(
-  Mock mock,
-  Symbol memberName,
-  Object? argument,
-) {
-  verify<dynamic>(mock.noSuchMethod(
-    Invocation.setter(memberName, argument),
-    returnValueForMissingStub: null,
-  ));
 }
