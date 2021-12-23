@@ -28,6 +28,10 @@
   id avCaptureSessionMock = OCMClassMock([AVCaptureSession class]);
   OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
+    
+  id avCaptureDeviceMock = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([avCaptureDeviceMock deviceWithUniqueID:[OCMArg any]]).andReturn(avCaptureDeviceMock);
+  OCMStub([avCaptureDeviceMock supportsAVCaptureSessionPreset:[OCMArg any]]).andReturn(YES);
 
   MockFLTThreadSafeFlutterResult *resultObject =
       [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
