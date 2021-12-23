@@ -49,4 +49,43 @@
   XCTAssert([[dictionaryResult allKeys] containsObject:@"cameraId"]);
 }
 
+- (void)testCreateWithUnsupportedResolutionPreset_ShouldCallResultOnMainThread {
+  CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
+
+  XCTestExpectation *expectation =
+      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+
+  // Set up mocks for initWithCameraName method
+  id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
+  OCMStub([avCaptureDeviceInputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg anyObjectRef]])
+      .andReturn([AVCaptureInput alloc]);
+
+  id avCaptureSessionMock = OCMClassMock([AVCaptureSession class]);
+  OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
+  OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
+
+  id avCaptureDeviceMock = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([avCaptureDeviceMock deviceWithUniqueID:[OCMArg any]]).andReturn(avCaptureDeviceMock);
+  OCMStub([avCaptureDeviceMock
+              supportsAVCaptureSessionPreset:[OCMArg isNotEqual:AVCaptureSessionPresetLow]])
+      .andReturn(NO);
+  OCMStub([avCaptureDeviceMock supportsAVCaptureSessionPreset:AVCaptureSessionPresetLow])
+      .andReturn(YES);
+
+  MockFLTThreadSafeFlutterResult *resultObject =
+      [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
+
+  // Set up method call
+  FlutterMethodCall *call = [FlutterMethodCall
+      methodCallWithMethodName:@"create"
+                     arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
+
+  [camera handleMethodCallAsync:call result:resultObject];
+
+  // Verify the result
+  NSDictionary *dictionaryResult = (NSDictionary *)resultObject.receivedResult;
+  XCTAssertNotNil(dictionaryResult);
+  XCTAssert([[dictionaryResult allKeys] containsObject:@"cameraId"]);
+}
+
 @end
