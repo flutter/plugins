@@ -1,3 +1,7 @@
+## 2.2.11
+
+* Check the value of duration when creating video progress indicator.
+
 ## 2.2.10
 
 * iOS: Updates texture on `seekTo`.
