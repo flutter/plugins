@@ -797,6 +797,26 @@ void main() {
     await controller.initialize();
     expect(controller.videoPlayerOptions!.mixWithOthers, true);
   });
+
+  testWidgets('duration is zero', (WidgetTester tester) async {
+    final VideoPlayerController controller = VideoPlayerController.network(
+      'https://127.0.0.1',
+    );
+    await controller.initialize();
+    controller.value = controller.value.copyWith(duration: Duration.zero);
+    final progressWidget =
+        VideoProgressIndicator(controller, allowScrubbing: true);
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: progressWidget,
+    ));
+    expect(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is LinearProgressIndicator && widget.value == 0,
+        ),
+        findsWidgets);
+  });
 }
 
 class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
