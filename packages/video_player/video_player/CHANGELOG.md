@@ -1,6 +1,6 @@
 ## 2.2.0
 
-* Add `observeAppLifecycle` to `VideoPlayerOptions`
+* Add `allowBackgroundPlayback` to `VideoPlayerOptions`
 
 ## 2.1.15
 

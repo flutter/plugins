@@ -97,6 +97,22 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 }
 
 void main() {
+  void verifyAppLifeCycle(
+    VideoPlayerController controller, {
+    bool isObserving = true,
+  }) {
+    final wasPlayingBeforePause = controller.value.isPlaying;
+    WidgetsBinding.instance!
+        .handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    expect(
+      controller.value.isPlaying,
+      isObserving ? false : wasPlayingBeforePause,
+    );
+    WidgetsBinding.instance!
+        .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    expect(controller.value.isPlaying, wasPlayingBeforePause);
+  }
+
   testWidgets('update texture', (WidgetTester tester) async {
     final FakeController controller = FakeController();
     await tester.pumpWidget(VideoPlayer(controller));
@@ -185,6 +201,14 @@ void main() {
     });
 
     group('initialize', () {
+      test('started app lifecycle observing', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        await controller.play();
+        verifyAppLifeCycle(controller);
+      });
       test('asset', () async {
         final VideoPlayerController controller = VideoPlayerController.asset(
           'a.avi',
@@ -715,6 +739,30 @@ void main() {
     });
   });
 
+  group('VideoPlayerOptions', () {
+    test('setMixWithOthers', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+          File(''),
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+      await controller.initialize();
+      expect(controller.videoPlayerOptions!.mixWithOthers, true);
+    });
+
+    group('allowBackgroundPlayback', () {
+      [true, false].forEach((allowBackgroundPlayback) {
+        test('is $allowBackgroundPlayback', () async {
+          final VideoPlayerController controller = VideoPlayerController.file(
+            File(''),
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: allowBackgroundPlayback),
+          );
+          await controller.initialize();
+          await controller.play();
+          verifyAppLifeCycle(controller, isObserving: !allowBackgroundPlayback);
+        });
+      });
+    });
+  });
+
   test('VideoProgressColors', () {
     const Color playedColor = Color.fromRGBO(0, 0, 255, 0.75);
     const Color bufferedColor = Color.fromRGBO(0, 255, 0, 0.5);
@@ -728,22 +776,6 @@ void main() {
     expect(colors.playedColor, playedColor);
     expect(colors.bufferedColor, bufferedColor);
     expect(colors.backgroundColor, backgroundColor);
-  });
-
-  test('setMixWithOthers', () async {
-    final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
-    await controller.initialize();
-    expect(controller.videoPlayerOptions!.mixWithOthers, true);
-  });
-
-  test('observeAppLifecycle', () async {
-    final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
-        videoPlayerOptions: VideoPlayerOptions(observeAppLifecycle: true));
-    await controller.initialize();
-    expect(controller.videoPlayerOptions!.observeAppLifecycle, true);
   });
 }
 
