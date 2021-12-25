@@ -11,8 +11,8 @@ class SaveTextPage extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
-  void _saveFile() async {
-    String? path = await getSavePath();
+  Future<void> _saveFile() async {
+    final String? path = await getSavePath();
     if (path == null) {
       // Operation was canceled by the user.
       return;
@@ -20,7 +20,7 @@ class SaveTextPage extends StatelessWidget {
     final String text = _contentController.text;
     final String fileName = _nameController.text;
     final Uint8List fileData = Uint8List.fromList(text.codeUnits);
-    final String fileMimeType = 'text/plain';
+    const String fileMimeType = 'text/plain';
     final XFile textFile =
         XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
     await textFile.saveTo(path);
@@ -30,7 +30,7 @@ class SaveTextPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Save text into a file"),
+        title: const Text('Save text into a file'),
       ),
       body: Center(
         child: Column(
@@ -42,7 +42,7 @@ class SaveTextPage extends StatelessWidget {
                 minLines: 1,
                 maxLines: 12,
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: '(Optional) Suggest File Name',
                 ),
               ),
@@ -53,18 +53,18 @@ class SaveTextPage extends StatelessWidget {
                 minLines: 1,
                 maxLines: 12,
                 controller: _contentController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter File Contents',
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Colors.blue,
                 onPrimary: Colors.white,
               ),
-              child: Text('Press to save a text file'),
+              child: const Text('Press to save a text file'),
               onPressed: () => _saveFile(),
             ),
           ],

@@ -13,12 +13,14 @@ import 'build_examples_command.dart';
 import 'common/core.dart';
 import 'create_all_plugins_app_command.dart';
 import 'drive_examples_command.dart';
+import 'federation_safety_check_command.dart';
 import 'firebase_test_lab_command.dart';
 import 'format_command.dart';
 import 'license_check_command.dart';
 import 'lint_android_command.dart';
 import 'lint_podspecs_command.dart';
 import 'list_command.dart';
+import 'make_deps_path_based_command.dart';
 import 'native_test_command.dart';
 import 'publish_check_command.dart';
 import 'publish_plugin_command.dart';
@@ -49,6 +51,7 @@ void main(List<String> args) {
     ..addCommand(BuildExamplesCommand(packagesDir))
     ..addCommand(CreateAllPluginsAppCommand(packagesDir))
     ..addCommand(DriveExamplesCommand(packagesDir))
+    ..addCommand(FederationSafetyCheckCommand(packagesDir))
     ..addCommand(FirebaseTestLabCommand(packagesDir))
     ..addCommand(FormatCommand(packagesDir))
     ..addCommand(LicenseCheckCommand(packagesDir))
@@ -56,6 +59,7 @@ void main(List<String> args) {
     ..addCommand(LintPodspecsCommand(packagesDir))
     ..addCommand(ListCommand(packagesDir))
     ..addCommand(NativeTestCommand(packagesDir))
+    ..addCommand(MakeDepsPathBasedCommand(packagesDir))
     ..addCommand(PublishCheckCommand(packagesDir))
     ..addCommand(PublishPluginCommand(packagesDir))
     ..addCommand(PubspecCheckCommand(packagesDir))

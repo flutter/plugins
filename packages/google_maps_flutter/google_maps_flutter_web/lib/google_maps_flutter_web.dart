@@ -25,6 +25,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 
+import 'src/third_party/to_screen_location/to_screen_location.dart';
 import 'src/types.dart';
 
 part 'src/google_maps_flutter_web.dart';

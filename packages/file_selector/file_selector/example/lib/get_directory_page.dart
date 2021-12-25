@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 /// Screen that shows an example of getDirectoryPath
 class GetDirectoryPage extends StatelessWidget {
-  void _getDirectoryPath(BuildContext context) async {
-    final String confirmButtonText = 'Choose';
+  Future<void> _getDirectoryPath(BuildContext context) async {
+    const String confirmButtonText = 'Choose';
     final String? directoryPath = await getDirectoryPath(
       confirmButtonText: confirmButtonText,
     );
@@ -16,9 +16,9 @@ class GetDirectoryPage extends StatelessWidget {
       // Operation was canceled by the user.
       return;
     }
-    await showDialog(
+    await showDialog<void>(
       context: context,
-      builder: (context) => TextDisplay(directoryPath),
+      builder: (BuildContext context) => TextDisplay(directoryPath),
     );
   }
 
@@ -26,7 +26,7 @@ class GetDirectoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Open a text file"),
+        title: const Text('Open a text file'),
       ),
       body: Center(
         child: Column(
@@ -37,7 +37,7 @@ class GetDirectoryPage extends StatelessWidget {
                 primary: Colors.blue,
                 onPrimary: Colors.white,
               ),
-              child: Text('Press to ask user to choose a directory'),
+              child: const Text('Press to ask user to choose a directory'),
               onPressed: () => _getDirectoryPath(context),
             ),
           ],
@@ -49,22 +49,22 @@ class GetDirectoryPage extends StatelessWidget {
 
 /// Widget that displays a text file in a dialog
 class TextDisplay extends StatelessWidget {
+  /// Default Constructor
+  const TextDisplay(this.directoryPath);
+
   /// Directory path
   final String directoryPath;
-
-  /// Default Constructor
-  TextDisplay(this.directoryPath);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Selected Directory'),
+      title: const Text('Selected Directory'),
       content: Scrollbar(
         child: SingleChildScrollView(
           child: Text(directoryPath),
         ),
       ),
-      actions: [
+      actions: <Widget>[
         TextButton(
           child: const Text('Close'),
           onPressed: () => Navigator.pop(context),

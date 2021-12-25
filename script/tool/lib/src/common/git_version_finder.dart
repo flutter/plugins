@@ -31,10 +31,16 @@ class GitVersionFinder {
   }
 
   /// Get a list of all the changed files.
-  Future<List<String>> getChangedFiles() async {
+  Future<List<String>> getChangedFiles(
+      {bool includeUncommitted = false}) async {
     final String baseSha = await getBaseSha();
     final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', baseSha, 'HEAD']);
+        .runCommand(<String>[
+      'diff',
+      '--name-only',
+      baseSha,
+      if (!includeUncommitted) 'HEAD'
+    ]);
     final String changedFilesStdout = changedFilesCommand.stdout.toString();
     if (changedFilesStdout.isEmpty) {
       return <String>[];
@@ -58,6 +64,9 @@ class GitVersionFinder {
       return null;
     }
     final String fileContent = gitShow.stdout as String;
+    if (fileContent.trim().isEmpty) {
+      return null;
+    }
     final String? versionString = loadYaml(fileContent)['version'] as String?;
     return versionString == null ? null : Version.parse(versionString);
   }
@@ -72,8 +81,9 @@ class GitVersionFinder {
     io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
         <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
         throwOnError: false);
-    if (baseShaFromMergeBase.stderr != null ||
-        baseShaFromMergeBase.stdout == null) {
+    final String stdout = (baseShaFromMergeBase.stdout as String? ?? '').trim();
+    final String stderr = (baseShaFromMergeBase.stdout as String? ?? '').trim();
+    if (stderr.isNotEmpty || stdout.isEmpty) {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
     }

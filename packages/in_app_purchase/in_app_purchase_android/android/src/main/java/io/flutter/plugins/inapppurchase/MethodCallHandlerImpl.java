@@ -110,10 +110,7 @@ class MethodCallHandlerImpl
         isReady(result);
         break;
       case InAppPurchasePlugin.MethodNames.START_CONNECTION:
-        startConnection(
-            (int) call.argument("handle"),
-            (boolean) call.argument("enablePendingPurchases"),
-            result);
+        startConnection((int) call.argument("handle"), result);
         break;
       case InAppPurchasePlugin.MethodNames.END_CONNECTION:
         endConnection(result);
@@ -319,12 +316,9 @@ class MethodCallHandlerImpl
         });
   }
 
-  private void startConnection(
-      final int handle, final boolean enablePendingPurchases, final MethodChannel.Result result) {
+  private void startConnection(final int handle, final MethodChannel.Result result) {
     if (billingClient == null) {
-      billingClient =
-          billingClientFactory.createBillingClient(
-              applicationContext, methodChannel, enablePendingPurchases);
+      billingClient = billingClientFactory.createBillingClient(applicationContext, methodChannel);
     }
 
     billingClient.startConnection(

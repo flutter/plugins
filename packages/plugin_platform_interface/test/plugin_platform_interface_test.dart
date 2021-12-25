@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:test/test.dart';
 
 class SamplePluginPlatform extends PlatformInterface {
   SamplePluginPlatform() : super(token: _token);

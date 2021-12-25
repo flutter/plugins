@@ -16,6 +16,7 @@ const Set<String> _codeFileExtensions = <String>{
   '.h',
   '.html',
   '.java',
+  '.kt',
   '.m',
   '.mm',
   '.swift',
@@ -49,16 +50,24 @@ const Set<String> _ignoredFullBasenameList = <String>{
 // When adding license regexes here, include the copyright info to ensure that
 // any new additions are flagged for added scrutiny in review.
 final List<RegExp> _thirdPartyLicenseBlockRegexes = <RegExp>[
-// Third-party code used in url_launcher_web.
+  // Third-party code used in url_launcher_web.
   RegExp(
-      r'^// Copyright 2017 Workiva Inc\..*'
-      r'^// Licensed under the Apache License, Version 2\.0',
-      multiLine: true,
-      dotAll: true),
+    r'^// Copyright 2017 Workiva Inc\..*'
+    r'^// Licensed under the Apache License, Version 2\.0',
+    multiLine: true,
+    dotAll: true,
+  ),
+  // Third-party code used in google_maps_flutter_web.
+  RegExp(
+    r'^// The MIT License [^C]+ Copyright \(c\) 2008 Krasimir Tsonev',
+    multiLine: true,
+  ),
   // bsdiff in flutter/packages.
-  RegExp(r'// Copyright 2003-2005 Colin Percival\. All rights reserved\.\n'
-      r'// Use of this source code is governed by a BSD-style license that can be\n'
-      r'// found in the LICENSE file\.\n'),
+  RegExp(
+    r'// Copyright 2003-2005 Colin Percival\. All rights reserved\.\n'
+    r'// Use of this source code is governed by a BSD-style license that can be\n'
+    r'// found in the LICENSE file\.\n',
+  ),
 ];
 
 // The exact format of the BSD license that our license files should contain.
@@ -197,7 +206,10 @@ class LicenseCheckCommand extends PluginCommand {
 
     for (final File file in codeFiles) {
       print('Checking ${file.path}');
-      final String content = await file.readAsString();
+      // On Windows, git may auto-convert line endings on checkout; this should
+      // still pass since they will be converted back on commit.
+      final String content =
+          (await file.readAsString()).replaceAll('\r\n', '\n');
 
       final String firstParyLicense =
           firstPartyLicenseBlockByExtension[p.extension(file.path)] ??
@@ -235,7 +247,10 @@ class LicenseCheckCommand extends PluginCommand {
 
     for (final File file in files) {
       print('Checking ${file.path}');
-      if (!file.readAsStringSync().contains(_fullBsdLicenseText)) {
+      // On Windows, git may auto-convert line endings on checkout; this should
+      // still pass since they will be converted back on commit.
+      final String contents = file.readAsStringSync().replaceAll('\r\n', '\n');
+      if (!contents.contains(_fullBsdLicenseText)) {
         incorrectLicenseFiles.add(file);
       }
     }

@@ -77,10 +77,17 @@ class PublishCheckCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final _PublishCheckResult? result = await _passesPublishCheck(package);
+    _PublishCheckResult? result = await _passesPublishCheck(package);
     if (result == null) {
       return PackageResult.skip('Package is marked as unpublishable.');
     }
+    if (!_passesAuthorsCheck(package)) {
+      _printImportantStatusMessage(
+          'No AUTHORS file found. Packages must include an AUTHORS file.',
+          isError: true);
+      result = _PublishCheckResult.error;
+    }
+
     if (result.index > _overallResult.index) {
       _overallResult = result;
     }
@@ -116,13 +123,12 @@ class PublishCheckCommand extends PackageLoopingCommand {
   }
 
   Pubspec? _tryParsePubspec(RepositoryPackage package) {
-    final File pubspecFile = package.pubspecFile;
-
     try {
-      return Pubspec.parse(pubspecFile.readAsStringSync());
+      return package.parsePubspec();
     } on Exception catch (exception) {
       print(
-        'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}',
+        'Failed to parse `pubspec.yaml` at ${package.pubspecFile.path}: '
+        '$exception',
       );
       return null;
     }
@@ -189,7 +195,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
     final String packageName = package.directory.basename;
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
-      print('no pubspec');
+      print('No valid pubspec found.');
       return _PublishCheckResult.error;
     } else if (pubspec.publishTo == 'none') {
       return null;
@@ -237,6 +243,16 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       case PubVersionFinderResult.noPackageFound:
         return _PublishCheckResult.needsPublishing;
     }
+  }
+
+  bool _passesAuthorsCheck(RepositoryPackage package) {
+    final List<String> pathComponents =
+        package.directory.fileSystem.path.split(package.directory.path);
+    if (pathComponents.contains('third_party')) {
+      // Third-party packages aren't required to have an AUTHORS file.
+      return true;
+    }
+    return package.directory.childFile('AUTHORS').existsSync();
   }
 
   void _printImportantStatusMessage(String message, {required bool isError}) {

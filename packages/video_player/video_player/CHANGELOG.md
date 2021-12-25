@@ -1,6 +1,57 @@
-## 2.2.0
+## 2.2.11
 
 * Add `allowBackgroundPlayback` to `VideoPlayerOptions`
+
+## 2.2.10
+
+* iOS: Updates texture on `seekTo`.
+
+## 2.2.9
+
+* Adds compatibility with `video_player_platform_interface` 5.0, which does not
+  include non-dev test dependencies.
+
+## 2.2.8
+
+* Changes the way the `VideoPlayerPlatform` instance is cached in the
+  controller, so that it's no longer impossible to change after the first use.
+* Updates unit tests to be self-contained.
+* Fixes integration tests.
+* Updates Android compileSdkVersion to 31.
+* Fixes a flaky integration test.
+
+## 2.2.7
+
+* Fixes a regression where dragging a [VideoProgressIndicator] while playing
+  would restart playback from the start of the video.
+
+## 2.2.6
+
+* Initialize player when size and duration become available on iOS
+
+## 2.2.5
+
+* Support to closed caption WebVTT format added.
+
+## 2.2.4
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 2.2.3
+
+* Fixed empty caption text still showing the caption widget.
+
+## 2.2.2
+
+* Fix a disposed `VideoPlayerController` throwing an exception when being replaced in the `VideoPlayer`.
+
+## 2.2.1
+
+* Specify Java 8 for Android build.
+
+## 2.2.0
+
+* Add `contentUri` based VideoPlayerController.
 
 ## 2.1.15
 

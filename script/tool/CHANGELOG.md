@@ -1,3 +1,51 @@
+## NEXT
+
+- Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+- Adds a `make-deps-path-based` command to convert inter-repo package
+  dependencies to path-based dependencies.
+- Adds a (hidden) `--run-on-dirty-packages` flag for use with
+  `make-deps-path-based` in CI.
+- `--packages` now allows using a federated plugin's package as a target without
+  fully specifying it (if it is not the same as the plugin's name). E.g.,
+  `--packages=path_provide_ios` now works.
+- `--run-on-changed-packages` now includes only the changed packages in a
+  federated plugin, not all packages in that plugin.
+- Fix `federation-safety-check` handling of plugin deletion, and of top-level
+  files in unfederated plugins whose names match federated plugin heuristics
+  (e.g., `packages/foo/foo_android.iml`).
+- Add an auto-retry for failed Firebase Test Lab tests as a short-term patch
+  for flake issues.
+
+## 0.7.3
+
+- `native-test` now builds unit tests before running them on Windows and Linux,
+  matching the behavior of other platforms.
+- Adds `--log-timing` to add timing information to package headers in looping
+  commands.
+- Adds a `--check-for-missing-changes` flag to `version-check` that requires
+  version updates (except for recognized exemptions) and CHANGELOG changes when
+  modifying packages, unless the PR description explains why it's not needed.
+
+## 0.7.2
+
+- Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
+- `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
+  have unit tests, rather than skipping them.
+- Added a new `federation-safety-check` command to help catch changes to
+  federated packages that have been done in such a way that they will pass in
+  CI, but fail once the change is landed and published.
+- `publish-check` now validates that there is an `AUTHORS` file.
+- Added flags to `version-check` to allow overriding the platform interface
+  major version change restriction.
+- Improved error handling and error messages in CHANGELOG version checks.
+- `license-check` now validates Kotlin files.
+- `pubspec-check` now checks that the description is of the pub-recommended
+  length.
+- Fix `license-check` when run on Windows with line ending conversion enabled.
+- Fixed `pubspec-check` on Windows.
+- Add support for `main` as a primary branch. `master` continues to work for
+  compatibility.
+
 ## 0.7.1
 
 - Add support for `.pluginToolsConfig.yaml` in the `build-examples` command.

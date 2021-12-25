@@ -1,6 +1,6 @@
 # google\_sign\_in\_web
 
-The web implementation of [google_sign_in](https://pub.dev/google_sign_in/google_sign_in)
+The web implementation of [google_sign_in](https://pub.dev/packages/google_sign_in)
 
 ## Usage
 

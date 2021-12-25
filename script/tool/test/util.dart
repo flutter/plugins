@@ -126,6 +126,7 @@ Directory createFakePackage(
 ## $version
   * Some changes.
   ''');
+  createFakeAuthors(packageDirectory);
 
   if (examples.length == 1) {
     final Directory exampleDir = packageDirectory.childDirectory(examples.first)
@@ -206,6 +207,12 @@ publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being 
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
+}
+
+void createFakeAuthors(Directory parent) {
+  final File authorsFile = parent.childFile('AUTHORS');
+  authorsFile.createSync();
+  authorsFile.writeAsStringSync('Google Inc.');
 }
 
 String _pluginPlatformSection(

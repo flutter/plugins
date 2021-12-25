@@ -147,6 +147,8 @@ class Marker implements MapsObject {
     this.visible = true,
     this.zIndex = 0.0,
     this.onTap,
+    this.onDrag,
+    this.onDragStart,
     this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
@@ -207,8 +209,14 @@ class Marker implements MapsObject {
   /// Callbacks to receive tap events for markers placed on this map.
   final VoidCallback? onTap;
 
+  /// Signature reporting the new [LatLng] at the start of a drag event.
+  final ValueChanged<LatLng>? onDragStart;
+
   /// Signature reporting the new [LatLng] at the end of a drag event.
   final ValueChanged<LatLng>? onDragEnd;
+
+  /// Signature reporting the new [LatLng] during the drag event.
+  final ValueChanged<LatLng>? onDrag;
 
   /// Creates a new [Marker] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
@@ -225,6 +233,8 @@ class Marker implements MapsObject {
     bool? visibleParam,
     double? zIndexParam,
     VoidCallback? onTapParam,
+    ValueChanged<LatLng>? onDragStartParam,
+    ValueChanged<LatLng>? onDragParam,
     ValueChanged<LatLng>? onDragEndParam,
   }) {
     return Marker(
@@ -241,6 +251,8 @@ class Marker implements MapsObject {
       visible: visibleParam ?? visible,
       zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
+      onDragStart: onDragStartParam ?? onDragStart,
+      onDrag: onDragParam ?? onDrag,
       onDragEnd: onDragEndParam ?? onDragEnd,
     );
   }
@@ -300,6 +312,7 @@ class Marker implements MapsObject {
     return 'Marker{markerId: $markerId, alpha: $alpha, anchor: $anchor, '
         'consumeTapEvents: $consumeTapEvents, draggable: $draggable, flat: $flat, '
         'icon: $icon, infoWindow: $infoWindow, position: $position, rotation: $rotation, '
-        'visible: $visible, zIndex: $zIndex, onTap: $onTap}';
+        'visible: $visible, zIndex: $zIndex, onTap: $onTap, onDragStart: $onDragStart, '
+        'onDrag: $onDrag, onDragEnd: $onDragEnd}';
   }
 }

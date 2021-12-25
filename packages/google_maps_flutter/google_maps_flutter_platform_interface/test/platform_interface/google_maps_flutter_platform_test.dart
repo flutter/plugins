@@ -16,10 +16,13 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Store the initial instance before any tests change it.
+  final GoogleMapsFlutterPlatform initialInstance =
+      GoogleMapsFlutterPlatform.instance;
+
   group('$GoogleMapsFlutterPlatform', () {
     test('$MethodChannelGoogleMapsFlutter() is the default instance', () {
-      expect(GoogleMapsFlutterPlatform.instance,
-          isInstanceOf<MethodChannelGoogleMapsFlutter>());
+      expect(initialInstance, isInstanceOf<MethodChannelGoogleMapsFlutter>());
     });
 
     test('Cannot be implemented with `implements`', () {

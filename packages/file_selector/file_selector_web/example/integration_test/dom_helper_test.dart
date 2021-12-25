@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:html';
+
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:file_selector_web/src/dom_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:file_selector_web/src/dom_helper.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 void main() {
   group('dom_helper', () {
@@ -15,7 +16,7 @@ void main() {
     late FileUploadInputElement input;
 
     FileList? createFileList(List<File> files) {
-      final dataTransfer = DataTransfer();
+      final DataTransfer dataTransfer = DataTransfer();
       files.forEach(dataTransfer.items!.add);
       return dataTransfer.files as FileList?;
     }
@@ -31,15 +32,15 @@ void main() {
     });
 
     group('getFiles', () {
-      final mockFile1 = File(['123456'], 'file1.txt');
-      final mockFile2 = File([], 'file2.txt');
+      final File mockFile1 = File(<Object>['123456'], 'file1.txt');
+      final File mockFile2 = File(<Object>[], 'file2.txt');
 
       testWidgets('works', (_) async {
         final Future<List<XFile>> futureFiles = domHelper.getFiles(
           input: input,
         );
 
-        setFilesAndTriggerChange([mockFile1, mockFile2]);
+        setFilesAndTriggerChange(<File>[mockFile1, mockFile2]);
 
         final List<XFile> files = await futureFiles;
 
@@ -62,7 +63,7 @@ void main() {
 
         // It should work the first time
         futureFiles = domHelper.getFiles(input: input);
-        setFilesAndTriggerChange([mockFile1]);
+        setFilesAndTriggerChange(<File>[mockFile1]);
 
         files = await futureFiles;
 
@@ -71,7 +72,7 @@ void main() {
 
         // The same input should work more than once
         futureFiles = domHelper.getFiles(input: input);
-        setFilesAndTriggerChange([mockFile2]);
+        setFilesAndTriggerChange(<File>[mockFile2]);
 
         files = await futureFiles;
 
@@ -80,14 +81,14 @@ void main() {
       });
 
       testWidgets('sets the <input /> attributes and clicks it', (_) async {
-        final accept = '.jpg,.png';
-        final multiple = true;
+        const String accept = '.jpg,.png';
+        const bool multiple = true;
         bool wasClicked = false;
 
         //ignore: unawaited_futures
         input.onClick.first.then((_) => wasClicked = true);
 
-        final futureFile = domHelper.getFiles(
+        final Future<List<XFile>> futureFile = domHelper.getFiles(
           accept: accept,
           multiple: multiple,
           input: input,
@@ -103,7 +104,7 @@ void main() {
               'The <input /> should be clicked otherwise no dialog will be shown',
         );
 
-        setFilesAndTriggerChange([]);
+        setFilesAndTriggerChange(<File>[]);
         await futureFile;
 
         // It should be already removed from the DOM after the file is resolved.

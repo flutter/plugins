@@ -113,6 +113,13 @@ void main() {
         );
       });
 
+      testWidgets('videoRecordingNotStarted', (tester) async {
+        expect(
+          CameraErrorCode.videoRecordingNotStarted.toString(),
+          equals('videoRecordingNotStarted'),
+        );
+      });
+
       testWidgets('unknown', (tester) async {
         expect(
           CameraErrorCode.unknown.toString(),

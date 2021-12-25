@@ -257,13 +257,19 @@ void main() {
       });
 
       testWidgets('renders initial geometry', (WidgetTester tester) async {
-        controller = _createController(circles: <Circle>{
-          Circle(circleId: CircleId('circle-1'))
-        }, markers: <Marker>{
+        controller = _createController(circles: {
+          Circle(
+            circleId: CircleId('circle-1'),
+            zIndex: 1234,
+          ),
+        }, markers: {
           Marker(
-              markerId: MarkerId('marker-1'),
-              infoWindow: InfoWindow(
-                  title: 'title for test', snippet: 'snippet for test'))
+            markerId: MarkerId('marker-1'),
+            infoWindow: InfoWindow(
+              title: 'title for test',
+              snippet: 'snippet for test',
+            ),
+          ),
         }, polygons: {
           Polygon(polygonId: PolygonId('polygon-1'), points: [
             LatLng(43.355114, -5.851333),
@@ -315,6 +321,7 @@ void main() {
             .captured[0] as Set<Polyline>;
 
         expect(capturedCircles.first.circleId.value, 'circle-1');
+        expect(capturedCircles.first.zIndex, 1234);
         expect(capturedMarkers.first.markerId.value, 'marker-1');
         expect(capturedMarkers.first.infoWindow.snippet, 'snippet for test');
         expect(capturedMarkers.first.infoWindow.title, 'title for test');

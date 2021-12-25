@@ -68,6 +68,17 @@ void main() {
           throwsUnimplementedError);
     });
 
+    testWidgets('cannot create from content URI', (WidgetTester tester) async {
+      expect(
+          VideoPlayerPlatform.instance.create(
+            DataSource(
+              sourceType: DataSourceType.contentUri,
+              uri: 'content://video',
+            ),
+          ),
+          throwsUnimplementedError);
+    });
+
     testWidgets('can dispose', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.dispose(await textureId), completes);
     });

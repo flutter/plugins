@@ -8,11 +8,9 @@ import android.app.Activity;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.view.TextureRegistry;
@@ -53,8 +51,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
         registrar.activity(),
         registrar.messenger(),
         registrar::addRequestPermissionsResultListener,
-        registrar.view(),
-        null);
+        registrar.view());
   }
 
   @Override
@@ -73,8 +70,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
         binding.getActivity(),
         flutterPluginBinding.getBinaryMessenger(),
         binding::addRequestPermissionsResultListener,
-        flutterPluginBinding.getTextureRegistry(),
-        FlutterLifecycleAdapter.getActivityLifecycle(binding));
+        flutterPluginBinding.getTextureRegistry());
   }
 
   @Override
@@ -100,8 +96,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
       Activity activity,
       BinaryMessenger messenger,
       PermissionsRegistry permissionsRegistry,
-      TextureRegistry textureRegistry,
-      @Nullable Lifecycle lifecycle) {
+      TextureRegistry textureRegistry) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // If the sdk is less than 21 (min sdk for Camera2) we don't register the plugin.
       return;
@@ -109,11 +104,6 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
     methodCallHandler =
         new MethodCallHandlerImpl(
-            activity,
-            messenger,
-            new CameraPermissions(),
-            permissionsRegistry,
-            textureRegistry,
-            lifecycle);
+            activity, messenger, new CameraPermissions(), permissionsRegistry, textureRegistry);
   }
 }

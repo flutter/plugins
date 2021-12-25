@@ -68,6 +68,10 @@ class CameraErrorCode {
   static const CameraErrorCode notStarted =
       CameraErrorCode._('cameraNotStarted');
 
+  /// The video recording was not started.
+  static const CameraErrorCode videoRecordingNotStarted =
+      CameraErrorCode._('videoRecordingNotStarted');
+
   /// An unknown camera error.
   static const CameraErrorCode unknown = CameraErrorCode._('cameraUnknown');
 

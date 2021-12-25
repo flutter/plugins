@@ -4,11 +4,12 @@
 
 import 'dart:html';
 import 'dart:typed_data';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
+
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_web/file_selector_web.dart';
 import 'package:file_selector_web/src/dom_helper.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
   group('FileSelectorWeb', () {
@@ -16,23 +17,25 @@ void main() {
 
     group('openFile', () {
       testWidgets('works', (WidgetTester _) async {
-        final mockFile = createXFile('1001', 'identity.png');
+        final XFile mockFile = createXFile('1001', 'identity.png');
 
-        final mockDomHelper = MockDomHelper()
-          ..setFiles([mockFile])
+        final MockDomHelper mockDomHelper = MockDomHelper()
+          ..setFiles(<XFile>[mockFile])
           ..expectAccept('.jpg,.jpeg,image/png,image/*')
           ..expectMultiple(false);
 
-        final plugin = FileSelectorWeb(domHelper: mockDomHelper);
+        final FileSelectorWeb plugin =
+            FileSelectorWeb(domHelper: mockDomHelper);
 
-        final typeGroup = XTypeGroup(
+        final XTypeGroup typeGroup = XTypeGroup(
           label: 'images',
-          extensions: ['jpg', 'jpeg'],
-          mimeTypes: ['image/png'],
-          webWildCards: ['image/*'],
+          extensions: <String>['jpg', 'jpeg'],
+          mimeTypes: <String>['image/png'],
+          webWildCards: <String>['image/*'],
         );
 
-        final file = await plugin.openFile(acceptedTypeGroups: [typeGroup]);
+        final XFile file =
+            await plugin.openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
 
         expect(file.name, mockFile.name);
         expect(await file.length(), 4);
@@ -43,22 +46,24 @@ void main() {
 
     group('openFiles', () {
       testWidgets('works', (WidgetTester _) async {
-        final mockFile1 = createXFile('123456', 'file1.txt');
-        final mockFile2 = createXFile('', 'file2.txt');
+        final XFile mockFile1 = createXFile('123456', 'file1.txt');
+        final XFile mockFile2 = createXFile('', 'file2.txt');
 
-        final mockDomHelper = MockDomHelper()
-          ..setFiles([mockFile1, mockFile2])
+        final MockDomHelper mockDomHelper = MockDomHelper()
+          ..setFiles(<XFile>[mockFile1, mockFile2])
           ..expectAccept('.txt')
           ..expectMultiple(true);
 
-        final plugin = FileSelectorWeb(domHelper: mockDomHelper);
+        final FileSelectorWeb plugin =
+            FileSelectorWeb(domHelper: mockDomHelper);
 
-        final typeGroup = XTypeGroup(
+        final XTypeGroup typeGroup = XTypeGroup(
           label: 'files',
-          extensions: ['.txt'],
+          extensions: <String>['.txt'],
         );
 
-        final files = await plugin.openFiles(acceptedTypeGroups: [typeGroup]);
+        final List<XFile> files =
+            await plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
 
         expect(files.length, 2);
 
@@ -76,8 +81,8 @@ void main() {
 
     group('getSavePath', () {
       testWidgets('returns non-null', (WidgetTester _) async {
-        final plugin = FileSelectorWeb();
-        final savePath = plugin.getSavePath();
+        final FileSelectorWeb plugin = FileSelectorWeb();
+        final Future<String?> savePath = plugin.getSavePath();
         expect(await savePath, isNotNull);
       });
     });
@@ -99,7 +104,7 @@ class MockDomHelper implements DomHelper {
         reason: 'Expected "accept" value does not match.');
     expect(multiple, _expectedMultiple,
         reason: 'Expected "multiple" value does not match.');
-    return Future.value(_files);
+    return Future<List<XFile>>.value(_files);
   }
 
   void setFiles(List<XFile> files) {
@@ -116,6 +121,6 @@ class MockDomHelper implements DomHelper {
 }
 
 XFile createXFile(String content, String name) {
-  final data = Uint8List.fromList(content.codeUnits);
+  final Uint8List data = Uint8List.fromList(content.codeUnits);
   return XFile.fromData(data, name: name, lastModified: DateTime.now());
 }

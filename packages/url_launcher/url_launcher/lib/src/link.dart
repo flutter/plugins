@@ -43,26 +43,30 @@ Future<ByteData> Function(Object?, String) pushRouteToFrameworkFunction =
 /// );
 /// ```
 class Link extends StatelessWidget implements LinkInfo {
-  /// Called at build time to construct the widget tree under the link.
-  final LinkWidgetBuilder builder;
-
-  /// The destination that this link leads to.
-  final Uri? uri;
-
-  /// The target indicating where to open the link.
-  final LinkTarget target;
-
-  /// Whether the link is disabled or not.
-  bool get isDisabled => uri == null;
-
   /// Creates a widget that renders a real link on the web, and uses WebViews in
   /// native platforms to open links.
-  Link({
+  const Link({
     Key? key,
     required this.uri,
     this.target = LinkTarget.defaultTarget,
     required this.builder,
   }) : super(key: key);
+
+  /// Called at build time to construct the widget tree under the link.
+  @override
+  final LinkWidgetBuilder builder;
+
+  /// The destination that this link leads to.
+  @override
+  final Uri? uri;
+
+  /// The target indicating where to open the link.
+  @override
+  final LinkTarget target;
+
+  /// Whether the link is disabled or not.
+  @override
+  bool get isDisabled => uri == null;
 
   LinkDelegate get _effectiveDelegate {
     return UrlLauncherPlatform.instance.linkDelegate ??
@@ -94,8 +98,12 @@ class DefaultLinkDelegate extends StatelessWidget {
   final LinkInfo link;
 
   bool get _useWebView {
-    if (link.target == LinkTarget.self) return true;
-    if (link.target == LinkTarget.blank) return false;
+    if (link.target == LinkTarget.self) {
+      return true;
+    }
+    if (link.target == LinkTarget.blank) {
+      return false;
+    }
     return false;
   }
 

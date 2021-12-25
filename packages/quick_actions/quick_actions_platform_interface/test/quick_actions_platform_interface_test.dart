@@ -5,13 +5,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quick_actions_platform_interface/method_channel/method_channel_quick_actions.dart';
 import 'package:quick_actions_platform_interface/platform_interface/quick_actions_platform.dart';
+import 'package:quick_actions_platform_interface/types/types.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Store the initial instance before any tests change it.
+  final QuickActionsPlatform initialInstance = QuickActionsPlatform.instance;
+
   group('$QuickActionsPlatform', () {
     test('$MethodChannelQuickActions is the default instance', () {
-      expect(QuickActionsPlatform.instance, isA<MethodChannelQuickActions>());
+      expect(initialInstance, isA<MethodChannelQuickActions>());
     });
 
     test('Cannot be implemented with `implements`', () {
@@ -28,11 +32,12 @@ void main() {
         'Default implementation of initialize() should throw unimplemented error',
         () {
       // Arrange
-      final QuickActionsPlatform = ExtendsQuickActionsPlatform();
+      final ExtendsQuickActionsPlatform quickActionsPlatform =
+          ExtendsQuickActionsPlatform();
 
       // Act & Assert
       expect(
-        () => QuickActionsPlatform.initialize((type) {}),
+        () => quickActionsPlatform.initialize((String type) {}),
         throwsUnimplementedError,
       );
     });
@@ -41,11 +46,12 @@ void main() {
         'Default implementation of setShortcutItems() should throw unimplemented error',
         () {
       // Arrange
-      final QuickActionsPlatform = ExtendsQuickActionsPlatform();
+      final ExtendsQuickActionsPlatform quickActionsPlatform =
+          ExtendsQuickActionsPlatform();
 
       // Act & Assert
       expect(
-        () => QuickActionsPlatform.setShortcutItems([]),
+        () => quickActionsPlatform.setShortcutItems(<ShortcutItem>[]),
         throwsUnimplementedError,
       );
     });
@@ -54,11 +60,12 @@ void main() {
         'Default implementation of clearShortcutItems() should throw unimplemented error',
         () {
       // Arrange
-      final QuickActionsPlatform = ExtendsQuickActionsPlatform();
+      final ExtendsQuickActionsPlatform quickActionsPlatform =
+          ExtendsQuickActionsPlatform();
 
       // Act & Assert
       expect(
-        () => QuickActionsPlatform.clearShortcutItems(),
+        () => quickActionsPlatform.clearShortcutItems(),
         throwsUnimplementedError,
       );
     });

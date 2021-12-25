@@ -12,7 +12,7 @@ First, add `video_player` as a [dependency in your pubspec.yaml file](https://fl
 
 ### iOS
 
-Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+This plugin requires iOS 9.0 or higher. Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
 ```xml
 <key>NSAppTransportSecurity</key>

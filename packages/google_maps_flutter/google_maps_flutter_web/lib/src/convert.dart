@@ -264,7 +264,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
 }
 
 gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
-  final populationOptions = gmaps.CircleOptions()
+  final circleOptions = gmaps.CircleOptions()
     ..strokeColor = _getCssColor(circle.strokeColor)
     ..strokeOpacity = _getCssOpacity(circle.strokeColor)
     ..strokeWeight = circle.strokeWidth
@@ -272,8 +272,9 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
     ..fillOpacity = _getCssOpacity(circle.fillColor)
     ..center = gmaps.LatLng(circle.center.latitude, circle.center.longitude)
     ..radius = circle.radius
-    ..visible = circle.visible;
-  return populationOptions;
+    ..visible = circle.visible
+    ..zIndex = circle.zIndex;
+  return circleOptions;
 }
 
 gmaps.PolygonOptions _polygonOptionsFromPolygon(

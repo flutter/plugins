@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/method_channel_url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
@@ -14,10 +13,12 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Store the initial instance before any tests change it.
+  final UrlLauncherPlatform initialInstance = UrlLauncherPlatform.instance;
+
   group('$UrlLauncherPlatform', () {
     test('$MethodChannelUrlLauncher() is the default instance', () {
-      expect(UrlLauncherPlatform.instance,
-          isInstanceOf<MethodChannelUrlLauncher>());
+      expect(initialInstance, isInstanceOf<MethodChannelUrlLauncher>());
     });
 
     test('Cannot be implemented with `implements`', () {
@@ -67,7 +68,7 @@ void main() {
     });
 
     test('canLaunch should return false if platform returns null', () async {
-      final canLaunch = await launcher.canLaunch('http://example.com/');
+      final bool canLaunch = await launcher.canLaunch('http://example.com/');
 
       expect(canLaunch, false);
     });
@@ -281,7 +282,7 @@ void main() {
     });
 
     test('launch should return false if platform returns null', () async {
-      final launched = await launcher.launch(
+      final bool launched = await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
         useWebView: false,

@@ -1,3 +1,39 @@
+##  0.9.4+5
+
+* Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
+* Fixes integration tests.
+
+## 0.9.4+4
+
+* Change Android compileSdkVersion to 31.
+* Remove usages of deprecated Android API `CamcorderProfile`.
+* Update gradle version to 7.0.2 on Android.
+
+## 0.9.4+3
+
+* Fix registerTexture and result being called on background thread on iOS.
+
+## 0.9.4+2
+
+* Updated package description;
+* Refactor unit test on iOS to make it compatible with new restrictions in Xcode 13 which only supports the use of the `XCUIDevice` in Xcode UI tests.
+
+## 0.9.4+1
+
+* Fixed Android implementation throwing IllegalStateException when switching to a different activity.
+
+## 0.9.4
+
+* Add web support by endorsing `package:camera_web`.
+
+## 0.9.3+1
+
+* Remove iOS 9 availability check around ultra high capture sessions.
+
+## 0.9.3
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
 ## 0.9.2+2
 
 * Ensure that setting the exposure offset returns the new offset value on Android.

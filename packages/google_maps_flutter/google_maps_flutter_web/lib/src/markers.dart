@@ -62,6 +62,12 @@ class MarkersController extends GeometryController {
         this.showMarkerInfoWindow(marker.markerId);
         _onMarkerTap(marker.markerId);
       },
+      onDragStart: (gmaps.LatLng latLng) {
+        _onMarkerDragStart(marker.markerId, latLng);
+      },
+      onDrag: (gmaps.LatLng latLng) {
+        _onMarkerDrag(marker.markerId, latLng);
+      },
       onDragEnd: (gmaps.LatLng latLng) {
         _onMarkerDragEnd(marker.markerId, latLng);
       },
@@ -138,6 +144,22 @@ class MarkersController extends GeometryController {
 
   void _onInfoWindowTap(MarkerId markerId) {
     _streamController.add(InfoWindowTapEvent(mapId, markerId));
+  }
+
+  void _onMarkerDragStart(MarkerId markerId, gmaps.LatLng latLng) {
+    _streamController.add(MarkerDragStartEvent(
+      mapId,
+      _gmLatLngToLatLng(latLng),
+      markerId,
+    ));
+  }
+
+  void _onMarkerDrag(MarkerId markerId, gmaps.LatLng latLng) {
+    _streamController.add(MarkerDragEvent(
+      mapId,
+      _gmLatLngToLatLng(latLng),
+      markerId,
+    ));
   }
 
   void _onMarkerDragEnd(MarkerId markerId, gmaps.LatLng latLng) {

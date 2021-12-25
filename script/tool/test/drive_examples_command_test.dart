@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
@@ -60,7 +61,8 @@ void main() {
       final String output =
           '''${includeBanner ? updateBanner : ''}[${devices.join(',')}]''';
 
-      final MockProcess mockDevicesProcess = MockProcess(stdout: output);
+      final MockProcess mockDevicesProcess =
+          MockProcess(stdout: output, stdoutEncoding: utf8);
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[mockDevicesProcess];

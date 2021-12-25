@@ -230,6 +230,16 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Stream<MarkerDragStartEvent> onMarkerDragStart({required int mapId}) {
+    return mapEventStreamController.stream.whereType<MarkerDragStartEvent>();
+  }
+
+  @override
+  Stream<MarkerDragEvent> onMarkerDrag({required int mapId}) {
+    return mapEventStreamController.stream.whereType<MarkerDragEvent>();
+  }
+
+  @override
   Stream<MarkerDragEndEvent> onMarkerDragEnd({required int mapId}) {
     return mapEventStreamController.stream.whereType<MarkerDragEndEvent>();
   }

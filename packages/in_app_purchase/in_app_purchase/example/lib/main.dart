@@ -4,24 +4,16 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'consumable_store.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    // For play billing library 2.0 on Android, it is mandatory to call
-    // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
-    // as part of initializing the app.
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-  }
 
   runApp(_MyApp());
 }
@@ -88,7 +80,7 @@ class _MyAppState extends State<_MyApp> {
 
     if (Platform.isIOS) {
       var iosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
     }
 
@@ -137,7 +129,7 @@ class _MyAppState extends State<_MyApp> {
   void dispose() {
     if (Platform.isIOS) {
       var iosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       iosPlatformAddition.setDelegate(null);
     }
     _subscription.cancel();
@@ -429,7 +421,8 @@ class _MyAppState extends State<_MyApp> {
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           handleError(purchaseDetails.error!);
-        } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+            purchaseDetails.status == PurchaseStatus.restored) {
           bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {
             deliverProduct(purchaseDetails);
@@ -476,9 +469,9 @@ class _MyAppState extends State<_MyApp> {
       }
     }
     if (Platform.isIOS) {
-      var iapIosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
-      await iapIosPlatformAddition.showPriceConsentIfNeeded();
+      var iapStoreKitPlatformAddition = _inAppPurchase
+          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+      await iapStoreKitPlatformAddition.showPriceConsentIfNeeded();
     }
   }
 

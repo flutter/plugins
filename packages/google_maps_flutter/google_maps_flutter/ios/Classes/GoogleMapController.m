@@ -509,6 +509,16 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   [_markersController onMarkerDragEnd:markerId coordinate:marker.position];
 }
 
+- (void)mapView:(GMSMapView*)mapView didStartDraggingMarker:(GMSMarker*)marker {
+  NSString* markerId = marker.userData[0];
+  [_markersController onMarkerDragStart:markerId coordinate:marker.position];
+}
+
+- (void)mapView:(GMSMapView*)mapView didDragMarker:(GMSMarker*)marker {
+  NSString* markerId = marker.userData[0];
+  [_markersController onMarkerDrag:markerId coordinate:marker.position];
+}
+
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_markersController onInfoWindowTap:markerId];

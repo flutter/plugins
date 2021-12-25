@@ -1,6 +1,18 @@
-## 4.2.0
+## 5.0.1
 
 * Add `allowBackgroundPlayback` to `VideoPlayerOptions`
+
+## 5.0.0
+
+* **BREAKING CHANGES**:
+  * Updates to extending `PlatformInterface`. Removes `isMock`, in favor of the
+    now-standard `MockPlatformInterfaceMixin`.
+  * Removes test.dart from the public interface. Tests in other packages should
+    mock `VideoPlatformInterface` rather than the method channel.
+
+## 4.2.0
+
+* Add `contentUri` to `DataSourceType`.
 
 ## 4.1.0
 
@@ -33,7 +45,7 @@
 
 ## 2.1.0
 
-* Add VideoPlayerOptions with audo mix mode
+* Add VideoPlayerOptions with audio mix mode
 
 ## 2.0.2
 

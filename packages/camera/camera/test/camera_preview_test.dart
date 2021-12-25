@@ -221,7 +221,7 @@ void main() {
 
       debugDefaultTargetPlatformOverride = null;
     });
-  });
+  }, skip: kIsWeb);
 
   testWidgets('when not on Android there should not be a rotated box',
       (WidgetTester tester) async {

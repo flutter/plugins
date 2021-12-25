@@ -304,6 +304,16 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   }
 
   /// A [Marker] has been dragged to a different [LatLng] position.
+  Stream<MarkerDragStartEvent> onMarkerDragStart({required int mapId}) {
+    throw UnimplementedError('onMarkerDragEnd() has not been implemented.');
+  }
+
+  /// A [Marker] has been dragged to a different [LatLng] position.
+  Stream<MarkerDragEvent> onMarkerDrag({required int mapId}) {
+    throw UnimplementedError('onMarkerDragEnd() has not been implemented.');
+  }
+
+  /// A [Marker] has been dragged to a different [LatLng] position.
   Stream<MarkerDragEndEvent> onMarkerDragEnd({required int mapId}) {
     throw UnimplementedError('onMarkerDragEnd() has not been implemented.');
   }

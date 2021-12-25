@@ -9,25 +9,13 @@
 /* Begin PBXBuildFile section */
 		2D92224B1EC342E7007564B0 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D92224A1EC342E7007564B0 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		4E8BDD90E81668641A750C18 /* libPods-RunnerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556D8EFC85341B7D1FDF536D /* libPods-RunnerTests.a */; };
 		66F8BCECCEFF62F4071D2DFC /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12E03CD14DABAA3AD3923183 /* libPods-Runner.a */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		F76AC2092669B6AE0040C8BC /* SharedPreferencesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F76AC2082669B6AE0040C8BC /* SharedPreferencesTests.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		F76AC20B2669B6AE0040C8BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
-			remoteInfo = Runner;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
@@ -63,9 +51,6 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2FC4F1DC78D7C01312F877F /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D896CE48B6CC2EB7D42CB6B6 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
-		F76AC2062669B6AE0040C8BC /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F76AC2082669B6AE0040C8BC /* SharedPreferencesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SharedPreferencesTests.m; sourceTree = "<group>"; };
-		F76AC20A2669B6AE0040C8BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,14 +59,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				66F8BCECCEFF62F4071D2DFC /* libPods-Runner.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F76AC2032669B6AE0040C8BC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4E8BDD90E81668641A750C18 /* libPods-RunnerTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,7 +92,6 @@
 			children = (
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
-				F76AC2072669B6AE0040C8BC /* RunnerTests */,
 				97C146EF1CF9000F007C117D /* Products */,
 				840012C8B5EDBCF56B0E4AC1 /* Pods */,
 				CF3B75C9A7D2FA2A4C99F110 /* Frameworks */,
@@ -126,7 +102,6 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
-				F76AC2062669B6AE0040C8BC /* RunnerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -164,15 +139,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F76AC2072669B6AE0040C8BC /* RunnerTests */ = {
-			isa = PBXGroup;
-			children = (
-				F76AC2082669B6AE0040C8BC /* SharedPreferencesTests.m */,
-				F76AC20A2669B6AE0040C8BC /* Info.plist */,
-			);
-			path = RunnerTests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -197,25 +163,6 @@
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F76AC2052669B6AE0040C8BC /* RunnerTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F76AC20F2669B6AE0040C8BC /* Build configuration list for PBXNativeTarget "RunnerTests" */;
-			buildPhases = (
-				DB9B98025BDEFED85B1B62A7 /* [CP] Check Pods Manifest.lock */,
-				F76AC2022669B6AE0040C8BC /* Sources */,
-				F76AC2032669B6AE0040C8BC /* Frameworks */,
-				F76AC2042669B6AE0040C8BC /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				F76AC20C2669B6AE0040C8BC /* PBXTargetDependency */,
-			);
-			name = RunnerTests;
-			productName = RunnerTests;
-			productReference = F76AC2062669B6AE0040C8BC /* RunnerTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -227,11 +174,6 @@
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
-					};
-					F76AC2052669B6AE0040C8BC = {
-						CreatedOnToolsVersion = 12.5;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 97C146ED1CF9000F007C117D;
 					};
 				};
 			};
@@ -249,7 +191,6 @@
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
-				F76AC2052669B6AE0040C8BC /* RunnerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -263,13 +204,6 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F76AC2042669B6AE0040C8BC /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,28 +256,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DB9B98025BDEFED85B1B62A7 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-RunnerTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -357,23 +269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F76AC2022669B6AE0040C8BC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F76AC2092669B6AE0040C8BC /* SharedPreferencesTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		F76AC20C2669B6AE0040C8BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 97C146ED1CF9000F007C117D /* Runner */;
-			targetProxy = F76AC20B2669B6AE0040C8BC /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
@@ -443,7 +339,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -493,7 +389,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -543,34 +439,6 @@
 			};
 			name = Release;
 		};
-		F76AC20D2669B6AE0040C8BC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2FC4F1DC78D7C01312F877F /* Pods-RunnerTests.debug.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = RunnerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
-			};
-			name = Debug;
-		};
-		F76AC20E2669B6AE0040C8BC /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D896CE48B6CC2EB7D42CB6B6 /* Pods-RunnerTests.release.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = RunnerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -588,15 +456,6 @@
 			buildConfigurations = (
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F76AC20F2669B6AE0040C8BC /* Build configuration list for PBXNativeTarget "RunnerTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F76AC20D2669B6AE0040C8BC /* Debug */,
-				F76AC20E2669B6AE0040C8BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

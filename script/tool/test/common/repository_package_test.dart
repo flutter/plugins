@@ -5,6 +5,7 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:test/test.dart';
 
 import '../util.dart';
@@ -118,6 +119,60 @@ void main() {
           plugin.childDirectory('example').childDirectory('example1').path);
       expect(examples[1].path,
           plugin.childDirectory('example').childDirectory('example2').path);
+    });
+  });
+
+  group('federated plugin queries', () {
+    test('all return false for a simple plugin', () {
+      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
+      expect(RepositoryPackage(plugin).isFederated, false);
+      expect(RepositoryPackage(plugin).isPlatformInterface, false);
+      expect(RepositoryPackage(plugin).isFederated, false);
+    });
+
+    test('handle app-facing packages', () {
+      final Directory plugin =
+          createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
+      expect(RepositoryPackage(plugin).isFederated, true);
+      expect(RepositoryPackage(plugin).isPlatformInterface, false);
+      expect(RepositoryPackage(plugin).isPlatformImplementation, false);
+    });
+
+    test('handle platform interface packages', () {
+      final Directory plugin = createFakePlugin('a_plugin_platform_interface',
+          packagesDir.childDirectory('a_plugin'));
+      expect(RepositoryPackage(plugin).isFederated, true);
+      expect(RepositoryPackage(plugin).isPlatformInterface, true);
+      expect(RepositoryPackage(plugin).isPlatformImplementation, false);
+    });
+
+    test('handle platform implementation packages', () {
+      // A platform interface can end with anything, not just one of the known
+      // platform names, because of cases like webview_flutter_wkwebview.
+      final Directory plugin = createFakePlugin(
+          'a_plugin_foo', packagesDir.childDirectory('a_plugin'));
+      expect(RepositoryPackage(plugin).isFederated, true);
+      expect(RepositoryPackage(plugin).isPlatformInterface, false);
+      expect(RepositoryPackage(plugin).isPlatformImplementation, true);
+    });
+  });
+
+  group('pubspec', () {
+    test('file', () async {
+      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
+
+      final File pubspecFile = RepositoryPackage(plugin).pubspecFile;
+
+      expect(pubspecFile.path, plugin.childFile('pubspec.yaml').path);
+    });
+
+    test('parsing', () async {
+      final Directory plugin = createFakePlugin('a_plugin', packagesDir,
+          examples: <String>['example1', 'example2']);
+
+      final Pubspec pubspec = RepositoryPackage(plugin).parsePubspec();
+
+      expect(pubspec.name, 'a_plugin');
     });
   });
 }

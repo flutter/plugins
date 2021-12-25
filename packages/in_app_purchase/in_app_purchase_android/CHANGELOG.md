@@ -1,3 +1,35 @@
+## 0.2.2
+
+* Fixes the `purchaseStream` incorrectly reporting `PurchaseStatus.error` when user upgrades subscription by deferred proration mode.
+
+## 0.2.1
+
+* Deprecated the `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases()` method and `InAppPurchaseAndroidPlatformAddition.enablePendingPurchase` property. Since Google Play no longer accepts App submissions that don't support pending purchases it is no longer necessary to acknowledge this through code.
+* Updates example app Android compileSdkVersion to 31.
+
+## 0.2.0
+
+* BREAKING CHANGE : Refactor to handle new `PurchaseStatus` named `canceled`. This means developers
+  can distinguish between an error and user cancellation.
+
+## 0.1.6
+
+* Require Dart SDK >= 2.14.
+* Update `json_annotation` dependency to `^4.3.0`.
+
+## 0.1.5+1
+
+* Fix a broken link in the README.
+
+## 0.1.5
+
+* Introduced the `SkuDetailsWrapper.introductoryPriceAmountMicros` field of the correct type (`int`) and deprecated the `SkuDetailsWrapper.introductoryPriceMicros` field.
+* Update dev_dependency `build_runner` to ^2.0.0 and `json_serializable` to ^5.0.2.
+
+## 0.1.4+7
+
+* Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.
+
 ## 0.1.4+6
 
 * Ensure that purchases correctly indicate whether they are acknowledged or not. The `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed.

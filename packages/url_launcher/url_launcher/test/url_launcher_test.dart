@@ -5,11 +5,11 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show PlatformException;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'package:flutter/services.dart' show PlatformException;
 
 import 'mock_url_launcher_platform.dart';
 
@@ -239,7 +239,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())!
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
@@ -268,7 +268,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())!
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
@@ -280,6 +280,42 @@ void main() {
       expect(binding.renderView.automaticSystemUiAdjustment, true);
       await launchResult;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
+    });
+
+    test('open non-parseable url', () async {
+      mock
+        ..setLaunchExpectations(
+          url:
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+          useSafariVC: false,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(
+          await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1'),
+          isTrue);
+    });
+
+    test('cannot open non-parseable url with forceSafariVC: true', () async {
+      expect(
+          () async => await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+              forceSafariVC: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('cannot open non-parseable url with forceWebView: true', () async {
+      expect(
+          () async => await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+              forceWebView: true),
+          throwsA(isA<PlatformException>()));
     });
   });
 }

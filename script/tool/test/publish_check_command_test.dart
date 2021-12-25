@@ -69,12 +69,22 @@ void main() {
       createFakePlugin('plugin_tools_test_package_a', packagesDir);
 
       processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-        MockProcess(exitCode: 1)
+        MockProcess(exitCode: 1, stdout: 'Some error from pub')
       ];
 
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runCapturingPrint(runner, <String>['publish-check']),
-        throwsA(isA<ToolExit>()),
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Some error from pub'),
+          contains('Unable to publish plugin_tools_test_package_a'),
+        ]),
       );
     });
 
@@ -82,8 +92,58 @@ void main() {
       final Directory dir = createFakePlugin('c', packagesDir);
       await dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
-      expect(() => runCapturingPrint(runner, <String>['publish-check']),
-          throwsA(isA<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No valid pubspec found.'),
+        ]),
+      );
+    });
+
+    test('fails if AUTHORS is missing', () async {
+      final Directory package = createFakePackage('a_package', packagesDir);
+      package.childFile('AUTHORS').delete();
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'No AUTHORS file found. Packages must include an AUTHORS file.'),
+        ]),
+      );
+    });
+
+    test('does not require AUTHORS for third-party', () async {
+      final Directory package = createFakePackage(
+          'a_package',
+          packagesDir.parent
+              .childDirectory('third_party')
+              .childDirectory('packages'));
+      package.childFile('AUTHORS').delete();
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['publish-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for a_package'),
+        ]),
+      );
     });
 
     test('pass on prerelease if --allow-pre-release flag is on', () async {
@@ -116,8 +176,21 @@ void main() {
         process,
       ];
 
-      expect(runCapturingPrint(runner, <String>['publish-check']),
-          throwsA(isA<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Packages with an SDK constraint on a pre-release of the Dart SDK'),
+          contains('Unable to publish d'),
+        ]),
+      );
     });
 
     test('Success message on stderr is not printed as an error', () async {
@@ -324,7 +397,7 @@ void main() {
       // aren't controlled by this package, so asserting its exact format would
       // make the test fragile to irrelevant changes in those details.
       expect(output.first, contains(r'''
-    "no pubspec",
+    "No valid pubspec found.",
     "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "url https://pub.dev/packages/no_publish_b.json",
     "no_publish_b.json",
