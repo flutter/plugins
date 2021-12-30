@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_android/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase_android/src/channel.dart';
 import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
 
@@ -29,8 +28,6 @@ void main() {
 
   setUp(() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
-
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
 
     const String debugMessage = 'dummy message';
     final BillingResponse responseCode = BillingResponse.ok;

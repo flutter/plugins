@@ -28,6 +28,7 @@ class GoogleSignInAuthentication {
   String? get accessToken => _data.accessToken;
 
   /// Server auth code used to access Google Login
+  @Deprecated('Use the `GoogleSignInAccount.serverAuthCode` property instead')
   String? get serverAuthCode => _data.serverAuthCode;
 
   @override
@@ -44,6 +45,7 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data.email,
         id = data.id,
         photoUrl = data.photoUrl,
+        serverAuthCode = data.serverAuthCode,
         _idToken = data.idToken {
     assert(id != null);
   }
@@ -67,6 +69,9 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   @override
   final String? photoUrl;
+
+  @override
+  final String? serverAuthCode;
 
   final String? _idToken;
   final GoogleSignIn _googleSignIn;
@@ -97,6 +102,7 @@ class GoogleSignInAccount implements GoogleIdentity {
     if (response.idToken == null) {
       response.idToken = _idToken;
     }
+
     return GoogleSignInAuthentication._(response);
   }
 
@@ -132,11 +138,13 @@ class GoogleSignInAccount implements GoogleIdentity {
         email == otherAccount.email &&
         id == otherAccount.id &&
         photoUrl == otherAccount.photoUrl &&
+        serverAuthCode == otherAccount.serverAuthCode &&
         _idToken == otherAccount._idToken;
   }
 
   @override
-  int get hashCode => hashValues(displayName, email, id, photoUrl, _idToken);
+  int get hashCode =>
+      hashValues(displayName, email, id, photoUrl, _idToken, serverAuthCode);
 
   @override
   String toString() {
@@ -145,6 +153,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       'email': email,
       'id': id,
       'photoUrl': photoUrl,
+      'serverAuthCode': serverAuthCode
     };
     return 'GoogleSignInAccount:$data';
   }

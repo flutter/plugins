@@ -26,4 +26,9 @@ enum PurchaseStatus {
   /// the purchase by calling the `completePurchase` method. More information on
   /// verifying purchases can be found [here](https://pub.dev/packages/in_app_purchase#restoring-previous-purchases).
   restored,
+
+  /// The purchase has been canceled.
+  ///
+  /// Update your UI to indicate the purchase is canceled.
+  canceled,
 }

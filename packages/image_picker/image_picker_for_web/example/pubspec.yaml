@@ -1,4 +1,4 @@
-name: connectivity_for_web_integration_tests
+name: image_picker_for_web_integration_tests
 publish_to: none
 
 environment:

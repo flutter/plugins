@@ -34,11 +34,12 @@ gradle-wrapper.jar
 .flutter-plugins-dependencies
 *.iml
 
+generated_plugin_registrant.cc
+generated_plugin_registrant.h
 generated_plugin_registrant.dart
+GeneratedPluginRegistrant.java
 GeneratedPluginRegistrant.h
 GeneratedPluginRegistrant.m
-generated_plugin_registrant.cc
-GeneratedPluginRegistrant.java
 GeneratedPluginRegistrant.swift
 build/
 .flutter-plugins

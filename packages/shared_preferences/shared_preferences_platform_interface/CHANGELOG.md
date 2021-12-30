@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes newly enabled analyzer options.
+
 ## 2.0.0
 
 * Migrate to null safety.

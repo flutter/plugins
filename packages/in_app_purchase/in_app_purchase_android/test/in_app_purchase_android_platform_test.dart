@@ -9,9 +9,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_android/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase_android/src/channel.dart';
-import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import 'billing_client_wrappers/purchase_wrapper_test.dart';
@@ -43,7 +41,6 @@ void main() {
         value: buildBillingResultMap(expectedBillingResult));
     stubPlatform.addResponse(name: endConnectionCall, value: null);
 
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
     InAppPurchaseAndroidPlatform.registerPlatform();
     iapAndroidPlatform =
         InAppPurchasePlatform.instance as InAppPurchaseAndroidPlatform;
@@ -616,6 +613,119 @@ void main() {
       await iapAndroidPlatform.buyConsumable(
           purchaseParam: purchaseParam, autoConsume: false);
       expect(null, await consumeCompleter.future);
+    });
+
+    test(
+        'should get canceled purchase status when response code is BillingResponse.userCanceled',
+        () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      const String debugMessage = 'dummy message';
+      final BillingResponse sentCode = BillingResponse.userCanceled;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: sentCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: buildBillingResultMap(expectedBillingResult),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'billingResult': buildBillingResultMap(expectedBillingResult),
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': [
+                {
+                  'orderId': 'orderID1',
+                  'sku': skuDetails.sku,
+                  'isAutoRenewing': false,
+                  'packageName': "package",
+                  'purchaseTime': 1231231231,
+                  'purchaseToken': "token",
+                  'signature': 'sign',
+                  'originalJson': 'json',
+                  'developerPayload': 'dummy payload',
+                  'isAcknowledged': true,
+                  'purchaseState': 1,
+                }
+              ]
+            });
+            iapAndroidPlatform.billingClient.callHandler(call);
+          });
+      Completer consumeCompleter = Completer();
+      // adding call back for consume purchase
+      final BillingResponse expectedCode = BillingResponse.userCanceled;
+      final BillingResultWrapper expectedBillingResultForConsume =
+          BillingResultWrapper(
+              responseCode: expectedCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+          name: consumeMethodName,
+          value: buildBillingResultMap(expectedBillingResultForConsume),
+          additionalStepBeforeReturn: (dynamic args) {
+            String purchaseToken = args['purchaseToken'];
+            consumeCompleter.complete(purchaseToken);
+          });
+
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
+      Stream purchaseStream = iapAndroidPlatform.purchaseStream;
+      late StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
+        completer.complete(purchaseDetails);
+        subscription.cancel();
+      }, onDone: () {});
+      final GooglePlayPurchaseParam purchaseParam = GooglePlayPurchaseParam(
+          productDetails: GooglePlayProductDetails.fromSkuDetails(skuDetails),
+          applicationUserName: accountId);
+      await iapAndroidPlatform.buyConsumable(purchaseParam: purchaseParam);
+
+      // Verify that the result has an error for the failed consumption
+      GooglePlayPurchaseDetails result = await completer.future;
+      expect(result.status, PurchaseStatus.canceled);
+    });
+
+    test(
+        'should get purchased purchase status when upgrading subscription by deferred proration mode',
+        () async {
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      const String debugMessage = 'dummy message';
+      final BillingResponse sentCode = BillingResponse.ok;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: sentCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+          name: launchMethodName,
+          value: buildBillingResultMap(expectedBillingResult),
+          additionalStepBeforeReturn: (_) {
+            // Mock java update purchase callback.
+            MethodCall call = MethodCall(kOnPurchasesUpdated, {
+              'billingResult': buildBillingResultMap(expectedBillingResult),
+              'responseCode': BillingResponseConverter().toJson(sentCode),
+              'purchasesList': []
+            });
+            iapAndroidPlatform.billingClient.callHandler(call);
+          });
+
+      Completer completer = Completer();
+      PurchaseDetails purchaseDetails;
+      Stream purchaseStream = iapAndroidPlatform.purchaseStream;
+      late StreamSubscription subscription;
+      subscription = purchaseStream.listen((_) {
+        purchaseDetails = _.first;
+        completer.complete(purchaseDetails);
+        subscription.cancel();
+      }, onDone: () {});
+      final GooglePlayPurchaseParam purchaseParam = GooglePlayPurchaseParam(
+          productDetails: GooglePlayProductDetails.fromSkuDetails(skuDetails),
+          applicationUserName: accountId,
+          changeSubscriptionParam: ChangeSubscriptionParam(
+            oldPurchaseDetails: GooglePlayPurchaseDetails.fromPurchase(
+                dummyUnacknowledgedPurchase),
+            prorationMode: ProrationMode.deferred,
+          ));
+      await iapAndroidPlatform.buyNonConsumable(purchaseParam: purchaseParam);
+
+      PurchaseDetails result = await completer.future;
+      expect(result.status, PurchaseStatus.purchased);
     });
   });
 

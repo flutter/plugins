@@ -5,10 +5,6 @@ FROM cirrusci/flutter:2.2.2
 
 RUN apt-get update -y
 
-# Required by Roboeletric and the Android SDK.
-RUN apt-get install -y openjdk-8-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
 RUN apt-get install -y --no-install-recommends gnupg
 
 # Add repo for gcloud sdk and install it

@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.biometric.BiometricManager;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -337,6 +338,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     lifecycle = null;
+    activity = null;
   }
 
   @Override
@@ -350,5 +352,11 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   public void onDetachedFromActivity() {
     lifecycle = null;
     channel.setMethodCallHandler(null);
+    activity = null;
+  }
+
+  @VisibleForTesting
+  final Activity getActivity() {
+    return activity;
   }
 }

@@ -4,4 +4,4 @@
 # found in the LICENSE file.
 
 dart ./script/tool/bin/flutter_plugin_tools.dart native-test --windows \
-   --no-integration --packages-for-branch
+   --no-integration --packages-for-branch --log-timing

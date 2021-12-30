@@ -16,7 +16,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'SharedPreferences Demo',
       home: SharedPreferencesDemo(),
     );
@@ -24,14 +24,14 @@ class MyApp extends StatelessWidget {
 }
 
 class SharedPreferencesDemo extends StatefulWidget {
-  SharedPreferencesDemo({Key? key}) : super(key: key);
+  const SharedPreferencesDemo({Key? key}) : super(key: key);
 
   @override
   SharedPreferencesDemoState createState() => SharedPreferencesDemoState();
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  SharedPreferencesStorePlatform _prefs =
+  final SharedPreferencesStorePlatform _prefs =
       SharedPreferencesStorePlatform.instance;
   late Future<int> _counter;
 
@@ -63,7 +63,7 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("SharedPreferences Demo"),
+        title: const Text('SharedPreferences Demo'),
       ),
       body: Center(
           child: FutureBuilder<int>(
