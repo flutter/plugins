@@ -584,7 +584,7 @@ class Camera
 
     try {
       captureSession.stopRepeating();
-      /** Conditional statement below is fix for CameraAccessException that prevents image capture on certain devices running Android 7/8 */
+      // Conditional statement below is fix for CameraAccessException that prevents image capture on certain devices running Android 7/8
       if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
         captureSession.abortCaptures();
       }
