@@ -33,3 +33,9 @@ dev_dependencies:
   mockito: ^5.0.0
   pedantic: ^1.10.0
   plugin_platform_interface: ^2.0.0
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  image_picker_platform_interface:
+    path:
+      ../image_picker_platform_interface

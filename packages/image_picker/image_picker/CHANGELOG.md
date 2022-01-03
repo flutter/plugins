@@ -1,7 +1,7 @@
 ## NEXT
-
 * Updates Android compileSdkVersion to 31.
 * Fix iOS RunnerUITests search paths.
+* Adds `forceFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
 
 ## 0.8.4+4
 
