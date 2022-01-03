@@ -52,14 +52,16 @@ void main() {
                 'maxWidth': null,
                 'maxHeight': null,
                 'imageQuality': null,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 1,
                 'maxWidth': null,
                 'maxHeight': null,
                 'imageQuality': null,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
             ],
           );
@@ -98,49 +100,56 @@ void main() {
                 'maxWidth': null,
                 'maxHeight': null,
                 'imageQuality': null,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
                 'maxWidth': 10.0,
                 'maxHeight': null,
                 'imageQuality': null,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
                 'maxWidth': null,
                 'maxHeight': 10.0,
                 'imageQuality': null,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
                 'maxWidth': 10.0,
                 'maxHeight': 20.0,
                 'imageQuality': null,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
                 'maxWidth': 10.0,
                 'maxHeight': null,
                 'imageQuality': 70,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
                 'maxWidth': null,
                 'maxHeight': 10.0,
                 'imageQuality': 70,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
                 'maxWidth': 10.0,
                 'maxHeight': 20.0,
                 'imageQuality': 70,
-                'cameraDevice': 0
+                'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
             ],
           );
@@ -177,6 +186,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
+                'forceFullMetadata': true,
               }),
             ],
           );
@@ -196,6 +206,26 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 1,
+                'forceFullMetadata': true,
+              }),
+            ],
+          );
+        });
+
+        test('passes the full metadata argument correctly', () async {
+          await picker.pickImage(
+              source: ImageSource.camera, forceFullMetadata: false);
+
+          expect(
+            log,
+            <Matcher>[
+              isMethodCall('pickImage', arguments: <String, dynamic>{
+                'source': 0,
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+                'cameraDevice': 0,
+                'forceFullMetadata': false,
               }),
             ],
           );
