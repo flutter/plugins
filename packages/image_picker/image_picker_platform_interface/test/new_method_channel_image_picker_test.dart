@@ -40,14 +40,16 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -93,49 +95,56 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -196,6 +205,7 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -215,6 +225,7 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 1,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -509,14 +520,16 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -562,49 +575,56 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -664,6 +684,7 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 0,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -683,6 +704,7 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 1,
+              'forceFullMetadata': true,
             }),
           ],
         );
@@ -977,6 +999,237 @@ void main() {
           };
         });
         expect(picker.getLostData(), throwsAssertionError);
+      });
+    });
+
+    group('#getImageFromSource', () {
+      test('passes the image source argument correctly', () async {
+        await picker.getImageFromSource(source: ImageSource.camera);
+        await picker.getImageFromSource(source: ImageSource.gallery);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 1,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+          ],
+        );
+      });
+
+      test('passes the width and height arguments correctly', () async {
+        await picker.getImageFromSource(source: ImageSource.camera);
+        await picker.getImageFromSource(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+        );
+        await picker.getImageFromSource(
+          source: ImageSource.camera,
+          maxHeight: 10.0,
+        );
+        await picker.getImageFromSource(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+        );
+        await picker.getImageFromSource(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          imageQuality: 70,
+        );
+        await picker.getImageFromSource(
+          source: ImageSource.camera,
+          maxHeight: 10.0,
+          imageQuality: 70,
+        );
+        await picker.getImageFromSource(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+          imageQuality: 70,
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': 70,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': 70,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': 70,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+          ],
+        );
+      });
+
+      test('does not accept a invalid imageQuality argument', () {
+        expect(
+          () => picker.getImageFromSource(
+              imageQuality: -1, source: ImageSource.gallery),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getImageFromSource(
+              imageQuality: 101, source: ImageSource.gallery),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getImageFromSource(
+              imageQuality: -1, source: ImageSource.camera),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getImageFromSource(
+              imageQuality: 101, source: ImageSource.camera),
+          throwsArgumentError,
+        );
+      });
+
+      test('does not accept a negative width or height argument', () {
+        expect(
+          () => picker.getImageFromSource(
+              source: ImageSource.camera, maxWidth: -1.0),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getImageFromSource(
+              source: ImageSource.camera, maxHeight: -1.0),
+          throwsArgumentError,
+        );
+      });
+
+      test('handles a null image path response gracefully', () async {
+        picker.channel
+            .setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(await picker.getImageFromSource(source: ImageSource.gallery),
+            isNull);
+        expect(await picker.getImageFromSource(source: ImageSource.camera),
+            isNull);
+      });
+
+      test('camera position defaults to back', () async {
+        await picker.getImageFromSource(source: ImageSource.camera);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': true,
+            }),
+          ],
+        );
+      });
+
+      test('camera position can set to front', () async {
+        await picker.getImageFromSource(
+            source: ImageSource.camera,
+            preferredCameraDevice: CameraDevice.front);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 1,
+              'forceFullMetadata': true,
+            }),
+          ],
+        );
+      });
+
+      test('passes the full metadata argument correctly', () async {
+        await picker.getImageFromSource(
+            source: ImageSource.camera, forceFullMetadata: false);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'cameraDevice': 0,
+              'forceFullMetadata': false,
+            }),
+          ],
+        );
       });
     });
   });
