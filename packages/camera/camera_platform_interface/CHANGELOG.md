@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Adopts new analysis options and fixes all violations.
+
 ## 2.1.1
 
 * Add web-relevant docs to platform interface code.
