@@ -128,14 +128,6 @@ task:
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
-    ### Android tasks ###
-    - name: android-build_all_plugins
-      env:
-        BUILD_ALL_ARGS: "apk"
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Web tasks ###
     - name: web-build_all_plugins
       env:
@@ -238,6 +230,13 @@ task:
           path: "**/reports/lint-results-debug.xml"
           type: text/xml
           format: android-lint
+    - name: android-build_all_plugins
+      env:
+        BUILD_ALL_ARGS: "apk"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Web tasks ###
     - name: web-platform_tests
       env:

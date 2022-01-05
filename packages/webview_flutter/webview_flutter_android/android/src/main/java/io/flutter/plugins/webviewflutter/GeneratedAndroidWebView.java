@@ -1152,6 +1152,8 @@ public class GeneratedAndroidWebView {
 
     void setBuiltInZoomControls(Long instanceId, Boolean enabled);
 
+    void setAllowFileAccess(Long instanceId, Boolean enabled);
+
     /** The codec used by WebSettingsHostApi. */
     static MessageCodec<Object> getCodec() {
       return WebSettingsHostApiCodec.INSTANCE;
@@ -1546,6 +1548,37 @@ public class GeneratedAndroidWebView {
                     throw new NullPointerException("enabledArg unexpectedly null.");
                   }
                   api.setBuiltInZoomControls(instanceIdArg.longValue(), enabledArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.WebSettingsHostApi.setAllowFileAccess",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  Boolean enabledArg = (Boolean) args.get(1);
+                  if (enabledArg == null) {
+                    throw new NullPointerException("enabledArg unexpectedly null.");
+                  }
+                  api.setAllowFileAccess(instanceIdArg.longValue(), enabledArg);
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
