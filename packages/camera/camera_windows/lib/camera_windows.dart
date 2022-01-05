@@ -183,7 +183,7 @@ class CameraWindows extends CameraPlatform {
     //Windows camera plugin does not support capture orientations
     //Force device orientation to landscape (by default camera plugin uses portraitUp orientation)
     return Stream<DeviceOrientationChangedEvent>.value(
-      DeviceOrientationChangedEvent(DeviceOrientation.landscapeRight),
+      const DeviceOrientationChangedEvent(DeviceOrientation.landscapeRight),
     );
   }
 

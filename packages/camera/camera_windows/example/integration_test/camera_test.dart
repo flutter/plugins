@@ -86,7 +86,7 @@ void main() {
       expect(
         await streamQueue.next,
         equals(
-          DeviceOrientationChangedEvent(
+          const DeviceOrientationChangedEvent(
             DeviceOrientation.landscapeRight,
           ),
         ),
