@@ -12,7 +12,7 @@ class SamplePluginPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static set instance(SamplePluginPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verifyExtends(instance, _token);
     // A real implementation would set a static instance field here.
   }
 }
@@ -26,17 +26,17 @@ class ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin extends Mock
 
 class ExtendsSamplePluginPlatform extends SamplePluginPlatform {}
 
-class InvalidPluginPlatform extends PlatformInterface {
-  SamplePluginPlatform() : super(token: _token);
+class ConstTokenPluginPlatform extends PlatformInterface {
+  ConstTokenPluginPlatform() : super(token: _token);
 
-  const Object _token = Object();
+  static const Object _token = Object(); // invalid
 
-  static set instance(SamplePluginPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+  static set instance(ConstTokenPluginPlatform instance) {
+    PlatformInterface.verifyExtends(instance, _token);
   }
 }
 
-class ExtendsInvalidPluginPlatform extends InvalidPluginPlatform {}
+class ExtendsConstTokenPluginPlatform extends ConstTokenPluginPlatform {}
 
 void main() {
   test('Cannot be implemented with `implements`', () {
@@ -53,11 +53,11 @@ void main() {
 
   test('Can be extended', () {
     SamplePluginPlatform.instance = ExtendsSamplePluginPlatform();
-  );
+  });
 
   test('Cannot use `const Object()` as token', () {
     expect(() {
-      InvalidPluginPlatform.instance = ExtendsInvalidPluginPlatform();
-    }, throwsA(isA<AssertionError()));
-  })
+      ConstTokenPluginPlatform.instance = ExtendsConstTokenPluginPlatform();
+    }, throwsA(isA<AssertionError>()));
+  });
 }

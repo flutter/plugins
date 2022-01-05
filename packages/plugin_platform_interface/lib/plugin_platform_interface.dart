@@ -29,7 +29,7 @@ import 'package:meta/meta.dart';
 ///   /// Platform-specific plugins should set this with their own platform-specific
 ///   /// class that extends [UrlLauncherPlatform] when they register themselves.
 ///   static set instance(UrlLauncherPlatform instance) {
-///     PlatformInterface.verifyToken(instance, _token);
+///     PlatformInterface.verifyExtends(instance, _token);
 ///     _instance = instance;
 ///   }
 ///
@@ -40,12 +40,14 @@ import 'package:meta/meta.dart';
 /// to include the [MockPlatformInterfaceMixin] for the verification to be temporarily disabled. See
 /// [MockPlatformInterfaceMixin] for a sample of using Mockito to mock a platform interface.
 abstract class PlatformInterface {
-  /// Pass a private, class-specific `Object()` as the `token`.
+  /// Constructs a PlatformInterface, for use only in constructors of abstract derived classes.
+  ///
+  /// @param token A non-`const` `Object` used to verify that implementations use `extends`.
   PlatformInterface({required Object token}) : _instanceToken = token;
 
   final Object? _instanceToken;
 
-  /// Ensures that the platform instance has a token that matches the
+  /// Ensures that the platform instance has a non-`const` token that matches the
   /// provided token and throws [AssertionError] if not.
   ///
   /// This is used to ensure that implementers are using `extends` rather than
@@ -56,8 +58,22 @@ abstract class PlatformInterface {
   ///
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
+  static void verifyExtends(PlatformInterface instance, Object token) {
+    if (identical(instance._instanceToken, const Object())) {
+      throw AssertionError('`const Object()` cannot be used as `token`.');
+    }
+    _verifyExtends(instance, token);
+  }
+
+  /// Performs the same checks as `verifyExtends` but without throwing an
+  /// [AssertionError] if `const Object()` is used as the instance token.
+  ///
+  /// This method will be deprecated in a future release.
   static void verifyToken(PlatformInterface instance, Object token) {
-    assert(token != const Object());
+    _verifyExtends(instance, token);
+  }
+
+  static void _verifyExtends(PlatformInterface instance, Object token) {
     if (instance is MockPlatformInterfaceMixin) {
       bool assertionsEnabled = false;
       assert(() {
