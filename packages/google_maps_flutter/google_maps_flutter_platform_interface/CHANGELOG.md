@@ -1,3 +1,7 @@
+## 2.1.4
+
+Removes dependency on `meta`.
+
 ## 2.1.3
 
 * `LatLng` constructor maintains longitude precision when given within
