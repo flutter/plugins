@@ -85,7 +85,7 @@ class LocalAuthentication {
   /// their phone.
   ///
   /// Setting [biometricOnly] to true prevents authenticates from using non-biometric
-  /// local authentication such as pin, passcode, and passcode.
+  /// local authentication such as pin, pattern, and passcode.
   ///
   /// Throws an [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
