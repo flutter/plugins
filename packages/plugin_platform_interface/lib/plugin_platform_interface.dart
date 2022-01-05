@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 /// implemented using `extends` instead of `implements`.
 ///
 /// Platform interface classes are expected to have a private static token object which will be
-/// be passed to [verifyToken] along with a platform interface object for verification.
+/// be passed to [verify] along with a platform interface object for verification.
 ///
 /// Sample usage:
 ///
@@ -40,15 +40,16 @@ import 'package:meta/meta.dart';
 /// to include the [MockPlatformInterfaceMixin] for the verification to be temporarily disabled. See
 /// [MockPlatformInterfaceMixin] for a sample of using Mockito to mock a platform interface.
 abstract class PlatformInterface {
-  /// Constructs a PlatformInterface, for use only in constructors of abstract derived classes.
+  /// Constructs a PlatformInterface, for use only in constructors of abstract
+  /// derived classes.
   ///
-  /// @param token A non-`const` `Object` used to verify that implementations use `extends`.
+  /// @param token The same, non-`const` `Object` that will be passed to `verify`.
   PlatformInterface({required Object token}) : _instanceToken = token;
 
   final Object? _instanceToken;
 
-  /// Ensures that the platform instance has a non-`const` token that matches the
-  /// provided token and throws [AssertionError] if not.
+  /// Ensures that the platform instance was constructed with a non-`const` token
+  /// that matches the provided token and throws [AssertionError] if not.
   ///
   /// This is used to ensure that implementers are using `extends` rather than
   /// `implements`.
@@ -60,7 +61,7 @@ abstract class PlatformInterface {
   /// with `noSuchMethod`.
   static void verify(PlatformInterface instance, Object token) {
     if (identical(instance._instanceToken, const Object())) {
-      throw AssertionError('`const Object()` cannot be used as `token`.');
+      throw AssertionError('`const Object()` cannot be used as the instance token.');
     }
     _verify(instance, token);
   }
@@ -95,7 +96,7 @@ abstract class PlatformInterface {
 
 /// A [PlatformInterface] mixin that can be combined with mockito's `Mock`.
 ///
-/// It passes the [PlatformInterface.verifyToken] check even though it isn't
+/// It passes the [PlatformInterface.verify] check even though it isn't
 /// using `extends`.
 ///
 /// This class is intended for use in tests only.
