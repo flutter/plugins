@@ -61,7 +61,7 @@ abstract class PlatformInterface {
   /// with `noSuchMethod`.
   static void verify(PlatformInterface instance, Object token) {
     if (identical(instance._instanceToken, const Object())) {
-      throw AssertionError('`const Object()` cannot be used as the instance token.');
+      throw AssertionError('`const Object()` cannot be used as the token.');
     }
     _verify(instance, token);
   }
