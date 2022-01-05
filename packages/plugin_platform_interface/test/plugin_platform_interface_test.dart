@@ -12,7 +12,7 @@ class SamplePluginPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static set instance(SamplePluginPlatform instance) {
-    PlatformInterface.verifyExtends(instance, _token);
+    PlatformInterface.verify(instance, _token);
     // A real implementation would set a static instance field here.
   }
 }
@@ -32,7 +32,7 @@ class ConstTokenPluginPlatform extends PlatformInterface {
   static const Object _token = Object(); // invalid
 
   static set instance(ConstTokenPluginPlatform instance) {
-    PlatformInterface.verifyExtends(instance, _token);
+    PlatformInterface.verify(instance, _token);
   }
 }
 

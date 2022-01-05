@@ -1,8 +1,7 @@
 ## 2.1.0
 
-* Add a new static method `verifyExtends`, preventing use of `const Object()` as instance token.
-* Soft deprecate `verifyToken`, to avoid breaking tests that check for use of deprecated APIs.
-* Update documentation.
+* Introduce `verify`, which prevents use of `const Object()` as instance token.
+* Add a comment indicating that `verifyToken` will be deprecated in a future release.
 
 ## 2.0.2
 
