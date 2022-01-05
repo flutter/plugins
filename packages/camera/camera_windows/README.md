@@ -8,12 +8,12 @@ The windows implementation of [`camera`][camera].
 
 ### Depend on the package
 
-This package is not [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin),
-which means you need to add `camera_windows` separately to your project dependencies to use it with [`camera`][camera] plugin.
+This package is not an [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin) implementation of the [`camera`][camera] plugin yet, so you'll need to 
+[add it explicitly](https://pub.dev/packages/camera_windows/install)
 
 ## Example
 
-Find the example in the [`camera windows` package](https://pub.dev/packages/camera_windows#example).
+Find the example in the [camera windows package](https://pub.dev/packages/camera_windows#example).
 
 ## Limitations on the windows platform
 
@@ -48,7 +48,6 @@ The windows implementation of [`camera`][camera] is missing the following featur
 - Image format group
 - Streaming of frames
 - Video record pause and resume
-- Support for multiple simultanious camera captures.
 
 <!-- Links -->
-[camera]: https://pub.dev/packages/camera_windows
+[camera]: https://pub.dev/packages/camera
