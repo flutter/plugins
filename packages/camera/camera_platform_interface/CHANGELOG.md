@@ -1,3 +1,7 @@
+## 2.1.3
+
+* Removes dependency on `meta`.
+
 ## 2.1.2
 
 * Adopts new analysis options and fixes all violations.
