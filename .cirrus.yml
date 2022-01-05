@@ -250,16 +250,11 @@ task:
         CHROME_DIR: /tmp/web_chromium/
         CHROME_EXECUTABLE: $CHROME_DIR/chrome-linux/chrome
       install_script:
+        # Install a pinned version of Chromium and its corresponding ChromeDriver.
+        # Setting CHROME_EXECUTABLE above causes this version to be used for tests.
         - ./script/install_chromium.sh "$CHROME_DIR"
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - dart pub get
       chromedriver_background_script:
-        - cd web_installers/packages/web_drivers/
-        # web_driver_installer only handles Google Chrome, not Chromium, so
-        # specify a version to match what's installed by install_chromium.sh
-        - dart lib/web_driver_installer.dart chromedriver --install-only --driver-version=84.0.4147.30
-        - ./chromedriver/chromedriver --port=4444
+        - "$CHROME_DIR"/chromedriver/chromedriver --port=4444
       build_script:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
