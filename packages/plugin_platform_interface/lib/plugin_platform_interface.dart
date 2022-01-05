@@ -57,6 +57,7 @@ abstract class PlatformInterface {
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
   static void verifyToken(PlatformInterface instance, Object token) {
+    assert(token != const Object());
     if (instance is MockPlatformInterfaceMixin) {
       bool assertionsEnabled = false;
       assert(() {

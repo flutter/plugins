@@ -1,5 +1,6 @@
-## 2.0.3
+## 2.1.0
 
+* Assert that `const Object()` is not used as the token.
 * Update documentation.
 
 ## 2.0.2
