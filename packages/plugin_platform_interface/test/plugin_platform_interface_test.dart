@@ -26,6 +26,18 @@ class ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin extends Mock
 
 class ExtendsSamplePluginPlatform extends SamplePluginPlatform {}
 
+class InvalidPluginPlatform extends PlatformInterface {
+  SamplePluginPlatform() : super(token: _token);
+
+  const Object _token = Object();
+
+  static set instance(SamplePluginPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+  }
+}
+
+class ExtendsInvalidPluginPlatform extends InvalidPluginPlatform {}
+
 void main() {
   test('Cannot be implemented with `implements`', () {
     expect(() {
@@ -41,5 +53,11 @@ void main() {
 
   test('Can be extended', () {
     SamplePluginPlatform.instance = ExtendsSamplePluginPlatform();
-  });
+  );
+
+  test('Cannot use `const Object()` as token', () {
+    expect(() {
+      InvalidPluginPlatform.instance = ExtendsInvalidPluginPlatform();
+    }, throwsA(isA<AssertionError()));
+  })
 }
