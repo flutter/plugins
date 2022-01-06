@@ -1,3 +1,7 @@
+## 0.2.2+1
+
+* Removes the dependency on `meta`.
+
 ## 0.2.2
 
 * Fixes the `purchaseStream` incorrectly reporting `PurchaseStatus.error` when user upgrades subscription by deferred proration mode.
