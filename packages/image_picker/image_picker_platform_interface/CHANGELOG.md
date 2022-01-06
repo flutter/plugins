@@ -1,3 +1,7 @@
+## 2.4.2
+
+* Removes dependency on `meta`.
+
 ## 2.4.1
 
 * Reverts the changes from 2.4.0, which was a breaking change that
