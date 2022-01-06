@@ -1,6 +1,7 @@
-## NEXT
+## 2.0.3
 
 * Minor code cleanup for new analysis rules.
+* Removes dependency on `meta`.
 
 ## 2.0.2
 
