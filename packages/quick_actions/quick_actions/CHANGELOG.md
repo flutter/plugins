@@ -1,3 +1,13 @@
+## NEXT
+
+* Updates Android compileSdkVersion to 31.
+* Updates code for analyzer changes.
+
+## 0.6.0+8
+
+* Updates example app Android compileSdkVersion to 31.
+* Moves method call to background thread to fix CI failure.
+
 ## 0.6.0+7
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.

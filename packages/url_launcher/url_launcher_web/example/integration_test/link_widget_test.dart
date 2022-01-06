@@ -4,11 +4,12 @@
 
 import 'dart:html' as html;
 import 'dart:js_util';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_web/src/link.dart';
-import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -59,14 +60,14 @@ void main() {
         textDirection: TextDirection.ltr,
         child: Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(100.0, 100.0)),
+            constraints: BoxConstraints.tight(const Size(100.0, 100.0)),
             child: WebLinkDelegate(TestLinkInfo(
               uri: uri,
               target: LinkTarget.blank,
               builder: (BuildContext context, FollowLink? followLink) {
                 return Container(
                   key: containerKey,
-                  child: SizedBox(width: 50.0, height: 50.0),
+                  child: const SizedBox(width: 50.0, height: 50.0),
                 );
               },
             )),
@@ -128,6 +129,12 @@ html.Element _findSingleAnchor() {
 }
 
 class TestLinkInfo extends LinkInfo {
+  TestLinkInfo({
+    required this.uri,
+    required this.target,
+    required this.builder,
+  });
+
   @override
   final LinkWidgetBuilder builder;
 
@@ -139,10 +146,4 @@ class TestLinkInfo extends LinkInfo {
 
   @override
   bool get isDisabled => uri == null;
-
-  TestLinkInfo({
-    required this.uri,
-    required this.target,
-    required this.builder,
-  });
 }
