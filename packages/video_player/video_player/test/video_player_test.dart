@@ -729,11 +729,33 @@ void main() {
           'errorDescription: null)');
     });
 
-    test('copyWith()', () {
-      final VideoPlayerValue original = VideoPlayerValue.uninitialized();
-      final VideoPlayerValue exactCopy = original.copyWith();
+    group('copyWith()', () {
+      test('exact copy', () {
+        final VideoPlayerValue original = VideoPlayerValue.uninitialized();
+        final VideoPlayerValue exactCopy = original.copyWith();
 
-      expect(exactCopy.toString(), original.toString());
+        expect(exactCopy.toString(), original.toString());
+      });
+      test('errorDescription is not persisted when copy with null', () {
+        final VideoPlayerValue original = VideoPlayerValue.erroneous('error');
+        final VideoPlayerValue copy = original.copyWith(errorDescription: null);
+
+        expect(copy.errorDescription, null);
+      });
+      test('errorDescription is changed when copy with another error', () {
+        final VideoPlayerValue original = VideoPlayerValue.erroneous('error');
+        final VideoPlayerValue copy =
+            original.copyWith(errorDescription: 'new error');
+
+        expect(copy.errorDescription, 'new error');
+      });
+      test('errorDescription is changed when copy with error', () {
+        final VideoPlayerValue original = VideoPlayerValue.uninitialized();
+        final VideoPlayerValue copy =
+            original.copyWith(errorDescription: 'new error');
+
+        expect(copy.errorDescription, 'new error');
+      });
     });
 
     group('aspectRatio', () {

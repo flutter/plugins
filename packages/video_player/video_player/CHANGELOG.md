@@ -1,3 +1,7 @@
+## 2.2.8
+
+* Fix persisting of hasError even after successful initialize
+
 ## 2.2.7
 
 * Fixes a regression where dragging a [VideoProgressIndicator] while playing

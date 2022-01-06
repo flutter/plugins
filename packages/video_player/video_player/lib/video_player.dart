@@ -131,7 +131,7 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? volume,
     double? playbackSpeed,
-    String? errorDescription,
+    String? errorDescription = '',
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -145,7 +145,11 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
-      errorDescription: errorDescription ?? this.errorDescription,
+      errorDescription: errorDescription == null
+          ? null
+          : errorDescription.isEmpty
+              ? this.errorDescription
+              : errorDescription,
     );
   }
 
