@@ -35,7 +35,7 @@ platform_properties:
       os: Windows
 
 targets:
-  - name: Windows win32-platform_tests main
+  - name: Windows win32-platform_tests master
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -60,7 +60,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows windows-build_all_plugins main
+  - name: Windows windows-build_all_plugins master
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -85,7 +85,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows uwp-platform_tests main
+  - name: Windows uwp-platform_tests master
     recipe: plugins/plugins
     timeout: 30
     properties:
