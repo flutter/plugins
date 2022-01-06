@@ -7,7 +7,6 @@
 #  * https://github.com/flutter/cocoon/blob/main/CI_YAML.md
 enabled_branches:
   - main
-  - master
 
 platform_properties:
   linux:
@@ -36,7 +35,7 @@ platform_properties:
       os: Windows
 
 targets:
-  - name: Windows win32-platform_tests master
+  - name: Windows win32-platform_tests main
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -61,7 +60,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows windows-build_all_plugins master
+  - name: Windows windows-build_all_plugins main
     recipe: plugins/plugins
     timeout: 30
     properties:
@@ -86,7 +85,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows uwp-platform_tests master
+  - name: Windows uwp-platform_tests main
     recipe: plugins/plugins
     timeout: 30
     properties:
