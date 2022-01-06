@@ -11,11 +11,10 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-import 'src/closed_caption_file.dart';
-
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
 
+import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
 
 VideoPlayerPlatform? _lastVideoPlayerPlatform;
