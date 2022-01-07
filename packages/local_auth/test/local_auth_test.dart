@@ -171,5 +171,21 @@ void main() {
         );
       });
     });
+
+    test('hasEnrolledFingerprints on Android.', () async {
+      setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
+      final bool enrolled = await localAuthentication.hasEnrolledFingerprints;
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'hasEnrolledFingerprints',
+            arguments: null,
+          ),
+        ],
+      );
+
+      expect(enrolled, true);
+    });
   });
 }
