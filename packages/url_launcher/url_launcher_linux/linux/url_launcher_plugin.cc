@@ -45,9 +45,9 @@ static gchar* get_url(FlValue* args, GError** error) {
   return g_strdup(fl_value_get_string(url_value));
 }
 
-// Called to check if URL with file scheme can be launched.
-static gboolean can_launch_url_with_file_scheme(FlUrlLauncherPlugin* self,
-                                                const gchar* url) {
+// Check if URI has launchable file resource
+static gboolean can_launch_uri_with_file_resource(FlUrlLauncherPlugin* self,
+                                                  const gchar* url) {
   g_autoptr(GError) error = nullptr;
   g_autoptr(GFile) file = g_file_new_for_uri(url);
   g_autoptr(GAppInfo) app_info =
@@ -76,7 +76,7 @@ FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
     is_launchable = app_info != nullptr;
 
     if (!is_launchable) {
-      is_launchable = can_launch_url_with_file_scheme(self, url);
+      is_launchable = can_launch_uri_with_file_resource(self, url);
     }
   }
 
