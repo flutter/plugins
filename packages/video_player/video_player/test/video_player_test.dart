@@ -813,7 +813,9 @@ void main() {
         test('is $allowBackgroundPlayback', () async {
           final VideoPlayerController controller = VideoPlayerController.file(
             File(''),
-            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: allowBackgroundPlayback),
+            videoPlayerOptions: VideoPlayerOptions(
+              allowBackgroundPlayback: allowBackgroundPlayback,
+            ),
           );
           await controller.initialize();
           await controller.play();

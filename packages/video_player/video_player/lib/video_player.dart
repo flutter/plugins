@@ -294,7 +294,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    final allowBackgroundPlayback = videoPlayerOptions?.allowBackgroundPlayback ?? false;
+    final allowBackgroundPlayback =
+        videoPlayerOptions?.allowBackgroundPlayback ?? false;
     if (!allowBackgroundPlayback) {
       _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     }
