@@ -30,7 +30,7 @@ abstract class WebViewCookieManagerPlatform extends PlatformInterface {
       throw AssertionError(
           'Platform interfaces can only be set to a non-null instance');
     }
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
 
