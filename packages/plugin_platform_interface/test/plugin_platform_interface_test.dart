@@ -73,8 +73,9 @@ class ConstVerifyTokenPluginPlatform extends PlatformInterface {
   }
 }
 
-class ImplementsConstVerifyTokenPluginPlatform extends PlatformInterface implements ConstVerifyTokenPluginPlatform {
-  ImplementsConstVerifyTokenPluginPlatform(): super(token: const Object());
+class ImplementsConstVerifyTokenPluginPlatform extends PlatformInterface
+    implements ConstVerifyTokenPluginPlatform {
+  ImplementsConstVerifyTokenPluginPlatform() : super(token: const Object());
 }
 
 void main() {
@@ -128,7 +129,8 @@ void main() {
     });
 
     test('does not prevent `const Object()` token', () {
-      ConstVerifyTokenPluginPlatform.instance = ImplementsConstVerifyTokenPluginPlatform();
+      ConstVerifyTokenPluginPlatform.instance =
+          ImplementsConstVerifyTokenPluginPlatform();
     });
   });
 }
