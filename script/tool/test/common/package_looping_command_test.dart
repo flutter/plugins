@@ -22,6 +22,7 @@ import '../util.dart';
 import 'plugin_command_test.mocks.dart';
 
 // Constants for colorized output start and end.
+const String _startElapsedTimeColor = '\x1B[90m';
 const String _startErrorColor = '\x1B[31m';
 const String _startHeadingColor = '\x1B[36m';
 const String _startSkipColor = '\x1B[90m';
@@ -270,6 +271,46 @@ void main() {
             '${_startHeadingColor}Running for package_a...$_endColor',
             '${_startHeadingColor}Running for package_b...$_endColor',
           ]));
+    });
+
+    test('prints timing info in long-form output when requested', () async {
+      createFakePlugin('package_a', packagesDir);
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: true);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--log-timing']);
+
+      const String separator =
+          '============================================================';
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '$_startHeadingColor\n$separator\n|| Running for package_a [@0:00]\n$separator\n$_endColor',
+            '$_startElapsedTimeColor\n[package_a completed in 0m 0s]$_endColor',
+            '$_startHeadingColor\n$separator\n|| Running for package_b [@0:00]\n$separator\n$_endColor',
+            '$_startElapsedTimeColor\n[package_b completed in 0m 0s]$_endColor',
+          ]));
+    });
+
+    test('prints timing info in short-form output when requested', () async {
+      createFakePlugin('package_a', packagesDir);
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--log-timing']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '$_startHeadingColor[0:00] Running for package_a...$_endColor',
+            '$_startHeadingColor[0:00] Running for package_b...$_endColor',
+          ]));
+      // Short-form output should not include elapsed time.
+      expect(output, isNot(contains('[package_a completed in 0m 0s]')));
     });
 
     test('shows the success message when nothing fails', () async {
