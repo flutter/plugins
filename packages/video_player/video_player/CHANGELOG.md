@@ -1,4 +1,4 @@
-## 2.2.11
+## 2.3.0
 
 * Add `allowBackgroundPlayback` to `VideoPlayerOptions`
 
