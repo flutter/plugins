@@ -1,3 +1,7 @@
+## 2.4.2
+
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
+
 ## 2.4.1
 
 * Reverts the changes from 2.4.0, which was a breaking change that
