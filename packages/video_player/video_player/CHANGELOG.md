@@ -1,6 +1,6 @@
 ## 2.2.11
 
-* Fix persisting of hasError even after successful initialize
+* Fixes persisting of hasError even after successful initialize
 
 ## 2.2.10
 
