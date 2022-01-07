@@ -32,7 +32,7 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   /// platform-specific class that extends [VideoPlayerPlatform] when they
   /// register themselves.
   static set instance(VideoPlayerPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
 

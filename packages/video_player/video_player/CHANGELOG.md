@@ -15,6 +15,7 @@
 * Fixes integration tests.
 * Updates Android compileSdkVersion to 31.
 * Fixes a flaky integration test.
+* Integration tests now use WebM on web, to allow running with Chromium.
 
 ## 2.2.7
 
