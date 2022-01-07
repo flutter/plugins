@@ -1,6 +1,6 @@
 ## 2.1.1
 
-* Fixes `verify` to work with fake objects, not just `Mock`.
+* Fixes `verify` to work with fake objects, not just mocks.
 
 ## 2.1.0
 
