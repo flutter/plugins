@@ -1,6 +1,7 @@
 ## 2.1.2
 
-* Updates README to demonstrate `verify` rather than `verifyToken`.
+* Updates README to demonstrate `verify` rather than `verifyToken`, and to note
+  that the test mixin applies to fakes as well as mocks.
 
 ## 2.1.1
 
