@@ -4,6 +4,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:in_app_purchase_platform_interface/src/types/purchase_status.dart';
 
 void main() {
   group('Constructor Tests', () {
@@ -25,6 +26,24 @@ void main() {
       expect(productDetails.rawPrice, 13.37);
       expect(productDetails.currencyCode, 'USD');
       expect(productDetails.currencySymbol, r'$');
+    });
+  });
+
+  group('PurchaseStatus Tests', () {
+    test('PurchaseStatus should contain 5 options', () {
+      const List<PurchaseStatus> values = PurchaseStatus.values;
+
+      expect(values.length, 5);
+    });
+
+    test('PurchaseStatus enum should have items in correct index', () {
+      const List<PurchaseStatus> values = PurchaseStatus.values;
+
+      expect(values[0], PurchaseStatus.pending);
+      expect(values[1], PurchaseStatus.purchased);
+      expect(values[2], PurchaseStatus.error);
+      expect(values[3], PurchaseStatus.restored);
+      expect(values[4], PurchaseStatus.canceled);
     });
   });
 }

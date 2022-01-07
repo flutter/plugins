@@ -4,6 +4,7 @@
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
+import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'core.dart';
 
@@ -46,6 +47,14 @@ class RepositoryPackage {
 
   /// The package's top-level pubspec.yaml.
   File get pubspecFile => directory.childFile('pubspec.yaml');
+
+  late final Pubspec _parsedPubspec =
+      Pubspec.parse(pubspecFile.readAsStringSync());
+
+  /// Returns the parsed [pubspecFile].
+  ///
+  /// Caches for future use.
+  Pubspec parsePubspec() => _parsedPubspec;
 
   /// True if this appears to be a federated plugin package, according to
   /// repository conventions.

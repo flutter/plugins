@@ -1,6 +1,22 @@
-## NEXT
+##  0.9.4+5
 
-* Updated package description.
+* Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
+* Fixes integration tests.
+
+## 0.9.4+4
+
+* Change Android compileSdkVersion to 31.
+* Remove usages of deprecated Android API `CamcorderProfile`.
+* Update gradle version to 7.0.2 on Android.
+
+## 0.9.4+3
+
+* Fix registerTexture and result being called on background thread on iOS.
+
+## 0.9.4+2
+
+* Updated package description;
+* Refactor unit test on iOS to make it compatible with new restrictions in Xcode 13 which only supports the use of the `XCUIDevice` in Xcode UI tests.
 
 ## 0.9.4+1
 

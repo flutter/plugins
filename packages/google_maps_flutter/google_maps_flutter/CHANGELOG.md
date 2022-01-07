@@ -1,3 +1,16 @@
+## NEXT
+
+* Updates Android compileSdkVersion to 31.
+
+## 2.1.1
+
+* Suppresses unchecked cast warning.
+
+## 2.1.0
+
+* Add iOS unit and UI integration test targets.
+* Provide access to Hybrid Composition on Android through the `GoogleMap` widget.
+
 ## 2.0.11
 
 * Add additional marker drag events.

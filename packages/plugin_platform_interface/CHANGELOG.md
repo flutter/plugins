@@ -1,3 +1,12 @@
+## 2.1.1
+
+* Fixes `verify` to work with fake objects, not just mocks.
+
+## 2.1.0
+
+* Introduce `verify`, which prevents use of `const Object()` as instance token.
+* Add a comment indicating that `verifyToken` will be deprecated in a future release.
+
 ## 2.0.2
 
 * Update package description.

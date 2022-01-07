@@ -7,13 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('FlashMode should contain 4 options', () {
-    final values = FlashMode.values;
+    const List<FlashMode> values = FlashMode.values;
 
     expect(values.length, 4);
   });
 
-  test("FlashMode enum should have items in correct index", () {
-    final values = FlashMode.values;
+  test('FlashMode enum should have items in correct index', () {
+    const List<FlashMode> values = FlashMode.values;
 
     expect(values[0], FlashMode.off);
     expect(values[1], FlashMode.auto);

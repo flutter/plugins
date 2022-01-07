@@ -9,12 +9,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTWKNavigationDelegate : NSObject <WKNavigationDelegate>
 
-- (instancetype)initWithChannel:(FlutterMethodChannel*)channel;
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel;
 
 /**
  * Whether to delegate navigation decisions over the method channel.
  */
 @property(nonatomic, assign) BOOL hasDartNavigationDelegate;
+
+/**
+ * Whether to allow zoom functionality on the WebView.
+ */
+@property(nonatomic, assign) BOOL shouldEnableZoom;
 
 @end
 

@@ -1,3 +1,15 @@
+## NEXT
+
+* Updates Android compileSdkVersion to 31.
+
+## 5.2.1
+
+ Change the placeholder of the GoogleUserCircleAvatar to a transparent image.
+
+## 5.2.0
+
+* Add `GoogleSignInAccount.serverAuthCode`. Mark `GoogleSignInAuthentication.serverAuthCode` as deprecated.
+
 ## 5.1.1
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
