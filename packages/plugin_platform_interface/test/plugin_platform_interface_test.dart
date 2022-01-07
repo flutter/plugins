@@ -12,7 +12,7 @@ class SamplePluginPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static set instance(SamplePluginPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verify(instance, _token);
     // A real implementation would set a static instance field here.
   }
 }
@@ -26,20 +26,81 @@ class ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin extends Mock
 
 class ExtendsSamplePluginPlatform extends SamplePluginPlatform {}
 
+class ConstTokenPluginPlatform extends PlatformInterface {
+  ConstTokenPluginPlatform() : super(token: _token);
+
+  static const Object _token = Object(); // invalid
+
+  static set instance(ConstTokenPluginPlatform instance) {
+    PlatformInterface.verify(instance, _token);
+  }
+}
+
+class ExtendsConstTokenPluginPlatform extends ConstTokenPluginPlatform {}
+
+class VerifyTokenPluginPlatform extends PlatformInterface {
+  VerifyTokenPluginPlatform() : super(token: _token);
+
+  static final Object _token = Object();
+
+  static set instance(VerifyTokenPluginPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+    // A real implementation would set a static instance field here.
+  }
+}
+
+class ImplementsVerifyTokenPluginPlatform extends Mock
+    implements VerifyTokenPluginPlatform {}
+
+class ImplementsVerifyTokenPluginPlatformUsingMockPlatformInterfaceMixin
+    extends Mock
+    with MockPlatformInterfaceMixin
+    implements VerifyTokenPluginPlatform {}
+
+class ExtendsVerifyTokenPluginPlatform extends VerifyTokenPluginPlatform {}
+
 void main() {
-  test('Cannot be implemented with `implements`', () {
-    expect(() {
-      SamplePluginPlatform.instance = ImplementsSamplePluginPlatform();
-    }, throwsA(isA<AssertionError>()));
+  group('`verify`', () {
+    test('prevents implementation with `implements`', () {
+      expect(() {
+        SamplePluginPlatform.instance = ImplementsSamplePluginPlatform();
+      }, throwsA(isA<AssertionError>()));
+    });
+
+    test('allows mocking with `implements`', () {
+      final SamplePluginPlatform mock =
+          ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin();
+      SamplePluginPlatform.instance = mock;
+    });
+
+    test('allows extending', () {
+      SamplePluginPlatform.instance = ExtendsSamplePluginPlatform();
+    });
+
+    test('prevents `const Object()` token', () {
+      expect(() {
+        ConstTokenPluginPlatform.instance = ExtendsConstTokenPluginPlatform();
+      }, throwsA(isA<AssertionError>()));
+    });
   });
 
-  test('Can be mocked with `implements`', () {
-    final SamplePluginPlatform mock =
-        ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin();
-    SamplePluginPlatform.instance = mock;
-  });
+  // Tests of the earlier, to-be-deprecated `verifyToken` method
+  group('`verifyToken`', () {
+    test('prevents implementation with `implements`', () {
+      expect(() {
+        VerifyTokenPluginPlatform.instance =
+            ImplementsVerifyTokenPluginPlatform();
+      }, throwsA(isA<AssertionError>()));
+    });
 
-  test('Can be extended', () {
-    SamplePluginPlatform.instance = ExtendsSamplePluginPlatform();
+    test('allows mocking with `implements`', () {
+      final VerifyTokenPluginPlatform mock =
+          ImplementsVerifyTokenPluginPlatformUsingMockPlatformInterfaceMixin();
+      VerifyTokenPluginPlatform.instance = mock;
+    });
+
+    test('allows extending', () {
+      VerifyTokenPluginPlatform.instance = ExtendsVerifyTokenPluginPlatform();
+    });
   });
 }
