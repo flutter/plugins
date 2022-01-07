@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Updates README to demonstrate `verify` rather than `verifyToken`.
+
 ## 2.1.1
 
 * Fixes `verify` to work with fake objects, not just mocks.
