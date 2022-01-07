@@ -13,11 +13,17 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   protected static final String EXTRA_ACTION = "some unique action key";
@@ -47,10 +53,42 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
     switch (call.method) {
       case "setShortcutItems":
-        List<Map<String, String>> serializedShortcuts = call.arguments();
-        List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
-        shortcutManager.setDynamicShortcuts(shortcuts);
-        break;
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+          List<Map<String, String>> serializedShortcuts = call.arguments();
+          List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
+
+          Executor uiThreadExecutor = new UiThreadExecutor();
+          ThreadPoolExecutor executor =
+              new ThreadPoolExecutor(
+                  0, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+
+          executor.execute(
+              () -> {
+                boolean dynamicShortcutsSet = false;
+                try {
+                  shortcutManager.setDynamicShortcuts(shortcuts);
+                  dynamicShortcutsSet = true;
+                } catch (Exception e) {
+                  // Leave dynamicShortcutsSet as false
+                }
+
+                final boolean didSucceed = dynamicShortcutsSet;
+
+                // TODO(camsim99): Move re-dispatch below to background thread when Flutter 2.8+ is stable.
+                uiThreadExecutor.execute(
+                    () -> {
+                      if (didSucceed) {
+                        result.success(null);
+                      } else {
+                        result.error(
+                            "quick_action_setshortcutitems_failure",
+                            "Exception thrown when setting dynamic shortcuts",
+                            null);
+                      }
+                    });
+              });
+        }
+        return;
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
         break;
@@ -126,5 +164,14 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         .putExtra(EXTRA_ACTION, type)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+  }
+
+  private static class UiThreadExecutor implements Executor {
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable command) {
+      handler.post(command);
+    }
   }
 }

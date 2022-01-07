@@ -1,6 +1,7 @@
-## 2.0.3
+## NEXT
 
-* Fix canLaunch detection for `file` scheme
+* Updates code for new analysis options.
+* Fixes canLaunch detection for `file` scheme
 
 ## 2.0.2
 

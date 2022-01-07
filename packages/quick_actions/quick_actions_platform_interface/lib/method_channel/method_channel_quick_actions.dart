@@ -9,7 +9,7 @@ import 'package:quick_actions_platform_interface/types/types.dart';
 
 import '../platform_interface/quick_actions_platform.dart';
 
-final MethodChannel _channel =
+const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/quick_actions');
 
 /// An implementation of [QuickActionsPlatform] that uses method channels.
@@ -22,7 +22,7 @@ class MethodChannelQuickActions extends QuickActionsPlatform {
   Future<void> initialize(QuickActionHandler handler) async {
     channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
-      handler(call.arguments);
+      handler(call.arguments as String);
     });
     final String? action =
         await channel.invokeMethod<String?>('getLaunchAction');

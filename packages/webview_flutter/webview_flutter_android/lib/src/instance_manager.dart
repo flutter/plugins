@@ -4,8 +4,8 @@
 
 /// Maintains instances stored to communicate with java objects.
 class InstanceManager {
-  Map<int, Object> _instanceIdsToInstances = <int, Object>{};
-  Map<Object, int> _instancesToInstanceIds = <Object, int>{};
+  final Map<int, Object> _instanceIdsToInstances = <int, Object>{};
+  final Map<Object, int> _instancesToInstanceIds = <Object, int>{};
 
   int _nextInstanceId = 0;
 

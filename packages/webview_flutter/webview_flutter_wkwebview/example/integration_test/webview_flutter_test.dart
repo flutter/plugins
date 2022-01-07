@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,10 +28,6 @@ void main() {
   const String primaryUrl = 'https://flutter.dev/';
   const String secondaryUrl = 'https://www.google.com/robots.txt';
 
-  // Set to `false` to include all flaky tests in the test run. See also https://github.com/flutter/flutter/issues/86757.
-  const bool _skipDueToIssue86757 = false;
-
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -49,9 +46,8 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
-  }, skip: _skipDueToIssue86757);
+  });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -71,7 +67,7 @@ void main() {
     await controller.loadUrl(secondaryUrl);
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, secondaryUrl);
-  }, skip: _skipDueToIssue86757);
+  });
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -180,91 +176,24 @@ void main() {
   });
 
   testWidgets('resize webview', (WidgetTester tester) async {
-    final String resizeTest = '''
-        <!DOCTYPE html><html>
-        <head><title>Resize test</title>
-          <script type="text/javascript">
-            function onResize() {
-              Resize.postMessage("resize");
-            }
-            function onLoad() {
-              window.onresize = onResize;
-            }
-          </script>
-        </head>
-        <body onload="onLoad();" bgColor="blue">
-        </body>
-        </html>
-      ''';
-    final String resizeTestBase64 =
-        base64Encode(const Utf8Encoder().convert(resizeTest));
-    final Completer<void> resizeCompleter = Completer<void>();
-    final Completer<void> pageStarted = Completer<void>();
-    final Completer<void> pageLoaded = Completer<void>();
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final GlobalKey key = GlobalKey();
+    final Completer<void> buttonTapResizeCompleter = Completer<void>();
+    final Completer<void> onPageFinished = Completer<void>();
 
-    final WebView webView = WebView(
-      key: key,
-      initialUrl: 'data:text/html;charset=utf-8;base64,$resizeTestBase64',
-      onWebViewCreated: (WebViewController controller) {
-        controllerCompleter.complete(controller);
+    bool resizeButtonTapped = false;
+    await tester.pumpWidget(ResizableWebView(
+      onResize: (_) {
+        if (resizeButtonTapped) {
+          buttonTapResizeCompleter.complete();
+        }
       },
-      javascriptChannels: <JavascriptChannel>{
-        JavascriptChannel(
-          name: 'Resize',
-          onMessageReceived: (JavascriptMessage message) {
-            resizeCompleter.complete(true);
-          },
-        ),
-      },
-      onPageStarted: (String url) {
-        pageStarted.complete(null);
-      },
-      onPageFinished: (String url) {
-        pageLoaded.complete(null);
-      },
-      javascriptMode: JavascriptMode.unrestricted,
-    );
+      onPageFinished: () => onPageFinished.complete(),
+    ));
+    await onPageFinished.future;
 
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: webView,
-            ),
-          ],
-        ),
-      ),
-    );
-
-    await controllerCompleter.future;
-    await pageStarted.future;
-    await pageLoaded.future;
-
-    expect(resizeCompleter.isCompleted, false);
-
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              width: 400,
-              height: 400,
-              child: webView,
-            ),
-          ],
-        ),
-      ),
-    );
-
-    await resizeCompleter.future;
+    resizeButtonTapped = true;
+    await tester.tap(find.byKey(const ValueKey<String>('resizeButton')));
+    await tester.pumpAndSettle();
+    expect(buttonTapResizeCompleter.future, completes);
   });
 
   testWidgets('set custom userAgent', (WidgetTester tester) async {
@@ -517,10 +446,10 @@ void main() {
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
+      final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -551,7 +480,7 @@ void main() {
           ),
         ),
       );
-      WebViewController controller = await controllerCompleter.future;
+      final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
       // Pump once to trigger the video play.
@@ -560,7 +489,7 @@ void main() {
       // Makes sure we get the correct event that indicates the video is actually playing.
       await videoPlaying.future;
 
-      String fullScreen =
+      final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
@@ -568,10 +497,10 @@ void main() {
     testWidgets(
         'Video plays full screen when allowsInlineMediaPlayback is false',
         (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
+      final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -602,7 +531,7 @@ void main() {
           ),
         ),
       );
-      WebViewController controller = await controllerCompleter.future;
+      final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
       // Pump once to trigger the video play.
@@ -611,7 +540,7 @@ void main() {
       // Makes sure we get the correct event that indicates the video is actually playing.
       await videoPlaying.future;
 
-      String fullScreen =
+      final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
     });
@@ -789,7 +718,7 @@ void main() {
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
-    final String getTitleTest = '''
+    const String getTitleTest = '''
         <!DOCTYPE html><html>
         <head><title>Some title</title>
         </head>
@@ -809,6 +738,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -826,13 +756,19 @@ void main() {
     await pageStarted.future;
     await pageLoaded.future;
 
+    // On at least iOS, it does not appear to be guaranteed that the native
+    // code has the title when the page load completes. Execute some JavaScript
+    // before checking the title to ensure that the page has been fully parsed
+    // and processed.
+    await controller.runJavascript('1;');
+
     final String? title = await controller.getTitle();
     expect(title, 'Some title');
   });
 
   group('Programmatic Scroll', () {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      final String scrollTestPage = '''
+      const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -879,7 +815,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      await tester.pumpAndSettle(Duration(seconds: 3));
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       int scrollPosX = await controller.getScrollX();
       int scrollPosY = await controller.getScrollY();
@@ -909,7 +845,7 @@ void main() {
   });
 
   group('NavigationDelegate', () {
-    final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
+    const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
         base64Encode(const Utf8Encoder().convert(blankPage));
 
@@ -1005,7 +941,7 @@ void main() {
     testWidgets(
       'onWebResourceError only called for main frame',
       (WidgetTester tester) async {
-        final String iframeTest = '''
+        const String iframeTest = '''
         <!DOCTYPE html>
         <html>
         <head>
@@ -1172,7 +1108,6 @@ void main() {
     expect(currentUrl, primaryUrl);
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
@@ -1210,7 +1145,8 @@ void main() {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion(primaryUrl));
     },
-    skip: _skipDueToIssue86757,
+    // Flaky; see https://github.com/flutter/flutter/issues/90976
+    skip: true,
   );
 }
 
@@ -1225,13 +1161,77 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return _runJavascriptReturningResult(controller, 'navigator.userAgent;');
+  return await controller.runJavascriptReturningResult('navigator.userAgent;');
 }
 
-Future<String> _runJavascriptReturningResult(
-    WebViewController controller, String js) async {
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.runJavascriptReturningResult(js);
+class ResizableWebView extends StatefulWidget {
+  const ResizableWebView(
+      {required this.onResize, required this.onPageFinished});
+
+  final JavascriptMessageHandler onResize;
+  final VoidCallback onPageFinished;
+
+  @override
+  State<StatefulWidget> createState() => ResizableWebViewState();
+}
+
+class ResizableWebViewState extends State<ResizableWebView> {
+  double webViewWidth = 200;
+  double webViewHeight = 200;
+
+  static const String resizePage = '''
+        <!DOCTYPE html><html>
+        <head><title>Resize test</title>
+          <script type="text/javascript">
+            function onResize() {
+              Resize.postMessage("resize");
+            }
+            function onLoad() {
+              window.onresize = onResize;
+            }
+          </script>
+        </head>
+        <body onload="onLoad();" bgColor="blue">
+        </body>
+        </html>
+      ''';
+
+  @override
+  Widget build(BuildContext context) {
+    final String resizeTestBase64 =
+        base64Encode(const Utf8Encoder().convert(resizePage));
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            width: webViewWidth,
+            height: webViewHeight,
+            child: WebView(
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$resizeTestBase64',
+              javascriptChannels: <JavascriptChannel>{
+                JavascriptChannel(
+                  name: 'Resize',
+                  onMessageReceived: widget.onResize,
+                ),
+              },
+              onPageFinished: (_) => widget.onPageFinished(),
+              javascriptMode: JavascriptMode.unrestricted,
+            ),
+          ),
+          TextButton(
+            key: const Key('resizeButton'),
+            onPressed: () {
+              setState(() {
+                webViewWidth += 100.0;
+                webViewHeight += 100.0;
+              });
+            },
+            child: const Text('ResizeButton'),
+          ),
+        ],
+      ),
+    );
   }
-  return jsonDecode(await controller.runJavascriptReturningResult(js));
 }

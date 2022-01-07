@@ -14,8 +14,9 @@ Downloaded by pub (not CocoaPods).
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/webview_flutter/webview_flutter_wkwebview' }
   s.documentation_url = 'https://pub.dev/packages/webview_flutter'
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'Classes/**/*.{h,m}'
   s.public_header_files = 'Classes/**/*.h'
+  s.module_map = 'Classes/FlutterWebView.modulemap'
   s.dependency 'Flutter'
 
   s.platform = :ios, '9.0'
