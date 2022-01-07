@@ -187,5 +187,22 @@ void main() {
 
       expect(enrolled, true);
     });
+
+    test('canAuthenticateWithBiometrics on Android.', () async {
+      setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
+      final bool canAuthenticateWithBiometrics =
+          await localAuthentication.canAuthenticateWithBiometrics;
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'canAuthenticateWithBiometrics',
+            arguments: null,
+          ),
+        ],
+      );
+
+      expect(canAuthenticateWithBiometrics, true);
+    });
   });
 }

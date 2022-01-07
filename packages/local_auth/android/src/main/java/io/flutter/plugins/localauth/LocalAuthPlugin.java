@@ -113,6 +113,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       case "hasEnrolledFingerprints":
         hasEnrolledFingerprints(result);
         break;
+      case "canAuthenticateWithBiometrics":
+        result.success(canAuthenticateWithBiometrics());
+        break;
       default:
         result.notImplemented();
         break;

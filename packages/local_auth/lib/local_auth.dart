@@ -187,4 +187,15 @@ class LocalAuthentication {
   /// Returns a [Future] bool true or false:
   Future<bool> get hasEnrolledFingerprints async =>
       (await _channel.invokeMethod<bool>('hasEnrolledFingerprints')) ?? false;
+
+  /// Only for Android
+  ///
+  /// returns false in the next cases:
+  /// - No biometric hardware found.
+  /// - No biometrics enrolled on this device.
+  ///
+  /// Returns a [Future] bool true or false:
+  Future<bool> get canAuthenticateWithBiometrics async =>
+      (await _channel.invokeMethod<bool>('canAuthenticateWithBiometrics')) ??
+      false;
 }
