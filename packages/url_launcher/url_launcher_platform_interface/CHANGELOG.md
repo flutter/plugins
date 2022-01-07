@@ -1,6 +1,7 @@
-## NEXT
+## 2.0.5
 
 * Updates code for new analysis options.
+* Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
 
 ## 2.0.4
 
