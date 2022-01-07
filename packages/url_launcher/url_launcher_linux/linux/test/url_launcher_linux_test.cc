@@ -42,7 +42,7 @@ TEST(UrlLauncherPlugin, CanLaunchFailureUnhandled) {
 TEST(UrlLauncherPlugin, CanLaunchFileSuccess) {
   g_autoptr(FlValue) args = fl_value_new_map();
   fl_value_set_string_take(args, "url", fl_value_new_string("file:///"));
-  FlMethodResponse* response = can_launch(nullptr, args);
+  g_autoptr(FlMethodResponse) response = can_launch(nullptr, args);
   ASSERT_NE(response, nullptr);
   ASSERT_TRUE(FL_IS_METHOD_SUCCESS_RESPONSE(response));
   g_autoptr(FlValue) expected = fl_value_new_bool(true);
