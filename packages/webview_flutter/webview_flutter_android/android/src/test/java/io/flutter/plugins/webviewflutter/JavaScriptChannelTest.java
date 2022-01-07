@@ -6,10 +6,11 @@ package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 import io.flutter.plugins.webviewflutter.JavaScriptChannelHostApiImpl.JavaScriptChannelCreator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,40 +22,44 @@ import org.mockito.junit.MockitoRule;
 public class JavaScriptChannelTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public GeneratedAndroidWebView.JavaScriptChannelFlutterApi mockFlutterApi;
+  @Mock public JavaScriptChannelFlutterApiImpl mockFlutterApi;
 
-  InstanceManager testInstanceManager;
-  JavaScriptChannelHostApiImpl testHostApiImpl;
-  JavaScriptChannel testJavaScriptChannel;
+  InstanceManager instanceManager;
+  JavaScriptChannelHostApiImpl hostApiImpl;
+  JavaScriptChannel javaScriptChannel;
 
   @Before
   public void setUp() {
-    testInstanceManager = new InstanceManager();
+    instanceManager = new InstanceManager();
 
     final JavaScriptChannelCreator javaScriptChannelCreator =
         new JavaScriptChannelCreator() {
           @Override
-          JavaScriptChannel createJavaScriptChannel(
-              Long instanceId,
-              JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+          public JavaScriptChannel createJavaScriptChannel(
+              JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi,
               String channelName,
               Handler platformThreadHandler) {
-            testJavaScriptChannel =
+            javaScriptChannel =
                 super.createJavaScriptChannel(
-                    instanceId, javaScriptChannelFlutterApi, channelName, platformThreadHandler);
-            return testJavaScriptChannel;
+                    javaScriptChannelFlutterApi, channelName, platformThreadHandler);
+            return javaScriptChannel;
           }
         };
 
-    testHostApiImpl =
+    hostApiImpl =
         new JavaScriptChannelHostApiImpl(
-            testInstanceManager, javaScriptChannelCreator, mockFlutterApi, new Handler());
-    testHostApiImpl.create(0L, "aChannelName");
+            instanceManager, javaScriptChannelCreator, mockFlutterApi, new Handler());
+    hostApiImpl.create(0L, "aChannelName");
   }
 
   @Test
   public void postMessage() {
-    testJavaScriptChannel.postMessage("A message post.");
-    verify(mockFlutterApi).postMessage(eq(0L), eq("A message post."), any());
+    javaScriptChannel.postMessage("A message post.");
+    verify(mockFlutterApi).postMessage(eq(javaScriptChannel), eq("A message post."), any());
+
+    reset(mockFlutterApi);
+    javaScriptChannel.release();
+    javaScriptChannel.postMessage("a message");
+    verify(mockFlutterApi, never()).postMessage((JavaScriptChannel) any(), any(), any());
   }
 }

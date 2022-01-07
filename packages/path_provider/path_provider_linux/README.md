@@ -1,6 +1,6 @@
 # path\_provider\_linux
 
-The linux implementation of [`path_provider`].
+The linux implementation of [`path_provider`][1].
 
 ## Usage
 

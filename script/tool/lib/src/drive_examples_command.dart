@@ -120,7 +120,9 @@ class DriveExamplesCommand extends PackageLoopingCommand {
           '-d',
           'web-server',
           '--web-port=7357',
-          '--browser-name=chrome'
+          '--browser-name=chrome',
+          if (platform.environment.containsKey('CHROME_EXECUTABLE'))
+            '--chrome-binary=${platform.environment['CHROME_EXECUTABLE']}',
         ],
       if (getBoolArg(kPlatformWindows))
         kPlatformWindows: <String>['-d', 'windows'],

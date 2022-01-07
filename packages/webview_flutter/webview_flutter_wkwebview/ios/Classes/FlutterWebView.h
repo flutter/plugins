@@ -5,6 +5,8 @@
 #import <Flutter/Flutter.h>
 #import <WebKit/WebKit.h>
 
+#import "FLTCookieManager.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -27,10 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView*)view;
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
+
 @end
 
 @interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
+                    cookieManager:(FLTCookieManager*)cookieManager;
 @end
 
 NS_ASSUME_NONNULL_END
