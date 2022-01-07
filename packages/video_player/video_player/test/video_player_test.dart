@@ -287,6 +287,19 @@ void main() {
         expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
             'file://a.avi');
       });
+
+      test('successful initialize on controller with error clears error',
+          () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        fakeVideoPlayerPlatform.forceInitError = true;
+        await controller.initialize().catchError((dynamic e) {});
+        expect(controller.value.hasError, equals(true));
+        fakeVideoPlayerPlatform.forceInitError = false;
+        await controller.initialize();
+        expect(controller.value.hasError, equals(false));
+      });
     });
 
     test('contentUri', () async {
