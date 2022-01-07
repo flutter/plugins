@@ -1,3 +1,11 @@
+## 2.1.3
+
+*  Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
+
+## 2.1.2
+
+* Adopts new analysis options and fixes all violations.
+
 ## 2.1.1
 
 * Add web-relevant docs to platform interface code.

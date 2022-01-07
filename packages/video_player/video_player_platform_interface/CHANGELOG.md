@@ -1,6 +1,10 @@
-## 5.0.1
+## 5.0.2
 
 * Add `allowBackgroundPlayback` to `VideoPlayerOptions`
+
+## 5.0.1
+
+* Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
 
 ## 5.0.0
 

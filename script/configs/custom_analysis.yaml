@@ -12,7 +12,6 @@
 # TODO(ecosystem): Remove everything from this list. See:
 # https://github.com/flutter/flutter/issues/76229
 - camera/camera
-- camera/camera_platform_interface
 - camera/camera_web
 - google_maps_flutter/google_maps_flutter
 - google_maps_flutter/google_maps_flutter_platform_interface
