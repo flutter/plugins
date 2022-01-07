@@ -430,6 +430,14 @@ void main() {
           true,
         ));
       });
+
+      test('setAllowFileAccess', () {
+        webSettings.setAllowFileAccess(true);
+        verify(mockPlatformHostApi.setAllowFileAccess(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
     });
 
     group('$JavaScriptChannel', () {
