@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Fixes `verify` to work with fake objects, not just mocks.
+
 ## 2.1.0
 
 * Introduce `verify`, which prevents use of `const Object()` as instance token.

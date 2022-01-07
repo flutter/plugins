@@ -24,6 +24,10 @@ class ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin extends Mock
     with MockPlatformInterfaceMixin
     implements SamplePluginPlatform {}
 
+class ImplementsSamplePluginPlatformUsingFakePlatformInterfaceMixin extends Fake
+    with MockPlatformInterfaceMixin
+    implements SamplePluginPlatform {}
+
 class ExtendsSamplePluginPlatform extends SamplePluginPlatform {}
 
 class ConstTokenPluginPlatform extends PlatformInterface {
@@ -71,6 +75,12 @@ void main() {
       final SamplePluginPlatform mock =
           ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin();
       SamplePluginPlatform.instance = mock;
+    });
+
+    test('allows faking with `implements`', () {
+      final SamplePluginPlatform fake =
+          ImplementsSamplePluginPlatformUsingFakePlatformInterfaceMixin();
+      SamplePluginPlatform.instance = fake;
     });
 
     test('allows extending', () {
