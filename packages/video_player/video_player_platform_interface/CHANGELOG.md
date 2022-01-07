@@ -1,4 +1,4 @@
-## 5.0.2
+## 5.1.0
 
 * Add `allowBackgroundPlayback` to `VideoPlayerOptions`
 
