@@ -1,4 +1,4 @@
-## NEXT
+## 2.0.3
 
 * Updates code for new analysis options.
 * Fixes canLaunch detection for `file` scheme
