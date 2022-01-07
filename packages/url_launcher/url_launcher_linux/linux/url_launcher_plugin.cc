@@ -50,7 +50,8 @@ static gboolean can_launch_url_with_file_scheme(FlUrlLauncherPlugin* self,
                                                 const gchar* url) {
   g_autoptr(GError) error = nullptr;
   g_autoptr(GFile) file = g_file_new_for_uri(url);
-  g_autoptr(GAppInfo) app_info = g_file_query_default_handler(file, NULL, &error);
+  g_autoptr(GAppInfo) app_info =
+      g_file_query_default_handler(file, NULL, &error);
   gboolean is_launchable = FALSE;
   if (app_info != nullptr) {
     is_launchable = TRUE;
