@@ -41,8 +41,8 @@ class HeatmapId {
 @immutable
 class WeightedLatLng {
   /// Creates an immutable object representing a [WeightedLatLng].
-  WeightedLatLng({
-    required this.point,
+  WeightedLatLng(
+    this.point, {
     this.intensity = 1,
   });
 
@@ -65,7 +65,7 @@ class WeightedLatLng {
 @immutable
 class HeatmapGradient {
   /// Creates an immutable object representing a [HeatmapGradient]
-  HeatmapGradient({
+  const HeatmapGradient({
     required this.colors,
     required this.startPoints,
     this.colorMapSize = 256,
@@ -118,7 +118,7 @@ class Heatmap {
   /// Creates an immutable object representing a heatmap on the map.
   const Heatmap({
     required this.heatmapId,
-    required this.gradient,
+    this.gradient = _defaultGradient,
     this.points = const <WeightedLatLng>[],
     this.opacity = 0.7,
     this.radius = 20,
@@ -127,6 +127,39 @@ class Heatmap {
     this.visible = true,
     this.zIndex = 0,
   });
+
+  // Default gradient with a smooth distribution of transitions.
+  static const HeatmapGradient _defaultGradient = HeatmapGradient(colors: [
+    Color.fromARGB(0, 0, 255, 255),
+    Color.fromARGB(1, 0, 255, 255),
+    Color.fromARGB(1, 0, 191, 255),
+    Color.fromARGB(1, 0, 127, 255),
+    Color.fromARGB(1, 0, 63, 255),
+    Color.fromARGB(1, 0, 0, 255),
+    Color.fromARGB(1, 0, 0, 223),
+    Color.fromARGB(1, 0, 0, 191),
+    Color.fromARGB(1, 0, 0, 159),
+    Color.fromARGB(1, 0, 0, 127),
+    Color.fromARGB(1, 63, 0, 91),
+    Color.fromARGB(1, 127, 0, 63),
+    Color.fromARGB(1, 191, 0, 31),
+    Color.fromARGB(1, 255, 0, 0),
+  ], startPoints: [
+    0.07,
+    0.13,
+    0.2,
+    0.27,
+    0.33,
+    0.4,
+    0.47,
+    0.53,
+    0.6,
+    0.67,
+    0.73,
+    0.8,
+    0.87,
+    0.93
+  ]);
 
   /// Uniquely identifies a [Heatmap].
   final HeatmapId heatmapId;

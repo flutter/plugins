@@ -143,7 +143,7 @@ void main() {
           gradient: HeatmapGradient(
               colors: [Color(0xFF2e6e8e), Color(0xFF21908c)],
               startPoints: [0.25, 0.75]),
-          points: [WeightedLatLng(point: LatLng(1, 1), intensity: 20)],
+          points: [WeightedLatLng(LatLng(1, 1), intensity: 20)],
         )
       ]);
       HeatmapUpdates heatmapUpdates =

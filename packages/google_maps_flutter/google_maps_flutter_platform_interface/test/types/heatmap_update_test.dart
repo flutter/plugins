@@ -26,7 +26,7 @@ void main() {
           gradient: HeatmapGradient(
               colors: [Color(0xFF2e6e8e), Color(0xFF21908c)],
               startPoints: [0.25, 0.75]),
-          points: [WeightedLatLng(point: LatLng(1, 1), intensity: 20)],
+          points: [WeightedLatLng(LatLng(1, 1), intensity: 20)],
         )
       ]);
       final heatmapUpdates = HeatmapUpdates.from(Set(), newHeatmaps);
@@ -43,7 +43,7 @@ void main() {
           gradient: HeatmapGradient(
               colors: [Color(0xFF2e6e8e), Color(0xFF21908c)],
               startPoints: [0.25, 0.75]),
-          points: [WeightedLatLng(point: LatLng(1, 1), intensity: 20)],
+          points: [WeightedLatLng(LatLng(1, 1), intensity: 20)],
         )
       ]);
       final heatmapUpdates = HeatmapUpdates.from(heatmaps, Set());
@@ -59,11 +59,10 @@ void main() {
         gradient: HeatmapGradient(
             colors: [Color(0xFF2e6e8e), Color(0xFF21908c)],
             startPoints: [0.25, 0.75]),
-        points: [WeightedLatLng(point: LatLng(1, 1), intensity: 20)],
+        points: [WeightedLatLng(LatLng(1, 1), intensity: 20)],
       );
       final heatmapChanged = heatmapOriginal.clone();
-      heatmapChanged.points.first =
-          WeightedLatLng(point: LatLng(1, 1), intensity: 40);
+      heatmapChanged.points.first = WeightedLatLng(LatLng(1, 1), intensity: 40);
       final heatmapUpdates = HeatmapUpdates.from(
           Set<Heatmap>.from([heatmapOriginal]),
           Set<Heatmap>.from([heatmapChanged]));

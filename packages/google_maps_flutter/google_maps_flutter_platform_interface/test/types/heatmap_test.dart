@@ -41,7 +41,7 @@ void main() {
         gradient: HeatmapGradient(
             colors: [Color(0xFF2e6e8e), Color(0xFF21908c)],
             startPoints: [0.25, 0.75]),
-        points: [WeightedLatLng(point: LatLng(1, 1), intensity: 20)],
+        points: [WeightedLatLng(LatLng(1, 1), intensity: 20)],
       );
 
       final cloneHeatmap = heatmap.clone();
@@ -60,6 +60,17 @@ void main() {
       expect(cloneHeatmap.gradient.colors.length, 1);
       expect(heatmap.gradient.startPoints[0], 0.1);
       expect(cloneHeatmap.gradient.startPoints[0], 0.25);
+    });
+    test('heatmap is created with default gradient', () {
+      final Heatmap heatmap = Heatmap(
+        heatmapId: HeatmapId("test1"),
+        points: [WeightedLatLng(LatLng(1, 1), intensity: 20)],
+      );
+
+      expect(heatmap.gradient.startPoints.length, 14);
+      expect(heatmap.gradient.colors.length, 14);
+      expect(heatmap.gradient.colors.first, Color.fromARGB(0, 0, 255, 255));
+      expect(heatmap.gradient.startPoints.first, 0.07);
     });
   });
 }
