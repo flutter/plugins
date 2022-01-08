@@ -89,6 +89,27 @@ class HeatmapGradient {
         listEquals(startPoints, typedOther.startPoints) &&
         colorMapSize == typedOther.colorMapSize;
   }
+
+  /// Creates a new [HeatmapGradient] object whose values are the same as this instance,
+  /// unless overwritten by the specified parameters.
+  HeatmapGradient copyWith({
+    List<Color>? colorsParam,
+    List<double>? startPointsParam,
+  }) {
+    return HeatmapGradient(
+      colors: colorsParam ?? colors,
+      startPoints: startPointsParam ?? startPoints,
+    );
+  }
+
+  /// Creates a new [HeatmapGradient] object whose values are the same as this
+  /// instance.
+  HeatmapGradient clone() {
+    return copyWith(
+      colorsParam: List<Color>.of(colors),
+      startPointsParam: List<double>.of(startPoints),
+    );
+  }
 }
 
 /// Paints a heatmap on geographical locations on the map.
@@ -168,6 +189,7 @@ class Heatmap {
   Heatmap clone() {
     return copyWith(
       pointsParam: List<WeightedLatLng>.of(points),
+      gradientParam: gradient.clone(),
     );
   }
 

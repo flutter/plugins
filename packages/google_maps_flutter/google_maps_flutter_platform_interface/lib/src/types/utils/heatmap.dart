@@ -49,16 +49,16 @@ dynamic _heatmapToJson(Heatmap heatmap) {
   }
 
   if (heatmap.points != null) {
-    json['points'] = _heatmapPointsToJson(heatmap);
+    json['points'] = _heatmapPointsToJson(heatmap.points);
   }
 
   return json;
 }
 
 /// Converts this heatmap's points to something serializable in JSON.
-dynamic _heatmapPointsToJson(Heatmap heatmap) {
+dynamic _heatmapPointsToJson(Iterable<WeightedLatLng> points) {
   final List<dynamic> result = <dynamic>[];
-  for (final WeightedLatLng point in heatmap.points) {
+  for (final point in points) {
     result.add(_weightedLatLngToJson(point));
   }
   return result;

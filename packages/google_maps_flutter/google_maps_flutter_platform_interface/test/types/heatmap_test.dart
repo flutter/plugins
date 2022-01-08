@@ -52,6 +52,14 @@ void main() {
       // Check it actually created a new object
       expect(
           identityHashCode(heatmap) == identityHashCode(cloneHeatmap), isFalse);
+
+      // Check the gradient is not shared
+      cloneHeatmap.gradient.colors.removeLast();
+      heatmap.gradient.startPoints[0] = 0.1;
+      expect(heatmap.gradient.colors.length, 2);
+      expect(cloneHeatmap.gradient.colors.length, 1);
+      expect(heatmap.gradient.startPoints[0], 0.1);
+      expect(cloneHeatmap.gradient.startPoints[0], 0.25);
     });
   });
 }
