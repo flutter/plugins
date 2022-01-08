@@ -1,6 +1,6 @@
 ## 2.1.5
 
-Add an interface to define Heatmap behaviour
+* Add an interface to define Heatmap behaviour
 
 ## 2.1.4
 
