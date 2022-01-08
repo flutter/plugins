@@ -63,6 +63,21 @@ class ImplementsVerifyTokenPluginPlatformUsingMockPlatformInterfaceMixin
 
 class ExtendsVerifyTokenPluginPlatform extends VerifyTokenPluginPlatform {}
 
+class ConstVerifyTokenPluginPlatform extends PlatformInterface {
+  ConstVerifyTokenPluginPlatform() : super(token: _token);
+
+  static const Object _token = Object(); // invalid
+
+  static set instance(ConstVerifyTokenPluginPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+  }
+}
+
+class ImplementsConstVerifyTokenPluginPlatform extends PlatformInterface
+    implements ConstVerifyTokenPluginPlatform {
+  ImplementsConstVerifyTokenPluginPlatform() : super(token: const Object());
+}
+
 void main() {
   group('`verify`', () {
     test('prevents implementation with `implements`', () {
@@ -111,6 +126,11 @@ void main() {
 
     test('allows extending', () {
       VerifyTokenPluginPlatform.instance = ExtendsVerifyTokenPluginPlatform();
+    });
+
+    test('does not prevent `const Object()` token', () {
+      ConstVerifyTokenPluginPlatform.instance =
+          ImplementsConstVerifyTokenPluginPlatform();
     });
   });
 }
