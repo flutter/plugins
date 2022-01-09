@@ -1,6 +1,7 @@
-## NEXT
+## 1.0.1
 
 * Updates code for analyzer changes.
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
 
 ## 1.0.0
 
