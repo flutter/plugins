@@ -4,7 +4,7 @@
 
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 // GApplication* g_application_get_default();
 typedef _GApplicationGetDefaultC = IntPtr Function();

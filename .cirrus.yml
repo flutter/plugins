@@ -9,7 +9,7 @@ env:
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+    - git fetch origin main # To set FETCH_HEAD for "git merge-base" to work
     - cd script/tool
     - dart pub get
 
