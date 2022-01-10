@@ -312,7 +312,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     result.success(isDeviceSupported());
   }
 
-  private void hasEnrolledFingerprints(Result result) { 
+  private void hasEnrolledFingerprints(Result result) {
     // API 23 - 28 with fingerprint
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fingerprintManager != null) {
       result.success(fingerprintManager.hasEnrolledFingerprints());
