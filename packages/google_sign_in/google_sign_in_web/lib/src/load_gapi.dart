@@ -8,7 +8,7 @@ library gapi_onload;
 import 'dart:async';
 
 import 'package:js/js.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 import 'generated/gapi.dart' as gapi;
 import 'utils.dart' show injectJSLibraries;
