@@ -10,8 +10,8 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 
 import 'auth_strings.dart';

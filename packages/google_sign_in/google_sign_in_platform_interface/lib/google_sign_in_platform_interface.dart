@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:meta/meta.dart' show visibleForTesting;
+
+import 'package:flutter/foundation.dart' show visibleForTesting;
+
 import 'src/method_channel_google_sign_in.dart';
 import 'src/types.dart';
 

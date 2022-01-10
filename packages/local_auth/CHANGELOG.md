@@ -1,7 +1,8 @@
 ## 1.1.10
 * Added get `hasEnrolledFingerprints` on Android.
 * Added get `canAuthenticateWithBiometrics` on Android.
-  
+* Removes dependency on `meta`.
+
 ## 1.1.9
 
 * Updates code for analysis option changes.
