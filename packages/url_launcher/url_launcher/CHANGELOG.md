@@ -1,3 +1,7 @@
+## 6.0.18
+
+* Removes dependency on `meta`.
+
 ## 6.0.17
 
 * Updates code for new analysis options.

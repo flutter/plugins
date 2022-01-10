@@ -1,6 +1,6 @@
 ## 2.1.4
 
-*  Fixed asynchronous exceptions handling of the `initializeCamera` method.
+* Removes dependency on `meta`.
 
 ## 2.1.3
 
