@@ -1,3 +1,7 @@
+## 2.1.4
+
+*  Fixed asynchronous exceptions handling of the `initializeCamera` method.
+
 ## 2.1.3
 
 *  Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
