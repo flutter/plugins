@@ -1,6 +1,10 @@
-## 2.4.2
+## 2.4.3
 
 * Removes dependency on `meta`.
+
+## 2.4.2
+
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
 
 ## 2.4.1
 
