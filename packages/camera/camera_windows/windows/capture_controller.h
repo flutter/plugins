@@ -13,6 +13,7 @@
 #include <mferror.h>
 #include <mfidl.h>
 #include <windows.h>
+#include <wrl/client.h>
 
 #include <chrono>
 #include <memory>
@@ -22,6 +23,7 @@
 #include "capture_engine_listener.h"
 
 namespace camera_windows {
+using Microsoft::WRL::ComPtr;
 
 enum ResolutionPreset {
   /// AUTO
@@ -51,16 +53,6 @@ enum RecordingType {
   RECORDING_TYPE_CONTINUOUS,
   RECORDING_TYPE_TIMED
 };
-
-template <class T>
-void Release(T** ppT) {
-  static_assert(std::is_base_of<IUnknown, T>::value,
-                "T must inherit from IUnknown");
-  if (*ppT) {
-    (*ppT)->Release();
-    *ppT = NULL;
-  }
-}
 
 class VideoCaptureDeviceEnumerator {
  protected:
@@ -155,17 +147,17 @@ class CaptureControllerImpl : public CaptureController,
 
   // CaptureEngine objects
   bool capture_engine_initialization_pending_ = false;
-  IMFCaptureEngine* capture_engine_ = nullptr;
-  CaptureEngineListener* capture_engine_callback_handler_ = nullptr;
+  ComPtr<IMFCaptureEngine> capture_engine_;
+  ComPtr<CaptureEngineListener> capture_engine_callback_handler_;
 
-  IMFDXGIDeviceManager* dxgi_device_manager_ = nullptr;
-  ID3D11Device* dx11_device_ = nullptr;
+  ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;
+  ComPtr<ID3D11Device> dx11_device_;
   // ID3D12Device* dx12_device_ = nullptr;
   UINT dx_device_reset_token_ = 0;
 
   // Sources
-  IMFMediaSource* video_source_ = nullptr;
-  IMFMediaSource* audio_source_ = nullptr;
+  ComPtr<IMFMediaSource> video_source_;
+  ComPtr<IMFMediaSource> audio_source_;
 
   // Texture
   int64_t texture_id_ = -1;
@@ -185,8 +177,8 @@ class CaptureControllerImpl : public CaptureController,
   bool previewing_ = false;
   uint32_t preview_frame_width_ = 0;
   uint32_t preview_frame_height_ = 0;
-  IMFMediaType* base_preview_media_type = nullptr;
-  IMFCapturePreviewSink* preview_sink_ = nullptr;
+  ComPtr<IMFMediaType> base_preview_media_type_;
+  ComPtr<IMFCapturePreviewSink> preview_sink_;
 
   // Photo / Record
   bool pending_image_capture_ = false;
@@ -199,9 +191,9 @@ class CaptureControllerImpl : public CaptureController,
 
   uint32_t capture_frame_width_ = 0;
   uint32_t capture_frame_height_ = 0;
-  IMFMediaType* base_capture_media_type = nullptr;
-  IMFCapturePhotoSink* photo_sink_ = nullptr;
-  IMFCaptureRecordSink* record_sink_ = nullptr;
+  ComPtr<IMFMediaType> base_capture_media_type_;
+  ComPtr<IMFCapturePhotoSink> photo_sink_;
+  ComPtr<IMFCaptureRecordSink> record_sink_;
   std::string pending_picture_path_ = "";
   std::string pending_record_path_ = "";
 

@@ -5,12 +5,15 @@
 #include "capture_controller.h"
 
 #include <wincodec.h>
+#include <wrl/client.h>
 
 #include <cassert>
 
 #include "string_utils.h"
 
 namespace camera_windows {
+
+using Microsoft::WRL::ComPtr;
 
 struct FlutterDesktop_Pixel {
   BYTE r = 0;
@@ -38,7 +41,7 @@ CaptureControllerImpl::~CaptureControllerImpl() {
 // static
 bool CaptureControllerImpl::EnumerateVideoCaptureDeviceSources(
     IMFActivate ***devices, UINT32 *count) {
-  IMFAttributes *attributes = nullptr;
+  ComPtr<IMFAttributes> attributes;
 
   HRESULT hr = MFCreateAttributes(&attributes, 1);
 
@@ -48,23 +51,22 @@ bool CaptureControllerImpl::EnumerateVideoCaptureDeviceSources(
   }
 
   if (SUCCEEDED(hr)) {
-    hr = MFEnumDeviceSources(attributes, devices, count);
+    hr = MFEnumDeviceSources(attributes.Get(), devices, count);
   }
 
-  Release(&attributes);
   return SUCCEEDED(hr);
 }
 
 HRESULT BuildMediaTypeForVideoPreview(IMFMediaType *src_media_type,
                                       IMFMediaType **preview_media_type) {
-  Release(preview_media_type);
-  IMFMediaType *new_media_type = nullptr;
+  assert(src_media_type);
+  ComPtr<IMFMediaType> new_media_type;
 
   HRESULT hr = MFCreateMediaType(&new_media_type);
 
   // First clone everything from original media type
   if (SUCCEEDED(hr)) {
-    hr = src_media_type->CopyAllItems(new_media_type);
+    hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
   if (SUCCEEDED(hr)) {
@@ -77,11 +79,9 @@ HRESULT BuildMediaTypeForVideoPreview(IMFMediaType *src_media_type,
   }
 
   if (SUCCEEDED(hr)) {
-    *preview_media_type = new_media_type;
-    (*preview_media_type)->AddRef();
+    new_media_type.CopyTo(preview_media_type);
   }
 
-  Release(&new_media_type);
   return hr;
 }
 
@@ -89,14 +89,14 @@ HRESULT BuildMediaTypeForVideoPreview(IMFMediaType *src_media_type,
 HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType *src_media_type,
                                       IMFMediaType **photo_media_type,
                                       GUID image_format) {
-  Release(photo_media_type);
-  IMFMediaType *new_media_type = nullptr;
+  assert(src_media_type);
+  ComPtr<IMFMediaType> new_media_type;
 
   HRESULT hr = MFCreateMediaType(&new_media_type);
 
   // First clone everything from original media type
   if (SUCCEEDED(hr)) {
-    hr = src_media_type->CopyAllItems(new_media_type);
+    hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
   if (SUCCEEDED(hr)) {
@@ -108,11 +108,9 @@ HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType *src_media_type,
   }
 
   if (SUCCEEDED(hr)) {
-    *photo_media_type = new_media_type;
-    (*photo_media_type)->AddRef();
+    new_media_type.CopyTo(photo_media_type);
   }
 
-  Release(&new_media_type);
   return hr;
 }
 
@@ -120,14 +118,14 @@ HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType *src_media_type,
 HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
                                       IMFMediaType **video_record_media_type,
                                       GUID capture_format) {
-  Release(video_record_media_type);
-  IMFMediaType *new_media_type = nullptr;
+  assert(src_media_type);
+  ComPtr<IMFMediaType> new_media_type;
 
   HRESULT hr = MFCreateMediaType(&new_media_type);
 
   // First clone everything from original media type
   if (SUCCEEDED(hr)) {
-    hr = src_media_type->CopyAllItems(new_media_type);
+    hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
   if (SUCCEEDED(hr)) {
@@ -135,15 +133,25 @@ HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
   }
 
   if (SUCCEEDED(hr)) {
-    *video_record_media_type = new_media_type;
-    (*video_record_media_type)->AddRef();
+    new_media_type.CopyTo(video_record_media_type);
   }
 
-  Release(&new_media_type);
   return hr;
 }
 
 // Queries interface object from collection
+template <class Q>
+HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
+                            Q **ppObj) {
+  ComPtr<IUnknown> pUnk;
+  HRESULT hr = pCollection->GetElement(index, pUnk.GetAddressOf());
+  if (SUCCEEDED(hr)) {
+    hr = pUnk->QueryInterface(IID_PPV_ARGS(ppObj));
+  }
+  return hr;
+}
+
+/*
 template <class Q>
 HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
                             Q **ppObj) {
@@ -154,15 +162,13 @@ HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
     pUnk->Release();
   }
   return hr;
-}
+}*/
 
 HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
-  Release(audio_record_media_type);
-
-  IMFAttributes *audio_output_attributes = nullptr;
-  IMFCollection *available_output_types = nullptr;
-  IMFMediaType *src_media_type = nullptr;
-  IMFMediaType *new_media_type = nullptr;
+  ComPtr<IMFAttributes> audio_output_attributes;
+  ComPtr<IMFMediaType> src_media_type;
+  ComPtr<IMFMediaType> new_media_type;
+  ComPtr<IMFCollection> available_output_types;
   DWORD mt_count = 0;
 
   HRESULT hr = MFCreateAttributes(&audio_output_attributes, 1);
@@ -176,13 +182,14 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
     DWORD mft_flags = (MFT_ENUM_FLAG_ALL & (~MFT_ENUM_FLAG_FIELDOFUSE)) |
                       MFT_ENUM_FLAG_SORTANDFILTER;
 
-    hr = MFTranscodeGetAudioOutputAvailableTypes(MFAudioFormat_AAC, mft_flags,
-                                                 audio_output_attributes,
-                                                 &available_output_types);
+    hr = MFTranscodeGetAudioOutputAvailableTypes(
+        MFAudioFormat_AAC, mft_flags, audio_output_attributes.Get(),
+        available_output_types.GetAddressOf());
   }
 
   if (SUCCEEDED(hr)) {
-    hr = GetCollectionObject(available_output_types, 0, &src_media_type);
+    hr = GetCollectionObject(available_output_types.Get(), 0,
+                             src_media_type.GetAddressOf());
   }
 
   if (SUCCEEDED(hr)) {
@@ -200,19 +207,12 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
   }
 
   if (SUCCEEDED(hr)) {
-    hr = src_media_type->CopyAllItems(new_media_type);
+    hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
   if (SUCCEEDED(hr)) {
-    // Point target media type to new media type
-    *audio_record_media_type = new_media_type;
-    (*audio_record_media_type)->AddRef();
+    new_media_type.CopyTo(audio_record_media_type);
   }
-
-  Release(&audio_output_attributes);
-  Release(&available_output_types);
-  Release(&src_media_type);
-  Release(&new_media_type);
 
   return hr;
 }
@@ -220,11 +220,11 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
 // Uses first audio source to capture audio. Enumerating audio sources via
 // platform interface is not supported.
 HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
-  this->audio_source_ = nullptr;
+  audio_source_ = nullptr;
   IMFActivate **devices = nullptr;
   UINT32 count = 0;
 
-  IMFAttributes *attributes = nullptr;
+  ComPtr<IMFAttributes> attributes;
   HRESULT hr = MFCreateAttributes(&attributes, 1);
 
   if (SUCCEEDED(hr)) {
@@ -233,10 +233,8 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   }
 
   if (SUCCEEDED(hr)) {
-    hr = MFEnumDeviceSources(attributes, &devices, &count);
+    hr = MFEnumDeviceSources(attributes.Get(), &devices, &count);
   }
-
-  Release(&attributes);
 
   if (SUCCEEDED(hr) && count > 0) {
     wchar_t *audio_device_id;
@@ -248,7 +246,7 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
         &audio_device_id_size);
 
     if (SUCCEEDED(hr)) {
-      IMFAttributes *audio_capture_source_attributes = nullptr;
+      ComPtr<IMFAttributes> audio_capture_source_attributes;
       hr = MFCreateAttributes(&audio_capture_source_attributes, 2);
 
       if (SUCCEEDED(hr)) {
@@ -264,13 +262,12 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
       }
 
       if (SUCCEEDED(hr)) {
-        hr = MFCreateDeviceSource(audio_capture_source_attributes,
-                                  &this->audio_source_);
+        hr = MFCreateDeviceSource(audio_capture_source_attributes.Get(),
+                                  audio_source_.GetAddressOf());
       }
-      Release(&audio_capture_source_attributes);
     }
 
-    ::CoTaskMemFree(audio_device_id);
+    CoTaskMemFree(audio_device_id);
   }
 
   CoTaskMemFree(devices);
@@ -280,9 +277,9 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
 
 HRESULT CaptureControllerImpl::CreateVideoCaptureSourceForDevice(
     const std::string &video_device_id) {
-  this->video_source_ = nullptr;
+  video_source_ = nullptr;
 
-  IMFAttributes *video_capture_source_attributes = nullptr;
+  ComPtr<IMFAttributes> video_capture_source_attributes;
 
   HRESULT hr = MFCreateAttributes(&video_capture_source_attributes, 2);
 
@@ -299,62 +296,40 @@ HRESULT CaptureControllerImpl::CreateVideoCaptureSourceForDevice(
   }
 
   if (SUCCEEDED(hr)) {
-    hr = MFCreateDeviceSource(video_capture_source_attributes,
-                              &this->video_source_);
+    hr = MFCreateDeviceSource(video_capture_source_attributes.Get(),
+                              video_source_.GetAddressOf());
   }
-
-  Release(&video_capture_source_attributes);
 
   return hr;
 }
 
 // Create DX11 Device and D3D Manager
-// TODO: Check if DX12 device can be used with flutter:
+// TODO: If DX12 device can be used with flutter:
 //       Separate CreateD3DManagerWithDX12Device functionality
 //       can be written if needed
-//       D3D_FEATURE_LEVEL min_feature_level = D3D_FEATURE_LEVEL_9_1;
-//       D3D12CreateDevice(nullptr,min_feature_level,...);
 HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
   HRESULT hr = S_OK;
-  /*
-  // Captures selected feature level
-  D3D_FEATURE_LEVEL feature_level;
-
-  // List of allowed feature levels
-  static const D3D_FEATURE_LEVEL allowed_feature_levels[] = {
-      D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
-      D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
-      D3D_FEATURE_LEVEL_9_1};
-
-  hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-                         D3D11_CREATE_DEVICE_VIDEO_SUPPORT,
-                         allowed_feature_levels,
-                        ARRAYSIZE(allowed_feature_levels), D3D11_SDK_VERSION,
-                         &dx11_device_, &feature_level, nullptr );
-  */
-
   hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
                          D3D11_CREATE_DEVICE_VIDEO_SUPPORT, nullptr, 0,
                          D3D11_SDK_VERSION, &dx11_device_, nullptr, nullptr);
 
   if (SUCCEEDED(hr)) {
     // Enable multithread protection
-    ID3D10Multithread *multi_thread;
-    hr = dx11_device_->QueryInterface(IID_PPV_ARGS(&multi_thread));
+    ComPtr<ID3D10Multithread> multi_thread;
+    hr = dx11_device_.As(&multi_thread);
     if (SUCCEEDED(hr)) {
       multi_thread->SetMultithreadProtected(TRUE);
     }
-    Release(&multi_thread);
   }
 
   if (SUCCEEDED(hr)) {
     hr = MFCreateDXGIDeviceManager(&dx_device_reset_token_,
-                                   &dxgi_device_manager_);
+                                   dxgi_device_manager_.GetAddressOf());
   }
 
   if (SUCCEEDED(hr)) {
-    hr =
-        dxgi_device_manager_->ResetDevice(dx11_device_, dx_device_reset_token_);
+    hr = dxgi_device_manager_->ResetDevice(dx11_device_.Get(),
+                                           dx_device_reset_token_);
   }
 
   return hr;
@@ -367,8 +342,8 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine(
   IMFCaptureEngineClassFactory *capture_engine_factory = nullptr;
 
   if (!capture_engine_callback_handler_) {
-    capture_engine_callback_handler_ = new CaptureEngineListener(this);
-    capture_engine_callback_handler_->AddRef();
+    capture_engine_callback_handler_ =
+        ComPtr<CaptureEngineListener>(new CaptureEngineListener(this));
   }
 
   if (SUCCEEDED(hr)) {
@@ -381,7 +356,7 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine(
 
   if (SUCCEEDED(hr)) {
     hr = attributes->SetUnknown(MF_CAPTURE_ENGINE_D3D_MANAGER,
-                                dxgi_device_manager_);
+                                dxgi_device_manager_.Get());
   }
 
   if (SUCCEEDED(hr)) {
@@ -412,8 +387,9 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine(
   }
 
   if (SUCCEEDED(hr)) {
-    hr = capture_engine_->Initialize(capture_engine_callback_handler_,
-                                     attributes, audio_source_, video_source_);
+    hr = capture_engine_->Initialize(capture_engine_callback_handler_.Get(),
+                                     attributes, audio_source_.Get(),
+                                     video_source_.Get());
   }
 
   return hr;
@@ -446,31 +422,32 @@ void CaptureControllerImpl::ResetCaptureEngineState() {
   max_video_duration_ms_ = -1;
 
   // Preview
-  Release(&preview_sink_);
+  preview_sink_ = nullptr;
   preview_frame_width_ = 0;
   preview_frame_height_ = 0;
 
   // Photo / Record
-  Release(&photo_sink_);
-  Release(&record_sink_);
+  photo_sink_ = nullptr;
+  record_sink_ = nullptr;
   capture_frame_width_ = 0;
   capture_frame_height_ = 0;
 
   // CaptureEngine
-  Release(&capture_engine_callback_handler_);
-  Release(&capture_engine_);
+  capture_engine_callback_handler_ = nullptr;
+  capture_engine_ = nullptr;
 
-  Release(&audio_source_);
-  Release(&video_source_);
+  audio_source_ = nullptr;
+  video_source_ = nullptr;
 
-  Release(&base_preview_media_type);
-  Release(&base_capture_media_type);
+  base_preview_media_type_ = nullptr;
+  base_capture_media_type_ = nullptr;
 
   if (dxgi_device_manager_) {
-    dxgi_device_manager_->ResetDevice(dx11_device_, dx_device_reset_token_);
+    dxgi_device_manager_->ResetDevice(dx11_device_.Get(),
+                                      dx_device_reset_token_);
   }
-  Release(&dxgi_device_manager_);
-  Release(&dx11_device_);
+  dxgi_device_manager_ = nullptr;
+  dx11_device_ = nullptr;
 
   // Texture
   if (texture_registrar_ && texture_id_ > -1) {
@@ -829,37 +806,33 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
     return E_FAIL;
   }
 
-  IMFCaptureSource *source = nullptr;
+  ComPtr<IMFCaptureSource> source;
   HRESULT hr = capture_engine_->GetSource(&source);
 
   if (SUCCEEDED(hr)) {
-    IMFMediaType *media_type = nullptr;
+    ComPtr<IMFMediaType> media_type;
     uint32_t max_height = GetMaxPreviewHeight();
 
     // Loop native media types
     for (int i = 0;; i++) {
       // Release media type if exists from previous loop;
-      Release(&media_type);
+      media_type = nullptr;
 
       if (FAILED(source->GetAvailableDeviceMediaType(
               (DWORD)
                   MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
-              i, &media_type))) {
+              i, media_type.GetAddressOf()))) {
         break;
       }
 
       uint32_t frame_width;
       uint32_t frame_height;
-      if (SUCCEEDED(MFGetAttributeSize(media_type, MF_MT_FRAME_SIZE,
+      if (SUCCEEDED(MFGetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
                                        &frame_width, &frame_height))) {
         // Update media type for photo and record capture
         if (capture_frame_width_ < frame_width ||
             capture_frame_height_ < frame_height) {
-          // Release old base type if allocated
-          Release(&base_capture_media_type);
-
-          base_capture_media_type = media_type;
-          base_capture_media_type->AddRef();
+          base_capture_media_type_ = media_type;
 
           capture_frame_width_ = frame_width;
           capture_frame_height_ = frame_height;
@@ -869,27 +842,21 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
         if (frame_height <= max_height &&
             (preview_frame_width_ < frame_width ||
              preview_frame_height_ < frame_height)) {
-          // Release old base type if allocated
-          Release(&base_preview_media_type);
-
-          base_preview_media_type = media_type;
-          base_preview_media_type->AddRef();
+          base_preview_media_type_ = media_type;
 
           preview_frame_width_ = frame_width;
           preview_frame_height_ = frame_height;
         }
       }
     }
-    Release(&media_type);
 
-    if (base_preview_media_type && base_capture_media_type) {
+    if (base_preview_media_type_ && base_capture_media_type_) {
       hr = S_OK;
     } else {
       hr = E_FAIL;
     }
   }
 
-  Release(&source);
   return hr;
 }
 
@@ -903,43 +870,46 @@ HRESULT CaptureControllerImpl::InitPreviewSink() {
     return hr;
   }
 
-  IMFMediaType *preview_media_type = nullptr;
-  IMFCaptureSink *capture_sink = nullptr;
+  ComPtr<IMFMediaType> preview_media_type;
+  ComPtr<IMFCaptureSink> capture_sink;
 
   // Get sink with preview type;
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW,
                                 &capture_sink);
 
   if (SUCCEEDED(hr)) {
-    hr = capture_sink->QueryInterface(IID_PPV_ARGS(&preview_sink_));
+    hr = capture_sink.As(&preview_sink_);
   }
 
-  if (SUCCEEDED(hr) && !base_preview_media_type) {
+  if (SUCCEEDED(hr)) {
+    hr = preview_sink_->RemoveAllStreams();
+  }
+
+  if (SUCCEEDED(hr) && !base_preview_media_type_) {
     hr = FindBaseMediaTypes();
   }
 
   if (SUCCEEDED(hr)) {
-    hr = BuildMediaTypeForVideoPreview(base_preview_media_type,
-                                       &preview_media_type);
+    hr = BuildMediaTypeForVideoPreview(base_preview_media_type_.Get(),
+                                       preview_media_type.GetAddressOf());
   }
 
   if (SUCCEEDED(hr)) {
     DWORD preview_sink_stream_index;
     hr = preview_sink_->AddStream(
         (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
-        preview_media_type, nullptr, &preview_sink_stream_index);
+        preview_media_type.Get(), nullptr, &preview_sink_stream_index);
 
     if (SUCCEEDED(hr)) {
-      hr = preview_sink_->SetSampleCallback(preview_sink_stream_index,
-                                            capture_engine_callback_handler_);
+      hr = preview_sink_->SetSampleCallback(
+          preview_sink_stream_index, capture_engine_callback_handler_.Get());
     }
   }
 
   if (FAILED(hr)) {
-    Release(&preview_sink_);
+    preview_sink_ = nullptr;
   }
 
-  Release(&capture_sink);
   return hr;
 }
 
@@ -951,30 +921,31 @@ HRESULT CaptureControllerImpl::InitPhotoSink(const std::string &filepath) {
     hr = photo_sink_->SetOutputFileName(Utf16FromUtf8(filepath).c_str());
 
     if (FAILED(hr)) {
-      Release(&photo_sink_);
+      photo_sink_ = nullptr;
     }
 
     return hr;
   }
 
-  IMFMediaType *photo_media_type = nullptr;
-  IMFCaptureSink *capture_sink = nullptr;
+  ComPtr<IMFMediaType> photo_media_type;
+  ComPtr<IMFCaptureSink> capture_sink;
 
   // Get sink with photo type;
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PHOTO,
                                 &capture_sink);
 
   if (SUCCEEDED(hr)) {
-    hr = capture_sink->QueryInterface(IID_PPV_ARGS(&photo_sink_));
+    hr = capture_sink.As(&photo_sink_);
   }
 
-  if (SUCCEEDED(hr) && !base_capture_media_type) {
+  if (SUCCEEDED(hr) && !base_capture_media_type_) {
     hr = FindBaseMediaTypes();
   }
 
   if (SUCCEEDED(hr)) {
-    hr = BuildMediaTypeForPhotoCapture(
-        base_capture_media_type, &photo_media_type, GUID_ContainerFormatJpeg);
+    hr = BuildMediaTypeForPhotoCapture(base_capture_media_type_.Get(),
+                                       photo_media_type.GetAddressOf(),
+                                       GUID_ContainerFormatJpeg);
   }
 
   if (SUCCEEDED(hr)) {
@@ -986,7 +957,7 @@ HRESULT CaptureControllerImpl::InitPhotoSink(const std::string &filepath) {
     DWORD dwSinkStreamIndex;
     hr = photo_sink_->AddStream(
         (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_PHOTO,
-        photo_media_type, nullptr, &dwSinkStreamIndex);
+        photo_media_type.Get(), nullptr, &dwSinkStreamIndex);
   }
 
   if (SUCCEEDED(hr)) {
@@ -994,11 +965,8 @@ HRESULT CaptureControllerImpl::InitPhotoSink(const std::string &filepath) {
   }
 
   if (FAILED(hr)) {
-    Release(&photo_sink_);
+    photo_sink_ = nullptr;
   }
-
-  Release(&capture_sink);
-  Release(&photo_media_type);
 
   return hr;
 }
@@ -1011,24 +979,24 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
     hr = record_sink_->SetOutputFileName(Utf16FromUtf8(filepath).c_str());
 
     if (FAILED(hr)) {
-      Release(&record_sink_);
+      record_sink_ = nullptr;
     }
 
     return hr;
   }
 
-  IMFMediaType *video_record_media_type = nullptr;
-  IMFCaptureSink *capture_sink = nullptr;
+  ComPtr<IMFMediaType> video_record_media_type;
+  ComPtr<IMFCaptureSink> capture_sink;
 
   // Get sink with record type;
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_RECORD,
                                 &capture_sink);
 
   if (SUCCEEDED(hr)) {
-    hr = capture_sink->QueryInterface(IID_PPV_ARGS(&record_sink_));
+    hr = capture_sink.As(&record_sink_);
   }
 
-  if (SUCCEEDED(hr) && !base_capture_media_type) {
+  if (SUCCEEDED(hr) && !base_capture_media_type_) {
     hr = FindBaseMediaTypes();
   }
 
@@ -1038,27 +1006,31 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   }
 
   if (SUCCEEDED(hr)) {
-    hr = BuildMediaTypeForVideoCapture(
-        base_capture_media_type, &video_record_media_type, MFVideoFormat_H264);
+    hr = BuildMediaTypeForVideoCapture(base_capture_media_type_.Get(),
+                                       video_record_media_type.GetAddressOf(),
+                                       MFVideoFormat_H264);
   }
 
   if (SUCCEEDED(hr)) {
     DWORD video_record_sink_stream_index;
     hr = record_sink_->AddStream(
         (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_RECORD,
-        video_record_media_type, nullptr, &video_record_sink_stream_index);
+        video_record_media_type.Get(), nullptr,
+        &video_record_sink_stream_index);
   }
 
-  IMFMediaType *audio_record_media_type = nullptr;
+  ComPtr<IMFMediaType> audio_record_media_type;
   if (SUCCEEDED(hr) && enable_audio_record_) {
     HRESULT audio_capture_hr = S_OK;
-    audio_capture_hr = BuildMediaTypeForAudioCapture(&audio_record_media_type);
+    audio_capture_hr =
+        BuildMediaTypeForAudioCapture(audio_record_media_type.GetAddressOf());
 
     if (SUCCEEDED(audio_capture_hr)) {
       DWORD audio_record_sink_stream_index;
       hr = record_sink_->AddStream(
           (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_AUDIO,
-          audio_record_media_type, nullptr, &audio_record_sink_stream_index);
+          audio_record_media_type.Get(), nullptr,
+          &audio_record_sink_stream_index);
     }
   }
 
@@ -1067,12 +1039,9 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   }
 
   if (FAILED(hr)) {
-    Release(&record_sink_);
+    record_sink_ = nullptr;
   }
 
-  Release(&capture_sink);
-  Release(&video_record_media_type);
-  Release(&audio_record_media_type);
   return hr;
 }
 
