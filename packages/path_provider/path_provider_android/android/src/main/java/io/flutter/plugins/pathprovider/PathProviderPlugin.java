@@ -243,7 +243,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
   }
 
   private List<String> getPathProviderExternalCacheDirectories() {
-    final List<String> paths = new ArrayList<>();
+    final List<String> paths = new ArrayList<String>();
 
     if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
       for (File dir : context.getExternalCacheDirs()) {
@@ -262,7 +262,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
   }
 
   private List<String> getPathProviderExternalStorageDirectories(String type) {
-    final List<String> paths = new ArrayList<>();
+    final List<String> paths = new ArrayList<String>();
 
     if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
       for (File dir : context.getExternalFilesDirs(type)) {

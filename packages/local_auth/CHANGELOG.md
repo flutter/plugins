@@ -1,3 +1,12 @@
+## 1.1.10
+
+* Removes dependency on `meta`.
+
+## 1.1.9
+
+* Updates code for analysis option changes.
+* Updates Android compileSdkVersion to 31.
+
 ## 1.1.8
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
