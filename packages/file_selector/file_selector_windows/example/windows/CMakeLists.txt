@@ -48,6 +48,8 @@ add_subdirectory("runner")
 
 # Enable the test target
 set(include_file_selector_windows_tests TRUE)
+# Provide an alias for the test target using the name expected by repo tooling.
+add_custom_target(unit_tests DEPENDS file_selector_windows_test)
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
