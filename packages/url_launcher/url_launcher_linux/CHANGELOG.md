@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Fixes canLaunch detection for URIs addressing on local or network file systems
+
 ## 2.0.3
 
 * Updates code for new analysis options.
