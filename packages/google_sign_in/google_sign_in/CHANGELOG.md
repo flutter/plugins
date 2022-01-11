@@ -1,5 +1,6 @@
 ## 5.2.3
-* Bump Android dependency on com.google.android.gms:play-services-auth and remove the need for jetifier.
+
+* Bumps the Android dependency on `com.google.android.gms:play-services-auth` and therefore removes the need for `jetifier`.
 
 ## 5.2.2
 
