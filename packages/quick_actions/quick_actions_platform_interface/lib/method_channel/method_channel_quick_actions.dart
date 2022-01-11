@@ -4,7 +4,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:quick_actions_platform_interface/types/types.dart';
 
 import '../platform_interface/quick_actions_platform.dart';

@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updates code for new analysis options.
+* Fix minor memory leak in Linux url_launcher tests.
 
 ## 2.0.2
 

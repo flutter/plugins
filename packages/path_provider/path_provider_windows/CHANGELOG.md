@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Removes dependency on `meta`.
+
 ## 2.0.4
 
 * Removed obsolete `pluginClass: none` from pubpsec.
