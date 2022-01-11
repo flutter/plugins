@@ -1,3 +1,7 @@
+## 2.2.11
+
+* Removes dependency on `meta`.
+
 ## 2.2.10
 
 * iOS: Updates texture on `seekTo`.
