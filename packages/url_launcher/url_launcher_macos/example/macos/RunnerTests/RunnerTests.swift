@@ -146,6 +146,7 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertTrue(result is FlutterError)
+        expectation.fulfill()
       })
 
     wait(for: [expectation], timeout: 10.0)
