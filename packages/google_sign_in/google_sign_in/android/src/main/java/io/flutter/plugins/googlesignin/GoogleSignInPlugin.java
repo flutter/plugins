@@ -137,7 +137,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
         String clientId = call.argument("clientId");
-        delegate.init(result, signInOption, requestedScopes, hostedDomain, clientId);
+        boolean forceCodeForRefreshToken = call.argument("forceCodeForRefreshToken");
+        delegate.init(result, signInOption, requestedScopes, hostedDomain, clientId, forceCodeForRefreshToken);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -193,7 +194,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String signInOption,
         List<String> requestedScopes,
         String hostedDomain,
-        String clientId);
+        String clientId,
+        boolean forceCodeForRefreshToken);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -318,7 +320,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String signInOption,
         List<String> requestedScopes,
         String hostedDomain,
-        String clientId) {
+        String clientId,
+        boolean forceCodeForRefreshToken) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
@@ -345,10 +348,10 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
                 .getIdentifier("default_web_client_id", "string", context.getPackageName());
         if (!Strings.isNullOrEmpty(clientId)) {
           optionsBuilder.requestIdToken(clientId);
-          optionsBuilder.requestServerAuthCode(clientId);
+          optionsBuilder.requestServerAuthCode(clientId, forceCodeForRefreshToken);
         } else if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
-          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier));
+          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier), forceCodeForRefreshToken);
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));

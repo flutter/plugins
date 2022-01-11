@@ -23,7 +23,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  google_sign_in_platform_interface: ^2.1.0
+  google_sign_in_platform_interface: ^2.2.0
   google_sign_in_web: ^0.10.0
 
 dev_dependencies:

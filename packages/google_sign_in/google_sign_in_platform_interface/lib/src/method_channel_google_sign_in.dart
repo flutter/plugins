@@ -25,12 +25,14 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
     SignInOption signInOption = SignInOption.standard,
     String? hostedDomain,
     String? clientId,
+    bool forceCodeForRefreshToken = false,
   }) {
     return channel.invokeMethod<void>('init', <String, dynamic>{
       'signInOption': signInOption.toString(),
       'scopes': scopes,
       'hostedDomain': hostedDomain,
       'clientId': clientId,
+      'forceCodeForRefreshToken': forceCodeForRefreshToken,
     });
   }
 

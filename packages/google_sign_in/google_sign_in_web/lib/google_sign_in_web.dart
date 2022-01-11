@@ -71,6 +71,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     SignInOption signInOption = SignInOption.standard,
     String? hostedDomain,
     String? clientId,
+    bool forceCodeForRefreshToken = false,
   }) async {
     final String? appClientId = clientId ?? _autoDetectedClientId;
     assert(

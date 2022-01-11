@@ -96,6 +96,27 @@ void main() {
             'scopes': <String>[],
             'hostedDomain': null,
             'clientId': fakeClientId,
+            'forceCodeForRefreshToken': false,
+          }),
+          isMethodCall('signIn', arguments: null),
+        ],
+      );
+    });
+
+    test('forceCodeForRefreshToken sent with init method call', () async {
+      final fakeClientId = 'fakeClientId';
+      googleSignIn = GoogleSignIn(clientId: fakeClientId, forceCodeForRefreshToken: true);
+      await googleSignIn.signIn();
+      expect(googleSignIn.currentUser, isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+            'clientId': fakeClientId,
+            'forceCodeForRefreshToken': true,
           }),
           isMethodCall('signIn', arguments: null),
         ],
@@ -430,5 +451,6 @@ Matcher _isSignInMethodCall({String signInOption = 'SignInOption.standard'}) {
     'scopes': <String>[],
     'hostedDomain': null,
     'clientId': null,
+    'forceCodeForRefreshToken': false
   });
 }

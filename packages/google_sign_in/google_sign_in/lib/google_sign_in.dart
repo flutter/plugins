@@ -180,6 +180,7 @@ class GoogleSignIn {
     this.scopes = const <String>[],
     this.hostedDomain,
     this.clientId,
+    this.forceCodeForRefreshToken = false,
   });
 
   /// Factory for creating default sign in user experience.
@@ -228,6 +229,9 @@ class GoogleSignIn {
   /// Client ID being used to connect to google sign-in. Only supported on web.
   final String? clientId;
 
+  /// Force the authorization code to be valid for a refresh token every time. Only needed on Android.
+  final bool forceCodeForRefreshToken;
+
   StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
 
@@ -262,6 +266,7 @@ class GoogleSignIn {
       scopes: scopes,
       hostedDomain: hostedDomain,
       clientId: clientId,
+      forceCodeForRefreshToken: forceCodeForRefreshToken,
     )..catchError((dynamic _) {
         // Invalidate initialization if it errors out.
         _initialization = null;
