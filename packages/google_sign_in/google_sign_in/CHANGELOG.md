@@ -1,4 +1,4 @@
-## NEXT
+## 5.2.2
 
 * Updates Android compileSdkVersion to 31.
 * Bump Android dependency on com.google.android.gms:play-services-auth and remove the need for jetifier.
