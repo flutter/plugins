@@ -1,7 +1,7 @@
 ## 2.0.3
 
 * Updates code for new analysis options.
-* Fixes canLaunch detection for `file` scheme
+* Fix minor memory leak in Linux url_launcher tests.
 
 ## 2.0.2
 

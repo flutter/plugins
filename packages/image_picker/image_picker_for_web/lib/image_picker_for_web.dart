@@ -5,9 +5,9 @@
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:image_picker_for_web/src/image_resizer.dart';
-import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 final String _kImagePickerInputsDomId = '__image_picker_web-file-input';
