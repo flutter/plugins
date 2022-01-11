@@ -1,6 +1,6 @@
 ## 0.8.2
 
-* Moved to flutter/plugins, and restructured to allow for unit testing.
+* Moves source to flutter/plugins, and restructures to allow for unit testing.
 
 ## 0.0.2+1
 
