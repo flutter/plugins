@@ -1,6 +1,7 @@
-## NEXT
+## 5.2.2
 
 * Updates Android compileSdkVersion to 31.
+* Removes depenedncy on `meta`.
 
 ## 5.2.1
 
