@@ -64,13 +64,13 @@ HRESULT BuildMediaTypeForVideoPreview(IMFMediaType *src_media_type,
 
   HRESULT hr = MFCreateMediaType(&new_media_type);
 
-  // First clone everything from original media type
   if (SUCCEEDED(hr)) {
+    // Clones everything from original media type.
     hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
   if (SUCCEEDED(hr)) {
-    // Change subtype to requested
+    // Changes subtype to MFVideoFormat_RGB32.
     hr = new_media_type->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
   }
 
@@ -85,7 +85,7 @@ HRESULT BuildMediaTypeForVideoPreview(IMFMediaType *src_media_type,
   return hr;
 }
 
-// Creates media type for photo capture for jpeg images
+// Initializes media type for photo capture for jpeg images.
 HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType *src_media_type,
                                       IMFMediaType **photo_media_type,
                                       GUID image_format) {
@@ -94,8 +94,8 @@ HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType *src_media_type,
 
   HRESULT hr = MFCreateMediaType(&new_media_type);
 
-  // First clone everything from original media type
   if (SUCCEEDED(hr)) {
+    // Clones everything from original media type.
     hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
@@ -114,7 +114,7 @@ HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType *src_media_type,
   return hr;
 }
 
-// Creates media type for video capture
+// Initializes media type for video capture.
 HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
                                       IMFMediaType **video_record_media_type,
                                       GUID capture_format) {
@@ -123,8 +123,8 @@ HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
 
   HRESULT hr = MFCreateMediaType(&new_media_type);
 
-  // First clone everything from original media type
   if (SUCCEEDED(hr)) {
+    // Clones everything from original media type.
     hr = src_media_type->CopyAllItems(new_media_type.Get());
   }
 
@@ -139,7 +139,7 @@ HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
   return hr;
 }
 
-// Queries interface object from collection
+// Queries interface object from collection.
 template <class Q>
 HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
                             Q **ppObj) {
@@ -151,19 +151,7 @@ HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
   return hr;
 }
 
-/*
-template <class Q>
-HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
-                            Q **ppObj) {
-  IUnknown *pUnk;
-  HRESULT hr = pCollection->GetElement(index, &pUnk);
-  if (SUCCEEDED(hr)) {
-    hr = pUnk->QueryInterface(IID_PPV_ARGS(ppObj));
-    pUnk->Release();
-  }
-  return hr;
-}*/
-
+// Initializes media type for audo capture.
 HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
   ComPtr<IMFAttributes> audio_output_attributes;
   ComPtr<IMFMediaType> src_media_type;
@@ -174,7 +162,7 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
   HRESULT hr = MFCreateAttributes(&audio_output_attributes, 1);
 
   if (SUCCEEDED(hr)) {
-    // Enumerate only low latency audio outputs
+    // Enumerates only low latency audio outputs.
     hr = audio_output_attributes->SetUINT32(MF_LOW_LATENCY, TRUE);
   }
 
@@ -197,12 +185,12 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
   }
 
   if (mt_count == 0) {
-    // No sources found
+    // No sources found, mark process as failure.
     hr = E_FAIL;
   }
 
-  // Create new media type to copy original media type to
   if (SUCCEEDED(hr)) {
+    // Create new media type to copy original media type to.
     hr = MFCreateMediaType(&new_media_type);
   }
 
@@ -217,8 +205,8 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
   return hr;
 }
 
-// Uses first audio source to capture audio. Enumerating audio sources via
-// platform interface is not supported.
+// Uses first audio source to capture audio.
+// Note: Enumerating audio sources via platform interface is not supported.
 HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   audio_source_ = nullptr;
   IMFActivate **devices = nullptr;
@@ -338,18 +326,39 @@ HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
 HRESULT CaptureControllerImpl::CreateCaptureEngine(
     const std::string &video_device_id) {
   HRESULT hr = S_OK;
-  IMFAttributes *attributes = nullptr;
-  IMFCaptureEngineClassFactory *capture_engine_factory = nullptr;
-
-  if (!capture_engine_callback_handler_) {
-    capture_engine_callback_handler_ =
-        ComPtr<CaptureEngineListener>(new CaptureEngineListener(this));
-  }
+  ComPtr<IMFAttributes> attributes;
+  ComPtr<IMFCaptureEngineClassFactory> capture_engine_factory;
 
   if (SUCCEEDED(hr)) {
     hr = CreateD3DManagerWithDX11Device();
   }
 
+  if (SUCCEEDED(hr)) {
+    hr = CoCreateInstance(CLSID_MFCaptureEngineClassFactory, nullptr,
+                          CLSCTX_INPROC_SERVER,
+                          IID_PPV_ARGS(&capture_engine_factory));
+  }
+
+  if (SUCCEEDED(hr)) {
+    // Creates CaptureEngine.
+    hr = capture_engine_factory->CreateInstance(CLSID_MFCaptureEngine,
+                                                IID_PPV_ARGS(&capture_engine_));
+  }
+
+  if (SUCCEEDED(hr)) {
+    hr = CreateVideoCaptureSourceForDevice(video_device_id);
+  }
+
+  if (enable_audio_record_) {
+    if (SUCCEEDED(hr)) {
+      hr = CreateDefaultAudioCaptureSource();
+    }
+  }
+
+  if (!capture_engine_callback_handler_) {
+    capture_engine_callback_handler_ =
+        ComPtr<CaptureEngineListener>(new CaptureEngineListener(this));
+  }
   if (SUCCEEDED(hr)) {
     hr = MFCreateAttributes(&attributes, 2);
   }
@@ -365,30 +374,8 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine(
   }
 
   if (SUCCEEDED(hr)) {
-    hr = CoCreateInstance(CLSID_MFCaptureEngineClassFactory, nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          IID_PPV_ARGS(&capture_engine_factory));
-  }
-
-  if (SUCCEEDED(hr)) {
-    // Create CaptureEngine.
-    hr = capture_engine_factory->CreateInstance(CLSID_MFCaptureEngine,
-                                                IID_PPV_ARGS(&capture_engine_));
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = CreateVideoCaptureSourceForDevice(video_device_id);
-  }
-
-  if (enable_audio_record_) {
-    if (SUCCEEDED(hr)) {
-      hr = CreateDefaultAudioCaptureSource();
-    }
-  }
-
-  if (SUCCEEDED(hr)) {
     hr = capture_engine_->Initialize(capture_engine_callback_handler_.Get(),
-                                     attributes, audio_source_.Get(),
+                                     attributes.Get(), audio_source_.Get(),
                                      video_source_.Get());
   }
 
@@ -454,41 +441,6 @@ void CaptureControllerImpl::ResetCaptureEngineState() {
     texture_registrar_->UnregisterTexture(texture_id_);
   }
   texture_ = nullptr;
-}
-
-uint8_t *CaptureControllerImpl::GetSourceBuffer(uint32_t current_length) {
-  if (this->source_buffer_data_ == nullptr ||
-      this->source_buffer_size_ != current_length) {
-    // Update source buffer size
-    this->source_buffer_data_ = nullptr;
-    this->source_buffer_data_ = std::make_unique<uint8_t[]>(current_length);
-    this->source_buffer_size_ = current_length;
-  }
-  return this->source_buffer_data_.get();
-}
-
-void CaptureControllerImpl::OnBufferUpdate() {
-  if (this->texture_registrar_ && this->texture_id_ >= 0) {
-    this->texture_registrar_->MarkTextureFrameAvailable(this->texture_id_);
-  }
-}
-
-void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
-  // Check if max_video_duration_ms is passed
-  if (recording_ && recording_type_ == RecordingType::RECORDING_TYPE_TIMED &&
-      max_video_duration_ms_ > 0) {
-    if (record_start_timestamp_us_ < 0) {
-      record_start_timestamp_us_ = capture_time_us;
-    }
-
-    recording_duration_us_ = (capture_time_us - record_start_timestamp_us_);
-
-    if (!record_stop_pending_ &&
-        recording_duration_us_ >=
-            (static_cast<uint64_t>(max_video_duration_ms_) * 1000)) {
-      StopTimedRecord();
-    }
-  }
 }
 
 void CaptureControllerImpl::CreateCaptureDevice(
@@ -576,203 +528,6 @@ void CaptureControllerImpl::TakePicture(const std::string filepath) {
     pending_picture_path_ = std::string();
     return capture_controller_listener_->OnPictureFailed(
         "Failed to take picture");
-  }
-}
-
-void CaptureControllerImpl::OnPicture(bool success) {
-  if (capture_controller_listener_) {
-    if (success && !pending_picture_path_.empty()) {
-      capture_controller_listener_->OnPictureSuccess(pending_picture_path_);
-    } else {
-      capture_controller_listener_->OnPictureFailed("Failed to take picture");
-    }
-  }
-  pending_image_capture_ = false;
-  pending_picture_path_ = std::string();
-}
-
-void CaptureControllerImpl::OnCaptureEngineInitialized(bool success) {
-  if (capture_controller_listener_) {
-    // Create flutter desktop pixelbuffer texture;
-    texture_ =
-        std::make_unique<flutter::TextureVariant>(flutter::PixelBufferTexture(
-            [this](size_t width,
-                   size_t height) -> const FlutterDesktopPixelBuffer * {
-              return this->ConvertPixelBufferForFlutter(width, height);
-            }));
-
-    auto new_texture_id = texture_registrar_->RegisterTexture(texture_.get());
-
-    if (new_texture_id >= 0) {
-      texture_id_ = new_texture_id;
-      capture_controller_listener_->OnCreateCaptureEngineSucceeded(texture_id_);
-      initialized_ = true;
-    } else {
-      initialized_ = false;
-    }
-  }
-  capture_engine_initialization_pending_ = false;
-}
-
-void CaptureControllerImpl::OnCaptureEngineError() {
-  // TODO: detect error type and update state depending of error type, also send
-  // other than capture engine creation errors to separate error handler
-  if (capture_controller_listener_) {
-    capture_controller_listener_->OnCreateCaptureEngineFailed(
-        "Error while capturing device");
-  }
-
-  initialized_ = false;
-  capture_engine_initialization_pending_ = false;
-}
-
-void CaptureControllerImpl::OnPreviewStarted(bool success) {
-  if (capture_controller_listener_) {
-    if (success && preview_frame_width_ > 0 && preview_frame_height_ > 0) {
-      capture_controller_listener_->OnStartPreviewSucceeded(
-          preview_frame_width_, preview_frame_height_);
-    } else {
-      capture_controller_listener_->OnStartPreviewFailed(
-          "Failed to start preview");
-    }
-  }
-
-  // update state
-  preview_pending_ = false;
-  previewing_ = success;
-};
-
-void CaptureControllerImpl::OnPreviewStopped(bool success) {
-  // update state
-  previewing_ = false;
-};
-
-void CaptureControllerImpl::OnRecordStarted(bool success) {
-  if (capture_controller_listener_) {
-    if (success) {
-      capture_controller_listener_->OnStartRecordSucceeded();
-    } else {
-      capture_controller_listener_->OnStartRecordFailed(
-          "Failed to start recording");
-    }
-  }
-
-  // update state
-  record_start_pending_ = false;
-  recording_ = success;
-};
-
-void CaptureControllerImpl::OnRecordStopped(bool success) {
-  if (capture_controller_listener_) {
-    if (recording_type_ == RecordingType::RECORDING_TYPE_CONTINUOUS) {
-      if (success && !pending_record_path_.empty()) {
-        capture_controller_listener_->OnStopRecordSucceeded(
-            pending_record_path_);
-      } else {
-        capture_controller_listener_->OnStopRecordFailed(
-            "Failed to record video");
-      }
-    } else if (recording_type_ == RecordingType::RECORDING_TYPE_TIMED) {
-      if (success && !pending_record_path_.empty()) {
-        capture_controller_listener_->OnVideoRecordedSuccess(
-            pending_record_path_, (recording_duration_us_ / 1000));
-
-      } else {
-        capture_controller_listener_->OnVideoRecordedFailed(
-            "Failed to record video");
-      }
-    }
-  }
-
-  // update state
-  recording_ = false;
-  record_stop_pending_ = false;
-  recording_type_ = RecordingType::RECORDING_TYPE_NOT_SET;
-  pending_record_path_ = std::string();
-}
-
-void CaptureControllerImpl::StartRecord(const std::string &filepath,
-                                        int64_t max_video_duration_ms) {
-  assert(capture_controller_listener_);
-  if (!initialized_) {
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Capture not initialized");
-  } else if (recording_) {
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Already recording");
-  } else if (record_start_pending_) {
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Start record already requested");
-  }
-
-  HRESULT hr = InitRecordSink(filepath);
-
-  if (SUCCEEDED(hr)) {
-    recording_type_ = max_video_duration_ms < 0
-                          ? RecordingType::RECORDING_TYPE_CONTINUOUS
-                          : RecordingType::RECORDING_TYPE_TIMED;
-    max_video_duration_ms_ = max_video_duration_ms;
-    record_start_timestamp_us_ = -1;
-    recording_duration_us_ = 0;
-    pending_record_path_ = filepath;
-    record_start_pending_ = true;
-
-    // Request to start recording.
-    // Check MF_CAPTURE_ENGINE_RECORD_STARTED event with CaptureEngineListener
-    hr = capture_engine_->StartRecord();
-  }
-
-  if (FAILED(hr)) {
-    record_start_pending_ = false;
-    recording_ = false;
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Failed to initialize video recording");
-  }
-}
-
-void CaptureControllerImpl::StopRecord() {
-  assert(capture_controller_listener_);
-
-  if (!initialized_) {
-    return capture_controller_listener_->OnStopRecordFailed(
-        "Capture not initialized");
-  } else if (!recording_ && !record_start_pending_) {
-    return capture_controller_listener_->OnStopRecordFailed("Not recording");
-  } else if (record_stop_pending_) {
-    return capture_controller_listener_->OnStopRecordFailed(
-        "Stop already requested");
-  }
-
-  // Request to stop recording.
-  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event with CaptureEngineListener
-  record_stop_pending_ = true;
-  HRESULT hr = capture_engine_->StopRecord(true, false);
-
-  if (FAILED(hr)) {
-    record_stop_pending_ = false;
-    recording_ = false;
-    return capture_controller_listener_->OnStopRecordFailed(
-        "Failed to stop recording");
-  }
-}
-
-void CaptureControllerImpl::StopTimedRecord() {
-  assert(capture_controller_listener_);
-  if (!recording_ && record_stop_pending_ &&
-      recording_type_ != RecordingType::RECORDING_TYPE_TIMED) {
-    return;
-  }
-
-  // Request to stop recording.
-  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event with CaptureEngineListener
-  record_stop_pending_ = true;
-  HRESULT hr = capture_engine_->StopRecord(true, false);
-
-  if (FAILED(hr)) {
-    record_stop_pending_ = false;
-    recording_ = false;
-    return capture_controller_listener_->OnVideoRecordedFailed(
-        "Failed to record video");
   }
 }
 
@@ -873,7 +628,7 @@ HRESULT CaptureControllerImpl::InitPreviewSink() {
   ComPtr<IMFMediaType> preview_media_type;
   ComPtr<IMFCaptureSink> capture_sink;
 
-  // Get sink with preview type;
+  // Get sink with preview type.
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW,
                                 &capture_sink);
 
@@ -917,7 +672,7 @@ HRESULT CaptureControllerImpl::InitPhotoSink(const std::string &filepath) {
   HRESULT hr = S_OK;
 
   if (photo_sink_) {
-    // If photo sink already exists, only update output filename
+    // If photo sink already exists, only update output filename.
     hr = photo_sink_->SetOutputFileName(Utf16FromUtf8(filepath).c_str());
 
     if (FAILED(hr)) {
@@ -930,7 +685,7 @@ HRESULT CaptureControllerImpl::InitPhotoSink(const std::string &filepath) {
   ComPtr<IMFMediaType> photo_media_type;
   ComPtr<IMFCaptureSink> capture_sink;
 
-  // Get sink with photo type;
+  // Gets sink with photo type.
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PHOTO,
                                 &capture_sink);
 
@@ -949,7 +704,7 @@ HRESULT CaptureControllerImpl::InitPhotoSink(const std::string &filepath) {
   }
 
   if (SUCCEEDED(hr)) {
-    // Remove existing streams if available
+    // Removes existing streams if available.
     hr = photo_sink_->RemoveAllStreams();
   }
 
@@ -975,7 +730,7 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   HRESULT hr = S_OK;
 
   if (record_sink_) {
-    // If record sink already exists, only update output filename
+    // If record sink already exists, only update output filename.
     hr = record_sink_->SetOutputFileName(Utf16FromUtf8(filepath).c_str());
 
     if (FAILED(hr)) {
@@ -988,7 +743,7 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   ComPtr<IMFMediaType> video_record_media_type;
   ComPtr<IMFCaptureSink> capture_sink;
 
-  // Get sink with record type;
+  // Gets sink with record type.
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_RECORD,
                                 &capture_sink);
 
@@ -1001,7 +756,7 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   }
 
   if (SUCCEEDED(hr)) {
-    // Remove existing streams if available
+    // Removes existing streams if available.
     hr = record_sink_->RemoveAllStreams();
   }
 
@@ -1045,6 +800,91 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   return hr;
 }
 
+void CaptureControllerImpl::StartRecord(const std::string &filepath,
+                                        int64_t max_video_duration_ms) {
+  assert(capture_controller_listener_);
+  if (!initialized_) {
+    return capture_controller_listener_->OnStartRecordFailed(
+        "Capture not initialized");
+  } else if (recording_) {
+    return capture_controller_listener_->OnStartRecordFailed(
+        "Already recording");
+  } else if (record_start_pending_) {
+    return capture_controller_listener_->OnStartRecordFailed(
+        "Start record already requested");
+  }
+
+  HRESULT hr = InitRecordSink(filepath);
+
+  if (SUCCEEDED(hr)) {
+    recording_type_ = max_video_duration_ms < 0
+                          ? RecordingType::RECORDING_TYPE_CONTINUOUS
+                          : RecordingType::RECORDING_TYPE_TIMED;
+    max_video_duration_ms_ = max_video_duration_ms;
+    record_start_timestamp_us_ = -1;
+    recording_duration_us_ = 0;
+    pending_record_path_ = filepath;
+    record_start_pending_ = true;
+
+    // Request to start recording.
+    // Check MF_CAPTURE_ENGINE_RECORD_STARTED event with CaptureEngineListener
+    hr = capture_engine_->StartRecord();
+  }
+
+  if (FAILED(hr)) {
+    record_start_pending_ = false;
+    recording_ = false;
+    return capture_controller_listener_->OnStartRecordFailed(
+        "Failed to initialize video recording");
+  }
+}
+
+void CaptureControllerImpl::StopRecord() {
+  assert(capture_controller_listener_);
+
+  if (!initialized_) {
+    return capture_controller_listener_->OnStopRecordFailed(
+        "Capture not initialized");
+  } else if (!recording_ && !record_start_pending_) {
+    return capture_controller_listener_->OnStopRecordFailed("Not recording");
+  } else if (record_stop_pending_) {
+    return capture_controller_listener_->OnStopRecordFailed(
+        "Stop already requested");
+  }
+
+  // Request to stop recording.
+  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event with CaptureEngineListener
+  record_stop_pending_ = true;
+  HRESULT hr = capture_engine_->StopRecord(true, false);
+
+  if (FAILED(hr)) {
+    record_stop_pending_ = false;
+    recording_ = false;
+    return capture_controller_listener_->OnStopRecordFailed(
+        "Failed to stop recording");
+  }
+}
+
+void CaptureControllerImpl::StopTimedRecord() {
+  assert(capture_controller_listener_);
+  if (!recording_ && record_stop_pending_ &&
+      recording_type_ != RecordingType::RECORDING_TYPE_TIMED) {
+    return;
+  }
+
+  // Request to stop recording.
+  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event with CaptureEngineListener
+  record_stop_pending_ = true;
+  HRESULT hr = capture_engine_->StopRecord(true, false);
+
+  if (FAILED(hr)) {
+    record_stop_pending_ = false;
+    recording_ = false;
+    return capture_controller_listener_->OnVideoRecordedFailed(
+        "Failed to record video");
+  }
+}
+
 void CaptureControllerImpl::StartPreview() {
   assert(capture_controller_listener_);
 
@@ -1057,8 +897,7 @@ void CaptureControllerImpl::StartPreview() {
   if (SUCCEEDED(hr)) {
     preview_pending_ = true;
 
-    // Request to start preview.
-    // Check MF_CAPTURE_ENGINE_PREVIEW_STARTED event with CaptureEngineListener
+    // Requests to start preview.
     hr = capture_engine_->StartPreview();
   }
 
@@ -1077,8 +916,7 @@ void CaptureControllerImpl::StopPreview() {
     return capture_controller_listener_->OnPausePreviewFailed("Not previewing");
   }
 
-  // Request to stop preview.
-  // Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event with CaptureEngineListener
+  // Requests to stop preview.
   HRESULT hr = capture_engine_->StopPreview();
 
   if (FAILED(hr)) {
@@ -1090,15 +928,202 @@ void CaptureControllerImpl::StopPreview() {
 void CaptureControllerImpl::PausePreview() {
   if (!previewing_) {
     preview_paused_ = false;
-    return capture_controller_listener_->OnPausePreviewFailed(
-        "Preview not started");
+
+    if (capture_controller_listener_) {
+      return capture_controller_listener_->OnPausePreviewFailed(
+          "Preview not started");
+    }
   }
   preview_paused_ = true;
-  capture_controller_listener_->OnPausePreviewSucceeded();
+
+  if (capture_controller_listener_) {
+    capture_controller_listener_->OnPausePreviewSucceeded();
+  }
 }
 
 void CaptureControllerImpl::ResumePreview() {
   preview_paused_ = false;
-  capture_controller_listener_->OnResumePreviewSucceeded();
+  if (capture_controller_listener_) {
+    capture_controller_listener_->OnResumePreviewSucceeded();
+  }
 }
+
+// Handles Picture event and informs CaptureControllerListener.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnPicture.
+void CaptureControllerImpl::OnPicture(bool success) {
+  if (capture_controller_listener_) {
+    if (success && !pending_picture_path_.empty()) {
+      capture_controller_listener_->OnPictureSuccess(pending_picture_path_);
+    } else {
+      capture_controller_listener_->OnPictureFailed("Failed to take picture");
+    }
+  }
+  pending_image_capture_ = false;
+  pending_picture_path_ = std::string();
+}
+
+// Handles CaptureEngineInitialized event and informs CaptureControllerListener.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnCaptureEngineInitialized.
+void CaptureControllerImpl::OnCaptureEngineInitialized(bool success) {
+  if (capture_controller_listener_) {
+    // Create flutter desktop pixelbuffer texture;
+    texture_ =
+        std::make_unique<flutter::TextureVariant>(flutter::PixelBufferTexture(
+            [this](size_t width,
+                   size_t height) -> const FlutterDesktopPixelBuffer * {
+              return this->ConvertPixelBufferForFlutter(width, height);
+            }));
+
+    auto new_texture_id = texture_registrar_->RegisterTexture(texture_.get());
+
+    if (new_texture_id >= 0) {
+      texture_id_ = new_texture_id;
+      capture_controller_listener_->OnCreateCaptureEngineSucceeded(texture_id_);
+      initialized_ = true;
+    } else {
+      initialized_ = false;
+    }
+  }
+  capture_engine_initialization_pending_ = false;
+}
+
+// Handles CaptureEngineError event and informs CaptureControllerListener.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnCaptureEngineError.
+void CaptureControllerImpl::OnCaptureEngineError() {
+  // TODO: detect error type and update state depending of error type, also send
+  // other than capture engine creation errors to separate error handler
+  if (capture_controller_listener_) {
+    capture_controller_listener_->OnCreateCaptureEngineFailed(
+        "Error while capturing device");
+  }
+
+  initialized_ = false;
+  capture_engine_initialization_pending_ = false;
+}
+
+// Handles PreviewStarted event and informs CaptureControllerListener.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnPreviewStarted.
+void CaptureControllerImpl::OnPreviewStarted(bool success) {
+  if (capture_controller_listener_) {
+    if (success && preview_frame_width_ > 0 && preview_frame_height_ > 0) {
+      capture_controller_listener_->OnStartPreviewSucceeded(
+          preview_frame_width_, preview_frame_height_);
+    } else {
+      capture_controller_listener_->OnStartPreviewFailed(
+          "Failed to start preview");
+    }
+  }
+
+  // update state
+  preview_pending_ = false;
+  previewing_ = success;
+};
+
+// Handles PreviewStopped event.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnPreviewStopped.
+void CaptureControllerImpl::OnPreviewStopped(bool success) {
+  // update state
+  previewing_ = false;
+};
+
+// Handles RecordStarted event and informs CaptureControllerListener.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnRecordStarted.
+void CaptureControllerImpl::OnRecordStarted(bool success) {
+  if (capture_controller_listener_) {
+    if (success) {
+      capture_controller_listener_->OnStartRecordSucceeded();
+    } else {
+      capture_controller_listener_->OnStartRecordFailed(
+          "Failed to start recording");
+    }
+  }
+
+  // update state
+  record_start_pending_ = false;
+  recording_ = success;
+};
+
+// Handles RecordStopped event and informs CaptureControllerListener.
+// Called via IMFCaptureEngineOnEventCallback implementation.
+// Implements CaptureEngineObserver::OnRecordStopped.
+void CaptureControllerImpl::OnRecordStopped(bool success) {
+  if (capture_controller_listener_) {
+    if (recording_type_ == RecordingType::RECORDING_TYPE_CONTINUOUS) {
+      if (success && !pending_record_path_.empty()) {
+        capture_controller_listener_->OnStopRecordSucceeded(
+            pending_record_path_);
+      } else {
+        capture_controller_listener_->OnStopRecordFailed(
+            "Failed to record video");
+      }
+    } else if (recording_type_ == RecordingType::RECORDING_TYPE_TIMED) {
+      if (success && !pending_record_path_.empty()) {
+        capture_controller_listener_->OnVideoRecordedSuccess(
+            pending_record_path_, (recording_duration_us_ / 1000));
+
+      } else {
+        capture_controller_listener_->OnVideoRecordedFailed(
+            "Failed to record video");
+      }
+    }
+  }
+
+  // update state
+  recording_ = false;
+  record_stop_pending_ = false;
+  recording_type_ = RecordingType::RECORDING_TYPE_NOT_SET;
+  pending_record_path_ = std::string();
+}
+
+// Returns pointer to databuffer.
+// Called via IMFCaptureEngineOnSampleCallback implementation.
+// Implements CaptureEngineObserver::GetSourceBuffer.
+uint8_t *CaptureControllerImpl::GetSourceBuffer(uint32_t current_length) {
+  if (this->source_buffer_data_ == nullptr ||
+      this->source_buffer_size_ != current_length) {
+    // Update source buffer size.
+    this->source_buffer_data_ = nullptr;
+    this->source_buffer_data_ = std::make_unique<uint8_t[]>(current_length);
+    this->source_buffer_size_ = current_length;
+  }
+  return this->source_buffer_data_.get();
+}
+
+// Marks texture frame available after buffer is updated.
+// Called via IMFCaptureEngineOnSampleCallback implementation.
+// Implements CaptureEngineObserver::OnBufferUpdate.
+void CaptureControllerImpl::OnBufferUpdate() {
+  if (this->texture_registrar_ && this->texture_id_ >= 0) {
+    this->texture_registrar_->MarkTextureFrameAvailable(this->texture_id_);
+  }
+}
+
+// Handles capture time update from each processed frame.
+// Stops timed recordings if requested recording duration has passed.
+// Called via IMFCaptureEngineOnSampleCallback implementation.
+// Implements CaptureEngineObserver::UpdateCaptureTime.
+void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
+  // Checks if max_video_duration_ms is passed.
+  if (recording_ && recording_type_ == RecordingType::RECORDING_TYPE_TIMED &&
+      max_video_duration_ms_ > 0) {
+    if (record_start_timestamp_us_ < 0) {
+      record_start_timestamp_us_ = capture_time_us;
+    }
+
+    recording_duration_us_ = (capture_time_us - record_start_timestamp_us_);
+
+    if (!record_stop_pending_ &&
+        recording_duration_us_ >=
+            (static_cast<uint64_t>(max_video_duration_ms_) * 1000)) {
+      StopTimedRecord();
+    }
+  }
+}
+
 }  // namespace camera_windows
