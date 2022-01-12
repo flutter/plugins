@@ -1,3 +1,7 @@
+## 0.10.0+5
+
+* Add override for `GoogleSignInPlatformInterface.initWithForceCodeForRefreshToken`.
+
 ## 0.10.0+4
 
 * Removes dependency on `meta`.

@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Add `initWithForceCodeForRefreshToken` method to add the `forceCodeForRefreshToken` method.
+
 ## 2.1.1
 
 * Removes dependency on `meta`.

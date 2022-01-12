@@ -71,7 +71,6 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     SignInOption signInOption = SignInOption.standard,
     String? hostedDomain,
     String? clientId,
-    bool forceCodeForRefreshToken = false,
   }) async {
     final String? appClientId = clientId ?? _autoDetectedClientId;
     assert(
@@ -118,6 +117,22 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     }));
 
     return _isAuthInitialized;
+  }
+
+  @override
+  Future<void> initWithForceCodeForRefreshToken({
+    List<String> scopes = const <String>[],
+    SignInOption signInOption = SignInOption.standard,
+    String? hostedDomain,
+    String? clientId,
+    bool forceCodeForRefreshToken = false,
+  }) async {
+    await init(
+      scopes: scopes,
+      signInOption: signInOption,
+      hostedDomain: hostedDomain,
+      clientId: clientId,
+    );
   }
 
   @override

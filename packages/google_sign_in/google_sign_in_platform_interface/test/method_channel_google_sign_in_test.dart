@@ -102,14 +102,13 @@ void main() {
               hostedDomain: 'example.com',
               scopes: <String>['two', 'scopes'],
               signInOption: SignInOption.games,
-              clientId: 'fakeClientId',
-              forceCodeForRefreshToken: true);
+              clientId: 'fakeClientId');
         }: isMethodCall('init', arguments: <String, dynamic>{
           'hostedDomain': 'example.com',
           'scopes': <String>['two', 'scopes'],
           'signInOption': 'SignInOption.games',
           'clientId': 'fakeClientId',
-          'forceCodeForRefreshToken': true,
+          'forceCodeForRefreshToken': false,
         }),
         () {
           googleSignIn.getTokens(
@@ -136,6 +135,24 @@ void main() {
       tests.keys.forEach((Function f) => f());
 
       expect(log, tests.values);
+    });
+
+    test('initWithForceCodeForRefreshToken passes through arguments to the channel', () async {
+      await googleSignIn.initWithForceCodeForRefreshToken(
+              hostedDomain: 'example.com',
+              scopes: <String>['two', 'scopes'],
+              signInOption: SignInOption.games,
+              clientId: 'fakeClientId',
+              forceCodeForRefreshToken: true);
+      expect(log, [
+        isMethodCall('init', arguments: <String, dynamic>{
+          'hostedDomain': 'example.com',
+          'scopes': <String>['two', 'scopes'],
+          'signInOption': 'SignInOption.games',
+          'clientId': 'fakeClientId',
+          'forceCodeForRefreshToken': true,
+        }),
+      ]);
     });
   });
 }

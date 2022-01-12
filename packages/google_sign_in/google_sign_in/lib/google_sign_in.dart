@@ -175,6 +175,9 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
+  ///
+  /// The [forceCodeForRefreshToken] is used on Android to ensure the authentication
+  /// code can be exchanged for a refresh token after the first request.
   GoogleSignIn({
     this.signInOption = SignInOption.standard,
     this.scopes = const <String>[],
@@ -261,7 +264,7 @@ class GoogleSignIn {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.init(
+    return _initialization ??= GoogleSignInPlatform.instance.initWithForceCodeForRefreshToken(
       signInOption: signInOption,
       scopes: scopes,
       hostedDomain: hostedDomain,
