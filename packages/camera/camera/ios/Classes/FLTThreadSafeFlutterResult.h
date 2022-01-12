@@ -5,7 +5,8 @@
 #import <Flutter/Flutter.h>
 
 /**
- * Wrapper for FlutterResult  that always delivers the result on the main thread.
+ * A thread safe wrapper for FlutterResult that can be called from any thread, by dispatching its
+ * underlying engine APIs to the main thread.
  */
 @interface FLTThreadSafeFlutterResult : NSObject
 

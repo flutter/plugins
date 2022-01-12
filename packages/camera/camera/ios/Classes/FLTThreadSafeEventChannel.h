@@ -7,7 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Wrapper for FlutterEventChannel that always sends events on the main thread
+ * A thread safe wrapper for FlutterEventChannel that can be called from any thread, by dispatching
+ * its underlying engine APIs to the main thread.
  */
 @interface FLTThreadSafeEventChannel : NSObject
 

@@ -7,55 +7,61 @@
 #import <OCMock/OCMock.h>
 
 @interface ThreadSafeEventChannelTests : XCTestCase
-@property(nonatomic, strong) FLTThreadSafeEventChannel *channel;
-@property(nonatomic, strong) XCTestExpectation *mainThreadExpectation;
-@property(nonatomic, strong) XCTestExpectation *mainThreadCompletionExpectation;
+@property(nonatomic, strong) FlutterEventChannel *mockEventChannel;
+@property(nonatomic, strong) FLTThreadSafeEventChannel *threadSafeEventChannel;
 @end
 
 @implementation ThreadSafeEventChannelTests
 
 - (void)setUp {
   [super setUp];
-  id mockEventChannel = OCMClassMock([FlutterEventChannel class]);
-
-  _mainThreadExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"setStreamHandler must be called on the main thread"];
-  _mainThreadCompletionExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"setStreamHandler's completion block must be called on the main thread"];
-  _channel = [[FLTThreadSafeEventChannel alloc] initWithEventChannel:mockEventChannel];
-
-  OCMStub([mockEventChannel setStreamHandler:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
-    if (NSThread.isMainThread) {
-      [self.mainThreadExpectation fulfill];
-    }
-  });
+  _mockEventChannel = OCMClassMock([FlutterEventChannel class]);
+  _threadSafeEventChannel =
+      [[FLTThreadSafeEventChannel alloc] initWithEventChannel:_mockEventChannel];
 }
 
 - (void)testSetStreamHandler_shouldStayOnMainThreadIfCalledFromMainThread {
-  __weak XCTestExpectation *mainThreadCompletionExpectation = self.mainThreadCompletionExpectation;
-  [self.channel setStreamHandler:nil
-                      completion:^{
-                        if (NSThread.isMainThread) {
-                          [mainThreadCompletionExpectation fulfill];
-                        }
-                      }];
-  [self waitForExpectations:@[ self.mainThreadExpectation, self.mainThreadCompletionExpectation ]
-                    timeout:1];
+  XCTestExpectation *mainThreadExpectation = [[XCTestExpectation alloc]
+      initWithDescription:@"setStreamHandler must be called on the main thread"];
+  XCTestExpectation *mainThreadCompletionExpectation = [[XCTestExpectation alloc]
+      initWithDescription:@"setStreamHandler's completion block must be called on the main thread"];
+  OCMStub([self.mockEventChannel setStreamHandler:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
+    if (NSThread.isMainThread) {
+      [mainThreadExpectation fulfill];
+    }
+  });
+
+  [self.threadSafeEventChannel setStreamHandler:nil
+                                     completion:^{
+                                       if (NSThread.isMainThread) {
+                                         [mainThreadCompletionExpectation fulfill];
+                                       }
+                                     }];
+  [self waitForExpectations:@[ mainThreadExpectation, mainThreadCompletionExpectation ] timeout:1];
 }
 
 - (void)testSetStreamHandler_shouldDispatchToMainThreadIfCalledFromBackgroundThread {
-  __weak XCTestExpectation *mainThreadCompletionExpectation = self.mainThreadCompletionExpectation;
+  XCTestExpectation *mainThreadExpectation = [[XCTestExpectation alloc]
+      initWithDescription:@"setStreamHandler must be called on the main thread"];
+  XCTestExpectation *mainThreadCompletionExpectation = [[XCTestExpectation alloc]
+      initWithDescription:@"setStreamHandler's completion block must be called on the main thread"];
+  OCMStub([self.mockEventChannel setStreamHandler:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
+    if (NSThread.isMainThread) {
+      [mainThreadExpectation fulfill];
+    }
+  });
+
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    [self.channel setStreamHandler:nil
-                        completion:^{
-                          if (NSThread.isMainThread) {
-                            [mainThreadCompletionExpectation fulfill];
-                          }
-                        }];
+    [self.threadSafeEventChannel setStreamHandler:nil
+                                       completion:^{
+                                         if (NSThread.isMainThread) {
+                                           [mainThreadCompletionExpectation fulfill];
+                                         }
+                                       }];
   });
   [self waitForExpectations:@[
-    self.mainThreadExpectation,
-    self.mainThreadCompletionExpectation,
+    mainThreadExpectation,
+    mainThreadCompletionExpectation,
   ]
                     timeout:1];
 }

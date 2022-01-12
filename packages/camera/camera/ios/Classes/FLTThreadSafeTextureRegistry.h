@@ -7,7 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Wrapper for FlutterTextureRegistry that always sends events on the main thread
+ * A thread safe wrapper for FlutterTextureRegistry that can be called from any thread, by
+ * dispatching its underlying engine APIs to the main thread.
  */
 @interface FLTThreadSafeTextureRegistry : NSObject
 
