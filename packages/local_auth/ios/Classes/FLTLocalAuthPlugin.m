@@ -146,7 +146,7 @@
   NSError *authError = nil;
   _lastCallArgs = nil;
   _lastResult = nil;
-  context.localizedFallbackTitle = @"";
+  context.localizedFallbackTitle = @"Enter passcode";
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
     [context evaluatePolicy:kLAPolicyDeviceOwnerAuthentication
