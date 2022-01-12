@@ -45,7 +45,7 @@ static gchar* get_url(FlValue* args, GError** error) {
   return g_strdup(fl_value_get_string(url_value));
 }
 
-// Check if URI has launchable file resource
+// Checks if URI has launchable file resource.
 static gboolean can_launch_uri_with_file_resource(FlUrlLauncherPlugin* self,
                                                   const gchar* url) {
   g_autoptr(GError) error = nullptr;
