@@ -127,7 +127,7 @@ class MethodChannelCamera extends CameraPlatform {
         'imageFormatGroup': imageFormatGroup.name(),
       },
     ).catchError(
-      (Object error, StackTrace stackTrace) async {
+      (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
           throw error;
         }
