@@ -138,7 +138,13 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String hostedDomain = call.argument("hostedDomain");
         String clientId = call.argument("clientId");
         boolean forceCodeForRefreshToken = call.argument("forceCodeForRefreshToken");
-        delegate.init(result, signInOption, requestedScopes, hostedDomain, clientId, forceCodeForRefreshToken);
+        delegate.init(
+            result,
+            signInOption,
+            requestedScopes,
+            hostedDomain,
+            clientId,
+            forceCodeForRefreshToken);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -351,7 +357,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
           optionsBuilder.requestServerAuthCode(clientId, forceCodeForRefreshToken);
         } else if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
-          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier), forceCodeForRefreshToken);
+          optionsBuilder.requestServerAuthCode(
+              context.getString(clientIdIdentifier), forceCodeForRefreshToken);
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
