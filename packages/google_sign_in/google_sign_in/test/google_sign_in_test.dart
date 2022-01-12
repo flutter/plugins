@@ -105,7 +105,8 @@ void main() {
 
     test('forceCodeForRefreshToken sent with init method call', () async {
       final fakeClientId = 'fakeClientId';
-      googleSignIn = GoogleSignIn(clientId: fakeClientId, forceCodeForRefreshToken: true);
+      googleSignIn =
+          GoogleSignIn(clientId: fakeClientId, forceCodeForRefreshToken: true);
       await googleSignIn.signIn();
       expect(googleSignIn.currentUser, isNotNull);
       expect(

@@ -120,10 +120,10 @@ abstract class GoogleSignInPlatform {
     bool forceCodeForRefreshToken = false,
   }) async {
     await init(
-      scopes: scopes,
-      signInOption: signInOption,
-      hostedDomain: hostedDomain,
-      clientId: clientId);
+        scopes: scopes,
+        signInOption: signInOption,
+        hostedDomain: hostedDomain,
+        clientId: clientId);
   }
 
   /// Attempts to reuse pre-existing credentials to sign in again, without user interaction.

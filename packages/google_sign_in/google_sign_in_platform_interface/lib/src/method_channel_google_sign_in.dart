@@ -27,10 +27,10 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
     String? clientId,
   }) {
     return initWithForceCodeForRefreshToken(
-      scopes: scopes,
-      signInOption: signInOption,
-      hostedDomain: hostedDomain,
-      clientId: clientId);
+        scopes: scopes,
+        signInOption: signInOption,
+        hostedDomain: hostedDomain,
+        clientId: clientId);
   }
 
   @override

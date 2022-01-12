@@ -264,16 +264,17 @@ class GoogleSignIn {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.initWithForceCodeForRefreshToken(
+    return _initialization ??=
+        GoogleSignInPlatform.instance.initWithForceCodeForRefreshToken(
       signInOption: signInOption,
       scopes: scopes,
       hostedDomain: hostedDomain,
       clientId: clientId,
       forceCodeForRefreshToken: forceCodeForRefreshToken,
     )..catchError((dynamic _) {
-        // Invalidate initialization if it errors out.
-        _initialization = null;
-      });
+            // Invalidate initialization if it errors out.
+            _initialization = null;
+          });
   }
 
   /// The most recently scheduled method call.
