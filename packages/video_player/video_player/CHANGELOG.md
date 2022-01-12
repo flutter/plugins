@@ -1,3 +1,7 @@
+## 2.2.11
+
+* Removes dependency on `meta`.
+
 ## 2.2.10
 
 * iOS: Updates texture on `seekTo`.
@@ -15,6 +19,7 @@
 * Fixes integration tests.
 * Updates Android compileSdkVersion to 31.
 * Fixes a flaky integration test.
+* Integration tests now use WebM on web, to allow running with Chromium.
 
 ## 2.2.7
 

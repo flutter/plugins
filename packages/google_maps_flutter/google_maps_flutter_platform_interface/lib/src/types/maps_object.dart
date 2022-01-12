@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart' show objectRuntimeType;
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable, objectRuntimeType;
 
 /// Uniquely identifies object an among [GoogleMap] collections of a specific
 /// type.
