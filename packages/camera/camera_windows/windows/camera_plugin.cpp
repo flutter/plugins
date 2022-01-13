@@ -346,7 +346,7 @@ void CameraPlugin::CreateMethodHandler(
   const auto *enable_audio =
       std::get_if<bool>(ValueOrNull(args, kEnableAudioKey));
   if (!enable_audio) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kEnableAudioKey) + " argument missing");
   }
 
@@ -354,20 +354,20 @@ void CameraPlugin::CreateMethodHandler(
   const auto *camera_name =
       std::get_if<std::string>(ValueOrNull(args, kCameraNameKey));
   if (!camera_name) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraNameKey) + " argument missing");
   }
   auto device_info = ParseDeviceInfoFromCameraName(*camera_name);
 
   if (!device_info) {
     return result->Error(
-        "Camera error", "Cannot parse argument " + std::string(kCameraNameKey));
+        "camera_error", "Cannot parse argument " + std::string(kCameraNameKey));
   }
 
   if (GetCameraByDeviceId(device_info->device_id)) {
-    return result->Error(
-        "Camera error",
-        "Camera with given " + std::string(*camera_name) + " already exists");
+    return result->Error("camera_error",
+                         "Camera with given device id already exists. Existing "
+                         "camera must be disposed before creating it again.");
   }
 
   std::unique_ptr<camera_windows::Camera> camera =
@@ -375,8 +375,8 @@ void CameraPlugin::CreateMethodHandler(
 
   if (camera->HasPendingResultByType(PendingResultType::CREATE_CAMERA)) {
     // This should never happen
-    return result->Error("Failed to create camera",
-                         "Pending camera creation already exists");
+    return result->Error("camera_error",
+                         "Pending camera creation request exists");
   }
 
   if (camera->AddPendingResult(PendingResultType::CREATE_CAMERA,
@@ -401,18 +401,18 @@ void CameraPlugin::InitializeMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 
   auto camera = GetCameraByCameraId(*camera_id);
   if (!camera) {
-    return result->Error("Camera not created", "Please create camera first");
+    return result->Error("camera_error", "Camera not created");
   }
 
   if (camera->HasPendingResultByType(PendingResultType::INITIALIZE)) {
-    return result->Error("Failed to initialize",
-                         "Initialize method already called");
+    return result->Error("camera_error",
+                         "Pending initialization request exists");
   }
 
   if (camera->AddPendingResult(PendingResultType::INITIALIZE,
@@ -427,18 +427,18 @@ void CameraPlugin::PausePreviewMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 
   auto camera = GetCameraByCameraId(*camera_id);
   if (!camera) {
-    return result->Error("Camera not created", "Please create camera first");
+    return result->Error("camera_error", "Camera not created");
   }
 
   if (camera->HasPendingResultByType(PendingResultType::PAUSE_PREVIEW)) {
-    return result->Error("Failed to initialize",
-                         "Pause preview method already called");
+    return result->Error("camera_error",
+                         "Pending pause preview request exists");
   }
 
   if (camera->AddPendingResult(PendingResultType::PAUSE_PREVIEW,
@@ -455,18 +455,18 @@ void CameraPlugin::ResumePreviewMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 
   auto camera = GetCameraByCameraId(*camera_id);
   if (!camera) {
-    return result->Error("Camera not created", "Please create camera first");
+    return result->Error("camera_error", "Camera not created");
   }
 
   if (camera->HasPendingResultByType(PendingResultType::RESUME_PREVIEW)) {
-    return result->Error("Failed to initialize",
-                         "Resume preview method already called");
+    return result->Error("camera_error",
+                         "Pending resume preview request exists");
   }
 
   if (camera->AddPendingResult(PendingResultType::RESUME_PREVIEW,
@@ -483,18 +483,18 @@ void CameraPlugin::StartVideoRecordingMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 
   auto camera = GetCameraByCameraId(*camera_id);
   if (!camera) {
-    return result->Error("Camera not created", "Please create camera first");
+    return result->Error("camera_error", "Camera not created");
   }
 
   if (camera->HasPendingResultByType(PendingResultType::START_RECORD)) {
-    return result->Error("Failed to start video recording",
-                         "Video recording starting already");
+    return result->Error("camera_error",
+                         "Pending start recording request exists");
   }
 
   // Get max video duration
@@ -516,7 +516,7 @@ void CameraPlugin::StartVideoRecordingMethodHandler(
       cc->StartRecord(str_path, max_video_duration_ms);
     }
   } else {
-    return result->Error("System error",
+    return result->Error("system_error",
                          "Failed to get path for video capture");
   }
 }
@@ -525,18 +525,18 @@ void CameraPlugin::StopVideoRecordingMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 
   auto camera = GetCameraByCameraId(*camera_id);
   if (!camera) {
-    return result->Error("Camera not created", "Please create camera first");
+    return result->Error("camera_error", "Camera not created");
   }
 
   if (camera->HasPendingResultByType(PendingResultType::STOP_RECORD)) {
-    return result->Error("Failed to stop video recording",
-                         "Video recording stopping already");
+    return result->Error("camera_error",
+                         "Pending stop recording request exists");
   }
 
   if (camera->AddPendingResult(PendingResultType::STOP_RECORD,
@@ -551,17 +551,17 @@ void CameraPlugin::TakePictureMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 
   auto camera = GetCameraByCameraId(*camera_id);
   if (!camera) {
-    return result->Error("Camera not created", "Please create camera first");
+    return result->Error("camera_error", "Camera not created");
   }
 
   if (camera->HasPendingResultByType(PendingResultType::TAKE_PICTURE)) {
-    return result->Error("Taking picture failed", "Picture already requested");
+    return result->Error("camera_error", "Pending take picture request exists");
   }
 
   std::string path;
@@ -573,7 +573,7 @@ void CameraPlugin::TakePictureMethodHandler(
       cc->TakePicture(path);
     }
   } else {
-    return result->Error("Taking picture failed", "Failed to get proper path");
+    return result->Error("system_error", "Failed to get capture path for picture");
   }
 }
 
@@ -581,7 +581,7 @@ void CameraPlugin::DisposeMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
   auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
   if (!camera_id) {
-    return result->Error("Argument error",
+    return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
   }
 

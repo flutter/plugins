@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 
 #include <cassert>
+#include <system_error>
 
 #include "string_utils.h"
 
@@ -34,7 +35,7 @@ CaptureControllerImpl::CaptureControllerImpl(
     : capture_controller_listener_(listener), CaptureController(){};
 
 CaptureControllerImpl::~CaptureControllerImpl() {
-  ResetCaptureEngineState();
+  ResetCaptureController();
   capture_controller_listener_ = nullptr;
 };
 
@@ -295,6 +296,7 @@ HRESULT CaptureControllerImpl::CreateVideoCaptureSourceForDevice(
 // TODO: If DX12 device can be used with flutter:
 //       Separate CreateD3DManagerWithDX12Device functionality
 //       can be written if needed
+// TODO: Should shared ANGLE device be used?
 HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
   HRESULT hr = S_OK;
   hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
@@ -323,30 +325,35 @@ HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
   return hr;
 }
 
-HRESULT CaptureControllerImpl::CreateCaptureEngine(
-    const std::string &video_device_id) {
+HRESULT CaptureControllerImpl::CreateCaptureEngine() {
+  assert(!video_device_id_.empty());
+
   HRESULT hr = S_OK;
   ComPtr<IMFAttributes> attributes;
-  ComPtr<IMFCaptureEngineClassFactory> capture_engine_factory;
+
+  // Creates capture engine only if not already initialized by test framework
+  if (!capture_engine_) {
+    ComPtr<IMFCaptureEngineClassFactory> capture_engine_factory;
+
+    if (SUCCEEDED(hr)) {
+      hr = CoCreateInstance(CLSID_MFCaptureEngineClassFactory, nullptr,
+                            CLSCTX_INPROC_SERVER,
+                            IID_PPV_ARGS(&capture_engine_factory));
+    }
+
+    if (SUCCEEDED(hr)) {
+      // Creates CaptureEngine.
+      hr = capture_engine_factory->CreateInstance(
+          CLSID_MFCaptureEngine, IID_PPV_ARGS(&capture_engine_));
+    }
+  }
 
   if (SUCCEEDED(hr)) {
     hr = CreateD3DManagerWithDX11Device();
   }
 
   if (SUCCEEDED(hr)) {
-    hr = CoCreateInstance(CLSID_MFCaptureEngineClassFactory, nullptr,
-                          CLSCTX_INPROC_SERVER,
-                          IID_PPV_ARGS(&capture_engine_factory));
-  }
-
-  if (SUCCEEDED(hr)) {
-    // Creates CaptureEngine.
-    hr = capture_engine_factory->CreateInstance(CLSID_MFCaptureEngine,
-                                                IID_PPV_ARGS(&capture_engine_));
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = CreateVideoCaptureSourceForDevice(video_device_id);
+    hr = CreateVideoCaptureSourceForDevice(video_device_id_);
   }
 
   if (enable_audio_record_) {
@@ -382,7 +389,7 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine(
   return hr;
 }
 
-void CaptureControllerImpl::ResetCaptureEngineState() {
+void CaptureControllerImpl::ResetCaptureController() {
   initialized_ = false;
   if (previewing_) {
     StopPreview();
@@ -456,20 +463,18 @@ void CaptureControllerImpl::CreateCaptureDevice(
         "Capture device already initializing");
   }
 
-  // Reset current capture engine state before creating new capture engine;
-  ResetCaptureEngineState();
-
   capture_engine_initialization_pending_ = true;
   resolution_preset_ = resolution_preset;
   enable_audio_record_ = enable_audio;
   texture_registrar_ = texture_registrar;
+  video_device_id_ = device_id;
 
-  HRESULT hr = CreateCaptureEngine(device_id);
+  HRESULT hr = CreateCaptureEngine();
 
   if (FAILED(hr)) {
     capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Failed to create camera");
-    ResetCaptureEngineState();
+    ResetCaptureController();
     return;
   }
 }
@@ -800,12 +805,14 @@ HRESULT CaptureControllerImpl::InitRecordSink(const std::string &filepath) {
   return hr;
 }
 
+// Starts recording.
+// Check MF_CAPTURE_ENGINE_RECORD_STARTED event handling for response process.
 void CaptureControllerImpl::StartRecord(const std::string &filepath,
                                         int64_t max_video_duration_ms) {
   assert(capture_controller_listener_);
   if (!initialized_) {
     return capture_controller_listener_->OnStartRecordFailed(
-        "Capture not initialized");
+        "Camera not initialized. Camera should be disposed and reinitialized.");
   } else if (recording_) {
     return capture_controller_listener_->OnStartRecordFailed(
         "Already recording");
@@ -839,12 +846,14 @@ void CaptureControllerImpl::StartRecord(const std::string &filepath,
   }
 }
 
+// Stops recording.
+// Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response process.
 void CaptureControllerImpl::StopRecord() {
   assert(capture_controller_listener_);
 
   if (!initialized_) {
     return capture_controller_listener_->OnStopRecordFailed(
-        "Capture not initialized");
+        "Camera not initialized. Camera should be disposed and reinitialized.");
   } else if (!recording_ && !record_start_pending_) {
     return capture_controller_listener_->OnStopRecordFailed("Not recording");
   } else if (record_stop_pending_) {
@@ -853,7 +862,6 @@ void CaptureControllerImpl::StopRecord() {
   }
 
   // Request to stop recording.
-  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event with CaptureEngineListener
   record_stop_pending_ = true;
   HRESULT hr = capture_engine_->StopRecord(true, false);
 
@@ -865,6 +873,8 @@ void CaptureControllerImpl::StopRecord() {
   }
 }
 
+// Stops timed recording. Called internally when requested time is passed.
+// Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response process.
 void CaptureControllerImpl::StopTimedRecord() {
   assert(capture_controller_listener_);
   if (!recording_ && record_stop_pending_ &&
@@ -885,11 +895,19 @@ void CaptureControllerImpl::StopTimedRecord() {
   }
 }
 
+// Starts capturing preview frames using preview sink
+// After first frame is captured, OnPreviewStarted is called
 void CaptureControllerImpl::StartPreview() {
   assert(capture_controller_listener_);
 
-  if (!initialized_ || previewing_) {
-    return OnPreviewStarted(false);
+  if (!initialized_) {
+    return OnPreviewStarted(
+        false,
+        "Camera not initialized. Camera should be disposed and reinitialized.");
+  }
+  if (previewing_) {
+    // Return success if preview already started
+    return OnPreviewStarted(true, "");
   }
 
   HRESULT hr = InitPreviewSink();
@@ -902,10 +920,14 @@ void CaptureControllerImpl::StartPreview() {
   }
 
   if (FAILED(hr)) {
-    return OnPreviewStarted(false);
+    return OnPreviewStarted(false, "Failed to start preview");
   }
 }
 
+// Stops preview. If called, recording will not work either.
+// Use PausePreview and ResumePreview methods to for
+// pausing and resuming the preview.
+// Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event handling for response process.
 void CaptureControllerImpl::StopPreview() {
   assert(capture_controller_listener_);
 
@@ -925,6 +947,9 @@ void CaptureControllerImpl::StopPreview() {
   };
 }
 
+// Marks preview as paused.
+// When preview is paused, captured frames are not processed for preview
+// and flutter texture is not updated
 void CaptureControllerImpl::PausePreview() {
   if (!previewing_) {
     preview_paused_ = false;
@@ -941,6 +966,9 @@ void CaptureControllerImpl::PausePreview() {
   }
 }
 
+// Marks preview as not paused.
+// When preview is not paused, captured frames are processed for preview
+// and flutter texture is updated.
 void CaptureControllerImpl::ResumePreview() {
   preview_paused_ = false;
   if (capture_controller_listener_) {
@@ -948,15 +976,60 @@ void CaptureControllerImpl::ResumePreview() {
   }
 }
 
-// Handles Picture event and informs CaptureControllerListener.
+// Handles capture engine events.
 // Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnPicture.
-void CaptureControllerImpl::OnPicture(bool success) {
+// Implements CaptureEngineObserver::OnEvent.
+void CaptureControllerImpl::OnEvent(IMFMediaEvent *event) {
+  if (!initialized_ && !capture_engine_initialization_pending_) {
+    return;
+  }
+
+  HRESULT event_hr;
+  HRESULT hr = event->GetStatus(&event_hr);
+
+  GUID extended_type_guid;
+  if (SUCCEEDED(hr)) {
+    hr = event->GetExtendedType(&extended_type_guid);
+  }
+
+  if (SUCCEEDED(hr)) {
+    std::string error;
+    if (FAILED(event_hr)) {
+      error = std::system_category().message(event_hr);
+    }
+
+    if (extended_type_guid == MF_CAPTURE_ENGINE_ERROR) {
+      OnCaptureEngineError(event_hr, error);
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
+      OnCaptureEngineInitialized(SUCCEEDED(event_hr), error);
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_PREVIEW_STARTED) {
+      // Preview is marked as started after first frame is captured.
+      // This is because, CaptureEngine might inform that preview is started
+      // even if error is thrown right after.
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_PREVIEW_STOPPED) {
+      OnPreviewStopped(SUCCEEDED(event_hr), error);
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_RECORD_STARTED) {
+      OnRecordStarted(SUCCEEDED(event_hr), error);
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_RECORD_STOPPED) {
+      OnRecordStopped(SUCCEEDED(event_hr), error);
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_PHOTO_TAKEN) {
+      OnPicture(SUCCEEDED(event_hr), error);
+    } else if (extended_type_guid == MF_CAPTURE_ENGINE_CAMERA_STREAM_BLOCKED) {
+      // TODO: Inform capture state to flutter.
+    } else if (extended_type_guid ==
+               MF_CAPTURE_ENGINE_CAMERA_STREAM_UNBLOCKED) {
+      // TODO: Inform capture state to flutter.
+    }
+  }
+}
+
+// Handles Picture event and informs CaptureControllerListener.
+void CaptureControllerImpl::OnPicture(bool success, const std::string &error) {
   if (capture_controller_listener_) {
     if (success && !pending_picture_path_.empty()) {
       capture_controller_listener_->OnPictureSuccess(pending_picture_path_);
     } else {
-      capture_controller_listener_->OnPictureFailed("Failed to take picture");
+      capture_controller_listener_->OnPictureFailed(error);
     }
   }
   pending_image_capture_ = false;
@@ -964,9 +1037,8 @@ void CaptureControllerImpl::OnPicture(bool success) {
 }
 
 // Handles CaptureEngineInitialized event and informs CaptureControllerListener.
-// Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnCaptureEngineInitialized.
-void CaptureControllerImpl::OnCaptureEngineInitialized(bool success) {
+void CaptureControllerImpl::OnCaptureEngineInitialized(
+    bool success, const std::string &error) {
   if (capture_controller_listener_) {
     // Create flutter desktop pixelbuffer texture;
     texture_ =
@@ -983,38 +1055,37 @@ void CaptureControllerImpl::OnCaptureEngineInitialized(bool success) {
       capture_controller_listener_->OnCreateCaptureEngineSucceeded(texture_id_);
       initialized_ = true;
     } else {
+      texture_ = nullptr;
+      texture_id_ = -1;
+      capture_controller_listener_->OnCreateCaptureEngineFailed(
+          "Failed to create texture_id");
       initialized_ = false;
     }
   }
+
   capture_engine_initialization_pending_ = false;
 }
 
 // Handles CaptureEngineError event and informs CaptureControllerListener.
-// Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnCaptureEngineError.
-void CaptureControllerImpl::OnCaptureEngineError() {
-  // TODO: detect error type and update state depending of error type, also send
-  // other than capture engine creation errors to separate error handler
+void CaptureControllerImpl::OnCaptureEngineError(HRESULT hr,
+                                                 const std::string &error) {
   if (capture_controller_listener_) {
-    capture_controller_listener_->OnCreateCaptureEngineFailed(
-        "Error while capturing device");
+    capture_controller_listener_->OnCaptureError(error);
   }
 
-  initialized_ = false;
-  capture_engine_initialization_pending_ = false;
+  // TODO: If MF_CAPTURE_ENGINE_ERROR is returned,
+  // should capture controller be reinitialized automatically?
 }
 
 // Handles PreviewStarted event and informs CaptureControllerListener.
-// Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnPreviewStarted.
-void CaptureControllerImpl::OnPreviewStarted(bool success) {
+void CaptureControllerImpl::OnPreviewStarted(bool success,
+                                             const std::string &error) {
   if (capture_controller_listener_) {
     if (success && preview_frame_width_ > 0 && preview_frame_height_ > 0) {
       capture_controller_listener_->OnStartPreviewSucceeded(
           preview_frame_width_, preview_frame_height_);
     } else {
-      capture_controller_listener_->OnStartPreviewFailed(
-          "Failed to start preview");
+      capture_controller_listener_->OnStartPreviewFailed(error);
     }
   }
 
@@ -1024,23 +1095,20 @@ void CaptureControllerImpl::OnPreviewStarted(bool success) {
 };
 
 // Handles PreviewStopped event.
-// Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnPreviewStopped.
-void CaptureControllerImpl::OnPreviewStopped(bool success) {
+void CaptureControllerImpl::OnPreviewStopped(bool success,
+                                             const std::string &error) {
   // update state
   previewing_ = false;
 };
 
 // Handles RecordStarted event and informs CaptureControllerListener.
-// Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnRecordStarted.
-void CaptureControllerImpl::OnRecordStarted(bool success) {
+void CaptureControllerImpl::OnRecordStarted(bool success,
+                                            const std::string &error) {
   if (capture_controller_listener_) {
     if (success) {
       capture_controller_listener_->OnStartRecordSucceeded();
     } else {
-      capture_controller_listener_->OnStartRecordFailed(
-          "Failed to start recording");
+      capture_controller_listener_->OnStartRecordFailed(error);
     }
   }
 
@@ -1050,26 +1118,24 @@ void CaptureControllerImpl::OnRecordStarted(bool success) {
 };
 
 // Handles RecordStopped event and informs CaptureControllerListener.
-// Called via IMFCaptureEngineOnEventCallback implementation.
-// Implements CaptureEngineObserver::OnRecordStopped.
-void CaptureControllerImpl::OnRecordStopped(bool success) {
+void CaptureControllerImpl::OnRecordStopped(bool success,
+                                            const std::string &error) {
   if (capture_controller_listener_) {
-    if (recording_type_ == RecordingType::RECORDING_TYPE_CONTINUOUS) {
-      if (success && !pending_record_path_.empty()) {
-        capture_controller_listener_->OnStopRecordSucceeded(
-            pending_record_path_);
-      } else {
-        capture_controller_listener_->OnStopRecordFailed(
-            "Failed to record video");
-      }
-    } else if (recording_type_ == RecordingType::RECORDING_TYPE_TIMED) {
+    // Always call stop record handlers,
+    // to handle separate stop record request for timed records.
+    if (success && !pending_record_path_.empty()) {
+      capture_controller_listener_->OnStopRecordSucceeded(pending_record_path_);
+    } else {
+      capture_controller_listener_->OnStopRecordFailed(error);
+    }
+
+    if (recording_type_ == RecordingType::RECORDING_TYPE_TIMED) {
       if (success && !pending_record_path_.empty()) {
         capture_controller_listener_->OnVideoRecordedSuccess(
             pending_record_path_, (recording_duration_us_ / 1000));
 
       } else {
-        capture_controller_listener_->OnVideoRecordedFailed(
-            "Failed to record video");
+        capture_controller_listener_->OnVideoRecordedFailed(error);
       }
     }
   }
@@ -1097,8 +1163,8 @@ uint8_t *CaptureControllerImpl::GetSourceBuffer(uint32_t current_length) {
 
 // Marks texture frame available after buffer is updated.
 // Called via IMFCaptureEngineOnSampleCallback implementation.
-// Implements CaptureEngineObserver::OnBufferUpdate.
-void CaptureControllerImpl::OnBufferUpdate() {
+// Implements CaptureEngineObserver::OnBufferUpdated.
+void CaptureControllerImpl::OnBufferUpdated() {
   if (this->texture_registrar_ && this->texture_id_ >= 0) {
     this->texture_registrar_->MarkTextureFrameAvailable(this->texture_id_);
   }
@@ -1109,6 +1175,15 @@ void CaptureControllerImpl::OnBufferUpdate() {
 // Called via IMFCaptureEngineOnSampleCallback implementation.
 // Implements CaptureEngineObserver::UpdateCaptureTime.
 void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
+  if (!initialized_) {
+    return;
+  }
+
+  if (preview_pending_) {
+    // Informs that first frame is captured succeffully and preview has started.
+    OnPreviewStarted(true, "");
+  }
+
   // Checks if max_video_duration_ms is passed.
   if (recording_ && recording_type_ == RecordingType::RECORDING_TYPE_TIMED &&
       max_video_duration_ms_ > 0) {

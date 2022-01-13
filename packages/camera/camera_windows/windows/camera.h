@@ -78,6 +78,7 @@ class CameraImpl : public Camera {
   void OnVideoRecordedSuccess(const std::string &filepath,
                               int64_t video_duration) override;
   void OnVideoRecordedFailed(const std::string &error) override;
+  void OnCaptureError(const std::string &error) override;
 
   // From Camera
 
@@ -118,8 +119,8 @@ class CameraImpl : public Camera {
   std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
   std::unique_ptr<MethodResult<>> GetPendingResultByType(
       PendingResultType type);
-  void ClearPendingResultByType(PendingResultType type);
-  void ClearPendingResults();
+  void SendErrorForPendingResults(const std::string &error_id,
+                                  const std::string &descripion);
 };
 
 class CameraFactory {

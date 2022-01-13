@@ -108,13 +108,17 @@ class CameraWindows extends CameraPlatform {
       return channel;
     });
 
-    final Map<String, double>? reply =
-        await _channel.invokeMapMethod<String, double>(
-      'initialize',
-      <String, dynamic>{
-        'cameraId': requestedCameraId,
-      },
-    );
+    final Map<String, double>? reply;
+    try {
+      reply = await _channel.invokeMapMethod<String, double>(
+        'initialize',
+        <String, dynamic>{
+          'cameraId': requestedCameraId,
+        },
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
 
     if (reply != null &&
         reply.containsKey('previewWidth') &&
@@ -146,10 +150,14 @@ class CameraWindows extends CameraPlatform {
       _channels.remove(cameraId);
     }
 
-    await _channel.invokeMethod<void>(
-      'dispose',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+    try {
+      await _channel.invokeMethod<void>(
+        'dispose',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
   }
 
   @override
@@ -202,10 +210,15 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<XFile> takePicture(int cameraId) async {
-    final String? path = await _channel.invokeMethod<String>(
-      'takePicture',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+    final String? path;
+    try {
+      path = await _channel.invokeMethod<String>(
+        'takePicture',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
 
     if (path == null) {
       throw CameraException(
@@ -218,29 +231,44 @@ class CameraWindows extends CameraPlatform {
   }
 
   @override
-  Future<void> prepareForVideoRecording() =>
+  Future<void> prepareForVideoRecording() async {
+    try {
       _channel.invokeMethod<void>('prepareForVideoRecording');
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
 
   @override
   Future<void> startVideoRecording(
     int cameraId, {
     Duration? maxVideoDuration,
   }) async {
-    await _channel.invokeMethod<void>(
-      'startVideoRecording',
-      <String, dynamic>{
-        'cameraId': cameraId,
-        'maxVideoDuration': maxVideoDuration?.inMilliseconds,
-      },
-    );
+    try {
+      await _channel.invokeMethod<void>(
+        'startVideoRecording',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'maxVideoDuration': maxVideoDuration?.inMilliseconds,
+        },
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
   }
 
   @override
   Future<XFile> stopVideoRecording(int cameraId) async {
-    final String? path = await _channel.invokeMethod<String>(
-      'stopVideoRecording',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+    final String? path;
+
+    try {
+      path = await _channel.invokeMethod<String>(
+        'stopVideoRecording',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
 
     if (path == null) {
       throw CameraException(

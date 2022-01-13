@@ -13,6 +13,7 @@ namespace {
 // Camera channel events
 const char kCameraMethodChannelBaseName[] = "flutter.io/cameraPlugin/camera";
 const char kVideoRecordedEvent[] = "video_recorded";
+const char kErrorEvent[] = "error";
 
 // Helper function for creating messaging channel for camera
 std::unique_ptr<flutter::MethodChannel<>> BuildChannelForCamera(
@@ -33,7 +34,9 @@ CameraImpl::CameraImpl(const std::string &device_id)
       Camera(device_id) {}
 CameraImpl::~CameraImpl() {
   capture_controller_ = nullptr;
-  ClearPendingResults();
+
+  SendErrorForPendingResults("Plugin disposed",
+                             "Plugin disposed before request was handled");
 }
 
 void CameraImpl::InitCamera(flutter::TextureRegistrar *texture_registrar,
@@ -100,22 +103,12 @@ bool CameraImpl::HasPendingResultByType(PendingResultType type) {
   return it->second != nullptr;
 }
 
-void CameraImpl::ClearPendingResultByType(PendingResultType type) {
-  auto pending_result = GetPendingResultByType(type);
-  if (pending_result) {
-    pending_result->Error("Plugin disposed",
-                          "Plugin disposed before request was handled");
+void CameraImpl::SendErrorForPendingResults(const std::string &error_id,
+                                            const std::string &descripion) {
+  for (const auto &pending_result : pending_results_) {
+    std::move(pending_result.second)->Error(error_id, descripion);
   }
-}
-
-void CameraImpl::ClearPendingResults() {
-  ClearPendingResultByType(PendingResultType::CREATE_CAMERA);
-  ClearPendingResultByType(PendingResultType::INITIALIZE);
-  ClearPendingResultByType(PendingResultType::PAUSE_PREVIEW);
-  ClearPendingResultByType(PendingResultType::RESUME_PREVIEW);
-  ClearPendingResultByType(PendingResultType::START_RECORD);
-  ClearPendingResultByType(PendingResultType::STOP_RECORD);
-  ClearPendingResultByType(PendingResultType::TAKE_PICTURE);
+  pending_results_.clear();
 }
 
 // TODO: Create common base handler function for alll success and error cases
@@ -136,7 +129,7 @@ void CameraImpl::OnCreateCaptureEngineFailed(const std::string &error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::CREATE_CAMERA);
   if (pending_result) {
-    pending_result->Error("Failed to create camera", error);
+    pending_result->Error("camera_error", error);
   }
 }
 
@@ -155,7 +148,7 @@ void CameraImpl::OnStartPreviewSucceeded(int32_t width, int32_t height) {
 void CameraImpl::OnStartPreviewFailed(const std::string &error) {
   auto pending_result = GetPendingResultByType(PendingResultType::INITIALIZE);
   if (pending_result) {
-    pending_result->Error("Failed to initialize", error);
+    pending_result->Error("camera_error", error);
   }
 };
 
@@ -173,7 +166,7 @@ void CameraImpl::OnResumePreviewFailed(const std::string &error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::RESUME_PREVIEW);
   if (pending_result) {
-    pending_result->Error("Failed to resume preview", error);
+    pending_result->Error("camera_error", error);
   }
 }
 
@@ -191,7 +184,7 @@ void CameraImpl::OnPausePreviewFailed(const std::string &error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::PAUSE_PREVIEW);
   if (pending_result) {
-    pending_result->Error("Failed to pause preview", error);
+    pending_result->Error("camera_error", error);
   }
 }
 
@@ -207,7 +200,7 @@ void CameraImpl::OnStartRecordSucceeded() {
 void CameraImpl::OnStartRecordFailed(const std::string &error) {
   auto pending_result = GetPendingResultByType(PendingResultType::START_RECORD);
   if (pending_result) {
-    pending_result->Error("Failed to start recording", error);
+    pending_result->Error("camera_error", error);
   }
 };
 
@@ -223,7 +216,7 @@ void CameraImpl::OnStopRecordSucceeded(const std::string &filepath) {
 void CameraImpl::OnStopRecordFailed(const std::string &error) {
   auto pending_result = GetPendingResultByType(PendingResultType::STOP_RECORD);
   if (pending_result) {
-    pending_result->Error("Failed to stop recording", error);
+    pending_result->Error("camera_error", error);
   }
 };
 
@@ -240,7 +233,7 @@ void CameraImpl::OnPictureFailed(const std::string &error) {
   auto pending_take_picture_result =
       GetPendingResultByType(PendingResultType::TAKE_PICTURE);
   if (pending_take_picture_result) {
-    pending_take_picture_result->Error("Failed to take picture", error);
+    pending_take_picture_result->Error("camera_error", error);
   }
 };
 
@@ -262,5 +255,17 @@ void CameraImpl::OnVideoRecordedSuccess(const std::string &filepath,
 
 // From CaptureControllerListener
 void CameraImpl::OnVideoRecordedFailed(const std::string &error){};
+
+void CameraImpl::OnCaptureError(const std::string &error) {
+  if (messenger_ && camera_id_ >= 0) {
+    auto channel = BuildChannelForCamera(messenger_, camera_id_);
+    std::unique_ptr<EncodableValue> message_data =
+        std::make_unique<EncodableValue>(EncodableMap(
+            {{EncodableValue("description"), EncodableValue(error)}}));
+    channel->InvokeMethod(kErrorEvent, std::move(message_data));
+  }
+
+  SendErrorForPendingResults("capture_error", error);
+}
 
 }  // namespace camera_windows

@@ -119,28 +119,21 @@ class CaptureControllerImpl : public CaptureController,
 
   // Handlers for CaptureEngineListener events
   // From CaptureEngineObserver
-  bool IsReadyForEvents() override {
-    return initialized_ || capture_engine_initialization_pending_;
-  };
   bool IsReadyForSample() override {
     return initialized_ && previewing_ && !preview_paused_;
   }
-  void OnCaptureEngineInitialized(bool success) override;
-  void OnCaptureEngineError() override;
-  void OnPicture(bool success) override;
-  void OnPreviewStarted(bool success) override;
-  void OnPreviewStopped(bool success) override;
-  void OnRecordStarted(bool success) override;
-  void OnRecordStopped(bool success) override;
+
+  void OnEvent(IMFMediaEvent* event) override;
 
   uint8_t* GetSourceBuffer(uint32_t current_length) override;
-  void OnBufferUpdate() override;
+  void OnBufferUpdated() override;
   void UpdateCaptureTime(uint64_t capture_time) override;
 
  private:
   CaptureControllerListener* capture_controller_listener_ = nullptr;
   bool initialized_ = false;
   bool enable_audio_record_ = false;
+  std::string video_device_id_;
 
   ResolutionPreset resolution_preset_ =
       ResolutionPreset::RESOLUTION_PRESET_MEDIUM;
@@ -199,13 +192,13 @@ class CaptureControllerImpl : public CaptureController,
 
   RecordingType recording_type_ = RecordingType::RECORDING_TYPE_NOT_SET;
 
-  void ResetCaptureEngineState();
+  void ResetCaptureController();
   uint32_t GetMaxPreviewHeight();
   HRESULT CreateDefaultAudioCaptureSource();
   HRESULT CreateVideoCaptureSourceForDevice(const std::string& video_device_id);
   HRESULT CreateD3DManagerWithDX11Device();
 
-  HRESULT CreateCaptureEngine(const std::string& video_device_id);
+  HRESULT CreateCaptureEngine();
 
   HRESULT FindBaseMediaTypes();
   HRESULT InitPreviewSink();
@@ -213,6 +206,14 @@ class CaptureControllerImpl : public CaptureController,
   HRESULT InitRecordSink(const std::string& filepath);
 
   void StopTimedRecord();
+
+  void OnCaptureEngineInitialized(bool success, const std::string& error);
+  void OnCaptureEngineError(HRESULT hr, const std::string& error);
+  void OnPicture(bool success, const std::string& error);
+  void OnPreviewStarted(bool success, const std::string& error);
+  void OnPreviewStopped(bool success, const std::string& error);
+  void OnRecordStarted(bool success, const std::string& error);
+  void OnRecordStopped(bool success, const std::string& error);
 
   const FlutterDesktopPixelBuffer* ConvertPixelBufferForFlutter(size_t width,
                                                                 size_t height);

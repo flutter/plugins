@@ -15,23 +15,14 @@ class CaptureEngineObserver {
  public:
   virtual ~CaptureEngineObserver() = default;
 
-  virtual bool IsReadyForEvents() = 0;
   virtual bool IsReadyForSample() = 0;
 
   // Event functions
-  // TODO: Instead of separate functions for each event,
-  // just have OnEvent handler;
-  virtual void OnCaptureEngineInitialized(bool success) = 0;
-  virtual void OnCaptureEngineError() = 0;
-  virtual void OnPicture(bool success) = 0;
-  virtual void OnPreviewStarted(bool success) = 0;
-  virtual void OnPreviewStopped(bool success) = 0;
-  virtual void OnRecordStarted(bool success) = 0;
-  virtual void OnRecordStopped(bool success) = 0;
+  virtual void OnEvent(IMFMediaEvent *event) = 0;
 
   // Sample functions
   virtual uint8_t* GetSourceBuffer(uint32_t current_length) = 0;
-  virtual void OnBufferUpdate() = 0;
+  virtual void OnBufferUpdated() = 0;
   virtual void UpdateCaptureTime(uint64_t capture_time) = 0;
 };
 
