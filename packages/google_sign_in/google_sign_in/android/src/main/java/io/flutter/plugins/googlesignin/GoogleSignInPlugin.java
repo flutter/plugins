@@ -183,7 +183,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
   /**
    * A delegate interface that exposes all of the sign-in functionality for other plugins to use.
-   * The below {@link #Delegate} implementation should be used by any clients unless they need to
+   * The below {@link Delegate} implementation should be used by any clients unless they need to
    * override some of these functions, such as for testing.
    */
   public interface IDelegate {

@@ -4,7 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {

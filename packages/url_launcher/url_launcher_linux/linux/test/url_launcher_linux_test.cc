@@ -18,7 +18,7 @@ TEST(UrlLauncherPlugin, CanLaunchSuccess) {
   g_autoptr(FlValue) args = fl_value_new_map();
   fl_value_set_string_take(args, "url",
                            fl_value_new_string("https://flutter.dev"));
-  FlMethodResponse* response = can_launch(nullptr, args);
+  g_autoptr(FlMethodResponse) response = can_launch(nullptr, args);
   ASSERT_NE(response, nullptr);
   ASSERT_TRUE(FL_IS_METHOD_SUCCESS_RESPONSE(response));
   g_autoptr(FlValue) expected = fl_value_new_bool(true);
@@ -30,7 +30,7 @@ TEST(UrlLauncherPlugin, CanLaunchSuccess) {
 TEST(UrlLauncherPlugin, CanLaunchFailureUnhandled) {
   g_autoptr(FlValue) args = fl_value_new_map();
   fl_value_set_string_take(args, "url", fl_value_new_string("madeup:scheme"));
-  FlMethodResponse* response = can_launch(nullptr, args);
+  g_autoptr(FlMethodResponse) response = can_launch(nullptr, args);
   ASSERT_NE(response, nullptr);
   ASSERT_TRUE(FL_IS_METHOD_SUCCESS_RESPONSE(response));
   g_autoptr(FlValue) expected = fl_value_new_bool(false);
@@ -44,7 +44,7 @@ TEST(UrlLauncherPlugin, CanLaunchFailureUnhandled) {
 TEST(UrlLauncherPlugin, CanLaunchFailureInvalidUrl) {
   g_autoptr(FlValue) args = fl_value_new_map();
   fl_value_set_string_take(args, "url", fl_value_new_string(""));
-  FlMethodResponse* response = can_launch(nullptr, args);
+  g_autoptr(FlMethodResponse) response = can_launch(nullptr, args);
   ASSERT_NE(response, nullptr);
   ASSERT_TRUE(FL_IS_METHOD_SUCCESS_RESPONSE(response));
   g_autoptr(FlValue) expected = fl_value_new_bool(false);

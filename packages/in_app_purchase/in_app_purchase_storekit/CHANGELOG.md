@@ -1,6 +1,10 @@
+## 0.3.0+1
+
+* Removes dependency on `meta`.
+
 ## 0.3.0
 
-* **BREAKING CHANGE:** `InAppPurchaseStoreKitPlatform.restorePurchase()` emits an empty instance of `List<ProductDetails>` when there were no transactions to restore, indicating that the restore procedure has finished. 
+* **BREAKING CHANGE:** `InAppPurchaseStoreKitPlatform.restorePurchase()` emits an empty instance of `List<ProductDetails>` when there were no transactions to restore, indicating that the restore procedure has finished.
 
 ## 0.2.1
 

@@ -4,8 +4,8 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 /// The macOS implementation of [PathProviderPlatform].

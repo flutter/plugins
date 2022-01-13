@@ -1,3 +1,7 @@
+## 2.0.12
+
+* Removes dependency on `meta`.
+
 ## 2.0.11
 
 * Corrects example for mocking in readme.
