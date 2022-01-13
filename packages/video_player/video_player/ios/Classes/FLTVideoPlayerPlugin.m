@@ -375,7 +375,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
-  return FLTCMTimeToMillis([[_player currentItem] duration]);
+  // [[_player currentItem] duration] initially can return incorrect value kCMTimeIndefinite.
+  // In this case [self duration] returns TIME_UNSET, which breaks existing [self setupEventSinkIfReadyToPlay] logic.
+  // Bug is highly reproducible with iOS 12.
+  //
+  // [[[_player currentItem] asset] duration] fixes this issue.
+  // Also works correctly with live streams, which have kCMTimeIndefinite duration.
+  // Related issue https://openradar.appspot.com/radar?id=4968600712511488
+  return FLTCMTimeToMillis([[[_player currentItem] asset] duration]);
 }
 
 - (void)seekTo:(int)location {

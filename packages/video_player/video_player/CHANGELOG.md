@@ -1,3 +1,7 @@
+## 2.2.12
+
+* Fixes incorrect video duration for iOS
+
 ## 2.2.11
 
 * Removes dependency on `meta`.
