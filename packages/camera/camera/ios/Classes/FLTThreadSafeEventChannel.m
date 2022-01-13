@@ -20,14 +20,15 @@
 
 - (void)setStreamHandler:(NSObject<FlutterStreamHandler> *)handler
               completion:(void (^)(void))completion {
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.channel setStreamHandler:handler];
-      completion();
-    });
-  } else {
+  void (^block)(void) = ^{
     [self.channel setStreamHandler:handler];
     completion();
+  };
+
+  if (!NSThread.isMainThread) {
+    dispatch_async(dispatch_get_main_queue(), block);
+  } else {
+    block();
   }
 }
 

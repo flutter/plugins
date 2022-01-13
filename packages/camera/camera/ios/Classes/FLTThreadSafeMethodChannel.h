@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A thread safe wrapper for FlutterMethodChannel that can be called from any thread, by dispatching
- * its underlying engine APIs to the main thread.
+ * its underlying engine calls to the main thread.
  */
 @interface FLTThreadSafeMethodChannel : NSObject
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMethodChannel:(FlutterMethodChannel *)channel;
 
 /**
- * Invokes the specified flutter method with the specified arguments on main thread.
+ * Invokes the specified flutter method on the main thread with the specified arguments.
  */
 - (void)invokeMethod:(NSString *)method arguments:(nullable id)arguments;
 

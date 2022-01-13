@@ -1,6 +1,6 @@
 ## 0.9.4+6
 
-* Fixed a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
+* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
 
 ## 0.9.4+5
 

@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A thread safe wrapper for FlutterTextureRegistry that can be called from any thread, by
- * dispatching its underlying engine APIs to the main thread.
+ * dispatching its underlying engine calls to the main thread.
  */
 @interface FLTThreadSafeTextureRegistry : NSObject
 
@@ -20,31 +20,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTextureRegistry:(NSObject<FlutterTextureRegistry> *)registry;
 
 /**
- * Registers a `FlutterTexture` for usage in Flutter and returns an id that can be used to reference
- * that texture when calling into Flutter with channels. Textures must be registered on the
- * main thread.
+ * Registers a `FlutterTexture` on the main thread for usage in Flutter and returns an id that can
+ * be used to reference that texture when calling into Flutter with channels.
  *
  * On success the completion block completes with the pointer to the registered texture, else with
- * 0.
+ * 0. The completion block runs on the main thread.
  */
 - (void)registerTexture:(NSObject<FlutterTexture> *)texture
              completion:(void (^)(int64_t))completion;
 
 /**
- * Notifies Flutter that the content of the previously registered texture has been updated.
- *
- * This will trigger a call to `-[FlutterTexture copyPixelBuffer]` on the raster thread.
- *
- * Runs on main thread.
+ * Notifies the Flutter engine on the main thread that the given texture has been updated.
  */
 - (void)textureFrameAvailable:(int64_t)textureId;
 
 /**
- * Unregisters a `FlutterTexture` that has previously regeistered with `registerTexture:`. Textures
- * must be unregistered on the main thread.
- *
- * Runs on main thread.
- *
+ * Notifies the Flutter engine on the main thread to unregister a `FlutterTexture` that has been
+ * previously registered with `registerTexture:`.
  * @param textureId The result that was previously returned from `registerTexture:`.
  */
 - (void)unregisterTexture:(int64_t)textureId;

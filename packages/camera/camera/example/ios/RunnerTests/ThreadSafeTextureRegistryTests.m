@@ -7,20 +7,16 @@
 #import <OCMock/OCMock.h>
 
 @interface ThreadSafeTextureRegistryTests : XCTestCase
-@property(nonatomic, strong) NSObject<FlutterTextureRegistry> *mockTextureRegistry;
-@property(nonatomic, strong) FLTThreadSafeTextureRegistry *threadSafeTextureRegistry;
 @end
 
 @implementation ThreadSafeTextureRegistryTests
 
-- (void)setUp {
-  [super setUp];
-  _mockTextureRegistry = OCMProtocolMock(@protocol(FlutterTextureRegistry));
-  _threadSafeTextureRegistry =
-      [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:_mockTextureRegistry];
-}
-
 - (void)testShouldStayOnMainThreadIfCalledFromMainThread {
+  NSObject<FlutterTextureRegistry> *mockTextureRegistry =
+      OCMProtocolMock(@protocol(FlutterTextureRegistry));
+  FLTThreadSafeTextureRegistry *threadSafeTextureRegistry =
+      [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:mockTextureRegistry];
+
   XCTestExpectation *registerTextureExpectation = [[XCTestExpectation alloc]
       initWithDescription:@"registerTexture must be called on the main thread"];
   XCTestExpectation *unregisterTextureExpectation = [[XCTestExpectation alloc]
@@ -30,34 +26,33 @@
   XCTestExpectation *registerTextureCompletionExpectation = [[XCTestExpectation alloc]
       initWithDescription:@"registerTexture's completion block must be called on the main thread"];
 
-  OCMStub([self.mockTextureRegistry registerTexture:[OCMArg any]])
-      .andDo(^(NSInvocation *invocation) {
-        if (NSThread.isMainThread) {
-          [registerTextureExpectation fulfill];
-        }
-      });
+  OCMStub([mockTextureRegistry registerTexture:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
+    if (NSThread.isMainThread) {
+      [registerTextureExpectation fulfill];
+    }
+  });
 
-  OCMStub([self.mockTextureRegistry unregisterTexture:0]).andDo(^(NSInvocation *invocation) {
+  OCMStub([mockTextureRegistry unregisterTexture:0]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
       [unregisterTextureExpectation fulfill];
     }
   });
 
-  OCMStub([self.mockTextureRegistry textureFrameAvailable:0]).andDo(^(NSInvocation *invocation) {
+  OCMStub([mockTextureRegistry textureFrameAvailable:0]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
       [textureFrameAvailableExpectation fulfill];
     }
   });
 
   NSObject<FlutterTexture> *anyTexture = OCMProtocolMock(@protocol(FlutterTexture));
-  [self.threadSafeTextureRegistry registerTexture:anyTexture
-                                       completion:^(int64_t textureId) {
-                                         if (NSThread.isMainThread) {
-                                           [registerTextureCompletionExpectation fulfill];
-                                         }
-                                       }];
-  [self.threadSafeTextureRegistry textureFrameAvailable:0];
-  [self.threadSafeTextureRegistry unregisterTexture:0];
+  [threadSafeTextureRegistry registerTexture:anyTexture
+                                  completion:^(int64_t textureId) {
+                                    if (NSThread.isMainThread) {
+                                      [registerTextureCompletionExpectation fulfill];
+                                    }
+                                  }];
+  [threadSafeTextureRegistry textureFrameAvailable:0];
+  [threadSafeTextureRegistry unregisterTexture:0];
   [self waitForExpectations:@[
     registerTextureExpectation,
     unregisterTextureExpectation,
@@ -68,6 +63,11 @@
 }
 
 - (void)testShouldDispatchToMainThreadIfCalledFromBackgroundThread {
+  NSObject<FlutterTextureRegistry> *mockTextureRegistry =
+      OCMProtocolMock(@protocol(FlutterTextureRegistry));
+  FLTThreadSafeTextureRegistry *threadSafeTextureRegistry =
+      [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:mockTextureRegistry];
+
   XCTestExpectation *registerTextureExpectation = [[XCTestExpectation alloc]
       initWithDescription:@"registerTexture must be called on the main thread"];
   XCTestExpectation *unregisterTextureExpectation = [[XCTestExpectation alloc]
@@ -77,20 +77,19 @@
   XCTestExpectation *registerTextureCompletionExpectation = [[XCTestExpectation alloc]
       initWithDescription:@"registerTexture's completion block must be called on the main thread"];
 
-  OCMStub([self.mockTextureRegistry registerTexture:[OCMArg any]])
-      .andDo(^(NSInvocation *invocation) {
-        if (NSThread.isMainThread) {
-          [registerTextureExpectation fulfill];
-        }
-      });
+  OCMStub([mockTextureRegistry registerTexture:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
+    if (NSThread.isMainThread) {
+      [registerTextureExpectation fulfill];
+    }
+  });
 
-  OCMStub([self.mockTextureRegistry unregisterTexture:0]).andDo(^(NSInvocation *invocation) {
+  OCMStub([mockTextureRegistry unregisterTexture:0]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
       [unregisterTextureExpectation fulfill];
     }
   });
 
-  OCMStub([self.mockTextureRegistry textureFrameAvailable:0]).andDo(^(NSInvocation *invocation) {
+  OCMStub([mockTextureRegistry textureFrameAvailable:0]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
       [textureFrameAvailableExpectation fulfill];
     }
@@ -98,14 +97,14 @@
 
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     NSObject<FlutterTexture> *anyTexture = OCMProtocolMock(@protocol(FlutterTexture));
-    [self.threadSafeTextureRegistry registerTexture:anyTexture
-                                         completion:^(int64_t textureId) {
-                                           if (NSThread.isMainThread) {
-                                             [registerTextureCompletionExpectation fulfill];
-                                           }
-                                         }];
-    [self.threadSafeTextureRegistry textureFrameAvailable:0];
-    [self.threadSafeTextureRegistry unregisterTexture:0];
+    [threadSafeTextureRegistry registerTexture:anyTexture
+                                    completion:^(int64_t textureId) {
+                                      if (NSThread.isMainThread) {
+                                        [registerTextureCompletionExpectation fulfill];
+                                      }
+                                    }];
+    [threadSafeTextureRegistry textureFrameAvailable:0];
+    [threadSafeTextureRegistry unregisterTexture:0];
   });
   [self waitForExpectations:@[
     registerTextureExpectation,
