@@ -573,7 +573,8 @@ void CameraPlugin::TakePictureMethodHandler(
       cc->TakePicture(path);
     }
   } else {
-    return result->Error("system_error", "Failed to get capture path for picture");
+    return result->Error("system_error",
+                         "Failed to get capture path for picture");
   }
 }
 

@@ -18,7 +18,7 @@ class CaptureEngineObserver {
   virtual bool IsReadyForSample() = 0;
 
   // Event functions
-  virtual void OnEvent(IMFMediaEvent *event) = 0;
+  virtual void OnEvent(IMFMediaEvent* event) = 0;
 
   // Sample functions
   virtual uint8_t* GetSourceBuffer(uint32_t current_length) = 0;
