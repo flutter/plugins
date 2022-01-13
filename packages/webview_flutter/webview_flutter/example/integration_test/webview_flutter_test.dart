@@ -480,7 +480,7 @@ void main() {
                 onMessageReceived: (JavascriptMessage message) {
                   final double currentTime = double.parse(message.message);
                   // Let it play for at least 1 second to make sure the related video's properties are set.
-                  if (currentTime > 1) {
+                  if (currentTime > 1 && !videoPlaying.isCompleted) {
                     videoPlaying.complete(null);
                   }
                 },
@@ -532,7 +532,7 @@ void main() {
                 onMessageReceived: (JavascriptMessage message) {
                   final double currentTime = double.parse(message.message);
                   // Let it play for at least 1 second to make sure the related video's properties are set.
-                  if (currentTime > 1) {
+                  if (currentTime > 1 && !videoPlaying.isCompleted) {
                     videoPlaying.complete(null);
                   }
                 },
@@ -1201,75 +1201,6 @@ void main() {
       expect(controller.currentUrl(), completion(primaryUrl));
     },
     skip: _skipDueToIssue86757,
-  );
-
-  testWidgets(
-    'JavaScript does not run in parent window',
-    (WidgetTester tester) async {
-      const String iframe = '''
-        <!DOCTYPE html>
-        <script>
-          window.onload = () => {
-            window.open(`javascript:
-              var elem = document.createElement("p");
-              elem.innerHTML = "<b>Executed JS in parent origin: " + window.location.origin + "</b>";
-              document.body.append(elem);
-            `);
-          };
-        </script>
-      ''';
-      final String iframeTestBase64 =
-          base64Encode(const Utf8Encoder().convert(iframe));
-
-      final String openWindowTest = '''
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>XSS test</title>
-        </head>
-        <body>
-          <iframe
-            onload="window.iframeLoaded = true;"
-            src="data:text/html;charset=utf-8;base64,$iframeTestBase64"></iframe>
-        </body>
-        </html>
-      ''';
-      final String openWindowTestBase64 =
-          base64Encode(const Utf8Encoder().convert(openWindowTest));
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      final Completer<void> pageLoadCompleter = Completer<void>();
-
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            initialUrl:
-                'data:text/html;charset=utf-8;base64,$openWindowTestBase64',
-            onPageFinished: (String url) {
-              pageLoadCompleter.complete();
-            },
-          ),
-        ),
-      );
-
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoadCompleter.future;
-
-      expect(controller.runJavascriptReturningResult('iframeLoaded'),
-          completion('true'));
-      expect(
-        controller.runJavascriptReturningResult(
-            'document.querySelector("p") && document.querySelector("p").textContent'),
-        completion('null'),
-      );
-    },
-    skip: !Platform.isAndroid,
   );
 }
 
