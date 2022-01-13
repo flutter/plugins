@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes an integration test race condition.
+
 ## 2.8.2
 
 * Adds the `WebSettings.setAllowFileAccess()` method and ensure that file access is allowed when the `WebViewAndroidWidget.loadFile()` method is executed.
