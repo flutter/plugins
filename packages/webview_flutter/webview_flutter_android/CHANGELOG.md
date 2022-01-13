@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes a duplicate Android-specific integration test.
+
 ## 2.8.2
 
 * Adds the `WebSettings.setAllowFileAccess()` method and ensure that file access is allowed when the `WebViewAndroidWidget.loadFile()` method is executed.
