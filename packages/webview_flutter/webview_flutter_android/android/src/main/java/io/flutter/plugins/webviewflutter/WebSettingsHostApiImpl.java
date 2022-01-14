@@ -118,4 +118,10 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
     final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
     webSettings.setBuiltInZoomControls(enabled);
   }
+
+  @Override
+  public void setAllowFileAccess(Long instanceId, Boolean enabled) {
+    final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
+    webSettings.setAllowFileAccess(enabled);
+  }
 }

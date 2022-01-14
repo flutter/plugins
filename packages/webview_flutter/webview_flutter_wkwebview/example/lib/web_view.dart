@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -54,6 +55,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -69,6 +71,7 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
+    this.backgroundColor,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
@@ -93,6 +96,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The initial cookies to set.
+  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -227,6 +233,12 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// The background color of the [WebView].
+  ///
+  /// When `null` the platform's webview default background color is used. By
+  /// default [backgroundColor] is `null`.
+  final Color? backgroundColor;
+
   @override
   _WebViewState createState() => _WebViewState();
 }
@@ -278,6 +290,8 @@ class _WebViewState extends State<WebView> {
             _javascriptChannelRegistry.channels.keys.toSet(),
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
+        cookies: widget.initialCookies,
+        backgroundColor: widget.backgroundColor,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
@@ -304,6 +318,14 @@ class WebViewController {
   late WebSettings _settings;
 
   WebView _widget;
+
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// Throws an ArgumentError if [key] is not part of the specified assets
+  /// in the pubspec.yaml file.
+  Future<void> loadFlutterAsset(String key) {
+    return _webViewPlatformController.loadFlutterAsset(key);
+  }
 
   /// Loads the file located on the specified [absoluteFilePath].
   ///
@@ -650,5 +672,23 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
     }
+  }
+}
+
+/// App-facing cookie manager that exposes the correct platform implementation.
+class WebViewCookieManager extends WebViewCookieManagerPlatform {
+  WebViewCookieManager._();
+
+  /// Returns an instance of the cookie manager for the current platform.
+  static WebViewCookieManagerPlatform get instance {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      if (Platform.isIOS) {
+        WebViewCookieManagerPlatform.instance = WKWebViewCookieManager();
+      } else {
+        throw AssertionError(
+            'This platform is currently unsupported for webview_flutter_wkwebview.');
+      }
+    }
+    return WebViewCookieManagerPlatform.instance!;
   }
 }

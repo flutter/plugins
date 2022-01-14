@@ -37,6 +37,17 @@ abstract class WebViewPlatformController {
     String absoluteFilePath,
   ) {
     throw UnimplementedError(
+        'WebView loadFile is not implemented on the current platform');
+  }
+
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// Throws an ArgumentError if [key] is not part of the specified assets
+  /// in the pubspec.yaml file.
+  Future<void> loadFlutterAsset(
+    String key,
+  ) {
+    throw UnimplementedError(
         'WebView loadFlutterAsset is not implemented on the current platform');
   }
 

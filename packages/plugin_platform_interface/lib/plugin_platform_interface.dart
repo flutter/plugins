@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 /// implemented using `extends` instead of `implements`.
 ///
 /// Platform interface classes are expected to have a private static token object which will be
-/// be passed to [verifyToken] along with a platform interface object for verification.
+/// be passed to [verify] along with a platform interface object for verification.
 ///
 /// Sample usage:
 ///
@@ -22,14 +22,14 @@ import 'package:meta/meta.dart';
 ///
 ///   static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
 ///
-///   static const Object _token = Object();
+///   static final Object _token = Object();
 ///
 ///   static UrlLauncherPlatform get instance => _instance;
 ///
 ///   /// Platform-specific plugins should set this with their own platform-specific
 ///   /// class that extends [UrlLauncherPlatform] when they register themselves.
 ///   static set instance(UrlLauncherPlatform instance) {
-///     PlatformInterface.verifyToken(instance, _token);
+///     PlatformInterface.verify(instance, _token);
 ///     _instance = instance;
 ///   }
 ///
@@ -40,13 +40,16 @@ import 'package:meta/meta.dart';
 /// to include the [MockPlatformInterfaceMixin] for the verification to be temporarily disabled. See
 /// [MockPlatformInterfaceMixin] for a sample of using Mockito to mock a platform interface.
 abstract class PlatformInterface {
-  /// Pass a private, class-specific `const Object()` as the `token`.
+  /// Constructs a PlatformInterface, for use only in constructors of abstract
+  /// derived classes.
+  ///
+  /// @param token The same, non-`const` `Object` that will be passed to `verify`.
   PlatformInterface({required Object token}) : _instanceToken = token;
 
   final Object? _instanceToken;
 
-  /// Ensures that the platform instance has a token that matches the
-  /// provided token and throws [AssertionError] if not.
+  /// Ensures that the platform instance was constructed with a non-`const` token
+  /// that matches the provided token and throws [AssertionError] if not.
   ///
   /// This is used to ensure that implementers are using `extends` rather than
   /// `implements`.
@@ -56,7 +59,23 @@ abstract class PlatformInterface {
   ///
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
+  static void verify(PlatformInterface instance, Object token) {
+    _verify(instance, token, preventConstObject: true);
+  }
+
+  /// Performs the same checks as `verify` but without throwing an
+  /// [AssertionError] if `const Object()` is used as the instance token.
+  ///
+  /// This method will be deprecated in a future release.
   static void verifyToken(PlatformInterface instance, Object token) {
+    _verify(instance, token, preventConstObject: false);
+  }
+
+  static void _verify(
+    PlatformInterface instance,
+    Object token, {
+    required bool preventConstObject,
+  }) {
     if (instance is MockPlatformInterfaceMixin) {
       bool assertionsEnabled = false;
       assert(() {
@@ -69,6 +88,10 @@ abstract class PlatformInterface {
       }
       return;
     }
+    if (preventConstObject &&
+        identical(instance._instanceToken, const Object())) {
+      throw AssertionError('`const Object()` cannot be used as the token.');
+    }
     if (!identical(token, instance._instanceToken)) {
       throw AssertionError(
           'Platform interfaces must not be implemented with `implements`');
@@ -76,14 +99,15 @@ abstract class PlatformInterface {
   }
 }
 
-/// A [PlatformInterface] mixin that can be combined with mockito's `Mock`.
+/// A [PlatformInterface] mixin that can be combined with fake or mock objects,
+/// such as test's `Fake` or mockito's `Mock`.
 ///
-/// It passes the [PlatformInterface.verifyToken] check even though it isn't
+/// It passes the [PlatformInterface.verify] check even though it isn't
 /// using `extends`.
 ///
 /// This class is intended for use in tests only.
 ///
-/// Sample usage (assuming UrlLauncherPlatform extends [PlatformInterface]:
+/// Sample usage (assuming `UrlLauncherPlatform` extends [PlatformInterface]):
 ///
 /// ```dart
 /// class UrlLauncherPlatformMock extends Mock
