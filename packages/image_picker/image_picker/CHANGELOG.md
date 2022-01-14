@@ -1,8 +1,3 @@
-## NEXT
-
-* Updates Android compileSdkVersion to 31.
-* Fix iOS RunnerUITests search paths.
-
 ## 0.8.4+5
 
 * Fix no response when picking BMP images in iOS14 devices or simulators.
