@@ -58,8 +58,8 @@ void CameraImpl::InitCamera(
   messenger_ = messenger;
   capture_controller_ =
       capture_controller_factory->CreateCaptureController(this);
-  capture_controller_->CreateCaptureDevice(texture_registrar, device_id_,
-                                           enable_audio, resolution_preset);
+  capture_controller_->InitCaptureDevice(texture_registrar, device_id_,
+                                         enable_audio, resolution_preset);
 }
 
 // Adds pending result to the pending_results map.

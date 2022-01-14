@@ -30,7 +30,7 @@ class CaptureEngineListener : public IMFCaptureEngineOnSampleCallback,
                               public IMFCaptureEngineOnEventCallback {
  public:
   CaptureEngineListener(CaptureEngineObserver* observer)
-      : ref_(1), observer_(observer) {}
+      : ref_(0), observer_(observer) {}
 
   ~CaptureEngineListener(){};
 

@@ -5,18 +5,19 @@
 
 #include "capture_engine_listener.h"
 
+#include <mfcaptureengine.h>
 #include <wrl/client.h>
 
 namespace camera_windows {
 
 using Microsoft::WRL::ComPtr;
 
-// Method from IUnknown
+// IUnknown
 STDMETHODIMP_(ULONG) CaptureEngineListener::AddRef() {
   return InterlockedIncrement(&ref_);
 }
 
-// Method from IUnknown
+// IUnknown
 STDMETHODIMP_(ULONG)
 CaptureEngineListener::Release() {
   LONG ref = InterlockedDecrement(&ref_);
@@ -26,23 +27,22 @@ CaptureEngineListener::Release() {
   return ref;
 }
 
-// Method from IUnknown
+// IUnknown
 STDMETHODIMP_(HRESULT)
 CaptureEngineListener::QueryInterface(const IID &riid, void **ppv) {
-  HRESULT hr = E_NOINTERFACE;
   *ppv = nullptr;
 
   if (riid == IID_IMFCaptureEngineOnEventCallback) {
     *ppv = static_cast<IMFCaptureEngineOnEventCallback *>(this);
     ((IUnknown *)*ppv)->AddRef();
-    hr = S_OK;
+    return S_OK;
   } else if (riid == IID_IMFCaptureEngineOnSampleCallback) {
     *ppv = static_cast<IMFCaptureEngineOnSampleCallback *>(this);
     ((IUnknown *)*ppv)->AddRef();
-    hr = S_OK;
+    return S_OK;
   }
 
-  return hr;
+  return E_NOINTERFACE;
 }
 
 STDMETHODIMP CaptureEngineListener::OnEvent(IMFMediaEvent *event) {
@@ -52,7 +52,7 @@ STDMETHODIMP CaptureEngineListener::OnEvent(IMFMediaEvent *event) {
   return S_OK;
 }
 
-// Method from IMFCaptureEngineOnSampleCallback
+// IMFCaptureEngineOnSampleCallback
 HRESULT CaptureEngineListener::OnSample(IMFSample *sample) {
   HRESULT hr = S_OK;
 

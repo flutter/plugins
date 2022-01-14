@@ -11,9 +11,13 @@
 #include <flutter/texture_registrar.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <mfcaptureengine.h>
 
 #include "camera.h"
 #include "camera_plugin.h"
+#include "capture_controller.h"
+#include "capture_controller_listener.h"
+#include "capture_engine_listener.h"
 
 namespace camera_windows {
 namespace test {
@@ -62,6 +66,7 @@ class MockTextureRegistrar : public flutter::TextureRegistrar {
     // TODO: create separate fake implementation
     ON_CALL(*this, RegisterTexture)
         .WillByDefault([this](flutter::TextureVariant* texture) -> int64_t {
+          EXPECT_TRUE(texture);
           this->texture_id = 1000;
           return this->texture_id;
         });
@@ -192,7 +197,7 @@ class MockCaptureControllerFactory : public CaptureControllerFactory {
 
 class MockCaptureController : public CaptureController {
  public:
-  MOCK_METHOD(void, CreateCaptureDevice,
+  MOCK_METHOD(void, InitCaptureDevice,
               (flutter::TextureRegistrar * texture_registrar,
                const std::string& device_id, bool enable_audio,
                ResolutionPreset resolution_preset),
@@ -241,6 +246,205 @@ class MockCameraPlugin : public CameraPlugin {
   void AddCamera(std::unique_ptr<Camera> camera) {
     cameras_.push_back(std::move(camera));
   }
+};
+
+class MockCaptureEngineListener : public IMFCaptureEngineOnSampleCallback,
+                                  public IMFCaptureEngineOnEventCallback {
+  MockCaptureEngineListener(CaptureEngineObserver* observer)
+      : ref_(1), observer_(observer) {}
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) AddRef() { return InterlockedIncrement(&ref_); }
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) Release() {
+    LONG ref = InterlockedDecrement(&ref_);
+    if (ref == 0) {
+      delete this;
+    }
+    return ref;
+  }
+
+  // IUnknown
+  STDMETHODIMP_(HRESULT) QueryInterface(const IID& riid, void** ppv) {
+    *ppv = nullptr;
+
+    if (riid == IID_IMFCaptureEngineOnEventCallback) {
+      *ppv = static_cast<IMFCaptureEngineOnEventCallback*>(this);
+      ((IUnknown*)*ppv)->AddRef();
+      return S_OK;
+    } else if (riid == IID_IMFCaptureEngineOnSampleCallback) {
+      *ppv = static_cast<IMFCaptureEngineOnSampleCallback*>(this);
+      ((IUnknown*)*ppv)->AddRef();
+      return S_OK;
+    }
+
+    return E_NOINTERFACE;
+  }
+
+  MOCK_METHOD(HRESULT, OnEvent, (IMFMediaEvent * pEvent));
+  MOCK_METHOD(HRESULT, OnSample, (IMFSample * pSample));
+
+  CaptureEngineObserver* observer_;
+  volatile ULONG ref_;
+};
+class MockCaptureControllerListener {};
+
+// Uses IMFMediaSourceEx which has SetD3DManager method.
+class FakeMediaSource : public IMFMediaSourceEx {
+ public:
+  FakeMediaSource() : ref_(0){};
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) AddRef() { return InterlockedIncrement(&ref_); }
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) Release() {
+    LONG ref = InterlockedDecrement(&ref_);
+    if (ref == 0) {
+      delete this;
+    }
+    return ref;
+  }
+
+  // IUnknown
+  STDMETHODIMP_(HRESULT) QueryInterface(const IID& riid, void** ppv) {
+    *ppv = nullptr;
+
+    if (riid == IID_IMFMediaSource) {
+      *ppv = static_cast<IMFMediaSource*>(this);
+      ((IUnknown*)*ppv)->AddRef();
+      return S_OK;
+    }
+
+    return E_NOINTERFACE;
+  }
+
+  // IMFMediaSource
+  HRESULT GetCharacteristics(DWORD* dwCharacteristics) override {
+    return E_NOTIMPL;
+  }
+  // IMFMediaSource
+  HRESULT CreatePresentationDescriptor(
+      IMFPresentationDescriptor** presentationDescriptor) override {
+    return E_NOTIMPL;
+  }
+  // IMFMediaSource
+  HRESULT Start(IMFPresentationDescriptor* presentationDescriptor,
+                const GUID* guidTimeFormat,
+                const PROPVARIANT* varStartPosition) override {
+    return E_NOTIMPL;
+  }
+  // IMFMediaSource
+  HRESULT Stop(void) override { return E_NOTIMPL; }
+  // IMFMediaSource
+  HRESULT Pause(void) override { return E_NOTIMPL; }
+  // IMFMediaSource
+  HRESULT Shutdown(void) override { return E_NOTIMPL; }
+
+  // IMFMediaEventGenerator
+  HRESULT GetEvent(DWORD dwFlags, IMFMediaEvent** event) override {
+    return E_NOTIMPL;
+  }
+  // IMFMediaEventGenerator
+  HRESULT BeginGetEvent(IMFAsyncCallback* callback,
+                        IUnknown* unkState) override {
+    return E_NOTIMPL;
+  }
+  // IMFMediaEventGenerator
+  HRESULT EndGetEvent(IMFAsyncResult* result, IMFMediaEvent** event) override {
+    return E_NOTIMPL;
+  }
+  // IMFMediaEventGenerator
+  HRESULT QueueEvent(MediaEventType met, REFGUID guidExtendedType,
+                     HRESULT hrStatus, const PROPVARIANT* value) override {
+    return E_NOTIMPL;
+  }
+
+  // IMFMediaSourceEx
+  HRESULT GetSourceAttributes(IMFAttributes** attributes) { return E_NOTIMPL; }
+  // IMFMediaSourceEx
+  HRESULT GetStreamAttributes(DWORD stream_id, IMFAttributes** attributes) {
+    return E_NOTIMPL;
+  }
+  // IMFMediaSourceEx
+  HRESULT SetD3DManager(IUnknown* manager) { return S_OK; }
+
+ private:
+  ~FakeMediaSource() = default;
+  volatile ULONG ref_;
+};
+
+class MockCaptureEngine : public IMFCaptureEngine {
+ public:
+  MockCaptureEngine() : ref_(0) {
+    ON_CALL(*this, Initialize)
+        .WillByDefault([this](IMFCaptureEngineOnEventCallback* callback,
+                              IMFAttributes* attributes, IUnknown* audio_Source,
+                              IUnknown* video_source) -> HRESULT {
+          EXPECT_TRUE(callback);
+          EXPECT_TRUE(attributes);
+          EXPECT_TRUE(video_source);
+          // audio_source is allowed to be nullptr;
+          callback_ = callback;
+          initialized_ = true;
+          return S_OK;
+        });
+  };
+
+  virtual ~MockCaptureEngine() = default;
+
+  MOCK_METHOD(HRESULT, Initialize,
+              (IMFCaptureEngineOnEventCallback * callback,
+               IMFAttributes* attributes, IUnknown* audio_Source,
+               IUnknown* video_source));
+  MOCK_METHOD(HRESULT, StartPreview, ());
+  MOCK_METHOD(HRESULT, StopPreview, ());
+  MOCK_METHOD(HRESULT, StartRecord, ());
+  MOCK_METHOD(HRESULT, StopRecord,
+              (BOOL finalize, BOOL flushUnprocessedSamples));
+  MOCK_METHOD(HRESULT, TakePhoto, ());
+  MOCK_METHOD(HRESULT, GetSink,
+              (MF_CAPTURE_ENGINE_SINK_TYPE type, IMFCaptureSink** sink));
+  MOCK_METHOD(HRESULT, GetSource, (IMFCaptureSource * *ppSource));
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) AddRef() { return InterlockedIncrement(&ref_); }
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) Release() {
+    LONG ref = InterlockedDecrement(&ref_);
+    if (ref == 0) {
+      delete this;
+    }
+    return ref;
+  }
+
+  // IUnknown
+  STDMETHODIMP_(HRESULT) QueryInterface(const IID& riid, void** ppv) {
+    *ppv = nullptr;
+
+    if (riid == IID_IMFCaptureEngine) {
+      *ppv = static_cast<IMFCaptureEngine*>(this);
+      ((IUnknown*)*ppv)->AddRef();
+      return S_OK;
+    }
+
+    return E_NOINTERFACE;
+  }
+
+  void CreateFakeEvent(HRESULT hrStatus, GUID event_type) {
+    EXPECT_TRUE(initialized_);
+    ComPtr<IMFMediaEvent> event;
+    MFCreateMediaEvent(MEExtendedType, event_type, hrStatus, nullptr, &event);
+    if (callback_) {
+      callback_->OnEvent(event.Get());
+    }
+  }
+
+  ComPtr<IMFCaptureEngineOnEventCallback> callback_;
+  volatile ULONG ref_;
+  bool initialized_ = false;
 };
 
 #define MOCK_DEVICE_ID "mock_device_id"

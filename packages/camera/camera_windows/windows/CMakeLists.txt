@@ -70,6 +70,7 @@ add_executable(${TEST_RUNNER}
   test/mocks.h
   test/camera_plugin_test.cpp
   test/camera_test.cpp
+  test/capture_controller_test.cpp
   ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${TEST_RUNNER})

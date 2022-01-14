@@ -352,11 +352,11 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
     hr = CreateD3DManagerWithDX11Device();
   }
 
-  if (SUCCEEDED(hr)) {
+  if (SUCCEEDED(hr) && !video_source_) {
     hr = CreateVideoCaptureSourceForDevice(video_device_id_);
   }
 
-  if (enable_audio_record_) {
+  if (enable_audio_record_ && !audio_source_) {
     if (SUCCEEDED(hr)) {
       hr = CreateDefaultAudioCaptureSource();
     }
@@ -366,6 +366,7 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
     capture_engine_callback_handler_ =
         ComPtr<CaptureEngineListener>(new CaptureEngineListener(this));
   }
+
   if (SUCCEEDED(hr)) {
     hr = MFCreateAttributes(&attributes, 2);
   }
@@ -450,7 +451,7 @@ void CaptureControllerImpl::ResetCaptureController() {
   texture_ = nullptr;
 }
 
-void CaptureControllerImpl::CreateCaptureDevice(
+void CaptureControllerImpl::InitCaptureDevice(
     flutter::TextureRegistrar *texture_registrar, const std::string &device_id,
     bool enable_audio, ResolutionPreset resolution_preset) {
   assert(capture_controller_listener_);

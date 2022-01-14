@@ -69,10 +69,10 @@ class CaptureController {
   CaptureController(const CaptureController&) = delete;
   CaptureController& operator=(const CaptureController&) = delete;
 
-  virtual void CreateCaptureDevice(flutter::TextureRegistrar* texture_registrar,
-                                   const std::string& device_id,
-                                   bool enable_audio,
-                                   ResolutionPreset resolution_preset) = 0;
+  virtual void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
+                                 const std::string& device_id,
+                                 bool enable_audio,
+                                 ResolutionPreset resolution_preset) = 0;
 
   virtual int64_t GetTextureId() = 0;
   virtual uint32_t GetPreviewWidth() = 0;
@@ -98,12 +98,16 @@ class CaptureControllerImpl : public CaptureController,
   CaptureControllerImpl(CaptureControllerListener* listener);
   virtual ~CaptureControllerImpl();
 
+  // Disallow copy and move.
+  CaptureControllerImpl(const CaptureControllerImpl&) = delete;
+  CaptureControllerImpl& operator=(const CaptureControllerImpl&) = delete;
+
   bool IsInitialized() { return initialized_; }
   bool IsPreviewing() { return previewing_; }
 
-  void CreateCaptureDevice(flutter::TextureRegistrar* texture_registrar,
-                           const std::string& device_id, bool enable_audio,
-                           ResolutionPreset resolution_preset) override;
+  void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
+                         const std::string& device_id, bool enable_audio,
+                         ResolutionPreset resolution_preset) override;
   int64_t GetTextureId() override { return texture_id_; }
   uint32_t GetPreviewWidth() override { return preview_frame_width_; }
   uint32_t GetPreviewHeight() override { return preview_frame_height_; }
@@ -128,6 +132,21 @@ class CaptureControllerImpl : public CaptureController,
   uint8_t* GetSourceBuffer(uint32_t current_length) override;
   void OnBufferUpdated() override;
   void UpdateCaptureTime(uint64_t capture_time) override;
+
+  // Sets capture engine, for mocking purposes
+  void SetCaptureEngine(IMFCaptureEngine* capture_engine) {
+    capture_engine_ = capture_engine;
+  };
+
+  // Sets video source, for mocking purposes
+  void SetVideoSource(IMFMediaSource* video_source) {
+    video_source_ = video_source;
+  };
+
+  // Sets audio source, for mocking purposes
+  void SetAudioSource(IMFMediaSource* audio_source) {
+    audio_source_ = audio_source;
+  };
 
  private:
   CaptureControllerListener* capture_controller_listener_ = nullptr;
