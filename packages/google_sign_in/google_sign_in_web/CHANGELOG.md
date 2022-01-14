@@ -1,6 +1,6 @@
 ## 0.10.0+5
 
-* Add override for `GoogleSignInPlatform.initWithForceCodeForRefreshToken`.
+* Adds override for `GoogleSignInPlatform.initWithForceCodeForRefreshToken`.
 
 ## 0.10.0+4
 

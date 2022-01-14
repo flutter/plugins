@@ -1,6 +1,6 @@
 ## 5.2.3
 
-* Add `forceCodeForRefreshToken` parameter to `GoogleSignIn`.
+* Adds `forceCodeForRefreshToken` parameter to `GoogleSignIn`.
 
 ## 5.2.2
 
