@@ -1,7 +1,5 @@
 ## NEXT
 
-* Updates code for new analysis options.
-
 ## 2.0.3
 
 * Update unit tests.
