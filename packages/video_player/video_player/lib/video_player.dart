@@ -583,15 +583,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyPlaybackSpeed();
   }
 
-  /// Sets the caption offset of [this].
+  /// Sets the caption offset.
   ///
-  /// The [offset] will be used when getting the correct caption for a specific position in [this]
+  /// The [offset] will be used when getting the correct caption for a specific position.
   /// The [offset] can be positive or negative.
   ///
   /// The values will be handled as follows:
   /// *  0: This is the default behaviour. No offset will be applied.
-  /// * >0: The caption will have a negative offset. So you will get caption text from the past
-  /// * <0: The caption will have a positive offset. So you will get caption text from the future
+  /// * >0: The caption will have a negative offset. So you will get caption text from the past.
+  /// * <0: The caption will have a positive offset. So you will get caption text from the future.
   void setCaptionOffset(Duration offset) {
     value = value.copyWith(
       captionOffset: offset,
