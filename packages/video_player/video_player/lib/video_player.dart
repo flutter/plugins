@@ -593,7 +593,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// *  0: This is the default behaviour. No offset will be applied.
   /// * >0: The caption will have a negative offset. So you will get caption text from the past
   /// * <0: The caption will have a positive offset. So you will get caption text from the future
-  void setCaptionOffset(Duration offset) async {
+  void setCaptionOffset(Duration offset) {
     value = value.copyWith(
       captionOffset: offset,
       caption: _getCaptionAt(value.position),
