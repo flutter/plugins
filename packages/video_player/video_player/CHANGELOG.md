@@ -1,7 +1,11 @@
 
-## 2.2.11
+## 2.2.12
 
 * Introduce setCaptionOffset to offset the caption display based on a Duration.
+
+## 2.2.11
+
+* Removes dependency on `meta`.
 
 ## 2.2.10
 
