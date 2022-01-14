@@ -21,19 +21,31 @@
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+@property(nonatomic, strong) dispatch_queue_t dispatchQueue;
 @property FlutterEventSink eventSink;
 @end
 
 @implementation FLTImageStreamHandler
 
+- (instancetype)initWithDispatchQueue:(dispatch_queue_t)dispatchQueue {
+  self = [super init];
+  NSAssert(self, @"super init cannot be nil");
+  _dispatchQueue = dispatchQueue;
+  return self;
+}
+
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
-  _eventSink = nil;
+  dispatch_async(self.dispatchQueue, ^{
+    self.eventSink = nil;
+  });
   return nil;
 }
 
 - (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
-  _eventSink = events;
+  dispatch_async(self.dispatchQueue, ^{
+    self.eventSink = events;
+  });
   return nil;
 }
 @end
@@ -608,7 +620,8 @@ NSString *const errorMethod = @"error";
     return;
   }
   if (_isStreamingImages) {
-    if (_imageStreamHandler.eventSink) {
+    FlutterEventSink eventSink = _imageStreamHandler.eventSink;
+    if (eventSink) {
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -654,6 +667,7 @@ NSString *const errorMethod = @"error";
 
         [planes addObject:planeBuffer];
       }
+      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
       imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
@@ -666,9 +680,9 @@ NSString *const errorMethod = @"error";
       imageBuffer[@"sensorExposureTime"] = [NSNumber numberWithInt:nsExposureDuration];
       imageBuffer[@"sensorSensitivity"] = [NSNumber numberWithFloat:[_captureDevice ISO]];
 
-      _imageStreamHandler.eventSink(imageBuffer);
-
-      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        eventSink(imageBuffer);
+      });
     }
   }
   if (_isRecording && !_isRecordingPaused) {
@@ -1121,7 +1135,7 @@ NSString *const errorMethod = @"error";
     FLTThreadSafeEventChannel *threadSafeEventChannel =
         [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
-    _imageStreamHandler = [[FLTImageStreamHandler alloc] init];
+    _imageStreamHandler = [[FLTImageStreamHandler alloc] initWithDispatchQueue:_dispatchQueue];
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
                                     dispatch_async(self->_dispatchQueue, ^{
