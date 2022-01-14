@@ -4,8 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable;
 
 import 'types.dart';
 

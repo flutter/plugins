@@ -39,7 +39,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [GoogleMapsFlutterPlatform] when they register themselves.
   static set instance(GoogleMapsFlutterPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
 
