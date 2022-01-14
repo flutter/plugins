@@ -4,7 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable;
 
 /// Represents a point coordinate in the [GoogleMap]'s view.
 ///

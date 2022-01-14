@@ -1,3 +1,7 @@
+## 2.0.10
+
+* Removes dependency on `meta`.
+
 ## 2.0.9
 
 * Updates compileSdkVersion to 31.
