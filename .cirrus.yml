@@ -19,8 +19,8 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     # failures due to changes in Flutter.
     # TODO(stuartmorgan): Investigate an autoroller for stable as well.
     - TARGET_TREEISH=$CHANNEL
-    - if [[ "$CHANNEL" == "master" ]]
-    -   TARGET_TREEISH="$(< .ci/flutter_$CHANNEL.version)"
+    - if [[ "$CHANNEL" == "master" ]]; then
+    -   TARGET_TREEISH=$(< .ci/flutter_$CHANNEL.version)
     - fi
     # Ensure that the repository has all the branches.
     - cd $FLUTTER_HOME
