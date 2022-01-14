@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:async/async.dart';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   bool _recordAudio = true;
   bool _previewPaused = false;
   Size? _previewSize;
-  StreamSubscription? _errorStreamSubscription;
+  StreamSubscription<CameraErrorEvent>? _errorStreamSubscription;
 
   @override
   void initState() {
@@ -91,7 +90,7 @@ class _MyAppState extends State<MyApp> {
 
       _errorStreamSubscription?.cancel();
       _errorStreamSubscription =
-          CameraPlatform.instance.onCameraError(cameraId).listen(OnCameraError);
+          CameraPlatform.instance.onCameraError(cameraId).listen(onCameraError);
 
       unawaited(CameraPlatform.instance
           .onCameraInitialized(cameraId)
@@ -233,7 +232,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void OnCameraError(CameraErrorEvent event) {
+  void onCameraError(CameraErrorEvent event) {
     scaffoldMessengerKey.currentState
         ?.showSnackBar(SnackBar(content: Text('Error: ${event.description}')));
   }
