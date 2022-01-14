@@ -20,7 +20,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.initializeCamera(1234),
-          throwsA(isA<PlatformException>()));
+          throwsA(isA<CameraException>()));
     });
   });
 
@@ -30,7 +30,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.takePicture(1234),
-          throwsA(isA<PlatformException>()));
+          throwsA(isA<CameraException>()));
     });
   });
 
@@ -40,7 +40,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.startVideoRecording(1234),
-          throwsA(isA<PlatformException>()));
+          throwsA(isA<CameraException>()));
     });
   });
 
@@ -50,7 +50,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.stopVideoRecording(1234),
-          throwsA(isA<PlatformException>()));
+          throwsA(isA<CameraException>()));
     });
   });
 
@@ -60,7 +60,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.pausePreview(1234),
-          throwsA(isA<PlatformException>()));
+          throwsA(isA<CameraException>()));
     });
   });
 
@@ -70,7 +70,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.resumePreview(1234),
-          throwsA(isA<PlatformException>()));
+          throwsA(isA<CameraException>()));
     });
   });
 

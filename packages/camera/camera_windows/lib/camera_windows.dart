@@ -364,18 +364,26 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> pausePreview(int cameraId) async {
-    await _channel.invokeMethod<double>(
-      'pausePreview',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+    try {
+      await _channel.invokeMethod<double>(
+        'pausePreview',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
   }
 
   @override
   Future<void> resumePreview(int cameraId) async {
-    await _channel.invokeMethod<double>(
-      'resumePreview',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+    try {
+      await _channel.invokeMethod<double>(
+        'resumePreview',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
   }
 
   @override
