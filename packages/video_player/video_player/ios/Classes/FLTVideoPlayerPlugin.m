@@ -337,12 +337,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setupEventSinkIfReadyToPlay {
   if (_eventSink && !_isInitialized) {
+    BOOL hasVideoTracks =
+        [[self.player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo] count] != 0;
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
 
-    // The player has not yet initialized.
-    if (height == CGSizeZero.height && width == CGSizeZero.width) {
+    // The player has not yet initialized when it contains video tracks.
+    if (hasVideoTracks && height == CGSizeZero.height && width == CGSizeZero.width) {
       return;
     }
     // The player may be initialized but still needs to determine the duration.
@@ -375,7 +377,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
-  return FLTCMTimeToMillis([[_player currentItem] duration]);
+  return FLTCMTimeToMillis([[[_player currentItem] asset] duration]);
 }
 
 - (void)seekTo:(int)location {

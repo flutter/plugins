@@ -1,3 +1,7 @@
+## 2.2.12
+
+* iOS: Support more media types when playing on iOS, typically audios.
+
 ## 2.2.11
 
 * Removes dependency on `meta`.
