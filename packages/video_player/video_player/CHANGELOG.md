@@ -1,6 +1,6 @@
 ## 2.2.12
 
-* iOS: Support more media types when playing on iOS, typically audios.
+* iOS: Validate size only when assets contain video tracks.
 
 ## 2.2.11
 

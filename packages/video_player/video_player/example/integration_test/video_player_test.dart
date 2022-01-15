@@ -273,6 +273,8 @@ void main() {
     );
   });
 
+  // Audio playback is tested to prevent accidental regression,
+  // but could be removed in the future.
   group('asset audios', () {
     setUp(() {
       _controller = VideoPlayerController.asset('assets/Audio.mp3');
