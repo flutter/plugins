@@ -16,20 +16,6 @@ namespace camera_windows {
 
 using Microsoft::WRL::ComPtr;
 
-struct FlutterDesktop_Pixel {
-  BYTE r = 0;
-  BYTE g = 0;
-  BYTE b = 0;
-  BYTE a = 0;
-};
-
-struct MFVideoFormat_RGB32_Pixel {
-  BYTE b = 0;
-  BYTE g = 0;
-  BYTE r = 0;
-  BYTE x = 0;
-};
-
 CaptureControllerImpl::CaptureControllerImpl(
     CaptureControllerListener *listener)
     : capture_controller_listener_(listener), CaptureController(){};
@@ -391,7 +377,6 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
 }
 
 void CaptureControllerImpl::ResetCaptureController() {
-  initialized_ = false;
   if (previewing_) {
     StopPreview();
   }
@@ -403,6 +388,7 @@ void CaptureControllerImpl::ResetCaptureController() {
   }
 
   // States
+  initialized_ = false;
   capture_engine_initialization_pending_ = false;
   preview_pending_ = false;
   previewing_ = false;
@@ -638,11 +624,11 @@ HRESULT CaptureControllerImpl::InitPreviewSink() {
   hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW,
                                 &capture_sink);
 
-  if (SUCCEEDED(hr)) {
+  if (capture_sink && SUCCEEDED(hr)) {
     hr = capture_sink.As(&preview_sink_);
   }
 
-  if (SUCCEEDED(hr)) {
+  if (preview_sink_ && SUCCEEDED(hr)) {
     hr = preview_sink_->RemoveAllStreams();
   }
 
@@ -906,6 +892,7 @@ void CaptureControllerImpl::StartPreview() {
         false,
         "Camera not initialized. Camera should be disposed and reinitialized.");
   }
+
   if (previewing_) {
     // Return success if preview already started
     return OnPreviewStarted(true, "");
@@ -925,27 +912,19 @@ void CaptureControllerImpl::StartPreview() {
   }
 }
 
-// Stops preview. If called, recording will not work either.
+// Stops preview. Called by destructor
 // Use PausePreview and ResumePreview methods to for
 // pausing and resuming the preview.
 // Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event handling for response process.
 void CaptureControllerImpl::StopPreview() {
   assert(capture_controller_listener_);
 
-  if (!initialized_) {
-    return capture_controller_listener_->OnPausePreviewFailed(
-        "Capture not initialized");
-  } else if (!previewing_ && !preview_pending_) {
-    return capture_controller_listener_->OnPausePreviewFailed("Not previewing");
+  if (!initialized_ && (!previewing_ && !preview_pending_)) {
+    return;
   }
 
   // Requests to stop preview.
-  HRESULT hr = capture_engine_->StopPreview();
-
-  if (FAILED(hr)) {
-    capture_controller_listener_->OnPausePreviewFailed(
-        "Failed to stop previewing");
-  };
+  capture_engine_->StopPreview();
 }
 
 // Marks preview as paused.

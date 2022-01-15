@@ -25,6 +25,20 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
+struct FlutterDesktop_Pixel {
+  BYTE r = 0;
+  BYTE g = 0;
+  BYTE b = 0;
+  BYTE a = 0;
+};
+
+struct MFVideoFormat_RGB32_Pixel {
+  BYTE b = 0;
+  BYTE g = 0;
+  BYTE r = 0;
+  BYTE x = 0;
+};
+
 enum ResolutionPreset {
   /// AUTO
   RESOLUTION_PRESET_AUTO,
@@ -80,7 +94,6 @@ class CaptureController {
 
   // Actions
   virtual void StartPreview() = 0;
-  virtual void StopPreview() = 0;
   virtual void PausePreview() = 0;
   virtual void ResumePreview() = 0;
   virtual void StartRecord(const std::string& filepath,
@@ -113,7 +126,6 @@ class CaptureControllerImpl : public CaptureController,
   uint32_t GetPreviewHeight() override { return preview_frame_height_; }
 
   void StartPreview() override;
-  void StopPreview() override;
   void PausePreview() override;
   void ResumePreview() override;
   void StartRecord(const std::string& filepath,
@@ -225,6 +237,7 @@ class CaptureControllerImpl : public CaptureController,
   HRESULT InitRecordSink(const std::string& filepath);
 
   void StopTimedRecord();
+  void StopPreview();
 
   void OnCaptureEngineInitialized(bool success, const std::string& error);
   void OnCaptureEngineError(HRESULT hr, const std::string& error);

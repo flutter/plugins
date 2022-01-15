@@ -19,6 +19,11 @@
 #include "mocks.h"
 
 namespace camera_windows {
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::NiceMock;
+using ::testing::Pointee;
+
 namespace test {
 
 TEST(Camera, InitCameraCreatesCaptureController) {
