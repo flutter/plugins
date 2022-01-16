@@ -91,7 +91,7 @@ void main() {
       });
 
       test('authenticate with `localizedFallbackTitle` on iOS.', () async {
-        final iosAuthMessages =
+        const IOSAuthMessages iosAuthMessages =
             IOSAuthMessages(localizedFallbackTitle: 'Enter PIN');
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
         await localAuthentication.authenticate(
