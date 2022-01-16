@@ -1,6 +1,7 @@
-## NEXT
+## 0.8.1+3
 
 * Minor code cleanup for new analysis rules.
+* Removes dependency on `meta`.
 
 ## 0.8.1+2
 

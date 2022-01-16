@@ -1,3 +1,15 @@
+## 5.0.1
+
+* Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
+
+## 5.0.0
+
+* **BREAKING CHANGES**:
+  * Updates to extending `PlatformInterface`. Removes `isMock`, in favor of the
+    now-standard `MockPlatformInterfaceMixin`.
+  * Removes test.dart from the public interface. Tests in other packages should
+    mock `VideoPlatformInterface` rather than the method channel.
+
 ## 4.2.0
 
 * Add `contentUri` to `DataSourceType`.

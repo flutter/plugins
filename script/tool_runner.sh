@@ -19,4 +19,4 @@ readonly TOOL_PATH="$REPO_DIR/script/tool/bin/flutter_plugin_tools.dart"
 # The tool expects to be run from the repo root.
 cd "$REPO_DIR"
 # Run from the in-tree source.
-dart run "$TOOL_PATH" "$@" --packages-for-branch $PLUGIN_SHARDING
+dart run "$TOOL_PATH" "$@" --packages-for-branch --log-timing $PLUGIN_SHARDING

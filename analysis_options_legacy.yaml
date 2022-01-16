@@ -5,6 +5,7 @@ analyzer:
     - '**/*.g.dart'
     - 'lib/src/generated/*.dart'
     - '**/*.mocks.dart' # Mockito @GenerateMocks
+    - '**/*.pigeon.dart' # Pigeon generated file
   errors:
     always_require_non_null_named_parameters: false # not needed with nnbd
     # TODO(https://github.com/flutter/flutter/issues/74381):

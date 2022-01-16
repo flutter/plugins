@@ -4,8 +4,8 @@
 
 import 'dart:ui' show hashValues, Offset;
 
-import 'package:flutter/foundation.dart' show ValueChanged, VoidCallback;
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart'
+    show immutable, ValueChanged, VoidCallback;
 
 import 'types.dart';
 

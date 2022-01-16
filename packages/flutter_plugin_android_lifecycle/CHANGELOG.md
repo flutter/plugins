@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Updates compileSdkVersion to 31.
+
 ## 2.0.4
 
 * Updated Android lint settings.
