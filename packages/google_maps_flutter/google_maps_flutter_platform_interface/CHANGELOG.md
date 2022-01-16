@@ -1,6 +1,10 @@
+## 2.1.6
+
+* Add an interface to define Heatmap behaviour.
+
 ## 2.1.5
 
-* Add an interface to define Heatmap behaviour
+* Removes dependency on `meta`.
 
 ## 2.1.4
 

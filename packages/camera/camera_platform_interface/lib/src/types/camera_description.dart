@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 /// The direction the camera is facing.
 enum CameraLensDirection {
