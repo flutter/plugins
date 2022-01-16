@@ -251,12 +251,11 @@ static const NSTimeInterval kTimeout = 30.0;
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
       .andDo(backgroundThreadReplyCaller);
 
-  FlutterMethodCall* call =
-      [FlutterMethodCall methodCallWithMethodName:@"authenticate"
-                                        arguments:@{
-                                          @"biometricOnly" : @(NO),
-                                          @"localizedReason" : reason,
-                                        }];
+  FlutterMethodCall* call = [FlutterMethodCall methodCallWithMethodName:@"authenticate"
+                                                              arguments:@{
+                                                                @"biometricOnly" : @(NO),
+                                                                @"localizedReason" : reason,
+                                                              }];
 
   XCTestExpectation* expectation = [self expectationWithDescription:@"Result is called"];
   [plugin handleMethodCall:call
