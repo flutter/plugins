@@ -1,3 +1,11 @@
+## 2.0.6
+
+* Removes dependency on `meta`.
+
+## 2.0.5
+
+* Updates code for new analysis options.
+
 ## 2.0.4
 
 * Add `implements` to pubspec.
