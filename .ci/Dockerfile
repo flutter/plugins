@@ -41,6 +41,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo ap
 RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
 RUN apt-get update && apt-get install -y --no-install-recommends google-chrome-stable
 
-# Make Chrome the default so http: has a handler for url_launcher tests.
+# Make Chrome the default so http: and file: has a handler for url_launcher tests.
 RUN apt-get install -y xdg-utils
 RUN xdg-settings set default-web-browser google-chrome.desktop
+RUN xdg-mime default google-chrome.desktop inode/directory
