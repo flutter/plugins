@@ -8,7 +8,7 @@
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart' show Color;
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable;
 
 import 'types.dart';
 
