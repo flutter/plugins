@@ -294,7 +294,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   private boolean canAuthenticateWithBiometrics() {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
+    int biometricStatus = biometricManager.canAuthenticate();
+    return biometricStatus == BiometricManager.BIOMETRIC_SUCCESS 
+      || biometricStatus == BiometricManager.BIOMETRIC_STATUS_UNKNOWN;
   }
 
   private boolean hasBiometricHardware() {
