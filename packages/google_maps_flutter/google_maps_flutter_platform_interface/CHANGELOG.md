@@ -1,3 +1,11 @@
+## 2.1.5
+
+Removes dependency on `meta`.
+
+## 2.1.4
+
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
+
 ## 2.1.3
 
 * `LatLng` constructor maintains longitude precision when given within

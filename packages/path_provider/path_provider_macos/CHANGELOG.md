@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Removes dependency on `meta`.
+
 ## 2.0.4
 
 * Switches to a package-internal implementation of the platform interface.

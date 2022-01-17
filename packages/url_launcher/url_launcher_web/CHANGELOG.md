@@ -1,3 +1,7 @@
+## 2.0.6
+
+* Removes dependency on `meta`.
+
 ## 2.0.5
 
 * Updates code for new analysis options.

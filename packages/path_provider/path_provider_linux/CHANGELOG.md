@@ -1,3 +1,12 @@
+## 2.1.5
+
+* Removes dependency on `meta`.
+
+## 2.1.4
+
+* Fixes `getApplicationSupportPath` handling of applications where the
+  application ID is not set.
+
 ## 2.1.3
 
 * Change getApplicationSupportPath from using executable name to application ID (if provided).
