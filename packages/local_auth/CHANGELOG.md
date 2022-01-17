@@ -1,3 +1,7 @@
+## 1.1.11
+
+* Fix the issue: "authenticate" with parameter "useErrorDialogs = true" does not open a dialog #96646
+
 ## 1.1.10
 
 * Removes dependency on `meta`.
