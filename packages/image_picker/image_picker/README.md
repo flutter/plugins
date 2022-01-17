@@ -26,7 +26,7 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 Starting with version **0.8.1** the Android implementation support to pick (multiple) images on Android 4.3 or higher.
 
-No configuration required - the plugin should work out of the box.
+No configuration required - the plugin should work out of the box. It is however highly recommended to prepare for Android killing the application when low on memory. How to prepare for this is discussed in the [Handling MainActivity destruction on Android](#handling-mainactivity-destruction-on-android) chapter.
 
 It is no longer required to add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml, as `image_picker` has been updated to make use of scoped storage.
 
@@ -55,7 +55,7 @@ import 'package:image_picker/image_picker.dart';
 
 ### Handling MainActivity destruction on Android
 
-Android system -- although very rarely -- sometimes kills the MainActivity after the image_picker finishes. When this happens, we lost the data selected from the image_picker. You can use `retrieveLostData` to retrieve the lost data in this situation. For example:
+When under high memory pressure the Android system -- although very rarely -- sometimes kills the MainActivity of the application using the image_picker. On Android the image_picker plugin makes use of the default `Intent.ACTOIN_GET_CONTENT` or `MediaStore.ACTION_IMAGE_CAPTURE` intents. This means that while the intent is executing the source application is moved to the background and becomes eligable for cleanup when the system is low on memory. When the intent finished executing, Android will restart the source application, however when this happens, we lost the data selected from the image_picker. In this situation it is possible to use the `ImagePicker.retrieveLostData()` method to retrieve the lost data. For example:
 
 ```dart
 Future<void> getLostData() async {
@@ -74,7 +74,7 @@ Future<void> getLostData() async {
 }
 ```
 
-There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
+There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the [example](https://github.com/flutter/plugins/blob/main/packages/image_picker/image_picker/example/lib/main.dart) app to see how we used it.
 
 ## Migrating to 0.8.2+
 
