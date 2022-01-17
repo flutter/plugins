@@ -159,7 +159,8 @@ class MockCamera : public Camera {
 
   MOCK_METHOD(void, OnTakePictureSucceeded, (const std::string& filepath),
               (override));
-  MOCK_METHOD(void, OnTakePictureFailed, (const std::string& error), (override));
+  MOCK_METHOD(void, OnTakePictureFailed, (const std::string& error),
+              (override));
 
   MOCK_METHOD(void, OnVideoRecordSucceeded,
               (const std::string& filepath, int64_t video_duration),

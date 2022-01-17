@@ -1007,7 +1007,8 @@ void CaptureControllerImpl::OnEvent(IMFMediaEvent *event) {
 void CaptureControllerImpl::OnPicture(bool success, const std::string &error) {
   if (capture_controller_listener_) {
     if (success && !pending_picture_path_.empty()) {
-      capture_controller_listener_->OnTakePictureSucceeded(pending_picture_path_);
+      capture_controller_listener_->OnTakePictureSucceeded(
+          pending_picture_path_);
     } else {
       capture_controller_listener_->OnTakePictureFailed(error);
     }

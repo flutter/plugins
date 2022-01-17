@@ -441,7 +441,6 @@ TEST(CaptureController, TakePictureSuccess) {
   photo_sink = nullptr;
 }
 
-
 TEST(CaptureController, PauseResumePreviewSuccess) {
   ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
   std::unique_ptr<MockCamera> camera =
@@ -472,7 +471,6 @@ TEST(CaptureController, PauseResumePreviewSuccess) {
   EXPECT_CALL(*camera, OnPausePreviewSucceeded()).Times(1);
   capture_controller->PausePreview();
 
-  
   EXPECT_CALL(*camera, OnResumePreviewSucceeded()).Times(1);
   capture_controller->ResumePreview();
 
