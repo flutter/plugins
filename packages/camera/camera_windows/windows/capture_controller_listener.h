@@ -31,12 +31,12 @@ class CaptureControllerListener {
   virtual void OnStopRecordSucceeded(const std::string& filepath) = 0;
   virtual void OnStopRecordFailed(const std::string& error) = 0;
 
-  virtual void OnPictureSuccess(const std::string& filepath) = 0;
-  virtual void OnPictureFailed(const std::string& error) = 0;
+  virtual void OnTakePictureSucceeded(const std::string& filepath) = 0;
+  virtual void OnTakePictureFailed(const std::string& error) = 0;
 
-  virtual void OnVideoRecordedSuccess(const std::string& filepath,
+  virtual void OnVideoRecordSucceeded(const std::string& filepath,
                                       int64_t video_duration) = 0;
-  virtual void OnVideoRecordedFailed(const std::string& error) = 0;
+  virtual void OnVideoRecordFailed(const std::string& error) = 0;
 
   virtual void OnCaptureError(const std::string& error) = 0;
 };

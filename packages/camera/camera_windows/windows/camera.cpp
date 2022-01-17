@@ -221,7 +221,7 @@ void CameraImpl::OnStopRecordFailed(const std::string &error) {
 };
 
 // From CaptureControllerListener
-void CameraImpl::OnPictureSuccess(const std::string &filepath) {
+void CameraImpl::OnTakePictureSucceeded(const std::string &filepath) {
   auto pending_result = GetPendingResultByType(PendingResultType::TAKE_PICTURE);
   if (pending_result) {
     pending_result->Success(EncodableValue(filepath));
@@ -229,7 +229,7 @@ void CameraImpl::OnPictureSuccess(const std::string &filepath) {
 };
 
 // From CaptureControllerListener
-void CameraImpl::OnPictureFailed(const std::string &error) {
+void CameraImpl::OnTakePictureFailed(const std::string &error) {
   auto pending_take_picture_result =
       GetPendingResultByType(PendingResultType::TAKE_PICTURE);
   if (pending_take_picture_result) {
@@ -238,7 +238,7 @@ void CameraImpl::OnPictureFailed(const std::string &error) {
 };
 
 // From CaptureControllerListener
-void CameraImpl::OnVideoRecordedSuccess(const std::string &filepath,
+void CameraImpl::OnVideoRecordSucceeded(const std::string &filepath,
                                         int64_t video_duration) {
   if (messenger_ && camera_id_ >= 0) {
     auto channel = BuildChannelForCamera(messenger_, camera_id_);
@@ -254,7 +254,7 @@ void CameraImpl::OnVideoRecordedSuccess(const std::string &filepath,
 }
 
 // From CaptureControllerListener
-void CameraImpl::OnVideoRecordedFailed(const std::string &error){};
+void CameraImpl::OnVideoRecordFailed(const std::string &error){};
 
 void CameraImpl::OnCaptureError(const std::string &error) {
   if (messenger_ && camera_id_ >= 0) {

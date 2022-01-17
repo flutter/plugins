@@ -157,14 +157,14 @@ class MockCamera : public Camera {
               (override));
   MOCK_METHOD(void, OnStopRecordFailed, (const std::string& error), (override));
 
-  MOCK_METHOD(void, OnPictureSuccess, (const std::string& filepath),
+  MOCK_METHOD(void, OnTakePictureSucceeded, (const std::string& filepath),
               (override));
-  MOCK_METHOD(void, OnPictureFailed, (const std::string& error), (override));
+  MOCK_METHOD(void, OnTakePictureFailed, (const std::string& error), (override));
 
-  MOCK_METHOD(void, OnVideoRecordedSuccess,
+  MOCK_METHOD(void, OnVideoRecordSucceeded,
               (const std::string& filepath, int64_t video_duration),
               (override));
-  MOCK_METHOD(void, OnVideoRecordedFailed, (const std::string& error),
+  MOCK_METHOD(void, OnVideoRecordFailed, (const std::string& error),
               (override));
   MOCK_METHOD(void, OnCaptureError, (const std::string& error), (override));
 
@@ -602,41 +602,70 @@ class MockCaptureRecordSink : public IMFCaptureRecordSink {
     return E_NOINTERFACE;
   }
 
-  void SendFakeSample(uint8_t* src_buffer, uint32_t size) {
-    assert(sample_callback_);
-    ComPtr<IMFSample> sample;
-    ComPtr<IMFMediaBuffer> buffer;
-    HRESULT hr = MFCreateSample(&sample);
-
-    if (SUCCEEDED(hr)) {
-      hr = MFCreateMemoryBuffer(size, &buffer);
-    }
-
-    if (SUCCEEDED(hr)) {
-      uint8_t* target_data;
-      if (SUCCEEDED(buffer->Lock(&target_data, nullptr, nullptr))) {
-        std::copy(src_buffer, src_buffer + size, target_data);
-      }
-      hr = buffer->Unlock();
-    }
-
-    if (SUCCEEDED(hr)) {
-      hr = buffer->SetCurrentLength(size);
-    }
-
-    if (SUCCEEDED(hr)) {
-      hr = sample->AddBuffer(buffer.Get());
-    }
-
-    if (SUCCEEDED(hr)) {
-      sample_callback_->OnSample(sample.Get());
-    }
-  }
-
-  ComPtr<IMFCaptureEngineOnSampleCallback> sample_callback_;
-
  private:
   ~MockCaptureRecordSink() = default;
+  volatile ULONG ref_;
+};
+
+class MockCapturePhotoSink : public IMFCapturePhotoSink {
+ public:
+  // IMFCaptureSink
+  MOCK_METHOD(HRESULT, GetOutputMediaType,
+              (DWORD dwSinkStreamIndex, IMFMediaType** ppMediaType));
+
+  // IMFCaptureSink
+  MOCK_METHOD(HRESULT, GetService,
+              (DWORD dwSinkStreamIndex, REFGUID rguidService, REFIID riid,
+               IUnknown** ppUnknown));
+
+  // IMFCaptureSink
+  MOCK_METHOD(HRESULT, AddStream,
+              (DWORD dwSourceStreamIndex, IMFMediaType* pMediaType,
+               IMFAttributes* pAttributes, DWORD* pdwSinkStreamIndex));
+
+  // IMFCaptureSink
+  MOCK_METHOD(HRESULT, Prepare, ());
+
+  // IMFCaptureSink
+  MOCK_METHOD(HRESULT, RemoveAllStreams, ());
+
+  // IMFCapturePhotoSink
+  MOCK_METHOD(HRESULT, SetOutputFileName, (LPCWSTR fileName));
+
+  // IMFCapturePhotoSink
+  MOCK_METHOD(HRESULT, SetSampleCallback,
+              (IMFCaptureEngineOnSampleCallback * pCallback));
+
+  // IMFCapturePhotoSink
+  MOCK_METHOD(HRESULT, SetOutputByteStream, (IMFByteStream * pByteStream));
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) AddRef() { return InterlockedIncrement(&ref_); }
+
+  // IUnknown
+  STDMETHODIMP_(ULONG) Release() {
+    LONG ref = InterlockedDecrement(&ref_);
+    if (ref == 0) {
+      delete this;
+    }
+    return ref;
+  }
+
+  // IUnknown
+  STDMETHODIMP_(HRESULT) QueryInterface(const IID& riid, void** ppv) {
+    *ppv = nullptr;
+
+    if (riid == IID_IMFCapturePhotoSink) {
+      *ppv = static_cast<IMFCapturePhotoSink*>(this);
+      ((IUnknown*)*ppv)->AddRef();
+      return S_OK;
+    }
+
+    return E_NOINTERFACE;
+  }
+
+ private:
+  ~MockCapturePhotoSink() = default;
   volatile ULONG ref_;
 };
 

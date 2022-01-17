@@ -151,6 +151,31 @@ void MockStartPreview(CaptureControllerImpl* capture_controller,
                                mock_source_buffer_size);
 }
 
+void MockRecordStart(CaptureControllerImpl* capture_controller,
+                     MockCaptureEngine* engine,
+                     MockCaptureRecordSink* record_sink, MockCamera* camera,
+                     const std::string& mock_path_to_video) {
+  EXPECT_CALL(*engine, StartRecord()).Times(1).WillOnce(Return(S_OK));
+
+  EXPECT_CALL(*engine, GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_RECORD, _))
+      .Times(1)
+      .WillOnce([src_sink = record_sink](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                                         IMFCaptureSink** target_sink) {
+        *target_sink = src_sink;
+        src_sink->AddRef();
+        return S_OK;
+      });
+
+  EXPECT_CALL(*record_sink, RemoveAllStreams).Times(1).WillOnce(Return(S_OK));
+  EXPECT_CALL(*record_sink, AddStream).Times(1).WillOnce(Return(S_OK));
+  EXPECT_CALL(*record_sink, SetOutputFileName).Times(1).WillOnce(Return(S_OK));
+
+  capture_controller->StartRecord(mock_path_to_video, -1);
+
+  EXPECT_CALL(*camera, OnStartRecordSucceeded()).Times(1);
+  engine->CreateFakeEvent(S_OK, MF_CAPTURE_ENGINE_RECORD_STARTED);
+}
+
 TEST(CaptureController,
      InitCaptureEngineCallsOnCreateCaptureEngineSucceededWithTextureId) {
   ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
@@ -191,7 +216,8 @@ TEST(CaptureController, StartPreviewStartsProcessingSamples) {
   ComPtr<MockCapturePreviewSink> preview_sink = new MockCapturePreviewSink();
   ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
 
-  // Let's keep these small for mock texture data. Two pixels should be enough.
+  // Let's keep these small for mock texture data. Two pixels should be
+  // enough.
   uint32_t mock_preview_width = 2;
   uint32_t mock_preview_height = 1;
   uint32_t pixels_total = mock_preview_width * mock_preview_height;
@@ -287,31 +313,9 @@ TEST(CaptureController, StartRecordSuccess) {
 
   // Start record
   ComPtr<MockCaptureRecordSink> record_sink = new MockCaptureRecordSink();
-  std::string mock_path_to_file = "mock_path_to_file";
-  EXPECT_CALL(*(engine.Get()), StartRecord()).Times(1).WillOnce(Return(S_OK));
-
-  EXPECT_CALL(*(engine.Get()), GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_RECORD, _))
-      .Times(1)
-      .WillOnce(
-          [src_sink = record_sink.Get()](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
-                                         IMFCaptureSink** target_sink) {
-            *target_sink = src_sink;
-            src_sink->AddRef();
-            return S_OK;
-          });
-
-  EXPECT_CALL(*(record_sink.Get()), RemoveAllStreams)
-      .Times(1)
-      .WillOnce(Return(S_OK));
-  EXPECT_CALL(*(record_sink.Get()), AddStream).Times(1).WillOnce(Return(S_OK));
-  EXPECT_CALL(*(record_sink.Get()), SetOutputFileName)
-      .Times(1)
-      .WillOnce(Return(S_OK));
-
-  capture_controller->StartRecord(mock_path_to_file, -1);
-
-  EXPECT_CALL(*camera, OnStartRecordSucceeded()).Times(1);
-  engine->CreateFakeEvent(S_OK, MF_CAPTURE_ENGINE_RECORD_STARTED);
+  std::string mock_path_to_video = "mock_path_to_video";
+  MockRecordStart(capture_controller.get(), engine.Get(), record_sink.Get(),
+                  camera.get(), mock_path_to_video);
 
   // Called by destructor
   EXPECT_CALL(*(engine.Get()), StopRecord(true, false))
@@ -319,9 +323,163 @@ TEST(CaptureController, StartRecordSuccess) {
       .WillOnce(Return(S_OK));
 
   capture_controller = nullptr;
+  texture_registrar = nullptr;
   engine = nullptr;
   camera = nullptr;
+  record_sink = nullptr;
+}
+
+TEST(CaptureController, StopRecordSuccess) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  uint64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCapturePreviewSink> preview_sink = new MockCapturePreviewSink();
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  std::unique_ptr<uint8_t[]> mock_source_buffer =
+      std::make_unique<uint8_t[]>(0);
+
+  // Start preview to be able to start record
+  MockStartPreview(capture_controller.get(), capture_source.Get(),
+                   preview_sink.Get(), texture_registrar.get(), engine.Get(),
+                   camera.get(), std::move(mock_source_buffer), 0, 1, 1,
+                   mock_texture_id);
+
+  // Start record
+  ComPtr<MockCaptureRecordSink> record_sink = new MockCaptureRecordSink();
+  std::string mock_path_to_video = "mock_path_to_video";
+  MockRecordStart(capture_controller.get(), engine.Get(), record_sink.Get(),
+                  camera.get(), mock_path_to_video);
+
+  // Request to stop record
+  EXPECT_CALL(*(engine.Get()), StopRecord(true, false))
+      .Times(1)
+      .WillOnce(Return(S_OK));
+  capture_controller->StopRecord();
+
+  // OnStopRecordSucceeded should be called with mocked file path
+  EXPECT_CALL(*camera, OnStopRecordSucceeded(Eq(mock_path_to_video))).Times(1);
+  engine->CreateFakeEvent(S_OK, MF_CAPTURE_ENGINE_RECORD_STOPPED);
+
+  capture_controller = nullptr;
   texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  record_sink = nullptr;
+}
+
+TEST(CaptureController, TakePictureSuccess) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  uint64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCapturePreviewSink> preview_sink = new MockCapturePreviewSink();
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  std::unique_ptr<uint8_t[]> mock_source_buffer =
+      std::make_unique<uint8_t[]>(0);
+
+  // Start preview to be able to start record
+  MockStartPreview(capture_controller.get(), capture_source.Get(),
+                   preview_sink.Get(), texture_registrar.get(), engine.Get(),
+                   camera.get(), std::move(mock_source_buffer), 0, 1, 1,
+                   mock_texture_id);
+
+  // Init photo sink tests
+  ComPtr<MockCapturePhotoSink> photo_sink = new MockCapturePhotoSink();
+  EXPECT_CALL(*(engine.Get()), GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PHOTO, _))
+      .Times(1)
+      .WillOnce(
+          [src_sink = photo_sink.Get()](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                                        IMFCaptureSink** target_sink) {
+            *target_sink = src_sink;
+            src_sink->AddRef();
+            return S_OK;
+          });
+  EXPECT_CALL(*(photo_sink.Get()), RemoveAllStreams)
+      .Times(1)
+      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*(photo_sink.Get()), AddStream).Times(1).WillOnce(Return(S_OK));
+  EXPECT_CALL(*(photo_sink.Get()), SetOutputFileName)
+      .Times(1)
+      .WillOnce(Return(S_OK));
+
+  // Request photo
+  std::string mock_path_to_photo = "mock_path_to_photo";
+  EXPECT_CALL(*(engine.Get()), TakePhoto()).Times(1).WillOnce(Return(S_OK));
+  capture_controller->TakePicture(mock_path_to_photo);
+
+  // OnTakePictureSucceeded should be called with mocked file path
+  EXPECT_CALL(*camera, OnTakePictureSucceeded(Eq(mock_path_to_photo))).Times(1);
+  engine->CreateFakeEvent(S_OK, MF_CAPTURE_ENGINE_PHOTO_TAKEN);
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
+  photo_sink = nullptr;
+}
+
+
+TEST(CaptureController, PauseResumePreviewSuccess) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  uint64_t mock_texture_id = 1234;
+
+  // Initialize capture controller to be able to start preview
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  ComPtr<MockCapturePreviewSink> preview_sink = new MockCapturePreviewSink();
+  ComPtr<MockCaptureSource> capture_source = new MockCaptureSource();
+
+  std::unique_ptr<uint8_t[]> mock_source_buffer =
+      std::make_unique<uint8_t[]>(0);
+
+  // Start preview to be able to start record
+  MockStartPreview(capture_controller.get(), capture_source.Get(),
+                   preview_sink.Get(), texture_registrar.get(), engine.Get(),
+                   camera.get(), std::move(mock_source_buffer), 0, 1, 1,
+                   mock_texture_id);
+
+  EXPECT_CALL(*camera, OnPausePreviewSucceeded()).Times(1);
+  capture_controller->PausePreview();
+
+  
+  EXPECT_CALL(*camera, OnResumePreviewSucceeded()).Times(1);
+  capture_controller->ResumePreview();
+
+  capture_controller = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+  camera = nullptr;
 }
 
 }  // namespace test

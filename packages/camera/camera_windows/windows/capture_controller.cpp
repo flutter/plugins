@@ -498,11 +498,11 @@ void CaptureControllerImpl::TakePicture(const std::string filepath) {
   assert(capture_controller_listener_);
 
   if (!initialized_) {
-    return capture_controller_listener_->OnPictureFailed("Not initialized");
+    return capture_controller_listener_->OnTakePictureFailed("Not initialized");
   }
 
   if (pending_image_capture_) {
-    return capture_controller_listener_->OnPictureFailed(
+    return capture_controller_listener_->OnTakePictureFailed(
         "Already capturing image");
   }
 
@@ -518,7 +518,7 @@ void CaptureControllerImpl::TakePicture(const std::string filepath) {
   if (FAILED(hr)) {
     pending_image_capture_ = false;
     pending_picture_path_ = std::string();
-    return capture_controller_listener_->OnPictureFailed(
+    return capture_controller_listener_->OnTakePictureFailed(
         "Failed to take picture");
   }
 }
@@ -877,7 +877,7 @@ void CaptureControllerImpl::StopTimedRecord() {
   if (FAILED(hr)) {
     record_stop_pending_ = false;
     recording_ = false;
-    return capture_controller_listener_->OnVideoRecordedFailed(
+    return capture_controller_listener_->OnVideoRecordFailed(
         "Failed to record video");
   }
 }
@@ -1007,9 +1007,9 @@ void CaptureControllerImpl::OnEvent(IMFMediaEvent *event) {
 void CaptureControllerImpl::OnPicture(bool success, const std::string &error) {
   if (capture_controller_listener_) {
     if (success && !pending_picture_path_.empty()) {
-      capture_controller_listener_->OnPictureSuccess(pending_picture_path_);
+      capture_controller_listener_->OnTakePictureSucceeded(pending_picture_path_);
     } else {
-      capture_controller_listener_->OnPictureFailed(error);
+      capture_controller_listener_->OnTakePictureFailed(error);
     }
   }
   pending_image_capture_ = false;
@@ -1111,11 +1111,11 @@ void CaptureControllerImpl::OnRecordStopped(bool success,
 
     if (recording_type_ == RecordingType::RECORDING_TYPE_TIMED) {
       if (success && !pending_record_path_.empty()) {
-        capture_controller_listener_->OnVideoRecordedSuccess(
+        capture_controller_listener_->OnVideoRecordSucceeded(
             pending_record_path_, (recording_duration_us_ / 1000));
 
       } else {
-        capture_controller_listener_->OnVideoRecordedFailed(error);
+        capture_controller_listener_->OnVideoRecordFailed(error);
       }
     }
   }

@@ -268,7 +268,7 @@ TEST(Camera, OnStopRecordFailedReturnsError) {
   camera->OnStopRecordFailed(error_text);
 }
 
-TEST(Camera, OnPictureSuccessReturnsSuccess) {
+TEST(Camera, OnTakePictureSucceededReturnsSuccess) {
   std::unique_ptr<CameraImpl> camera =
       std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
   std::unique_ptr<MockMethodResult> result =
@@ -281,10 +281,10 @@ TEST(Camera, OnPictureSuccessReturnsSuccess) {
 
   camera->AddPendingResult(PendingResultType::TAKE_PICTURE, std::move(result));
 
-  camera->OnPictureSuccess(filepath);
+  camera->OnTakePictureSucceeded(filepath);
 }
 
-TEST(Camera, OnPictureFailedReturnsError) {
+TEST(Camera, OnTakePictureFailedReturnsError) {
   std::unique_ptr<CameraImpl> camera =
       std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
   std::unique_ptr<MockMethodResult> result =
@@ -297,10 +297,10 @@ TEST(Camera, OnPictureFailedReturnsError) {
 
   camera->AddPendingResult(PendingResultType::TAKE_PICTURE, std::move(result));
 
-  camera->OnPictureFailed(error_text);
+  camera->OnTakePictureFailed(error_text);
 }
 
-TEST(Camera, OnVideoRecordedSuccessInvokesCameraChannelEvent) {
+TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
   std::unique_ptr<CameraImpl> camera =
       std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
   std::unique_ptr<MockCaptureControllerFactory> capture_controller_factory =
@@ -332,7 +332,7 @@ TEST(Camera, OnVideoRecordedSuccessInvokesCameraChannelEvent) {
   // Pass camera id for camera
   camera->OnCreateCaptureEngineSucceeded(camera_id);
 
-  camera->OnVideoRecordedSuccess(filepath, video_duration);
+  camera->OnVideoRecordSucceeded(filepath, video_duration);
 }
 
 }  // namespace test
