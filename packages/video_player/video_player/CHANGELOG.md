@@ -1,6 +1,10 @@
+## 2.2.12
+
+* Fixes persisting of hasError even after successful initialize.
+
 ## 2.2.11
 
-* Fixes persisting of hasError even after successful initialize
+* Removes dependency on `meta`.
 
 ## 2.2.10
 

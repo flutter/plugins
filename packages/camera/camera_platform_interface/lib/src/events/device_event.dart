@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:camera_platform_interface/src/utils/utils.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 /// Generic Event coming from the native side of Camera,
 /// not related to a specific camera module.

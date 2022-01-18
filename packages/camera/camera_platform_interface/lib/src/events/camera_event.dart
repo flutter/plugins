@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:camera_platform_interface/src/types/focus_mode.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
 import '../../camera_platform_interface.dart';
 
