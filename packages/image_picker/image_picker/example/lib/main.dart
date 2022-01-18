@@ -61,9 +61,12 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController qualityController = TextEditingController();
 
   void _refreshFileMimeTypes() {
+    if (_fileList == null) {
+      return;
+    }
     _fileList = _fileList
-        ?.map((file) => XFile(file.path, mimeType: lookupMimeType(file.path)))
-        ?.toList();
+        !.map((file) => XFile(file.path, mimeType: lookupMimeType(file.path)))
+        .toList();
   }
 
   void _onPickButtonPressed(ImageSource source,
@@ -500,6 +503,7 @@ class _AutoPlayingVideoState extends State<AutoPlayingVideo> {
   }
 
   void didUpdateWidget(AutoPlayingVideo oldWidget) {
+    super.didUpdateWidget(oldWidget);
     if (oldWidget.file.path != widget.file.path) {
       _playFile(widget.file);
     }

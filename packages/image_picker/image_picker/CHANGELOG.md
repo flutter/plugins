@@ -1,7 +1,8 @@
-## NEXT
+## 0.8.5
 
 * Updates Android compileSdkVersion to 31.
 * Fix iOS RunnerUITests search paths.
+* Adds support for `pickImageOrVideo` and `pickMultiImageAndVideo`.
 
 ## 0.8.4+4
 
