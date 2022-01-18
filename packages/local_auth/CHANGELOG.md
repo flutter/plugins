@@ -1,6 +1,6 @@
 ## 1.1.11
 
-* Add support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
+* Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
 
 ## 1.1.10
 
