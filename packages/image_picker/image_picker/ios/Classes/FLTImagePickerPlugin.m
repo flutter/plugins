@@ -14,7 +14,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
-#import "FLTPHPickerSaveImageToPathOperation.h"
+#import "FLTPHPickerSaveItemToPathOperation.h"
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
                                     UIImagePickerControllerDelegate,
@@ -100,7 +100,25 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [self checkPhotoAuthorizationForAccessLevel];
 }
 
-- (void)pickImageWithUIImagePicker {
+- (void)pickImageOrVideoWithPHPicker:(int)maxItemsAllowed API_AVAILABLE(ios(14)) {
+  PHPickerConfiguration *config =
+      [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
+  config.selectionLimit = maxItemsAllowed;  // Setting to zero allow us to pick unlimited photos
+  config.filter = [PHPickerFilter anyFilterMatchingSubfilters:@[
+    [PHPickerFilter imagesFilter], [PHPickerFilter videosFilter]
+  ]];
+  config.preferredAssetRepresentationMode = PHPickerConfigurationAssetRepresentationModeCurrent;
+
+  _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+  _pickerViewController.delegate = self;
+  _pickerViewController.presentationController.delegate = self;
+
+  self.maxImagesAllowed = maxItemsAllowed;
+
+  [self checkPhotoAuthorizationForAccessLevel];
+}
+
+- (void)pickImageWithUIImagePicker:(int)maxItemsAllowed {
   _imagePickerController = [[UIImagePickerController alloc] init];
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   _imagePickerController.delegate = self;
@@ -108,7 +126,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
-  self.maxImagesAllowed = 1;
+  self.maxImagesAllowed = maxItemsAllowed;
 
   switch (imageSource) {
     case SOURCE_CAMERA:
@@ -125,6 +143,19 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
+- (void)pickImageOrVideoWithUIImagePicker:(int)maxItemsAllowed {
+  _imagePickerController = [[UIImagePickerController alloc] init];
+  _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+  _imagePickerController.delegate = self;
+  _imagePickerController.mediaTypes = @[
+    (NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie,
+    (NSString *)kUTTypeVideo, (NSString *)kUTTypeMPEG4
+  ];
+  _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+  self.maxImagesAllowed = maxItemsAllowed;
+  [self checkPhotoAuthorization];
+}
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.result) {
     self.result([FlutterError errorWithCode:@"multiple_request"
@@ -133,21 +164,36 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     self.result = nil;
   }
 
-  if ([@"pickImage" isEqualToString:call.method]) {
+  if ([@"pickImageOrVideo" isEqualToString:call.method]) {
+    self.result = result;
+    _arguments = call.arguments;
+    if (@available(iOS 14, *)) {
+      [self pickImageOrVideoWithPHPicker:1];
+    } else {
+      [self pickImageOrVideoWithUIImagePicker:1];
+    }
+  } else if ([@"pickMultiImageAndVideo" isEqualToString:call.method]) {
+    self.result = result;
+    _arguments = call.arguments;
+    if (@available(iOS 14, *)) {
+      [self pickImageOrVideoWithPHPicker:0];
+    } else {
+      [self pickImageOrVideoWithUIImagePicker:0];
+    }
+  } else if ([@"pickImage" isEqualToString:call.method]) {
     self.result = result;
     _arguments = call.arguments;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
-
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
         [self pickImageWithPHPicker:1];
       } else {
         // UIImagePicker is used
-        [self pickImageWithUIImagePicker];
+        [self pickImageWithUIImagePicker:1];
       }
     } else {
-      [self pickImageWithUIImagePicker];
+      [self pickImageWithUIImagePicker:1];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
@@ -155,7 +201,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       _arguments = call.arguments;
       [self pickImageWithPHPicker:0];
     } else {
-      [self pickImageWithUIImagePicker];
+      [self pickImageWithUIImagePicker:0];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
@@ -406,14 +452,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation =
-          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
-                                                            maxHeight:maxHeight
-                                                             maxWidth:maxWidth
-                                                  desiredImageQuality:desiredImageQuality
-                                                       savedPathBlock:^(NSString *savedPath) {
-                                                         pathList[i] = savedPath;
-                                                       }];
+      FLTPHPickerSaveItemToPathOperation *operation =
+          [[FLTPHPickerSaveItemToPathOperation alloc] initWithResult:result
+                                                      maxImageHeight:maxHeight
+                                                       maxImageWidth:maxWidth
+                                                 desiredImageQuality:desiredImageQuality
+                                                      savedPathBlock:^(NSString *savedPath) {
+                                                        pathList[i] = savedPath;
+                                                      }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];

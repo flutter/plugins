@@ -143,7 +143,7 @@ public class ImagePickerDelegateTest {
 
     verify(mockActivity)
         .startActivityForResult(
-            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY));
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY));
   }
 
   @Test
@@ -269,7 +269,7 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onActivityResult(
-        ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, Activity.RESULT_CANCELED, null);
+        ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY, Activity.RESULT_CANCELED, null);
 
     verify(mockResult).success(null);
     verifyNoMoreInteractions(mockResult);
@@ -281,7 +281,7 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onActivityResult(
-        ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
+        ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
 
     verify(mockResult).success("originalPath");
     verifyNoMoreInteractions(mockResult);
@@ -294,7 +294,7 @@ public class ImagePickerDelegateTest {
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
-        ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
+        ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
 
     verify(mockResult).success("scaledPath");
     verifyNoMoreInteractions(mockResult);
@@ -397,7 +397,7 @@ public class ImagePickerDelegateTest {
 
     doNothing().when(mockResult).success(valueCapture.capture());
 
-    mockDelegate.retrieveLostImage(mockResult);
+    mockDelegate.retrieveLostData(mockResult);
 
     assertEquals("/example/last_item", valueCapture.getValue().get("path"));
   }
