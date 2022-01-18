@@ -5,10 +5,12 @@
 A Flutter plugin for finding commonly used locations on the filesystem. Supports Android, iOS, Linux, macOS and Windows.
 Not all methods are supported on all platforms.
 
-## Usage
+## Installation
 
 To use this plugin, add `path_provider` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 Please see the example app of this plugin for a full example.
+
+## Usage
 
 Methods support by platform
 
@@ -16,7 +18,7 @@ Methods support by platform
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | Temporary | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Support | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| Application Library | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| Application Library | ❌️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Documents | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | External Storage | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | External Cache (Directories) | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
@@ -74,7 +76,6 @@ Platform support:
 Path to the directory where application can store files that are persistent,
 backed up, and not visible to the user, such as sqlite.db.
 
-
 Example:
 ``` dart
 Future<String?> requestDirectoryPath() async {
@@ -93,7 +94,7 @@ Platform support:
 
 | Android | iOS | Linux | MacOS | Windows | 
 | :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| ❌️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 ### Application Documents Directory 
 Path to a directory where the application may place data that is
@@ -228,9 +229,10 @@ Platform support:
 | :-----: | :-----: | :-----: | :-----: | :-----: |
 | ❌️ | ❌️ | ✔️ | ✔️ | ✔️ |
 
-### Usage in tests
+## Usage in tests
 
 `path_provider` now uses a `PlatformInterface`, meaning that not all platforms share the a single `PlatformChannel`-based implementation.
 With that change, tests should be updated to mock `PathProviderPlatform` rather than `PlatformChannel`.
 
 See this `path_provider` [test](https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/test/path_provider_test.dart) for an example.
+
