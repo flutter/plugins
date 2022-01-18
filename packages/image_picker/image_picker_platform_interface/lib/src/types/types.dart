@@ -13,3 +13,6 @@ const String kTypeImage = 'image';
 
 /// Denotes that a video is being picked.
 const String kTypeVideo = 'video';
+
+/// Denotes that an image or video is being picked.
+const String kTypeImageOrVideo = 'imageOrVideo';

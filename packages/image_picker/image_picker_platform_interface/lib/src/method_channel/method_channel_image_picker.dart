@@ -111,6 +111,66 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     );
   }
 
+  Future<String?> _getImageOrVideoPath({
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+  }) {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxImageWidth != null && maxImageWidth < 0) {
+      throw ArgumentError.value(
+          maxImageWidth, 'maxImageWidth', 'cannot be negative');
+    }
+
+    if (maxImageHeight != null && maxImageHeight < 0) {
+      throw ArgumentError.value(
+          maxImageHeight, 'maxImageHeight', 'cannot be negative');
+    }
+
+    return _channel.invokeMethod<String>(
+      'pickImageOrVideo',
+      <String, dynamic>{
+        'maxWidth': maxImageWidth,
+        'maxHeight': maxImageHeight,
+        'imageQuality': imageQuality,
+      },
+    );
+  }
+
+  Future<List<dynamic>?> _getMultiImageAndVideoPath({
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+  }) {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxImageWidth != null && maxImageWidth < 0) {
+      throw ArgumentError.value(
+          maxImageWidth, 'maxImageWidth', 'cannot be negative');
+    }
+
+    if (maxImageHeight != null && maxImageHeight < 0) {
+      throw ArgumentError.value(
+          maxImageHeight, 'maxImageHeight', 'cannot be negative');
+    }
+
+    return _channel.invokeMethod<List<dynamic>?>(
+      'pickMultiImageAndVideo',
+      <String, dynamic>{
+        'maxWidth': maxImageWidth,
+        'maxHeight': maxImageHeight,
+        'imageQuality': imageQuality,
+      },
+    );
+  }
+
   @override
   Future<PickedFile?> pickVideo({
     required ImageSource source,
@@ -211,6 +271,36 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<XFile?> getImageOrVideo({
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+  }) async {
+    String? path = await _getImageOrVideoPath(
+      maxImageWidth: maxImageWidth,
+      maxImageHeight: maxImageHeight,
+      imageQuality: imageQuality,
+    );
+    return path != null ? XFile(path) : null;
+  }
+
+  @override
+  Future<List<XFile>?> getMultiImageAndVideo({
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+  }) async {
+    final List<dynamic>? paths = await _getMultiImageAndVideoPath(
+      maxImageWidth: maxImageWidth,
+      maxImageHeight: maxImageHeight,
+      imageQuality: imageQuality,
+    );
+    if (paths == null) return null;
+
+    return paths.map((path) => XFile(path)).toList();
+  }
+
+  @override
   Future<XFile?> getVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
@@ -238,13 +328,17 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     assert(result.containsKey('path') != result.containsKey('errorCode'));
 
     final String? type = result['type'];
-    assert(type == kTypeImage || type == kTypeVideo);
+    assert(
+      type == kTypeImage || type == kTypeVideo || type == kTypeImageOrVideo,
+    );
 
     RetrieveType? retrieveType;
     if (type == kTypeImage) {
       retrieveType = RetrieveType.image;
     } else if (type == kTypeVideo) {
       retrieveType = RetrieveType.video;
+    } else if (type == kTypeImageOrVideo) {
+      retrieveType = RetrieveType.imageOrVideo;
     }
 
     PlatformException? exception;

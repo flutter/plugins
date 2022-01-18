@@ -210,6 +210,68 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getMultiImage() has not been implemented.');
   }
 
+  /// Returns an [XFile] with the image or video that was picked from the gallery.
+  ///
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and
+  /// above only support HEIC images if used in addition to a size modification,
+  /// of which the usage is explained below.
+  ///
+  /// For when an image is picked:
+  ///
+  ///   If specified, the image will be at most [maxImageWidth] wide and
+  ///   [maxImageHeight] tall. Otherwise the image will be returned at its
+  ///   original width and height.
+  ///
+  ///   The [imageQuality] argument modifies the quality of the image, ranging
+  ///   from 0-100 where 100 is the original/max quality. If `imageQuality` is
+  ///   null, the image with the original quality will be returned. Compression
+  ///   is only supported for certain image types such as JPEG and on Android
+  ///   PNG and WebP. If compression is not supported for the image that is
+  ///   picked, a warning message will be logged.
+  ///
+  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  ///
+  /// If no image or video were picked, the return value is null.
+  Future<XFile?> getImageOrVideo({
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+  }) {
+    throw UnimplementedError('getImageOrVideo() has not been implemented.');
+  }
+
+  /// Returns a [List<XFile>] with the images and/or videos that were picked.
+  ///
+  /// The images come from the [ImageSource.gallery].
+  ///
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and
+  /// above only support HEIC images if used in addition to a size modification,
+  /// of which the usage is explained below.
+  ///
+  /// For every image picked:
+  ///
+  ///   If specified, the image will be at most [maxImageWidth] wide and
+  ///   [maxImageHeight] tall. Otherwise the image will be returned at its
+  ///   original width and height.
+  ///
+  ///   The [imageQuality] argument modifies the quality of the image, ranging
+  ///   from 0-100 where 100 is the original/max quality. If `imageQuality` is
+  ///   null, the image with the original quality will be returned. Compression
+  ///   is only supported for certain image types such as JPEG and on Android
+  ///   PNG and WebP. If compression is not supported for the image that is
+  ///   picked, a warning message will be logged.
+  ///
+  /// If no images were picked, the return value is null.
+  Future<List<XFile>?> getMultiImageAndVideo({
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+  }) {
+    throw UnimplementedError(
+        'getMultiImageAndVideo() has not been implemented.');
+  }
+
   /// Returns a [XFile] containing the video that was picked.
   ///
   /// The [source] argument controls where the video comes from. This can
