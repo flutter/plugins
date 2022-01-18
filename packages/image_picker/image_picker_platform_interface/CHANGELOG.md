@@ -1,3 +1,7 @@
+## 2.5.0
+
+* Adds `getImageOrVideo` and `getMultiImageAndVideo` methods for picking both videos and images simultaneously.
+
 ## 2.4.3
 
 * Removes dependency on `meta`.

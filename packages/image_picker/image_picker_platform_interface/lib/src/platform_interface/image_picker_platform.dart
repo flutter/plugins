@@ -212,9 +212,15 @@ abstract class ImagePickerPlatform extends PlatformInterface {
 
   /// Returns an [XFile] with the image or video that was picked from the gallery.
   ///
+  /// The images come from the [ImageSource.gallery].
+  ///
   /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and
   /// above only support HEIC images if used in addition to a size modification,
   /// of which the usage is explained below.
+  ///
+  /// This method is only supported on Android API 19 and above.
+  /// It could possibly work on API 18 and below on some devices,
+  /// but this is not guaranteed.
   ///
   /// For when an image is picked:
   ///
@@ -249,6 +255,10 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// above only support HEIC images if used in addition to a size modification,
   /// of which the usage is explained below.
   ///
+  /// This method is only supported on Android API 19 and above.
+  /// It could possibly work on API 18 and below on some devices,
+  /// but this is not guaranteed.
+  ///
   /// For every image picked:
   ///
   ///   If specified, the image will be at most [maxImageWidth] wide and
@@ -261,6 +271,9 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///   is only supported for certain image types such as JPEG and on Android
   ///   PNG and WebP. If compression is not supported for the image that is
   ///   picked, a warning message will be logged.
+  ///
+  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
   Future<List<XFile>?> getMultiImageAndVideo({
