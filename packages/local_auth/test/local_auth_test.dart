@@ -179,7 +179,8 @@ void main() {
 
     test('canCheckBiometrics on Android.', () async {
       setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-      final bool canAuthenticateWithBiometrics = await localAuthentication.canCheckBiometrics;
+      final bool canAuthenticateWithBiometrics =
+          await localAuthentication.canCheckBiometrics;
 
       expect(
         log,
