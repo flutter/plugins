@@ -50,7 +50,6 @@ void main() {
       bool hasNavigationDelegate = false,
       bool hasProgressTracking = false,
       bool useHybridComposition = false,
-      String systemVersion = '14.0',
     }) async {
       await tester.pumpWidget(WebViewCupertinoWidget(
         creationParams: creationParams ??
@@ -64,7 +63,6 @@ void main() {
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
         configuration: mockWebViewConfiguration,
-        systemVersion: systemVersion,
         onBuildWidget: (WebViewCupertinoPlatformController controller) {
           return Container();
         },
@@ -115,50 +113,6 @@ void main() {
           web_kit.AudiovisualMediaType.none,
         });
       });
-
-      testWidgets(
-        'autoMediaPlaybackPolicy true with systemVersion < 10.0',
-        (WidgetTester tester) async {
-          await buildWidget(
-            tester,
-            systemVersion: '9.5',
-            creationParams: CreationParams(
-              autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy
-                  .require_user_action_for_all_media_types,
-              webSettings: WebSettings(
-                userAgent: const WebSetting<String?>.absent(),
-                hasNavigationDelegate: false,
-              ),
-            ),
-          );
-
-          verify(
-            mockWebViewConfiguration.requiresUserActionForMediaPlayback = true,
-          );
-        },
-      );
-
-      testWidgets(
-        'autoMediaPlaybackPolicy true with systemVersion < 9.0',
-        (WidgetTester tester) async {
-          await buildWidget(
-            tester,
-            systemVersion: '8.5',
-            creationParams: CreationParams(
-              autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy
-                  .require_user_action_for_all_media_types,
-              webSettings: WebSettings(
-                userAgent: const WebSetting<String?>.absent(),
-                hasNavigationDelegate: false,
-              ),
-            ),
-          );
-
-          verify(
-            mockWebViewConfiguration.mediaPlaybackRequiresUserAction = true,
-          );
-        },
-      );
 
       group('$WebSettings', () {
         testWidgets('allowsInlineMediaPlayback', (WidgetTester tester) async {
