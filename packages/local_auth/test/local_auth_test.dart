@@ -24,6 +24,11 @@ void main() {
     setUp(() {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
+        if (methodCall.method == 'getAvailableBiometrics') {
+          return Future<List<String>>.value(
+            <String>['fingerprint'],
+          );
+        }
         return Future<dynamic>.value(true);
       });
       localAuthentication = LocalAuthentication();
@@ -172,29 +177,17 @@ void main() {
       });
     });
 
-    test('hasEnrolledFingerprints on Android.', () async {
+    test('canCheckBiometrics on Android.', () async {
       setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-      final bool enrolled = await localAuthentication.hasEnrolledFingerprints;
+      final bool canAuthenticateWithBiometrics = await localAuthentication.canCheckBiometrics;
+
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'hasEnrolledFingerprints',
+            'getAvailableBiometrics',
             arguments: null,
           ),
-        ],
-      );
-
-      expect(enrolled, true);
-    });
-
-    test('canAuthenticateWithBiometrics on Android.', () async {
-      setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-      final bool canAuthenticateWithBiometrics =
-          await localAuthentication.canAuthenticateWithBiometrics;
-      expect(
-        log,
-        <Matcher>[
           isMethodCall(
             'canAuthenticateWithBiometrics',
             arguments: null,

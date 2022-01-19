@@ -138,10 +138,19 @@ class LocalAuthentication {
 
   /// Returns true if device is capable of checking biometrics
   ///
+  /// Returns false on Android if device has the biometric
+  /// hardware but doesn't have any biometric enrolled
+  ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!
-          .isNotEmpty;
+  Future<bool> get canCheckBiometrics async {
+    final List<BiometricType> biometrics = await getAvailableBiometrics();
+    if (biometrics.isEmpty) {
+      return false;
+    } else if (_platform.isAndroid) {
+      return _canAuthenticateWithBiometrics;
+    }
+    return true;
+  }
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
@@ -182,20 +191,12 @@ class LocalAuthentication {
 
   /// Only for Android
   ///
-  /// returns true if device has at least one fingerprint registered
-  ///
-  /// Returns a [Future] bool true or false:
-  Future<bool> get hasEnrolledFingerprints async =>
-      (await _channel.invokeMethod<bool>('hasEnrolledFingerprints')) ?? false;
-
-  /// Only for Android
-  ///
   /// returns false in the next cases:
   /// - No biometric hardware found.
   /// - No biometrics enrolled on this device.
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canAuthenticateWithBiometrics async =>
+  Future<bool> get _canAuthenticateWithBiometrics async =>
       (await _channel.invokeMethod<bool>('canAuthenticateWithBiometrics')) ??
       false;
 }
