@@ -1,12 +1,10 @@
 ## NEXT
 
-* Starts the Dart side of the platform specific implemention for iOS. Created
-  `WebViewCupertinoWidget`and added support for `WebSettings.allowsInlineMediaPlayback` and
-  `AutoMediaPlaybackPolicy`. This currently has no effect on the working iOS implementation.
+* Fixes an integration test race condition.
 
 ## 2.7.1
 
-* Fixes header import for cookie manager to be relative only. 
+* Fixes header import for cookie manager to be relative only.
 
 ## 2.7.0
 

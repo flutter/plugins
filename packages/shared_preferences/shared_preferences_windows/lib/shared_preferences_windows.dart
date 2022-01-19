@@ -7,7 +7,7 @@ import 'dart:convert' show json;
 
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path/path.dart' as path;
 import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';

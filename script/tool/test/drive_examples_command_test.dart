@@ -584,6 +584,58 @@ void main() {
           ]));
     });
 
+    test('driving a web plugin with CHROME_EXECUTABLE', () async {
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+        },
+      );
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      mockPlatform.environment['CHROME_EXECUTABLE'] = '/path/to/chrome';
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'drive-examples',
+        '--web',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
+        ]),
+      );
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>[
+                  'drive',
+                  '-d',
+                  'web-server',
+                  '--web-port=7357',
+                  '--browser-name=chrome',
+                  '--chrome-binary=/path/to/chrome',
+                  '--driver',
+                  'test_driver/plugin_test.dart',
+                  '--target',
+                  'test_driver/plugin.dart'
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
     test('driving when plugin does not suppport Windows is a no-op', () async {
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/test_driver/plugin_test.dart',
