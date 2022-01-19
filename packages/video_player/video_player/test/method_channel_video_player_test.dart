@@ -10,7 +10,7 @@ import 'package:video_player_platform_interface/messages.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-import 'test.dart';
+import 'test_api.dart';
 
 class _ApiLogger implements TestHostVideoPlayerApi {
   final List<String> log = [];

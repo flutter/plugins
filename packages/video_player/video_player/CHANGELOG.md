@@ -1,3 +1,7 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 2.2.11
 
 * Removes dependency on `meta`.
