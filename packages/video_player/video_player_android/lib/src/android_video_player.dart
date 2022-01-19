@@ -11,14 +11,14 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 
 import 'messages.dart';
 
-/// An iOS and Android implementation of [VideoPlayerPlatform] that uses method
+/// An Android implementation of [VideoPlayerPlatform] that uses method
 /// channels.
-class MethodChannelVideoPlayer extends VideoPlayerPlatform {
+class AndroidVideoPlayer extends VideoPlayerPlatform {
   VideoPlayerApi _api = VideoPlayerApi();
 
   /// Registers this class as the default instance of [PathProviderPlatform].
-  static registerWith() {
-    VideoPlayerPlatform.instance = MethodChannelVideoPlayer();
+  static void registerWith() {
+    VideoPlayerPlatform.instance = AndroidVideoPlayer();
   }
 
   @override
