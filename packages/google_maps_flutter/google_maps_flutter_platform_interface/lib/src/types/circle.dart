@@ -4,7 +4,7 @@
 
 import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable;
 
 import 'types.dart';
 

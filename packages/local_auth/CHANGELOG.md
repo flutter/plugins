@@ -1,7 +1,11 @@
+## 1.2.0
+
+* Updated `canCheckBiometrics` behavior. Now it returns `false` on Android if device has the biometric hardware but doesn't have any biometric enrolled.
+
 ## 1.1.10
-* Added get `hasEnrolledFingerprints` on Android.
-* Added get `canAuthenticateWithBiometrics` on Android.
-  
+
+* Removes dependency on `meta`.
+
 ## 1.1.9
 
 * Updates code for analysis option changes.

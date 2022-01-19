@@ -1,3 +1,11 @@
+## 2.2.12
+
+* iOS: Validate size only when assets contain video tracks.
+
+## 2.2.11
+
+* Removes dependency on `meta`.
+
 ## 2.2.10
 
 * iOS: Updates texture on `seekTo`.

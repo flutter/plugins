@@ -15,15 +15,25 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
+    # Master uses a pinned, auto-rolled version to prevent out-of-band CI
+    # failures due to changes in Flutter.
+    # TODO(stuartmorgan): Investigate an autoroller for stable as well.
+    - TARGET_TREEISH=$CHANNEL
+    - if [[ "$CHANNEL" == "master" ]]; then
+    -   TARGET_TREEISH=$(< .ci/flutter_$CHANNEL.version)
+    - fi
     # Ensure that the repository has all the branches.
     - cd $FLUTTER_HOME
     - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     - git fetch origin
-    # Switch to the requested branch.
-    - git checkout $CHANNEL
-    # Reset to upstream branch, rather than using pull, since the base image
-    # can sometimes be in a state where it has diverged from upstream (!).
-    - git reset --hard @{u}
+    # Switch to the requested channel.
+    - git checkout $TARGET_TREEISH
+    # When using a branch rather than a hash, reset to the upstream branch
+    # rather than using pull, since the base image can sometimes be in a state
+    # where it has diverged from upstream (!).
+    - if [[ "$TARGET_TREEISH" == "$CHANNEL" ]]; then
+    -   git reset --hard @{u}
+    - fi
     # Run doctor to allow auditing of what version of Flutter the run is using.
     - flutter doctor -v
   << : *TOOL_SETUP_TEMPLATE
