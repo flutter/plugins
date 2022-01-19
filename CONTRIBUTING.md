@@ -42,28 +42,6 @@ use, and use auto-formatters:
 - [Objective-C](https://google.github.io/styleguide/objcguide.html) formatted with
   `clang-format`
 
-### The review process
-
-Reviewing PRs often requires a non-trivial amount of time. We prioritize issues, not PRs, so that we use our maintainers' time in the most impactful way. Issues pertaining to this repository are managed in the [flutter/flutter issue tracker and are labeled with "plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin+sort%3Areactions-%2B1-desc). Non-trivial PRs should have an associated issue that will be used for prioritization. See the [prioritization section](https://github.com/flutter/flutter/wiki/Issue-hygiene#prioritization) in the Flutter wiki to understand how issues are prioritized.
-
-Newly opened PRs first go through initial triage which results in one of:
-  * **Merging the PR** - if the PR can be quickly reviewed and looks good.
-  * **Requesting minor changes** - if the PR can be quickly reviewed, but needs changes.
-  * **Moving the PR to the backlog** - if the review requires non-trivial effort and the issue isn't currently a priority; in this case the maintainer will:
-    * Add the "backlog" label to the issue.
-    * Leave a comment on the PR explaining that the review is not trivial and that the issue will be looked at according to priority order.
-  * **Starting a non-trivial review** - if the review requires non-trivial effort and the issue is a priority; in this case the maintainer will:
-    * Add the "in review" label to the issue.
-    * Self assign the PR.
-  * **Closing the PR** - if the PR maintainer decides that the PR should not be merged.
-
-Please be aware that there is currently a significant backlog, so reviews for plugin PRs will
-in most cases take significantly longer to begin than the two-week timeframe given in the
-main Flutter PR guide. An effort is underway to work through the backlog, but it will
-take time. If you are interested in hepling out (e.g., by doing initial reviews looking
-for obvious problems like missing or failing tests), please reach out
-[on Discord](https://github.com/flutter/flutter/wiki/Chat) in `#hackers-ecosystem`.
-
 ### Releasing
 
 If you are a team member landing a PR, or just want to know what the release
