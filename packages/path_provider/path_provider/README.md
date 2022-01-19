@@ -5,24 +5,30 @@
 A Flutter plugin for finding commonly used locations on the filesystem. Supports Android, iOS, Linux, macOS and Windows.
 Not all methods are supported on all platforms.
 
-## Installation
+## Usage
 
 To use this plugin, add `path_provider` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
-Please see the example app of this plugin for a full example.
+Please see the example app of this plugin for a full [example][example] app.
 
-## Usage
+
+Add the following import:
+```dart
+import 'package:path_provider/path_provider.dart';
+```
+
+## Supported platforms and paths
 
 Methods support by platform
 
-| Dir | Android | iOS | Linux | MacOS | Windows |
+| Dir | Android | iOS | Linux | macOS | Windows |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | Temporary | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Support | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Library | ❌️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Documents | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | External Storage | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
-| External Cache (Directories) | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
-| External Storage (Directories) | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
+| External Cache Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
+| External Storage Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | Downloads | ❌ | ❌ | ✔️ | ✔️ | ✔️ |
 
 ### Temporary Directory
@@ -41,13 +47,7 @@ Future<String?> requestDirectoryPath() async {
   }
   return null;
 }
-``` 
-
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+```
 
 ### Application Support Directory
 Path to a directory where the application may place application support files.
@@ -65,12 +65,6 @@ Future<String?> requestDirectoryPath() async {
   return null;
 }
 ```
-
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 ### Application Library Directory
 Path to the directory where application can store files that are persistent,
@@ -90,12 +84,6 @@ Future<String?> requestDirectoryPath() async {
 }
 ```
 
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ❌️ | ✔️ | ✔️ | ✔️ | ✔️ |
-
 ### Application Documents Directory 
 Path to a directory where the application may place data that is
 user-generated, or that cannot otherwise be recreated by your application.
@@ -113,12 +101,6 @@ Future<String?> requestDirectoryPath() async {
   return null;
 }
 ```
-
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 ### External Storage Directory
 Path to a directory where the application may access top level storage.
@@ -138,12 +120,6 @@ Future<List<Directory>?> requestDirectories() async {
   return null;
 }
 ```
-
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ❌️ | ❌️ | ❌️ | ❌ |
 
 ### External Cache Directories
 Paths to directories where application specific external cache data can be
@@ -167,12 +143,6 @@ Future<List<Directory>?> requestDirectories() async {
 }
 ```
 
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ❌️ | ❌️ | ❌️ | ❌ |
-
 ### External Storage Directories
 Paths to directories where application specific data can be stored.
 These paths typically reside on external storage like separate partitions
@@ -185,7 +155,8 @@ Example:
 ``` dart
 Future<List<Directory>?> requestDirectories() async {
   try {
-    List<Directory>? directories = await getExternalStorageDirectories();
+    List<Directory>? directories = 
+        await getExternalStorageDirectories(type: StorageDirectory.pictures);
     return directories;
   } catch (e) {
     // HANDLE ERROR
@@ -193,13 +164,6 @@ Future<List<Directory>?> requestDirectories() async {
   return null;
 }
 ```
-
-Platform support:
-
-| Android | iOS | Linux | MacOS | Windows | 
-| :---: | :---: | :---: | :---: | :---: |
-| ✔️ | ❌️ | ❌️ | ❌️ | ❌ |
-
 
 ### Downloads Directory
 Path to the directory where downloaded files can be stored.
@@ -223,16 +187,11 @@ On Android and on iOS, this function throws an [UnsupportedError] as no equivale
 path exists.
 
 
-Platform support:
-
-| Android |   iOS   |  Linux  |  MacOS  | Windows | 
-| :-----: | :-----: | :-----: | :-----: | :-----: |
-| ❌️ | ❌️ | ✔️ | ✔️ | ✔️ |
-
-## Usage in tests
+## Testing
 
 `path_provider` now uses a `PlatformInterface`, meaning that not all platforms share the a single `PlatformChannel`-based implementation.
 With that change, tests should be updated to mock `PathProviderPlatform` rather than `PlatformChannel`.
 
 See this `path_provider` [test](https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/test/path_provider_test.dart) for an example.
 
+[example]:./example
