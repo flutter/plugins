@@ -377,6 +377,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
+  // Note: https://openradar.appspot.com/radar?id=4968600712511488
+  // `[AVPlayerItem duration]` can be `kCMTimeIndefinite`,
+  // use `[[AVPlayerItem asset] duration]` instead.
   return FLTCMTimeToMillis([[[_player currentItem] asset] duration]);
 }
 
