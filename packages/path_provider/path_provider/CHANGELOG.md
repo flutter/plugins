@@ -1,3 +1,6 @@
+## 2.0.8+1
+* Updates documentation on README.md.
+
 ## 2.0.8
 
 * Updates example app Android compileSdkVersion to 31.
