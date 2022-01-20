@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -25,6 +25,7 @@
 		9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		BE6173D826A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */; };
+		E4B0B2A12799913700F5AF86 /* FLTPHPickerSaveItemToPathOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E4B0B2A02799913700F5AF86 /* FLTPHPickerSaveItemToPathOperationTests.m */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
 /* End PBXBuildFile section */
 
@@ -91,6 +92,7 @@
 		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtilTests.m; sourceTree = "<group>"; };
 		BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromLimitedGalleryUITests.m; sourceTree = "<group>"; };
 		DC6FCAAD4E7580C9B3C2E21D /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E4B0B2A02799913700F5AF86 /* FLTPHPickerSaveItemToPathOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLTPHPickerSaveItemToPathOperationTests.m; sourceTree = "<group>"; };
 		EC32F6993F4529982D9519F1 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerTestImages.h; sourceTree = "<group>"; };
 		F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerTestImages.m; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
 				68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */,
 				334733F62668136400DCC49E /* Info.plist */,
+				E4B0B2A02799913700F5AF86 /* FLTPHPickerSaveItemToPathOperationTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -458,6 +461,7 @@
 				334733FF266813FA00DCC49E /* ImagePickerTestImages.m in Sources */,
 				334733FC266813EE00DCC49E /* ImageUtilTests.m in Sources */,
 				33473400266813FD00DCC49E /* ImagePickerPluginTests.m in Sources */,
+				E4B0B2A12799913700F5AF86 /* FLTPHPickerSaveItemToPathOperationTests.m in Sources */,
 				334733FE266813F400DCC49E /* PhotoAssetUtilTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

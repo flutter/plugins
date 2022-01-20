@@ -9,6 +9,7 @@
 
 // For testing only.
 - (UIImagePickerController *)getImagePickerController;
+- (PHPickerViewController *)getPickerViewController API_AVAILABLE(ios(14));
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window;
 
 @end

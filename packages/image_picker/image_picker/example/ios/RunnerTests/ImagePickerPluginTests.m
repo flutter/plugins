@@ -6,6 +6,7 @@
 
 @import image_picker;
 @import XCTest;
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <OCMock/OCMock.h>
 
 @interface MockViewController : UIViewController
@@ -253,6 +254,76 @@
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
   XCTAssertEqual(pickImageResult, pathList);
+}
+
+- (void)testPickingImageOrVideo {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImageOrVideo"
+                                                              arguments:@{}];
+  if (@available(iOS 14, *)) {
+    XCTAssertNil([plugin getPickerViewController]);
+  } else {
+    XCTAssertNil([plugin getImagePickerController]);
+  }
+
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+
+  if (@available(iOS 14, *)) {
+    PHPickerViewController *controller = [plugin getPickerViewController];
+    XCTAssertNotNil(controller);
+    // Check if PHPickerView has been configured to selecting 1 item of either type.
+    XCTAssertEqual(controller.configuration.selectionLimit, 1);
+    PHPickerFilter *expectedFilter = [PHPickerFilter anyFilterMatchingSubfilters:@[
+      [PHPickerFilter imagesFilter], [PHPickerFilter videosFilter]
+    ]];
+    XCTAssertEqualObjects(controller.configuration.filter, expectedFilter);
+  } else {
+    UIImagePickerController *controller = [plugin getImagePickerController];
+    XCTAssertNotNil(controller);
+    // Check if UIImagePickerView has been configured to selecting an item of either type.
+    NSArray<NSString *> *expectedMediaTypes = @[
+      (NSString *)kUTTypeImage,
+      (NSString *)kUTTypeMovie,
+    ];
+    XCTAssertEqualObjects(controller.mediaTypes, expectedMediaTypes);
+  }
+}
+
+- (void)testPickingMultiImageAndVideo {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImageAndVideo"
+                                                              arguments:@{}];
+  if (@available(iOS 14, *)) {
+    XCTAssertNil([plugin getPickerViewController]);
+  } else {
+    XCTAssertNil([plugin getImagePickerController]);
+  }
+
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+
+  if (@available(iOS 14, *)) {
+    PHPickerViewController *controller = [plugin getPickerViewController];
+    XCTAssertNotNil(controller);
+    // Check if PHPickerView has been configured to selecting multiple items of either type.
+    XCTAssertEqual(controller.configuration.selectionLimit, 0);
+    PHPickerFilter *expectedFilter = [PHPickerFilter anyFilterMatchingSubfilters:@[
+      [PHPickerFilter imagesFilter], [PHPickerFilter videosFilter]
+    ]];
+    XCTAssertEqualObjects(controller.configuration.filter, expectedFilter);
+  } else {
+    UIImagePickerController *controller = [plugin getImagePickerController];
+    XCTAssertNotNil(controller);
+    // Check if UIImagePickerView has been configured to selecting an item of either type.
+    NSArray<NSString *> *expectedMediaTypes = @[
+      (NSString *)kUTTypeImage,
+      (NSString *)kUTTypeMovie,
+    ];
+    XCTAssertEqualObjects(controller.mediaTypes, expectedMediaTypes);
+  }
 }
 
 @end

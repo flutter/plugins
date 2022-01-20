@@ -52,6 +52,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return _imagePickerController;
 }
 
+- (PHPickerViewController *)getPickerViewController API_AVAILABLE(ios(14)) {
+  return _pickerViewController;
+}
+
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window {
   UIWindow *windowToUse = window;
   if (windowToUse == nil) {
@@ -148,8 +152,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   _imagePickerController.delegate = self;
   _imagePickerController.mediaTypes = @[
-    (NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie,
-    (NSString *)kUTTypeVideo, (NSString *)kUTTypeMPEG4
+    (NSString *)kUTTypeImage,
+    (NSString *)kUTTypeMovie,
   ];
   _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
   self.maxImagesAllowed = maxItemsAllowed;
@@ -196,9 +200,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self pickImageWithUIImagePicker:1];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
+    self.result = result;
+    _arguments = call.arguments;
     if (@available(iOS 14, *)) {
-      self.result = result;
-      _arguments = call.arguments;
       [self pickImageWithPHPicker:0];
     } else {
       [self pickImageWithUIImagePicker:0];

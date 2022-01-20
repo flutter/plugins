@@ -11,7 +11,6 @@ API_AVAILABLE(ios(14))
 @property(assign, nonatomic) NSNumber *maxHeight;
 @property(assign, nonatomic) NSNumber *maxWidth;
 @property(assign, nonatomic) NSNumber *desiredImageQuality;
-
 @end
 
 typedef void (^GetSavedPath)(NSString *);
@@ -82,8 +81,7 @@ typedef void (^GetSavedPath)(NSString *);
                           NSError *_Nullable error) {
         if ([data isKindOfClass:[UIImage class]]) {
           __block UIImage *localImage = data;
-          PHAsset *originalAsset =
-              [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
+          PHAsset *originalAsset = [self getAssetFromPHPickerResult:self.result];
           if (self.maxWidth != (id)[NSNull null] || self.maxHeight != (id)[NSNull null]) {
             localImage = [FLTImagePickerImageUtil scaledImage:localImage
                                                      maxWidth:self.maxWidth
@@ -94,10 +92,9 @@ typedef void (^GetSavedPath)(NSString *);
           if (!originalAsset) {
             // Image picked without an original asset (e.g. User picked an image without
             // permission).
-            savedPath =
-                [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                                image:localImage
-                                                         imageQuality:self.desiredImageQuality];
+            savedPath = [self saveImageWithPickerInfo:nil
+                                                image:localImage
+                                         imageQuality:self.desiredImageQuality];
             [self completeOperationWithPath:savedPath];
           } else {
             [[PHImageManager defaultManager]
@@ -107,12 +104,12 @@ typedef void (^GetSavedPath)(NSString *);
                                            UIImageOrientation orientation,
                                            NSDictionary *_Nullable info) {
                              // maxWidth and maxHeight are used only for GIF images.
-                             savedPath = [FLTImagePickerPhotoAssetUtil
-                                 saveImageWithOriginalImageData:imageData
-                                                          image:localImage
-                                                       maxWidth:self.maxWidth
-                                                      maxHeight:self.maxHeight
-                                                   imageQuality:self.desiredImageQuality];
+                             savedPath =
+                                 [self saveImageWithOriginalImageData:imageData
+                                                                image:localImage
+                                                             maxWidth:self.maxWidth
+                                                            maxHeight:self.maxHeight
+                                                         imageQuality:self.desiredImageQuality];
                              [self completeOperationWithPath:savedPath];
                            }];
           }
@@ -168,6 +165,42 @@ typedef void (^GetSavedPath)(NSString *);
   } else {
     [self setFinished:YES];
   }
+}
+
+// Wrappers for mocking
+
+- (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {
+  return [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
+}
+
+- (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info
+                                image:(UIImage *)image
+                         imageQuality:(NSNumber *)imageQuality {
+  return [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
+                                                         image:image
+                                                  imageQuality:imageQuality];
+}
+
+- (UIImage *)scaledImage:(UIImage *)image
+                maxWidth:(NSNumber *)maxWidth
+               maxHeight:(NSNumber *)maxHeight
+     isMetadataAvailable:(BOOL)isMetadataAvailable {
+  return [FLTImagePickerImageUtil scaledImage:image
+                                     maxWidth:maxWidth
+                                    maxHeight:maxHeight
+                          isMetadataAvailable:isMetadataAvailable];
+}
+
+- (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
+                                       image:(UIImage *)image
+                                    maxWidth:(NSNumber *)maxWidth
+                                   maxHeight:(NSNumber *)maxHeight
+                                imageQuality:(NSNumber *)imageQuality {
+  return [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:originalImageData
+                                                                image:image
+                                                             maxWidth:maxWidth
+                                                            maxHeight:maxHeight
+                                                         imageQuality:imageQuality];
 }
 
 @end
