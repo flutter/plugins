@@ -1,3 +1,11 @@
+## NEXT
+
+* Fixes an integration test race condition.
+
+## 2.7.1
+
+* Fixes header import for cookie manager to be relative only.
+
 ## 2.7.0
 
 * Adds implementation of the `loadFlutterAsset` method from the platform interface.
