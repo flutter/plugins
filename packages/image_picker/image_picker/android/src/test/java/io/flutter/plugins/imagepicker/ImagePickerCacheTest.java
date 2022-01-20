@@ -7,6 +7,7 @@ package io.flutter.plugins.imagepicker;
 import static io.flutter.plugins.imagepicker.ImagePickerCache.MAP_KEY_IMAGE_QUALITY;
 import static io.flutter.plugins.imagepicker.ImagePickerCache.SHARED_PREFERENCES_NAME;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -111,5 +112,27 @@ public class ImagePickerCacheTest {
     Map<String, Object> resultMapWithDefaultQuality = cache.getCacheMap();
     int defaultImageQuality = (int) resultMapWithDefaultQuality.get(cache.MAP_KEY_IMAGE_QUALITY);
     assertThat(defaultImageQuality, equalTo(100));
+  }
+
+  @Test
+  public void ImageCache_ShouldCacheCorrectType() {
+    ImagePickerCache cache = new ImagePickerCache(mockActivity);
+    Map<String, String> methodToTypeMap =
+        new HashMap<String, String>() {
+          {
+            put(ImagePickerPlugin.METHOD_CALL_IMAGE, "image");
+            put(ImagePickerPlugin.METHOD_CALL_MULTI_IMAGE, "image");
+            put(ImagePickerPlugin.METHOD_CALL_VIDEO, "video");
+            put(ImagePickerPlugin.METHOD_CALL_IMAGE_OR_VIDEO, "imageOrVideo");
+            put(ImagePickerPlugin.METHOD_CALL_MULTI_IMAGE_AND_VIDEO, "imageOrVideo");
+          }
+        };
+    methodToTypeMap
+        .entrySet()
+        .forEach(
+            (entry) -> {
+              cache.saveTypeWithMethodCallName(entry.getKey());
+              assertEquals(entry.getValue(), preferenceStorage.get("flutter_image_picker_type"));
+            });
   }
 }

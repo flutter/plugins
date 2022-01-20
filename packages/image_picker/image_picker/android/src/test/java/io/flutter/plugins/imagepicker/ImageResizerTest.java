@@ -41,8 +41,8 @@ public class ImageResizerTest {
 
   @Test
   public void onResizeImageIfNeeded_WhenQualityIsNull_ShoultNotResize_ReturnTheUnscaledFile() {
-    String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
-    assertThat(outoutFile, equalTo(imageFile.getPath()));
+    String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
+    assertThat(outputFile, equalTo(imageFile.getPath()));
   }
 
   @Test

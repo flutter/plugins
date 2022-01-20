@@ -230,7 +230,7 @@ public class ImagePickerDelegate
             : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
     if (pathList != null) {
       for (String path : pathList) {
-        String mimeType = activity.getContentResolver().getType(Uri.parse(path));
+        String mimeType = fileUtils.getMimeFromUri(activity, Uri.parse(path));
         if (mimeType != null && mimeType.startsWith("image/")) {
           newPathList.add(
               imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
@@ -577,10 +577,14 @@ public class ImagePickerDelegate
 
   private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
+      if (pendingCameraMediaUri == null) {
+        String cachedPath = cache.retrievePendingCameraMediaUriPath();
+        if (cachedPath != null) {
+          pendingCameraMediaUri = Uri.parse(cachedPath);
+        }
+      }
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri != null
-              ? pendingCameraMediaUri
-              : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
+          pendingCameraMediaUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
@@ -596,10 +600,14 @@ public class ImagePickerDelegate
 
   private void handleCaptureVideoResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
+      if (pendingCameraMediaUri == null) {
+        String cachePath = cache.retrievePendingCameraMediaUriPath();
+        if (cachePath != null) {
+          pendingCameraMediaUri = Uri.parse(cachePath);
+        }
+      }
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri != null
-              ? pendingCameraMediaUri
-              : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
+          pendingCameraMediaUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
