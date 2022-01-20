@@ -202,6 +202,95 @@ void main() {
         });
       });
 
+      group('#pickImageOrVideo', () {
+        test('passes the width and height arguments correctly', () async {
+          await picker.pickImageOrVideo();
+          await picker.pickImageOrVideo(
+            maxImageWidth: 10.0,
+          );
+          await picker.pickImageOrVideo(
+            maxImageHeight: 10.0,
+          );
+          await picker.pickImageOrVideo(
+            maxImageWidth: 10.0,
+            maxImageHeight: 20.0,
+          );
+          await picker.pickImageOrVideo(
+            maxImageWidth: 10.0,
+            imageQuality: 70,
+          );
+          await picker.pickImageOrVideo(
+            maxImageHeight: 10.0,
+            imageQuality: 70,
+          );
+          await picker.pickImageOrVideo(
+            maxImageWidth: 10.0,
+            maxImageHeight: 20.0,
+            imageQuality: 70,
+          );
+
+          expect(
+            log,
+            <Matcher>[
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': null,
+              }),
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': null,
+              }),
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': 70,
+              }),
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': 70,
+              }),
+              isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': 70,
+              }),
+            ],
+          );
+        });
+
+        test('does not accept a negative width or height argument', () {
+          expect(
+            picker.pickImageOrVideo(maxImageWidth: -1.0),
+            throwsArgumentError,
+          );
+
+          expect(
+            picker.pickImageOrVideo(maxImageHeight: -1.0),
+            throwsArgumentError,
+          );
+        });
+
+        test('handles a null path response gracefully', () async {
+          channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+
+          expect(await picker.pickImageOrVideo(), isNull);
+          expect(await picker.pickImageOrVideo(), isNull);
+        });
+      });
+
       group('#pickVideo', () {
         test('passes the image source argument correctly', () async {
           await picker.pickVideo(source: ImageSource.camera);
@@ -368,7 +457,7 @@ void main() {
       });
     });
 
-    group('#Multi images', () {
+    group('#Multi image/video', () {
       setUp(() {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
@@ -460,6 +549,102 @@ void main() {
 
           expect(await picker.pickMultiImage(), isNull);
           expect(await picker.pickMultiImage(), isNull);
+        });
+      });
+
+      group('#pickMultiImageAndVideo', () {
+        test('passes the width and height arguments correctly', () async {
+          await picker.pickMultiImageAndVideo();
+          await picker.pickMultiImageAndVideo(
+            maxImageWidth: 10.0,
+          );
+          await picker.pickMultiImageAndVideo(
+            maxImageHeight: 10.0,
+          );
+          await picker.pickMultiImageAndVideo(
+            maxImageWidth: 10.0,
+            maxImageHeight: 20.0,
+          );
+          await picker.pickMultiImageAndVideo(
+            maxImageWidth: 10.0,
+            imageQuality: 70,
+          );
+          await picker.pickMultiImageAndVideo(
+            maxImageHeight: 10.0,
+            imageQuality: 70,
+          );
+          await picker.pickMultiImageAndVideo(
+            maxImageWidth: 10.0,
+            maxImageHeight: 20.0,
+            imageQuality: 70,
+          );
+
+          expect(
+            log,
+            <Matcher>[
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': null,
+                    'maxHeight': null,
+                    'imageQuality': null,
+                  }),
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': 10.0,
+                    'maxHeight': null,
+                    'imageQuality': null,
+                  }),
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': null,
+                    'maxHeight': 10.0,
+                    'imageQuality': null,
+                  }),
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': 10.0,
+                    'maxHeight': 20.0,
+                    'imageQuality': null,
+                  }),
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': 10.0,
+                    'maxHeight': null,
+                    'imageQuality': 70,
+                  }),
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': null,
+                    'maxHeight': 10.0,
+                    'imageQuality': 70,
+                  }),
+              isMethodCall('pickMultiImageAndVideo',
+                  arguments: <String, dynamic>{
+                    'maxWidth': 10.0,
+                    'maxHeight': 20.0,
+                    'imageQuality': 70,
+                  }),
+            ],
+          );
+        });
+
+        test('does not accept a negative width or height argument', () {
+          expect(
+            picker.pickMultiImageAndVideo(maxImageWidth: -1.0),
+            throwsArgumentError,
+          );
+
+          expect(
+            picker.pickMultiImageAndVideo(maxImageHeight: -1.0),
+            throwsArgumentError,
+          );
+        });
+
+        test('handles a null path response gracefully', () async {
+          channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+
+          expect(await picker.pickMultiImageAndVideo(), isNull);
+          expect(await picker.pickMultiImageAndVideo(), isNull);
         });
       });
     });

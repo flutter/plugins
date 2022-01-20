@@ -117,9 +117,9 @@ const int kElementWaitingTime = 30;
 
   // Find the "not picked image text".
   XCUIElement* imageNotPickedText = [self.app.staticTexts
-      elementMatchingPredicate:[NSPredicate
-                                   predicateWithFormat:@"label == %@",
-                                                       @"You have not yet picked an image."]];
+      elementMatchingPredicate:
+          [NSPredicate
+              predicateWithFormat:@"label == %@", @"You have not yet picked an image or video."]];
   if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds",

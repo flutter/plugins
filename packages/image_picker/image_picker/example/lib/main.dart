@@ -64,8 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_fileList == null) {
       return;
     }
-    _fileList = _fileList
-        !.map((file) => XFile(file.path, mimeType: lookupMimeType(file.path)))
+    _fileList = _fileList!
+        .map((file) => XFile(file.path, mimeType: lookupMimeType(file.path)))
         .toList();
   }
 
