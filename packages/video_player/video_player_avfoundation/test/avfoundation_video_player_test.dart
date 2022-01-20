@@ -6,14 +6,14 @@ import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_platform_interface/messages.dart';
-import 'package:video_player_platform_interface/method_channel_video_player.dart';
+import 'package:video_player_avfoundation/src/messages.dart';
+import 'package:video_player_avfoundation/video_player_avfoundation.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-import 'test.dart';
+import 'test_api.dart';
 
 class _ApiLogger implements TestHostVideoPlayerApi {
-  final List<String> log = [];
+  final List<String> log = <String>[];
   TextureMessage? textureMessage;
   CreateMessage? createMessage;
   PositionMessage? positionMessage;
@@ -93,17 +93,8 @@ class _ApiLogger implements TestHostVideoPlayerApi {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  // Store the initial instance before any tests change it.
-  final VideoPlayerPlatform initialInstance = VideoPlayerPlatform.instance;
-
-  group('$VideoPlayerPlatform', () {
-    test('$MethodChannelVideoPlayer() is the default instance', () {
-      expect(initialInstance, isInstanceOf<MethodChannelVideoPlayer>());
-    });
-  });
-
-  group('$MethodChannelVideoPlayer', () {
-    final MethodChannelVideoPlayer player = MethodChannelVideoPlayer();
+  group('$AVFoundationVideoPlayer', () {
+    final AVFoundationVideoPlayer player = AVFoundationVideoPlayer();
     late _ApiLogger log;
 
     setUp(() {
@@ -148,7 +139,7 @@ void main() {
       expect(log.createMessage?.uri, 'someUri');
       expect(log.createMessage?.packageName, null);
       expect(log.createMessage?.formatHint, 'dash');
-      expect(log.createMessage?.httpHeaders, {});
+      expect(log.createMessage?.httpHeaders, <String, String>{});
       expect(textureId, 3);
     });
 
@@ -156,14 +147,15 @@ void main() {
       final int? textureId = await player.create(DataSource(
         sourceType: DataSourceType.network,
         uri: 'someUri',
-        httpHeaders: {'Authorization': 'Bearer token'},
+        httpHeaders: <String, String>{'Authorization': 'Bearer token'},
       ));
       expect(log.log.last, 'create');
       expect(log.createMessage?.asset, null);
       expect(log.createMessage?.uri, 'someUri');
       expect(log.createMessage?.packageName, null);
       expect(log.createMessage?.formatHint, null);
-      expect(log.createMessage?.httpHeaders, {'Authorization': 'Bearer token'});
+      expect(log.createMessage?.httpHeaders,
+          <String, String>{'Authorization': 'Bearer token'});
       expect(textureId, 3);
     });
 
@@ -238,7 +230,7 @@ void main() {
       _ambiguate(ServicesBinding.instance)
           ?.defaultBinaryMessenger
           .setMockMessageHandler(
-        "flutter.io/videoPlayer/videoEvents123",
+        'flutter.io/videoPlayer/videoEvents123',
         (ByteData? message) async {
           final MethodCall methodCall =
               const StandardMethodCodec().decodeMethodCall(message);
@@ -246,7 +238,7 @@ void main() {
             await _ambiguate(ServicesBinding.instance)
                 ?.defaultBinaryMessenger
                 .handlePlatformMessage(
-                    "flutter.io/videoPlayer/videoEvents123",
+                    'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'initialized',
@@ -259,7 +251,7 @@ void main() {
             await _ambiguate(ServicesBinding.instance)
                 ?.defaultBinaryMessenger
                 .handlePlatformMessage(
-                    "flutter.io/videoPlayer/videoEvents123",
+                    'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'completed',
@@ -269,7 +261,7 @@ void main() {
             await _ambiguate(ServicesBinding.instance)
                 ?.defaultBinaryMessenger
                 .handlePlatformMessage(
-                    "flutter.io/videoPlayer/videoEvents123",
+                    'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'bufferingUpdate',
@@ -283,7 +275,7 @@ void main() {
             await _ambiguate(ServicesBinding.instance)
                 ?.defaultBinaryMessenger
                 .handlePlatformMessage(
-                    "flutter.io/videoPlayer/videoEvents123",
+                    'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'bufferingStart',
@@ -293,7 +285,7 @@ void main() {
             await _ambiguate(ServicesBinding.instance)
                 ?.defaultBinaryMessenger
                 .handlePlatformMessage(
-                    "flutter.io/videoPlayer/videoEvents123",
+                    'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'bufferingEnd',

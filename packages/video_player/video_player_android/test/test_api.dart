@@ -8,9 +8,10 @@
 // @dart = 2.12
 import 'dart:async';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_android/src/messages.dart';
 
 abstract class TestHostVideoPlayerApi {
   void initialize();
