@@ -11,6 +11,10 @@ Although key-value storage is easy and convenient to use, it has limitations:
 * Only primitive types can be used: `int`, `double`, `bool`, `string`, and `stringList`.
 * It’s not designed to store a lot of data.
 
+SharedPreferences data is deleted in these situations:
+* on uninstallation of app or
+* on clearing the application data.
+
 ## Usage
 To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
@@ -50,20 +54,16 @@ final action = prefs.getString('action') ?? '';
 final items = prefs.getStringList('items') ?? <String>[];
 ```
 
-#### Remove data
+#### Remove an entry
 ```dart 
 // Remove data from the provided key.
 final success = await prefs.remove('counter');
 ```
 
-#### Clear preferences
+#### Remove all keys and values
 ```dart 
 final success = await prefs.clear();
 ```
-
-SharedPreferences data is also removed:
-* on uninstallation of app or
-* on clearing the application data.
 
 ### Sample Usage
 
