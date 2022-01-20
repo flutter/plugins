@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTThreadSafeMethodChannel.h"
+#import "QueueHelper.h"
 
 @interface FLTThreadSafeMethodChannel ()
 @property(nonatomic, strong) FlutterMethodChannel *channel;
@@ -19,13 +20,9 @@
 }
 
 - (void)invokeMethod:(NSString *)method arguments:(id)arguments {
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.channel invokeMethod:method arguments:arguments];
-    });
-  } else {
+  [QueueHelper ensureToRunOnMainQueue:^{
     [self.channel invokeMethod:method arguments:arguments];
-  }
+  }];
 }
 
 @end

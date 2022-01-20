@@ -16,10 +16,11 @@
   FLTThreadSafeEventChannel *threadSafeEventChannel =
       [[FLTThreadSafeEventChannel alloc] initWithEventChannel:mockEventChannel];
 
-  XCTestExpectation *mainThreadExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"setStreamHandler must be called on the main thread"];
-  XCTestExpectation *mainThreadCompletionExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"setStreamHandler's completion block must be called on the main thread"];
+  XCTestExpectation *mainThreadExpectation =
+      [self expectationWithDescription:@"setStreamHandler must be called on the main thread"];
+  XCTestExpectation *mainThreadCompletionExpectation =
+      [self expectationWithDescription:
+                @"setStreamHandler's completion block must be called on the main thread"];
   OCMStub([mockEventChannel setStreamHandler:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
       [mainThreadExpectation fulfill];
@@ -32,7 +33,7 @@
                                     [mainThreadCompletionExpectation fulfill];
                                   }
                                 }];
-  [self waitForExpectations:@[ mainThreadExpectation, mainThreadCompletionExpectation ] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSetStreamHandler_shouldDispatchToMainThreadIfCalledFromBackgroundThread {
@@ -40,10 +41,11 @@
   FLTThreadSafeEventChannel *threadSafeEventChannel =
       [[FLTThreadSafeEventChannel alloc] initWithEventChannel:mockEventChannel];
 
-  XCTestExpectation *mainThreadExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"setStreamHandler must be called on the main thread"];
-  XCTestExpectation *mainThreadCompletionExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"setStreamHandler's completion block must be called on the main thread"];
+  XCTestExpectation *mainThreadExpectation =
+      [self expectationWithDescription:@"setStreamHandler must be called on the main thread"];
+  XCTestExpectation *mainThreadCompletionExpectation =
+      [self expectationWithDescription:
+                @"setStreamHandler's completion block must be called on the main thread"];
   OCMStub([mockEventChannel setStreamHandler:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
       [mainThreadExpectation fulfill];
@@ -58,11 +60,7 @@
                                     }
                                   }];
   });
-  [self waitForExpectations:@[
-    mainThreadExpectation,
-    mainThreadCompletionExpectation,
-  ]
-                    timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 @end

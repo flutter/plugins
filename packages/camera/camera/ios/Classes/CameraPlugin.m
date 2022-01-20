@@ -21,7 +21,10 @@
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+// The queue on which `eventSink` property should be accessed
 @property(nonatomic, strong) dispatch_queue_t dispatchQueue;
+// `eventSink` property should be accessed on `dispatchQueue`.
+// The block itself should be invoked on the main queue.
 @property FlutterEventSink eventSink;
 @end
 
@@ -623,6 +626,7 @@ NSString *const errorMethod = @"error";
     FlutterEventSink eventSink = _imageStreamHandler.eventSink;
     if (eventSink) {
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      // Must lock base address before accessing the pixel data
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
       size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
@@ -667,6 +671,8 @@ NSString *const errorMethod = @"error";
 
         [planes addObject:planeBuffer];
       }
+      // Before accessing pixel data, we should lock the base address, and unlock it afterwards.
+      // Done accessing the `pixelBuffer` at this point.
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
@@ -1139,7 +1145,7 @@ NSString *const errorMethod = @"error";
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
                                     dispatch_async(self->_dispatchQueue, ^{
-                                      self->_isStreamingImages = YES;
+                                      self.isStreamingImages = YES;
                                     });
                                   }];
   } else {

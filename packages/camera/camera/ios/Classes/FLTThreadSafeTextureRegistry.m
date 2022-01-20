@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTThreadSafeTextureRegistry.h"
+#import "QueueHelper.h"
 
 @interface FLTThreadSafeTextureRegistry ()
 @property(nonatomic, strong) NSObject<FlutterTextureRegistry> *registry;
@@ -20,33 +21,21 @@
 
 - (void)registerTexture:(NSObject<FlutterTexture> *)texture
              completion:(void (^)(int64_t))completion {
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      completion([self.registry registerTexture:texture]);
-    });
-  } else {
+  [QueueHelper ensureToRunOnMainQueue:^{
     completion([self.registry registerTexture:texture]);
-  }
+  }];
 }
 
 - (void)textureFrameAvailable:(int64_t)textureId {
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.registry textureFrameAvailable:textureId];
-    });
-  } else {
+  [QueueHelper ensureToRunOnMainQueue:^{
     [self.registry textureFrameAvailable:textureId];
-  }
+  }];
 }
 
 - (void)unregisterTexture:(int64_t)textureId {
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.registry unregisterTexture:textureId];
-    });
-  } else {
+  [QueueHelper ensureToRunOnMainQueue:^{
     [self.registry unregisterTexture:textureId];
-  }
+  }];
 }
 
 @end

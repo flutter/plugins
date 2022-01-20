@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTThreadSafeEventChannel.h"
+#import "QueueHelper.h"
 
 @interface FLTThreadSafeEventChannel ()
 @property(nonatomic, strong) FlutterEventChannel *channel;
@@ -20,16 +21,10 @@
 
 - (void)setStreamHandler:(NSObject<FlutterStreamHandler> *)handler
               completion:(void (^)(void))completion {
-  void (^block)(void) = ^{
+  [QueueHelper ensureToRunOnMainQueue:^{
     [self.channel setStreamHandler:handler];
     completion();
-  };
-
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), block);
-  } else {
-    block();
-  }
+  }];
 }
 
 @end

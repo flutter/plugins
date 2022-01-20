@@ -16,8 +16,8 @@
   FLTThreadSafeMethodChannel *threadSafeMethodChannel =
       [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:mockMethodChannel];
 
-  XCTestExpectation *mainThreadExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"invokeMethod must be called on the main thread"];
+  XCTestExpectation *mainThreadExpectation =
+      [self expectationWithDescription:@"invokeMethod must be called on the main thread"];
 
   OCMStub([mockMethodChannel invokeMethod:[OCMArg any] arguments:[OCMArg any]])
       .andDo(^(NSInvocation *invocation) {
@@ -27,7 +27,7 @@
       });
 
   [threadSafeMethodChannel invokeMethod:@"foo" arguments:nil];
-  [self waitForExpectations:@[ mainThreadExpectation ] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testInvokeMethod__shouldDispatchToMainThreadIfCalledFromBackgroundThread {
@@ -35,8 +35,8 @@
   FLTThreadSafeMethodChannel *threadSafeMethodChannel =
       [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:mockMethodChannel];
 
-  XCTestExpectation *mainThreadExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"invokeMethod must be called on the main thread"];
+  XCTestExpectation *mainThreadExpectation =
+      [self expectationWithDescription:@"invokeMethod must be called on the main thread"];
 
   OCMStub([mockMethodChannel invokeMethod:[OCMArg any] arguments:[OCMArg any]])
       .andDo(^(NSInvocation *invocation) {
@@ -48,7 +48,7 @@
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     [threadSafeMethodChannel invokeMethod:@"foo" arguments:nil];
   });
-  [self waitForExpectations:@[ mainThreadExpectation ] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 @end

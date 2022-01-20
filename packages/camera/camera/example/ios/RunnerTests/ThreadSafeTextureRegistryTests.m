@@ -17,14 +17,15 @@
   FLTThreadSafeTextureRegistry *threadSafeTextureRegistry =
       [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:mockTextureRegistry];
 
-  XCTestExpectation *registerTextureExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"registerTexture must be called on the main thread"];
-  XCTestExpectation *unregisterTextureExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"unregisterTexture must be called on the main thread"];
-  XCTestExpectation *textureFrameAvailableExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"textureFrameAvailable must be called on the main thread"];
-  XCTestExpectation *registerTextureCompletionExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"registerTexture's completion block must be called on the main thread"];
+  XCTestExpectation *registerTextureExpectation =
+      [self expectationWithDescription:@"registerTexture must be called on the main thread"];
+  XCTestExpectation *unregisterTextureExpectation =
+      [self expectationWithDescription:@"unregisterTexture must be called on the main thread"];
+  XCTestExpectation *textureFrameAvailableExpectation =
+      [self expectationWithDescription:@"textureFrameAvailable must be called on the main thread"];
+  XCTestExpectation *registerTextureCompletionExpectation =
+      [self expectationWithDescription:
+                @"registerTexture's completion block must be called on the main thread"];
 
   OCMStub([mockTextureRegistry registerTexture:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
@@ -53,13 +54,7 @@
                                   }];
   [threadSafeTextureRegistry textureFrameAvailable:0];
   [threadSafeTextureRegistry unregisterTexture:0];
-  [self waitForExpectations:@[
-    registerTextureExpectation,
-    unregisterTextureExpectation,
-    textureFrameAvailableExpectation,
-    registerTextureCompletionExpectation,
-  ]
-                    timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testShouldDispatchToMainThreadIfCalledFromBackgroundThread {
@@ -68,14 +63,15 @@
   FLTThreadSafeTextureRegistry *threadSafeTextureRegistry =
       [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:mockTextureRegistry];
 
-  XCTestExpectation *registerTextureExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"registerTexture must be called on the main thread"];
-  XCTestExpectation *unregisterTextureExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"unregisterTexture must be called on the main thread"];
-  XCTestExpectation *textureFrameAvailableExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"textureFrameAvailable must be called on the main thread"];
-  XCTestExpectation *registerTextureCompletionExpectation = [[XCTestExpectation alloc]
-      initWithDescription:@"registerTexture's completion block must be called on the main thread"];
+  XCTestExpectation *registerTextureExpectation =
+      [self expectationWithDescription:@"registerTexture must be called on the main thread"];
+  XCTestExpectation *unregisterTextureExpectation =
+      [self expectationWithDescription:@"unregisterTexture must be called on the main thread"];
+  XCTestExpectation *textureFrameAvailableExpectation =
+      [self expectationWithDescription:@"textureFrameAvailable must be called on the main thread"];
+  XCTestExpectation *registerTextureCompletionExpectation =
+      [self expectationWithDescription:
+                @"registerTexture's completion block must be called on the main thread"];
 
   OCMStub([mockTextureRegistry registerTexture:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
     if (NSThread.isMainThread) {
@@ -106,13 +102,7 @@
     [threadSafeTextureRegistry textureFrameAvailable:0];
     [threadSafeTextureRegistry unregisterTexture:0];
   });
-  [self waitForExpectations:@[
-    registerTextureExpectation,
-    unregisterTextureExpectation,
-    textureFrameAvailableExpectation,
-    registerTextureCompletionExpectation,
-  ]
-                    timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 @end
