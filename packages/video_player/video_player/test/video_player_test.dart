@@ -280,6 +280,19 @@ void main() {
 
         expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
       });
+
+      test('successful initialize on controller with error clears error',
+          () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        fakeVideoPlayerPlatform.forceInitError = true;
+        await controller.initialize().catchError((dynamic e) {});
+        expect(controller.value.hasError, equals(true));
+        fakeVideoPlayerPlatform.forceInitError = false;
+        await controller.initialize();
+        expect(controller.value.hasError, equals(false));
+      });
     });
 
     test('contentUri', () async {
@@ -721,11 +734,33 @@ void main() {
           'errorDescription: null)');
     });
 
-    test('copyWith()', () {
-      final VideoPlayerValue original = VideoPlayerValue.uninitialized();
-      final VideoPlayerValue exactCopy = original.copyWith();
+    group('copyWith()', () {
+      test('exact copy', () {
+        final VideoPlayerValue original = VideoPlayerValue.uninitialized();
+        final VideoPlayerValue exactCopy = original.copyWith();
 
-      expect(exactCopy.toString(), original.toString());
+        expect(exactCopy.toString(), original.toString());
+      });
+      test('errorDescription is not persisted when copy with null', () {
+        final VideoPlayerValue original = VideoPlayerValue.erroneous('error');
+        final VideoPlayerValue copy = original.copyWith(errorDescription: null);
+
+        expect(copy.errorDescription, null);
+      });
+      test('errorDescription is changed when copy with another error', () {
+        final VideoPlayerValue original = VideoPlayerValue.erroneous('error');
+        final VideoPlayerValue copy =
+            original.copyWith(errorDescription: 'new error');
+
+        expect(copy.errorDescription, 'new error');
+      });
+      test('errorDescription is changed when copy with error', () {
+        final VideoPlayerValue original = VideoPlayerValue.uninitialized();
+        final VideoPlayerValue copy =
+            original.copyWith(errorDescription: 'new error');
+
+        expect(copy.errorDescription, 'new error');
+      });
     });
 
     group('aspectRatio', () {
