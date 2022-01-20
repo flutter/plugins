@@ -53,12 +53,12 @@ final items = prefs.getStringList('items') ?? <String>[];
 #### Remove data
 ```dart 
 // Remove data from the provided key.
-final bool success = await prefs.remove('counter');
+final success = await prefs.remove('counter');
 ```
 
 #### Clear preferences
 ```dart 
-final bool success = await prefs.clear();
+final success = await prefs.clear();
 ```
 
 SharedPreferences data is also removed:
