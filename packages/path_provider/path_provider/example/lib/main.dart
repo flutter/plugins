@@ -138,12 +138,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: const Text('Get Temporary Directory'),
+                    child: const Text(
+                      'Get Temporary Directory',
+                    ),
                     onPressed: _requestTempDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
-                    future: _tempDirectory, builder: _buildDirectory),
+                  future: _tempDirectory,
+                  builder: _buildDirectory,
+                ),
               ],
             ),
             Column(
@@ -151,12 +155,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: const Text('Get Application Documents Directory'),
+                    child: const Text(
+                      'Get Application Documents Directory',
+                    ),
                     onPressed: _requestAppDocumentsDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
-                    future: _appDocumentsDirectory, builder: _buildDirectory),
+                  future: _appDocumentsDirectory,
+                  builder: _buildDirectory,
+                ),
               ],
             ),
             Column(
@@ -164,12 +172,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: const Text('Get Application Support Directory'),
+                    child: const Text(
+                      'Get Application Support Directory',
+                    ),
                     onPressed: _requestAppSupportDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
-                    future: _appSupportDirectory, builder: _buildDirectory),
+                  future: _appSupportDirectory,
+                  builder: _buildDirectory,
+                ),
               ],
             ),
             Column(
@@ -177,15 +189,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text(Platform.isAndroid
-                        ? 'Application Library Directory unavailable'
-                        : 'Get Application Library Directory'),
+                    child: Text(
+                      Platform.isAndroid
+                          ? 'Application Library Directory unavailable'
+                          : 'Get Application Library Directory',
+                    ),
                     onPressed:
                         Platform.isAndroid ? null : _requestAppLibraryDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
-                    future: _appLibraryDirectory, builder: _buildDirectory),
+                  future: _appLibraryDirectory,
+                  builder: _buildDirectory,
+                ),
               ],
             ),
             Column(
@@ -193,17 +209,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text(!Platform.isAndroid
-                        ? 'External storage is unavailable'
-                        : 'Get External Storage Directory'),
+                    child: Text(
+                      !Platform.isAndroid
+                          ? 'External storage is unavailable'
+                          : 'Get External Storage Directory',
+                    ),
                     onPressed: !Platform.isAndroid
                         ? null
                         : _requestExternalStorageDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
-                    future: _externalDocumentsDirectory,
-                    builder: _buildDirectory),
+                  future: _externalDocumentsDirectory,
+                  builder: _buildDirectory,
+                ),
               ],
             ),
             Column(
@@ -211,9 +230,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text(!Platform.isAndroid
-                        ? 'External directories are unavailable'
-                        : 'Get External Storage Directories'),
+                    child: Text(
+                      !Platform.isAndroid
+                          ? 'External directories are unavailable'
+                          : 'Get External Storage Directories',
+                    ),
                     onPressed: !Platform.isAndroid
                         ? null
                         : () {
@@ -234,17 +255,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text(!Platform.isAndroid
-                        ? 'External directories are unavailable'
-                        : 'Get External Cache Directories'),
+                    child: Text(
+                      !Platform.isAndroid
+                          ? 'External directories are unavailable'
+                          : 'Get External Cache Directories',
+                    ),
                     onPressed: !Platform.isAndroid
                         ? null
                         : _requestExternalCacheDirectories,
                   ),
                 ),
                 FutureBuilder<List<Directory>?>(
-                    future: _externalCacheDirectories,
-                    builder: _buildDirectories),
+                  future: _externalCacheDirectories,
+                  builder: _buildDirectories,
+                ),
               ],
             ),
             Column(
@@ -252,16 +276,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text(Platform.isAndroid || Platform.isIOS
-                        ? 'Downloads directory is unavailable'
-                        : 'Get Downloads Directory'),
+                    child: Text(
+                      Platform.isAndroid || Platform.isIOS
+                          ? 'Downloads directory is unavailable'
+                          : 'Get Downloads Directory',
+                    ),
                     onPressed: Platform.isAndroid || Platform.isIOS
                         ? null
                         : _requestDownloadsDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
-                    future: _downloadsDirectory, builder: _buildDirectory),
+                  future: _downloadsDirectory,
+                  builder: _buildDirectory,
+                ),
               ],
             ),
           ],

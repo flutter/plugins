@@ -1,5 +1,6 @@
-## 2.0.8+1
+## 2.0.9
 * Updates documentation on README.md.
+* Update to example application
 
 ## 2.0.8
 
