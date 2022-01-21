@@ -36,7 +36,7 @@ class WebViewCupertinoWidget extends StatefulWidget {
   /// If null, a default configuration is used.
   final web_kit.WebViewConfiguration? configuration;
 
-  /// The handler for constructing [web_kit.WebView]s.
+  /// The handler for constructing [web_kit.WebView]s and calling static methods.
   ///
   /// This should only be changed for testing purposes.
   final WebViewProxy webViewProxy;
