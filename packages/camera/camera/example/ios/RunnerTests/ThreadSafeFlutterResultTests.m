@@ -10,8 +10,7 @@
 
 @implementation ThreadSafeFlutterResultTests
 - (void)testAsyncSendSuccess_ShouldCallResultOnMainThread {
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation* expectation = [self expectationWithDescription:@"Result finished"];
 
   FLTThreadSafeFlutterResult* threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
@@ -23,12 +22,11 @@
     [threadSafeFlutterResult sendSuccess];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSyncSendSuccess_ShouldCallResultOnMainThread {
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation* expectation = [self expectationWithDescription:@"Result finished"];
 
   FLTThreadSafeFlutterResult* threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
@@ -36,12 +34,11 @@
         [expectation fulfill];
       }];
   [threadSafeFlutterResult sendSuccess];
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendNotImplemented_ShouldSendNotImplementedToFlutterResult {
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation* expectation = [self expectationWithDescription:@"Result finished"];
 
   FLTThreadSafeFlutterResult* threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
@@ -53,15 +50,14 @@
     [threadSafeFlutterResult sendNotImplemented];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendErrorDetails_ShouldSendErrorToFlutterResult {
   NSString* errorCode = @"errorCode";
   NSString* errorMessage = @"message";
   NSString* errorDetails = @"error details";
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation* expectation = [self expectationWithDescription:@"Result finished"];
 
   FLTThreadSafeFlutterResult* threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
@@ -77,13 +73,12 @@
     [threadSafeFlutterResult sendErrorWithCode:errorCode message:errorMessage details:errorDetails];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendNSError_ShouldSendErrorToFlutterResult {
   NSError* originalError = [[NSError alloc] initWithDomain:NSURLErrorDomain code:404 userInfo:nil];
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation* expectation = [self expectationWithDescription:@"Result finished"];
 
   FLTThreadSafeFlutterResult* threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
@@ -99,13 +94,12 @@
     [threadSafeFlutterResult sendError:originalError];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendResult_ShouldSendResultToFlutterResult {
   NSString* resultData = @"resultData";
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation* expectation = [self expectationWithDescription:@"Result finished"];
 
   FLTThreadSafeFlutterResult* threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
@@ -117,6 +111,6 @@
     [threadSafeFlutterResult sendSuccessWithData:resultData];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 @end

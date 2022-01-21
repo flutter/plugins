@@ -24,6 +24,10 @@ class ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin extends Mock
     with MockPlatformInterfaceMixin
     implements SamplePluginPlatform {}
 
+class ImplementsSamplePluginPlatformUsingFakePlatformInterfaceMixin extends Fake
+    with MockPlatformInterfaceMixin
+    implements SamplePluginPlatform {}
+
 class ExtendsSamplePluginPlatform extends SamplePluginPlatform {}
 
 class ConstTokenPluginPlatform extends PlatformInterface {
@@ -59,6 +63,29 @@ class ImplementsVerifyTokenPluginPlatformUsingMockPlatformInterfaceMixin
 
 class ExtendsVerifyTokenPluginPlatform extends VerifyTokenPluginPlatform {}
 
+class ConstVerifyTokenPluginPlatform extends PlatformInterface {
+  ConstVerifyTokenPluginPlatform() : super(token: _token);
+
+  static const Object _token = Object(); // invalid
+
+  static set instance(ConstVerifyTokenPluginPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+  }
+}
+
+class ImplementsConstVerifyTokenPluginPlatform extends PlatformInterface
+    implements ConstVerifyTokenPluginPlatform {
+  ImplementsConstVerifyTokenPluginPlatform() : super(token: const Object());
+}
+
+// Ensures that `PlatformInterface` has no instance methods. Adding an
+// instance method is discouraged and may be a breaking change if it
+// conflicts with instance methods in subclasses.
+class StaticMethodsOnlyPlatformInterfaceTest implements PlatformInterface {}
+
+class StaticMethodsOnlyMockPlatformInterfaceMixinTest
+    implements MockPlatformInterfaceMixin {}
+
 void main() {
   group('`verify`', () {
     test('prevents implementation with `implements`', () {
@@ -71,6 +98,12 @@ void main() {
       final SamplePluginPlatform mock =
           ImplementsSamplePluginPlatformUsingMockPlatformInterfaceMixin();
       SamplePluginPlatform.instance = mock;
+    });
+
+    test('allows faking with `implements`', () {
+      final SamplePluginPlatform fake =
+          ImplementsSamplePluginPlatformUsingFakePlatformInterfaceMixin();
+      SamplePluginPlatform.instance = fake;
     });
 
     test('allows extending', () {
@@ -101,6 +134,11 @@ void main() {
 
     test('allows extending', () {
       VerifyTokenPluginPlatform.instance = ExtendsVerifyTokenPluginPlatform();
+    });
+
+    test('does not prevent `const Object()` token', () {
+      ConstVerifyTokenPluginPlatform.instance =
+          ImplementsConstVerifyTokenPluginPlatform();
     });
   });
 }
