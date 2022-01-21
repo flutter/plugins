@@ -1,6 +1,6 @@
 ## 5.1.0
 
-* Add `allowBackgroundPlayback` to `VideoPlayerOptions`
+* Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
 
 ## 5.0.1
 

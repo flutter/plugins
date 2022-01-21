@@ -97,7 +97,7 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 void main() {
   void verifyAppLifeCycle(
     VideoPlayerController controller, {
-    bool isObserving = true,
+    required bool isObserving,
   }) {
     final wasPlayingBeforePause = controller.value.isPlaying;
     WidgetsBinding.instance!
@@ -211,8 +211,9 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyAppLifeCycle(controller);
+        verifyAppLifeCycle(controller, isObserving: true);
       });
+
       test('asset', () async {
         final VideoPlayerController controller = VideoPlayerController.asset(
           'a.avi',
@@ -808,19 +809,17 @@ void main() {
       expect(controller.videoPlayerOptions!.mixWithOthers, true);
     });
 
-    group('allowBackgroundPlayback', () {
-      [true, false].forEach((allowBackgroundPlayback) {
-        test('is $allowBackgroundPlayback', () async {
-          final VideoPlayerController controller = VideoPlayerController.file(
-            File(''),
-            videoPlayerOptions: VideoPlayerOptions(
-              allowBackgroundPlayback: allowBackgroundPlayback,
-            ),
-          );
-          await controller.initialize();
-          await controller.play();
-          verifyAppLifeCycle(controller, isObserving: !allowBackgroundPlayback);
-        });
+    [true, false].forEach((allowBackgroundPlayback) {
+      test('allowBackgroundPlayback is $allowBackgroundPlayback', () async {
+        final VideoPlayerController controller = VideoPlayerController.file(
+          File(''),
+          videoPlayerOptions: VideoPlayerOptions(
+            allowBackgroundPlayback: allowBackgroundPlayback,
+          ),
+        );
+        await controller.initialize();
+        await controller.play();
+        verifyAppLifeCycle(controller, isObserving: !allowBackgroundPlayback);
       });
     });
   });

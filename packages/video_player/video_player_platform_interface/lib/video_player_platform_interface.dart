@@ -329,9 +329,8 @@ class DurationRange {
 
 /// [VideoPlayerOptions] can be optionally used to set additional player settings
 class VideoPlayerOptions {
-  /// Set this to false to let plugin manage play/pause with app lifecycle changes,
-  /// Set this to true to keep playing video in background, when app goes in background
-  /// The default value is false
+  /// Set this to true to keep playing video in background, when app goes in background.
+  /// The default value is false.
   final bool allowBackgroundPlayback;
 
   /// Set this to true to mix the video players audio with other audio sources.
