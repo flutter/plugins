@@ -3,17 +3,18 @@
 [![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dev/packages/shared_preferences)
 
 Wraps platform-specific persistent storage for simple data
-(NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.). Data may be persisted to disk asynchronously,
+(NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.). 
+Data may be persisted to disk asynchronously,
 and there is no guarantee that writes will be persisted to disk after
 returning, so this plugin must not be used for storing critical data.
 
 Although key-value storage is easy and convenient to use, it has limitations:
-* Only primitive types can be used: `int`, `double`, `bool`, `string`, and `stringList`.
+* Only primitive types can be used: `int`, `double`, `bool`, `String`, and `StringList`.
 * It’s not designed to store a lot of data.
+* No encryption for data.
 
-SharedPreferences data is deleted in these situations:
-* on uninstallation of app or
-* on clearing the application data.
+SharedPreferences data is deleted when the application is uninstalled or the application data 
+is cleared.
 
 ## Usage
 To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
@@ -24,8 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 ```
 
 ### Examples
-Here are small examples that show you how to use the API. 
-Please also take a look at our [example][example] app.
+Here are small examples that show you how to use the API.
 
 #### Write data
 ```dart 
