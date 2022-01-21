@@ -1,6 +1,6 @@
 ## 2.2.14
 
-* Remove KVO observer on AVPlayerItem on iOS.
+* Removes KVO observer on AVPlayerItem on iOS.
 
 ## 2.2.13
 
