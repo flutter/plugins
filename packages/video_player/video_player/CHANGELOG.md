@@ -1,3 +1,7 @@
+## 2.2.14
+
+* Removes KVO observer on AVPlayerItem on iOS.
+
 ## 2.2.13
 
 * Fixes persisting of hasError even after successful initialize.
