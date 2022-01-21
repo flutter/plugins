@@ -104,6 +104,7 @@ Future<String> requestDirectoryPath() async {
 
 ### External Storage Directory
 Path to a directory where the application may access top-level storage.
+This path is an SD-card or built-in storage partition in a device. 
 The current operating system should be determined before issuing this
 function call, as this functionality is **only available on Android**.
 
