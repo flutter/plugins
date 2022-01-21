@@ -1,3 +1,7 @@
+## 2.2.13
+
+* Fixes persisting of hasError even after successful initialize.
+
 ## 2.2.12
 
 * iOS: Validate size only when assets contain video tracks.
