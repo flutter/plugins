@@ -22,23 +22,23 @@
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
 // The queue on which `eventSink` property should be accessed
-@property(nonatomic, strong) dispatch_queue_t dispatchQueue;
-// `eventSink` property should be accessed on `dispatchQueue`.
+@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
+// `eventSink` property should be accessed on `captureSessionQueue`.
 // The block itself should be invoked on the main queue.
 @property FlutterEventSink eventSink;
 @end
 
 @implementation FLTImageStreamHandler
 
-- (instancetype)initWithDispatchQueue:(dispatch_queue_t)dispatchQueue {
+- (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _dispatchQueue = dispatchQueue;
+  _captureSessionQueue = captureSessionQueue;
   return self;
 }
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
-  dispatch_async(self.dispatchQueue, ^{
+  dispatch_async(self.captureSessionQueue, ^{
     self.eventSink = nil;
   });
   return nil;
@@ -46,7 +46,7 @@
 
 - (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
-  dispatch_async(self.dispatchQueue, ^{
+  dispatch_async(self.captureSessionQueue, ^{
     self.eventSink = events;
   });
   return nil;
@@ -360,7 +360,9 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @end
 
 @implementation FLTCam {
-  dispatch_queue_t _dispatchQueue;
+  // All FLTCam's state access and capture session related operations should be on run on this
+  // queue.
+  dispatch_queue_t _captureSessionQueue;
   UIDeviceOrientation _deviceOrientation;
 }
 // Format used for video and image streaming.
@@ -371,7 +373,7 @@ NSString *const errorMethod = @"error";
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
                        orientation:(UIDeviceOrientation)orientation
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
+               captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
@@ -381,7 +383,7 @@ NSString *const errorMethod = @"error";
     *error = e;
   }
   _enableAudio = enableAudio;
-  _dispatchQueue = dispatchQueue;
+  _captureSessionQueue = captureSessionQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FlashModeAuto : FlashModeOff;
@@ -1141,10 +1143,11 @@ NSString *const errorMethod = @"error";
     FLTThreadSafeEventChannel *threadSafeEventChannel =
         [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
-    _imageStreamHandler = [[FLTImageStreamHandler alloc] initWithDispatchQueue:_dispatchQueue];
+    _imageStreamHandler =
+        [[FLTImageStreamHandler alloc] initWithCaptureSessionQueue:_captureSessionQueue];
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
-                                    dispatch_async(self->_dispatchQueue, ^{
+                                    dispatch_async(self->_captureSessionQueue, ^{
                                       self.isStreamingImages = YES;
                                     });
                                   }];
@@ -1268,7 +1271,7 @@ NSString *const errorMethod = @"error";
     _audioWriterInput.expectsMediaDataInRealTime = YES;
 
     [_videoWriter addInput:_audioWriterInput];
-    [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+    [_audioOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
   }
 
   if (_flashMode == FlashModeTorch) {
@@ -1279,7 +1282,7 @@ NSString *const errorMethod = @"error";
 
   [_videoWriter addInput:_videoWriterInput];
 
-  [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
 
   return YES;
 }
@@ -1320,7 +1323,7 @@ NSString *const errorMethod = @"error";
 @end
 
 @implementation CameraPlugin {
-  dispatch_queue_t _dispatchQueue;
+  dispatch_queue_t _captureSessionQueue;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -1382,12 +1385,12 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (_dispatchQueue == nil) {
-    _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
+  if (_captureSessionQueue == nil) {
+    _captureSessionQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
   }
 
   // Invoke the plugin on another dispatch queue to avoid blocking the UI.
-  dispatch_async(_dispatchQueue, ^{
+  dispatch_async(_captureSessionQueue, ^{
     FLTThreadSafeFlutterResult *threadSafeResult =
         [[FLTThreadSafeFlutterResult alloc] initWithResult:result];
 
@@ -1438,7 +1441,7 @@ NSString *const errorMethod = @"error";
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
                                          orientation:[[UIDevice currentDevice] orientation]
-                                       dispatchQueue:_dispatchQueue
+                                 captureSessionQueue:_captureSessionQueue
                                                error:&error];
 
     if (error) {
@@ -1504,7 +1507,7 @@ NSString *const errorMethod = @"error";
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:cameraId];
       [_camera close];
-      _dispatchQueue = nil;
+      _captureSessionQueue = nil;
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       [_camera setUpCaptureSessionForAudio];
