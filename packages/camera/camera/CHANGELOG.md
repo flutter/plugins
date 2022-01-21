@@ -1,3 +1,7 @@
+## NEXT
+
+* Minor internal code cleanup.
+
 ## 0.9.4+6
 
 * Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
