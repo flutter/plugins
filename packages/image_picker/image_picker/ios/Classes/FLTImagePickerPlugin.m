@@ -402,23 +402,27 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
-    NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
+    NSMutableArray *pickResult = [self createNSMutableArrayWithSize:results.count];
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation =
-          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
-                                                            maxHeight:maxHeight
-                                                             maxWidth:maxWidth
-                                                  desiredImageQuality:desiredImageQuality
-                                                       savedPathBlock:^(NSString *savedPath) {
-                                                         pathList[i] = savedPath;
-                                                       }];
+      FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
+               initWithResult:result
+                    maxHeight:maxHeight
+                     maxWidth:maxWidth
+          desiredImageQuality:desiredImageQuality
+               savedPathBlock:^(NSString *savedPath, NSError *error) {
+                 if (error == nil) {
+                   pickResult[i] = savedPath;
+                 } else {
+                   pickResult[i] = error;
+                 }
+               }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self handleSavedPathList:pathList];
+      [self handleSavedPathList:pickResult];
     });
   });
 }
@@ -567,6 +571,19 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   if (pathList) {
     if (![pathList containsObject:[NSNull null]]) {
+      NSMutableArray *formattedPathList = [[NSMutableArray alloc] initWithCapacity:pathList.count];
+      for (int x = 0; x < pathList.count; x++) {
+        if ([pathList[x] isKindOfClass:[NSString class]]) {
+          formattedPathList[x] = @{
+            @"type" : @"path",
+            @"value" : pathList[x],
+          };
+        } else if ([pathList[x] isKindOfClass:[NSError class]]) {
+          formattedPathList[x] =
+              @{@"type" : @"error", @"value" : ((NSError *)pathList[x]).localizedDescription};
+        }
+      }
+
       if ((self.maxImagesAllowed == 1)) {
         self.result(pathList.firstObject);
       } else {

@@ -1,6 +1,6 @@
-## 0.8.4+4
+## 0.8.5
 
-* Support adding WebP for iOS
+* iOS: allow picking images with WebP format.
 
 ## 0.8.4+3
 
