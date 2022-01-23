@@ -8,7 +8,8 @@ repo](https://github.com/flutter/flutter). It contains the source code for
 Flutter first-party plugins (i.e., plugins developed by the core Flutter team).
 Check the `packages` directory for all plugins.
 
-Flutter plugins enable access to platform-specific APIs. For more information about plugins, and how to use them, see
+Flutter plugins enable access to platform-specific APIs. For more information
+about plugins, and how to use them, see
 [https://flutter.dev/platform-plugins/](https://flutter.dev/platform-plugins/).
 
 These plugins are also available on
