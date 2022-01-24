@@ -81,24 +81,18 @@ class CameraImpl : public Camera {
   bool HasDeviceId(std::string &device_id) override {
     return device_id_ == device_id;
   };
-
   bool HasCameraId(int64_t camera_id) override {
     return camera_id_ == camera_id;
   };
-
   bool AddPendingResult(PendingResultType type,
                         std::unique_ptr<MethodResult<>> result) override;
-
   bool HasPendingResultByType(PendingResultType type) override;
-
   camera_windows::CaptureController *GetCaptureController() override {
     return capture_controller_.get();
   };
-
   void InitCamera(flutter::TextureRegistrar *texture_registrar,
                   flutter::BinaryMessenger *messenger, bool enable_audio,
                   ResolutionPreset resolution_preset) override;
-
   void InitCamera(
       std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
       flutter::TextureRegistrar *texture_registrar,

@@ -15,29 +15,21 @@ class CaptureControllerListener {
 
   virtual void OnCreateCaptureEngineSucceeded(int64_t texture_id) = 0;
   virtual void OnCreateCaptureEngineFailed(const std::string& error) = 0;
-
   virtual void OnStartPreviewSucceeded(int32_t width, int32_t height) = 0;
   virtual void OnStartPreviewFailed(const std::string& error) = 0;
-
   virtual void OnResumePreviewSucceeded() = 0;
   virtual void OnResumePreviewFailed(const std::string& error) = 0;
-
   virtual void OnPausePreviewSucceeded() = 0;
   virtual void OnPausePreviewFailed(const std::string& error) = 0;
-
   virtual void OnStartRecordSucceeded() = 0;
   virtual void OnStartRecordFailed(const std::string& error) = 0;
-
   virtual void OnStopRecordSucceeded(const std::string& filepath) = 0;
   virtual void OnStopRecordFailed(const std::string& error) = 0;
-
   virtual void OnTakePictureSucceeded(const std::string& filepath) = 0;
   virtual void OnTakePictureFailed(const std::string& error) = 0;
-
   virtual void OnVideoRecordSucceeded(const std::string& filepath,
                                       int64_t video_duration) = 0;
   virtual void OnVideoRecordFailed(const std::string& error) = 0;
-
   virtual void OnCaptureError(const std::string& error) = 0;
 };
 

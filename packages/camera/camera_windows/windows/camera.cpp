@@ -63,7 +63,7 @@ void CameraImpl::InitCamera(
 }
 
 // Adds pending result to the pending_results map.
-// If result already exists, call result error handler
+// Calls method result error handler, if result already exists.
 bool CameraImpl::AddPendingResult(
     PendingResultType type, std::unique_ptr<flutter::MethodResult<>> result) {
   assert(result);
