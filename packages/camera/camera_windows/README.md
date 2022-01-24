@@ -2,52 +2,54 @@
 
 The windows implementation of [`camera`][camera].
 
-*Note*: This plugin is under development. See [missing implementation](#missing-implementation).
+*Note*: This plugin is under development.
+See [missing implementations and limitations](#limitations-on-the-windows-platform)
 
 ## Usage
 
 ### Depend on the package
 
-This package is not an [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin) implementation of the [`camera`][camera] plugin yet, so you'll need to 
-[add it explicitly](https://pub.dev/packages/camera_windows/install)
+This package is not an [endorsed][endorsed-federated-plugin] 
+implementation of the [`camera`][camera] plugin, so you'll need to
+[add it explicitly][install]
 
-## Example
-
-Find the example in the [camera windows package](https://pub.dev/packages/camera_windows#example).
-
-## Limitations on the windows platform
+## Limitations on the Windows platform
 
 ### Device orientation
 
-The device orientation is not detected for cameras yet. See [missing implementation](#missing-implementation)
+The device orientation is not detected for cameras.
 
-- `CameraPlatform.onDeviceOrientationChanged` stream returns always one item: `DeviceOrientation.landscapeRight`
+- `CameraPlatform.onDeviceOrientationChanged` stream always
+returns the following value: `DeviceOrientation.landscapeRight`
 
 ### Taking a picture
 
 Captured pictures are saved to default `Pictures` folder.
 This folder cannot be changed at the moment.
 
-### Video recording 
+### Video recording
 
 Captures videos are saved to default `Videos` folder.
 This folder cannot be changed at the moment.
 
-Recording video do not work if preview is not started.
+Video recording does not work if preview is not started.
+If preview is not drawn on the screen it is recommended to pause preview
+to avoid unnecessary processing of the textures while recording.
 
-A video is recorded in  following video MIME type: `video/mp4`
+Pausing and resuming the video recording is not supported.
 
-Pausing and resuming the video is not supported at the moment.
+### Other limitations
 
-## Missing implementation
+The windows implementation of [`camera`][camera]
+is missing the following features:
 
-The windows implementation of [`camera`][camera] is missing the following features:
 - Exposure mode, point and offset
 - Focus mode and point
-- Sensor orientation
 - Image format group
 - Streaming of frames
-- Video record pause and resume
 
 <!-- Links -->
+
 [camera]: https://pub.dev/packages/camera
+[endorsed-federated-plugin]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
+[install]: https://pub.dev/packages/camera_windows/install
