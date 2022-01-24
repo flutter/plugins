@@ -91,7 +91,7 @@ std::unique_ptr<flutter::MethodResult<>> CameraImpl::GetPendingResultByType(
 
 bool CameraImpl::HasPendingResultByType(PendingResultType type) {
   if (pending_results_.empty()) {
-    return nullptr;
+    return false;
   }
   auto it = pending_results_.find(type);
   if (it == pending_results_.end()) {
