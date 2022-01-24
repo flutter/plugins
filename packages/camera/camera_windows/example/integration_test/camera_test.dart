@@ -9,10 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
+// Note that these integration tests do not currently cover
+// all features and code paths, as they can only be tested if
+// one or more cameras are available in the test environment.
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
-  // TODO(jokerttu): write rest of the integration tests after camera support is available on windows test framework or native plugin code is mockable
 
   group('initializeCamera', () {
     testWidgets('throws exception if camera is not created',
