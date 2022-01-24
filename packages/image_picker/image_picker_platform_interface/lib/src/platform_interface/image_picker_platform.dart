@@ -146,7 +146,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('retrieveLostData() has not been implemented.');
   }
 
-  /// This method is deprecated in favor of [getImageFromSource] and will be removed in a future update
+  /// This method is deprecated in favor of [getImageFromSource] and will be removed in a future update.
   ///
   /// Returns an [XFile] with the image that was picked.
   ///

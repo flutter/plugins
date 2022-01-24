@@ -197,6 +197,26 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool forceFullMetadata = true,
+  }) async {
+    String? path = await _getImagePath(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+      preferredCameraDevice: preferredCameraDevice,
+      forceFullMetadata: forceFullMetadata,
+    );
+    return path != null ? XFile(path) : null;
+  }
+
+  @override
   Future<List<XFile>?> getMultiImage({
     double? maxWidth,
     double? maxHeight,
@@ -271,25 +291,5 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       type: retrieveType,
       files: pickedFileList,
     );
-  }
-
-  @override
-  Future<XFile?> getImageFromSource({
-    required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool forceFullMetadata = true,
-  }) async {
-    String? path = await _getImagePath(
-      source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
-      forceFullMetadata: forceFullMetadata,
-    );
-    return path != null ? XFile(path) : null;
   }
 }

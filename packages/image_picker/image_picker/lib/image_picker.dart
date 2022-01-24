@@ -191,12 +191,9 @@ class ImagePicker {
   /// the front or rear camera should be opened, this function is not guaranteed
   /// to work on an Android device.
   ///
-  /// Use `forceFullMetadata` (defaults to `true`) to control, how much additional information the plugin tries to get on iOS.
-  /// If `forceFullMetadata` is set to `true`, the plugin tries to get the full image metadata which may require
-  /// extra permission requests.
-  /// If `forceFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces permission requests
-  /// from the iOS platform (it won’t ask for the `Photo Library Usage` permission).
-  ///
+  /// Use `requestFullMetadata` (defaults to `true`) to control how much additional information the plugin tries to get on iOS.
+  /// If `requestFullMetadata` is set to `true`, the plugin tries to get the full image metadata which may require
+  /// extra permission requests on some platforms, such as `Photo Library Usage` permission on iOS .
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.

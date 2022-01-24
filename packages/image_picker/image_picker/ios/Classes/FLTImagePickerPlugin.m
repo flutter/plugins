@@ -97,7 +97,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   self.maxImagesAllowed = maxImagesAllowed;
 
-  [self checkPhotoAuthorizationForAccessLevel];
+  BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
+  if (usePhaAsset) {
+    [self checkPhotoAuthorizationForAccessLevel];
+  } else {
+    [self showPhotoLibrary:PHPickerClassType];
+  }
 }
 
 - (void)pickImageWithUIImagePicker {
@@ -107,6 +112,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
   int imageSource = [[_arguments objectForKey:@"source"] intValue];
+  BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
 
   self.maxImagesAllowed = 1;
 
@@ -115,7 +121,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self checkCameraAuthorization];
       break;
     case SOURCE_GALLERY:
-      [self checkPhotoAuthorization];
+      if (usePhaAsset) {
+        [self checkPhotoAuthorization];
+      } else {
+        [self showPhotoLibrary:UIImagePickerClassType];
+      }
       break;
     default:
       self.result([FlutterError errorWithCode:@"invalid_source"
@@ -132,13 +142,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                     details:nil]);
     self.result = nil;
   }
+  BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
 
   if ([@"pickImage" isEqualToString:call.method]) {
     self.result = result;
     _arguments = call.arguments;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
-    if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
+    if (usePhaAsset && imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
         [self pickImageWithPHPicker:1];
@@ -181,6 +192,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
+        if (usePhaAsset) {
+          [self checkPhotoAuthorization];
+        } else {
+          [self showPhotoLibrary:UIImagePickerClassType];
+        }
         [self checkPhotoAuthorization];
         break;
       default:
@@ -484,8 +500,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
+    BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
 
-    PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    PHAsset *originalAsset;
+    if(usePhaAsset) {
+      PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    }
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
       image = [FLTImagePickerImageUtil scaledImage:image

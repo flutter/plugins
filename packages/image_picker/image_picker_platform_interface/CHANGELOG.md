@@ -1,7 +1,7 @@
 ## 2.5.0
 
-* Re-adding `forceFullMetadata` option, but as a parameter of a new `pickImageFromSource` 
-  method (non-breaking change approach).
+* Re-adds `forceFullMetadata` option, but as a parameter of a new `pickImageFromSource` 
+  method.
 
 ## 2.4.3
 
