@@ -215,7 +215,7 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
     wchar_t *audio_device_id;
     UINT32 audio_device_id_size;
 
-    // Use first audio device
+    // Use first audio device.
     hr = devices[0]->GetAllocatedString(
         MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ENDPOINT_ID, &audio_device_id,
         &audio_device_id_size);
@@ -279,10 +279,7 @@ HRESULT CaptureControllerImpl::CreateVideoCaptureSourceForDevice(
 }
 
 // Create DX11 Device and D3D Manager
-// TODO: If DX12 device can be used with flutter:
-//       Separate CreateD3DManagerWithDX12Device functionality
-//       can be written if needed
-// TODO: Should shared ANGLE device be used?
+// TODO: Use existing ANGLE device
 HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
   HRESULT hr = S_OK;
   hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
@@ -486,6 +483,7 @@ CaptureControllerImpl::ConvertPixelBufferForFlutter(size_t target_width,
       dst[i].a = 255;
     }
 
+    // TODO: add release_callback and clear dest_buffer after each frame.
     this->flutter_desktop_pixel_buffer_.buffer = dest_buffer_.get();
     this->flutter_desktop_pixel_buffer_.width = this->preview_frame_width_;
     this->flutter_desktop_pixel_buffer_.height = this->preview_frame_height_;
@@ -509,7 +507,7 @@ void CaptureControllerImpl::TakePicture(const std::string filepath) {
   HRESULT hr = InitPhotoSink(filepath);
 
   if (SUCCEEDED(hr)) {
-    // Request new photo
+    // Request new photo.
     pending_picture_path_ = filepath;
     pending_image_capture_ = true;
     hr = capture_engine_->TakePhoto();
@@ -542,7 +540,7 @@ uint32_t CaptureControllerImpl::GetMaxPreviewHeight() {
       break;
     case RESOLUTION_PRESET_AUTO:
     default:
-      // no limit
+      // no limit.
       return 0xffffffff;
       break;
   }
@@ -560,9 +558,9 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
     ComPtr<IMFMediaType> media_type;
     uint32_t max_height = GetMaxPreviewHeight();
 
-    // Loop native media types
+    // Loop native media types.
     for (int i = 0;; i++) {
-      // Release media type if exists from previous loop;
+      // Release media type if exists from previous loop.
       media_type = nullptr;
 
       if (FAILED(source->GetAvailableDeviceMediaType(
@@ -576,7 +574,7 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
       uint32_t frame_height;
       if (SUCCEEDED(MFGetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
                                        &frame_width, &frame_height))) {
-        // Update media type for photo and record capture
+        // Update media type for photo and record capture.
         if (capture_frame_width_ < frame_width ||
             capture_frame_height_ < frame_height) {
           base_capture_media_type_ = media_type;
@@ -585,7 +583,7 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
           capture_frame_height_ = frame_height;
         }
 
-        // Update media type for preview
+        // Update media type for preview.
         if (frame_height <= max_height &&
             (preview_frame_width_ < frame_width ||
              preview_frame_height_ < frame_height)) {

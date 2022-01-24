@@ -39,25 +39,25 @@ struct MFVideoFormatRGB32Pixel {
 };
 
 enum ResolutionPreset {
-  /// AUTO
+  // AUTO
   RESOLUTION_PRESET_AUTO,
 
-  /// 240p (320x240)
+  // 240p (320x240)
   RESOLUTION_PRESET_LOW,
 
-  /// 480p (720x480)
+  // 480p (720x480)
   RESOLUTION_PRESET_MEDIUM,
 
-  /// 720p (1280x720)
+  // 720p (1280x720)
   RESOLUTION_PRESET_HIGH,
 
-  /// 1080p (1920x1080)
+  // 1080p (1920x1080)
   RESOLUTION_PRESET_VERY_HIGH,
 
-  /// 2160p (4096x2160)
+  // 2160p (4096x2160)
   RESOLUTION_PRESET_ULTRA_HIGH,
 
-  /// The highest resolution available.
+  // The highest resolution available.
   RESOLUTION_PRESET_MAX,
 };
 
@@ -132,8 +132,8 @@ class CaptureControllerImpl : public CaptureController,
   void StopRecord() override;
   void TakePicture(const std::string filepath) override;
 
-  // Handlers for CaptureEngineListener events
-  // From CaptureEngineObserver
+  // Handlers for CaptureEngineListener events.
+  // From CaptureEngineObserver.
   bool IsReadyForSample() override {
     return initialized_ && previewing_ && !preview_paused_;
   }
@@ -144,17 +144,17 @@ class CaptureControllerImpl : public CaptureController,
   void OnBufferUpdated() override;
   void UpdateCaptureTime(uint64_t capture_time) override;
 
-  // Sets capture engine, for mocking purposes
+  // Sets capture engine, for mocking purposes.
   void SetCaptureEngine(IMFCaptureEngine* capture_engine) {
     capture_engine_ = capture_engine;
   };
 
-  // Sets video source, for mocking purposes
+  // Sets video source, for mocking purposes.
   void SetVideoSource(IMFMediaSource* video_source) {
     video_source_ = video_source;
   };
 
-  // Sets audio source, for mocking purposes
+  // Sets audio source, for mocking purposes.
   void SetAudioSource(IMFMediaSource* audio_source) {
     audio_source_ = audio_source;
   };
@@ -175,7 +175,6 @@ class CaptureControllerImpl : public CaptureController,
 
   ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;
   ComPtr<ID3D11Device> dx11_device_;
-  // ID3D12Device* dx12_device_ = nullptr;
   UINT dx_device_reset_token_ = 0;
 
   // Sources
@@ -187,12 +186,11 @@ class CaptureControllerImpl : public CaptureController,
   flutter::TextureRegistrar* texture_registrar_ = nullptr;
   std::unique_ptr<flutter::TextureVariant> texture_;
 
-  // TODO: add release_callback and clear buffer after each frame
   FlutterDesktopPixelBuffer flutter_desktop_pixel_buffer_ = {};
   uint32_t source_buffer_size_ = 0;
   std::unique_ptr<uint8_t[]> source_buffer_data_ = nullptr;
   std::unique_ptr<uint8_t[]> dest_buffer_ = nullptr;
-  uint32_t bytes_per_pixel_ = 4;  // MFVideoFormat_RGB32
+  uint32_t bytes_per_pixel_ = 4;
 
   // Preview
   bool preview_paused_ = false;

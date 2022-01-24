@@ -60,7 +60,7 @@ class CameraImpl : public Camera {
   CameraImpl(const CameraImpl &) = delete;
   CameraImpl &operator=(const CameraImpl &) = delete;
 
-  // From CaptureControllerListener
+  // From CaptureControllerListener.
   void OnCreateCaptureEngineSucceeded(int64_t texture_id) override;
   void OnCreateCaptureEngineFailed(const std::string &error) override;
   void OnStartPreviewSucceeded(int32_t width, int32_t height) override;
@@ -80,8 +80,7 @@ class CameraImpl : public Camera {
   void OnVideoRecordFailed(const std::string &error) override;
   void OnCaptureError(const std::string &error) override;
 
-  // From Camera
-
+  // From Camera.
   bool HasDeviceId(std::string &device_id) override {
     return device_id_ == device_id;
   };
@@ -115,7 +114,7 @@ class CameraImpl : public Camera {
   int64_t camera_id_;
   std::string device_id_;
 
-  // Pending results
+  // Pending results.
   std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
   std::unique_ptr<MethodResult<>> GetPendingResultByType(
       PendingResultType type);

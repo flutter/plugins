@@ -275,7 +275,7 @@ void CameraPlugin::AvailableCamerasMethodHandler(
   UINT32 count = 0;
   if (!this->EnumerateVideoCaptureDeviceSources(&devices, &count)) {
     result->Error("System error", "Failed to get available cameras");
-    // No need to free devices here, cos allocation failed
+    // No need to free devices here, cos allocation failed.
     return;
   }
 
@@ -285,13 +285,12 @@ void CameraPlugin::AvailableCamerasMethodHandler(
     return;
   }
 
-  // Format found devices to the response
+  // Format found devices to the response.
   EncodableList devices_list;
   for (UINT32 i = 0; i < count; ++i) {
     auto device_info = GetDeviceInfo(devices[i]);
     auto deviceName = GetUniqueDeviceName(std::move(device_info));
 
-    // TODO: get lens facing info and sensor orientation from devices
     devices_list.push_back(EncodableMap({
         {EncodableValue("name"), EncodableValue(deviceName)},
         {EncodableValue("lensFacing"), EncodableValue("front")},
@@ -309,7 +308,7 @@ bool CameraPlugin::EnumerateVideoCaptureDeviceSources(IMFActivate ***devices,
                                                                    count);
 }
 
-// Loops through cameras and returns camera with matching device_id or nullptr
+// Loops through cameras and returns camera with matching device_id or nullptr.
 Camera *CameraPlugin::GetCameraByDeviceId(std::string &device_id) {
   for (auto it = begin(cameras_); it != end(cameras_); ++it) {
     if ((*it)->HasDeviceId(device_id)) {
@@ -319,7 +318,7 @@ Camera *CameraPlugin::GetCameraByDeviceId(std::string &device_id) {
   return nullptr;
 }
 
-// Loops through cameras and returns camera with matching camera_id or nullptr
+// Loops through cameras and returns camera with matching camera_id or nullptr.
 Camera *CameraPlugin::GetCameraByCameraId(int64_t camera_id) {
   for (auto it = begin(cameras_); it != end(cameras_); ++it) {
     if ((*it)->HasCameraId(camera_id)) {
@@ -339,10 +338,10 @@ void CameraPlugin::DisposeCameraByCameraId(int64_t camera_id) {
 }
 
 // Creates and initializes capture controller
-// and MFCaptureEngine for requested device
+// and MFCaptureEngine for requested device.
 void CameraPlugin::CreateMethodHandler(
     const EncodableMap &args, std::unique_ptr<flutter::MethodResult<>> result) {
-  // Parse enableAudio argument
+  // Parse enableAudio argument.
   const auto *enable_audio =
       std::get_if<bool>(ValueOrNull(args, kEnableAudioKey));
   if (!enable_audio) {
@@ -350,7 +349,7 @@ void CameraPlugin::CreateMethodHandler(
                          std::string(kEnableAudioKey) + " argument missing");
   }
 
-  // Parse cameraName argument
+  // Parse cameraName argument.
   const auto *camera_name =
       std::get_if<std::string>(ValueOrNull(args, kCameraNameKey));
   if (!camera_name) {
@@ -374,14 +373,13 @@ void CameraPlugin::CreateMethodHandler(
       camera_factory_->CreateCamera(device_info->device_id);
 
   if (camera->HasPendingResultByType(PendingResultType::CREATE_CAMERA)) {
-    // This should never happen
     return result->Error("camera_error",
                          "Pending camera creation request exists");
   }
 
   if (camera->AddPendingResult(PendingResultType::CREATE_CAMERA,
                                std::move(result))) {
-    // Parse resolutionPreset argument
+    // Parse resolution preset argument.
     const auto *resolution_preset_argument =
         std::get_if<std::string>(ValueOrNull(args, kResolutionPresetKey));
     ResolutionPreset resolution_preset;
@@ -443,8 +441,6 @@ void CameraPlugin::PausePreviewMethodHandler(
 
   if (camera->AddPendingResult(PendingResultType::PAUSE_PREVIEW,
                                std::move(result))) {
-    // Capture engine does not really have pause feature...
-    // so preview is stopped instead.
     auto cc = camera->GetCaptureController();
     assert(cc);
     cc->PausePreview();
@@ -471,8 +467,6 @@ void CameraPlugin::ResumePreviewMethodHandler(
 
   if (camera->AddPendingResult(PendingResultType::RESUME_PREVIEW,
                                std::move(result))) {
-    // Capture engine does not really have pause feature...
-    // so preview is started instead
     auto cc = camera->GetCaptureController();
     assert(cc);
     cc->ResumePreview();
@@ -497,7 +491,6 @@ void CameraPlugin::StartVideoRecordingMethodHandler(
                          "Pending start recording request exists");
   }
 
-  // Get max video duration
   int64_t max_video_duration_ms = -1;
   auto requested_max_video_duration_ms =
       std::get_if<std::int32_t>(ValueOrNull(args, kMaxVideoDurationKey));

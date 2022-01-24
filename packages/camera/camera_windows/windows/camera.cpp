@@ -10,12 +10,12 @@ using flutter::EncodableMap;
 using flutter::EncodableValue;
 
 namespace {
-// Camera channel events
+// Camera channel events.
 const char kCameraMethodChannelBaseName[] = "flutter.io/cameraPlugin/camera";
 const char kVideoRecordedEvent[] = "video_recorded";
 const char kErrorEvent[] = "error";
 
-// Helper function for creating messaging channel for camera
+// Helper function for creating messaging channel for camera.
 std::unique_ptr<flutter::MethodChannel<>> BuildChannelForCamera(
     flutter::BinaryMessenger *messenger, int64_t camera_id) {
   auto channel_name =
@@ -111,8 +111,7 @@ void CameraImpl::SendErrorForPendingResults(const std::string &error_id,
   pending_results_.clear();
 }
 
-// TODO: Create common base handler function for alll success and error cases
-// below From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnCreateCaptureEngineSucceeded(int64_t texture_id) {
   // Use texture id as camera id
   camera_id_ = texture_id;
@@ -124,7 +123,7 @@ void CameraImpl::OnCreateCaptureEngineSucceeded(int64_t texture_id) {
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnCreateCaptureEngineFailed(const std::string &error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::CREATE_CAMERA);
@@ -133,7 +132,7 @@ void CameraImpl::OnCreateCaptureEngineFailed(const std::string &error) {
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnStartPreviewSucceeded(int32_t width, int32_t height) {
   auto pending_result = GetPendingResultByType(PendingResultType::INITIALIZE);
   if (pending_result) {
@@ -144,7 +143,7 @@ void CameraImpl::OnStartPreviewSucceeded(int32_t width, int32_t height) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnStartPreviewFailed(const std::string &error) {
   auto pending_result = GetPendingResultByType(PendingResultType::INITIALIZE);
   if (pending_result) {
@@ -152,7 +151,7 @@ void CameraImpl::OnStartPreviewFailed(const std::string &error) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnResumePreviewSucceeded() {
   auto pending_result =
       GetPendingResultByType(PendingResultType::RESUME_PREVIEW);
@@ -161,7 +160,7 @@ void CameraImpl::OnResumePreviewSucceeded() {
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnResumePreviewFailed(const std::string &error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::RESUME_PREVIEW);
@@ -170,7 +169,7 @@ void CameraImpl::OnResumePreviewFailed(const std::string &error) {
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnPausePreviewSucceeded() {
   auto pending_result =
       GetPendingResultByType(PendingResultType::PAUSE_PREVIEW);
@@ -179,7 +178,7 @@ void CameraImpl::OnPausePreviewSucceeded() {
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnPausePreviewFailed(const std::string &error) {
   auto pending_result =
       GetPendingResultByType(PendingResultType::PAUSE_PREVIEW);
@@ -188,7 +187,7 @@ void CameraImpl::OnPausePreviewFailed(const std::string &error) {
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnStartRecordSucceeded() {
   auto pending_result = GetPendingResultByType(PendingResultType::START_RECORD);
   if (pending_result) {
@@ -196,7 +195,7 @@ void CameraImpl::OnStartRecordSucceeded() {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnStartRecordFailed(const std::string &error) {
   auto pending_result = GetPendingResultByType(PendingResultType::START_RECORD);
   if (pending_result) {
@@ -204,7 +203,7 @@ void CameraImpl::OnStartRecordFailed(const std::string &error) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnStopRecordSucceeded(const std::string &filepath) {
   auto pending_result = GetPendingResultByType(PendingResultType::STOP_RECORD);
   if (pending_result) {
@@ -212,7 +211,7 @@ void CameraImpl::OnStopRecordSucceeded(const std::string &filepath) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnStopRecordFailed(const std::string &error) {
   auto pending_result = GetPendingResultByType(PendingResultType::STOP_RECORD);
   if (pending_result) {
@@ -220,7 +219,7 @@ void CameraImpl::OnStopRecordFailed(const std::string &error) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnTakePictureSucceeded(const std::string &filepath) {
   auto pending_result = GetPendingResultByType(PendingResultType::TAKE_PICTURE);
   if (pending_result) {
@@ -228,7 +227,7 @@ void CameraImpl::OnTakePictureSucceeded(const std::string &filepath) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnTakePictureFailed(const std::string &error) {
   auto pending_take_picture_result =
       GetPendingResultByType(PendingResultType::TAKE_PICTURE);
@@ -237,7 +236,7 @@ void CameraImpl::OnTakePictureFailed(const std::string &error) {
   }
 };
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnVideoRecordSucceeded(const std::string &filepath,
                                         int64_t video_duration) {
   if (messenger_ && camera_id_ >= 0) {
@@ -253,7 +252,7 @@ void CameraImpl::OnVideoRecordSucceeded(const std::string &filepath,
   }
 }
 
-// From CaptureControllerListener
+// From CaptureControllerListener.
 void CameraImpl::OnVideoRecordFailed(const std::string &error){};
 
 void CameraImpl::OnCaptureError(const std::string &error) {

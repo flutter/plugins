@@ -123,7 +123,7 @@ TEST(CameraPlugin, CreateHandlerCallsInitCamera) {
       });
 
   // Move mocked camera to the factory to be passed
-  // for plugin with CreateCamera function
+  // for plugin with CreateCamera function.
   camera_factory_->pending_camera_ = std::move(camera);
 
   EXPECT_CALL(*camera_factory_, CreateCamera(MOCK_DEVICE_ID));
@@ -215,7 +215,7 @@ TEST(CameraPlugin, CreateHandlerErrorOnExistingDeviceId) {
       });
 
   // Move mocked camera to the factory to be passed
-  // for plugin with CreateCamera function
+  // for plugin with CreateCamera function.
   camera_factory_->pending_camera_ = std::move(camera);
 
   EXPECT_CALL(*camera_factory_, CreateCamera(MOCK_DEVICE_ID));
@@ -298,7 +298,7 @@ TEST(CameraPlugin, InitializeHandlerCallStartPreview) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -344,7 +344,7 @@ TEST(CameraPlugin, InitializeHandlerErrorOnInvalidCameraId) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(1);
@@ -412,7 +412,7 @@ TEST(CameraPlugin, TakePictureHandlerCallsTakePictureWithPath) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -458,7 +458,7 @@ TEST(CameraPlugin, TakePictureHandlerErrorOnInvalidCameraId) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(1);
@@ -527,7 +527,7 @@ TEST(CameraPlugin, StartVideoRecordingHandlerCallsStartRecordWithPath) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -599,7 +599,7 @@ TEST(CameraPlugin,
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -646,7 +646,7 @@ TEST(CameraPlugin, StartVideoRecordingHandlerErrorOnInvalidCameraId) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(1);
@@ -714,7 +714,7 @@ TEST(CameraPlugin, StopVideoRecordingHandlerCallsStopRecord) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -760,7 +760,7 @@ TEST(CameraPlugin, StopVideoRecordingHandlerErrorOnInvalidCameraId) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(1);
@@ -829,7 +829,7 @@ TEST(CameraPlugin, ResumePreviewHandlerCallsResumePreview) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -875,7 +875,7 @@ TEST(CameraPlugin, ResumePreviewHandlerErrorOnInvalidCameraId) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(1);
@@ -944,7 +944,7 @@ TEST(CameraPlugin, PausePreviewHandlerCallsPausePreview) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(0);
@@ -990,7 +990,7 @@ TEST(CameraPlugin, PausePreviewHandlerErrorOnInvalidCameraId) {
                           std::make_unique<MockBinaryMessenger>().get(),
                           std::make_unique<MockCameraFactory>());
 
-  // Add mocked camera to plugins camera list
+  // Add mocked camera to plugins camera list.
   plugin.AddCamera(std::move(camera));
 
   EXPECT_CALL(*initialize_result, ErrorInternal).Times(1);

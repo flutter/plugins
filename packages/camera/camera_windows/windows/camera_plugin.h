@@ -39,7 +39,7 @@ class CameraPlugin : public flutter::Plugin,
   CameraPlugin(const CameraPlugin &) = delete;
   CameraPlugin &operator=(const CameraPlugin &) = delete;
 
-  // Called when a method is called on plugin channel;
+  // Called when a method is called on plugin channel.
   void HandleMethodCall(const flutter::MethodCall<> &method_call,
                         std::unique_ptr<MethodResult<>> result);
 
@@ -59,7 +59,6 @@ class CameraPlugin : public flutter::Plugin,
   flutter::BinaryMessenger *messenger_;
 
   // Method handlers
-
   void AvailableCamerasMethodHandler(
       std::unique_ptr<flutter::MethodResult<>> result);
 

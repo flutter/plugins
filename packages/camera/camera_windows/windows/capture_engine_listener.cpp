@@ -58,15 +58,15 @@ HRESULT CaptureEngineListener::OnSample(IMFSample *sample) {
 
   if (this->observer_ && sample) {
     LONGLONG raw_time_stamp = 0;
-    // Receives the presentation time, in 100-nanosecond units
+    // Receives the presentation time, in 100-nanosecond units.
     sample->GetSampleTime(&raw_time_stamp);
 
-    // Report time in microseconds
+    // Report time in microseconds.
     this->observer_->UpdateCaptureTime(
         static_cast<uint64_t>(raw_time_stamp / 10));
 
     if (!this->observer_->IsReadyForSample()) {
-      // No texture target available or not previewing, just return status
+      // No texture target available or not previewing, just return status.
       return hr;
     }
 
