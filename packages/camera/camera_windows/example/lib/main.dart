@@ -12,7 +12,7 @@ void main() {
   runApp(MyApp());
 }
 
-/// App for testing
+// App for testing.
 class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  // Fetches list of available cameras from camera_windows plugin
+  // Fetches list of available cameras from camera_windows plugin.
   Future<void> getAvailableCameras() async {
     String cameraInfo;
     List<CameraDescription> cameras = <CameraDescription>[];
@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> {
       } on CameraException catch (e) {
         debugPrint('Failed to dispose camera: ${e.code}: ${e.description}');
       }
-      //Reset state
+      // Reset state.
       setState(() {
         _initialized = false;
         _cameraId = -1;
