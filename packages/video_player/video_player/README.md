@@ -20,7 +20,7 @@ to determine the right combination of entries for your use case and supported iO
 
 ### Android
 
-If you are using network-based videos, ensure the following permission is present in your
+If you are using network-based videos, ensure that the following permission is present in your
 Android Manifest file, located in `<project root>/android/app/src/main/AndroidManifest.xml`:
 
 ```xml
