@@ -210,7 +210,7 @@ class ImagePicker {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool forceFullMetadata = true,
+    bool requestFullMetadata = true,
   }) {
     return platform.getImageFromSource(
       source: source,
@@ -218,7 +218,7 @@ class ImagePicker {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
       preferredCameraDevice: preferredCameraDevice,
-      forceFullMetadata: forceFullMetadata,
+      requestFullMetadata: requestFullMetadata,
     );
   }
 

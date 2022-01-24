@@ -53,7 +53,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 1,
@@ -61,7 +61,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
             ],
           );
@@ -101,7 +101,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
@@ -109,7 +109,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
@@ -117,7 +117,7 @@ void main() {
                 'maxHeight': 10.0,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
@@ -125,7 +125,7 @@ void main() {
                 'maxHeight': 20.0,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
@@ -133,7 +133,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': 70,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
@@ -141,7 +141,7 @@ void main() {
                 'maxHeight': 10.0,
                 'imageQuality': 70,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
               isMethodCall('pickImage', arguments: <String, dynamic>{
                 'source': 0,
@@ -149,7 +149,7 @@ void main() {
                 'maxHeight': 20.0,
                 'imageQuality': 70,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
             ],
           );
@@ -186,7 +186,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
             ],
           );
@@ -206,7 +206,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 1,
-                'forceFullMetadata': true,
+                'requestFullMetadata': true,
               }),
             ],
           );
@@ -214,7 +214,7 @@ void main() {
 
         test('passes the full metadata argument correctly', () async {
           await picker.pickImage(
-              source: ImageSource.camera, forceFullMetadata: false);
+              source: ImageSource.camera, requestFullMetadata: false);
 
           expect(
             log,
@@ -225,7 +225,7 @@ void main() {
                 'maxHeight': null,
                 'imageQuality': null,
                 'cameraDevice': 0,
-                'forceFullMetadata': false,
+                'requestFullMetadata': false,
               }),
             ],
           );

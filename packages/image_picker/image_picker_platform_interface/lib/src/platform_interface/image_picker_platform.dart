@@ -278,9 +278,9 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// the front or rear camera should be opened, this function is not guaranteed
   /// to work on an Android device.
   ///
-  /// `forceFullMetadata` defaults to `true`, so the plugin tries to get the full image metadata which may require
+  /// `requestFullMetadata` defaults to `true`, so the plugin tries to get the full image metadata which may require
   /// extra permission requests on certain platforms.
-  /// If `forceFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces permission requests
+  /// If `requestFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces permission requests
   /// from the platform (e.g. on iOS the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
@@ -293,7 +293,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool forceFullMetadata = true,
+    bool requestFullMetadata = true,
   }) {
     return getImage(
       source: source,

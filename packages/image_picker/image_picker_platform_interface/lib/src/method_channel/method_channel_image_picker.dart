@@ -85,7 +85,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool forceFullMetadata = true,
+    bool requestFullMetadata = true,
   }) {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
@@ -108,7 +108,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
         'cameraDevice': preferredCameraDevice.index,
-        'forceFullMetadata': forceFullMetadata,
+        'requestFullMetadata': requestFullMetadata,
       },
     );
   }
@@ -203,7 +203,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool forceFullMetadata = true,
+    bool requestFullMetadata = true,
   }) async {
     String? path = await _getImagePath(
       source: source,
@@ -211,7 +211,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
       preferredCameraDevice: preferredCameraDevice,
-      forceFullMetadata: forceFullMetadata,
+      requestFullMetadata: requestFullMetadata,
     );
     return path != null ? XFile(path) : null;
   }
