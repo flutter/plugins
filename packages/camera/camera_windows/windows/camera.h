@@ -100,9 +100,9 @@ class CameraImpl : public Camera {
       ResolutionPreset resolution_preset);
 
  private:
-  std::unique_ptr<CaptureController> capture_controller_;
-  flutter::BinaryMessenger *messenger_;
-  int64_t camera_id_;
+  std::unique_ptr<CaptureController> capture_controller_ = nullptr;
+  flutter::BinaryMessenger *messenger_ = nullptr;
+  int64_t camera_id_ = -1;
   std::string device_id_;
 
   // Pending results.

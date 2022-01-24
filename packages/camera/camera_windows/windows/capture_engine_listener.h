@@ -30,7 +30,7 @@ class CaptureEngineListener : public IMFCaptureEngineOnSampleCallback,
                               public IMFCaptureEngineOnEventCallback {
  public:
   CaptureEngineListener(CaptureEngineObserver* observer)
-      : ref_(0), observer_(observer) {}
+      : observer_(observer) {}
 
   ~CaptureEngineListener(){};
 
@@ -51,7 +51,7 @@ class CaptureEngineListener : public IMFCaptureEngineOnSampleCallback,
 
  private:
   CaptureEngineObserver* observer_;
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
 };
 
 }  // namespace camera_windows

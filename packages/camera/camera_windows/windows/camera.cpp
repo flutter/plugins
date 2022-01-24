@@ -27,11 +27,8 @@ std::unique_ptr<flutter::MethodChannel<>> BuildChannelForCamera(
 }  // namespace
 
 CameraImpl::CameraImpl(const std::string &device_id)
-    : device_id_(device_id),
-      capture_controller_(nullptr),
-      messenger_(nullptr),
-      camera_id_(-1),
-      Camera(device_id) {}
+    : device_id_(device_id), Camera(device_id) {}
+
 CameraImpl::~CameraImpl() {
   capture_controller_ = nullptr;
 

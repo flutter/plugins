@@ -58,7 +58,7 @@ class MockBinaryMessenger : public flutter::BinaryMessenger {
 
 class MockTextureRegistrar : public flutter::TextureRegistrar {
  public:
-  MockTextureRegistrar() : texture_id_(-1), texture_(nullptr) {
+  MockTextureRegistrar() {
     ON_CALL(*this, RegisterTexture)
         .WillByDefault([this](flutter::TextureVariant* texture) -> int64_t {
           EXPECT_TRUE(texture);
@@ -93,8 +93,9 @@ class MockTextureRegistrar : public flutter::TextureRegistrar {
 
   MOCK_METHOD(bool, UnregisterTexture, (int64_t), (override));
   MOCK_METHOD(bool, MarkTextureFrameAvailable, (int64_t), (override));
-  int64_t texture_id_;
-  flutter::TextureVariant* texture_;
+
+  int64_t texture_id_ = -1;
+  flutter::TextureVariant* texture_ = nullptr;
 };
 
 class MockCameraFactory : public CameraFactory {
@@ -266,7 +267,7 @@ class MockCameraPlugin : public CameraPlugin {
 
 class MockCaptureSource : public IMFCaptureSource {
  public:
-  MockCaptureSource() : ref_(0){};
+  MockCaptureSource(){};
   ~MockCaptureSource() = default;
 
   // IUnknown
@@ -327,13 +328,13 @@ class MockCaptureSource : public IMFCaptureSource {
               (UINT32 uifriendlyName, DWORD* pdwActualStreamIndex));
 
  private:
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
 };
 
 // Uses IMFMediaSourceEx which has SetD3DManager method.
 class MockMediaSource : public IMFMediaSourceEx {
  public:
-  MockMediaSource() : ref_(0){};
+  MockMediaSource(){};
   ~MockMediaSource() = default;
 
   // IUnknown
@@ -412,7 +413,7 @@ class MockMediaSource : public IMFMediaSourceEx {
   HRESULT SetD3DManager(IUnknown* manager) { return S_OK; }
 
  private:
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
 };
 
 class MockCapturePreviewSink : public IMFCapturePreviewSink {
@@ -530,7 +531,7 @@ class MockCapturePreviewSink : public IMFCapturePreviewSink {
 
  private:
   ~MockCapturePreviewSink() = default;
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
 };
 
 class MockCaptureRecordSink : public IMFCaptureRecordSink {
@@ -605,7 +606,7 @@ class MockCaptureRecordSink : public IMFCaptureRecordSink {
 
  private:
   ~MockCaptureRecordSink() = default;
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
 };
 
 class MockCapturePhotoSink : public IMFCapturePhotoSink {
@@ -667,7 +668,7 @@ class MockCapturePhotoSink : public IMFCapturePhotoSink {
 
  private:
   ~MockCapturePhotoSink() = default;
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
 };
 
 template <class T>
@@ -826,8 +827,7 @@ class FakeIMFAttributesBase : public T {
 class FakeMediaType : public FakeIMFAttributesBase<IMFMediaType> {
  public:
   FakeMediaType(GUID major_type, GUID sub_type, int width, int height)
-      : ref_(0),
-        major_type_(major_type),
+      : major_type_(major_type),
         sub_type_(sub_type),
         width_(width),
         height_(height){};
@@ -917,7 +917,7 @@ class FakeMediaType : public FakeIMFAttributesBase<IMFMediaType> {
 
  private:
   ~FakeMediaType() = default;
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
   const GUID major_type_;
   const GUID sub_type_;
   const int width_;
@@ -926,7 +926,7 @@ class FakeMediaType : public FakeIMFAttributesBase<IMFMediaType> {
 
 class MockCaptureEngine : public IMFCaptureEngine {
  public:
-  MockCaptureEngine() : ref_(0) {
+  MockCaptureEngine() {
     ON_CALL(*this, Initialize)
         .WillByDefault([this](IMFCaptureEngineOnEventCallback* callback,
                               IMFAttributes* attributes, IUnknown* audioSource,
@@ -996,7 +996,7 @@ class MockCaptureEngine : public IMFCaptureEngine {
   ComPtr<IMFCaptureEngineOnEventCallback> callback_;
   ComPtr<IMFMediaSource> videoSource_;
   ComPtr<IMFMediaSource> audioSource_;
-  volatile ULONG ref_;
+  volatile ULONG ref_ = 0;
   bool initialized_ = false;
 };
 
