@@ -17,7 +17,7 @@ import 'package:stream_transform/stream_transform.dart';
 // An implementation of [CameraPlatform] for Windows.
 class CameraWindows extends CameraPlatform {
   // The method channel used to interact with the native platform.
-  final MethodChannel _channel =
+  final MethodChannel _pluginChannel =
       const MethodChannel('plugins.flutter.io/camera');
 
   // Registers the Windows implementation of CameraPlatform.
@@ -25,7 +25,8 @@ class CameraWindows extends CameraPlatform {
     CameraPlatform.instance = CameraWindows();
   }
 
-  final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
+  // Camera specific method channels to allow comminicating with specific cameras.
+  final Map<int, MethodChannel> _cameraChannels = <int, MethodChannel>{};
 
   // The controller we need to broadcast the different events coming
   // from handleMethodCall.
@@ -46,7 +47,7 @@ class CameraWindows extends CameraPlatform {
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
-      final List<Map<dynamic, dynamic>>? cameras = await _channel
+      final List<Map<dynamic, dynamic>>? cameras = await _pluginChannel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
 
       if (cameras == null) {
@@ -73,7 +74,7 @@ class CameraWindows extends CameraPlatform {
     bool enableAudio = false,
   }) async {
     try {
-      final Map<String, dynamic>? reply = await _channel
+      final Map<String, dynamic>? reply = await _pluginChannel
           .invokeMapMethod<String, dynamic>('create', <String, dynamic>{
         'cameraName': cameraDescription.name,
         'resolutionPreset': resolutionPreset != null
@@ -100,7 +101,7 @@ class CameraWindows extends CameraPlatform {
     final int requestedCameraId = cameraId;
 
     // Creates channel for camera events.
-    _channels.putIfAbsent(requestedCameraId, () {
+    _cameraChannels.putIfAbsent(requestedCameraId, () {
       final MethodChannel channel =
           MethodChannel('flutter.io/cameraPlugin/camera$requestedCameraId');
       channel.setMethodCallHandler(
@@ -111,7 +112,7 @@ class CameraWindows extends CameraPlatform {
 
     final Map<String, double>? reply;
     try {
-      reply = await _channel.invokeMapMethod<String, double>(
+      reply = await _pluginChannel.invokeMapMethod<String, double>(
         'initialize',
         <String, dynamic>{
           'cameraId': requestedCameraId,
@@ -145,14 +146,14 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> dispose(int cameraId) async {
-    if (_channels.containsKey(cameraId)) {
-      final MethodChannel? cameraChannel = _channels[cameraId];
+    if (_cameraChannels.containsKey(cameraId)) {
+      final MethodChannel? cameraChannel = _cameraChannels[cameraId];
       cameraChannel?.setMethodCallHandler(null);
-      _channels.remove(cameraId);
+      _cameraChannels.remove(cameraId);
     }
 
     try {
-      await _channel.invokeMethod<void>(
+      await _pluginChannel.invokeMethod<void>(
         'dispose',
         <String, dynamic>{'cameraId': cameraId},
       );
@@ -213,7 +214,7 @@ class CameraWindows extends CameraPlatform {
   Future<XFile> takePicture(int cameraId) async {
     final String? path;
     try {
-      path = await _channel.invokeMethod<String>(
+      path = await _pluginChannel.invokeMethod<String>(
         'takePicture',
         <String, dynamic>{'cameraId': cameraId},
       );
@@ -234,7 +235,7 @@ class CameraWindows extends CameraPlatform {
   @override
   Future<void> prepareForVideoRecording() async {
     try {
-      _channel.invokeMethod<void>('prepareForVideoRecording');
+      _pluginChannel.invokeMethod<void>('prepareForVideoRecording');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -246,7 +247,7 @@ class CameraWindows extends CameraPlatform {
     Duration? maxVideoDuration,
   }) async {
     try {
-      await _channel.invokeMethod<void>(
+      await _pluginChannel.invokeMethod<void>(
         'startVideoRecording',
         <String, dynamic>{
           'cameraId': cameraId,
@@ -263,7 +264,7 @@ class CameraWindows extends CameraPlatform {
     final String? path;
 
     try {
-      path = await _channel.invokeMethod<String>(
+      path = await _pluginChannel.invokeMethod<String>(
         'stopVideoRecording',
         <String, dynamic>{'cameraId': cameraId},
       );
@@ -372,7 +373,7 @@ class CameraWindows extends CameraPlatform {
   @override
   Future<void> pausePreview(int cameraId) async {
     try {
-      await _channel.invokeMethod<double>(
+      await _pluginChannel.invokeMethod<double>(
         'pausePreview',
         <String, dynamic>{'cameraId': cameraId},
       );
@@ -384,7 +385,7 @@ class CameraWindows extends CameraPlatform {
   @override
   Future<void> resumePreview(int cameraId) async {
     try {
-      await _channel.invokeMethod<double>(
+      await _pluginChannel.invokeMethod<double>(
         'resumePreview',
         <String, dynamic>{'cameraId': cameraId},
       );
