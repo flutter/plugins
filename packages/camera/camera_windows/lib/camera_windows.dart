@@ -14,30 +14,31 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-/// An implementation of [CameraPlatform] that uses method channels.
+// An implementation of [CameraPlatform] for Windows.
 class CameraWindows extends CameraPlatform {
-  /// The method channel used to interact with the native platform.
+  // The method channel used to interact with the native platform.
   final MethodChannel _channel =
       const MethodChannel('plugins.flutter.io/camera');
 
-  /// Registers the Windows implementation of CameraPlatform.
+  // Registers the Windows implementation of CameraPlatform.
   static void registerWith() {
     CameraPlatform.instance = CameraWindows();
   }
 
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
 
-  /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall, specific to camera events.
-  ///
-  /// It is a `broadcast` because multiple controllers will connect to
-  /// different stream views of this Controller.
-  /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
+  // The controller we need to broadcast the different events coming
+  // from handleMethodCall.
+  //
+  // It is a `broadcast` because multiple controllers will connect to
+  // different stream views of this Controller.
+  // This is only exposed for test purposes. It shouldn't be used by clients of
+  // the plugin as it may break or change at any time.
   @visibleForTesting
   final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
 
+  // Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
       cameraEventStreamController.stream
           .where((CameraEvent event) => event.cameraId == cameraId);
@@ -98,7 +99,7 @@ class CameraWindows extends CameraPlatform {
   }) async {
     final int requestedCameraId = cameraId;
 
-    //Create channel for camera events
+    // Creates channel for camera events.
     _channels.putIfAbsent(requestedCameraId, () {
       final MethodChannel channel =
           MethodChannel('flutter.io/cameraPlugin/camera$requestedCameraId');
@@ -167,7 +168,7 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
-    //Windows camera plugin does not support resolution changed events
+    // Windows camera plugin does not support resolution changed events.
     return const Stream<CameraResolutionChangedEvent>.empty();
   }
 
@@ -188,8 +189,8 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    //Windows camera plugin does not support capture orientations
-    //Force device orientation to landscape (by default camera plugin uses portraitUp orientation)
+    // Windows camera plugin does not support capture orientations.
+    // Force device orientation to landscape as by default camera plugin uses portraitUp orientation.
     return Stream<DeviceOrientationChangedEvent>.value(
       const DeviceOrientationChangedEvent(DeviceOrientation.landscapeRight),
     );
@@ -292,12 +293,12 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> setFlashMode(int cameraId, FlashMode mode) async {
-    //Windows camera plugin does not support setFlashMode yet
+    throw UnimplementedError('setFlashMode() is not implemented.');
   }
 
   @override
   Future<void> setExposureMode(int cameraId, ExposureMode mode) async {
-    //Windows camera plugin does not support setExposureMode yet
+    throw UnimplementedError('setExposureMode() is not implemented.');
   }
 
   @override
@@ -305,36 +306,40 @@ class CameraWindows extends CameraPlatform {
     assert(point == null || point.x >= 0 && point.x <= 1);
     assert(point == null || point.y >= 0 && point.y <= 1);
 
-    //Windows camera plugin does not support setExposurePoint yet
+    throw UnimplementedError('setExposurePoint() is not implemented.');
   }
 
   @override
   Future<double> getMinExposureOffset(int cameraId) async {
-    //Windows camera plugin does not support getMinExposureOffset yet
+    // Explosure offset is not supported by camera windows plugin yet.
+    // Default min offset value is returned.
     return 0.0;
   }
 
   @override
   Future<double> getMaxExposureOffset(int cameraId) async {
-    //Windows camera plugin does not support getMaxExposureOffset yet
+    // Explosure offset is not supported by camera windows plugin yet.
+    // Default max offset value is returned.
     return 0.0;
   }
 
   @override
   Future<double> getExposureOffsetStepSize(int cameraId) async {
-    //Windows camera plugin does not support getExposureOffsetStepSize yet
+    // Explosure offset is not supported by camera windows plugin yet.
+    // Default step value is returned.
     return 1.0;
   }
 
   @override
   Future<double> setExposureOffset(int cameraId, double offset) async {
-    //Windows camera plugin does not support setExposureOffset yet
+    // Explosure offset is not supported by camera windows plugin yet.
+    // Default exposure offset value is returned as a response.
     return 0.0;
   }
 
   @override
   Future<void> setFocusMode(int cameraId, FocusMode mode) async {
-    //Windows camera plugin does not support focus modes yet
+    throw UnimplementedError('setFocusMode() is not implemented.');
   }
 
   @override
@@ -342,24 +347,26 @@ class CameraWindows extends CameraPlatform {
     assert(point == null || point.x >= 0 && point.x <= 1);
     assert(point == null || point.y >= 0 && point.y <= 1);
 
-    //Windows camera plugin does not support focus points yet
-  }
-
-  @override
-  Future<double> getMaxZoomLevel(int cameraId) async {
-    //Windows camera plugin does not support zoom levels yet
-    return 1.0;
+    throw UnimplementedError('setFocusPoint() is not implemented.');
   }
 
   @override
   Future<double> getMinZoomLevel(int cameraId) async {
-    //Windows camera plugin does not support zoom levels yet
+    // Zoom level is not supported by camera windows plugin yet.
+    // Default min zoom level value is returned as a response.
+    return 1.0;
+  }
+
+  @override
+  Future<double> getMaxZoomLevel(int cameraId) async {
+    // Zoom level is not supported by camera windows plugin yet.
+    // Default max zoom level value is returned as a response.
     return 1.0;
   }
 
   @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {
-    //Windows camera plugin does not support zoom levels yet
+    throw UnimplementedError('setZoomLevel() is not implemented.');
   }
 
   @override
@@ -391,7 +398,7 @@ class CameraWindows extends CameraPlatform {
     return Texture(textureId: cameraId);
   }
 
-  /// Returns the resolution preset as a String.
+  // Returns the resolution preset as a String.
   String _serializeResolutionPreset(ResolutionPreset resolutionPreset) {
     switch (resolutionPreset) {
       case ResolutionPreset.max:
@@ -411,10 +418,10 @@ class CameraWindows extends CameraPlatform {
     }
   }
 
-  /// Converts messages received from the native platform into camera events.
-  ///
-  /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
+  // Converts messages received from the native platform into camera events.
+  //
+  // This is only exposed for test purposes. It shouldn't be used by clients of
+  // the plugin as it may break or change at any time.
   @visibleForTesting
   Future<dynamic> handleCameraMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
@@ -426,7 +433,7 @@ class CameraWindows extends CameraPlatform {
         );
         break;
       case 'video_recorded':
-        //This is called if maxVideoDuration was given on record start
+        // This is called if maxVideoDuration was given on record start.
         cameraEventStreamController.add(
           VideoRecordedEvent(
             cameraId,
