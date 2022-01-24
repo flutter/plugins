@@ -6,7 +6,6 @@
 #define PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_CAPTURE_CONTROLLER_H_
 
 #include <d3d11.h>
-//#include <d3d12.h>
 #include <flutter/texture_registrar.h>
 #include <mfapi.h>
 #include <mfcaptureengine.h>
