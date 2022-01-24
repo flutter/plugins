@@ -30,7 +30,7 @@ see the documentation for [developing packages](https://flutter.dev/developing-p
 [platform channels](https://flutter.dev/platform-channels/). You can store
 your plugin source code in any GitHub repository (the present repo is only
 intended for plugins developed by the core Flutter team). Once your plugin
-is ready you can [publish](https://flutter.dev/developing-packages/#publish)
+is ready, you can [publish](https://flutter.dev/developing-packages/#publish) it
 to the [pub repository](https://pub.dev/).
 
 If you wish to contribute a change to any of the existing plugins in this repo,
