@@ -15,7 +15,7 @@ First, add `video_player` as a [dependency in your pubspec.yaml file](https://fl
 If you need to access videos using `http` (rather than `https`) URLs, you will need to add
 the appropriate `NSAppTransportSecurity` permissions to your app's _Info.plist_ file, located
 in `<project root>/ios/Runner/Info.plist`. See
-[Apple's documentation](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity?language=objc)
+[Apple's documentation](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity)
 to determine the right combination of entries for your use case and supported iOS versions.
 
 ### Android
