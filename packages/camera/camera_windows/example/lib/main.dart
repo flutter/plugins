@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -165,10 +164,6 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> takePicture() async {
     final XFile _file = await CameraPlatform.instance.takePicture(_cameraId);
-    if (!await launch('file:${_file.path}')) {
-      throw 'Could not open file: "${_file.path}"';
-    }
-
     showInSnackBar('Picture captured to: ${_file.path}');
   }
 
@@ -182,9 +177,7 @@ class _MyAppState extends State<MyApp> {
           setState(() {
             _recordingTimed = false;
           });
-          if (!await launch('file:${event.file.path}')) {
-            throw 'Could not open file: "${event.file.path}"';
-          }
+
           showInSnackBar('Video captured to: ${event.file.path}');
         }
       });
@@ -208,9 +201,6 @@ class _MyAppState extends State<MyApp> {
         final XFile _file =
             await CameraPlatform.instance.stopVideoRecording(_cameraId);
 
-        if (!await launch('file:${_file.path}')) {
-          throw 'Could not open file: "${_file.path}"';
-        }
         showInSnackBar('Video captured to: ${_file.path}');
       }
       setState(() {
