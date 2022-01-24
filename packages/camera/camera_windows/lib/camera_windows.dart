@@ -200,12 +200,12 @@ class CameraWindows extends CameraPlatform {
     int cameraId,
     DeviceOrientation orientation,
   ) async {
-    //Windows camera plugin does not support capture orientation locking
+    throw UnimplementedError('lockCaptureOrientation() is not implemented.');
   }
 
   @override
   Future<void> unlockCaptureOrientation(int cameraId) async {
-    //Windows camera plugin does not support capture orientation locking
+    throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
   }
 
   @override
