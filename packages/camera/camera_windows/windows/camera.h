@@ -38,13 +38,10 @@ class Camera : public CaptureControllerListener {
 
   virtual bool HasDeviceId(std::string &device_id) = 0;
   virtual bool HasCameraId(int64_t camera_id) = 0;
-
   virtual bool AddPendingResult(PendingResultType type,
                                 std::unique_ptr<MethodResult<>> result) = 0;
   virtual bool HasPendingResultByType(PendingResultType type) = 0;
-
   virtual camera_windows::CaptureController *GetCaptureController() = 0;
-
   virtual void InitCamera(flutter::TextureRegistrar *texture_registrar,
                           flutter::BinaryMessenger *messenger,
                           bool enable_audio,

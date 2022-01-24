@@ -16,20 +16,19 @@ import 'package:stream_transform/stream_transform.dart';
 
 // An implementation of [CameraPlatform] for Windows.
 class CameraWindows extends CameraPlatform {
-  // The method channel used to interact with the native platform.
-  final MethodChannel _pluginChannel =
-      const MethodChannel('plugins.flutter.io/camera');
-
   // Registers the Windows implementation of CameraPlatform.
   static void registerWith() {
     CameraPlatform.instance = CameraWindows();
   }
 
+  // The method channel used to interact with the native platform.
+  final MethodChannel _pluginChannel =
+      const MethodChannel('plugins.flutter.io/camera');
+
   // Camera specific method channels to allow comminicating with specific cameras.
   final Map<int, MethodChannel> _cameraChannels = <int, MethodChannel>{};
 
-  // The controller we need to broadcast the different events coming
-  // from handleMethodCall.
+  // The controller that broadcasts events coming from handleCameraMethodCall
   //
   // It is a `broadcast` because multiple controllers will connect to
   // different stream views of this Controller.
@@ -122,26 +121,17 @@ class CameraWindows extends CameraPlatform {
       throw CameraException(e.code, e.message);
     }
 
-    if (reply != null &&
-        reply.containsKey('previewWidth') &&
-        reply.containsKey('previewHeight')) {
-      cameraEventStreamController.add(
-        CameraInitializedEvent(
-          requestedCameraId,
-          reply['previewWidth']!,
-          reply['previewHeight']!,
-          ExposureMode.auto,
-          false,
-          FocusMode.auto,
-          false,
-        ),
-      );
-    } else {
-      throw CameraException(
-        'INITIALIZATION_FAILED',
-        'The platform "$defaultTargetPlatform" did not return valid data when reporting success. The platform should always return a valid data or report an error.',
-      );
-    }
+    cameraEventStreamController.add(
+      CameraInitializedEvent(
+        requestedCameraId,
+        reply!['previewWidth']!,
+        reply['previewHeight']!,
+        ExposureMode.auto,
+        false,
+        FocusMode.auto,
+        false,
+      ),
+    );
   }
 
   @override
@@ -222,14 +212,7 @@ class CameraWindows extends CameraPlatform {
       throw CameraException(e.code, e.message);
     }
 
-    if (path == null) {
-      throw CameraException(
-        'INVALID_PATH',
-        'The platform "$defaultTargetPlatform" did not return a path while reporting success. The platform should always return a valid path or report an error.',
-      );
-    }
-
-    return XFile(path);
+    return XFile(path!);
   }
 
   @override
@@ -272,14 +255,7 @@ class CameraWindows extends CameraPlatform {
       throw CameraException(e.code, e.message);
     }
 
-    if (path == null) {
-      throw CameraException(
-        'INVALID_PATH',
-        'The platform "$defaultTargetPlatform" did not return a path while reporting success. The platform should always return a valid path or report an error.',
-      );
-    }
-
-    return XFile(path);
+    return XFile(path!);
   }
 
   @override

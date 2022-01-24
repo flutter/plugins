@@ -49,7 +49,6 @@ class CameraPlugin : public flutter::Plugin,
   Camera *GetCameraByDeviceId(std::string &device_id);
   Camera *GetCameraByCameraId(int64_t camera_id);
   void DisposeCameraByCameraId(int64_t camera_id);
-
   bool EnumerateVideoCaptureDeviceSources(IMFActivate ***devices,
                                           UINT32 *count) override;
 
@@ -61,28 +60,20 @@ class CameraPlugin : public flutter::Plugin,
   // Method handlers
   void AvailableCamerasMethodHandler(
       std::unique_ptr<flutter::MethodResult<>> result);
-
   void CreateMethodHandler(const EncodableMap &args,
                            std::unique_ptr<MethodResult<>> result);
-
   void InitializeMethodHandler(const EncodableMap &args,
                                std::unique_ptr<MethodResult<>> result);
-
   void TakePictureMethodHandler(const EncodableMap &args,
                                 std::unique_ptr<MethodResult<>> result);
-
   void StartVideoRecordingMethodHandler(const EncodableMap &args,
                                         std::unique_ptr<MethodResult<>> result);
-
   void StopVideoRecordingMethodHandler(const EncodableMap &args,
                                        std::unique_ptr<MethodResult<>> result);
-
   void ResumePreviewMethodHandler(const EncodableMap &args,
                                   std::unique_ptr<MethodResult<>> result);
-
   void PausePreviewMethodHandler(const EncodableMap &args,
                                  std::unique_ptr<MethodResult<>> result);
-
   void DisposeMethodHandler(const EncodableMap &args,
                             std::unique_ptr<MethodResult<>> result);
 };
