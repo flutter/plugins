@@ -282,12 +282,12 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> pauseVideoRecording(int cameraId) async {
-    //Video recording cannot be paused on windows
+    throw UnimplementedError('pauseVideoRecording() is not implemented.');
   }
 
   @override
   Future<void> resumeVideoRecording(int cameraId) async {
-    //Video recording cannot be paused on windows
+    throw UnimplementedError('resumeVideoRecording() is not implemented.');
   }
 
   @override
