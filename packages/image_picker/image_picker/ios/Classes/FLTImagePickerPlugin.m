@@ -97,7 +97,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   self.maxImagesAllowed = maxImagesAllowed;
 
-  BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
+  BOOL usePhaAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
   if (usePhaAsset) {
     [self checkPhotoAuthorizationForAccessLevel];
   } else {
@@ -112,7 +112,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
   int imageSource = [[_arguments objectForKey:@"source"] intValue];
-  BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
+  BOOL usePhaAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
 
   self.maxImagesAllowed = 1;
 
@@ -142,7 +142,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                     details:nil]);
     self.result = nil;
   }
-  BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
+  BOOL usePhaAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
 
   if ([@"pickImage" isEqualToString:call.method]) {
     self.result = result;
@@ -500,7 +500,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-    BOOL usePhaAsset = [[_arguments objectForKey:@"forceFullMetadata"] boolValue];
+    BOOL usePhaAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
 
     PHAsset *originalAsset;
     if(usePhaAsset) {
