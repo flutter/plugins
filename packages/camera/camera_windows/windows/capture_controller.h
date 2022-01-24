@@ -25,14 +25,14 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-struct FlutterDesktop_Pixel {
+struct FlutterDesktopPixel {
   BYTE r = 0;
   BYTE g = 0;
   BYTE b = 0;
   BYTE a = 0;
 };
 
-struct MFVideoFormat_RGB32_Pixel {
+struct MFVideoFormatRGB32Pixel {
   BYTE b = 0;
   BYTE g = 0;
   BYTE r = 0;

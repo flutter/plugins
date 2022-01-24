@@ -475,9 +475,9 @@ CaptureControllerImpl::ConvertPixelBufferForFlutter(size_t target_width,
         this->preview_frame_width_ * this->preview_frame_height_;
     dest_buffer_ = std::make_unique<uint8_t[]>(pixels_total * 4);
 
-    MFVideoFormat_RGB32_Pixel *src =
-        (MFVideoFormat_RGB32_Pixel *)this->source_buffer_data_.get();
-    FlutterDesktop_Pixel *dst = (FlutterDesktop_Pixel *)dest_buffer_.get();
+    MFVideoFormatRGB32Pixel *src =
+        (MFVideoFormatRGB32Pixel *)this->source_buffer_data_.get();
+    FlutterDesktopPixel *dst = (FlutterDesktopPixel *)dest_buffer_.get();
 
     for (uint32_t i = 0; i < pixels_total; i++) {
       dst[i].r = src[i].r;

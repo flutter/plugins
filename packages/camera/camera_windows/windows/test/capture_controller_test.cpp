@@ -232,8 +232,8 @@ TEST(CaptureController, StartPreviewStartsProcessingSamples) {
   uint8_t mock_red_pixel = 0x11;
   uint8_t mock_green_pixel = 0x22;
   uint8_t mock_blue_pixel = 0x33;
-  MFVideoFormat_RGB32_Pixel* mock_source_buffer_data =
-      (MFVideoFormat_RGB32_Pixel*)mock_source_buffer.get();
+  MFVideoFormatRGB32Pixel* mock_source_buffer_data =
+      (MFVideoFormatRGB32Pixel*)mock_source_buffer.get();
 
   for (uint32_t i = 0; i < pixels_total; i++) {
     mock_source_buffer_data[i].r = mock_red_pixel;
@@ -264,8 +264,8 @@ TEST(CaptureController, StartPreviewStartsProcessingSamples) {
         EXPECT_EQ(converted_buffer->height, mock_preview_height);
         EXPECT_EQ(converted_buffer->width, mock_preview_width);
 
-        FlutterDesktop_Pixel* converted_buffer_data =
-            (FlutterDesktop_Pixel*)(converted_buffer->buffer);
+        FlutterDesktopPixel* converted_buffer_data =
+            (FlutterDesktopPixel*)(converted_buffer->buffer);
 
         for (uint32_t i = 0; i < pixels_total; i++) {
           EXPECT_EQ(converted_buffer_data[i].r, mock_red_pixel);
