@@ -503,8 +503,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     BOOL usePhaAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
 
     PHAsset *originalAsset;
-    if(usePhaAsset) {
-      PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    if (usePhaAsset) {
+      originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     }
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
