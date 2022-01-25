@@ -380,7 +380,10 @@ class CameraPlugin extends CameraPlatform {
 
         // Full-screen mode may be required to modify the device orientation.
         // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
-        documentElement.requestFullscreen();
+        // Recent versions of Dart changed requestFullscreen to return a Future instead of void.
+        // This wrapper allows use of both the old and new APIs.
+        dynamic fullScreen() => documentElement.requestFullscreen();
+        await fullScreen();
         await orientation.lock(orientationType.toString());
       } else {
         throw PlatformException(
