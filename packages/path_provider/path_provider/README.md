@@ -10,16 +10,20 @@ Not all methods are supported on all platforms.
 
 To use this plugin, add `path_provider` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
-Add the following import:
+## Example
 ```dart
-import 'package:path_provider/path_provider.dart';
+Directory tempDir = await getTemporaryDirectory();
+String tempPath = tempDir.path;
+
+Directory appDocDir = await getApplicationDocumentsDirectory();
+String appDocPath = appDocDir.path;
 ```
 
 ## Supported platforms and paths
 
-Methods support by platform:
+Directories support by platform:
 
-| Dir | Android | iOS | Linux | macOS | Windows |
+| Directory | Android | iOS | Linux | macOS | Windows |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | Temporary | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Support | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -29,174 +33,6 @@ Methods support by platform:
 | External Cache Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | External Storage Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | Downloads | ❌ | ❌ | ✔️ | ✔️ | ✔️ |
-
-### Temporary Directory
-Path to the temporary directory on the device that is suitable for storing caches of downloaded 
-files.
-
-Example:
-``` dart
-Future<String> requestDirectoryPath() async {
-  try {
-    final Directory directory = await getTemporaryDirectory();
-    final String dirPath = directory.path;
-    return dirPath;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-### Application Support Directory
-Path to a directory where the application may place application support files.
-
-Example:
-``` dart
-Future<String> requestDirectoryPath() async {
-  try {
-    final Directory directory = await getApplicationSupportDirectory();
-    final String dirPath = directory.path;
-    return dirPath;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-### Application Library Directory
-Path to the directory where an application can store persistent files.
-
-On Android, this function throws an `UnsupportedError` as no equivalent
-path exists.
-
-Example:
-``` dart
-Future<String?> requestDirectoryPath() async {
-  try {
-    final Directory? directory = await getLibraryDirectory();
-    final String? dirPath = directory.path;
-    return dirPath;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-### Application Documents Directory 
-Path to a directory where the application can store user-generated documents.
-
-Example:
-``` dart
-Future<String> requestDirectoryPath() async {
-  try {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final String dirPath = directory.path;
-    return dirPath;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-### External Storage Directory
-Path to a directory where the application may access top-level storage.
-This path is typically an SD card or built-in storage partition in a device. 
-The current operating system should be determined before issuing this
-function call, as this functionality is **only available on Android**.
-
-On other than Android platform, this function throws an `UnsupportedError` as no equivalent
-path exists.
-
-Example:
-``` dart
-Future<List<Directory>?> requestDirectories() async {
-  try {
-    final Directory? directory = await getExternalStorageDirectory();
-    final String? dirPath = directory?.path;
-    return dirPath;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-
-### External Cache Directories
-Paths to directories where application-specific external cache data can be
-stored. These paths typically reside on external storage like separate
-partitions or SD cards. Phones may have multiple storage directories
-available.
-
-The current operating system should be determined before issuing this
-function call, as this functionality is **only available on Android**.
-
-On other than Android platform, this function throws an `UnsupportedError` as no equivalent
-path exists.
-
-Example:
-``` dart
-Future<List<Directory>?> requestDirectories() async {
-  try {
-    final List<Directory>? directories = await getExternalCacheDirectories();
-    return directories;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-
-### External Storage Directories
-Paths to directories where application-specific data can be stored.
-These paths typically reside on external storage like separate partitions
-or SD cards. Phones may have multiple storage directories available.
-
-The current operating system should be determined before issuing this
-function call, as this functionality is **only available on Android**.
-
-On other than Android platform, this function throws an `UnsupportedError` as no equivalent
-path exists.
-
-Example:
-``` dart
-Future<List<Directory>?> requestDirectories() async {
-  try {
-    final List<Directory>? directories = 
-        await getExternalStorageDirectories(type: StorageDirectory.pictures);
-    return directories;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
-
-### Downloads Directory
-Path to the directory where downloaded files can be stored.
-This is typically only relevant on desktop operating systems.
-
-On Android and iOS, this function throws an `UnsupportedError` as no equivalent
-path exists.
-
-Example:
-``` dart
-Future<String?> requestDirectoryPath() async {
-  try {
-    final Directory? directory = await getDownloadsDirectory();
-    final String? dirPath = directory?.path;
-    return dirPath;
-  } catch (e) {
-    // HANDLE ERROR
-  }
-  return null;
-}
-```
 
 ## Testing
 
