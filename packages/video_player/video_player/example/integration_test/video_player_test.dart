@@ -272,4 +272,68 @@ void main() {
       skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
     );
   });
+
+  // Audio playback is tested to prevent accidental regression,
+  // but could be removed in the future.
+  group('asset audios', () {
+    setUp(() {
+      _controller = VideoPlayerController.asset('assets/Audio.mp3');
+    });
+
+    testWidgets('can be initialized', (WidgetTester tester) async {
+      await _controller.initialize();
+
+      expect(_controller.value.isInitialized, true);
+      expect(_controller.value.position, const Duration(seconds: 0));
+      expect(_controller.value.isPlaying, false);
+      // Due to the duration calculation accurancy between platforms,
+      // the milliseconds on Web will be a slightly different from natives.
+      // The audio was made with 44100 Hz, 192 Kbps CBR, and 32 bits.
+      expect(
+        _controller.value.duration,
+        Duration(seconds: 5, milliseconds: kIsWeb ? 42 : 41),
+      );
+    });
+
+    testWidgets('can be played', (WidgetTester tester) async {
+      await _controller.initialize();
+      // Mute to allow playing without DOM interaction on Web.
+      // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+      await _controller.setVolume(0);
+
+      await _controller.play();
+      await tester.pumpAndSettle(_playDuration);
+
+      expect(_controller.value.isPlaying, true);
+      expect(
+        _controller.value.position,
+        (Duration position) => position > const Duration(milliseconds: 0),
+      );
+    });
+
+    testWidgets('can seek', (WidgetTester tester) async {
+      await _controller.initialize();
+      await _controller.seekTo(const Duration(seconds: 3));
+
+      expect(_controller.value.position, const Duration(seconds: 3));
+    });
+
+    testWidgets('can be paused', (WidgetTester tester) async {
+      await _controller.initialize();
+      // Mute to allow playing without DOM interaction on Web.
+      // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+      await _controller.setVolume(0);
+
+      // Play for a second, then pause, and then wait a second.
+      await _controller.play();
+      await tester.pumpAndSettle(_playDuration);
+      await _controller.pause();
+      final Duration pausedPosition = _controller.value.position;
+      await tester.pumpAndSettle(_playDuration);
+
+      // Verify that we stopped playing after the pause.
+      expect(_controller.value.isPlaying, false);
+      expect(_controller.value.position, pausedPosition);
+    });
+  });
 }

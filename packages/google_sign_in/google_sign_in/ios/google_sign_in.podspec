@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Enables Google Sign-In in Flutter apps.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/google_sign_in'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/main/packages/google_sign_in'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/google_sign_in' }
