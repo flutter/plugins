@@ -1,7 +1,7 @@
 name: plugin_platform_interface
 description: Reusable base class for platform interfaces of Flutter federated
   plugins, to help enforce best practices.
-repository: https://github.com/flutter/plugins/tree/master/packages/plugin_platform_interface
+repository: https://github.com/flutter/plugins/tree/main/packages/plugin_platform_interface
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+plugin_platform_interface%22
 
 # DO NOT MAKE A BREAKING CHANGE TO THIS PACKAGE
