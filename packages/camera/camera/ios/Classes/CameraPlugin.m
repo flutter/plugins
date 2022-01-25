@@ -10,6 +10,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
+#import "FlashMode.h"
 #import "FLTThreadSafeEventChannel.h"
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
@@ -113,34 +114,6 @@
 }
 @end
 
-// Mirrors FlashMode in flash_mode.dart
-typedef enum {
-  FlashModeOff,
-  FlashModeAuto,
-  FlashModeAlways,
-  FlashModeTorch,
-} FlashMode;
-
-static FlashMode getFlashModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"off"]) {
-    return FlashModeOff;
-  } else if ([mode isEqualToString:@"auto"]) {
-    return FlashModeAuto;
-  } else if ([mode isEqualToString:@"always"]) {
-    return FlashModeAlways;
-  } else if ([mode isEqualToString:@"torch"]) {
-    return FlashModeTorch;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown flash mode %@", mode]
-                                     }];
-    @throw error;
-  }
-}
-
 static OSType getVideoFormatFromString(NSString *videoFormatString) {
   if ([videoFormatString isEqualToString:@"bgra8888"]) {
     return kCVPixelFormatType_32BGRA;
@@ -149,20 +122,6 @@ static OSType getVideoFormatFromString(NSString *videoFormatString) {
   } else {
     NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
     return kCVPixelFormatType_32BGRA;
-  }
-}
-
-static AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
-  switch (mode) {
-    case FlashModeOff:
-      return AVCaptureFlashModeOff;
-    case FlashModeAuto:
-      return AVCaptureFlashModeAuto;
-    case FlashModeAlways:
-      return AVCaptureFlashModeOn;
-    case FlashModeTorch:
-    default:
-      return -1;
   }
 }
 
