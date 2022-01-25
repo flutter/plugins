@@ -1,6 +1,6 @@
 name: path_provider_ios
 description: iOS implementation of the path_provider plugin.
-repository: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_ios
+repository: https://github.com/flutter/plugins/tree/main/packages/path_provider/path_provider_ios
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+path_provider%22
 version: 2.0.7
 
