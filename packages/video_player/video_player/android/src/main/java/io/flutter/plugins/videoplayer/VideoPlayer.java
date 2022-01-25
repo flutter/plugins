@@ -190,26 +190,21 @@ final class VideoPlayer {
               setBuffering(true);
               sendBufferingUpdate();
             } else if (playbackState == Player.STATE_READY) {
-              if (!isInitialized) {
-                isInitialized = true;
-                sendInitialized();
-              }
+              setBuffering(false);
+              isInitialized = true;
+              sendInitialized();
             } else if (playbackState == Player.STATE_ENDED) {
               Map<String, Object> event = new HashMap<>();
               event.put("event", "completed");
               eventSink.success(event);
             }
-
-            if (playbackState != Player.STATE_BUFFERING) {
-              setBuffering(false);
-            }
           }
 
           @Override
           public void onPlayerError(final ExoPlaybackException error) {
-            setBuffering(false);
             if (eventSink != null) {
               eventSink.error("VideoError", "Video player had error " + error, null);
+              exoPlayer.prepare();
             }
           }
         });

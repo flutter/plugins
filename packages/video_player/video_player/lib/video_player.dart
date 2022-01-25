@@ -357,7 +357,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             isInitialized: event.duration != null,
             errorDescription: null,
           );
-          initializingCompleter.complete(null);
+          if (!initializingCompleter.isCompleted) {
+            initializingCompleter.complete(null);
+          }
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
@@ -392,7 +394,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     void errorListener(Object obj) {
       final PlatformException e = obj as PlatformException;
-      value = VideoPlayerValue.erroneous(e.message!);
+      value = value.copyWith(errorDescription: e.message!);
       _timer?.cancel();
       if (!initializingCompleter.isCompleted) {
         initializingCompleter.completeError(obj);
@@ -788,7 +790,7 @@ class _VideoScrubberState extends State<_VideoScrubber> {
         }
         _controllerWasPlaying = controller.value.isPlaying;
         if (_controllerWasPlaying) {
-          controller.pause();
+          //controller.pause();
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
@@ -800,7 +802,7 @@ class _VideoScrubberState extends State<_VideoScrubber> {
       onHorizontalDragEnd: (DragEndDetails details) {
         if (_controllerWasPlaying &&
             controller.value.position != controller.value.duration) {
-          controller.play();
+          //controller.play();
         }
       },
       onTapDown: (TapDownDetails details) {
