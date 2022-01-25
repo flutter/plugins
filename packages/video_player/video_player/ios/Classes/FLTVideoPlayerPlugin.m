@@ -37,17 +37,13 @@
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic) CGAffineTransform preferredTransform;
-@property(nonatomic, readonly) bool disposed;
-@property(nonatomic, readonly) bool isPlaying;
-@property(nonatomic) bool isLooping;
-@property(nonatomic, readonly) bool isInitialized;
+@property(nonatomic, readonly) BOOL disposed;
+@property(nonatomic, readonly) BOOL isPlaying;
+@property(nonatomic) BOOL isLooping;
+@property(nonatomic, readonly) BOOL isInitialized;
 - (instancetype)initWithURL:(NSURL*)url
                frameUpdater:(FLTFrameUpdater*)frameUpdater
                 httpHeaders:(NSDictionary<NSString*, NSString*>*)headers;
-- (void)play;
-- (void)pause;
-- (void)setIsLooping:(bool)isLooping;
-- (void)updatePlayingState;
 @end
 
 static void* timeRangeContext = &timeRangeContext;
@@ -114,7 +110,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 const int64_t TIME_UNSET = -9223372036854775807;
 
-static inline int64_t FLTCMTimeToMillis(CMTime time) {
+NS_INLINE int64_t FLTCMTimeToMillis(CMTime time) {
   // When CMTIME_IS_INDEFINITE return a value that matches TIME_UNSET from ExoPlayer2 on Android.
   // Fixes https://github.com/flutter/flutter/issues/48670
   if (CMTIME_IS_INDEFINITE(time)) return TIME_UNSET;
@@ -122,14 +118,14 @@ static inline int64_t FLTCMTimeToMillis(CMTime time) {
   return time.value * 1000 / time.timescale;
 }
 
-static inline CGFloat radiansToDegrees(CGFloat radians) {
+NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   // Input range [-pi, pi] or [-180, 180]
   CGFloat degrees = GLKMathRadiansToDegrees((float)radians);
   if (degrees < 0) {
     // Convert -90 to 270 and -180 to 180
     return degrees + 360;
   }
-  // Output degrees in between [0, 360[
+  // Output degrees in between [0, 360]
   return degrees;
 };
 
@@ -217,9 +213,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _isInitialized = false;
-  _isPlaying = false;
-  _disposed = false;
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -352,7 +345,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       return;
     }
 
-    _isInitialized = true;
+    _isInitialized = YES;
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
@@ -363,12 +356,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)play {
-  _isPlaying = true;
+  _isPlaying = YES;
   [self updatePlayingState];
 }
 
 - (void)pause {
-  _isPlaying = false;
+  _isPlaying = NO;
   [self updatePlayingState];
 }
 
@@ -389,7 +382,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
        toleranceAfter:kCMTimeZero];
 }
 
-- (void)setIsLooping:(bool)isLooping {
+- (void)setIsLooping:(BOOL)isLooping {
   _isLooping = isLooping;
 }
 
@@ -457,22 +450,18 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 /// is useful for the case where the Engine is in the process of deconstruction
 /// so the channel is going to die or is already dead.
 - (void)disposeSansEventChannel {
-  _disposed = true;
+  _disposed = YES;
   [_displayLink invalidate];
-  [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"loadedTimeRanges"
-                                context:timeRangeContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackLikelyToKeepUp"
-                                context:playbackLikelyToKeepUpContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackBufferEmpty"
-                                context:playbackBufferEmptyContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"playbackBufferFull"
-                                context:playbackBufferFullContext];
-  [_player replaceCurrentItemWithPlayerItem:nil];
+  AVPlayerItem* currentItem = self.player.currentItem;
+  [currentItem removeObserver:self forKeyPath:@"status"];
+  [currentItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+  [currentItem removeObserver:self forKeyPath:@"presentationSize"];
+  [currentItem removeObserver:self forKeyPath:@"duration"];
+  [currentItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp"];
+  [currentItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+  [currentItem removeObserver:self forKeyPath:@"playbackBufferFull"];
+
+  [self.player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -486,7 +475,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @interface FLTVideoPlayerPlugin () <FLTVideoPlayerApi>
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry>* registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
-@property(readonly, strong, nonatomic) NSMutableDictionary* players;
+@property(readonly, strong, nonatomic)
+    NSMutableDictionary<NSNumber*, FLTVideoPlayer*>* playersByTextureId;
 @property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
 @end
 
@@ -503,16 +493,13 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _registry = [registrar textures];
   _messenger = [registrar messenger];
   _registrar = registrar;
-  _players = [NSMutableDictionary dictionaryWithCapacity:1];
+  _playersByTextureId = [NSMutableDictionary dictionaryWithCapacity:1];
   return self;
 }
 
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  for (NSNumber* textureId in _players.allKeys) {
-    FLTVideoPlayer* player = _players[textureId];
-    [player disposeSansEventChannel];
-  }
-  [_players removeAllObjects];
+  [self.playersByTextureId.allValues makeObjectsPerformSelector:@selector(disposeSansEventChannel)];
+  [self.playersByTextureId removeAllObjects];
   // TODO(57151): This should be commented out when 57151's fix lands on stable.
   // This is the correct behavior we never did it in the past and the engine
   // doesn't currently support it.
@@ -521,7 +508,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (FLTTextureMessage*)onPlayerSetup:(FLTVideoPlayer*)player
                        frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  int64_t textureId = [_registry registerTexture:player];
+  int64_t textureId = [self.registry registerTexture:player];
   frameUpdater.textureId = textureId;
   FlutterEventChannel* eventChannel = [FlutterEventChannel
       eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
@@ -529,7 +516,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
            binaryMessenger:_messenger];
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
-  _players[@(textureId)] = player;
+  self.playersByTextureId[@(textureId)] = player;
   FLTTextureMessage* result = [[FLTTextureMessage alloc] init];
   result.textureId = @(textureId);
   return result;
@@ -539,11 +526,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // Allow audio playback when the Ring/Silent switch is set to silent
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
 
-  for (NSNumber* textureId in _players) {
-    [_registry unregisterTexture:[textureId unsignedIntegerValue]];
-    [_players[textureId] dispose];
-  }
-  [_players removeAllObjects];
+  [self.playersByTextureId
+      enumerateKeysAndObjectsUsingBlock:^(NSNumber* textureId, FLTVideoPlayer* player, BOOL* stop) {
+        [self.registry unregisterTexture:textureId.unsignedIntegerValue];
+        [player dispose];
+      }];
+  [self.playersByTextureId removeAllObjects];
 }
 
 - (FLTTextureMessage*)create:(FLTCreateMessage*)input error:(FlutterError**)error {
@@ -570,9 +558,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)dispose:(FLTTextureMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  [_registry unregisterTexture:input.textureId.intValue];
-  [_players removeObjectForKey:input.textureId];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+  [self.registry unregisterTexture:input.textureId.intValue];
+  [self.playersByTextureId removeObjectForKey:input.textureId];
   // If the Flutter contains https://github.com/flutter/engine/pull/12695,
   // the `player` is disposed via `onTextureUnregistered` at the right time.
   // Without https://github.com/flutter/engine/pull/12695, there is no guarantee that the
@@ -592,46 +580,46 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setLooping:(FLTLoopingMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  [player setIsLooping:[input.isLooping boolValue]];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+  player.isLooping = input.isLooping.boolValue;
 }
 
 - (void)setVolume:(FLTVolumeMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  [player setVolume:[input.volume doubleValue]];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+  [player setVolume:input.volume.doubleValue];
 }
 
 - (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  [player setPlaybackSpeed:[input.speed doubleValue]];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+  [player setPlaybackSpeed:input.speed.doubleValue];
 }
 
 - (void)play:(FLTTextureMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
   [player play];
 }
 
 - (FLTPositionMessage*)position:(FLTTextureMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
   FLTPositionMessage* result = [[FLTPositionMessage alloc] init];
   result.position = @([player position]);
   return result;
 }
 
 - (void)seekTo:(FLTPositionMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  [player seekTo:[input.position intValue]];
-  [_registry textureFrameAvailable:input.textureId.intValue];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+  [player seekTo:input.position.intValue];
+  [self.registry textureFrameAvailable:input.textureId.intValue];
 }
 
 - (void)pause:(FLTTextureMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
+  FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
   [player pause];
 }
 
 - (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
                    error:(FlutterError* _Nullable __autoreleasing*)error {
-  if ([input.mixWithOthers boolValue]) {
+  if (input.mixWithOthers.boolValue) {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
                                      withOptions:AVAudioSessionCategoryOptionMixWithOthers
                                            error:nil];
