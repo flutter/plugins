@@ -20,7 +20,7 @@ using FlutterRootWindowProvider = std::function<HWND()>;
 
 class FileSelectorPlugin : public flutter::Plugin {
  public:
-  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
+  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
   // Creates a new plugin instance for the given registar, using the given
   // factory to create native dialog controllers.
@@ -31,7 +31,7 @@ class FileSelectorPlugin : public flutter::Plugin {
   virtual ~FileSelectorPlugin();
 
   // Called when a method is called on plugin channel;
-  void HandleMethodCall(const flutter::MethodCall<> &method_call,
+  void HandleMethodCall(const flutter::MethodCall<>& method_call,
                         std::unique_ptr<flutter::MethodResult<>> result);
 
  private:

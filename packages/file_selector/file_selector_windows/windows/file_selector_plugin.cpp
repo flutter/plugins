@@ -53,7 +53,7 @@ constexpr char kTypeGroupExtensionsKey[] = "extensions";
 
 // Looks for |key| in |map|, returning the associated value if it is present, or
 // a nullptr if not.
-const EncodableValue *ValueOrNull(const EncodableMap &map, const char *key) {
+const EncodableValue* ValueOrNull(const EncodableMap& map, const char* key) {
   auto it = map.find(EncodableValue(key));
   if (it == map.end()) {
     return nullptr;
@@ -63,11 +63,11 @@ const EncodableValue *ValueOrNull(const EncodableMap &map, const char *key) {
 
 // Returns the path for |shell_item| as a UTF-8 string, or an
 // empty string on failure.
-std::string GetPathForShellItem(IShellItem *shell_item) {
+std::string GetPathForShellItem(IShellItem* shell_item) {
   if (shell_item == nullptr) {
     return "";
   }
-  wchar_t *wide_path = nullptr;
+  wchar_t* wide_path = nullptr;
   if (!SUCCEEDED(shell_item->GetDisplayName(SIGDN_FILESYSPATH, &wide_path))) {
     return "";
   }
@@ -85,12 +85,12 @@ class DefaultFileDialogControllerFactory : public FileDialogControllerFactory {
 
   // Disallow copy and assign.
   DefaultFileDialogControllerFactory(
-      const DefaultFileDialogControllerFactory &) = delete;
-  DefaultFileDialogControllerFactory &operator=(
-      const DefaultFileDialogControllerFactory &) = delete;
+      const DefaultFileDialogControllerFactory&) = delete;
+  DefaultFileDialogControllerFactory& operator=(
+      const DefaultFileDialogControllerFactory&) = delete;
 
   std::unique_ptr<FileDialogController> CreateController(
-      IFileDialog *dialog) const override {
+      IFileDialog* dialog) const override {
     assert(dialog != nullptr);
     return std::make_unique<FileDialogController>(dialog);
   }
@@ -100,7 +100,7 @@ class DefaultFileDialogControllerFactory : public FileDialogControllerFactory {
 // providing a simplified API for interacting with it as needed for the plugin.
 class DialogWrapper {
  public:
-  explicit DialogWrapper(const FileDialogControllerFactory &dialog_factory,
+  explicit DialogWrapper(const FileDialogControllerFactory& dialog_factory,
                          IID type) {
     is_open_dialog_ = type == CLSID_FileOpenDialog;
     IFileDialogPtr dialog = nullptr;
@@ -111,7 +111,7 @@ class DialogWrapper {
 
   // Attempts to set the default folder for the dialog to |path|,
   // if it exists.
-  void SetDefaultFolder(const std::string &path) {
+  void SetDefaultFolder(const std::string& path) {
     std::wstring wide_path = Utf16FromUtf8(path);
     IShellItemPtr item;
     last_result_ = SHCreateItemFromParsingName(wide_path.c_str(), nullptr,
@@ -123,13 +123,13 @@ class DialogWrapper {
   }
 
   // Sets the file name that is initially shown in the dialog.
-  void SetFileName(const std::string &name) {
+  void SetFileName(const std::string& name) {
     std::wstring wide_name = Utf16FromUtf8(name);
     last_result_ = dialog_controller_->SetFileName(wide_name.c_str());
   }
 
   // Sets the label of the confirmation button.
-  void SetOkButtonLabel(const std::string &label) {
+  void SetOkButtonLabel(const std::string& label) {
     std::wstring wide_label = Utf16FromUtf8(label);
     last_result_ = dialog_controller_->SetOkButtonLabel(wide_label.c_str());
   }
@@ -149,7 +149,7 @@ class DialogWrapper {
   }
 
   // Sets the filters for allowed file types to select.
-  void SetFileTypeFilters(const EncodableList &filters) {
+  void SetFileTypeFilters(const EncodableList& filters) {
     const std::wstring spec_delimiter = L";";
     const std::wstring file_wildcard = L"*.";
     std::vector<COMDLG_FILTERSPEC> filter_specs;
@@ -160,19 +160,19 @@ class DialogWrapper {
     filter_extensions.reserve(filters.size());
     filter_names.reserve(filters.size());
 
-    for (const EncodableValue &filter_info_value : filters) {
-      const auto &filter_info = std::get<EncodableMap>(filter_info_value);
-      const auto *filter_name = std::get_if<std::string>(
+    for (const EncodableValue& filter_info_value : filters) {
+      const auto& filter_info = std::get<EncodableMap>(filter_info_value);
+      const auto* filter_name = std::get_if<std::string>(
           ValueOrNull(filter_info, kTypeGroupLabelKey));
-      const auto *extensions = std::get_if<EncodableList>(
+      const auto* extensions = std::get_if<EncodableList>(
           ValueOrNull(filter_info, kTypeGroupExtensionsKey));
       filter_names.push_back(filter_name ? Utf16FromUtf8(*filter_name) : L"");
       filter_extensions.push_back(L"");
-      std::wstring &spec = filter_extensions.back();
+      std::wstring& spec = filter_extensions.back();
       if (!extensions || extensions->empty()) {
         spec += L"*.*";
       } else {
-        for (const EncodableValue &extension : *extensions) {
+        for (const EncodableValue& extension : *extensions) {
           if (!spec.empty()) {
             spec += spec_delimiter;
           }
@@ -249,9 +249,9 @@ class DialogWrapper {
 // error on failure.
 //
 // |result| is guaranteed to be resolved by this function.
-void ShowDialog(const FileDialogControllerFactory &dialog_factory,
-                HWND parent_window, const std::string &method,
-                const EncodableMap &args,
+void ShowDialog(const FileDialogControllerFactory& dialog_factory,
+                HWND parent_window, const std::string& method,
+                const EncodableMap& args,
                 std::unique_ptr<flutter::MethodResult<>> result) {
   IID dialog_type = method.compare(kGetSavePathMethod) == 0
                         ? CLSID_FileSaveDialog
@@ -267,7 +267,7 @@ void ShowDialog(const FileDialogControllerFactory &dialog_factory,
   if (method.compare(kGetDirectoryPathMethod) == 0) {
     dialog_options |= FOS_PICKFOLDERS;
   }
-  const auto *allow_multiple_selection =
+  const auto* allow_multiple_selection =
       std::get_if<bool>(ValueOrNull(args, kMultipleKey));
   if (allow_multiple_selection && *allow_multiple_selection) {
     dialog_options |= FOS_ALLOWMULTISELECT;
@@ -276,22 +276,22 @@ void ShowDialog(const FileDialogControllerFactory &dialog_factory,
     dialog.AddOptions(dialog_options);
   }
 
-  const auto *initial_dir =
+  const auto* initial_dir =
       std::get_if<std::string>(ValueOrNull(args, kInitialDirectoryKey));
   if (initial_dir) {
     dialog.SetDefaultFolder(*initial_dir);
   }
-  const auto *suggested_name =
+  const auto* suggested_name =
       std::get_if<std::string>(ValueOrNull(args, kSuggestedNameKey));
   if (suggested_name) {
     dialog.SetFileName(*suggested_name);
   }
-  const auto *confirm_label =
+  const auto* confirm_label =
       std::get_if<std::string>(ValueOrNull(args, kConfirmButtonTextKey));
   if (confirm_label) {
     dialog.SetOkButtonLabel(*confirm_label);
   }
-  const auto *accepted_types =
+  const auto* accepted_types =
       std::get_if<EncodableList>(ValueOrNull(args, kAcceptedTypeGroupsKey));
   if (accepted_types && !accepted_types->empty()) {
     dialog.SetFileTypeFilters(*accepted_types);
@@ -308,7 +308,7 @@ void ShowDialog(const FileDialogControllerFactory &dialog_factory,
 }
 
 // Returns the top-level window that owns |view|.
-HWND GetRootWindow(flutter::FlutterView *view) {
+HWND GetRootWindow(flutter::FlutterView* view) {
   return ::GetAncestor(view->GetNativeWindow(), GA_ROOT);
 }
 
@@ -316,7 +316,7 @@ HWND GetRootWindow(flutter::FlutterView *view) {
 
 // static
 void FileSelectorPlugin::RegisterWithRegistrar(
-    flutter::PluginRegistrarWindows *registrar) {
+    flutter::PluginRegistrarWindows* registrar) {
   auto channel = std::make_unique<flutter::MethodChannel<>>(
       registrar->messenger(), "plugins.flutter.io/file_selector",
       &flutter::StandardMethodCodec::GetInstance());
@@ -327,7 +327,7 @@ void FileSelectorPlugin::RegisterWithRegistrar(
           std::make_unique<DefaultFileDialogControllerFactory>());
 
   channel->SetMethodCallHandler(
-      [plugin_pointer = plugin.get()](const auto &call, auto result) {
+      [plugin_pointer = plugin.get()](const auto& call, auto result) {
         plugin_pointer->HandleMethodCall(call, std::move(result));
       });
 
@@ -343,13 +343,13 @@ FileSelectorPlugin::FileSelectorPlugin(
 FileSelectorPlugin::~FileSelectorPlugin() = default;
 
 void FileSelectorPlugin::HandleMethodCall(
-    const flutter::MethodCall<> &method_call,
+    const flutter::MethodCall<>& method_call,
     std::unique_ptr<flutter::MethodResult<>> result) {
-  const std::string &method_name = method_call.method_name();
+  const std::string& method_name = method_call.method_name();
   if (method_name.compare(kOpenFileMethod) == 0 ||
       method_name.compare(kGetSavePathMethod) == 0 ||
       method_name.compare(kGetDirectoryPathMethod) == 0) {
-    const auto *arguments =
+    const auto* arguments =
         std::get_if<flutter::EncodableMap>(method_call.arguments());
     assert(arguments);
     ShowDialog(*controller_factory_, get_root_window_(), method_name,
