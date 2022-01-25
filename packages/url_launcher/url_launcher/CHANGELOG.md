@@ -1,3 +1,7 @@
+## 6.0.19
+
+* Update README : Replaced `RaisedButton` with `ElevatedButton` .
+
 ## 6.0.18
 
 * Removes dependency on `meta`.
