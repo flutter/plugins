@@ -78,6 +78,14 @@ class ImplementsConstVerifyTokenPluginPlatform extends PlatformInterface
   ImplementsConstVerifyTokenPluginPlatform() : super(token: const Object());
 }
 
+// Ensures that `PlatformInterface` has no instance methods. Adding an
+// instance method is discouraged and may be a breaking change if it
+// conflicts with instance methods in subclasses.
+class StaticMethodsOnlyPlatformInterfaceTest implements PlatformInterface {}
+
+class StaticMethodsOnlyMockPlatformInterfaceMixinTest
+    implements MockPlatformInterfaceMixin {}
+
 void main() {
   group('`verify`', () {
     test('prevents implementation with `implements`', () {
