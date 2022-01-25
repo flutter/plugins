@@ -33,8 +33,8 @@ using flutter::EncodableList;
 using flutter::EncodableMap;
 using flutter::EncodableValue;
 
-// From method_channel_file_selector.dart
-constexpr char kChannelName[] = "plugins.flutter.io/file_selector";
+// From file_selector_windows.dart
+constexpr char kChannelName[] = "plugins.flutter.io/file_selector_windows";
 
 constexpr char kOpenFileMethod[] = "openFile";
 constexpr char kGetSavePathMethod[] = "getSavePath";
@@ -318,7 +318,7 @@ HWND GetRootWindow(flutter::FlutterView* view) {
 void FileSelectorPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows* registrar) {
   auto channel = std::make_unique<flutter::MethodChannel<>>(
-      registrar->messenger(), "plugins.flutter.io/file_selector",
+      registrar->messenger(), kChannelName,
       &flutter::StandardMethodCodec::GetInstance());
 
   std::unique_ptr<FileSelectorPlugin> plugin =

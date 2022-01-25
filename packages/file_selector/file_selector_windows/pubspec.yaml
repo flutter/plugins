@@ -13,8 +13,12 @@ flutter:
     implements: file_selector
     platforms:
       windows:
+        dartPluginClass: FileSelectorWindows
         pluginClass: FileSelectorWindows
 
 dependencies:
+  file_selector_platform_interface: ^2.0.4
   flutter:
+    sdk: flutter
+  flutter_test:
     sdk: flutter

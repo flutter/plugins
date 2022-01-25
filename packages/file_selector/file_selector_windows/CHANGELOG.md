@@ -1,6 +1,7 @@
 ## 0.8.2
 
 * Moves source to flutter/plugins, and restructures to allow for unit testing.
+* Switches to an internal method channel implementation.
 
 ## 0.0.2+1
 
