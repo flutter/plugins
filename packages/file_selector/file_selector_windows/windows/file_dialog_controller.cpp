@@ -4,16 +4,18 @@
 
 #include "file_dialog_controller.h"
 
+#include <comdef.h>
+#include <comip.h>
 #include <windows.h>
+
+_COM_SMARTPTR_TYPEDEF(IFileOpenDialog, IID_IFileOpenDialog);
 
 namespace file_selector_windows {
 
 FileDialogController::FileDialogController(IFileDialog* dialog)
-    : dialog_(dialog) {
-  dialog_->AddRef();
-}
+    : dialog_(dialog) {}
 
-FileDialogController::~FileDialogController() { dialog_->Release(); }
+FileDialogController::~FileDialogController() {}
 
 HRESULT FileDialogController::SetDefaultFolder(IShellItem* folder) {
   return dialog_->SetDefaultFolder(folder);
@@ -50,13 +52,12 @@ HRESULT FileDialogController::GetResult(IShellItem** out_item) const {
 }
 
 HRESULT FileDialogController::GetResults(IShellItemArray** out_items) const {
-  IFileOpenDialog* open_dialog;
+  IFileOpenDialogPtr open_dialog;
   HRESULT result = dialog_->QueryInterface(IID_PPV_ARGS(&open_dialog));
   if (!SUCCEEDED(result)) {
     return result;
   }
   result = open_dialog->GetResults(out_items);
-  open_dialog->Release();
   return result;
 }
 

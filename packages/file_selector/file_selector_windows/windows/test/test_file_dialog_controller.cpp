@@ -16,11 +16,9 @@ TestFileDialogController::TestFileDialogController(IFileDialog* dialog,
                                                    MockShow mock_show)
     : dialog_(dialog),
       mock_show_(std::move(mock_show)),
-      FileDialogController(dialog) {
-  dialog_->AddRef();
-}
+      FileDialogController(dialog) {}
 
-TestFileDialogController::~TestFileDialogController() { dialog_->Release(); }
+TestFileDialogController::~TestFileDialogController() {}
 
 HRESULT TestFileDialogController::SetFileTypes(UINT count,
                                                COMDLG_FILTERSPEC* filters) {

@@ -27,7 +27,7 @@ namespace test {
 // the instance goes out of scope.
 //
 // This creates a file on the filesystem since creating IShellItem instances for
-// files that don't exist is not-trivial.
+// files that don't exist is non-trivial.
 class ScopedTestShellItem {
  public:
   ScopedTestShellItem();
@@ -52,7 +52,7 @@ class ScopedTestShellItem {
 // the instance goes out of scope.
 //
 // This creates a file on the filesystem since creating IShellItem instances for
-// files that don't exist is not-trivial, and this is intended for use in
+// files that don't exist is non-trivial, and this is intended for use in
 // creating IShellItemArray instances.
 class ScopedTestFileIdList {
  public:

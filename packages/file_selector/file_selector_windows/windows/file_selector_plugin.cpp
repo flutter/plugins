@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "file_selector_plugin.h"
 
+#include <comdef.h>
+#include <comip.h>
 #include <flutter/flutter_view.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -18,6 +20,11 @@
 #include "file_dialog_controller.h"
 #include "string_utils.h"
 
+_COM_SMARTPTR_TYPEDEF(IEnumShellItems, IID_IEnumShellItems);
+_COM_SMARTPTR_TYPEDEF(IFileDialog, IID_IFileDialog);
+_COM_SMARTPTR_TYPEDEF(IShellItem, IID_IShellItem);
+_COM_SMARTPTR_TYPEDEF(IShellItemArray, IID_IShellItemArray);
+
 namespace file_selector_windows {
 
 namespace {
@@ -27,22 +34,22 @@ using flutter::EncodableMap;
 using flutter::EncodableValue;
 
 // From method_channel_file_selector.dart
-const char kChannelName[] = "plugins.flutter.io/file_selector";
+constexpr char kChannelName[] = "plugins.flutter.io/file_selector";
 
-const char kOpenFileMethod[] = "openFile";
-const char kGetSavePathMethod[] = "getSavePath";
-const char kGetDirectoryPathMethod[] = "getDirectoryPath";
+constexpr char kOpenFileMethod[] = "openFile";
+constexpr char kGetSavePathMethod[] = "getSavePath";
+constexpr char kGetDirectoryPathMethod[] = "getDirectoryPath";
 
-const char kAcceptedTypeGroupsKey[] = "acceptedTypeGroups";
-const char kConfirmButtonTextKey[] = "confirmButtonText";
-const char kInitialDirectoryKey[] = "initialDirectory";
-const char kMultipleKey[] = "multiple";
-const char kSuggestedNameKey[] = "suggestedName";
+constexpr char kAcceptedTypeGroupsKey[] = "acceptedTypeGroups";
+constexpr char kConfirmButtonTextKey[] = "confirmButtonText";
+constexpr char kInitialDirectoryKey[] = "initialDirectory";
+constexpr char kMultipleKey[] = "multiple";
+constexpr char kSuggestedNameKey[] = "suggestedName";
 
 // From x_type_group.dart
 // Only 'extensions' are supported by Windows for filtering.
-const char kTypeGroupLabelKey[] = "label";
-const char kTypeGroupExtensionsKey[] = "extensions";
+constexpr char kTypeGroupLabelKey[] = "label";
+constexpr char kTypeGroupExtensionsKey[] = "extensions";
 
 // Looks for |key| in |map|, returning the associated value if it is present, or
 // a nullptr if not.
@@ -57,6 +64,9 @@ const EncodableValue *ValueOrNull(const EncodableMap &map, const char *key) {
 // Returns the path for |shell_item| as a UTF-8 string, or an
 // empty string on failure.
 std::string GetPathForShellItem(IShellItem *shell_item) {
+  if (shell_item == nullptr) {
+    return "";
+  }
   wchar_t *wide_path = nullptr;
   if (!SUCCEEDED(shell_item->GetDisplayName(SIGDN_FILESYSPATH, &wide_path))) {
     return "";
@@ -81,6 +91,7 @@ class DefaultFileDialogControllerFactory : public FileDialogControllerFactory {
 
   std::unique_ptr<FileDialogController> CreateController(
       IFileDialog *dialog) const override {
+    assert(dialog != nullptr);
     return std::make_unique<FileDialogController>(dialog);
   }
 };
@@ -92,25 +103,23 @@ class DialogWrapper {
   explicit DialogWrapper(const FileDialogControllerFactory &dialog_factory,
                          IID type) {
     is_open_dialog_ = type == CLSID_FileOpenDialog;
-    IFileDialog *dialog = nullptr;
+    IFileDialogPtr dialog = nullptr;
     last_result_ = CoCreateInstance(type, nullptr, CLSCTX_INPROC_SERVER,
                                     IID_PPV_ARGS(&dialog));
     dialog_controller_ = dialog_factory.CreateController(dialog);
-    dialog->Release();
   }
 
   // Attempts to set the default folder for the dialog to |path|,
   // if it exists.
   void SetDefaultFolder(const std::string &path) {
     std::wstring wide_path = Utf16FromUtf8(path);
-    IShellItem *item;
+    IShellItemPtr item;
     last_result_ = SHCreateItemFromParsingName(wide_path.c_str(), nullptr,
                                                IID_PPV_ARGS(&item));
     if (!SUCCEEDED(last_result_)) {
       return;
     }
     dialog_controller_->SetDefaultFolder(item);
-    item->Release();
   }
 
   // Sets the file name that is initially shown in the dialog.
@@ -188,25 +197,21 @@ class DialogWrapper {
     }
 
     if (is_open_dialog_) {
-      IShellItemArray *shell_items;
+      IShellItemArrayPtr shell_items;
       last_result_ = dialog_controller_->GetResults(&shell_items);
       if (!SUCCEEDED(last_result_)) {
         return EncodableValue();
       }
-      IEnumShellItems *item_enumerator;
+      IEnumShellItemsPtr item_enumerator;
       last_result_ = shell_items->EnumItems(&item_enumerator);
       if (!SUCCEEDED(last_result_)) {
-        shell_items->Release();
         return EncodableValue();
       }
       EncodableList files;
-      IShellItem *shell_item;
+      IShellItemPtr shell_item;
       while (item_enumerator->Next(1, &shell_item, nullptr) == S_OK) {
         files.push_back(EncodableValue(GetPathForShellItem(shell_item)));
-        shell_item->Release();
       }
-      item_enumerator->Release();
-      shell_items->Release();
       if (opening_directory_) {
         // The directory option expects a String, not a List<String>.
         if (files.empty()) {
@@ -217,13 +222,12 @@ class DialogWrapper {
         return EncodableValue(std::move(files));
       }
     } else {
-      IShellItem *shell_item;
+      IShellItemPtr shell_item;
       last_result_ = dialog_controller_->GetResult(&shell_item);
       if (!SUCCEEDED(last_result_)) {
         return EncodableValue();
       }
       EncodableValue file(GetPathForShellItem(shell_item));
-      shell_item->Release();
       return file;
     }
   }

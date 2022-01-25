@@ -4,10 +4,14 @@
 #ifndef PACKAGES_FILE_SELECTOR_FILE_SELECTOR_WINDOWS_WINDOWS_FILE_DIALOG_CONTROLLER_H_
 #define PACKAGES_FILE_SELECTOR_FILE_SELECTOR_WINDOWS_WINDOWS_FILE_DIALOG_CONTROLLER_H_
 
+#include <comdef.h>
+#include <comip.h>
 #include <shobjidl.h>
 #include <windows.h>
 
 #include <memory>
+
+_COM_SMARTPTR_TYPEDEF(IFileDialog, IID_IFileDialog);
 
 namespace file_selector_windows {
 
@@ -40,7 +44,7 @@ class FileDialogController {
   virtual HRESULT GetResults(IShellItemArray** out_items) const;
 
  private:
-  IFileDialog* dialog_ = nullptr;
+  IFileDialogPtr dialog_ = nullptr;
 };
 
 // Interface for creating FileDialogControllers, to allow for dependency

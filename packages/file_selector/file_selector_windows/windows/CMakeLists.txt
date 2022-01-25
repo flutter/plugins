@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 set(PROJECT_NAME "file_selector_windows")
 project(${PROJECT_NAME} LANGUAGES CXX)
 

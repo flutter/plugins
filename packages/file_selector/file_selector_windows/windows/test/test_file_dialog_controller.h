@@ -4,6 +4,8 @@
 #ifndef PACKAGES_FILE_SELECTOR_FILE_SELECTOR_WINDOWS_WINDOWS_TEST_TEST_FILE_DIALOG_CONTROLLER_H_
 #define PACKAGES_FILE_SELECTOR_FILE_SELECTOR_WINDOWS_WINDOWS_TEST_TEST_FILE_DIALOG_CONTROLLER_H_
 
+#include <comdef.h>
+#include <comip.h>
 #include <windows.h>
 
 #include <functional>
@@ -13,6 +15,8 @@
 
 #include "file_dialog_controller.h"
 #include "test/test_utils.h"
+
+_COM_SMARTPTR_TYPEDEF(IFileDialog, IID_IFileDialog);
 
 namespace file_selector_windows {
 namespace test {
@@ -60,7 +64,7 @@ class TestFileDialogController : public FileDialogController {
   std::wstring GetOkButtonLabel() const;
 
  private:
-  IFileDialog* dialog_;
+  IFileDialogPtr dialog_;
   MockShow mock_show_;
   MockShowResult mock_result_;
 
