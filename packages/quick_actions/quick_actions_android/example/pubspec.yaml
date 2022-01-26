@@ -3,13 +3,13 @@ description: Demonstrates how to use the quick_actions plugin.
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.9.1+hotfix.2"
+  sdk: ">=2.15.0 <3.0.0"
+  flutter: ">=2.8.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  quick_actions:
+  quick_actions_android:
     # When depending on this package from a real application you should use:
     #   quick_actions: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints

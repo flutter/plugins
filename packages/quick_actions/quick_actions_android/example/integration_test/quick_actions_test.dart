@@ -5,13 +5,13 @@
 // @dart = 2.9
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:quick_actions/quick_actions.dart';
+import 'package:quick_actions_platform_interface/quick_actions_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Can set shortcuts', (WidgetTester tester) async {
-    const QuickActions quickActions = QuickActions();
+    final QuickActionsPlatform quickActions = QuickActionsPlatform.instance;
     await quickActions.initialize(null);
 
     const ShortcutItem shortCutItem = ShortcutItem(

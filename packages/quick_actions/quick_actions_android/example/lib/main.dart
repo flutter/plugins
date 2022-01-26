@@ -5,7 +5,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:quick_actions/quick_actions.dart';
+import 'package:quick_actions_platform_interface/quick_actions_platform_interface.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    const QuickActions quickActions = QuickActions();
+    final QuickActionsPlatform quickActions = QuickActionsPlatform.instance;
     quickActions.initialize((String shortcutType) {
       setState(() {
         if (shortcutType != null) {
