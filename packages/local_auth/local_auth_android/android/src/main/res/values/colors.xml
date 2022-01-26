@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Fingerprint colors -->
+  <color name="warning_color">#E53935</color>
+  <color name="hint_color">#BDBDBD</color>
+  <color name="success_color">#43A047</color>
+  <color name="black_text">#212121</color>
+  <color name="grey_text">#757575</color>
+</resources>

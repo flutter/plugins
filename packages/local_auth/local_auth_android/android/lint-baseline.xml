@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 4.1.1" client="gradle" variant="debug" version="4.1.1">
+
+    <issue
+        id="NewApi"
+        message="`@android:style/Theme.Material.Dialog.Alert` requires API level 21 (current min is 16)"
+        errorLine1="  &lt;style name=&quot;AlertDialogCustom&quot; parent=&quot;@android:style/Theme.Material.Dialog.Alert&quot;>"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/styles.xml"
+            line="3"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="`android:colorAccent` requires API level 21 (current min is 16)"
+        errorLine1="    &lt;item name=&quot;android:colorAccent&quot;>#FF009688&lt;/item>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/styles.xml"
+            line="7"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+        errorLine1="    &lt;uses-sdk android:targetSdkVersion=&quot;29&quot;/>"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="3"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
+        errorLine1="  &lt;LinearLayout"
+        errorLine2="   ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/scan_fp.xml"
+            line="26"
+            column="4"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/scan_fp.xml"
+            line="30"
+            column="6"/>
+    </issue>
+
+</issues>
