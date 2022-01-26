@@ -12,7 +12,7 @@ void main() {
   runApp(MyApp());
 }
 
-// App for testing.
+/// Example app for Camera Windows plugin.
 class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
@@ -34,19 +34,19 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    getAvailableCameras();
+    _getAvailableCameras();
   }
 
   @override
   void dispose() {
-    disposeCurrentCamera();
+    _disposeCurrentCamera();
     _errorStreamSubscription?.cancel();
     _errorStreamSubscription = null;
     super.dispose();
   }
 
-  // Fetches list of available cameras from camera_windows plugin.
-  Future<void> getAvailableCameras() async {
+  /// Fetches list of available cameras from camera_windows plugin.
+  Future<void> _getAvailableCameras() async {
     String cameraInfo;
     List<CameraDescription> cameras = <CameraDescription>[];
 
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// Initializes the camera on the device.
-  Future<void> initializeFirstCamera() async {
+  Future<void> _initializeFirstCamera() async {
     assert(_cameras.isNotEmpty);
     assert(!_initialized);
     final Completer<CameraInitializedEvent> _initializeCompleter =
@@ -88,8 +88,9 @@ class _MyAppState extends State<MyApp> {
       );
 
       _errorStreamSubscription?.cancel();
-      _errorStreamSubscription =
-          CameraPlatform.instance.onCameraError(cameraId).listen(onCameraError);
+      _errorStreamSubscription = CameraPlatform.instance
+          .onCameraError(cameraId)
+          .listen(_onCameraError);
 
       unawaited(CameraPlatform.instance
           .onCameraInitialized(cameraId)
@@ -123,7 +124,8 @@ class _MyAppState extends State<MyApp> {
       } on CameraException catch (e) {
         debugPrint('Failed to dispose camera: ${e.code}: ${e.description}');
       }
-      // Reset state.
+
+      /// Reset state.
       setState(() {
         _initialized = false;
         _cameraId = -1;
@@ -137,7 +139,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> disposeCurrentCamera() async {
+  Future<void> _disposeCurrentCamera() async {
     assert(_cameraId > 0);
     assert(_initialized);
     try {
@@ -151,7 +153,7 @@ class _MyAppState extends State<MyApp> {
         _recordingTimed = false;
         _previewPaused = false;
       });
-      getAvailableCameras();
+      _getAvailableCameras();
     } on CameraException catch (e) {
       setState(() {
         _cameraInfo = 'Failed to dispose camera: ${e.code}: ${e.description}';
@@ -159,16 +161,16 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Widget buildPreview() {
+  Widget _buildPreview() {
     return CameraPlatform.instance.buildPreview(_cameraId);
   }
 
-  Future<void> takePicture() async {
+  Future<void> _takePicture() async {
     final XFile _file = await CameraPlatform.instance.takePicture(_cameraId);
-    showInSnackBar('Picture captured to: ${_file.path}');
+    _showInSnackBar('Picture captured to: ${_file.path}');
   }
 
-  Future<void> recordTimed(int seconds) async {
+  Future<void> _recordTimed(int seconds) async {
     if (_initialized && _cameraId > 0 && !_recordingTimed) {
       CameraPlatform.instance
           .onVideoRecordedEvent(_cameraId)
@@ -179,7 +181,7 @@ class _MyAppState extends State<MyApp> {
             _recordingTimed = false;
           });
 
-          showInSnackBar('Video captured to: ${event.file.path}');
+          _showInSnackBar('Video captured to: ${event.file.path}');
         }
       });
 
@@ -194,10 +196,10 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> toggleRecord() async {
+  Future<void> _toggleRecord() async {
     if (_initialized && _cameraId > 0) {
       if (_recordingTimed) {
-        // Request to stop timed recording short.
+        /// Request to stop timed recording short.
         await CameraPlatform.instance.stopVideoRecording(_cameraId);
       } else {
         if (!_recording) {
@@ -206,7 +208,7 @@ class _MyAppState extends State<MyApp> {
           final XFile _file =
               await CameraPlatform.instance.stopVideoRecording(_cameraId);
 
-          showInSnackBar('Video captured to: ${_file.path}');
+          _showInSnackBar('Video captured to: ${_file.path}');
         }
         setState(() {
           _recording = !_recording;
@@ -215,7 +217,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> togglePreview() async {
+  Future<void> _togglePreview() async {
     if (_initialized && _cameraId > 0) {
       if (!_previewPaused) {
         await CameraPlatform.instance.pausePreview(_cameraId);
@@ -228,23 +230,23 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void onCameraError(CameraErrorEvent event) {
-    scaffoldMessengerKey.currentState
+  void _onCameraError(CameraErrorEvent event) {
+    _scaffoldMessengerKey.currentState
         ?.showSnackBar(SnackBar(content: Text('Error: ${event.description}')));
   }
 
-  void showInSnackBar(String message) {
-    scaffoldMessengerKey.currentState
+  void _showInSnackBar(String message) {
+    _scaffoldMessengerKey.currentState
         ?.showSnackBar(SnackBar(content: Text(message)));
   }
 
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: scaffoldMessengerKey,
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
@@ -260,7 +262,7 @@ class _MyAppState extends State<MyApp> {
             ),
             if (_cameras.isEmpty)
               ElevatedButton(
-                onPressed: getAvailableCameras,
+                onPressed: _getAvailableCameras,
                 child: const Text('Re-check available cameras'),
               ),
             if (_cameras.isNotEmpty)
@@ -281,26 +283,26 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: _initialized
-                        ? disposeCurrentCamera
-                        : initializeFirstCamera,
+                        ? _disposeCurrentCamera
+                        : _initializeFirstCamera,
                     child:
                         Text(_initialized ? 'Dispose camera' : 'Create camera'),
                   ),
                   const SizedBox(width: 5),
                   ElevatedButton(
-                    onPressed: _initialized ? takePicture : null,
+                    onPressed: _initialized ? _takePicture : null,
                     child: const Text('Take picture'),
                   ),
                   const SizedBox(width: 5),
                   ElevatedButton(
-                    onPressed: _initialized ? togglePreview : null,
+                    onPressed: _initialized ? _togglePreview : null,
                     child: Text(
                       _previewPaused ? 'Resume preview' : 'Pause preview',
                     ),
                   ),
                   const SizedBox(width: 5),
                   ElevatedButton(
-                    onPressed: _initialized ? toggleRecord : null,
+                    onPressed: _initialized ? _toggleRecord : null,
                     child: Text(
                       (_recording || _recordingTimed)
                           ? 'Stop recording'
@@ -310,7 +312,7 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(width: 5),
                   ElevatedButton(
                     onPressed: (_initialized && !_recording && !_recordingTimed)
-                        ? () => recordTimed(5)
+                        ? () => _recordTimed(5)
                         : null,
                     child: const Text(
                       'Record 5 seconds',
@@ -332,7 +334,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                     child: AspectRatio(
                       aspectRatio: _previewSize!.width / _previewSize!.height,
-                      child: buildPreview(),
+                      child: _buildPreview(),
                     ),
                   ),
                 ),
