@@ -1,6 +1,6 @@
 ## 0.9.4+8
 
-* Fixed an bug where ImageFormatGroup was ignored in startImageStream on iOS.
+* Fixed a bug where ImageFormatGroup was ignored in `startImageStream` on iOS.
 
 ## 0.9.4+7
 
