@@ -8,7 +8,6 @@
 #import <camera/FLTThreadSafeFlutterResult.h>
 #import <camera/FLTThreadSafeMethodChannel.h>
 #import <camera/FLTThreadSafeTextureRegistry.h>
-#import <camera/FlashMode.h>
 #import <camera/QueueHelper.h>
 
 FOUNDATION_EXPORT double cameraVersionNumber;

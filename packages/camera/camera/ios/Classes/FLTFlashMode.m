@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FlashMode.h"
+#import "FLTFlashMode.h"
 
-FlashMode getFlashModeForString(NSString *mode) {
+FLTFlashMode getFLTFlashModeForString(NSString *mode) {
   if ([mode isEqualToString:@"off"]) {
-    return FlashModeOff;
+    return FLTFlashModeOff;
   } else if ([mode isEqualToString:@"auto"]) {
-    return FlashModeAuto;
+    return FLTFlashModeAuto;
   } else if ([mode isEqualToString:@"always"]) {
-    return FlashModeAlways;
+    return FLTFlashModeAlways;
   } else if ([mode isEqualToString:@"torch"]) {
-    return FlashModeTorch;
+    return FLTFlashModeTorch;
   } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown
@@ -24,15 +24,15 @@ FlashMode getFlashModeForString(NSString *mode) {
   }
 }
 
-AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
+AVCaptureFlashMode getAVCaptureFlashModeForFLTFlashMode(FLTFlashMode mode) {
   switch (mode) {
-    case FlashModeOff:
+    case FLTFlashModeOff:
       return AVCaptureFlashModeOff;
-    case FlashModeAuto:
+    case FLTFlashModeAuto:
       return AVCaptureFlashModeAuto;
-    case FlashModeAlways:
+    case FLTFlashModeAlways:
       return AVCaptureFlashModeOn;
-    case FlashModeTorch:
+    case FLTFlashModeTorch:
     default:
       return -1;
   }
