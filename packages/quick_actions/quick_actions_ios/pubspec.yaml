@@ -14,6 +14,7 @@ flutter:
     platforms:
       ios:
         pluginClass: FLTQuickActionsPlugin
+        dartPluginClass: QuickActionsIos
 
 dependencies:
   flutter:

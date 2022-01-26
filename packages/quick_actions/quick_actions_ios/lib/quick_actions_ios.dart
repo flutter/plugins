@@ -4,15 +4,20 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:quick_actions_platform_interface/types/types.dart';
+import 'package:quick_actions_platform_interface/quick_actions_platform_interface.dart';
 
-import '../platform_interface/quick_actions_platform.dart';
+export 'package:quick_actions_platform_interface/types/types.dart';
 
 const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/quick_actions');
+    MethodChannel('plugins.flutter.io/quick_actions_ios');
 
 /// An implementation of [QuickActionsPlatform] that uses method channels.
-class MethodChannelQuickActions extends QuickActionsPlatform {
+class QuickActionsIos extends QuickActionsPlatform {
+    /// Registers this class as the default instance of [PathProviderPlatform].
+  static void registerWith() {
+    QuickActionsPlatform.instance = QuickActionsIos();
+  }
+
   /// The MethodChannel that is being used by this implementation of the plugin.
   @visibleForTesting
   MethodChannel get channel => _channel;
