@@ -11,7 +11,7 @@ export 'package:local_auth_platform_interface/types/biometric_type.dart';
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/local_auth_ios');
 
-// The implementation of [LocalAuthPlatform] for iOS.
+/// The implementation of [LocalAuthPlatform] for iOS.
 class LocalAuthIOS extends LocalAuthPlatform {
   /// Registers this class as the default instance of [LocalAuthPlatform].
   static void registerWith() {

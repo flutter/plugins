@@ -32,7 +32,7 @@ void main() {
     group('With device auth fail over', () {
       test('authenticate with no args on iOS.', () async {
         await localAuthentication.authenticate(
-          authStrings: IOSAuthMessages().args,
+          authStrings: const IOSAuthMessages().args,
           localizedReason: 'Needs secure',
           biometricOnly: true,
         );
@@ -54,7 +54,7 @@ void main() {
       test('authenticate with no localizedReason on iOS.', () async {
         await expectLater(
           localAuthentication.authenticate(
-            authStrings: IOSAuthMessages().args,
+            authStrings: const IOSAuthMessages().args,
             localizedReason: '',
             biometricOnly: true,
           ),
@@ -66,7 +66,7 @@ void main() {
     group('With biometrics only', () {
       test('authenticate with no args on iOS.', () async {
         await localAuthentication.authenticate(
-          authStrings: IOSAuthMessages().args,
+          authStrings: const IOSAuthMessages().args,
           localizedReason: 'Needs secure',
         );
         expect(
@@ -86,7 +86,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: IOSAuthMessages().args,
+          authStrings: const IOSAuthMessages().args,
           localizedReason: 'Insecure',
           sensitiveTransaction: false,
           useErrorDialogs: false,

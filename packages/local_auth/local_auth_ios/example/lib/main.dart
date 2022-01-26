@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
       });
       authenticated = await auth.authenticate(
         localizedReason: 'Let OS determine authentication method',
-        authStrings: IOSAuthMessages().args,
+        authStrings: const IOSAuthMessages().args,
         useErrorDialogs: true,
         stickyAuth: true,
       );
@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
       authenticated = await auth.authenticate(
         localizedReason:
             'Scan your fingerprint (or face or whatever) to authenticate',
-        authStrings: IOSAuthMessages().args,
+        authStrings: const IOSAuthMessages().args,
         useErrorDialogs: true,
         stickyAuth: true,
         biometricOnly: true,
