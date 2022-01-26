@@ -15,6 +15,7 @@
 namespace camera_windows {
 
 using flutter::EncodableMap;
+using flutter::MethodChannel;
 using flutter::MethodResult;
 
 enum PendingResultType {
@@ -116,6 +117,7 @@ class CameraImpl : public Camera {
 
  private:
   std::unique_ptr<CaptureController> capture_controller_ = nullptr;
+  std::unique_ptr<MethodChannel<>> camera_channel_ = nullptr;
   flutter::BinaryMessenger* messenger_ = nullptr;
   int64_t camera_id_ = -1;
   std::string device_id_;
@@ -133,6 +135,9 @@ class CameraImpl : public Camera {
   // error_message: A user-readable error message (optional).
   void SendErrorForPendingResults(const std::string& error_code,
                                   const std::string& descripion);
+
+  // Initializes method channel instance and returns pointer it
+  MethodChannel<>* GetMethodChannel();
 };
 
 class CameraFactory {

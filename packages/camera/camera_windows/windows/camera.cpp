@@ -9,22 +9,10 @@ using flutter::EncodableList;
 using flutter::EncodableMap;
 using flutter::EncodableValue;
 
-namespace {
 // Camera channel events.
 const char kCameraMethodChannelBaseName[] = "flutter.io/cameraPlugin/camera";
 const char kVideoRecordedEvent[] = "video_recorded";
 const char kErrorEvent[] = "error";
-
-// Helper function for creating messaging channel for camera.
-std::unique_ptr<flutter::MethodChannel<>> BuildChannelForCamera(
-    flutter::BinaryMessenger* messenger, int64_t camera_id) {
-  auto channel_name =
-      std::string(kCameraMethodChannelBaseName) + std::to_string(camera_id);
-  return std::make_unique<flutter::MethodChannel<>>(
-      messenger, channel_name, &flutter::StandardMethodCodec::GetInstance());
-}
-
-}  // namespace
 
 CameraImpl::CameraImpl(const std::string& device_id)
     : device_id_(device_id), Camera(device_id) {}
@@ -104,6 +92,24 @@ void CameraImpl::SendErrorForPendingResults(const std::string& error_code,
     std::move(pending_result.second)->Error(error_code, descripion);
   }
   pending_results_.clear();
+}
+
+MethodChannel<>* CameraImpl::GetMethodChannel() {
+  assert(messenger_);
+  assert(camera_id_);
+
+  // Use existing channel if initialized
+  if (camera_channel_) {
+    return camera_channel_.get();
+  }
+
+  auto channel_name =
+      std::string(kCameraMethodChannelBaseName) + std::to_string(camera_id_);
+
+  camera_channel_ = std::make_unique<flutter::MethodChannel<>>(
+      messenger_, channel_name, &flutter::StandardMethodCodec::GetInstance());
+
+  return camera_channel_.get();
 }
 
 void CameraImpl::OnCreateCaptureEngineSucceeded(int64_t texture_id) {
@@ -220,7 +226,7 @@ void CameraImpl::OnTakePictureFailed(const std::string& error) {
 void CameraImpl::OnVideoRecordSucceeded(const std::string& file_path,
                                         int64_t video_duration_ms) {
   if (messenger_ && camera_id_ >= 0) {
-    auto channel = BuildChannelForCamera(messenger_, camera_id_);
+    auto channel = GetMethodChannel();
 
     std::unique_ptr<EncodableValue> message_data =
         std::make_unique<EncodableValue>(
@@ -236,7 +242,8 @@ void CameraImpl::OnVideoRecordFailed(const std::string& error){};
 
 void CameraImpl::OnCaptureError(const std::string& error) {
   if (messenger_ && camera_id_ >= 0) {
-    auto channel = BuildChannelForCamera(messenger_, camera_id_);
+    auto channel = GetMethodChannel();
+
     std::unique_ptr<EncodableValue> message_data =
         std::make_unique<EncodableValue>(EncodableMap(
             {{EncodableValue("description"), EncodableValue(error)}}));
