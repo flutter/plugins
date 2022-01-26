@@ -16,8 +16,8 @@ namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
 // Initializes media type for video capture.
-HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
-                                      IMFMediaType **video_record_media_type,
+HRESULT BuildMediaTypeForVideoCapture(IMFMediaType* src_media_type,
+                                      IMFMediaType** video_record_media_type,
                                       GUID capture_format) {
   assert(src_media_type);
   ComPtr<IMFMediaType> new_media_type;
@@ -44,8 +44,8 @@ HRESULT BuildMediaTypeForVideoCapture(IMFMediaType *src_media_type,
 
 // Queries interface object from collection.
 template <class Q>
-HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
-                            Q **ppObj) {
+HRESULT GetCollectionObject(IMFCollection* pCollection, DWORD index,
+                            Q** ppObj) {
   ComPtr<IUnknown> pUnk;
   HRESULT hr = pCollection->GetElement(index, pUnk.GetAddressOf());
   if (FAILED(hr)) {
@@ -55,7 +55,7 @@ HRESULT GetCollectionObject(IMFCollection *pCollection, DWORD index,
 }
 
 // Initializes media type for audo capture.
-HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
+HRESULT BuildMediaTypeForAudioCapture(IMFMediaType** audio_record_media_type) {
   ComPtr<IMFAttributes> audio_output_attributes;
   ComPtr<IMFMediaType> src_media_type;
   ComPtr<IMFMediaType> new_media_type;
@@ -114,8 +114,8 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType **audio_record_media_type) {
   return hr;
 }
 
-HRESULT RecordHandler::InitRecordSink(IMFCaptureEngine *capture_engine,
-                                      IMFMediaType *base_media_type) {
+HRESULT RecordHandler::InitRecordSink(IMFCaptureEngine* capture_engine,
+                                      IMFMediaType* base_media_type) {
   HRESULT hr = S_OK;
   if (record_sink_) {
     // If record sink already exists, only update output filename.
@@ -188,10 +188,10 @@ HRESULT RecordHandler::InitRecordSink(IMFCaptureEngine *capture_engine,
   return hr;
 }
 
-bool RecordHandler::StartRecord(const std::string &file_path,
+bool RecordHandler::StartRecord(const std::string& file_path,
                                 int64_t max_duration,
-                                IMFCaptureEngine *capture_engine,
-                                IMFMediaType *base_media_type) {
+                                IMFCaptureEngine* capture_engine,
+                                IMFMediaType* base_media_type) {
   assert(!file_path.empty());
   assert(capture_engine);
   assert(base_media_type);
@@ -210,7 +210,7 @@ bool RecordHandler::StartRecord(const std::string &file_path,
   return true;
 }
 
-bool RecordHandler::StopRecord(IMFCaptureEngine *capture_engine) {
+bool RecordHandler::StopRecord(IMFCaptureEngine* capture_engine) {
   if (recording_state_ == RecordingState::RECORDING) {
     recording_state_ = RecordingState::STOPPING;
     HRESULT hr = capture_engine->StopRecord(true, false);

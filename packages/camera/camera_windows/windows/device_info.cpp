@@ -14,7 +14,7 @@ std::string GetUniqueDeviceName(
 }
 
 std::unique_ptr<CaptureDeviceInfo> ParseDeviceInfoFromCameraName(
-    const std::string &camera_name) {
+    const std::string& camera_name) {
   size_t delimeter_index = camera_name.rfind(' ', camera_name.length());
   if (delimeter_index != std::string::npos) {
     auto deviceInfo = std::make_unique<CaptureDeviceInfo>();

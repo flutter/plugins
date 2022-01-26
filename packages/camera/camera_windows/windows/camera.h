@@ -29,56 +29,56 @@ enum PendingResultType {
 
 class Camera : public CaptureControllerListener {
  public:
-  Camera(const std::string &device_id){};
+  Camera(const std::string& device_id){};
   virtual ~Camera() = default;
 
   // Disallow copy and move.
-  Camera(const Camera &) = delete;
-  Camera &operator=(const Camera &) = delete;
+  Camera(const Camera&) = delete;
+  Camera& operator=(const Camera&) = delete;
 
-  virtual bool HasDeviceId(std::string &device_id) = 0;
+  virtual bool HasDeviceId(std::string& device_id) = 0;
   virtual bool HasCameraId(int64_t camera_id) = 0;
   virtual bool AddPendingResult(PendingResultType type,
                                 std::unique_ptr<MethodResult<>> result) = 0;
   virtual bool HasPendingResultByType(PendingResultType type) = 0;
-  virtual camera_windows::CaptureController *GetCaptureController() = 0;
-  virtual void InitCamera(flutter::TextureRegistrar *texture_registrar,
-                          flutter::BinaryMessenger *messenger,
+  virtual camera_windows::CaptureController* GetCaptureController() = 0;
+  virtual void InitCamera(flutter::TextureRegistrar* texture_registrar,
+                          flutter::BinaryMessenger* messenger,
                           bool enable_audio,
                           ResolutionPreset resolution_preset) = 0;
 };
 
 class CameraImpl : public Camera {
  public:
-  CameraImpl(const std::string &device_id);
+  CameraImpl(const std::string& device_id);
   virtual ~CameraImpl();
 
   // Disallow copy and move.
-  CameraImpl(const CameraImpl &) = delete;
-  CameraImpl &operator=(const CameraImpl &) = delete;
+  CameraImpl(const CameraImpl&) = delete;
+  CameraImpl& operator=(const CameraImpl&) = delete;
 
   // From CaptureControllerListener.
   void OnCreateCaptureEngineSucceeded(int64_t texture_id) override;
-  void OnCreateCaptureEngineFailed(const std::string &error) override;
+  void OnCreateCaptureEngineFailed(const std::string& error) override;
   void OnStartPreviewSucceeded(int32_t width, int32_t height) override;
-  void OnStartPreviewFailed(const std::string &error) override;
+  void OnStartPreviewFailed(const std::string& error) override;
   void OnPausePreviewSucceeded() override;
-  void OnPausePreviewFailed(const std::string &error) override;
+  void OnPausePreviewFailed(const std::string& error) override;
   void OnResumePreviewSucceeded() override;
-  void OnResumePreviewFailed(const std::string &error) override;
+  void OnResumePreviewFailed(const std::string& error) override;
   void OnStartRecordSucceeded() override;
-  void OnStartRecordFailed(const std::string &error) override;
-  void OnStopRecordSucceeded(const std::string &filepath) override;
-  void OnStopRecordFailed(const std::string &error) override;
-  void OnTakePictureSucceeded(const std::string &filepath) override;
-  void OnTakePictureFailed(const std::string &error) override;
-  void OnVideoRecordSucceeded(const std::string &filepath,
+  void OnStartRecordFailed(const std::string& error) override;
+  void OnStopRecordSucceeded(const std::string& filepath) override;
+  void OnStopRecordFailed(const std::string& error) override;
+  void OnTakePictureSucceeded(const std::string& filepath) override;
+  void OnTakePictureFailed(const std::string& error) override;
+  void OnVideoRecordSucceeded(const std::string& filepath,
                               int64_t video_duration) override;
-  void OnVideoRecordFailed(const std::string &error) override;
-  void OnCaptureError(const std::string &error) override;
+  void OnVideoRecordFailed(const std::string& error) override;
+  void OnCaptureError(const std::string& error) override;
 
   // From Camera.
-  bool HasDeviceId(std::string &device_id) override {
+  bool HasDeviceId(std::string& device_id) override {
     return device_id_ == device_id;
   };
   bool HasCameraId(int64_t camera_id) override {
@@ -87,21 +87,21 @@ class CameraImpl : public Camera {
   bool AddPendingResult(PendingResultType type,
                         std::unique_ptr<MethodResult<>> result) override;
   bool HasPendingResultByType(PendingResultType type) override;
-  camera_windows::CaptureController *GetCaptureController() override {
+  camera_windows::CaptureController* GetCaptureController() override {
     return capture_controller_.get();
   };
-  void InitCamera(flutter::TextureRegistrar *texture_registrar,
-                  flutter::BinaryMessenger *messenger, bool enable_audio,
+  void InitCamera(flutter::TextureRegistrar* texture_registrar,
+                  flutter::BinaryMessenger* messenger, bool enable_audio,
                   ResolutionPreset resolution_preset) override;
   void InitCamera(
       std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
-      flutter::TextureRegistrar *texture_registrar,
-      flutter::BinaryMessenger *messenger, bool enable_audio,
+      flutter::TextureRegistrar* texture_registrar,
+      flutter::BinaryMessenger* messenger, bool enable_audio,
       ResolutionPreset resolution_preset);
 
  private:
   std::unique_ptr<CaptureController> capture_controller_ = nullptr;
-  flutter::BinaryMessenger *messenger_ = nullptr;
+  flutter::BinaryMessenger* messenger_ = nullptr;
   int64_t camera_id_ = -1;
   std::string device_id_;
 
@@ -109,8 +109,8 @@ class CameraImpl : public Camera {
   std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
   std::unique_ptr<MethodResult<>> GetPendingResultByType(
       PendingResultType type);
-  void SendErrorForPendingResults(const std::string &error_id,
-                                  const std::string &descripion);
+  void SendErrorForPendingResults(const std::string& error_id,
+                                  const std::string& descripion);
 };
 
 class CameraFactory {
@@ -119,11 +119,11 @@ class CameraFactory {
   virtual ~CameraFactory() = default;
 
   // Disallow copy and move.
-  CameraFactory(const CameraFactory &) = delete;
-  CameraFactory &operator=(const CameraFactory &) = delete;
+  CameraFactory(const CameraFactory&) = delete;
+  CameraFactory& operator=(const CameraFactory&) = delete;
 
   virtual std::unique_ptr<Camera> CreateCamera(
-      const std::string &device_id) = 0;
+      const std::string& device_id) = 0;
 };
 
 class CameraFactoryImpl : public CameraFactory {
@@ -132,10 +132,10 @@ class CameraFactoryImpl : public CameraFactory {
   virtual ~CameraFactoryImpl() = default;
 
   // Disallow copy and move.
-  CameraFactoryImpl(const CameraFactoryImpl &) = delete;
-  CameraFactoryImpl &operator=(const CameraFactoryImpl &) = delete;
+  CameraFactoryImpl(const CameraFactoryImpl&) = delete;
+  CameraFactoryImpl& operator=(const CameraFactoryImpl&) = delete;
 
-  std::unique_ptr<Camera> CreateCamera(const std::string &device_id) override {
+  std::unique_ptr<Camera> CreateCamera(const std::string& device_id) override {
     return std::make_unique<CameraImpl>(device_id);
   };
 };

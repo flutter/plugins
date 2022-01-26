@@ -22,59 +22,59 @@ using flutter::MethodResult;
 class CameraPlugin : public flutter::Plugin,
                      public VideoCaptureDeviceEnumerator {
  public:
-  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
+  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
-  CameraPlugin(flutter::TextureRegistrar *texture_registrar,
-               flutter::BinaryMessenger *messenger);
+  CameraPlugin(flutter::TextureRegistrar* texture_registrar,
+               flutter::BinaryMessenger* messenger);
 
   // Creates a plugin instance with the given CameraFactory instance.
   // Exists for unit testing with mock implementations.
-  CameraPlugin(flutter::TextureRegistrar *texture_registrar,
-               flutter::BinaryMessenger *messenger,
+  CameraPlugin(flutter::TextureRegistrar* texture_registrar,
+               flutter::BinaryMessenger* messenger,
                std::unique_ptr<CameraFactory> camera_factory);
 
   virtual ~CameraPlugin();
 
   // Disallow copy and move.
-  CameraPlugin(const CameraPlugin &) = delete;
-  CameraPlugin &operator=(const CameraPlugin &) = delete;
+  CameraPlugin(const CameraPlugin&) = delete;
+  CameraPlugin& operator=(const CameraPlugin&) = delete;
 
   // Called when a method is called on plugin channel.
-  void HandleMethodCall(const flutter::MethodCall<> &method_call,
+  void HandleMethodCall(const flutter::MethodCall<>& method_call,
                         std::unique_ptr<MethodResult<>> result);
 
  protected:
   std::vector<std::unique_ptr<Camera>> cameras_;
 
-  Camera *GetCameraByDeviceId(std::string &device_id);
-  Camera *GetCameraByCameraId(int64_t camera_id);
+  Camera* GetCameraByDeviceId(std::string& device_id);
+  Camera* GetCameraByCameraId(int64_t camera_id);
   void DisposeCameraByCameraId(int64_t camera_id);
-  bool EnumerateVideoCaptureDeviceSources(IMFActivate ***devices,
-                                          UINT32 *count) override;
+  bool EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
+                                          UINT32* count) override;
 
  private:
   std::unique_ptr<CameraFactory> camera_factory_;
-  flutter::TextureRegistrar *texture_registrar_;
-  flutter::BinaryMessenger *messenger_;
+  flutter::TextureRegistrar* texture_registrar_;
+  flutter::BinaryMessenger* messenger_;
 
   // Method handlers
   void AvailableCamerasMethodHandler(
       std::unique_ptr<flutter::MethodResult<>> result);
-  void CreateMethodHandler(const EncodableMap &args,
+  void CreateMethodHandler(const EncodableMap& args,
                            std::unique_ptr<MethodResult<>> result);
-  void InitializeMethodHandler(const EncodableMap &args,
+  void InitializeMethodHandler(const EncodableMap& args,
                                std::unique_ptr<MethodResult<>> result);
-  void TakePictureMethodHandler(const EncodableMap &args,
+  void TakePictureMethodHandler(const EncodableMap& args,
                                 std::unique_ptr<MethodResult<>> result);
-  void StartVideoRecordingMethodHandler(const EncodableMap &args,
+  void StartVideoRecordingMethodHandler(const EncodableMap& args,
                                         std::unique_ptr<MethodResult<>> result);
-  void StopVideoRecordingMethodHandler(const EncodableMap &args,
+  void StopVideoRecordingMethodHandler(const EncodableMap& args,
                                        std::unique_ptr<MethodResult<>> result);
-  void ResumePreviewMethodHandler(const EncodableMap &args,
+  void ResumePreviewMethodHandler(const EncodableMap& args,
                                   std::unique_ptr<MethodResult<>> result);
-  void PausePreviewMethodHandler(const EncodableMap &args,
+  void PausePreviewMethodHandler(const EncodableMap& args,
                                  std::unique_ptr<MethodResult<>> result);
-  void DisposeMethodHandler(const EncodableMap &args,
+  void DisposeMethodHandler(const EncodableMap& args,
                             std::unique_ptr<MethodResult<>> result);
 };
 

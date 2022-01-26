@@ -30,19 +30,19 @@ class RecordHandler {
   virtual ~RecordHandler() = default;
 
   // Prevent copying.
-  RecordHandler(RecordHandler const &) = delete;
-  RecordHandler &operator=(RecordHandler const &) = delete;
+  RecordHandler(RecordHandler const&) = delete;
+  RecordHandler& operator=(RecordHandler const&) = delete;
 
   // Initializes record sink and asks capture engine to start recording.
   // Sets record state to STARTING.
   // Returns false if recording cannot be started.
-  bool StartRecord(const std::string &filepath, int64_t max_duration,
-                   IMFCaptureEngine *capture_engine,
-                   IMFMediaType *base_media_type);
+  bool StartRecord(const std::string& filepath, int64_t max_duration,
+                   IMFCaptureEngine* capture_engine,
+                   IMFMediaType* base_media_type);
 
   // Stops existing recording.
   // Returns false if recording cannot be stopped.
-  bool StopRecord(IMFCaptureEngine *capture_engine);
+  bool StopRecord(IMFCaptureEngine* capture_engine);
 
   // Set the record handler recording state to RECORDING.
   void OnRecordStarted();
@@ -77,8 +77,8 @@ class RecordHandler {
 
  private:
   // Initializes record sink for video file capture.
-  HRESULT InitRecordSink(IMFCaptureEngine *capture_engine,
-                         IMFMediaType *base_media_type);
+  HRESULT InitRecordSink(IMFCaptureEngine* capture_engine,
+                         IMFMediaType* base_media_type);
 
   bool record_audio_ = false;
   int64_t max_video_duration_ms_ = -1;

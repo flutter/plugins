@@ -29,23 +29,23 @@ CaptureEngineListener::Release() {
 
 // IUnknown
 STDMETHODIMP_(HRESULT)
-CaptureEngineListener::QueryInterface(const IID &riid, void **ppv) {
+CaptureEngineListener::QueryInterface(const IID& riid, void** ppv) {
   *ppv = nullptr;
 
   if (riid == IID_IMFCaptureEngineOnEventCallback) {
-    *ppv = static_cast<IMFCaptureEngineOnEventCallback *>(this);
-    ((IUnknown *)*ppv)->AddRef();
+    *ppv = static_cast<IMFCaptureEngineOnEventCallback*>(this);
+    ((IUnknown*)*ppv)->AddRef();
     return S_OK;
   } else if (riid == IID_IMFCaptureEngineOnSampleCallback) {
-    *ppv = static_cast<IMFCaptureEngineOnSampleCallback *>(this);
-    ((IUnknown *)*ppv)->AddRef();
+    *ppv = static_cast<IMFCaptureEngineOnSampleCallback*>(this);
+    ((IUnknown*)*ppv)->AddRef();
     return S_OK;
   }
 
   return E_NOINTERFACE;
 }
 
-STDMETHODIMP CaptureEngineListener::OnEvent(IMFMediaEvent *event) {
+STDMETHODIMP CaptureEngineListener::OnEvent(IMFMediaEvent* event) {
   if (observer_) {
     observer_->OnEvent(event);
   }
@@ -53,7 +53,7 @@ STDMETHODIMP CaptureEngineListener::OnEvent(IMFMediaEvent *event) {
 }
 
 // IMFCaptureEngineOnSampleCallback
-HRESULT CaptureEngineListener::OnSample(IMFSample *sample) {
+HRESULT CaptureEngineListener::OnSample(IMFSample* sample) {
   HRESULT hr = S_OK;
 
   if (this->observer_ && sample) {
@@ -77,9 +77,9 @@ HRESULT CaptureEngineListener::OnSample(IMFSample *sample) {
     if (SUCCEEDED(hr) && buffer) {
       DWORD max_length = 0;
       DWORD current_length = 0;
-      uint8_t *data;
+      uint8_t* data;
       if (SUCCEEDED(buffer->Lock(&data, &max_length, &current_length))) {
-        uint8_t *src_buffer = this->observer_->GetSourceBuffer(current_length);
+        uint8_t* src_buffer = this->observer_->GetSourceBuffer(current_length);
         if (src_buffer) {
           std::copy(data, data + current_length, src_buffer);
         }
