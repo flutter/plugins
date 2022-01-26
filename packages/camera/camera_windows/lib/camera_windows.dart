@@ -11,7 +11,6 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 /// An implementation of [CameraPlatform] for Windows.
@@ -410,8 +409,7 @@ class CameraWindows extends CameraPlatform {
         );
         break;
       case 'video_recorded':
-
-        /// This is called if maxVideoDuration was given on record start.
+        // This is called if maxVideoDuration was given on record start.
         cameraEventStreamController.add(
           VideoRecordedEvent(
             cameraId,
