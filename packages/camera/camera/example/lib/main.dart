@@ -626,7 +626,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
-      await controller!.dispose();
+      CameraController? _controller = controller!;
+      setState(() {
+        controller = null;
+      });
+      await _controller.dispose();
+      _controller = null;
     }
 
     final CameraController cameraController = CameraController(
@@ -635,8 +640,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
-
-    controller = cameraController;
 
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
@@ -668,6 +671,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .getMinZoomLevel()
             .then((value) => _minAvailableZoom = value),
       ]);
+      controller = cameraController;
     } on CameraException catch (e) {
       _showCameraException(e);
     }

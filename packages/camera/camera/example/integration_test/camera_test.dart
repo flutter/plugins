@@ -4,10 +4,11 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
-import 'package:flutter/painting.dart';
+import 'package:camera_example/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
@@ -63,7 +64,9 @@ void main() {
 
     // Load picture
     final File fileImage = File(file.path);
-    final Image image = await decodeImageFromList(fileImage.readAsBytesSync());
+    final ui.Image image = await decodeImageFromList(
+      fileImage.readAsBytesSync(),
+    );
 
     // Verify image dimensions are as expected
     expect(image, isNotNull);
@@ -291,5 +294,29 @@ void main() {
       expect(_image.planes.length, 1);
     },
     skip: !Platform.isIOS,
+  );
+
+  testWidgets(
+    'Disposed controller removed correctly',
+    (WidgetTester tester) async {
+      cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        return;
+      }
+
+      // Bump the example.
+      await tester.pumpWidget(CameraApp());
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      // Tap to switch to the first camera.
+      await tester.tap(
+        find.byIcon(getCameraLensIcon(cameras.first.lensDirection)),
+      );
+      // Wait a few seconds to make sure the lifecycle changed.
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      // Ensure the controller is no longer depended by widgets.
+      final dynamic exception = tester.takeException();
+      expect(exception, isNull);
+    },
   );
 }
