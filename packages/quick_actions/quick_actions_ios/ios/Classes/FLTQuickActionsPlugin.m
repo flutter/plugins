@@ -4,7 +4,7 @@
 
 #import "FLTQuickActionsPlugin.h"
 
-static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
+static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions_ios";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
