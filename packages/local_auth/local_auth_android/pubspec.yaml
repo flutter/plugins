@@ -21,10 +21,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_plugin_android_lifecycle: ^2.0.1
+  intl: ^0.17.0
   local_auth_platform_interface:
     path: ../local_auth_platform_interface
-  intl: ^0.17.0
-  flutter_plugin_android_lifecycle: ^2.0.1
 
 dev_dependencies:
   flutter_test:

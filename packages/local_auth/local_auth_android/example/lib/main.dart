@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
       });
       authenticated = await auth.authenticate(
           localizedReason: 'Let OS determine authentication method',
-          authStrings: AndroidAuthMessages().args,
+          authStrings: const AndroidAuthMessages().args,
           useErrorDialogs: true,
           stickyAuth: true);
       setState(() {
@@ -113,7 +113,7 @@ class _MyAppState extends State<MyApp> {
       authenticated = await auth.authenticate(
           localizedReason:
               'Scan your fingerprint (or face or whatever) to authenticate',
-          authStrings: AndroidAuthMessages().args,
+          authStrings: const AndroidAuthMessages().args,
           useErrorDialogs: true,
           stickyAuth: true,
           biometricOnly: true);
