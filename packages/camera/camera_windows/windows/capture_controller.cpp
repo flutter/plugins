@@ -11,6 +11,8 @@
 #include <chrono>
 #include <system_error>
 
+#include "photo_handler.h"
+#include "preview_handler.h"
 #include "record_handler.h"
 #include "string_utils.h"
 
@@ -46,65 +48,6 @@ bool CaptureControllerImpl::EnumerateVideoCaptureDeviceSources(
   return SUCCEEDED(hr);
 }
 
-HRESULT BuildMediaTypeForVideoPreview(IMFMediaType* src_media_type,
-                                      IMFMediaType** preview_media_type) {
-  assert(src_media_type);
-  ComPtr<IMFMediaType> new_media_type;
-
-  HRESULT hr = MFCreateMediaType(&new_media_type);
-
-  if (SUCCEEDED(hr)) {
-    // Clones everything from original media type.
-    hr = src_media_type->CopyAllItems(new_media_type.Get());
-  }
-
-  if (SUCCEEDED(hr)) {
-    // Changes subtype to MFVideoFormat_RGB32.
-    hr = new_media_type->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = new_media_type->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, TRUE);
-  }
-
-  if (SUCCEEDED(hr)) {
-    new_media_type.CopyTo(preview_media_type);
-  }
-
-  return hr;
-}
-
-// Initializes media type for photo capture for jpeg images.
-HRESULT BuildMediaTypeForPhotoCapture(IMFMediaType* src_media_type,
-                                      IMFMediaType** photo_media_type,
-                                      GUID image_format) {
-  assert(src_media_type);
-  ComPtr<IMFMediaType> new_media_type;
-
-  HRESULT hr = MFCreateMediaType(&new_media_type);
-
-  if (SUCCEEDED(hr)) {
-    // Clones everything from original media type.
-    hr = src_media_type->CopyAllItems(new_media_type.Get());
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = new_media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Image);
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = new_media_type->SetGUID(MF_MT_SUBTYPE, image_format);
-  }
-
-  if (SUCCEEDED(hr)) {
-    new_media_type.CopyTo(photo_media_type);
-  }
-
-  return hr;
-}
-
-// Uses first audio source to capture audio.
-// Note: Enumerating audio sources via platform interface is not supported.
 HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   audio_source_ = nullptr;
   IMFActivate** devices = nullptr;
@@ -189,9 +132,9 @@ HRESULT CaptureControllerImpl::CreateVideoCaptureSourceForDevice(
   return hr;
 }
 
-// Create DX11 Device and D3D Manager
-// TODO: Use existing ANGLE device
 HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
+  // TODO: Use existing ANGLE device
+
   HRESULT hr = S_OK;
   hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
                          D3D11_CREATE_DEVICE_VIDEO_SUPPORT, nullptr, 0,
@@ -293,16 +236,16 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
 }
 
 void CaptureControllerImpl::ResetCaptureController() {
-  if (previewing_) {
-    StopPreview();
-  }
-
   if (record_handler_) {
     if (record_handler_->IsContinuousRecording()) {
       StopRecord();
     } else if (record_handler_->IsTimedRecording()) {
       StopTimedRecord();
     }
+  }
+
+  if (preview_handler_ && preview_handler_->IsInitialized()) {
+    StopPreview();
   }
 
   // Shuts down the media foundation platform object.
@@ -316,29 +259,14 @@ void CaptureControllerImpl::ResetCaptureController() {
   media_foundation_started_ = false;
   capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
   record_handler_ = nullptr;
-
-  preview_pending_ = false;
-  previewing_ = false;
-  pending_image_capture_ = false;
-
-  // Preview
-  preview_sink_ = nullptr;
+  preview_handler_ = nullptr;
+  photo_handler_ = nullptr;
   preview_frame_width_ = 0;
   preview_frame_height_ = 0;
-
-  // Photo / Record
-  photo_sink_ = nullptr;
-  record_sink_ = nullptr;
-  capture_frame_width_ = 0;
-  capture_frame_height_ = 0;
-
-  // CaptureEngine
   capture_engine_callback_handler_ = nullptr;
   capture_engine_ = nullptr;
-
   audio_source_ = nullptr;
   video_source_ = nullptr;
-
   base_preview_media_type_ = nullptr;
   base_capture_media_type_ = nullptr;
 
@@ -353,6 +281,7 @@ void CaptureControllerImpl::ResetCaptureController() {
   if (texture_registrar_ && texture_id_ > -1) {
     texture_registrar_->UnregisterTexture(texture_id_);
   }
+  texture_id_ = -1;
   texture_ = nullptr;
 }
 
@@ -429,32 +358,34 @@ CaptureControllerImpl::ConvertPixelBufferForFlutter(size_t target_width,
   return nullptr;
 }
 
-void CaptureControllerImpl::TakePicture(const std::string filepath) {
-  assert(capture_controller_listener_);
+void CaptureControllerImpl::TakePicture(const std::string file_path) {
+  assert(capture_engine_callback_handler_);
+  assert(capture_engine_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
     return OnPicture(false, "Not initialized");
   }
 
-  if (pending_image_capture_) {
-    return OnPicture(false, "Already capturing image");
+  if (!base_capture_media_type_) {
+    // Enumerates mediatypes and finds media type for video capture.
+    if (FAILED(FindBaseMediaTypes())) {
+      return OnPicture(false, "Failed to initialize photo capture");
+    }
   }
 
-  HRESULT hr = InitPhotoSink(filepath);
-
-  if (FAILED(hr)) {
-    return OnPicture(false, "Failed to init photo sink");
+  if (!photo_handler_) {
+    photo_handler_ = std::make_unique<PhotoHandler>();
+  } else if (photo_handler_->IsTakingPhoto()) {
+    return OnPicture(false, "Photo already requested");
   }
 
-  // Request new photo
-  pending_picture_path_ = filepath;
-  pending_image_capture_ = true;
-  hr = capture_engine_->TakePhoto();
-
-  if (FAILED(hr)) {
-    pending_image_capture_ = false;
-    pending_picture_path_ = std::string();
-    return OnPicture(false, "Failed to take picture");
+  // Check MF_CAPTURE_ENGINE_PHOTO_TAKEN event handling
+  // for response process.
+  if (!photo_handler_->TakePhoto(file_path, capture_engine_.Get(),
+                                 base_capture_media_type_.Get())) {
+    // Destroy photo handler on error cases to make sure state is resetted.
+    photo_handler_ = nullptr;
+    return OnPicture(false, "Failed to take photo");
   }
 }
 
@@ -483,6 +414,46 @@ uint32_t CaptureControllerImpl::GetMaxPreviewHeight() {
   }
 }
 
+// Finds best mediat type for given source stream index and max height;
+bool FindBestMediaType(DWORD source_stream_index, IMFCaptureSource* source,
+                       IMFMediaType** target_media_type, uint32_t max_height,
+                       uint32_t* target_frame_width,
+                       uint32_t* target_frame_height) {
+  assert(source);
+  ComPtr<IMFMediaType> media_type;
+
+  uint32_t best_width = 0;
+  uint32_t best_height = 0;
+
+  // Loop native media types.
+  for (int i = 0;; i++) {
+    if (FAILED(source->GetAvailableDeviceMediaType(
+            source_stream_index, i, media_type.GetAddressOf()))) {
+      break;
+    }
+
+    uint32_t frame_width;
+    uint32_t frame_height;
+    if (SUCCEEDED(MFGetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
+                                     &frame_width, &frame_height))) {
+      // Update target mediatype
+      if (frame_height <= max_height &&
+          (best_width < frame_width || best_height < frame_height)) {
+        media_type.CopyTo(target_media_type);
+        best_width = frame_width;
+        best_height = frame_height;
+      }
+    }
+  }
+
+  if (target_frame_width && target_frame_height) {
+    *target_frame_width = best_width;
+    *target_frame_height = best_height;
+  }
+
+  return *target_media_type != nullptr;
+}
+
 HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
     return E_FAIL;
@@ -492,183 +463,36 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
   HRESULT hr = capture_engine_->GetSource(&source);
 
   if (SUCCEEDED(hr)) {
-    ComPtr<IMFMediaType> media_type;
-    uint32_t max_height = GetMaxPreviewHeight();
-
-    // Loop native media types.
-    for (int i = 0;; i++) {
-      // Release media type if exists from previous loop.
-      media_type = nullptr;
-
-      if (FAILED(source->GetAvailableDeviceMediaType(
-              (DWORD)
-                  MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
-              i, media_type.GetAddressOf()))) {
-        break;
-      }
-
-      uint32_t frame_width;
-      uint32_t frame_height;
-      if (SUCCEEDED(MFGetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
-                                       &frame_width, &frame_height))) {
-        // Update media type for photo and record capture.
-        if (capture_frame_width_ < frame_width ||
-            capture_frame_height_ < frame_height) {
-          base_capture_media_type_ = media_type;
-
-          capture_frame_width_ = frame_width;
-          capture_frame_height_ = frame_height;
-        }
-
-        // Update media type for preview.
-        if (frame_height <= max_height &&
-            (preview_frame_width_ < frame_width ||
-             preview_frame_height_ < frame_height)) {
-          base_preview_media_type_ = media_type;
-
-          preview_frame_width_ = frame_width;
-          preview_frame_height_ = frame_height;
-        }
-      }
+    // Find base media type for previewing.
+    uint32_t max_preview_height = GetMaxPreviewHeight();
+    if (!FindBestMediaType(
+            (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
+            source.Get(), base_preview_media_type_.GetAddressOf(),
+            max_preview_height, &preview_frame_width_,
+            &preview_frame_height_)) {
+      return E_FAIL;
     }
 
-    if (base_preview_media_type_ && base_capture_media_type_) {
-      hr = S_OK;
-    } else {
-      hr = E_FAIL;
+    // Find base media type for record and photo capture.
+    if (!FindBestMediaType(
+            (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_RECORD,
+            source.Get(), base_capture_media_type_.GetAddressOf(),
+            (uint32_t)0xffffffff, nullptr, nullptr)) {
+      return E_FAIL;
     }
   }
 
   return hr;
 }
 
-HRESULT CaptureControllerImpl::InitPreviewSink() {
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
-    return E_FAIL;
-  }
-
-  HRESULT hr = S_OK;
-  if (preview_sink_) {
-    return hr;
-  }
-
-  ComPtr<IMFMediaType> preview_media_type;
-  ComPtr<IMFCaptureSink> capture_sink;
-
-  // Get sink with preview type.
-  hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW,
-                                &capture_sink);
-
-  if (capture_sink && SUCCEEDED(hr)) {
-    hr = capture_sink.As(&preview_sink_);
-  }
-
-  if (preview_sink_ && SUCCEEDED(hr)) {
-    hr = preview_sink_->RemoveAllStreams();
-  }
-
-  if (SUCCEEDED(hr) && !base_preview_media_type_) {
-    hr = FindBaseMediaTypes();
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = BuildMediaTypeForVideoPreview(base_preview_media_type_.Get(),
-                                       preview_media_type.GetAddressOf());
-  }
-
-  if (SUCCEEDED(hr)) {
-    DWORD preview_sink_stream_index;
-    hr = preview_sink_->AddStream(
-        (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
-        preview_media_type.Get(), nullptr, &preview_sink_stream_index);
-
-    if (SUCCEEDED(hr)) {
-      hr = preview_sink_->SetSampleCallback(
-          preview_sink_stream_index, capture_engine_callback_handler_.Get());
-    }
-  }
-
-  if (FAILED(hr)) {
-    preview_sink_ = nullptr;
-  }
-
-  return hr;
-}
-
-HRESULT CaptureControllerImpl::InitPhotoSink(const std::string& filepath) {
-  HRESULT hr = S_OK;
-
-  if (photo_sink_) {
-    // If photo sink already exists, only update output filename.
-    hr = photo_sink_->SetOutputFileName(Utf16FromUtf8(filepath).c_str());
-
-    if (FAILED(hr)) {
-      photo_sink_ = nullptr;
-    }
-
-    return hr;
-  }
-
-  ComPtr<IMFMediaType> photo_media_type;
-  ComPtr<IMFCaptureSink> capture_sink;
-
-  // Gets sink with photo type.
-  hr = capture_engine_->GetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PHOTO,
-                                &capture_sink);
-
-  if (SUCCEEDED(hr)) {
-    hr = capture_sink.As(&photo_sink_);
-  }
-
-  if (SUCCEEDED(hr) && !base_capture_media_type_) {
-    hr = FindBaseMediaTypes();
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = BuildMediaTypeForPhotoCapture(base_capture_media_type_.Get(),
-                                       photo_media_type.GetAddressOf(),
-                                       GUID_ContainerFormatJpeg);
-  }
-
-  if (SUCCEEDED(hr)) {
-    // Removes existing streams if available.
-    hr = photo_sink_->RemoveAllStreams();
-  }
-
-  if (SUCCEEDED(hr)) {
-    DWORD dwSinkStreamIndex;
-    hr = photo_sink_->AddStream(
-        (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_PHOTO,
-        photo_media_type.Get(), nullptr, &dwSinkStreamIndex);
-  }
-
-  if (SUCCEEDED(hr)) {
-    hr = photo_sink_->SetOutputFileName(Utf16FromUtf8(filepath).c_str());
-  }
-
-  if (FAILED(hr)) {
-    photo_sink_ = nullptr;
-  }
-
-  return hr;
-}
-
-// Starts recording.
-// Check MF_CAPTURE_ENGINE_RECORD_STARTED event handling for response process.
-void CaptureControllerImpl::StartRecord(const std::string& filepath,
+void CaptureControllerImpl::StartRecord(const std::string& file_path,
                                         int64_t max_video_duration_ms) {
-  assert(capture_controller_listener_);
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Camera not initialized. Camera should be disposed and reinitialized.");
-  }
+  assert(capture_engine_);
 
-  if (!record_handler_) {
-    record_handler_ = std::make_unique<RecordHandler>(record_audio_);
-  } else if (record_handler_->CanStart()) {
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Recording cannot be started. Previous recording must be stopped "
-        "first.");
+  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+    return OnRecordStarted(
+        false,
+        "Camera not initialized. Camera should be disposed and reinitialized.");
   }
 
   if (!base_capture_media_type_) {
@@ -678,34 +502,43 @@ void CaptureControllerImpl::StartRecord(const std::string& filepath,
     }
   }
 
-  if (!record_handler_->StartRecord(filepath, max_video_duration_ms,
+  if (!record_handler_) {
+    record_handler_ = std::make_unique<RecordHandler>(record_audio_);
+  } else if (!record_handler_->CanStart()) {
+    return OnRecordStarted(
+        false,
+        "Recording cannot be started. Previous recording must be stopped "
+        "first.");
+  }
+
+  // Check MF_CAPTURE_ENGINE_RECORD_STARTED event handling for response process.
+  if (!record_handler_->StartRecord(file_path, max_video_duration_ms,
                                     capture_engine_.Get(),
                                     base_capture_media_type_.Get())) {
+    // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Failed to start video recording");
+    return OnRecordStarted(false, "Failed to start video recording");
   }
 }
 
-// Stops recording.
-// Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response process.
 void CaptureControllerImpl::StopRecord() {
   assert(capture_controller_listener_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
-    return capture_controller_listener_->OnStopRecordFailed(
+    return OnRecordStopped(
+        false,
         "Camera not initialized. Camera should be disposed and reinitialized.");
   }
 
   if (!record_handler_ && !record_handler_->CanStop()) {
-    return capture_controller_listener_->OnStopRecordFailed(
-        "Recording cannot be stopped.");
+    return OnRecordStopped(false, "Recording cannot be stopped.");
   }
 
+  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response process.
   if (!record_handler_->StopRecord(capture_engine_.Get())) {
+    // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
-    return capture_controller_listener_->OnStartRecordFailed(
-        "Failed to stop video recording");
+    return OnRecordStopped(false, "Failed to stop video recording");
   }
 }
 
@@ -718,16 +551,18 @@ void CaptureControllerImpl::StopTimedRecord() {
   }
 
   if (!record_handler_->StopRecord(capture_engine_.Get())) {
+    // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
     return capture_controller_listener_->OnVideoRecordFailed(
         "Failed to record video");
   }
 }
 
-// Starts capturing preview frames using preview sink
+// Starts capturing preview frames using preview handler
 // After first frame is captured, OnPreviewStarted is called
 void CaptureControllerImpl::StartPreview() {
-  assert(capture_controller_listener_);
+  assert(capture_engine_callback_handler_);
+  assert(capture_engine_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
     return OnPreviewStarted(
@@ -735,22 +570,29 @@ void CaptureControllerImpl::StartPreview() {
         "Camera not initialized. Camera should be disposed and reinitialized.");
   }
 
-  if (previewing_) {
-    // Return success if preview already started
+  if (!base_preview_media_type_) {
+    // Enumerates mediatypes and finds media type for video capture.
+    if (FAILED(FindBaseMediaTypes())) {
+      return OnPreviewStarted(false, "Failed to initialize video preview");
+    }
+  }
+
+  if (!preview_handler_) {
+    preview_handler_ = std::make_unique<PreviewHandler>();
+  } else if (preview_handler_->IsInitialized()) {
     return OnPreviewStarted(true, "");
+  } else {
+    return OnPreviewStarted(false, "Preview already exists");
   }
 
-  HRESULT hr = InitPreviewSink();
-
-  if (SUCCEEDED(hr)) {
-    preview_pending_ = true;
-
-    // Requests to start preview.
-    hr = capture_engine_->StartPreview();
-  }
-
-  if (FAILED(hr)) {
-    return OnPreviewStarted(false, "Failed to start preview");
+  // Check MF_CAPTURE_ENGINE_PREVIEW_STARTED event handling for response
+  // process.
+  if (!preview_handler_->StartPreview(capture_engine_.Get(),
+                                      base_capture_media_type_.Get(),
+                                      capture_engine_callback_handler_.Get())) {
+    // Destroy preview handler on error cases to make sure state is resetted.
+    preview_handler_ = nullptr;
+    return OnPreviewStarted(false, "Failed to start video preview");
   }
 }
 
@@ -759,33 +601,33 @@ void CaptureControllerImpl::StartPreview() {
 // pausing and resuming the preview.
 // Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event handling for response process.
 void CaptureControllerImpl::StopPreview() {
-  assert(capture_controller_listener_);
+  assert(capture_engine_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
-      (!previewing_ && !preview_pending_)) {
+      !preview_handler_) {
     return;
   }
 
   // Requests to stop preview.
-  capture_engine_->StopPreview();
+  preview_handler_->StopPreview(capture_engine_.Get());
 }
 
 // Marks preview as paused.
 // When preview is paused, captured frames are not processed for preview
 // and flutter texture is not updated
 void CaptureControllerImpl::PausePreview() {
-  if (!previewing_) {
-    preview_paused_ = false;
+  assert(capture_controller_listener_);
 
-    if (capture_controller_listener_) {
-      return capture_controller_listener_->OnPausePreviewFailed(
-          "Preview not started");
-    }
+  if (!preview_handler_ && !preview_handler_->IsInitialized()) {
+    return capture_controller_listener_->OnPausePreviewFailed(
+        "Preview not started");
   }
-  preview_paused_ = true;
 
-  if (capture_controller_listener_) {
+  if (preview_handler_->PausePreview()) {
     capture_controller_listener_->OnPausePreviewSucceeded();
+  } else {
+    capture_controller_listener_->OnPausePreviewFailed(
+        "Failed to pause preview");
   }
 }
 
@@ -793,9 +635,18 @@ void CaptureControllerImpl::PausePreview() {
 // When preview is not paused, captured frames are processed for preview
 // and flutter texture is updated.
 void CaptureControllerImpl::ResumePreview() {
-  preview_paused_ = false;
-  if (capture_controller_listener_) {
+  assert(capture_controller_listener_);
+
+  if (!preview_handler_ && !preview_handler_->IsInitialized()) {
+    return capture_controller_listener_->OnResumePreviewFailed(
+        "Preview not started");
+  }
+
+  if (preview_handler_->ResumePreview()) {
     capture_controller_listener_->OnResumePreviewSucceeded();
+  } else {
+    capture_controller_listener_->OnResumePreviewFailed(
+        "Failed to pause preview");
   }
 }
 
@@ -850,19 +701,23 @@ void CaptureControllerImpl::OnEvent(IMFMediaEvent* event) {
 
 // Handles Picture event and informs CaptureControllerListener.
 void CaptureControllerImpl::OnPicture(bool success, const std::string& error) {
-  if (capture_controller_listener_) {
-    if (success && !pending_picture_path_.empty()) {
-      capture_controller_listener_->OnTakePictureSucceeded(
-          pending_picture_path_);
-    } else {
+  if (success && photo_handler_) {
+    if (capture_controller_listener_) {
+      std::string path = photo_handler_->GetPhotoPath();
+      capture_controller_listener_->OnTakePictureSucceeded(path);
+    }
+    photo_handler_->OnPhotoTaken();
+  } else {
+    if (capture_controller_listener_) {
       capture_controller_listener_->OnTakePictureFailed(error);
     }
+    // Destroy photo handler on error cases to make sure state is resetted.
+    photo_handler_ = nullptr;
   }
-  pending_image_capture_ = false;
-  pending_picture_path_ = std::string();
 }
 
-// Handles CaptureEngineInitialized event and informs CaptureControllerListener.
+// Handles CaptureEngineInitialized event and informs
+// CaptureControllerListener.
 void CaptureControllerImpl::OnCaptureEngineInitialized(
     bool success, const std::string& error) {
   if (capture_controller_listener_) {
@@ -901,8 +756,17 @@ void CaptureControllerImpl::OnCaptureEngineError(HRESULT hr,
 }
 
 // Handles PreviewStarted event and informs CaptureControllerListener.
+// This should be called only after first frame has been received or
+// in error cases.
 void CaptureControllerImpl::OnPreviewStarted(bool success,
                                              const std::string& error) {
+  if (preview_handler_ && success) {
+    preview_handler_->OnPreviewStarted();
+  } else {
+    // Destroy preview handler on error cases to make sure state is resetted.
+    preview_handler_ = nullptr;
+  }
+
   if (capture_controller_listener_) {
     if (success && preview_frame_width_ > 0 && preview_frame_height_ > 0) {
       capture_controller_listener_->OnStartPreviewSucceeded(
@@ -911,31 +775,30 @@ void CaptureControllerImpl::OnPreviewStarted(bool success,
       capture_controller_listener_->OnStartPreviewFailed(error);
     }
   }
-
-  // update state
-  preview_pending_ = false;
-  previewing_ = success;
 };
 
 // Handles PreviewStopped event.
 void CaptureControllerImpl::OnPreviewStopped(bool success,
                                              const std::string& error) {
-  // update state
-  previewing_ = false;
+  // Preview handler is destroyed if preview is stopped as it
+  // does not have any use anymore.
+  preview_handler_ = nullptr;
 };
 
 // Handles RecordStarted event and informs CaptureControllerListener.
 void CaptureControllerImpl::OnRecordStarted(bool success,
                                             const std::string& error) {
-  if (success) {
+  if (success && record_handler_) {
+    record_handler_->OnRecordStarted();
     if (capture_controller_listener_) {
       capture_controller_listener_->OnStartRecordSucceeded();
     }
-    record_handler_->OnRecordStarted();
   } else {
     if (capture_controller_listener_) {
       capture_controller_listener_->OnStartRecordFailed(error);
     }
+
+    // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
   }
 };
@@ -944,11 +807,11 @@ void CaptureControllerImpl::OnRecordStarted(bool success,
 void CaptureControllerImpl::OnRecordStopped(bool success,
                                             const std::string& error) {
   if (capture_controller_listener_ && record_handler_) {
-    // Always calls stop record handler,
+    // Always calls OnStopRecord listener methods
     // to handle separate stop record request for timed records.
-    std::string path = record_handler_->GetRecordPath();
 
     if (success) {
+      std::string path = record_handler_->GetRecordPath();
       capture_controller_listener_->OnStopRecordSucceeded(path);
       if (record_handler_->IsTimedRecording()) {
         capture_controller_listener_->OnVideoRecordSucceeded(
@@ -962,21 +825,24 @@ void CaptureControllerImpl::OnRecordStopped(bool success,
     }
   }
 
-  // update state
-
-  record_handler_ = nullptr;
+  if (success && record_handler_) {
+    record_handler_->OnRecordStopped();
+  } else {
+    // Destroy record handler on error cases to make sure state is resetted.
+    record_handler_ = nullptr;
+  }
 }
 
 // Returns pointer to databuffer.
 // Called via IMFCaptureEngineOnSampleCallback implementation.
-// Implements CaptureEngineObserver::GetSourceBuffer.
-uint8_t* CaptureControllerImpl::GetSourceBuffer(uint32_t current_length) {
+// Implements CaptureEngineObserver::GetFrameBuffer.
+uint8_t* CaptureControllerImpl::GetFrameBuffer(uint32_t new_length) {
   if (this->source_buffer_data_ == nullptr ||
-      this->source_buffer_size_ != current_length) {
+      this->source_buffer_size_ != new_length) {
     // Update source buffer size.
     this->source_buffer_data_ = nullptr;
-    this->source_buffer_data_ = std::make_unique<uint8_t[]>(current_length);
-    this->source_buffer_size_ = current_length;
+    this->source_buffer_data_ = std::make_unique<uint8_t[]>(new_length);
+    this->source_buffer_size_ = new_length;
   }
   return this->source_buffer_data_.get();
 }
@@ -999,8 +865,9 @@ void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
     return;
   }
 
-  if (preview_pending_) {
-    // Informs that first frame is captured succeffully and preview has started.
+  if (preview_handler_ && preview_handler_->IsStarting()) {
+    // Informs that first frame is captured succeffully and preview has
+    // started.
     OnPreviewStarted(true, "");
   }
 

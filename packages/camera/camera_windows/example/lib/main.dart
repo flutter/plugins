@@ -149,6 +149,7 @@ class _MyAppState extends State<MyApp> {
         _previewSize = null;
         _recording = false;
         _recordingTimed = false;
+        _previewPaused = false;
       });
       getAvailableCameras();
     } on CameraException catch (e) {

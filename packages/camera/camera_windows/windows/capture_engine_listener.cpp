@@ -79,7 +79,7 @@ HRESULT CaptureEngineListener::OnSample(IMFSample* sample) {
       DWORD current_length = 0;
       uint8_t* data;
       if (SUCCEEDED(buffer->Lock(&data, &max_length, &current_length))) {
-        uint8_t* src_buffer = this->observer_->GetSourceBuffer(current_length);
+        uint8_t* src_buffer = this->observer_->GetFrameBuffer(current_length);
         if (src_buffer) {
           std::copy(data, data + current_length, src_buffer);
         }

@@ -242,14 +242,14 @@ TEST(Camera, OnStopRecordSucceededReturnsSuccess) {
   std::unique_ptr<MockMethodResult> result =
       std::make_unique<MockMethodResult>();
 
-  std::string filepath = "C:\temp\filename.mp4";
+  std::string file_path = "C:\temp\filename.mp4";
 
   EXPECT_CALL(*result, ErrorInternal).Times(0);
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(filepath))));
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(file_path))));
 
   camera->AddPendingResult(PendingResultType::STOP_RECORD, std::move(result));
 
-  camera->OnStopRecordSucceeded(filepath);
+  camera->OnStopRecordSucceeded(file_path);
 }
 
 TEST(Camera, OnStopRecordFailedReturnsError) {
@@ -274,14 +274,14 @@ TEST(Camera, OnTakePictureSucceededReturnsSuccess) {
   std::unique_ptr<MockMethodResult> result =
       std::make_unique<MockMethodResult>();
 
-  std::string filepath = "C:\temp\filename.jpeg";
+  std::string file_path = "C:\temp\filename.jpeg";
 
   EXPECT_CALL(*result, ErrorInternal).Times(0);
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(filepath))));
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(file_path))));
 
   camera->AddPendingResult(PendingResultType::TAKE_PICTURE, std::move(result));
 
-  camera->OnTakePictureSucceeded(filepath);
+  camera->OnTakePictureSucceeded(file_path);
 }
 
 TEST(Camera, OnTakePictureFailedReturnsError) {
@@ -309,7 +309,7 @@ TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
   std::unique_ptr<MockBinaryMessenger> binary_messenger =
       std::make_unique<MockBinaryMessenger>();
 
-  std::string filepath = "C:\temp\filename.mp4";
+  std::string file_path = "C:\temp\filename.mp4";
   int64_t camera_id = 12345;
   std::string camera_channel =
       std::string("flutter.io/cameraPlugin/camera") + std::to_string(camera_id);
@@ -332,7 +332,7 @@ TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
   // Pass camera id for camera
   camera->OnCreateCaptureEngineSucceeded(camera_id);
 
-  camera->OnVideoRecordSucceeded(filepath, video_duration);
+  camera->OnVideoRecordSucceeded(file_path, video_duration);
 }
 
 }  // namespace test

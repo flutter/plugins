@@ -68,7 +68,7 @@ const EncodableValue* ValueOrNull(const EncodableMap& map, const char* key) {
   return &(it->second);
 }
 
-// Parses resolution preset argument to enum value
+// Parses resolution preset argument to enum value.
 ResolutionPreset ParseResolutionPreset(const std::string& resolution_preset) {
   if (resolution_preset.compare(kResolutionPresetValueLow) == 0) {
     return ResolutionPreset::RESOLUTION_PRESET_LOW;
@@ -86,16 +86,7 @@ ResolutionPreset ParseResolutionPreset(const std::string& resolution_preset) {
   return ResolutionPreset::RESOLUTION_PRESET_AUTO;
 }
 
-bool HasCurrentTextureId(int64_t current_camera_id, const EncodableMap& args) {
-  const auto* camera_id =
-      std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
-
-  if (!camera_id) {
-    return false;
-  }
-  return current_camera_id == *camera_id;
-}
-
+// Builds CaptureDeviceInfo object from given device holding device name and id.
 std::unique_ptr<CaptureDeviceInfo> GetDeviceInfo(IMFActivate* device) {
   assert(device);
   auto device_info = std::make_unique<CaptureDeviceInfo>();
@@ -122,6 +113,8 @@ std::unique_ptr<CaptureDeviceInfo> GetDeviceInfo(IMFActivate* device) {
   return device_info;
 }
 
+// Builds datetime string from current time.
+// Used as part of the filenames for captured pictures and videos.
 std::string GetCurrentTimeString() {
   std::chrono::system_clock::duration now =
       std::chrono::system_clock::now().time_since_epoch();
@@ -144,7 +137,8 @@ std::string GetCurrentTimeString() {
   return time_start + std::to_string(ms - s * 1000);
 }
 
-bool GetFilePathForPicture(std::string& filename) {
+// Builds file path for picture capture.
+bool GetFilePathForPicture(std::string& file_path) {
   wchar_t* known_folder_path = nullptr;
   HRESULT hr = SHGetKnownFolderPath(FOLDERID_Pictures, KF_FLAG_CREATE, nullptr,
                                     &known_folder_path);
@@ -152,14 +146,15 @@ bool GetFilePathForPicture(std::string& filename) {
   if (SUCCEEDED(hr)) {
     std::string path = Utf8FromUtf16(std::wstring(known_folder_path));
 
-    filename = path + "\\" + "PhotoCapture_" + GetCurrentTimeString() + "." +
-               kPictureCaptureExtension;
+    file_path = path + "\\" + "PhotoCapture_" + GetCurrentTimeString() + "." +
+                kPictureCaptureExtension;
   }
 
   return SUCCEEDED(hr);
 }
 
-bool GetFilePathForVideo(std::string& filename) {
+// Builds file path for video capture.
+bool GetFilePathForVideo(std::string& file_path) {
   wchar_t* known_folder_path = nullptr;
   HRESULT hr = SHGetKnownFolderPath(FOLDERID_Videos, KF_FLAG_CREATE, nullptr,
                                     &known_folder_path);
@@ -167,8 +162,8 @@ bool GetFilePathForVideo(std::string& filename) {
   if (SUCCEEDED(hr)) {
     std::string path = Utf8FromUtf16(std::wstring(known_folder_path));
 
-    filename = path + "\\" + "VideoCapture_" + GetCurrentTimeString() + "." +
-               kVideoCaptureExtension;
+    file_path = path + "\\" + "VideoCapture_" + GetCurrentTimeString() + "." +
+                kVideoCaptureExtension;
   }
 
   return SUCCEEDED(hr);
@@ -268,6 +263,33 @@ void CameraPlugin::HandleMethodCall(
   }
 }
 
+Camera* CameraPlugin::GetCameraByDeviceId(std::string& device_id) {
+  for (auto it = begin(cameras_); it != end(cameras_); ++it) {
+    if ((*it)->HasDeviceId(device_id)) {
+      return it->get();
+    }
+  }
+  return nullptr;
+}
+
+Camera* CameraPlugin::GetCameraByCameraId(int64_t camera_id) {
+  for (auto it = begin(cameras_); it != end(cameras_); ++it) {
+    if ((*it)->HasCameraId(camera_id)) {
+      return it->get();
+    }
+  }
+  return nullptr;
+}
+
+void CameraPlugin::DisposeCameraByCameraId(int64_t camera_id) {
+  for (auto it = begin(cameras_); it != end(cameras_); ++it) {
+    if ((*it)->HasCameraId(camera_id)) {
+      cameras_.erase(it);
+      return;
+    }
+  }
+}
+
 void CameraPlugin::AvailableCamerasMethodHandler(
     std::unique_ptr<flutter::MethodResult<>> result) {
   // Enumerate devices.
@@ -308,37 +330,6 @@ bool CameraPlugin::EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
                                                                    count);
 }
 
-// Loops through cameras and returns camera with matching device_id or nullptr.
-Camera* CameraPlugin::GetCameraByDeviceId(std::string& device_id) {
-  for (auto it = begin(cameras_); it != end(cameras_); ++it) {
-    if ((*it)->HasDeviceId(device_id)) {
-      return it->get();
-    }
-  }
-  return nullptr;
-}
-
-// Loops through cameras and returns camera with matching camera_id or nullptr.
-Camera* CameraPlugin::GetCameraByCameraId(int64_t camera_id) {
-  for (auto it = begin(cameras_); it != end(cameras_); ++it) {
-    if ((*it)->HasCameraId(camera_id)) {
-      return it->get();
-    }
-  }
-  return nullptr;
-}
-
-void CameraPlugin::DisposeCameraByCameraId(int64_t camera_id) {
-  for (auto it = begin(cameras_); it != end(cameras_); ++it) {
-    if ((*it)->HasCameraId(camera_id)) {
-      cameras_.erase(it);
-      return;
-    }
-  }
-}
-
-// Creates and initializes capture controller
-// and MFCaptureEngine for requested device.
 void CameraPlugin::CreateMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
   // Parse enableAudio argument.

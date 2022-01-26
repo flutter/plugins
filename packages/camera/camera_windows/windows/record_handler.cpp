@@ -116,6 +116,10 @@ HRESULT BuildMediaTypeForAudioCapture(IMFMediaType** audio_record_media_type) {
 
 HRESULT RecordHandler::InitRecordSink(IMFCaptureEngine* capture_engine,
                                       IMFMediaType* base_media_type) {
+  assert(!file_path_.empty());
+  assert(capture_engine);
+  assert(base_media_type);
+
   HRESULT hr = S_OK;
   if (record_sink_) {
     // If record sink already exists, only update output filename.
@@ -204,15 +208,15 @@ bool RecordHandler::StartRecord(const std::string& file_path,
     return false;
   }
 
-  recording_state_ = RecordingState::STARTING;
+  recording_state_ = RecordState::RECORD_STATE__STARTING;
   capture_engine->StartRecord();
 
   return true;
 }
 
 bool RecordHandler::StopRecord(IMFCaptureEngine* capture_engine) {
-  if (recording_state_ == RecordingState::RECORDING) {
-    recording_state_ = RecordingState::STOPPING;
+  if (recording_state_ == RecordState::RECORD_STATE__RUNNING) {
+    recording_state_ = RecordState::RECORD_STATE__STOPPING;
     HRESULT hr = capture_engine->StopRecord(true, false);
     return SUCCEEDED(hr);
   }
@@ -220,18 +224,18 @@ bool RecordHandler::StopRecord(IMFCaptureEngine* capture_engine) {
 }
 
 void RecordHandler::OnRecordStarted() {
-  if (recording_state_ == RecordingState::STARTING) {
-    recording_state_ = RecordingState::RECORDING;
+  if (recording_state_ == RecordState::RECORD_STATE__STARTING) {
+    recording_state_ = RecordState::RECORD_STATE__RUNNING;
   }
 }
 
 void RecordHandler::OnRecordStopped() {
-  if (recording_state_ == RecordingState::STOPPING) {
+  if (recording_state_ == RecordState::RECORD_STATE__STOPPING) {
     file_path_ = "";
     recording_start_timestamp_us_ = -1;
     recording_duration_us_ = 0;
     max_video_duration_ms_ = -1;
-    recording_state_ = RecordingState::NOT_RECORDING;
+    recording_state_ = RecordState::RECORD_STATE__NOT_STARTED;
   }
 }
 
@@ -245,7 +249,7 @@ void RecordHandler::UpdateRecordingTime(uint64_t timestamp) {
 
 bool RecordHandler::ShouldStopTimedRecording() {
   return type_ == RecordingType::TIMED &&
-         recording_state_ == RecordingState::RECORDING &&
+         recording_state_ == RecordState::RECORD_STATE__RUNNING &&
          max_video_duration_ms_ > 0 &&
          recording_duration_us_ >=
              (static_cast<uint64_t>(max_video_duration_ms_) * 1000);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORDING_H_
-#define PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORDING_H_
+#ifndef PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORD_HANDLER_H_
+#define PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORD_HANDLER_H_
 
 #include <mfapi.h>
 #include <mfcaptureengine.h>
@@ -17,11 +17,11 @@ using Microsoft::WRL::ComPtr;
 
 enum RecordingType { CONTINUOUS, TIMED };
 
-enum RecordingState {
-  NOT_RECORDING,
-  STARTING,
-  RECORDING,
-  STOPPING,
+enum RecordState {
+  RECORD_STATE__NOT_STARTED,
+  RECORD_STATE__STARTING,
+  RECORD_STATE__RUNNING,
+  RECORD_STATE__STOPPING
 };
 
 class RecordHandler {
@@ -33,21 +33,34 @@ class RecordHandler {
   RecordHandler(RecordHandler const&) = delete;
   RecordHandler& operator=(RecordHandler const&) = delete;
 
-  // Initializes record sink and asks capture engine to start recording.
-  // Sets record state to STARTING.
+  // Initializes record sink and requests capture engine to start recording.
+  // Sets record state to RECORD_STATE__STARTING.
   // Returns false if recording cannot be started.
-  bool StartRecord(const std::string& filepath, int64_t max_duration,
+  //
+  // file_path:       A string that hold file path for video capture.
+  // max_duration:    A int64 value of maximun recording duration.
+  //                  If value is -1 video recording is considered as
+  //                  a continuous recording.
+  // capture_engine:  A pointer to capture engine instance. Used to start
+  //                  the actual recording.
+  // base_media_type: A pointer to base media type used as a base
+  //                  for the actual video capture media type.
+  bool StartRecord(const std::string& file_path, int64_t max_duration,
                    IMFCaptureEngine* capture_engine,
                    IMFMediaType* base_media_type);
 
   // Stops existing recording.
   // Returns false if recording cannot be stopped.
+  //
+  // capture_engine:  A pointer to capture engine instance. Used to stop
+  //                  the ongoing recording.
   bool StopRecord(IMFCaptureEngine* capture_engine);
 
-  // Set the record handler recording state to RECORDING.
+  // Set the record handler recording state to RECORD_STATE__RUNNING.
   void OnRecordStarted();
 
-  // Resets the record handler state and sets recording state to NOT_RECORDING.
+  // Resets the record handler state and sets recording state to
+  // RECORD_STATE__NOT_STARTED.
   void OnRecordStopped();
 
   // Returns true if recording type is continuous recording.
@@ -57,10 +70,14 @@ class RecordHandler {
   bool IsTimedRecording() { return type_ == RecordingType::TIMED; };
 
   // Returns true if new recording can be started.
-  bool CanStart() { return recording_state_ == NOT_RECORDING; };
+  bool CanStart() {
+    return recording_state_ == RecordState::RECORD_STATE__NOT_STARTED;
+  };
 
   // Returns true if recording can be stopped.
-  bool CanStop() { return recording_state_ == RECORDING; };
+  bool CanStop() {
+    return recording_state_ == RecordState::RECORD_STATE__RUNNING;
+  };
 
   // Returns path to video recording.
   std::string GetRecordPath() { return file_path_; };
@@ -85,10 +102,10 @@ class RecordHandler {
   int64_t recording_start_timestamp_us_ = -1;
   uint64_t recording_duration_us_ = 0;
   std::string file_path_ = "";
-  RecordingState recording_state_ = RecordingState::NOT_RECORDING;
+  RecordState recording_state_ = RecordState::RECORD_STATE__NOT_STARTED;
   RecordingType type_;
   ComPtr<IMFCaptureRecordSink> record_sink_;
 };
 }  // namespace camera_windows
 
-#endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORDING_H_
+#endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORD_HANDLER_H_

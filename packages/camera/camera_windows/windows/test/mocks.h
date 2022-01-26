@@ -154,17 +154,17 @@ class MockCamera : public Camera {
   MOCK_METHOD(void, OnStartRecordFailed, (const std::string& error),
               (override));
 
-  MOCK_METHOD(void, OnStopRecordSucceeded, (const std::string& filepath),
+  MOCK_METHOD(void, OnStopRecordSucceeded, (const std::string& file_path),
               (override));
   MOCK_METHOD(void, OnStopRecordFailed, (const std::string& error), (override));
 
-  MOCK_METHOD(void, OnTakePictureSucceeded, (const std::string& filepath),
+  MOCK_METHOD(void, OnTakePictureSucceeded, (const std::string& file_path),
               (override));
   MOCK_METHOD(void, OnTakePictureFailed, (const std::string& error),
               (override));
 
   MOCK_METHOD(void, OnVideoRecordSucceeded,
-              (const std::string& filepath, int64_t video_duration),
+              (const std::string& file_path, int64_t video_duration),
               (override));
   MOCK_METHOD(void, OnVideoRecordFailed, (const std::string& error),
               (override));
@@ -227,10 +227,10 @@ class MockCaptureController : public CaptureController {
   MOCK_METHOD(void, ResumePreview, (), (override));
   MOCK_METHOD(void, PausePreview, (), (override));
   MOCK_METHOD(void, StartRecord,
-              (const std::string& filepath, int64_t max_video_duration_ms),
+              (const std::string& file_path, int64_t max_video_duration_ms),
               (override));
   MOCK_METHOD(void, StopRecord, (), (override));
-  MOCK_METHOD(void, TakePicture, (const std::string filepath), (override));
+  MOCK_METHOD(void, TakePicture, (const std::string file_path), (override));
 };
 
 // MockCameraPlugin extends CameraPlugin behaviour a bit to allow adding cameras

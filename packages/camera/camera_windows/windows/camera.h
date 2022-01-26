@@ -36,12 +36,24 @@ class Camera : public CaptureControllerListener {
   Camera(const Camera&) = delete;
   Camera& operator=(const Camera&) = delete;
 
+  // Tests if current camera has given device id.
   virtual bool HasDeviceId(std::string& device_id) = 0;
+
+  // Tests if current camera has given camera id.
   virtual bool HasCameraId(int64_t camera_id) = 0;
+
+  // Adds pending result to the pending_results map.
+  // Calls method result error handler, if result already exists.
   virtual bool AddPendingResult(PendingResultType type,
                                 std::unique_ptr<MethodResult<>> result) = 0;
+
+  // Checks if pending result with given type already exists.
   virtual bool HasPendingResultByType(PendingResultType type) = 0;
+
+  // Returns pointer to capture controller.
   virtual camera_windows::CaptureController* GetCaptureController() = 0;
+
+  // Initializes camera and capture controller.
   virtual void InitCamera(flutter::TextureRegistrar* texture_registrar,
                           flutter::BinaryMessenger* messenger,
                           bool enable_audio,
@@ -68,11 +80,11 @@ class CameraImpl : public Camera {
   void OnResumePreviewFailed(const std::string& error) override;
   void OnStartRecordSucceeded() override;
   void OnStartRecordFailed(const std::string& error) override;
-  void OnStopRecordSucceeded(const std::string& filepath) override;
+  void OnStopRecordSucceeded(const std::string& file_path) override;
   void OnStopRecordFailed(const std::string& error) override;
-  void OnTakePictureSucceeded(const std::string& filepath) override;
+  void OnTakePictureSucceeded(const std::string& file_path) override;
   void OnTakePictureFailed(const std::string& error) override;
-  void OnVideoRecordSucceeded(const std::string& filepath,
+  void OnVideoRecordSucceeded(const std::string& file_path,
                               int64_t video_duration) override;
   void OnVideoRecordFailed(const std::string& error) override;
   void OnCaptureError(const std::string& error) override;
@@ -93,6 +105,9 @@ class CameraImpl : public Camera {
   void InitCamera(flutter::TextureRegistrar* texture_registrar,
                   flutter::BinaryMessenger* messenger, bool enable_audio,
                   ResolutionPreset resolution_preset) override;
+
+  // Inits camera with capture controller factory.
+  // Called by InitCamera implementation but also used in tests.
   void InitCamera(
       std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
       flutter::TextureRegistrar* texture_registrar,
@@ -109,7 +124,14 @@ class CameraImpl : public Camera {
   std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
   std::unique_ptr<MethodResult<>> GetPendingResultByType(
       PendingResultType type);
-  void SendErrorForPendingResults(const std::string& error_id,
+
+  // Loops through all pending results calls their
+  // error handler with given error id and description.
+  // Pending results are cleared in the process.
+  //
+  // error_code: A string error code describing the error.
+  // error_message: A user-readable error message (optional).
+  void SendErrorForPendingResults(const std::string& error_code,
                                   const std::string& descripion);
 };
 
