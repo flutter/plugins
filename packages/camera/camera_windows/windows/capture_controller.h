@@ -14,12 +14,12 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include <chrono>
 #include <memory>
 #include <string>
 
 #include "capture_controller_listener.h"
 #include "capture_engine_listener.h"
+#include "record_handler.h"
 
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
@@ -61,10 +61,10 @@ enum ResolutionPreset {
   RESOLUTION_PRESET_MAX,
 };
 
-enum RecordingType {
-  RECORDING_TYPE_NOT_SET,
-  RECORDING_TYPE_CONTINUOUS,
-  RECORDING_TYPE_TIMED
+enum CaptureEngineState {
+  CAPTURE_ENGINE_NOT_INITIALIZED,
+  CAPTURE_ENGINE_INITIALIZING,
+  CAPTURE_ENGINE_INITIALIZED
 };
 
 class VideoCaptureDeviceEnumerator {
@@ -114,7 +114,10 @@ class CaptureControllerImpl : public CaptureController,
   CaptureControllerImpl(const CaptureControllerImpl&) = delete;
   CaptureControllerImpl& operator=(const CaptureControllerImpl&) = delete;
 
-  bool IsInitialized() { return initialized_; }
+  bool IsInitialized() {
+    return capture_engine_state_ ==
+           CaptureEngineState::CAPTURE_ENGINE_INITIALIZED;
+  }
   bool IsPreviewing() { return previewing_; }
 
   void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
@@ -135,7 +138,9 @@ class CaptureControllerImpl : public CaptureController,
   // Handlers for CaptureEngineListener events.
   // From CaptureEngineObserver.
   bool IsReadyForSample() override {
-    return initialized_ && previewing_ && !preview_paused_;
+    return capture_engine_state_ ==
+               CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
+           previewing_ && !preview_paused_;
   }
 
   void OnEvent(IMFMediaEvent* event) override;
@@ -160,16 +165,20 @@ class CaptureControllerImpl : public CaptureController,
   };
 
  private:
+  // states
+  CaptureEngineState capture_engine_state_ =
+      CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
+  std::unique_ptr<RecordHandler> record_handler_ = nullptr;
+
   CaptureControllerListener* capture_controller_listener_ = nullptr;
-  bool initialized_ = false;
-  bool enable_audio_record_ = false;
+  bool media_foundation_started_ = false;
+  bool record_audio_ = false;
   std::string video_device_id_;
 
   ResolutionPreset resolution_preset_ =
       ResolutionPreset::RESOLUTION_PRESET_MEDIUM;
 
   // CaptureEngine objects
-  bool capture_engine_initialization_pending_ = false;
   ComPtr<IMFCaptureEngine> capture_engine_;
   ComPtr<CaptureEngineListener> capture_engine_callback_handler_;
 
@@ -203,12 +212,6 @@ class CaptureControllerImpl : public CaptureController,
 
   // Photo / Record
   bool pending_image_capture_ = false;
-  bool record_start_pending_ = false;
-  bool record_stop_pending_ = false;
-  bool recording_ = false;
-  int64_t record_start_timestamp_us_ = -1;
-  uint64_t recording_duration_us_ = 0;
-  int64_t max_video_duration_ms_ = -1;
 
   uint32_t capture_frame_width_ = 0;
   uint32_t capture_frame_height_ = 0;
@@ -216,9 +219,6 @@ class CaptureControllerImpl : public CaptureController,
   ComPtr<IMFCapturePhotoSink> photo_sink_;
   ComPtr<IMFCaptureRecordSink> record_sink_;
   std::string pending_picture_path_ = "";
-  std::string pending_record_path_ = "";
-
-  RecordingType recording_type_ = RecordingType::RECORDING_TYPE_NOT_SET;
 
   void ResetCaptureController();
   uint32_t GetMaxPreviewHeight();

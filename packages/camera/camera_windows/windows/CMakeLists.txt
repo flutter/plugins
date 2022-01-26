@@ -20,6 +20,8 @@ list(APPEND PLUGIN_SOURCES
   "string_utils.cpp"
   "device_info.h"
   "device_info.cpp"
+  "record_handler.h"
+  "record_handler.cpp"
 )
 
 add_library(${PLUGIN_NAME} SHARED
