@@ -1,6 +1,6 @@
 ## 2.2.16
 
-* Introduce setCaptionOffset to offset the caption display based on a Duration.
+* Introduces `setCaptionOffset` to offset the caption display based on a Duration.
 
 ## 2.2.15
 
