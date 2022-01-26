@@ -21,13 +21,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'URL Launcher'),
+      home: const MyHomePage(title: 'URL Launcher'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _phone = '';
 
   Future<void> _launchInBrowser(String url) async {
-    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    final UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
     if (await launcher.canLaunch(url)) {
       await launcher.launch(
         url,
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchInWebViewOrVC(String url) async {
-    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    final UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
     if (await launcher.canLaunch(url)) {
       await launcher.launch(
         url,
@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchInWebViewWithJavaScript(String url) async {
-    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    final UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
     if (await launcher.canLaunch(url)) {
       await launcher.launch(
         url,
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchInWebViewWithDomStorage(String url) async {
-    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    final UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
     if (await launcher.canLaunch(url)) {
       await launcher.launch(
         url,
@@ -115,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _makePhoneCall(String url) async {
-    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    final UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
     if (await launcher.canLaunch(url)) {
       await launcher.launch(
         url,

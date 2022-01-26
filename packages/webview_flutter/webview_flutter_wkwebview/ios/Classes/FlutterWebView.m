@@ -10,12 +10,15 @@
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
+  FLTCookieManager* _cookieManager;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
+                    cookieManager:(FLTCookieManager*)cookieManager {
   self = [super init];
   if (self) {
     _messenger = messenger;
+    _cookieManager = cookieManager;
   }
   return self;
 }
@@ -27,6 +30,10 @@
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
+  if (@available(iOS 11.0, *)) {
+    [_cookieManager setCookiesForData:args[@"cookies"]];
+  }
+
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
@@ -96,6 +103,20 @@
                         inConfiguration:configuration];
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+
+    // Background color
+    NSNumber* backgroundColorNSNumber = args[@"backgroundColor"];
+    if ([backgroundColorNSNumber isKindOfClass:[NSNumber class]]) {
+      int backgroundColorInt = [backgroundColorNSNumber intValue];
+      UIColor* backgroundColor = [UIColor colorWithRed:(backgroundColorInt >> 16 & 0xff) / 255.0
+                                                 green:(backgroundColorInt >> 8 & 0xff) / 255.0
+                                                  blue:(backgroundColorInt & 0xff) / 255.0
+                                                 alpha:(backgroundColorInt >> 24 & 0xff) / 255.0];
+      _webView.opaque = NO;
+      _webView.backgroundColor = UIColor.clearColor;
+      _webView.scrollView.backgroundColor = backgroundColor;
+    }
+
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
@@ -142,6 +163,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadFile"]) {
     [self onLoadFile:call result:result];
+  } else if ([[call method] isEqualToString:@"loadFlutterAsset"]) {
+    [self onLoadFlutterAsset:call result:result];
   } else if ([[call method] isEqualToString:@"loadHtmlString"]) {
     [self onLoadHtmlString:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
@@ -220,6 +243,34 @@
   NSURL* baseUrl = [url URLByDeletingLastPathComponent];
 
   [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
+  result(nil);
+}
+
+- (void)onLoadFlutterAsset:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadFlutterAsset_invalidKey"
+                               message:@"Supplied asset key is not valid."
+                               details:error]);
+    return;
+  }
+
+  NSString* assetKey = [call arguments];
+  NSString* assetFilePath = [FlutterDartProject lookupKeyForAsset:assetKey];
+  NSURL* url = [[NSBundle mainBundle] URLForResource:[assetFilePath stringByDeletingPathExtension]
+                                       withExtension:assetFilePath.pathExtension];
+
+  if (!url) {
+    result([FlutterError
+        errorWithCode:@"loadFlutterAsset_invalidKey"
+              message:@"Failed parsing file path for supplied key."
+              details:[NSString
+                          stringWithFormat:@"Failed to convert path '%@' into NSURL for key '%@'.",
+                                           assetFilePath, assetKey]]);
+    return;
+  }
+
+  [_webView loadFileURL:url allowingReadAccessToURL:[url URLByDeletingLastPathComponent]];
   result(nil);
 }
 

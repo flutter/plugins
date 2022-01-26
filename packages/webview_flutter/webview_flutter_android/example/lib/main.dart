@@ -6,14 +6,23 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/driver_extension.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'navigation_decision.dart';
 import 'navigation_request.dart';
 import 'web_view.dart';
+
+void appMain() {
+  enableFlutterDriverExtension();
+  main();
+}
 
 void main() {
   // Configure the [WebView] to use the [SurfaceAndroidWebView]
@@ -38,6 +47,46 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
+const String kExamplePage = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Load file or HTML string example</title>
+</head>
+<body>
+
+<h1>Local demo page</h1>
+<p>
+  This is an example page used to demonstrate how to load a local file or HTML 
+  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
+  webview</a> plugin.
+</p>
+
+</body>
+</html>
+''';
+
+const String kTransparentBackgroundPage = '''
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transparent background test</title>
+</head>
+<style type="text/css">
+  body { background: transparent; margin: 0; padding: 0; }
+  #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+  #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
+  p { text-align: center; }
+</style>
+<body>
+  <div id="container">
+    <p>Transparent background test</p>
+    <div id="shape"></div>
+  </div>
+</body>
+</html>
+''';
+
 class _WebViewExample extends StatefulWidget {
   const _WebViewExample({Key? key}) : super(key: key);
 
@@ -52,6 +101,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF4CAF50),
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -88,6 +138,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
           javascriptChannels: _createJavascriptChannels(context),
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
+          backgroundColor: const Color(0x80000000),
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -135,6 +186,12 @@ enum _MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  loadFlutterAsset,
+  loadLocalFile,
+  loadHtmlString,
+  transparentBackground,
+  doPostRequest,
+  setCookie,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -149,6 +206,7 @@ class _SampleMenu extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<_MenuOptions>(
+          key: const ValueKey<String>('ShowPopupMenu'),
           onSelected: (_MenuOptions value) {
             switch (value) {
               case _MenuOptions.showUserAgent:
@@ -171,6 +229,24 @@ class _SampleMenu extends StatelessWidget {
                 break;
               case _MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
+                break;
+              case _MenuOptions.loadFlutterAsset:
+                _onLoadFlutterAssetExample(controller.data!, context);
+                break;
+              case _MenuOptions.loadLocalFile:
+                _onLoadLocalFileExample(controller.data!, context);
+                break;
+              case _MenuOptions.loadHtmlString:
+                _onLoadHtmlStringExample(controller.data!, context);
+                break;
+              case _MenuOptions.transparentBackground:
+                _onTransparentBackground(controller.data!, context);
+                break;
+              case _MenuOptions.doPostRequest:
+                _onDoPostRequest(controller.data!, context);
+                break;
+              case _MenuOptions.setCookie:
+                _onSetCookie(controller.data!, context);
                 break;
             }
           },
@@ -203,6 +279,31 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.loadFlutterAsset,
+              child: Text('Load Flutter Asset'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.loadHtmlString,
+              child: Text('Load HTML string'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.loadLocalFile,
+              child: Text('Load local file'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              key: ValueKey<String>('ShowTransparentBackgroundExample'),
+              value: _MenuOptions.transparentBackground,
+              child: Text('Transparent background example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.doPostRequest,
+              child: Text('Post Request'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.setCookie,
+              child: Text('Set Cookie'),
             ),
           ],
         );
@@ -263,7 +364,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onClearCookies(
       WebViewController controller, BuildContext context) async {
-    final bool hadCookies = await WebView.platform.clearCookies();
+    final bool hadCookies = await WebViewCookieManager.instance.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
       message = 'There are no cookies.';
@@ -274,11 +375,47 @@ class _SampleMenu extends StatelessWidget {
     ));
   }
 
+  Future<void> _onSetCookie(
+      WebViewController controller, BuildContext context) async {
+    await WebViewCookieManager.instance.setCookie(
+      const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
+    );
+    await controller.loadUrl('https://httpbin.org/anything');
+  }
+
   Future<void> _onNavigationDelegateExample(
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  Future<void> _onLoadFlutterAssetExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadFlutterAsset('assets/www/index.html');
+  }
+
+  Future<void> _onLoadLocalFileExample(
+      WebViewController controller, BuildContext context) async {
+    final String pathToIndex = await _prepareLocalFile();
+
+    await controller.loadFile(pathToIndex);
+  }
+
+  Future<void> _onLoadHtmlStringExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kExamplePage);
+  }
+
+  Future<void> _onDoPostRequest(
+      WebViewController controller, BuildContext context) async {
+    final WebViewRequest request = WebViewRequest(
+      uri: Uri.parse('https://httpbin.org/post'),
+      method: WebViewRequestMethod.post,
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+    await controller.loadRequest(request);
   }
 
   Widget _getCookieList(String cookies) {
@@ -293,6 +430,21 @@ class _SampleMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: cookieWidgets.toList(),
     );
+  }
+
+  static Future<String> _prepareLocalFile() async {
+    final String tmpDir = (await getTemporaryDirectory()).path;
+    final File indexFile = File('$tmpDir/www/index.html');
+
+    await Directory('$tmpDir/www').create(recursive: true);
+    await indexFile.writeAsString(kExamplePage);
+
+    return indexFile.path;
+  }
+
+  Future<void> _onTransparentBackground(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kTransparentBackgroundPage);
   }
 }
 

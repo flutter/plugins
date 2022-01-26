@@ -1,3 +1,7 @@
+## NEXT
+
+* Implemented support for new Dart SDKs with an async requestFullscreen API.
+
 ## 0.2.1+1
 
 * Update usage documentation.
