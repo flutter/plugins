@@ -187,39 +187,6 @@ class CaptureControllerImpl : public CaptureController,
   };
 
  private:
-  bool media_foundation_started_ = false;
-  bool record_audio_ = false;
-  uint32_t preview_frame_width_ = 0;
-  uint32_t preview_frame_height_ = 0;
-  UINT dx_device_reset_token_ = 0;
-  std::unique_ptr<RecordHandler> record_handler_ = nullptr;
-  std::unique_ptr<PreviewHandler> preview_handler_ = nullptr;
-  std::unique_ptr<PhotoHandler> photo_handler_ = nullptr;
-  CaptureControllerListener* capture_controller_listener_ = nullptr;
-  std::string video_device_id_;
-  CaptureEngineState capture_engine_state_ =
-      CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
-  ResolutionPreset resolution_preset_ =
-      ResolutionPreset::RESOLUTION_PRESET_MEDIUM;
-  ComPtr<IMFCaptureEngine> capture_engine_;
-  ComPtr<CaptureEngineListener> capture_engine_callback_handler_;
-  ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;
-  ComPtr<ID3D11Device> dx11_device_;
-  ComPtr<IMFMediaType> base_capture_media_type_;
-  ComPtr<IMFMediaType> base_preview_media_type_;
-  ComPtr<IMFMediaSource> video_source_;
-  ComPtr<IMFMediaSource> audio_source_;
-
-  // Texture
-  int64_t texture_id_ = -1;
-  flutter::TextureRegistrar* texture_registrar_ = nullptr;
-  std::unique_ptr<flutter::TextureVariant> texture_;
-  FlutterDesktopPixelBuffer flutter_desktop_pixel_buffer_ = {};
-  uint32_t source_buffer_size_ = 0;
-  std::unique_ptr<uint8_t[]> source_buffer_data_ = nullptr;
-  std::unique_ptr<uint8_t[]> dest_buffer_ = nullptr;
-  uint32_t bytes_per_pixel_ = 4;
-
   // Resets capture controller state.
   // This is called if capture engine creation fails or is disposed.
   void ResetCaptureController();
@@ -275,6 +242,39 @@ class CaptureControllerImpl : public CaptureController,
   // Converts local pixel buffer to flutter pixel buffer
   const FlutterDesktopPixelBuffer* ConvertPixelBufferForFlutter(size_t width,
                                                                 size_t height);
+
+  bool media_foundation_started_ = false;
+  bool record_audio_ = false;
+  uint32_t preview_frame_width_ = 0;
+  uint32_t preview_frame_height_ = 0;
+  UINT dx_device_reset_token_ = 0;
+  std::unique_ptr<RecordHandler> record_handler_ = nullptr;
+  std::unique_ptr<PreviewHandler> preview_handler_ = nullptr;
+  std::unique_ptr<PhotoHandler> photo_handler_ = nullptr;
+  CaptureControllerListener* capture_controller_listener_ = nullptr;
+  std::string video_device_id_;
+  CaptureEngineState capture_engine_state_ =
+      CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
+  ResolutionPreset resolution_preset_ =
+      ResolutionPreset::RESOLUTION_PRESET_MEDIUM;
+  ComPtr<IMFCaptureEngine> capture_engine_;
+  ComPtr<CaptureEngineListener> capture_engine_callback_handler_;
+  ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;
+  ComPtr<ID3D11Device> dx11_device_;
+  ComPtr<IMFMediaType> base_capture_media_type_;
+  ComPtr<IMFMediaType> base_preview_media_type_;
+  ComPtr<IMFMediaSource> video_source_;
+  ComPtr<IMFMediaSource> audio_source_;
+
+  // Texture
+  int64_t texture_id_ = -1;
+  uint32_t bytes_per_pixel_ = 4;
+  uint32_t source_buffer_size_ = 0;
+  std::unique_ptr<uint8_t[]> source_buffer_ = nullptr;
+  std::unique_ptr<uint8_t[]> dest_buffer_ = nullptr;
+  std::unique_ptr<flutter::TextureVariant> texture_;
+  flutter::TextureRegistrar* texture_registrar_ = nullptr;
+  FlutterDesktopPixelBuffer flutter_desktop_pixel_buffer_ = {};
 };
 
 class CaptureControllerFactory {

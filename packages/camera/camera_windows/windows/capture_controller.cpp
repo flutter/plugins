@@ -337,14 +337,14 @@ void CaptureControllerImpl::InitCaptureDevice(
 const FlutterDesktopPixelBuffer*
 CaptureControllerImpl::ConvertPixelBufferForFlutter(size_t target_width,
                                                     size_t target_height) {
-  if (this->source_buffer_data_ && this->source_buffer_size_ > 0 &&
+  if (this->source_buffer_ && this->source_buffer_size_ > 0 &&
       this->preview_frame_width_ > 0 && this->preview_frame_height_ > 0) {
     uint32_t pixels_total =
         this->preview_frame_width_ * this->preview_frame_height_;
     dest_buffer_ = std::make_unique<uint8_t[]>(pixels_total * 4);
 
     MFVideoFormatRGB32Pixel* src =
-        (MFVideoFormatRGB32Pixel*)this->source_buffer_data_.get();
+        (MFVideoFormatRGB32Pixel*)this->source_buffer_.get();
     FlutterDesktopPixel* dst = (FlutterDesktopPixel*)dest_buffer_.get();
 
     for (uint32_t i = 0; i < pixels_total; i++) {
@@ -845,14 +845,13 @@ void CaptureControllerImpl::OnRecordStopped(bool success,
 // Called via IMFCaptureEngineOnSampleCallback implementation.
 // Implements CaptureEngineObserver::GetFrameBuffer.
 uint8_t* CaptureControllerImpl::GetFrameBuffer(uint32_t new_length) {
-  if (this->source_buffer_data_ == nullptr ||
+  if (this->source_buffer_ == nullptr ||
       this->source_buffer_size_ != new_length) {
     // Update source buffer size.
-    this->source_buffer_data_ = nullptr;
-    this->source_buffer_data_ = std::make_unique<uint8_t[]>(new_length);
+    this->source_buffer_ = std::make_unique<uint8_t[]>(new_length);
     this->source_buffer_size_ = new_length;
   }
-  return this->source_buffer_data_.get();
+  return this->source_buffer_.get();
 }
 
 // Marks texture frame available after buffer is updated.

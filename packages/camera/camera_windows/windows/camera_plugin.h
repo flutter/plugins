@@ -44,8 +44,6 @@ class CameraPlugin : public flutter::Plugin,
                         std::unique_ptr<MethodResult<>> result);
 
  protected:
-  std::vector<std::unique_ptr<Camera>> cameras_;
-
   // Loops through cameras and returns camera
   // with matching device_id or nullptr.
   Camera* GetCameraByDeviceId(std::string& device_id);
@@ -61,11 +59,9 @@ class CameraPlugin : public flutter::Plugin,
   bool EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
                                           UINT32* count) override;
 
- private:
-  std::unique_ptr<CameraFactory> camera_factory_;
-  flutter::TextureRegistrar* texture_registrar_;
-  flutter::BinaryMessenger* messenger_;
+  std::vector<std::unique_ptr<Camera>> cameras_;
 
+ private:
   // Handles availableCameras method calls.
   // Enumerates video capture devices and
   // returns list of available camera devices.
@@ -119,6 +115,10 @@ class CameraPlugin : public flutter::Plugin,
   // Disposes camera if exists.
   void DisposeMethodHandler(const EncodableMap& args,
                             std::unique_ptr<MethodResult<>> result);
+
+  std::unique_ptr<CameraFactory> camera_factory_;
+  flutter::TextureRegistrar* texture_registrar_;
+  flutter::BinaryMessenger* messenger_;
 };
 
 }  // namespace camera_windows

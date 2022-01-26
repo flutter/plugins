@@ -116,17 +116,6 @@ class CameraImpl : public Camera {
       ResolutionPreset resolution_preset);
 
  private:
-  std::unique_ptr<CaptureController> capture_controller_ = nullptr;
-  std::unique_ptr<MethodChannel<>> camera_channel_ = nullptr;
-  flutter::BinaryMessenger* messenger_ = nullptr;
-  int64_t camera_id_ = -1;
-  std::string device_id_;
-
-  // Pending results.
-  std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
-  std::unique_ptr<MethodResult<>> GetPendingResultByType(
-      PendingResultType type);
-
   // Loops through all pending results calls their
   // error handler with given error id and description.
   // Pending results are cleared in the process.
@@ -138,6 +127,18 @@ class CameraImpl : public Camera {
 
   // Initializes method channel instance and returns pointer it
   MethodChannel<>* GetMethodChannel();
+
+  // Finds pending result from pending_results map by type.
+  // Returns nullptr if type is not present.
+  std::unique_ptr<MethodResult<>> GetPendingResultByType(
+      PendingResultType type);
+
+  std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
+  std::unique_ptr<CaptureController> capture_controller_ = nullptr;
+  std::unique_ptr<MethodChannel<>> camera_channel_ = nullptr;
+  flutter::BinaryMessenger* messenger_ = nullptr;
+  int64_t camera_id_ = -1;
+  std::string device_id_;
 };
 
 class CameraFactory {
