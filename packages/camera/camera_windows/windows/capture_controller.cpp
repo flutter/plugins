@@ -4,6 +4,7 @@
 
 #include "capture_controller.h"
 
+#include <atlbase.h>
 #include <wincodec.h>
 #include <wrl/client.h>
 
@@ -35,22 +36,27 @@ bool CaptureControllerImpl::EnumerateVideoCaptureDeviceSources(
   ComPtr<IMFAttributes> attributes;
 
   HRESULT hr = MFCreateAttributes(&attributes, 1);
-
-  if (SUCCEEDED(hr)) {
-    hr = attributes->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-                             MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+  if (FAILED(hr)) {
+    return false;
   }
 
-  if (SUCCEEDED(hr)) {
-    hr = MFEnumDeviceSources(attributes.Get(), devices, count);
+  hr = attributes->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+                           MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+  if (FAILED(hr)) {
+    return false;
   }
 
-  return SUCCEEDED(hr);
+  hr = MFEnumDeviceSources(attributes.Get(), devices, count);
+  if (FAILED(hr)) {
+    return false;
+  }
+
+  return true;
 }
 
 HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   audio_source_ = nullptr;
-  IMFActivate** devices = nullptr;
+  CComHeapPtr<IMFActivate*> devices;
   UINT32 count = 0;
 
   ComPtr<IMFAttributes> attributes;
@@ -66,7 +72,7 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   }
 
   if (SUCCEEDED(hr) && count > 0) {
-    wchar_t* audio_device_id;
+    CComHeapPtr<wchar_t> audio_device_id;
     UINT32 audio_device_id_size;
 
     // Use first audio device.
@@ -95,11 +101,7 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
                                   audio_source_.GetAddressOf());
       }
     }
-
-    CoTaskMemFree(audio_device_id);
   }
-
-  CoTaskMemFree(devices);
 
   return hr;
 }
@@ -111,24 +113,26 @@ HRESULT CaptureControllerImpl::CreateVideoCaptureSourceForDevice(
   ComPtr<IMFAttributes> video_capture_source_attributes;
 
   HRESULT hr = MFCreateAttributes(&video_capture_source_attributes, 2);
-
-  if (SUCCEEDED(hr)) {
-    hr = video_capture_source_attributes->SetGUID(
-        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+  if (FAILED(hr)) {
+    return hr;
   }
 
-  if (SUCCEEDED(hr)) {
-    hr = video_capture_source_attributes->SetString(
-        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
-        Utf16FromUtf8(video_device_id).c_str());
+  hr = video_capture_source_attributes->SetGUID(
+      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+  if (FAILED(hr)) {
+    return hr;
   }
 
-  if (SUCCEEDED(hr)) {
-    hr = MFCreateDeviceSource(video_capture_source_attributes.Get(),
-                              video_source_.GetAddressOf());
+  hr = video_capture_source_attributes->SetString(
+      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
+      Utf16FromUtf8(video_device_id).c_str());
+  if (FAILED(hr)) {
+    return hr;
   }
 
+  hr = MFCreateDeviceSource(video_capture_source_attributes.Get(),
+                            video_source_.GetAddressOf());
   return hr;
 }
 
@@ -139,26 +143,27 @@ HRESULT CaptureControllerImpl::CreateD3DManagerWithDX11Device() {
   hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
                          D3D11_CREATE_DEVICE_VIDEO_SUPPORT, nullptr, 0,
                          D3D11_SDK_VERSION, &dx11_device_, nullptr, nullptr);
-
-  if (SUCCEEDED(hr)) {
-    // Enable multithread protection
-    ComPtr<ID3D10Multithread> multi_thread;
-    hr = dx11_device_.As(&multi_thread);
-    if (SUCCEEDED(hr)) {
-      multi_thread->SetMultithreadProtected(TRUE);
-    }
+  if (FAILED(hr)) {
+    return hr;
   }
 
-  if (SUCCEEDED(hr)) {
-    hr = MFCreateDXGIDeviceManager(&dx_device_reset_token_,
-                                   dxgi_device_manager_.GetAddressOf());
+  // Enable multithread protection
+  ComPtr<ID3D10Multithread> multi_thread;
+  hr = dx11_device_.As(&multi_thread);
+  if (FAILED(hr)) {
+    return hr;
   }
 
-  if (SUCCEEDED(hr)) {
-    hr = dxgi_device_manager_->ResetDevice(dx11_device_.Get(),
-                                           dx_device_reset_token_);
+  multi_thread->SetMultithreadProtected(TRUE);
+
+  hr = MFCreateDXGIDeviceManager(&dx_device_reset_token_,
+                                 dxgi_device_manager_.GetAddressOf());
+  if (FAILED(hr)) {
+    return hr;
   }
 
+  hr = dxgi_device_manager_->ResetDevice(dx11_device_.Get(),
+                                         dx_device_reset_token_);
   return hr;
 }
 
@@ -461,28 +466,28 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
 
   ComPtr<IMFCaptureSource> source;
   HRESULT hr = capture_engine_->GetSource(&source);
-
-  if (SUCCEEDED(hr)) {
-    // Find base media type for previewing.
-    uint32_t max_preview_height = GetMaxPreviewHeight();
-    if (!FindBestMediaType(
-            (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
-            source.Get(), base_preview_media_type_.GetAddressOf(),
-            max_preview_height, &preview_frame_width_,
-            &preview_frame_height_)) {
-      return E_FAIL;
-    }
-
-    // Find base media type for record and photo capture.
-    if (!FindBestMediaType(
-            (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_RECORD,
-            source.Get(), base_capture_media_type_.GetAddressOf(),
-            (uint32_t)0xffffffff, nullptr, nullptr)) {
-      return E_FAIL;
-    }
+  if (FAILED(hr)) {
+    return hr;
   }
 
-  return hr;
+  // Find base media type for previewing.
+  uint32_t max_preview_height = GetMaxPreviewHeight();
+  if (!FindBestMediaType(
+          (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
+          source.Get(), base_preview_media_type_.GetAddressOf(),
+          max_preview_height, &preview_frame_width_, &preview_frame_height_)) {
+    return E_FAIL;
+  }
+
+  // Find base media type for record and photo capture.
+  if (!FindBestMediaType(
+          (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_RECORD,
+          source.Get(), base_capture_media_type_.GetAddressOf(),
+          (uint32_t)0xffffffff, nullptr, nullptr)) {
+    return E_FAIL;
+  }
+
+  return S_OK;
 }
 
 void CaptureControllerImpl::StartRecord(const std::string& file_path,
@@ -490,9 +495,9 @@ void CaptureControllerImpl::StartRecord(const std::string& file_path,
   assert(capture_engine_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
-    return OnRecordStarted(
-        false,
-        "Camera not initialized. Camera should be disposed and reinitialized.");
+    return OnRecordStarted(false,
+                           "Camera not initialized. Camera should be "
+                           "disposed and reinitialized.");
   }
 
   if (!base_capture_media_type_) {
@@ -511,7 +516,8 @@ void CaptureControllerImpl::StartRecord(const std::string& file_path,
         "first.");
   }
 
-  // Check MF_CAPTURE_ENGINE_RECORD_STARTED event handling for response process.
+  // Check MF_CAPTURE_ENGINE_RECORD_STARTED event handling for response
+  // process.
   if (!record_handler_->StartRecord(file_path, max_video_duration_ms,
                                     capture_engine_.Get(),
                                     base_capture_media_type_.Get())) {
@@ -525,16 +531,17 @@ void CaptureControllerImpl::StopRecord() {
   assert(capture_controller_listener_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
-    return OnRecordStopped(
-        false,
-        "Camera not initialized. Camera should be disposed and reinitialized.");
+    return OnRecordStopped(false,
+                           "Camera not initialized. Camera should be "
+                           "disposed and reinitialized.");
   }
 
   if (!record_handler_ && !record_handler_->CanStop()) {
     return OnRecordStopped(false, "Recording cannot be stopped.");
   }
 
-  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response process.
+  // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response
+  // process.
   if (!record_handler_->StopRecord(capture_engine_.Get())) {
     // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
@@ -565,9 +572,9 @@ void CaptureControllerImpl::StartPreview() {
   assert(capture_engine_);
 
   if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
-    return OnPreviewStarted(
-        false,
-        "Camera not initialized. Camera should be disposed and reinitialized.");
+    return OnPreviewStarted(false,
+                            "Camera not initialized. Camera should be "
+                            "disposed and reinitialized.");
   }
 
   if (!base_preview_media_type_) {
@@ -599,7 +606,8 @@ void CaptureControllerImpl::StartPreview() {
 // Stops preview. Called by destructor
 // Use PausePreview and ResumePreview methods to for
 // pausing and resuming the preview.
-// Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event handling for response process.
+// Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event handling for response
+// process.
 void CaptureControllerImpl::StopPreview() {
   assert(capture_engine_);
 

@@ -4,6 +4,7 @@
 
 #include "camera_plugin.h"
 
+#include <atlbase.h>
 #include <flutter/flutter_view.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -90,26 +91,26 @@ ResolutionPreset ParseResolutionPreset(const std::string& resolution_preset) {
 std::unique_ptr<CaptureDeviceInfo> GetDeviceInfo(IMFActivate* device) {
   assert(device);
   auto device_info = std::make_unique<CaptureDeviceInfo>();
-  wchar_t* name;
+  CComHeapPtr<wchar_t> name;
   UINT32 name_size;
 
   HRESULT hr = device->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
                                           &name, &name_size);
-  if (SUCCEEDED(hr)) {
-    wchar_t* id;
-    UINT32 id_size;
-    hr = device->GetAllocatedString(
-        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK, &id, &id_size);
-
-    if (SUCCEEDED(hr)) {
-      device_info->display_name = Utf8FromUtf16(std::wstring(name, name_size));
-      device_info->device_id = Utf8FromUtf16(std::wstring(id, id_size));
-    }
-
-    ::CoTaskMemFree(id);
+  if (FAILED(hr)) {
+    return device_info;
   }
 
-  ::CoTaskMemFree(name);
+  CComHeapPtr<wchar_t> id;
+  UINT32 id_size;
+  hr = device->GetAllocatedString(
+      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK, &id, &id_size);
+
+  if (FAILED(hr)) {
+    return device_info;
+  }
+
+  device_info->display_name = Utf8FromUtf16(std::wstring(name, name_size));
+  device_info->device_id = Utf8FromUtf16(std::wstring(id, id_size));
   return device_info;
 }
 
@@ -293,7 +294,7 @@ void CameraPlugin::DisposeCameraByCameraId(int64_t camera_id) {
 void CameraPlugin::AvailableCamerasMethodHandler(
     std::unique_ptr<flutter::MethodResult<>> result) {
   // Enumerate devices.
-  IMFActivate** devices;
+  CComHeapPtr<IMFActivate*> devices;
   UINT32 count = 0;
   if (!this->EnumerateVideoCaptureDeviceSources(&devices, &count)) {
     result->Error("System error", "Failed to get available cameras");
@@ -303,7 +304,6 @@ void CameraPlugin::AvailableCamerasMethodHandler(
 
   if (count == 0) {
     result->Success(EncodableValue(EncodableList()));
-    CoTaskMemFree(devices);
     return;
   }
 
@@ -320,7 +320,6 @@ void CameraPlugin::AvailableCamerasMethodHandler(
     }));
   }
 
-  CoTaskMemFree(devices);
   result->Success(std::move(EncodableValue(devices_list)));
 }
 

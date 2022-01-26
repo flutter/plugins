@@ -196,17 +196,22 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> toggleRecord() async {
     if (_initialized && _cameraId > 0) {
-      if (!_recording) {
-        await CameraPlatform.instance.startVideoRecording(_cameraId);
+      if (_recordingTimed) {
+        // Request to stop timed recording short.
+        await CameraPlatform.instance.stopVideoRecording(_cameraId);
       } else {
-        final XFile _file =
-            await CameraPlatform.instance.stopVideoRecording(_cameraId);
+        if (!_recording) {
+          await CameraPlatform.instance.startVideoRecording(_cameraId);
+        } else {
+          final XFile _file =
+              await CameraPlatform.instance.stopVideoRecording(_cameraId);
 
-        showInSnackBar('Video captured to: ${_file.path}');
+          showInSnackBar('Video captured to: ${_file.path}');
+        }
+        setState(() {
+          _recording = !_recording;
+        });
       }
-      setState(() {
-        _recording = !_recording;
-      });
     }
   }
 
@@ -295,11 +300,11 @@ class _MyAppState extends State<MyApp> {
                   ),
                   const SizedBox(width: 5),
                   ElevatedButton(
-                    onPressed: (_initialized && !_recordingTimed)
-                        ? toggleRecord
-                        : null,
+                    onPressed: _initialized ? toggleRecord : null,
                     child: Text(
-                      _recording ? 'Stop recording' : 'Record Video',
+                      (_recording || _recordingTimed)
+                          ? 'Stop recording'
+                          : 'Record Video',
                     ),
                   ),
                   const SizedBox(width: 5),

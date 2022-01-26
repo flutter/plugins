@@ -203,6 +203,8 @@ bool RecordHandler::StartRecord(const std::string& file_path,
   type_ = max_duration < 0 ? RecordingType::CONTINUOUS : RecordingType::TIMED;
   max_video_duration_ms_ = max_duration;
   file_path_ = file_path;
+  recording_start_timestamp_us_ = -1;
+  recording_duration_us_ = 0;
 
   if (FAILED(InitRecordSink(capture_engine, base_media_type))) {
     return false;
