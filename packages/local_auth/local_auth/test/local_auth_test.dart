@@ -2,174 +2,154 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:local_auth/src/local_auth.dart';
+import 'package:local_auth_android/types/auth_strings_android.dart';
+import 'package:local_auth_ios/types/auth_strings_ios.dart';
+import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  late LocalAuthentication localAuthentication;
+  late MockLocalAuthPlatform mockLocalAuthPlatform;
 
-  group('LocalAuth', () {
-    const MethodChannel channel = MethodChannel(
-      'plugins.flutter.io/local_auth',
-    );
-
-    final List<MethodCall> log = <MethodCall>[];
-    late LocalAuthentication localAuthentication;
-
-    setUp(() {
-      channel.setMockMethodCallHandler((MethodCall methodCall) {
-        log.add(methodCall);
-        return Future<dynamic>.value(true);
-      });
-      localAuthentication = LocalAuthentication();
-      log.clear();
-    });
-
-    group('With device auth fail over', () {
-      test('authenticate with no args on Android.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticate(
-          localizedReason: 'Needs secure',
-          biometricOnly: true,
-        );
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': true,
-                }..addAll(const AndroidAuthMessages().args)),
-          ],
-        );
-      });
-
-      test('authenticate with no args on iOS.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-        await localAuthentication.authenticate(
-          localizedReason: 'Needs secure',
-          biometricOnly: true,
-        );
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': true,
-                }..addAll(const IOSAuthMessages().args)),
-          ],
-        );
-      });
-
-      test('authenticate with no localizedReason on iOS.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-        await expectLater(
-          localAuthentication.authenticate(
-            localizedReason: '',
-            biometricOnly: true,
-          ),
-          throwsAssertionError,
-        );
-      });
-
-      test('authenticate with no sensitive transaction.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticate(
-          localizedReason: 'Insecure',
-          sensitiveTransaction: false,
-          useErrorDialogs: false,
-          biometricOnly: true,
-        );
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Insecure',
-                  'useErrorDialogs': false,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': false,
-                  'biometricOnly': true,
-                }..addAll(const AndroidAuthMessages().args)),
-          ],
-        );
-      });
-    });
-
-    group('With biometrics only', () {
-      test('authenticate with no args on Android.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticate(
-          localizedReason: 'Needs secure',
-        );
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': false,
-                }..addAll(const AndroidAuthMessages().args)),
-          ],
-        );
-      });
-
-      test('authenticate with no args on iOS.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-        await localAuthentication.authenticate(
-          localizedReason: 'Needs secure',
-        );
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': false,
-                }..addAll(const IOSAuthMessages().args)),
-          ],
-        );
-      });
-
-      test('authenticate with no sensitive transaction.', () async {
-        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticate(
-          localizedReason: 'Insecure',
-          sensitiveTransaction: false,
-          useErrorDialogs: false,
-        );
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Insecure',
-                  'useErrorDialogs': false,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': false,
-                  'biometricOnly': false,
-                }..addAll(const AndroidAuthMessages().args)),
-          ],
-        );
-      });
-    });
+  setUp(() {
+    localAuthentication = LocalAuthentication();
+    mockLocalAuthPlatform = MockLocalAuthPlatform();
+    LocalAuthPlatform.instance = mockLocalAuthPlatform;
   });
+
+  test('authenticateWithBiometrics calls platform implementation', () {
+    when(mockLocalAuthPlatform.authenticate(
+      localizedReason: anyNamed('localizedReason'),
+      authStrings: anyNamed('authStrings'),
+      useErrorDialogs: anyNamed('useErrorDialogs'),
+      stickyAuth: anyNamed('stickyAuth'),
+      sensitiveTransaction: anyNamed('sensitiveTransaction'),
+      biometricOnly: anyNamed('biometricOnly'),
+    )).thenAnswer((_) async => true);
+    localAuthentication.authenticateWithBiometrics(
+        localizedReason: 'Test Reason');
+    verify(mockLocalAuthPlatform.authenticate(
+      localizedReason: 'Test Reason',
+      authStrings: <String, String>{}
+        ..addAll(const AndroidAuthMessages().args)
+        ..addAll(const IOSAuthMessages().args),
+      useErrorDialogs: true,
+      stickyAuth: false,
+      sensitiveTransaction: true,
+      biometricOnly: true,
+    )).called(1);
+  });
+
+  test('authenticate calls platform implementation', () {
+    when(mockLocalAuthPlatform.authenticate(
+      localizedReason: anyNamed('localizedReason'),
+      authStrings: anyNamed('authStrings'),
+      useErrorDialogs: anyNamed('useErrorDialogs'),
+      stickyAuth: anyNamed('stickyAuth'),
+      sensitiveTransaction: anyNamed('sensitiveTransaction'),
+      biometricOnly: anyNamed('biometricOnly'),
+    )).thenAnswer((_) async => true);
+    localAuthentication.authenticate(localizedReason: 'Test Reason');
+    verify(mockLocalAuthPlatform.authenticate(
+      localizedReason: 'Test Reason',
+      authStrings: <String, String>{}
+        ..addAll(const AndroidAuthMessages().args)
+        ..addAll(const IOSAuthMessages().args),
+      useErrorDialogs: true,
+      stickyAuth: false,
+      sensitiveTransaction: true,
+      biometricOnly: false,
+    )).called(1);
+  });
+
+  test('isDeviceSupported calls platform implementation', () {
+    when(mockLocalAuthPlatform.isDeviceSupported())
+        .thenAnswer((_) async => true);
+    localAuthentication.isDeviceSupported();
+    verify(mockLocalAuthPlatform.isDeviceSupported()).called(1);
+  });
+
+  test('getAvailableBiometrics calls platform implementation', () {
+    when(mockLocalAuthPlatform.getAvailableBiometrics())
+        .thenAnswer((_) async => <BiometricType>[]);
+    localAuthentication.getAvailableBiometrics();
+    verify(mockLocalAuthPlatform.getAvailableBiometrics()).called(1);
+  });
+
+  test('stopAuthentication calls platform implementation on Android', () {
+    when(mockLocalAuthPlatform.stopAuthentication())
+        .thenAnswer((_) async => true);
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
+    localAuthentication.stopAuthentication();
+    verify(mockLocalAuthPlatform.stopAuthentication()).called(1);
+  });
+
+  test('stopAuthentication does not call platform implementation on iOS', () {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+    localAuthentication.stopAuthentication();
+    verifyNever(mockLocalAuthPlatform.stopAuthentication());
+  });
+
+  test('canCheckBiometrics returns correct result', () async {
+    when(mockLocalAuthPlatform.getAvailableBiometrics())
+        .thenAnswer((_) async => <BiometricType>[]);
+    bool? result;
+    result = await localAuthentication.canCheckBiometrics;
+    expect(result, false);
+    when(mockLocalAuthPlatform.getAvailableBiometrics())
+        .thenAnswer((_) async => <BiometricType>[BiometricType.face]);
+    result = await localAuthentication.canCheckBiometrics;
+    expect(result, true);
+    verify(mockLocalAuthPlatform.getAvailableBiometrics()).called(2);
+  });
+}
+
+class MockLocalAuthPlatform extends Mock
+    with MockPlatformInterfaceMixin
+    implements LocalAuthPlatform {
+  MockLocalAuthPlatform() {
+    throwOnMissingStub(this);
+  }
+
+  @override
+  Future<bool> authenticate(
+          {String? localizedReason,
+          bool? useErrorDialogs = true,
+          bool? stickyAuth = false,
+          Map<String, String>? authStrings,
+          bool? sensitiveTransaction = true,
+          bool? biometricOnly = false}) =>
+      super.noSuchMethod(
+          Invocation.method(#authenticate, <Object>[], <Symbol, Object?>{
+            #localizedReason: localizedReason,
+            #useErrorDialogs: useErrorDialogs,
+            #stickyAuth: stickyAuth,
+            #authStrings: authStrings,
+            #sensitiveTransaction: sensitiveTransaction,
+            #biometricOnly: biometricOnly
+          }),
+          returnValue: Future<bool>.value(false)) as Future<bool>;
+
+  @override
+  Future<List<BiometricType>> getAvailableBiometrics() =>
+      super.noSuchMethod(Invocation.method(#getAvailableBiometrics, <Object>[]),
+              returnValue: Future<List<BiometricType>>.value(<BiometricType>[]))
+          as Future<List<BiometricType>>;
+
+  @override
+  Future<bool> isDeviceSupported() =>
+      super.noSuchMethod(Invocation.method(#isDeviceSupported, <Object>[]),
+          returnValue: Future<bool>.value(false)) as Future<bool>;
+
+  @override
+  Future<bool> stopAuthentication() =>
+      super.noSuchMethod(Invocation.method(#stopAuthentication, <Object>[]),
+          returnValue: Future<bool>.value(false)) as Future<bool>;
 }
