@@ -1,7 +1,22 @@
+## 2.2.16
+
+* Introduce setCaptionOffset to offset the caption display based on a Duration.
+
+## 2.2.15
+
+* Updates README discussion of permissions.
+
+## 2.2.14
+
+* Removes KVO observer on AVPlayerItem on iOS.
+
+## 2.2.13
+
+* Fixes persisting of hasError even after successful initialize.
 
 ## 2.2.12
 
-* Introduce setCaptionOffset to offset the caption display based on a Duration.
+* iOS: Validate size only when assets contain video tracks.
 
 ## 2.2.11
 

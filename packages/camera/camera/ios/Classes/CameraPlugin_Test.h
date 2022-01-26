@@ -10,6 +10,9 @@
 /// Methods exposed for unit testing.
 @interface CameraPlugin ()
 
+// All FLTCam's state access and capture session related operations should be on run on this queue.
+@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
+
 /// Inject @p FlutterTextureRegistry and @p FlutterBinaryMessenger for unit testing.
 - (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry> *)registry
                        messenger:(NSObject<FlutterBinaryMessenger> *)messenger
