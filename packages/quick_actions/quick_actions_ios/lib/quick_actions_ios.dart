@@ -13,7 +13,7 @@ const MethodChannel _channel =
 
 /// An implementation of [QuickActionsPlatform] that uses method channels.
 class QuickActionsIos extends QuickActionsPlatform {
-    /// Registers this class as the default instance of [PathProviderPlatform].
+  /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {
     QuickActionsPlatform.instance = QuickActionsIos();
   }
