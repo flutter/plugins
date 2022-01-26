@@ -11,7 +11,7 @@
 @implementation PathProviderTests
 
 - (void)testPlugin {
-  FLTPathProviderPlugin* plugin = [[FLTPathProviderPlugin alloc] init];
+  FLTPathProviderPlugin *plugin = [[FLTPathProviderPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 

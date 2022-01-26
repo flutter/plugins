@@ -6,7 +6,7 @@
 @import os.log;
 
 @interface URLLauncherUITests : XCTestCase
-@property(nonatomic, strong) XCUIApplication* app;
+@property(nonatomic, strong) XCUIApplication *app;
 @end
 
 @implementation URLLauncherUITests
@@ -19,18 +19,18 @@
 }
 
 - (void)testLaunch {
-  XCUIApplication* app = self.app;
+  XCUIApplication *app = self.app;
 
-  NSArray<NSString*>* buttonNames = @[
+  NSArray<NSString *> *buttonNames = @[
     @"Launch in app", @"Launch in app(JavaScript ON)", @"Launch in app(DOM storage ON)",
     @"Launch a universal link in a native app, fallback to Safari.(Youtube)"
   ];
-  for (NSString* buttonName in buttonNames) {
-    XCUIElement* button = app.buttons[buttonName];
+  for (NSString *buttonName in buttonNames) {
+    XCUIElement *button = app.buttons[buttonName];
     XCTAssertTrue([button waitForExistenceWithTimeout:30.0]);
     XCTAssertEqual(app.webViews.count, 0);
     [button tap];
-    XCUIElement* webView = app.webViews.firstMatch;
+    XCUIElement *webView = app.webViews.firstMatch;
     XCTAssertTrue([webView waitForExistenceWithTimeout:30.0]);
     XCTAssertTrue([app.buttons[@"ForwardButton"] waitForExistenceWithTimeout:30.0]);
     XCTAssertTrue(app.buttons[@"Share"].exists);
