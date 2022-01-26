@@ -6,8 +6,10 @@
 enum BiometricType {
   /// Face authentication.
   face,
+
   /// Fingerprint authentication.
   fingerprint,
+
   /// Iris authentication.
   iris,
 }
