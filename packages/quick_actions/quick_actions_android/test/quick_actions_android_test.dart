@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quick_actions_android/quick_actions_android.dart';
+import 'package:quick_actions_platform_interface/quick_actions_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,11 @@ void main() {
       });
 
       log.clear();
+    });
+
+    test('registerWith() registers correct instance', () {
+      QuickActionsAndroid.registerWith();
+      expect(QuickActionsPlatform.instance, isA<QuickActionsAndroid>());
     });
 
     group('#initialize', () {

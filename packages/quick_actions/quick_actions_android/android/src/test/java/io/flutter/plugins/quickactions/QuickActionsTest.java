@@ -43,7 +43,7 @@ public class QuickActionsTest {
         @NonNull String channel,
         @Nullable ByteBuffer message,
         @Nullable final BinaryReply callback) {
-      if (channel.equals("plugins.flutter.io/quick_actions")) {
+      if (channel.equals("plugins.flutter.io/quick_actions_android")) {
         lastMethodCall =
             StandardMethodCodec.INSTANCE.decodeMethodCall((ByteBuffer) message.position(0));
       }
