@@ -1,6 +1,6 @@
 ## 2.1.5
 
-* Fixed asynchronous exceptions handling of the `initializeCamera` method.
+* Fixes asynchronous exceptions handling of the `initializeCamera` method.
 
 ## 2.1.4
 
