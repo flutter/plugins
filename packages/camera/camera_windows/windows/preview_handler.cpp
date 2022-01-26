@@ -129,7 +129,8 @@ bool PreviewHandler::StartPreview(IMFCaptureEngine* capture_engine,
 }
 
 bool PreviewHandler::StopPreview(IMFCaptureEngine* capture_engine) {
-  if (preview_state_ == PreviewState::PREVIEW_STATE__RUNNING ||
+  if (preview_state_ == PreviewState::PREVIEW_STATE__STARTING ||
+      preview_state_ == PreviewState::PREVIEW_STATE__RUNNING ||
       preview_state_ == PreviewState::PREVIEW_STATE__PAUSED) {
     preview_state_ = PreviewState::PREVIEW_STATE__STOPPING;
     return SUCCEEDED(capture_engine->StopPreview());

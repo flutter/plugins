@@ -244,7 +244,7 @@ void CaptureControllerImpl::ResetCaptureController() {
     }
   }
 
-  if (preview_handler_ && preview_handler_->IsInitialized()) {
+  if (preview_handler_) {
     StopPreview();
   }
 
@@ -287,7 +287,7 @@ void CaptureControllerImpl::ResetCaptureController() {
 
 void CaptureControllerImpl::InitCaptureDevice(
     flutter::TextureRegistrar* texture_registrar, const std::string& device_id,
-    bool enable_audio, ResolutionPreset resolution_preset) {
+    bool record_audio, ResolutionPreset resolution_preset) {
   assert(capture_controller_listener_);
 
   if (capture_engine_state_ == CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
@@ -302,7 +302,7 @@ void CaptureControllerImpl::InitCaptureDevice(
 
   capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_INITIALIZING;
   resolution_preset_ = resolution_preset;
-  record_audio_ = enable_audio;
+  record_audio_ = record_audio;
   texture_registrar_ = texture_registrar;
   video_device_id_ = device_id;
 

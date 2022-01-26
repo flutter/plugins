@@ -91,12 +91,12 @@ class CaptureController {
   //                    register texture for capture preview.
   // device_id:         A string that holds information of camera device id to
   //                    be captured.
-  // enable_audio:      A boolean value telling if audio should be captured on
+  // record_audio:      A boolean value telling if audio should be captured on
   //                    video recording.
   // resolution_preset: Maximum capture resolution height.
   virtual void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
                                  const std::string& device_id,
-                                 bool enable_audio,
+                                 bool record_audio,
                                  ResolutionPreset resolution_preset) = 0;
 
   // Returns texture id for preview
@@ -147,7 +147,7 @@ class CaptureControllerImpl : public CaptureController,
 
   // From CaptureController
   void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
-                         const std::string& device_id, bool enable_audio,
+                         const std::string& device_id, bool record_audio,
                          ResolutionPreset resolution_preset) override;
   int64_t GetTextureId() override { return texture_id_; }
   uint32_t GetPreviewWidth() override { return preview_frame_width_; }
@@ -191,6 +191,7 @@ class CaptureControllerImpl : public CaptureController,
   bool record_audio_ = false;
   uint32_t preview_frame_width_ = 0;
   uint32_t preview_frame_height_ = 0;
+  UINT dx_device_reset_token_ = 0;
   std::unique_ptr<RecordHandler> record_handler_ = nullptr;
   std::unique_ptr<PreviewHandler> preview_handler_ = nullptr;
   std::unique_ptr<PhotoHandler> photo_handler_ = nullptr;
@@ -208,7 +209,6 @@ class CaptureControllerImpl : public CaptureController,
   ComPtr<IMFMediaType> base_preview_media_type_;
   ComPtr<IMFMediaSource> video_source_;
   ComPtr<IMFMediaSource> audio_source_;
-  UINT dx_device_reset_token_ = 0;
 
   // Texture
   int64_t texture_id_ = -1;

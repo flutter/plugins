@@ -98,12 +98,6 @@ HRESULT PhotoHandler::InitPhotoSink(IMFCaptureEngine* capture_engine,
     return hr;
   }
 
-  hr = photo_sink_->RemoveAllStreams();
-  if (FAILED(hr)) {
-    photo_sink_ = nullptr;
-    return hr;
-  }
-
   DWORD photo_sink_stream_index;
   hr = photo_sink_->AddStream(
       (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_PHOTO,

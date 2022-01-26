@@ -184,7 +184,7 @@ class MockCamera : public Camera {
 
   MOCK_METHOD(void, InitCamera,
               (flutter::TextureRegistrar * texture_registrar,
-               flutter::BinaryMessenger* messenger, bool enable_audio,
+               flutter::BinaryMessenger* messenger, bool record_audio,
                ResolutionPreset resolution_preset),
               (override));
 
@@ -214,7 +214,7 @@ class MockCaptureController : public CaptureController {
 
   MOCK_METHOD(void, InitCaptureDevice,
               (flutter::TextureRegistrar * texture_registrar,
-               const std::string& device_id, bool enable_audio,
+               const std::string& device_id, bool record_audio,
                ResolutionPreset resolution_preset),
               (override));
 

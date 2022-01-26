@@ -116,7 +116,7 @@ TEST(CameraPlugin, CreateHandlerCallsInitCamera) {
       .Times(1)
       .WillOnce([cam = camera.get()](
                     flutter::TextureRegistrar* texture_registrar,
-                    flutter::BinaryMessenger* messenger, bool enable_audio,
+                    flutter::BinaryMessenger* messenger, bool record_audio,
                     ResolutionPreset resolution_preset) {
         assert(cam->pending_result_);
         return cam->pending_result_->Success(EncodableValue(1));
@@ -202,7 +202,7 @@ TEST(CameraPlugin, CreateHandlerErrorOnExistingDeviceId) {
       .Times(1)
       .WillOnce([cam = camera.get()](
                     flutter::TextureRegistrar* texture_registrar,
-                    flutter::BinaryMessenger* messenger, bool enable_audio,
+                    flutter::BinaryMessenger* messenger, bool record_audio,
                     ResolutionPreset resolution_preset) {
         assert(cam->pending_result_);
         return cam->pending_result_->Success(EncodableValue(1));

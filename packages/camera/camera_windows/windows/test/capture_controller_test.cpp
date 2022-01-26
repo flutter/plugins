@@ -60,7 +60,7 @@ void MockInitCaptureController(CaptureControllerImpl* capture_controller,
   EXPECT_CALL(*engine, Initialize).Times(1);
 
   capture_controller->InitCaptureDevice(
-      texture_registrar, MOCK_DEVICE_ID, true,
+      texture_registrar, MOCK_DEVICE_ID, false,
       ResolutionPreset::RESOLUTION_PRESET_AUTO);
 
   // MockCaptureEngine::Initialize is called
@@ -112,6 +112,23 @@ void MockStartPreview(CaptureControllerImpl* capture_controller,
       GetAvailableDeviceMediaType(
           Eq((DWORD)
                  MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW),
+          _, _))
+      .WillRepeatedly([mock_preview_width, mock_preview_height](
+                          DWORD stream_index, DWORD media_type_index,
+                          IMFMediaType** media_type) {
+        // We give only one media type to loop through
+        if (media_type_index != 0) return MF_E_NO_MORE_TYPES;
+        *media_type =
+            new FakeMediaType(MFMediaType_Video, MFVideoFormat_RGB32,
+                              mock_preview_width, mock_preview_height);
+        (*media_type)->AddRef();
+        return S_OK;
+      });
+
+  EXPECT_CALL(
+      *capture_source,
+      GetAvailableDeviceMediaType(
+          Eq((DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_RECORD),
           _, _))
       .WillRepeatedly([mock_preview_width, mock_preview_height](
                           DWORD stream_index, DWORD media_type_index,

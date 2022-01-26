@@ -333,9 +333,9 @@ bool CameraPlugin::EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
 void CameraPlugin::CreateMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
   // Parse enableAudio argument.
-  const auto* enable_audio =
+  const auto* record_audio =
       std::get_if<bool>(ValueOrNull(args, kEnableAudioKey));
-  if (!enable_audio) {
+  if (!record_audio) {
     return result->Error("argument_error",
                          std::string(kEnableAudioKey) + " argument missing");
   }
@@ -380,7 +380,7 @@ void CameraPlugin::CreateMethodHandler(
       resolution_preset = ResolutionPreset::RESOLUTION_PRESET_AUTO;
     }
 
-    camera->InitCamera(texture_registrar_, messenger_, *enable_audio,
+    camera->InitCamera(texture_registrar_, messenger_, *record_audio,
                        resolution_preset);
     cameras_.push_back(std::move(camera));
   }

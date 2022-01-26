@@ -56,7 +56,7 @@ class Camera : public CaptureControllerListener {
   // Initializes camera and capture controller.
   virtual void InitCamera(flutter::TextureRegistrar* texture_registrar,
                           flutter::BinaryMessenger* messenger,
-                          bool enable_audio,
+                          bool record_audio,
                           ResolutionPreset resolution_preset) = 0;
 };
 
@@ -103,7 +103,7 @@ class CameraImpl : public Camera {
     return capture_controller_.get();
   };
   void InitCamera(flutter::TextureRegistrar* texture_registrar,
-                  flutter::BinaryMessenger* messenger, bool enable_audio,
+                  flutter::BinaryMessenger* messenger, bool record_audio,
                   ResolutionPreset resolution_preset) override;
 
   // Inits camera with capture controller factory.
@@ -111,7 +111,7 @@ class CameraImpl : public Camera {
   void InitCamera(
       std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
       flutter::TextureRegistrar* texture_registrar,
-      flutter::BinaryMessenger* messenger, bool enable_audio,
+      flutter::BinaryMessenger* messenger, bool record_audio,
       ResolutionPreset resolution_preset);
 
  private:
