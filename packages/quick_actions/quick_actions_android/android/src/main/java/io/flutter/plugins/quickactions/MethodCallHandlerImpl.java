@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   protected static final String EXTRA_ACTION = "some unique action key";
-  private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
+  private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions_android";
 
   private final Context context;
   private Activity activity;

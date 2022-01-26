@@ -17,7 +17,7 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 
 /** QuickActionsPlugin */
 public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewIntentListener {
-  private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
+  private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions_android";
 
   private MethodChannel channel;
   private MethodCallHandlerImpl handler;
