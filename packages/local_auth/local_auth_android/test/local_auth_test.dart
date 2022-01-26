@@ -32,7 +32,7 @@ void main() {
     group('With device auth fail over', () {
       test('authenticate with no args on Android.', () async {
         await localAuthentication.authenticate(
-          authStrings: AndroidAuthMessages().args,
+          authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Needs secure',
           biometricOnly: true,
         );
@@ -53,7 +53,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: AndroidAuthMessages().args,
+          authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Insecure',
           sensitiveTransaction: false,
           useErrorDialogs: false,
@@ -78,7 +78,7 @@ void main() {
     group('With biometrics only', () {
       test('authenticate with no args on Android.', () async {
         await localAuthentication.authenticate(
-          authStrings: AndroidAuthMessages().args,
+          authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Needs secure',
         );
         expect(
@@ -98,7 +98,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: AndroidAuthMessages().args,
+          authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Insecure',
           sensitiveTransaction: false,
           useErrorDialogs: false,
