@@ -12,19 +12,19 @@
 
 @implementation FLTFlashModeTests
 
-- (void)testGetFLTFlashModeForString {
-  XCTAssertEqual(FLTFlashModeOff, getFLTFlashModeForString(@"off"));
-  XCTAssertEqual(FLTFlashModeAuto, getFLTFlashModeForString(@"auto"));
-  XCTAssertEqual(FLTFlashModeAlways, getFLTFlashModeForString(@"always"));
-  XCTAssertEqual(FLTFlashModeTorch, getFLTFlashModeForString(@"torch"));
-  XCTAssertThrows(getFLTFlashModeForString(@"unkwown"));
+- (void)testFLTGetFLTFlashModeForString {
+  XCTAssertEqual(FLTFlashModeOff, FLTGetFLTFlashModeForString(@"off"));
+  XCTAssertEqual(FLTFlashModeAuto, FLTGetFLTFlashModeForString(@"auto"));
+  XCTAssertEqual(FLTFlashModeAlways, FLTGetFLTFlashModeForString(@"always"));
+  XCTAssertEqual(FLTFlashModeTorch, FLTGetFLTFlashModeForString(@"torch"));
+  XCTAssertThrows(FLTGetFLTFlashModeForString(@"unkwown"));
 }
 
-- (void)testGetAVCaptureFlashModeForFLTFlashMode {
-  XCTAssertEqual(AVCaptureFlashModeOff, getAVCaptureFlashModeForFLTFlashMode(FLTFlashModeOff));
-  XCTAssertEqual(AVCaptureFlashModeAuto, getAVCaptureFlashModeForFLTFlashMode(FLTFlashModeAuto));
-  XCTAssertEqual(AVCaptureFlashModeOn, getAVCaptureFlashModeForFLTFlashMode(FLTFlashModeAlways));
-  XCTAssertEqual(-1, getAVCaptureFlashModeForFLTFlashMode(FLTFlashModeTorch));
+- (void)testFLTGetAVCaptureFlashModeForFLTFlashMode {
+  XCTAssertEqual(AVCaptureFlashModeOff, FLTGetAVCaptureFlashModeForFLTFlashMode(FLTFlashModeOff));
+  XCTAssertEqual(AVCaptureFlashModeAuto, FLTGetAVCaptureFlashModeForFLTFlashMode(FLTFlashModeAuto));
+  XCTAssertEqual(AVCaptureFlashModeOn, FLTGetAVCaptureFlashModeForFLTFlashMode(FLTFlashModeAlways));
+  XCTAssertEqual(-1, FLTGetAVCaptureFlashModeForFLTFlashMode(FLTFlashModeTorch));
 }
 
 @end

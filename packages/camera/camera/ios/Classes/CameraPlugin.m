@@ -10,11 +10,11 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
-#import "FLTFlashMode.h"
 #import "FLTThreadSafeEventChannel.h"
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
+#import "FlashMode.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -447,7 +447,7 @@ NSString *const errorMethod = @"error";
     [settings setHighResolutionPhotoEnabled:YES];
   }
 
-  AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFLTFlashMode(_flashMode);
+  AVCaptureFlashMode avFlashMode = FLTGetAVCaptureFlashModeForFLTFlashMode(_flashMode);
   if (avFlashMode != -1) {
     [settings setFlashMode:avFlashMode];
   }
@@ -894,7 +894,7 @@ NSString *const errorMethod = @"error";
 - (void)setFlashModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
   FLTFlashMode mode;
   @try {
-    mode = getFLTFlashModeForString(modeStr);
+    mode = FLTGetFLTFlashModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -924,7 +924,7 @@ NSString *const errorMethod = @"error";
                         details:nil];
       return;
     }
-    AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFLTFlashMode(mode);
+    AVCaptureFlashMode avFlashMode = FLTGetAVCaptureFlashModeForFLTFlashMode(mode);
     if (![_capturePhotoOutput.supportedFlashModes
             containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
       [result sendErrorWithCode:@"setFlashModeFailed"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTFlashMode.h"
+#import "FlashMode.h"
 
-FLTFlashMode getFLTFlashModeForString(NSString *mode) {
+FLTFlashMode FLTGetFLTFlashModeForString(NSString *mode) {
   if ([mode isEqualToString:@"off"]) {
     return FLTFlashModeOff;
   } else if ([mode isEqualToString:@"auto"]) {
@@ -24,7 +24,7 @@ FLTFlashMode getFLTFlashModeForString(NSString *mode) {
   }
 }
 
-AVCaptureFlashMode getAVCaptureFlashModeForFLTFlashMode(FLTFlashMode mode) {
+AVCaptureFlashMode FLTGetAVCaptureFlashModeForFLTFlashMode(FLTFlashMode mode) {
   switch (mode) {
     case FLTFlashModeOff:
       return AVCaptureFlashModeOff;

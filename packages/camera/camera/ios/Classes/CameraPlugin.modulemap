@@ -6,6 +6,6 @@ framework module camera {
 
   explicit module Test {
     header "CameraPlugin_Test.h"
-    header "FLTFlashMode.h"
+    header "FlashMode.h"
   }
 }

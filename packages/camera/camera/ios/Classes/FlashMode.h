@@ -21,12 +21,12 @@ typedef NS_ENUM(NSInteger, FLTFlashMode) {
  * Gets FLTFlashMode from its string representation.
  * @param mode a string representation of the FLTFlashMode.
  */
-extern FLTFlashMode getFLTFlashModeForString(NSString *mode);
+extern FLTFlashMode FLTGetFLTFlashModeForString(NSString *mode);
 
 /**
  * Gets AVCaptureFlashMode from FLTFlashMode.
  * @param mode flash mode.
  */
-extern AVCaptureFlashMode getAVCaptureFlashModeForFLTFlashMode(FLTFlashMode mode);
+extern AVCaptureFlashMode FLTGetAVCaptureFlashModeForFLTFlashMode(FLTFlashMode mode);
 
 NS_ASSUME_NONNULL_END
