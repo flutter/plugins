@@ -17,6 +17,7 @@ flutter:
         pluginClass: FileSelectorWindows
 
 dependencies:
+  cross_file: ^0.3.1
   file_selector_platform_interface: ^2.0.4
   flutter:
     sdk: flutter
