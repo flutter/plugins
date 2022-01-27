@@ -100,15 +100,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [self checkPhotoAuthorizationForAccessLevel];
 }
 
-- (void)pickImageWithUIImagePicker {
+- (void)pickImageWithUIImagePicker:(int)imageSource maxImagesAllowed:(int)maxImagesAllowed {
   _imagePickerController = [[UIImagePickerController alloc] init];
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   _imagePickerController.delegate = self;
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-  int imageSource = [[_arguments objectForKey:@"source"] intValue];
-
-  self.maxImagesAllowed = 1;
+  self.maxImagesAllowed = maxImagesAllowed;
 
   switch (imageSource) {
     case SOURCE_CAMERA:
@@ -144,18 +142,18 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         [self pickImageWithPHPicker:1];
       } else {
         // UIImagePicker is used
-        [self pickImageWithUIImagePicker];
+        [self pickImageWithUIImagePicker:SOURCE_GALLERY maxImagesAllowed:1];
       }
     } else {
-      [self pickImageWithUIImagePicker];
+      [self pickImageWithUIImagePicker:SOURCE_CAMERA maxImagesAllowed:1];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
+    self.result = result;
+    _arguments = call.arguments;
     if (@available(iOS 14, *)) {
-      self.result = result;
-      _arguments = call.arguments;
       [self pickImageWithPHPicker:0];
     } else {
-      [self pickImageWithUIImagePicker];
+      [self pickImageWithUIImagePicker:SOURCE_GALLERY maxImagesAllowed:0];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
