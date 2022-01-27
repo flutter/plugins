@@ -12,4 +12,14 @@ enum BiometricType {
 
   /// Iris authentication.
   iris,
+
+  /// Any biometric (e.g. fingerprint, iris, or face) on the device that meets
+  /// or exceeds the requirements for Class 3 (formerly Strong), as defined
+  /// by the Android CDD. Android only.
+  strong,
+
+  /// Any biometric (e.g. fingerprint, iris, or face) on the device that meets
+  /// or exceeds the requirements for Class 2 (formerly Weak), as defined
+  /// by the Android CDD. Android only.
+  weak,
 }
