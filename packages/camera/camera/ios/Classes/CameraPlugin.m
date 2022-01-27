@@ -14,6 +14,7 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
+#import "FlashMode.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -113,34 +114,6 @@
 }
 @end
 
-// Mirrors FlashMode in flash_mode.dart
-typedef enum {
-  FlashModeOff,
-  FlashModeAuto,
-  FlashModeAlways,
-  FlashModeTorch,
-} FlashMode;
-
-static FlashMode getFlashModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"off"]) {
-    return FlashModeOff;
-  } else if ([mode isEqualToString:@"auto"]) {
-    return FlashModeAuto;
-  } else if ([mode isEqualToString:@"always"]) {
-    return FlashModeAlways;
-  } else if ([mode isEqualToString:@"torch"]) {
-    return FlashModeTorch;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown flash mode %@", mode]
-                                     }];
-    @throw error;
-  }
-}
-
 static OSType getVideoFormatFromString(NSString *videoFormatString) {
   if ([videoFormatString isEqualToString:@"bgra8888"]) {
     return kCVPixelFormatType_32BGRA;
@@ -149,20 +122,6 @@ static OSType getVideoFormatFromString(NSString *videoFormatString) {
   } else {
     NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
     return kCVPixelFormatType_32BGRA;
-  }
-}
-
-static AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
-  switch (mode) {
-    case FlashModeOff:
-      return AVCaptureFlashModeOff;
-    case FlashModeAuto:
-      return AVCaptureFlashModeAuto;
-    case FlashModeAlways:
-      return AVCaptureFlashModeOn;
-    case FlashModeTorch:
-    default:
-      return -1;
   }
 }
 
@@ -349,7 +308,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FocusMode focusMode;
-@property(assign, nonatomic) FlashMode flashMode;
+@property(assign, nonatomic) FLTFlashMode flashMode;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -386,7 +345,7 @@ NSString *const errorMethod = @"error";
   _captureSessionQueue = captureSessionQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
-  _flashMode = _captureDevice.hasFlash ? FlashModeAuto : FlashModeOff;
+  _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
   _exposureMode = ExposureModeAuto;
   _focusMode = FocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
@@ -488,7 +447,7 @@ NSString *const errorMethod = @"error";
     [settings setHighResolutionPhotoEnabled:YES];
   }
 
-  AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(_flashMode);
+  AVCaptureFlashMode avFlashMode = FLTGetAVCaptureFlashModeForFLTFlashMode(_flashMode);
   if (avFlashMode != -1) {
     [settings setFlashMode:avFlashMode];
   }
@@ -933,14 +892,14 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setFlashModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
-  FlashMode mode;
+  FLTFlashMode mode;
   @try {
-    mode = getFlashModeForString(modeStr);
+    mode = FLTGetFLTFlashModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
   }
-  if (mode == FlashModeTorch) {
+  if (mode == FLTFlashModeTorch) {
     if (!_captureDevice.hasTorch) {
       [result sendErrorWithCode:@"setFlashModeFailed"
                         message:@"Device does not support torch mode"
@@ -965,7 +924,7 @@ NSString *const errorMethod = @"error";
                         details:nil];
       return;
     }
-    AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(mode);
+    AVCaptureFlashMode avFlashMode = FLTGetAVCaptureFlashModeForFLTFlashMode(mode);
     if (![_capturePhotoOutput.supportedFlashModes
             containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
       [result sendErrorWithCode:@"setFlashModeFailed"
@@ -1281,7 +1240,7 @@ NSString *const errorMethod = @"error";
     [_audioOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
   }
 
-  if (_flashMode == FlashModeTorch) {
+  if (_flashMode == FLTFlashModeTorch) {
     [self.captureDevice lockForConfiguration:nil];
     [self.captureDevice setTorchMode:AVCaptureTorchModeOn];
     [self.captureDevice unlockForConfiguration];
