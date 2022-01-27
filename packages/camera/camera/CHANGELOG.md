@@ -1,3 +1,7 @@
+## 0.9.4+8
+
+* Fixes a bug where ImageFormatGroup was ignored in `startImageStream` on iOS.
+
 ## 0.9.4+7
 
 * Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.  
