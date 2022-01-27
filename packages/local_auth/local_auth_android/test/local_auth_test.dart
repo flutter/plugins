@@ -34,7 +34,7 @@ void main() {
         await localAuthentication.authenticate(
           authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Needs secure',
-          biometricOnly: true,
+          options: const AuthenticationOptions(biometricOnly: true),
         );
         expect(
           log,
@@ -55,9 +55,11 @@ void main() {
         await localAuthentication.authenticate(
           authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Insecure',
-          sensitiveTransaction: false,
-          useErrorDialogs: false,
-          biometricOnly: true,
+          options: const AuthenticationOptions(
+            sensitiveTransaction: false,
+            useErrorDialogs: false,
+            biometricOnly: true,
+          ),
         );
         expect(
           log,
@@ -100,8 +102,10 @@ void main() {
         await localAuthentication.authenticate(
           authStrings: const AndroidAuthMessages().args,
           localizedReason: 'Insecure',
-          sensitiveTransaction: false,
-          useErrorDialogs: false,
+          options: const AuthenticationOptions(
+            sensitiveTransaction: false,
+            useErrorDialogs: false,
+          ),
         );
         expect(
           log,
