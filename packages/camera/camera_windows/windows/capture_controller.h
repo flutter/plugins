@@ -70,7 +70,7 @@ enum CaptureEngineState {
 };
 
 class VideoCaptureDeviceEnumerator {
- protected:
+ private:
   virtual bool EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
                                                   UINT32* count) = 0;
 };

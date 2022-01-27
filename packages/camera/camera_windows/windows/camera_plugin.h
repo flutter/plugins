@@ -19,6 +19,13 @@
 namespace camera_windows {
 using flutter::MethodResult;
 
+namespace test {
+namespace {
+// Forward declaration of test class.
+class MockCameraPlugin;
+}  // namespace
+}  // namespace test
+
 class CameraPlugin : public flutter::Plugin,
                      public VideoCaptureDeviceEnumerator {
  public:
@@ -43,7 +50,7 @@ class CameraPlugin : public flutter::Plugin,
   void HandleMethodCall(const flutter::MethodCall<>& method_call,
                         std::unique_ptr<MethodResult<>> result);
 
- protected:
+ private:
   // Loops through cameras and returns camera
   // with matching device_id or nullptr.
   Camera* GetCameraByDeviceId(std::string& device_id);
@@ -59,9 +66,6 @@ class CameraPlugin : public flutter::Plugin,
   bool EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
                                           UINT32* count) override;
 
-  std::vector<std::unique_ptr<Camera>> cameras_;
-
- private:
   // Handles availableCameras method calls.
   // Enumerates video capture devices and
   // returns list of available camera devices.
@@ -119,6 +123,9 @@ class CameraPlugin : public flutter::Plugin,
   std::unique_ptr<CameraFactory> camera_factory_;
   flutter::TextureRegistrar* texture_registrar_;
   flutter::BinaryMessenger* messenger_;
+  std::vector<std::unique_ptr<Camera>> cameras_;
+
+  friend class camera_windows::test::MockCameraPlugin;
 };
 
 }  // namespace camera_windows
