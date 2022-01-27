@@ -10,9 +10,10 @@ using flutter::EncodableMap;
 using flutter::EncodableValue;
 
 // Camera channel events.
-const char kCameraMethodChannelBaseName[] = "flutter.io/cameraPlugin/camera";
-const char kVideoRecordedEvent[] = "video_recorded";
-const char kErrorEvent[] = "error";
+constexpr char kCameraMethodChannelBaseName[] =
+    "flutter.io/cameraPlugin/camera";
+constexpr char kVideoRecordedEvent[] = "video_recorded";
+constexpr char kErrorEvent[] = "error";
 
 CameraImpl::CameraImpl(const std::string& device_id)
     : device_id_(device_id), Camera(device_id) {}

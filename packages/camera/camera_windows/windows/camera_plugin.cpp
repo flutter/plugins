@@ -30,31 +30,31 @@ using flutter::EncodableValue;
 namespace {
 
 // Channel events
-const char kChannelName[] = "plugins.flutter.io/camera";
+constexpr char kChannelName[] = "plugins.flutter.io/camera";
 
-const char kAvailableCamerasMethod[] = "availableCameras";
-const char kCreateMethod[] = "create";
-const char kInitializeMethod[] = "initialize";
-const char kTakePictureMethod[] = "takePicture";
-const char kStartVideoRecordingMethod[] = "startVideoRecording";
-const char kStopVideoRecordingMethod[] = "stopVideoRecording";
-const char kPausePreview[] = "pausePreview";
-const char kResumePreview[] = "resumePreview";
-const char kDisposeMethod[] = "dispose";
+constexpr char kAvailableCamerasMethod[] = "availableCameras";
+constexpr char kCreateMethod[] = "create";
+constexpr char kInitializeMethod[] = "initialize";
+constexpr char kTakePictureMethod[] = "takePicture";
+constexpr char kStartVideoRecordingMethod[] = "startVideoRecording";
+constexpr char kStopVideoRecordingMethod[] = "stopVideoRecording";
+constexpr char kPausePreview[] = "pausePreview";
+constexpr char kResumePreview[] = "resumePreview";
+constexpr char kDisposeMethod[] = "dispose";
 
-const char kCameraNameKey[] = "cameraName";
-const char kResolutionPresetKey[] = "resolutionPreset";
-const char kEnableAudioKey[] = "enableAudio";
+constexpr char kCameraNameKey[] = "cameraName";
+constexpr char kResolutionPresetKey[] = "resolutionPreset";
+constexpr char kEnableAudioKey[] = "enableAudio";
 
-const char kCameraIdKey[] = "cameraId";
-const char kMaxVideoDurationKey[] = "maxVideoDuration";
+constexpr char kCameraIdKey[] = "cameraId";
+constexpr char kMaxVideoDurationKey[] = "maxVideoDuration";
 
-const char kResolutionPresetValueLow[] = "low";
-const char kResolutionPresetValueMedium[] = "medium";
-const char kResolutionPresetValueHigh[] = "high";
-const char kResolutionPresetValueVeryHigh[] = "veryHigh";
-const char kResolutionPresetValueUltraHigh[] = "ultraHigh";
-const char kResolutionPresetValueMax[] = "max";
+constexpr char kResolutionPresetValueLow[] = "low";
+constexpr char kResolutionPresetValueMedium[] = "medium";
+constexpr char kResolutionPresetValueHigh[] = "high";
+constexpr char kResolutionPresetValueVeryHigh[] = "veryHigh";
+constexpr char kResolutionPresetValueUltraHigh[] = "ultraHigh";
+constexpr char kResolutionPresetValueMax[] = "max";
 
 const std::string kPictureCaptureExtension = "jpeg";
 const std::string kVideoCaptureExtension = "mp4";
