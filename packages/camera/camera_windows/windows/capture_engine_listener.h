@@ -18,7 +18,7 @@ class CaptureEngineObserver {
   // Returns true if sample can be processed.
   virtual bool IsReadyForSample() = 0;
 
-  // Handles Capture Engine media events.
+  // Handles CaptureEngine media events.
   virtual void OnEvent(IMFMediaEvent* event) = 0;
 
   // Returns frame buffer target for new capture sample.

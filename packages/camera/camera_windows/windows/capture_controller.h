@@ -239,7 +239,7 @@ class CaptureControllerImpl : public CaptureController,
   // Handles record stopped events.
   void OnRecordStopped(bool success, const std::string& error);
 
-  // Converts local pixel buffer to flutter pixel buffer
+  // Converts local pixel buffer to flutter pixel buffer.
   const FlutterDesktopPixelBuffer* ConvertPixelBufferForFlutter(size_t width,
                                                                 size_t height);
 

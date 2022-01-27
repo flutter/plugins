@@ -34,7 +34,7 @@ class RecordHandler {
   RecordHandler& operator=(RecordHandler const&) = delete;
 
   // Initializes record sink and requests capture engine to start recording.
-  // Sets record state to RECORD_STATE__STARTING.
+  // Sets record state to: starting.
   // Returns false if recording cannot be started.
   //
   // file_path:       A string that hold file path for video capture.
@@ -56,11 +56,11 @@ class RecordHandler {
   //                  the ongoing recording.
   bool StopRecord(IMFCaptureEngine* capture_engine);
 
-  // Set the record handler recording state to RECORD_STATE__RUNNING.
+  // Set the record handler recording state to: running.
   void OnRecordStarted();
 
-  // Resets the record handler state and sets recording state to
-  // RECORD_STATE__NOT_STARTED.
+  // Resets the record handler state and
+  // sets recording state to: not started.
   void OnRecordStopped();
 
   // Returns true if recording type is continuous recording.

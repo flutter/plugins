@@ -35,7 +35,7 @@ class PreviewHandler {
   PreviewHandler& operator=(PreviewHandler const&) = delete;
 
   // Initializes preview sink and requests capture engine to start previewing.
-  // Sets preview state to PREVIEW_STATE__STARTING.
+  // Sets preview state to: starting.
   // Returns false if recording cannot be started.
   //
   // capture_engine:  A pointer to capture engine instance. Used to start
@@ -55,33 +55,32 @@ class PreviewHandler {
   //                  the ongoing recording.
   bool StopPreview(IMFCaptureEngine* capture_engine);
 
-  // Set the preview handler recording state to PREVIEW_STATE__PAUSED.
+  // Set the preview handler recording state to: paused.
   bool PausePreview();
 
-  // Set the preview handler recording state to PREVIEW_STATE__RUNNING.
+  // Set the preview handler recording state to: running.
   bool ResumePreview();
 
-  // Set the preview handler recording state to PREVIEW_STATE__RUNNING.
+  // Set the preview handler recording state to: running.
   void OnPreviewStarted();
 
-  // Returns true if preview state is PREVIEW_STATE__RUNNING or
-  // PREVIEW_STATE__PAUSED.
+  // Returns true if preview state is running or paused.
   bool IsInitialized() {
     return preview_state_ == PreviewState::PREVIEW_STATE__RUNNING &&
            preview_state_ == PreviewState::PREVIEW_STATE__PAUSED;
   };
 
-  // Returns true if preview state is PREVIEW_STATE__RUNNING.
+  // Returns true if preview state is running.
   bool IsRunning() {
     return preview_state_ == PreviewState::PREVIEW_STATE__RUNNING;
   };
 
-  // Return true if preview state is PREVIEW_STATE__PAUSED
+  // Return true if preview state is paused.
   bool IsPaused() {
     return preview_state_ == PreviewState::PREVIEW_STATE__PAUSED;
   };
 
-  // Returns true if preview state is PREVIEW_STATE__STARTING.
+  // Returns true if preview state is starting.
   bool IsStarting() {
     return preview_state_ == PreviewState::PREVIEW_STATE__STARTING;
   };

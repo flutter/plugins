@@ -32,8 +32,9 @@ class PhotoHandler {
   PhotoHandler(PhotoHandler const&) = delete;
   PhotoHandler& operator=(PhotoHandler const&) = delete;
 
-  // Initializes photo sink if not initialized and requests capture engine to
-  // start photoing. Sets photo state to PHOTO_STATE__TAKING.
+  // Initializes photo sink if not initialized and requests
+  // capture engine to take photo.
+  // Sets photo state to: taking.
   // Returns false if photo cannot be taken.
   //
   // capture_engine:  A pointer to capture engine instance.
@@ -44,15 +45,15 @@ class PhotoHandler {
   bool TakePhoto(const std::string& file_path, IMFCaptureEngine* capture_engine,
                  IMFMediaType* base_media_type);
 
-  // Set the photo handler recording state to PHOTO_STATE__IDLE.
+  // Set the photo handler recording state to: idle.
   void OnPhotoTaken();
 
-  // Returns true if photo state is PHOTO_STATE__IDLE
+  // Returns true if photo state is idle
   bool IsInitialized() {
     return photo_state_ == PhotoState::PHOTO_STATE__IDLE;
   };
 
-  // Returns true if photo state is PHOTO_STATE__TAKING.
+  // Returns true if photo state is taking.
   bool IsTakingPhoto() {
     return photo_state_ == PhotoState::PHOTO_STATE__TAKING;
   };

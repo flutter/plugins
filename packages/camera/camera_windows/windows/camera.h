@@ -43,8 +43,8 @@ class Camera : public CaptureControllerListener {
   // Tests if current camera has given camera id.
   virtual bool HasCameraId(int64_t camera_id) = 0;
 
-  // Adds pending result to the pending_results map.
-  // Calls method result error handler, if result already exists.
+  // Adds a pending result.
+  // Returns an error result if the result has already been added.
   virtual bool AddPendingResult(PendingResultType type,
                                 std::unique_ptr<MethodResult<>> result) = 0;
 
@@ -116,7 +116,7 @@ class CameraImpl : public Camera {
       ResolutionPreset resolution_preset);
 
  private:
-  // Loops through all pending results calls their
+  // Loops through all pending results and calls their
   // error handler with given error id and description.
   // Pending results are cleared in the process.
   //
@@ -128,7 +128,7 @@ class CameraImpl : public Camera {
   // Initializes method channel instance and returns pointer it
   MethodChannel<>* GetMethodChannel();
 
-  // Finds pending result from pending_results map by type.
+  // Finds pending result by type.
   // Returns nullptr if type is not present.
   std::unique_ptr<MethodResult<>> GetPendingResultByType(
       PendingResultType type);
