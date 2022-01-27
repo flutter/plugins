@@ -1,27 +1,24 @@
-//
-//  ResolutionPreset.m
-//  camera
-//
-//  Created by Huan Lin on 1/26/22.
-//
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #import "ResolutionPreset.h"
 
-ResolutionPreset FLTGetResolutionPresetForString(NSString *preset) {
+FLTResolutionPreset FLTGetFLTResolutionPresetForString(NSString *preset) {
   if ([preset isEqualToString:@"veryLow"]) {
-    return veryLow;
+    return FLTResolutionPresetVeryLow;
   } else if ([preset isEqualToString:@"low"]) {
-    return low;
+    return FLTResolutionPresetLow;
   } else if ([preset isEqualToString:@"medium"]) {
-    return medium;
+    return FLTResolutionPresetMedium;
   } else if ([preset isEqualToString:@"high"]) {
-    return high;
+    return FLTResolutionPresetHigh;
   } else if ([preset isEqualToString:@"veryHigh"]) {
-    return veryHigh;
+    return FLTResolutionPresetVeryHigh;
   } else if ([preset isEqualToString:@"ultraHigh"]) {
-    return ultraHigh;
+    return FLTResolutionPresetUltraHigh;
   } else if ([preset isEqualToString:@"max"]) {
-    return max;
+    return FLTResolutionPresetMax;
   } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown

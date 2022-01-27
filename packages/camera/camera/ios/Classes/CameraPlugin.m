@@ -149,7 +149,7 @@
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) BOOL isPreviewPaused;
-@property(assign, nonatomic) ResolutionPreset resolutionPreset;
+@property(assign, nonatomic) FLTResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FocusMode focusMode;
 @property(assign, nonatomic) FLTFlashMode flashMode;
@@ -181,7 +181,7 @@ NSString *const errorMethod = @"error";
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   @try {
-    _resolutionPreset = FLTGetResolutionPresetForString(resolutionPreset);
+    _resolutionPreset = FLTGetFLTResolutionPresetForString(resolutionPreset);
   } @catch (NSError *e) {
     *error = e;
   }
@@ -355,7 +355,7 @@ NSString *const errorMethod = @"error";
   return file;
 }
 
-- (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
+- (void)setCaptureSessionPreset:(FLTResolutionPreset)resolutionPreset {
   switch (resolutionPreset) {
     case max:
     case ultraHigh:
