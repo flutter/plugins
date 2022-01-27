@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
   bool _recordAudio = true;
   bool _previewPaused = false;
   Size? _previewSize;
+  ResolutionPreset _resolutionPreset = ResolutionPreset.max;
   StreamSubscription<CameraErrorEvent>? _errorStreamSubscription;
 
   @override
@@ -88,7 +89,7 @@ class _MyAppState extends State<MyApp> {
 
       cameraId = await CameraPlatform.instance.createCamera(
         camera,
-        ResolutionPreset.veryHigh,
+        _resolutionPreset,
         enableAudio: _recordAudio,
       );
 
@@ -224,7 +225,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _togglePreview() async {
-    if (_initialized && _cameraId > 0) {
+    if (_initialized && _cameraId >= 0) {
       if (!_previewPaused) {
         await CameraPlatform.instance.pausePreview(_cameraId);
       } else {
@@ -237,13 +238,36 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _switchCamera() async {
-    if (_cameraId > -1) {
+    _cameraIndex = (_cameraIndex + 1) % _cameras.length;
+    if (_initialized && _cameraId >= 0) {
       await _disposeCurrentCamera();
+      if (_cameras.isNotEmpty) {
+        await _initializeCamera();
+      }
+    } else {
+      await _getAvailableCameras();
     }
-    if (_cameras.isNotEmpty) {
-      setState(() {
-        _cameraIndex = (_cameraIndex + 1) % _cameras.length;
-      });
+  }
+
+  Future<void> _onResolutionChange(ResolutionPreset? newValue) async {
+    if (newValue == null) {
+      return;
+    }
+    setState(() {
+      _resolutionPreset = newValue;
+    });
+    if (_initialized && _cameraId >= 0) {
+      await _disposeCurrentCamera();
+      await _initializeCamera();
+    }
+  }
+
+  Future<void> _onAudioChange(bool recordAudio) async {
+    setState(() {
+      _recordAudio = recordAudio;
+    });
+    if (_initialized && _cameraId >= 0) {
+      await _disposeCurrentCamera();
       await _initializeCamera();
     }
   }
@@ -254,8 +278,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _showInSnackBar(String message) {
-    _scaffoldMessengerKey.currentState
-        ?.showSnackBar(SnackBar(content: Text(message)));
+    _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 1),
+    ));
   }
 
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
@@ -263,6 +289,15 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final List<DropdownMenuItem<ResolutionPreset>> resolutionItems =
+        ResolutionPreset.values
+            .map<DropdownMenuItem<ResolutionPreset>>((ResolutionPreset value) {
+      return DropdownMenuItem<ResolutionPreset>(
+        value: value,
+        child: Text(value.toString()),
+      );
+    }).toList();
+
     return MaterialApp(
       scaffoldMessengerKey: _scaffoldMessengerKey,
       home: Scaffold(
@@ -287,17 +322,19 @@ class _MyAppState extends State<MyApp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  DropdownButton<ResolutionPreset>(
+                    value: _resolutionPreset,
+                    onChanged: (ResolutionPreset? value) =>
+                        _onResolutionChange(value),
+                    items: resolutionItems,
+                  ),
+                  const SizedBox(width: 20),
                   const Text(
                     'Audio:',
                   ),
                   Switch(
-                    value: _recordAudio,
-                    onChanged: !_initialized
-                        ? (bool state) => setState(() {
-                              _recordAudio = state;
-                            })
-                        : null,
-                  ),
+                      value: _recordAudio,
+                      onChanged: (bool state) => _onAudioChange(state)),
                   const SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: _initialized
