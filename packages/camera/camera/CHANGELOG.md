@@ -1,5 +1,6 @@
 ## NEXT
 
+* Minor iOS internal code cleanup related to resolution preset, video format, focus mode, exposure mode and device orientation.
 * Minor iOS internal code cleanup related to flash mode.
 
 ## 0.9.4+8

@@ -10,11 +10,11 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
+#import "CameraProperties.h"
 #import "FLTThreadSafeEventChannel.h"
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
-#import "FlashMode.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -114,167 +114,6 @@
 }
 @end
 
-static OSType getVideoFormatFromString(NSString *videoFormatString) {
-  if ([videoFormatString isEqualToString:@"bgra8888"]) {
-    return kCVPixelFormatType_32BGRA;
-  } else if ([videoFormatString isEqualToString:@"yuv420"]) {
-    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-  } else {
-    NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
-    return kCVPixelFormatType_32BGRA;
-  }
-}
-
-// Mirrors ExposureMode in camera.dart
-typedef enum {
-  ExposureModeAuto,
-  ExposureModeLocked,
-
-} ExposureMode;
-
-static NSString *getStringForExposureMode(ExposureMode mode) {
-  switch (mode) {
-    case ExposureModeAuto:
-      return @"auto";
-    case ExposureModeLocked:
-      return @"locked";
-  }
-  NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                       code:NSURLErrorUnknown
-                                   userInfo:@{
-                                     NSLocalizedDescriptionKey : [NSString
-                                         stringWithFormat:@"Unknown string for exposure mode"]
-                                   }];
-  @throw error;
-}
-
-static ExposureMode getExposureModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"auto"]) {
-    return ExposureModeAuto;
-  } else if ([mode isEqualToString:@"locked"]) {
-    return ExposureModeLocked;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown exposure mode %@", mode]
-                                     }];
-    @throw error;
-  }
-}
-
-static UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation) {
-  if ([orientation isEqualToString:@"portraitDown"]) {
-    return UIDeviceOrientationPortraitUpsideDown;
-  } else if ([orientation isEqualToString:@"landscapeLeft"]) {
-    return UIDeviceOrientationLandscapeRight;
-  } else if ([orientation isEqualToString:@"landscapeRight"]) {
-    return UIDeviceOrientationLandscapeLeft;
-  } else if ([orientation isEqualToString:@"portraitUp"]) {
-    return UIDeviceOrientationPortrait;
-  } else {
-    NSError *error = [NSError
-        errorWithDomain:NSCocoaErrorDomain
-                   code:NSURLErrorUnknown
-               userInfo:@{
-                 NSLocalizedDescriptionKey :
-                     [NSString stringWithFormat:@"Unknown device orientation %@", orientation]
-               }];
-    @throw error;
-  }
-}
-
-static NSString *getStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
-  switch (orientation) {
-    case UIDeviceOrientationPortraitUpsideDown:
-      return @"portraitDown";
-    case UIDeviceOrientationLandscapeRight:
-      return @"landscapeLeft";
-    case UIDeviceOrientationLandscapeLeft:
-      return @"landscapeRight";
-    case UIDeviceOrientationPortrait:
-    default:
-      return @"portraitUp";
-      break;
-  };
-}
-
-// Mirrors FocusMode in camera.dart
-typedef enum {
-  FocusModeAuto,
-  FocusModeLocked,
-} FocusMode;
-
-static NSString *getStringForFocusMode(FocusMode mode) {
-  switch (mode) {
-    case FocusModeAuto:
-      return @"auto";
-    case FocusModeLocked:
-      return @"locked";
-  }
-  NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                       code:NSURLErrorUnknown
-                                   userInfo:@{
-                                     NSLocalizedDescriptionKey : [NSString
-                                         stringWithFormat:@"Unknown string for focus mode"]
-                                   }];
-  @throw error;
-}
-
-static FocusMode getFocusModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"auto"]) {
-    return FocusModeAuto;
-  } else if ([mode isEqualToString:@"locked"]) {
-    return FocusModeLocked;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown focus mode %@", mode]
-                                     }];
-    @throw error;
-  }
-}
-
-// Mirrors ResolutionPreset in camera.dart
-typedef enum {
-  veryLow,
-  low,
-  medium,
-  high,
-  veryHigh,
-  ultraHigh,
-  max,
-} ResolutionPreset;
-
-static ResolutionPreset getResolutionPresetForString(NSString *preset) {
-  if ([preset isEqualToString:@"veryLow"]) {
-    return veryLow;
-  } else if ([preset isEqualToString:@"low"]) {
-    return low;
-  } else if ([preset isEqualToString:@"medium"]) {
-    return medium;
-  } else if ([preset isEqualToString:@"high"]) {
-    return high;
-  } else if ([preset isEqualToString:@"veryHigh"]) {
-    return veryHigh;
-  } else if ([preset isEqualToString:@"ultraHigh"]) {
-    return ultraHigh;
-  } else if ([preset isEqualToString:@"max"]) {
-    return max;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown resolution preset %@", preset]
-                                     }];
-    @throw error;
-  }
-}
-
 @interface FLTCam : NSObject <FlutterTexture,
                               AVCaptureVideoDataOutputSampleBufferDelegate,
                               AVCaptureAudioDataOutputSampleBufferDelegate>
@@ -305,9 +144,9 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) BOOL isPreviewPaused;
-@property(assign, nonatomic) ResolutionPreset resolutionPreset;
-@property(assign, nonatomic) ExposureMode exposureMode;
-@property(assign, nonatomic) FocusMode focusMode;
+@property(assign, nonatomic) FLTResolutionPreset resolutionPreset;
+@property(assign, nonatomic) FLTExposureMode exposureMode;
+@property(assign, nonatomic) FLTFocusMode focusMode;
 @property(assign, nonatomic) FLTFlashMode flashMode;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
@@ -337,7 +176,7 @@ NSString *const errorMethod = @"error";
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   @try {
-    _resolutionPreset = getResolutionPresetForString(resolutionPreset);
+    _resolutionPreset = FLTGetFLTResolutionPresetForString(resolutionPreset);
   } @catch (NSError *e) {
     *error = e;
   }
@@ -346,8 +185,8 @@ NSString *const errorMethod = @"error";
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
-  _exposureMode = ExposureModeAuto;
-  _focusMode = FocusModeAuto;
+  _exposureMode = FLTExposureModeAuto;
+  _focusMode = FLTFocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
   _videoFormat = kCVPixelFormatType_32BGRA;
@@ -443,7 +282,7 @@ NSString *const errorMethod = @"error";
 
 - (void)captureToFile:(FLTThreadSafeFlutterResult *)result API_AVAILABLE(ios(10)) {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-  if (_resolutionPreset == max) {
+  if (_resolutionPreset == FLTResolutionPresetMax) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
 
@@ -511,10 +350,10 @@ NSString *const errorMethod = @"error";
   return file;
 }
 
-- (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
+- (void)setCaptureSessionPreset:(FLTResolutionPreset)resolutionPreset {
   switch (resolutionPreset) {
-    case max:
-    case ultraHigh:
+    case FLTResolutionPresetMax:
+    case FLTResolutionPresetUltraHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
         _previewSize = CGSizeMake(3840, 2160);
@@ -527,25 +366,25 @@ NSString *const errorMethod = @"error";
                        _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
         break;
       }
-    case veryHigh:
+    case FLTResolutionPresetVeryHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
         _previewSize = CGSizeMake(1920, 1080);
         break;
       }
-    case high:
+    case FLTResolutionPresetHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
         _previewSize = CGSizeMake(1280, 720);
         break;
       }
-    case medium:
+    case FLTResolutionPresetMedium:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
         _previewSize = CGSizeMake(640, 480);
         break;
       }
-    case low:
+    case FLTResolutionPresetLow:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
         _previewSize = CGSizeMake(352, 288);
@@ -871,7 +710,7 @@ NSString *const errorMethod = @"error";
                              orientation:(NSString *)orientationStr {
   UIDeviceOrientation orientation;
   @try {
-    orientation = getUIDeviceOrientationForString(orientationStr);
+    orientation = FLTGetUIDeviceOrientationForString(orientationStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -943,9 +782,9 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
-  ExposureMode mode;
+  FLTExposureMode mode;
   @try {
-    mode = getExposureModeForString(modeStr);
+    mode = FLTGetFLTExposureModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -958,10 +797,10 @@ NSString *const errorMethod = @"error";
 - (void)applyExposureMode {
   [_captureDevice lockForConfiguration:nil];
   switch (_exposureMode) {
-    case ExposureModeLocked:
+    case FLTExposureModeLocked:
       [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
       break;
-    case ExposureModeAuto:
+    case FLTExposureModeAuto:
       if ([_captureDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
         [_captureDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
       } else {
@@ -973,9 +812,9 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
-  FocusMode mode;
+  FLTFocusMode mode;
   @try {
-    mode = getFocusModeForString(modeStr);
+    mode = FLTGetFLTFocusModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -1003,15 +842,15 @@ NSString *const errorMethod = @"error";
  * @param focusMode The focus mode that should be applied to the @captureDevice instance.
  * @param captureDevice The AVCaptureDevice to which the @focusMode will be applied.
  */
-- (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
+- (void)applyFocusMode:(FLTFocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
   [captureDevice lockForConfiguration:nil];
   switch (focusMode) {
-    case FocusModeLocked:
+    case FLTFocusModeLocked:
       if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
-    case FocusModeAuto:
+    case FLTFocusModeAuto:
       if ([captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
         [captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
       } else if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
@@ -1346,7 +1185,7 @@ NSString *const errorMethod = @"error";
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
   [_deviceEventMethodChannel
       invokeMethod:@"orientation_changed"
-         arguments:@{@"orientation" : getStringForUIDeviceOrientation(orientation)}];
+         arguments:@{@"orientation" : FLTGetStringForUIDeviceOrientation(orientation)}];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -1430,7 +1269,7 @@ NSString *const errorMethod = @"error";
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
       NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
-      [_camera setVideoFormat:getVideoFormatFromString(videoFormatValue)];
+      [_camera setVideoFormat:FLTGetVideoFormatFromString(videoFormatValue)];
 
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
@@ -1450,8 +1289,8 @@ NSString *const errorMethod = @"error";
              arguments:@{
                @"previewWidth" : @(_camera.previewSize.width),
                @"previewHeight" : @(_camera.previewSize.height),
-               @"exposureMode" : getStringForExposureMode([_camera exposureMode]),
-               @"focusMode" : getStringForFocusMode([_camera focusMode]),
+               @"exposureMode" : FLTGetStringForFLTExposureMode([_camera exposureMode]),
+               @"focusMode" : FLTGetStringForFLTFocusMode([_camera focusMode]),
                @"exposurePointSupported" :
                    @([_camera.captureDevice isExposurePointOfInterestSupported]),
                @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),
