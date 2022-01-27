@@ -14,7 +14,12 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
+#import "DeviceOrientation.h"
+#import "ExposureMode.h"
 #import "FlashMode.h"
+#import "FocusMode.h"
+#import "ResolutionPreset.h"
+#import "VideoFormat.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -113,167 +118,6 @@
   [_result sendSuccessWithData:_path];
 }
 @end
-
-static OSType getVideoFormatFromString(NSString *videoFormatString) {
-  if ([videoFormatString isEqualToString:@"bgra8888"]) {
-    return kCVPixelFormatType_32BGRA;
-  } else if ([videoFormatString isEqualToString:@"yuv420"]) {
-    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-  } else {
-    NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
-    return kCVPixelFormatType_32BGRA;
-  }
-}
-
-// Mirrors ExposureMode in camera.dart
-typedef enum {
-  ExposureModeAuto,
-  ExposureModeLocked,
-
-} ExposureMode;
-
-static NSString *getStringForExposureMode(ExposureMode mode) {
-  switch (mode) {
-    case ExposureModeAuto:
-      return @"auto";
-    case ExposureModeLocked:
-      return @"locked";
-  }
-  NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                       code:NSURLErrorUnknown
-                                   userInfo:@{
-                                     NSLocalizedDescriptionKey : [NSString
-                                         stringWithFormat:@"Unknown string for exposure mode"]
-                                   }];
-  @throw error;
-}
-
-static ExposureMode getExposureModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"auto"]) {
-    return ExposureModeAuto;
-  } else if ([mode isEqualToString:@"locked"]) {
-    return ExposureModeLocked;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown exposure mode %@", mode]
-                                     }];
-    @throw error;
-  }
-}
-
-static UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation) {
-  if ([orientation isEqualToString:@"portraitDown"]) {
-    return UIDeviceOrientationPortraitUpsideDown;
-  } else if ([orientation isEqualToString:@"landscapeLeft"]) {
-    return UIDeviceOrientationLandscapeRight;
-  } else if ([orientation isEqualToString:@"landscapeRight"]) {
-    return UIDeviceOrientationLandscapeLeft;
-  } else if ([orientation isEqualToString:@"portraitUp"]) {
-    return UIDeviceOrientationPortrait;
-  } else {
-    NSError *error = [NSError
-        errorWithDomain:NSCocoaErrorDomain
-                   code:NSURLErrorUnknown
-               userInfo:@{
-                 NSLocalizedDescriptionKey :
-                     [NSString stringWithFormat:@"Unknown device orientation %@", orientation]
-               }];
-    @throw error;
-  }
-}
-
-static NSString *getStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
-  switch (orientation) {
-    case UIDeviceOrientationPortraitUpsideDown:
-      return @"portraitDown";
-    case UIDeviceOrientationLandscapeRight:
-      return @"landscapeLeft";
-    case UIDeviceOrientationLandscapeLeft:
-      return @"landscapeRight";
-    case UIDeviceOrientationPortrait:
-    default:
-      return @"portraitUp";
-      break;
-  };
-}
-
-// Mirrors FocusMode in camera.dart
-typedef enum {
-  FocusModeAuto,
-  FocusModeLocked,
-} FocusMode;
-
-static NSString *getStringForFocusMode(FocusMode mode) {
-  switch (mode) {
-    case FocusModeAuto:
-      return @"auto";
-    case FocusModeLocked:
-      return @"locked";
-  }
-  NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                       code:NSURLErrorUnknown
-                                   userInfo:@{
-                                     NSLocalizedDescriptionKey : [NSString
-                                         stringWithFormat:@"Unknown string for focus mode"]
-                                   }];
-  @throw error;
-}
-
-static FocusMode getFocusModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"auto"]) {
-    return FocusModeAuto;
-  } else if ([mode isEqualToString:@"locked"]) {
-    return FocusModeLocked;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown focus mode %@", mode]
-                                     }];
-    @throw error;
-  }
-}
-
-// Mirrors ResolutionPreset in camera.dart
-typedef enum {
-  veryLow,
-  low,
-  medium,
-  high,
-  veryHigh,
-  ultraHigh,
-  max,
-} ResolutionPreset;
-
-static ResolutionPreset getResolutionPresetForString(NSString *preset) {
-  if ([preset isEqualToString:@"veryLow"]) {
-    return veryLow;
-  } else if ([preset isEqualToString:@"low"]) {
-    return low;
-  } else if ([preset isEqualToString:@"medium"]) {
-    return medium;
-  } else if ([preset isEqualToString:@"high"]) {
-    return high;
-  } else if ([preset isEqualToString:@"veryHigh"]) {
-    return veryHigh;
-  } else if ([preset isEqualToString:@"ultraHigh"]) {
-    return ultraHigh;
-  } else if ([preset isEqualToString:@"max"]) {
-    return max;
-  } else {
-    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                         code:NSURLErrorUnknown
-                                     userInfo:@{
-                                       NSLocalizedDescriptionKey : [NSString
-                                           stringWithFormat:@"Unknown resolution preset %@", preset]
-                                     }];
-    @throw error;
-  }
-}
 
 @interface FLTCam : NSObject <FlutterTexture,
                               AVCaptureVideoDataOutputSampleBufferDelegate,
