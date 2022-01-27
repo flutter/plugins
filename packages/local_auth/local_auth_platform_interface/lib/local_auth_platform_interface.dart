@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:local_auth_platform_interface/default_method_channel_platform.dart';
+import 'package:local_auth_platform_interface/types/auth_options.dart';
 import 'package:local_auth_platform_interface/types/biometric_type.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -25,8 +27,9 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// Defaults to [DefaultLocalAuthPlatform].
   static LocalAuthPlatform get instance => _instance;
 
-  /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [LocalAuthPlatform] when they register themselves.
+  /// Platform-specific implementations should set this with their own
+  /// platform-specific class that extends [LocalAuthPlatform] when they
+  /// register themselves.
   static set instance(LocalAuthPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
@@ -42,31 +45,10 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// for authentication. This is typically along the lines of: 'Please scan
   /// your finger to access MyApp.'. This must not be empty.
   ///
-  /// [useErrorDialogs] = true means the system will attempt to handle user
-  /// fixable issues encountered while authenticating. For instance, if
-  /// fingerprint reader exists on the phone but there's no fingerprint
-  /// registered, the plugin will attempt to take the user to settings to add
-  /// one. Anything that is not user fixable, such as no biometric sensor on
-  /// device, will be returned as a [PlatformException].
-  ///
-  /// [stickyAuth] is used when the application goes into background for any
-  /// reason while the authentication is in progress. Due to security reasons,
-  /// the authentication has to be stopped at that time. If stickyAuth is set
-  /// to true, authentication resumes when the app is resumed. If it is set to
-  /// false (default), then as soon as app is paused a failure message is sent
-  /// back to Dart and it is up to the client app to restart authentication or
-  /// do something else.
-  ///
   /// Provide [authStrings] if you want to
   /// customize messages in the dialogs.
   ///
-  /// Setting [sensitiveTransaction] to true enables platform specific
-  /// precautions. For instance, on face unlock, Android opens a confirmation
-  /// dialog after the face is recognized to make sure the user meant to unlock
-  /// their phone.
-  ///
-  /// Setting [biometricOnly] to true prevents authenticates from using non-biometric
-  /// local authentication such as pin, passcode, and passcode.
+  /// Provide [options] for configuring further authentication related options.
   ///
   /// Throws an [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
@@ -74,11 +56,8 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// simulator.
   Future<bool> authenticate({
     required String localizedReason,
-    bool useErrorDialogs = true,
-    bool stickyAuth = false,
     required Map<String, String> authStrings,
-    bool sensitiveTransaction = true,
-    bool biometricOnly = false,
+    AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
     throw UnimplementedError('authenticate() has not been implemented.');
   }
@@ -110,7 +89,3 @@ abstract class LocalAuthPlatform extends PlatformInterface {
     throw UnimplementedError('stopAuthentication() has not been implemented.');
   }
 }
-
-/// The default interface implementation acting as a placeholder for
-/// the native implementation to be set.
-class DefaultLocalAuthPlatform extends LocalAuthPlatform {}
