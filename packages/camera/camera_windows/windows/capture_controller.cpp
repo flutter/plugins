@@ -198,6 +198,7 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
     return hr;
   }
 
+  // Creates video source only if not already initialized by test framework
   if (!video_source_) {
     hr = CreateVideoCaptureSourceForDevice(video_device_id_);
     if (FAILED(hr)) {
@@ -205,6 +206,7 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
     }
   }
 
+  // Creates audio source only if not already initialized by test framework
   if (record_audio_ && !audio_source_) {
     hr = CreateDefaultAudioCaptureSource();
     if (FAILED(hr)) {
@@ -471,11 +473,11 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
   }
 
   // Find base media type for previewing.
-  uint32_t max_preview_height = GetMaxPreviewHeight();
   if (!FindBestMediaType(
           (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_PREVIEW,
           source.Get(), base_preview_media_type_.GetAddressOf(),
-          max_preview_height, &preview_frame_width_, &preview_frame_height_)) {
+          GetMaxPreviewHeight(), &preview_frame_width_,
+          &preview_frame_height_)) {
     return E_FAIL;
   }
 
@@ -595,7 +597,7 @@ void CaptureControllerImpl::StartPreview() {
   // Check MF_CAPTURE_ENGINE_PREVIEW_STARTED event handling for response
   // process.
   if (!preview_handler_->StartPreview(capture_engine_.Get(),
-                                      base_capture_media_type_.Get(),
+                                      base_preview_media_type_.Get(),
                                       capture_engine_callback_handler_.Get())) {
     // Destroy preview handler on error cases to make sure state is resetted.
     preview_handler_ = nullptr;
