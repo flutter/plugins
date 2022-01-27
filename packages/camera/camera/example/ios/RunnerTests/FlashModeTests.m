@@ -6,11 +6,11 @@
 @import AVFoundation;
 #import <XCTest/XCTest.h>
 
-@interface FLTFlashModeTests : XCTestCase
+@interface FlashModeTests : XCTestCase
 
 @end
 
-@implementation FLTFlashModeTests
+@implementation FlashModeTests
 
 - (void)testFLTGetFLTFlashModeForString {
   XCTAssertEqual(FLTFlashModeOff, FLTGetFLTFlashModeForString(@"off"));
