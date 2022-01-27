@@ -4,7 +4,6 @@
 
 #include "camera_plugin.h"
 
-#include <atlbase.h>
 #include <flutter/flutter_view.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -19,6 +18,7 @@
 #include <chrono>
 #include <memory>
 
+#include "com_heap_ptr.h"
 #include "device_info.h"
 #include "string_utils.h"
 
@@ -91,7 +91,7 @@ ResolutionPreset ParseResolutionPreset(const std::string& resolution_preset) {
 std::unique_ptr<CaptureDeviceInfo> GetDeviceInfo(IMFActivate* device) {
   assert(device);
   auto device_info = std::make_unique<CaptureDeviceInfo>();
-  CComHeapPtr<wchar_t> name;
+  ComHeapPtr<wchar_t> name;
   UINT32 name_size;
 
   HRESULT hr = device->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
@@ -100,7 +100,7 @@ std::unique_ptr<CaptureDeviceInfo> GetDeviceInfo(IMFActivate* device) {
     return device_info;
   }
 
-  CComHeapPtr<wchar_t> id;
+  ComHeapPtr<wchar_t> id;
   UINT32 id_size;
   hr = device->GetAllocatedString(
       MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK, &id, &id_size);
@@ -294,7 +294,7 @@ void CameraPlugin::DisposeCameraByCameraId(int64_t camera_id) {
 void CameraPlugin::AvailableCamerasMethodHandler(
     std::unique_ptr<flutter::MethodResult<>> result) {
   // Enumerate devices.
-  CComHeapPtr<IMFActivate*> devices;
+  ComHeapPtr<IMFActivate*> devices;
   UINT32 count = 0;
   if (!this->EnumerateVideoCaptureDeviceSources(&devices, &count)) {
     result->Error("System error", "Failed to get available cameras");

@@ -4,7 +4,6 @@
 
 #include "capture_controller.h"
 
-#include <atlbase.h>
 #include <wincodec.h>
 #include <wrl/client.h>
 
@@ -12,6 +11,7 @@
 #include <chrono>
 #include <system_error>
 
+#include "com_heap_ptr.h"
 #include "photo_handler.h"
 #include "preview_handler.h"
 #include "record_handler.h"
@@ -56,7 +56,7 @@ bool CaptureControllerImpl::EnumerateVideoCaptureDeviceSources(
 
 HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   audio_source_ = nullptr;
-  CComHeapPtr<IMFActivate*> devices;
+  ComHeapPtr<IMFActivate*> devices;
   UINT32 count = 0;
 
   ComPtr<IMFAttributes> attributes;
@@ -72,7 +72,7 @@ HRESULT CaptureControllerImpl::CreateDefaultAudioCaptureSource() {
   }
 
   if (SUCCEEDED(hr) && count > 0) {
-    CComHeapPtr<wchar_t> audio_device_id;
+    ComHeapPtr<wchar_t> audio_device_id;
     UINT32 audio_device_id_size;
 
     // Use first audio device.

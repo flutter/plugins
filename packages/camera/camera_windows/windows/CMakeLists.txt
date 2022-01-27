@@ -26,6 +26,7 @@ list(APPEND PLUGIN_SOURCES
   "record_handler.cpp"
   "photo_handler.h"
   "photo_handler.cpp"
+  "com_heap_ptr.h"
 )
 
 add_library(${PLUGIN_NAME} SHARED
