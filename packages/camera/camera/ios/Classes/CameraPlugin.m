@@ -150,7 +150,7 @@
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) BOOL isPreviewPaused;
 @property(assign, nonatomic) FLTResolutionPreset resolutionPreset;
-@property(assign, nonatomic) ExposureMode exposureMode;
+@property(assign, nonatomic) FLTExposureMode exposureMode;
 @property(assign, nonatomic) FLTFocusMode focusMode;
 @property(assign, nonatomic) FLTFlashMode flashMode;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
@@ -190,7 +190,7 @@ NSString *const errorMethod = @"error";
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
-  _exposureMode = ExposureModeAuto;
+  _exposureMode = FLTExposureModeAuto;
   _focusMode = FLTFocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
@@ -787,9 +787,9 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
-  ExposureMode mode;
+  FLTExposureMode mode;
   @try {
-    mode = FLTGetExposureModeForString(modeStr);
+    mode = FLTGetFLTExposureModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -802,10 +802,10 @@ NSString *const errorMethod = @"error";
 - (void)applyExposureMode {
   [_captureDevice lockForConfiguration:nil];
   switch (_exposureMode) {
-    case ExposureModeLocked:
+    case FLTExposureModeLocked:
       [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
       break;
-    case ExposureModeAuto:
+    case FLTExposureModeAuto:
       if ([_captureDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
         [_captureDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
       } else {
@@ -1294,7 +1294,7 @@ NSString *const errorMethod = @"error";
              arguments:@{
                @"previewWidth" : @(_camera.previewSize.width),
                @"previewHeight" : @(_camera.previewSize.height),
-               @"exposureMode" : FLTGetStringForExposureMode([_camera exposureMode]),
+               @"exposureMode" : FLTGetStringForFLTExposureMode([_camera exposureMode]),
                @"focusMode" : FLTGetStringForFLTFocusMode([_camera focusMode]),
                @"exposurePointSupported" :
                    @([_camera.captureDevice isExposurePointOfInterestSupported]),

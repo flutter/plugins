@@ -4,11 +4,11 @@
 
 #import "ExposureMode.h"
 
-NSString *FLTGetStringForExposureMode(ExposureMode mode) {
+NSString *FLTGetStringForFLTExposureMode(FLTExposureMode mode) {
   switch (mode) {
-    case ExposureModeAuto:
+    case FLTExposureModeAuto:
       return @"auto";
-    case ExposureModeLocked:
+    case FLTExposureModeLocked:
       return @"locked";
   }
   NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
@@ -20,11 +20,11 @@ NSString *FLTGetStringForExposureMode(ExposureMode mode) {
   @throw error;
 }
 
-ExposureMode FLTGetExposureModeForString(NSString *mode) {
+FLTExposureMode FLTGetFLTExposureModeForString(NSString *mode) {
   if ([mode isEqualToString:@"auto"]) {
-    return ExposureModeAuto;
+    return FLTExposureModeAuto;
   } else if ([mode isEqualToString:@"locked"]) {
-    return ExposureModeLocked;
+    return FLTExposureModeLocked;
   } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown

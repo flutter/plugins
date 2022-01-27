@@ -9,9 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Represents camera's exposure mode. Mirrors ExposureMode in camera.dart.
  */
-typedef NS_ENUM(NSInteger, ExposureMode) {
-  ExposureModeAuto,
-  ExposureModeLocked,
+typedef NS_ENUM(NSInteger, FLTExposureMode) {
+  FLTExposureModeAuto,
+  FLTExposureModeLocked,
 
 };
 
@@ -19,12 +19,12 @@ typedef NS_ENUM(NSInteger, ExposureMode) {
  * Gets a string representation of exposure mode.
  * @param mode exposure mode
  */
-extern NSString *FLTGetStringForExposureMode(ExposureMode mode);
+extern NSString *FLTGetStringForFLTExposureMode(FLTExposureMode mode);
 
 /**
- * Gets ExposureMode from its string representation.
- * @param mode a string representation of the ExposureMode.
+ * Gets FLTExposureMode from its string representation.
+ * @param mode a string representation of the FLTExposureMode.
  */
-extern ExposureMode FLTGetExposureModeForString(NSString *mode);
+extern FLTExposureMode FLTGetFLTExposureModeForString(NSString *mode);
 
 NS_ASSUME_NONNULL_END
