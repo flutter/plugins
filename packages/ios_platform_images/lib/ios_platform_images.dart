@@ -16,21 +16,18 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
   _FutureImageStreamCompleter({
     required Future<ui.Codec> codec,
     required this.futureScale,
-    this.informationCollector,
   }) {
     codec.then<void>(_onCodecReady, onError: (dynamic error, StackTrace stack) {
       reportError(
         context: ErrorDescription('resolving a single-frame image stream'),
         exception: error,
         stack: stack,
-        informationCollector: informationCollector,
         silent: true,
       );
     });
   }
 
   final Future<double> futureScale;
-  final InformationCollector? informationCollector;
 
   Future<void> _onCodecReady(ui.Codec codec) async {
     try {
@@ -42,7 +39,6 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
         context: ErrorDescription('resolving an image frame'),
         exception: exception,
         stack: stack,
-        informationCollector: this.informationCollector,
         silent: true,
       );
     }

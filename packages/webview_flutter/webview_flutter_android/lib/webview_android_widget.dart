@@ -179,6 +179,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         ? absoluteFilePath
         : 'file://$absoluteFilePath';
 
+    webView.settings.setAllowFileAccess(true);
     return webView.loadUrl(url, <String, String>{});
   }
 
@@ -418,11 +419,12 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   }
 
   Future<void> _setUserAgent(WebSetting<String?> userAgent) {
-    if (userAgent.isPresent && userAgent.value != null) {
-      return webView.settings.setUserAgentString(userAgent.value!);
+    if (userAgent.isPresent) {
+      // If the string is empty, the system default value will be used.
+      return webView.settings.setUserAgentString(userAgent.value ?? '');
     }
 
-    return webView.settings.setUserAgentString('');
+    return Future<void>.value();
   }
 
   Future<void> _setZoomEnabled(bool zoomEnabled) {

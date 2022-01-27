@@ -1,8 +1,21 @@
-##  0.9.4+6
+## NEXT
 
-* Added `frameStack` property to `startImageStream`.
+* Minor iOS internal code cleanup related to flash mode.
 
-##  0.9.4+5
+## 0.9.4+8
+
+* Fixes a bug where ImageFormatGroup was ignored in `startImageStream` on iOS.
+
+## 0.9.4+7
+
+* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.  
+* Minor iOS internal code cleanup related to dispatch queue.
+
+## 0.9.4+6
+
+* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
+
+## 0.9.4+5
 
 * Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
 * Fixes integration tests.

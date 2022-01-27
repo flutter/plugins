@@ -1,3 +1,8 @@
+## NEXT
+
+* Removes a duplicate Android-specific integration test.
+* Fixes an integration test race condition.
+
 ## 3.0.0
 
 * **BREAKING CHANGE**: On Android, hybrid composition (SurfaceAndroidWebView)

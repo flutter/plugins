@@ -1,6 +1,11 @@
-## NEXT
+## 5.2.3
+
+* Bumps the Android dependency on `com.google.android.gms:play-services-auth` and therefore removes the need for `jetifier`.
+
+## 5.2.2
 
 * Updates Android compileSdkVersion to 31.
+* Removes dependency on `meta`.
 
 ## 5.2.1
 

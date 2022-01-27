@@ -1,3 +1,11 @@
+## 2.0.12
+
+* Removes dependency on `meta`.
+
+## 2.0.11
+
+* Corrects example for mocking in readme.
+
 ## 2.0.10
 
 * Removes obsolete manual registration of Windows and Linux implementations.

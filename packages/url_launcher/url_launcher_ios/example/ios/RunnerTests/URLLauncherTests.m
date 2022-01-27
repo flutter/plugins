@@ -11,7 +11,7 @@
 @implementation URLLauncherTests
 
 - (void)testPlugin {
-  FLTURLLauncherPlugin* plugin = [[FLTURLLauncherPlugin alloc] init];
+  FLTURLLauncherPlugin *plugin = [[FLTURLLauncherPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 

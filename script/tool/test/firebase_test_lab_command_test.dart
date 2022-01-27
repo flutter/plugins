@@ -271,7 +271,7 @@ public class MainActivityTest {
       );
     });
 
-    test('fails if a test fails', () async {
+    test('fails if a test fails twice', () async {
       const String javaTestFileRelativePath =
           'example/android/app/src/androidTest/MainActivityTest.java';
       final Directory pluginDir =
@@ -287,6 +287,7 @@ public class MainActivityTest {
         MockProcess(), // auth
         MockProcess(), // config
         MockProcess(exitCode: 1), // integration test #1
+        MockProcess(exitCode: 1), // integration test #1 retry
         MockProcess(), // integration test #2
       ];
 
@@ -311,6 +312,44 @@ public class MainActivityTest {
           contains('Testing example/integration_test/foo_test.dart...'),
           contains('plugin:\n'
               '    example/integration_test/bar_test.dart failed tests'),
+        ]),
+      );
+    });
+
+    test('passes with warning if a test fails once, then passes on retry',
+        () async {
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final Directory pluginDir =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/integration_test/bar_test.dart',
+        'example/integration_test/foo_test.dart',
+        'example/android/gradlew',
+        javaTestFileRelativePath,
+      ]);
+      _writeJavaTestFile(pluginDir, javaTestFileRelativePath);
+
+      processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
+        MockProcess(), // auth
+        MockProcess(), // config
+        MockProcess(exitCode: 1), // integration test #1
+        MockProcess(), // integration test #1 retry
+        MockProcess(), // integration test #2
+      ];
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'firebase-test-lab',
+        '--device',
+        'model=redfin,version=30',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Testing example/integration_test/bar_test.dart...'),
+          contains('bar_test.dart failed on attempt 1. Retrying...'),
+          contains('Testing example/integration_test/foo_test.dart...'),
+          contains('Ran for 1 package(s) (1 with warnings)'),
         ]),
       );
     });

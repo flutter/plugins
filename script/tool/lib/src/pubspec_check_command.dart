@@ -211,6 +211,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
       return '"description" is too long. pub.dev recommends package '
           'descriptions of 60-180 characters.';
     }
+    return null;
   }
 
   bool _checkIssueLink(Pubspec pubspec) {
