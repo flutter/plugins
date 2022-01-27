@@ -5,11 +5,11 @@
 #import "FocusMode.h"
 
 
-NSString *FLTGetStringForFocusMode(FocusMode mode) {
+NSString *FLTGetStringForFLTFocusMode(FLTFocusMode mode) {
   switch (mode) {
-    case FocusModeAuto:
+    case FLTFocusModeAuto:
       return @"auto";
-    case FocusModeLocked:
+    case FLTFocusModeLocked:
       return @"locked";
   }
   NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
@@ -21,11 +21,11 @@ NSString *FLTGetStringForFocusMode(FocusMode mode) {
   @throw error;
 }
 
-FocusMode getFocusModeForString(NSString *mode) {
+FLTFocusMode getFLTFocusModeForString(NSString *mode) {
   if ([mode isEqualToString:@"auto"]) {
-    return FocusModeAuto;
+    return FLTFocusModeAuto;
   } else if ([mode isEqualToString:@"locked"]) {
-    return FocusModeLocked;
+    return FLTFocusModeLocked;
   } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown

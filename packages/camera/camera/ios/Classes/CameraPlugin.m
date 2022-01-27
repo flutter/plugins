@@ -151,7 +151,7 @@
 @property(assign, nonatomic) BOOL isPreviewPaused;
 @property(assign, nonatomic) FLTResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
-@property(assign, nonatomic) FocusMode focusMode;
+@property(assign, nonatomic) FLTFocusMode focusMode;
 @property(assign, nonatomic) FLTFlashMode flashMode;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
@@ -191,7 +191,7 @@ NSString *const errorMethod = @"error";
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
   _exposureMode = ExposureModeAuto;
-  _focusMode = FocusModeAuto;
+  _focusMode = FLTFocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
   _videoFormat = kCVPixelFormatType_32BGRA;
@@ -817,9 +817,9 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
-  FocusMode mode;
+  FLTFocusMode mode;
   @try {
-    mode = getFocusModeForString(modeStr);
+    mode = getFLTFocusModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -847,15 +847,15 @@ NSString *const errorMethod = @"error";
  * @param focusMode The focus mode that should be applied to the @captureDevice instance.
  * @param captureDevice The AVCaptureDevice to which the @focusMode will be applied.
  */
-- (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
+- (void)applyFocusMode:(FLTFocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
   [captureDevice lockForConfiguration:nil];
   switch (focusMode) {
-    case FocusModeLocked:
+    case FLTFocusModeLocked:
       if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
-    case FocusModeAuto:
+    case FLTFocusModeAuto:
       if ([captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
         [captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
       } else if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
@@ -1295,7 +1295,7 @@ NSString *const errorMethod = @"error";
                @"previewWidth" : @(_camera.previewSize.width),
                @"previewHeight" : @(_camera.previewSize.height),
                @"exposureMode" : FLTGetStringForExposureMode([_camera exposureMode]),
-               @"focusMode" : FLTGetStringForFocusMode([_camera focusMode]),
+               @"focusMode" : FLTGetStringForFLTFocusMode([_camera focusMode]),
                @"exposurePointSupported" :
                    @([_camera.captureDevice isExposurePointOfInterestSupported]),
                @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),
