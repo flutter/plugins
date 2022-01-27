@@ -819,7 +819,7 @@ NSString *const errorMethod = @"error";
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
   FLTFocusMode mode;
   @try {
-    mode = getFLTFocusModeForString(modeStr);
+    mode = FLTGetFLTFocusModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;

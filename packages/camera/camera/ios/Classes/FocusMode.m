@@ -21,7 +21,7 @@ NSString *FLTGetStringForFLTFocusMode(FLTFocusMode mode) {
   @throw error;
 }
 
-FLTFocusMode getFLTFocusModeForString(NSString *mode) {
+FLTFocusMode FLTGetFLTFocusModeForString(NSString *mode) {
   if ([mode isEqualToString:@"auto"]) {
     return FLTFocusModeAuto;
   } else if ([mode isEqualToString:@"locked"]) {

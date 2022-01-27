@@ -24,6 +24,6 @@ extern NSString *FLTGetStringForFLTFocusMode(FLTFocusMode mode);
  * Gets FLTFocusMode from its string representation.
  * @param mode a string representation of focus mode.
  */
-extern FLTFocusMode getFLTFocusModeForString(NSString *mode);
+extern FLTFocusMode FLTGetFLTFocusModeForString(NSString *mode);
 
 NS_ASSUME_NONNULL_END
