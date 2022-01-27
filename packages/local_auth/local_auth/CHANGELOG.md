@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Added Windows support.
+
 ## 1.1.10
 
 * Removes dependency on `meta`.

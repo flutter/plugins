@@ -113,10 +113,11 @@ class LocalAuthentication {
       args.addAll(iOSAuthStrings.args);
     } else if (_platform.isAndroid) {
       args.addAll(androidAuthStrings.args);
-    } else {
+    } else if (!_platform.isWindows) {
       throw PlatformException(
         code: otherOperatingSystem,
-        message: 'Local authentication does not support non-Android/iOS '
+        message:
+            'Local authentication does not support non-Android/iOS/Windows '
             'operating systems.',
         details: 'Your operating system is ${_platform.operatingSystem}',
       );
