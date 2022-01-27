@@ -6,10 +6,10 @@
 
 @implementation ImagePickerTestImages
 
-+ (NSData*)JPGTestData {
-  NSBundle* bundle = [NSBundle bundleForClass:self];
-  NSURL* url = [bundle URLForResource:@"jpgImage" withExtension:@"jpg"];
-  NSData* data = [NSData dataWithContentsOfURL:url];
++ (NSData *)JPGTestData {
+  NSBundle *bundle = [NSBundle bundleForClass:self];
+  NSURL *url = [bundle URLForResource:@"jpgImage" withExtension:@"jpg"];
+  NSData *data = [NSData dataWithContentsOfURL:url];
   if (!data.length) {
     // When the tests are run outside the example project (podspec lint) the image may not be
     // embedded in the test bundle. Fall back to the base64 string representation of the jpg.
@@ -73,10 +73,10 @@
   return data;
 }
 
-+ (NSData*)PNGTestData {
-  NSBundle* bundle = [NSBundle bundleForClass:self];
-  NSURL* url = [bundle URLForResource:@"pngImage" withExtension:@"png"];
-  NSData* data = [NSData dataWithContentsOfURL:url];
++ (NSData *)PNGTestData {
+  NSBundle *bundle = [NSBundle bundleForClass:self];
+  NSURL *url = [bundle URLForResource:@"pngImage" withExtension:@"png"];
+  NSData *data = [NSData dataWithContentsOfURL:url];
   if (!data.length) {
     // When the tests are run outside the example project (podspec lint) the image may not be
     // embedded in the test bundle. Fall back to the base64 string representation of the png.
@@ -91,10 +91,10 @@
   return data;
 }
 
-+ (NSData*)GIFTestData {
-  NSBundle* bundle = [NSBundle bundleForClass:self];
-  NSURL* url = [bundle URLForResource:@"gifImage" withExtension:@"gif"];
-  NSData* data = [NSData dataWithContentsOfURL:url];
++ (NSData *)GIFTestData {
+  NSBundle *bundle = [NSBundle bundleForClass:self];
+  NSURL *url = [bundle URLForResource:@"gifImage" withExtension:@"gif"];
+  NSData *data = [NSData dataWithContentsOfURL:url];
   if (!data.length) {
     // When the tests are run outside the example project (podspec lint) the image may not be
     // embedded in the test bundle. Fall back to the base64 string representation of the gif.
