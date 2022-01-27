@@ -27,6 +27,7 @@
 		E0C6E2002770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C6E1FD2770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m */; };
 		E0C6E2012770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C6E1FE2770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m */; };
 		E0C6E2022770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C6E1FF2770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m */; };
+		E0F95E3127A23C2400699390 /* VideoFormatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F95E3027A23C2400699390 /* VideoFormatTests.m */; };
 		E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */; };
 		F6EE622F2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */; };
 /* End PBXBuildFile section */
@@ -88,6 +89,7 @@
 		E0C6E1FD2770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeMethodChannelTests.m; sourceTree = "<group>"; };
 		E0C6E1FE2770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeTextureRegistryTests.m; sourceTree = "<group>"; };
 		E0C6E1FF2770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeEventChannelTests.m; sourceTree = "<group>"; };
+		E0F95E3027A23C2400699390 /* VideoFormatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoFormatTests.m; sourceTree = "<group>"; };
 		E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraPreviewPauseTests.m; sourceTree = "<group>"; };
 		F63F9EED27143B19002479BF /* MockFLTThreadSafeFlutterResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MockFLTThreadSafeFlutterResult.h; sourceTree = "<group>"; };
 		F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockFLTThreadSafeFlutterResult.m; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				E032F24F279F5E94009E9028 /* CameraCaptureSessionQueueRaceConditionTests.m */,
 				E032F2A627A0BF2D009E9028 /* FlashModeTests.m */,
 				E07B3BF327A23AD700A28551 /* ResolutionPresetTests.m */,
+				E0F95E3027A23C2400699390 /* VideoFormatTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -397,6 +400,7 @@
 			files = (
 				03F6F8B226CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m in Sources */,
 				E032F2A727A0BF2D009E9028 /* FlashModeTests.m in Sources */,
+				E0F95E3127A23C2400699390 /* VideoFormatTests.m in Sources */,
 				033B94BE269C40A200B4DF97 /* CameraMethodChannelTests.m in Sources */,
 				03BB766B2665316900CE5A93 /* CameraFocusTests.m in Sources */,
 				E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */,
