@@ -13,11 +13,9 @@
 @implementation FocusModeTests
 
 - (void)testFLTGetStringForFLTFocusMode {
-  
   XCTAssertEqualObjects(@"auto", FLTGetStringForFLTFocusMode(FLTFocusModeAuto));
   XCTAssertEqualObjects(@"locked", FLTGetStringForFLTFocusMode(FLTFocusModeLocked));
   XCTAssertThrows(FLTGetStringForFLTFocusMode(-1));
-  
 }
 
 - (void)testFLTGetFLTFocusModeForString {

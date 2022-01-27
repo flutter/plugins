@@ -4,7 +4,6 @@
 
 #import "FocusMode.h"
 
-
 NSString *FLTGetStringForFLTFocusMode(FLTFocusMode mode) {
   switch (mode) {
     case FLTFocusModeAuto:
@@ -36,4 +35,3 @@ FLTFocusMode FLTGetFLTFocusModeForString(NSString *mode) {
     @throw error;
   }
 }
-

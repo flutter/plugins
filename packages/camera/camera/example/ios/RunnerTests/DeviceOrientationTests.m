@@ -13,20 +13,25 @@
 @implementation DeviceOrientationTests
 
 - (void)testFLTGetUIDeviceOrientationForString {
-  
-  XCTAssertEqual(UIDeviceOrientationPortraitUpsideDown, FLTGetUIDeviceOrientationForString(@"portraitDown"));
-  XCTAssertEqual(UIDeviceOrientationLandscapeRight, FLTGetUIDeviceOrientationForString(@"landscapeLeft"));
-  XCTAssertEqual(UIDeviceOrientationLandscapeLeft, FLTGetUIDeviceOrientationForString(@"landscapeRight"));
+  XCTAssertEqual(UIDeviceOrientationPortraitUpsideDown,
+                 FLTGetUIDeviceOrientationForString(@"portraitDown"));
+  XCTAssertEqual(UIDeviceOrientationLandscapeRight,
+                 FLTGetUIDeviceOrientationForString(@"landscapeLeft"));
+  XCTAssertEqual(UIDeviceOrientationLandscapeLeft,
+                 FLTGetUIDeviceOrientationForString(@"landscapeRight"));
   XCTAssertEqual(UIDeviceOrientationPortrait, FLTGetUIDeviceOrientationForString(@"portraitUp"));
   XCTAssertThrows(FLTGetUIDeviceOrientationForString(@"unknown"));
-  
 }
 
 - (void)testFLTGetStringForUIDeviceOrientation {
-  XCTAssertEqualObjects(@"portraitDown", FLTGetStringForUIDeviceOrientation(UIDeviceOrientationPortraitUpsideDown));
-  XCTAssertEqualObjects(@"landscapeLeft", FLTGetStringForUIDeviceOrientation(UIDeviceOrientationLandscapeRight));
-  XCTAssertEqualObjects(@"landscapeRight", FLTGetStringForUIDeviceOrientation(UIDeviceOrientationLandscapeLeft));
-  XCTAssertEqualObjects(@"portraitUp", FLTGetStringForUIDeviceOrientation(UIDeviceOrientationPortrait));
+  XCTAssertEqualObjects(@"portraitDown",
+                        FLTGetStringForUIDeviceOrientation(UIDeviceOrientationPortraitUpsideDown));
+  XCTAssertEqualObjects(@"landscapeLeft",
+                        FLTGetStringForUIDeviceOrientation(UIDeviceOrientationLandscapeRight));
+  XCTAssertEqualObjects(@"landscapeRight",
+                        FLTGetStringForUIDeviceOrientation(UIDeviceOrientationLandscapeLeft));
+  XCTAssertEqualObjects(@"portraitUp",
+                        FLTGetStringForUIDeviceOrientation(UIDeviceOrientationPortrait));
   XCTAssertEqualObjects(@"portraitUp", FLTGetStringForUIDeviceOrientation(-1));
 }
 

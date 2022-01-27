@@ -13,11 +13,10 @@
 @implementation VideoFormatTests
 
 - (void)testFLTGetVideoFormatFromString {
-  
   XCTAssertEqual(kCVPixelFormatType_32BGRA, FLTGetVideoFormatFromString(@"bgra8888"));
-  XCTAssertEqual(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, FLTGetVideoFormatFromString(@"yuv420"));
+  XCTAssertEqual(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                 FLTGetVideoFormatFromString(@"yuv420"));
   XCTAssertEqual(kCVPixelFormatType_32BGRA, FLTGetVideoFormatFromString(@"unknown"));
-  
 }
 
 @end

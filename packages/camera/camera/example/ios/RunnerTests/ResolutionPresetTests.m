@@ -13,7 +13,6 @@
 @implementation ResolutionPresetTests
 
 - (void)testFLTGetFLTResolutionPresetForString {
-  
   XCTAssertEqual(FLTResolutionPresetVeryLow, FLTGetFLTResolutionPresetForString(@"veryLow"));
   XCTAssertEqual(FLTResolutionPresetLow, FLTGetFLTResolutionPresetForString(@"low"));
   XCTAssertEqual(FLTResolutionPresetMedium, FLTGetFLTResolutionPresetForString(@"medium"));
@@ -22,7 +21,6 @@
   XCTAssertEqual(FLTResolutionPresetUltraHigh, FLTGetFLTResolutionPresetForString(@"ultraHigh"));
   XCTAssertEqual(FLTResolutionPresetMax, FLTGetFLTResolutionPresetForString(@"max"));
   XCTAssertThrows(FLTGetFLTFlashModeForString(@"unknown"));
-  
 }
 
 @end

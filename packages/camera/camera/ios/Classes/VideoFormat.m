@@ -14,4 +14,3 @@ OSType FLTGetVideoFormatFromString(NSString *videoFormatString) {
     return kCVPixelFormatType_32BGRA;
   }
 }
-
