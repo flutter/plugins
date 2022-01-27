@@ -287,7 +287,7 @@ NSString *const errorMethod = @"error";
 
 - (void)captureToFile:(FLTThreadSafeFlutterResult *)result API_AVAILABLE(ios(10)) {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-  if (_resolutionPreset == max) {
+  if (_resolutionPreset == FLTResolutionPresetMax) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
 
@@ -357,8 +357,8 @@ NSString *const errorMethod = @"error";
 
 - (void)setCaptureSessionPreset:(FLTResolutionPreset)resolutionPreset {
   switch (resolutionPreset) {
-    case max:
-    case ultraHigh:
+    case FLTResolutionPresetMax:
+    case FLTResolutionPresetUltraHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
         _previewSize = CGSizeMake(3840, 2160);
@@ -371,25 +371,25 @@ NSString *const errorMethod = @"error";
                        _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
         break;
       }
-    case veryHigh:
+    case FLTResolutionPresetVeryHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
         _previewSize = CGSizeMake(1920, 1080);
         break;
       }
-    case high:
+    case FLTResolutionPresetHigh:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
         _previewSize = CGSizeMake(1280, 720);
         break;
       }
-    case medium:
+    case FLTResolutionPresetMedium:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
         _previewSize = CGSizeMake(640, 480);
         break;
       }
-    case low:
+    case FLTResolutionPresetLow:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
         _previewSize = CGSizeMake(352, 288);
