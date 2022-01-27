@@ -7,7 +7,7 @@
 
 #import "ResolutionPreset.h"
 
-ResolutionPreset getResolutionPresetForString(NSString *preset) {
+ResolutionPreset FLTGetResolutionPresetForString(NSString *preset) {
   if ([preset isEqualToString:@"veryLow"]) {
     return veryLow;
   } else if ([preset isEqualToString:@"low"]) {

@@ -6,6 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern OSType getVideoFormatFromString(NSString *videoFormatString);
+/**
+ * Gets VideoFormat from its string representation.
+ */
+extern OSType FLTGetVideoFormatFromString(NSString *videoFormatString);
 
 NS_ASSUME_NONNULL_END

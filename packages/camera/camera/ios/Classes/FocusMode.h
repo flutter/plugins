@@ -6,14 +6,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Mirrors FocusMode in camera.dart
-typedef enum {
+/**
+ * Represents camera's focus mode. Mirrors FocusMode in camera.dart.
+ */
+typedef NS_ENUM(NSInteger, FocusMode) {
   FocusModeAuto,
   FocusModeLocked,
-} FocusMode;
+};
 
-extern NSString *getStringForFocusMode(FocusMode mode);
+/**
+ * Gets a string representation from FocusMode.
+ * @param mode focus mode
+ */
+extern NSString *FLTGetStringForFocusMode(FocusMode mode);
 
+/**
+ * Gets FocusMode from its string representation.
+ * @param mode a string representation of focus mode.
+ */
 extern FocusMode getFocusModeForString(NSString *mode);
 
 NS_ASSUME_NONNULL_END

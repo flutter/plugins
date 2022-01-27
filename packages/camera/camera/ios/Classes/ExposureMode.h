@@ -6,14 +6,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Mirrors ExposureMode in camera.dart
-typedef enum {
+/**
+ * Represents camera's exposure mode. Mirrors ExposureMode in camera.dart.
+ */
+typedef NS_ENUM(NSInteger, ExposureMode) {
   ExposureModeAuto,
   ExposureModeLocked,
 
-} ExposureMode;
+};
 
-extern NSString *getStringForExposureMode(ExposureMode mode);
-extern ExposureMode getExposureModeForString(NSString *mode);
+/**
+ * Gets a string representation of exposure mode.
+ * @param mode exposure mode
+ */
+extern NSString *FLTGetStringForExposureMode(ExposureMode mode);
+
+/**
+ * Gets ExposureMode from its string representation.
+ * @param mode a string representation of the ExposureMode.
+ */
+extern ExposureMode FLTGetExposureModeForString(NSString *mode);
 
 NS_ASSUME_NONNULL_END

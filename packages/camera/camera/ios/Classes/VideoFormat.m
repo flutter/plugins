@@ -4,7 +4,7 @@
 
 #import "VideoFormat.h"
 
-OSType getVideoFormatFromString(NSString *videoFormatString) {
+OSType FLTGetVideoFormatFromString(NSString *videoFormatString) {
   if ([videoFormatString isEqualToString:@"bgra8888"]) {
     return kCVPixelFormatType_32BGRA;
   } else if ([videoFormatString isEqualToString:@"yuv420"]) {

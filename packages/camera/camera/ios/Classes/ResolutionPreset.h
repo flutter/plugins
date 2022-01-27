@@ -9,9 +9,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-// Mirrors ResolutionPreset in camera.dart
-typedef enum {
+/**
+ * Represents camera's resolution present. Mirrors ResolutionPreset in camera.dart.
+ */
+typedef NS_ENUM(NSInteger, ResolutionPreset) {
   veryLow,
   low,
   medium,
@@ -19,8 +20,12 @@ typedef enum {
   veryHigh,
   ultraHigh,
   max,
-} ResolutionPreset;
+};
 
-extern ResolutionPreset getResolutionPresetForString(NSString *preset);
+/**
+ * Gets ResolutionPreset from its string representation.
+ * @param preset a string representation of ResolutionPreset.
+ */
+extern ResolutionPreset FLTGetResolutionPresetForString(NSString *preset);
 
 NS_ASSUME_NONNULL_END

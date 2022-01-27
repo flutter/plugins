@@ -5,7 +5,7 @@
 #import "FocusMode.h"
 
 
-NSString *getStringForFocusMode(FocusMode mode) {
+NSString *FLTGetStringForFocusMode(FocusMode mode) {
   switch (mode) {
     case FocusModeAuto:
       return @"auto";

@@ -5,7 +5,7 @@
 #import "DeviceOrientation.h"
 
 
-UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation) {
+UIDeviceOrientation FLTGetUIDeviceOrientationForString(NSString *orientation) {
   if ([orientation isEqualToString:@"portraitDown"]) {
     return UIDeviceOrientationPortraitUpsideDown;
   } else if ([orientation isEqualToString:@"landscapeLeft"]) {
@@ -27,7 +27,7 @@ UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation) {
 }
 
 
-NSString *getStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
+NSString *FLTGetStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
   switch (orientation) {
     case UIDeviceOrientationPortraitUpsideDown:
       return @"portraitDown";

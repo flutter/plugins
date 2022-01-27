@@ -181,7 +181,7 @@ NSString *const errorMethod = @"error";
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   @try {
-    _resolutionPreset = getResolutionPresetForString(resolutionPreset);
+    _resolutionPreset = FLTGetResolutionPresetForString(resolutionPreset);
   } @catch (NSError *e) {
     *error = e;
   }
@@ -715,7 +715,7 @@ NSString *const errorMethod = @"error";
                              orientation:(NSString *)orientationStr {
   UIDeviceOrientation orientation;
   @try {
-    orientation = getUIDeviceOrientationForString(orientationStr);
+    orientation = FLTGetUIDeviceOrientationForString(orientationStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -789,7 +789,7 @@ NSString *const errorMethod = @"error";
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
   ExposureMode mode;
   @try {
-    mode = getExposureModeForString(modeStr);
+    mode = FLTGetExposureModeForString(modeStr);
   } @catch (NSError *e) {
     [result sendError:e];
     return;
@@ -1190,7 +1190,7 @@ NSString *const errorMethod = @"error";
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
   [_deviceEventMethodChannel
       invokeMethod:@"orientation_changed"
-         arguments:@{@"orientation" : getStringForUIDeviceOrientation(orientation)}];
+         arguments:@{@"orientation" : FLTGetStringForUIDeviceOrientation(orientation)}];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -1274,7 +1274,7 @@ NSString *const errorMethod = @"error";
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
       NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
-      [_camera setVideoFormat:getVideoFormatFromString(videoFormatValue)];
+      [_camera setVideoFormat:FLTGetVideoFormatFromString(videoFormatValue)];
 
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
@@ -1294,8 +1294,8 @@ NSString *const errorMethod = @"error";
              arguments:@{
                @"previewWidth" : @(_camera.previewSize.width),
                @"previewHeight" : @(_camera.previewSize.height),
-               @"exposureMode" : getStringForExposureMode([_camera exposureMode]),
-               @"focusMode" : getStringForFocusMode([_camera focusMode]),
+               @"exposureMode" : FLTGetStringForExposureMode([_camera exposureMode]),
+               @"focusMode" : FLTGetStringForFocusMode([_camera focusMode]),
                @"exposurePointSupported" :
                    @([_camera.captureDevice isExposurePointOfInterestSupported]),
                @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),

@@ -4,7 +4,7 @@
 
 #import "ExposureMode.h"
 
-NSString *getStringForExposureMode(ExposureMode mode) {
+NSString *FLTGetStringForExposureMode(ExposureMode mode) {
   switch (mode) {
     case ExposureModeAuto:
       return @"auto";
@@ -20,7 +20,7 @@ NSString *getStringForExposureMode(ExposureMode mode) {
   @throw error;
 }
 
-ExposureMode getExposureModeForString(NSString *mode) {
+ExposureMode FLTGetExposureModeForString(NSString *mode) {
   if ([mode isEqualToString:@"auto"]) {
     return ExposureModeAuto;
   } else if ([mode isEqualToString:@"locked"]) {

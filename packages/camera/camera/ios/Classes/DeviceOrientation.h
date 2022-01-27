@@ -6,8 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation);
+/**
+ * Gets UIDeviceOrientation from its string representation.
+ */
+extern UIDeviceOrientation FLTGetUIDeviceOrientationForString(NSString *orientation);
 
-extern NSString *getStringForUIDeviceOrientation(UIDeviceOrientation orientation);
+/**
+ * Gets a string representation of UIDeviceOrientation.
+ */
+extern NSString *FLTGetStringForUIDeviceOrientation(UIDeviceOrientation orientation);
 
 NS_ASSUME_NONNULL_END
