@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:local_auth_ios/types/auth_strings_ios.dart';
+import 'package:local_auth_platform_interface/types/auth_options.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,7 @@ void main() {
         await localAuthentication.authenticate(
           authStrings: const IOSAuthMessages().args,
           localizedReason: 'Needs secure',
-          biometricOnly: true,
+          options: const AuthenticationOptions(biometricOnly: true),
         );
         expect(
           log,
@@ -56,7 +57,7 @@ void main() {
           localAuthentication.authenticate(
             authStrings: const IOSAuthMessages().args,
             localizedReason: '',
-            biometricOnly: true,
+            options: const AuthenticationOptions(biometricOnly: true),
           ),
           throwsAssertionError,
         );
@@ -88,8 +89,10 @@ void main() {
         await localAuthentication.authenticate(
           authStrings: const IOSAuthMessages().args,
           localizedReason: 'Insecure',
-          sensitiveTransaction: false,
-          useErrorDialogs: false,
+          options: const AuthenticationOptions(
+            sensitiveTransaction: false,
+            useErrorDialogs: false,
+          ),
         );
         expect(
           log,
