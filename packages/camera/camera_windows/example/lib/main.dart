@@ -21,6 +21,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _cameraInfo = 'Unknown';
   List<CameraDescription> _cameras = <CameraDescription>[];
+  int _cameraIndex = 0;
   int _cameraId = -1;
   bool _initialized = false;
   bool _recording = false;
@@ -50,12 +51,14 @@ class _MyAppState extends State<MyApp> {
     String cameraInfo;
     List<CameraDescription> cameras = <CameraDescription>[];
 
+    int cameraIndex = _cameraIndex;
     try {
       cameras = await CameraPlatform.instance.availableCameras();
+      cameraIndex = cameraIndex % cameras.length;
       if (cameras.isEmpty) {
         cameraInfo = 'No available cameras';
       } else {
-        cameraInfo = 'Found camera: ${cameras.first.name}';
+        cameraInfo = 'Found camera: ${cameras[cameraIndex].name}';
       }
     } on PlatformException catch (e) {
       cameraInfo = 'Failed to get cameras: ${e.code}: ${e.message}';
@@ -66,20 +69,22 @@ class _MyAppState extends State<MyApp> {
     }
 
     setState(() {
+      _cameraIndex = cameraIndex;
       _cameras = cameras;
       _cameraInfo = cameraInfo;
     });
   }
 
   /// Initializes the camera on the device.
-  Future<void> _initializeFirstCamera() async {
+  Future<void> _initializeCamera() async {
     assert(_cameras.isNotEmpty);
     assert(!_initialized);
     final Completer<CameraInitializedEvent> _initializeCompleter =
         Completer<CameraInitializedEvent>();
     int cameraId = -1;
     try {
-      final CameraDescription camera = _cameras.first;
+      final int cameraIndex = _cameraIndex % _cameras.length;
+      final CameraDescription camera = _cameras[cameraIndex];
 
       cameraId = await CameraPlatform.instance.createCamera(
         camera,
@@ -114,6 +119,7 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _initialized = true;
         _cameraId = cameraId;
+        _cameraIndex = cameraIndex;
         _cameraInfo = 'Capturing camera: ${camera.name}';
       });
     } on CameraException catch (e) {
@@ -153,7 +159,7 @@ class _MyAppState extends State<MyApp> {
         _recordingTimed = false;
         _previewPaused = false;
       });
-      _getAvailableCameras();
+      await _getAvailableCameras();
     } on CameraException catch (e) {
       setState(() {
         _cameraInfo = 'Failed to dispose camera: ${e.code}: ${e.description}';
@@ -230,6 +236,18 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _switchCamera() async {
+    if (_cameraId > -1) {
+      await _disposeCurrentCamera();
+    }
+    if (_cameras.isNotEmpty) {
+      setState(() {
+        _cameraIndex = (_cameraIndex + 1) % _cameras.length;
+      });
+      await _initializeCamera();
+    }
+  }
+
   void _onCameraError(CameraErrorEvent event) {
     _scaffoldMessengerKey.currentState
         ?.showSnackBar(SnackBar(content: Text('Error: ${event.description}')));
@@ -284,7 +302,7 @@ class _MyAppState extends State<MyApp> {
                   ElevatedButton(
                     onPressed: _initialized
                         ? _disposeCurrentCamera
-                        : _initializeFirstCamera,
+                        : _initializeCamera,
                     child:
                         Text(_initialized ? 'Dispose camera' : 'Create camera'),
                   ),
@@ -318,6 +336,15 @@ class _MyAppState extends State<MyApp> {
                       'Record 5 seconds',
                     ),
                   ),
+                  if (_cameras.length > 1) ...<Widget>[
+                    const SizedBox(width: 5),
+                    ElevatedButton(
+                      onPressed: _switchCamera,
+                      child: const Text(
+                        'Switch camera',
+                      ),
+                    ),
+                  ]
                 ],
               ),
             const SizedBox(height: 5),
