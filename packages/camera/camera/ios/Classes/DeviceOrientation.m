@@ -38,6 +38,5 @@ NSString *FLTGetStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
     case UIDeviceOrientationPortrait:
     default:
       return @"portraitUp";
-      break;
   };
 }

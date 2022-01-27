@@ -30,6 +30,7 @@
 		E0F95E3127A23C2400699390 /* VideoFormatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F95E3027A23C2400699390 /* VideoFormatTests.m */; };
 		E0F95E3327A23C8D00699390 /* FocusModeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F95E3227A23C8D00699390 /* FocusModeTests.m */; };
 		E0F95E3527A23D6700699390 /* ExposureModeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F95E3427A23D6700699390 /* ExposureModeTests.m */; };
+		E0F95E3727A23DE600699390 /* DeviceOrientationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F95E3627A23DE600699390 /* DeviceOrientationTests.m */; };
 		E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */; };
 		F6EE622F2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */; };
 /* End PBXBuildFile section */
@@ -94,6 +95,7 @@
 		E0F95E3027A23C2400699390 /* VideoFormatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoFormatTests.m; sourceTree = "<group>"; };
 		E0F95E3227A23C8D00699390 /* FocusModeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FocusModeTests.m; sourceTree = "<group>"; };
 		E0F95E3427A23D6700699390 /* ExposureModeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExposureModeTests.m; sourceTree = "<group>"; };
+		E0F95E3627A23DE600699390 /* DeviceOrientationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceOrientationTests.m; sourceTree = "<group>"; };
 		E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraPreviewPauseTests.m; sourceTree = "<group>"; };
 		F63F9EED27143B19002479BF /* MockFLTThreadSafeFlutterResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MockFLTThreadSafeFlutterResult.h; sourceTree = "<group>"; };
 		F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockFLTThreadSafeFlutterResult.m; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				E0F95E3027A23C2400699390 /* VideoFormatTests.m */,
 				E0F95E3227A23C8D00699390 /* FocusModeTests.m */,
 				E0F95E3427A23D6700699390 /* ExposureModeTests.m */,
+				E0F95E3627A23DE600699390 /* DeviceOrientationTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -419,6 +422,7 @@
 				E0C6E2012770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m in Sources */,
 				E0F95E3327A23C8D00699390 /* FocusModeTests.m in Sources */,
 				E0C6E2002770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m in Sources */,
+				E0F95E3727A23DE600699390 /* DeviceOrientationTests.m in Sources */,
 				E01EE4A82799F3A5008C1950 /* QueueHelperTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
