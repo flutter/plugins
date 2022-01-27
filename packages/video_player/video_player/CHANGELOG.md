@@ -1,3 +1,7 @@
+## 2.2.16
+
+* Introduces `setCaptionOffset` to offset the caption display based on a Duration.
+
 ## 2.2.15
 
 * Updates README discussion of permissions.

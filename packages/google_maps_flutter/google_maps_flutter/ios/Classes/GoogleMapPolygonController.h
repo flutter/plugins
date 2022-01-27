@@ -9,30 +9,30 @@
 @protocol FLTGoogleMapPolygonOptionsSink
 - (void)setConsumeTapEvents:(BOOL)consume;
 - (void)setVisible:(BOOL)visible;
-- (void)setFillColor:(UIColor*)color;
-- (void)setStrokeColor:(UIColor*)color;
+- (void)setFillColor:(UIColor *)color;
+- (void)setStrokeColor:(UIColor *)color;
 - (void)setStrokeWidth:(CGFloat)width;
-- (void)setPoints:(NSArray<CLLocation*>*)points;
-- (void)setHoles:(NSArray<NSArray<CLLocation*>*>*)holes;
+- (void)setPoints:(NSArray<CLLocation *> *)points;
+- (void)setHoles:(NSArray<NSArray<CLLocation *> *> *)holes;
 - (void)setZIndex:(int)zIndex;
 @end
 
 // Defines polygon controllable by Flutter.
 @interface FLTGoogleMapPolygonController : NSObject <FLTGoogleMapPolygonOptionsSink>
-@property(atomic, readonly) NSString* polygonId;
-- (instancetype)initPolygonWithPath:(GMSMutablePath*)path
-                          polygonId:(NSString*)polygonId
-                            mapView:(GMSMapView*)mapView;
+@property(atomic, readonly) NSString *polygonId;
+- (instancetype)initPolygonWithPath:(GMSMutablePath *)path
+                          polygonId:(NSString *)polygonId
+                            mapView:(GMSMapView *)mapView;
 - (void)removePolygon;
 @end
 
 @interface FLTPolygonsController : NSObject
-- (instancetype)init:(FlutterMethodChannel*)methodChannel
-             mapView:(GMSMapView*)mapView
-           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
-- (void)addPolygons:(NSArray*)polygonsToAdd;
-- (void)changePolygons:(NSArray*)polygonsToChange;
-- (void)removePolygonIds:(NSArray*)polygonIdsToRemove;
-- (void)onPolygonTap:(NSString*)polygonId;
-- (bool)hasPolygonWithId:(NSString*)polygonId;
+- (instancetype)init:(FlutterMethodChannel *)methodChannel
+             mapView:(GMSMapView *)mapView
+           registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+- (void)addPolygons:(NSArray *)polygonsToAdd;
+- (void)changePolygons:(NSArray *)polygonsToChange;
+- (void)removePolygonIds:(NSArray *)polygonIdsToRemove;
+- (void)onPolygonTap:(NSString *)polygonId;
+- (bool)hasPolygonWithId:(NSString *)polygonId;
 @end
