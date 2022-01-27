@@ -10,16 +10,11 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
-#import "DeviceOrientation.h"
-#import "ExposureMode.h"
+#import "CameraProperties.h"
 #import "FLTThreadSafeEventChannel.h"
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
-#import "FlashMode.h"
-#import "FocusMode.h"
-#import "ResolutionPreset.h"
-#import "VideoFormat.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;

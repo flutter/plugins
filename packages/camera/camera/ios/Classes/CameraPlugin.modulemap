@@ -6,11 +6,6 @@ framework module camera {
 
   explicit module Test {
     header "CameraPlugin_Test.h"
-    header "DeviceOrientation.h"
-    header "ExposureMode.h"
-    header "FlashMode.h"
-    header "FocusMode.h"
-    header "ResolutionPreset.h"
-    header "VideoFormat.h"
+    header "CameraProperties.h"
   }
 }
