@@ -16,6 +16,7 @@
 #include "preview_handler.h"
 #include "record_handler.h"
 #include "string_utils.h"
+#include "texture_handler.h"
 
 namespace camera_windows {
 
@@ -265,9 +266,6 @@ void CaptureControllerImpl::ResetCaptureController() {
   // States
   media_foundation_started_ = false;
   capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
-  record_handler_ = nullptr;
-  preview_handler_ = nullptr;
-  photo_handler_ = nullptr;
   preview_frame_width_ = 0;
   preview_frame_height_ = 0;
   capture_engine_callback_handler_ = nullptr;
@@ -284,12 +282,10 @@ void CaptureControllerImpl::ResetCaptureController() {
   dxgi_device_manager_ = nullptr;
   dx11_device_ = nullptr;
 
-  // Texture
-  if (texture_registrar_ && texture_id_ > -1) {
-    texture_registrar_->UnregisterTexture(texture_id_);
-  }
-  texture_id_ = -1;
-  texture_ = nullptr;
+  record_handler_ = nullptr;
+  preview_handler_ = nullptr;
+  photo_handler_ = nullptr;
+  texture_handler_ = nullptr;
 }
 
 void CaptureControllerImpl::InitCaptureDevice(
@@ -297,8 +293,7 @@ void CaptureControllerImpl::InitCaptureDevice(
     bool record_audio, ResolutionPreset resolution_preset) {
   assert(capture_controller_listener_);
 
-  if (capture_engine_state_ == CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
-      texture_id_ >= 0) {
+  if (capture_engine_state_ == CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
     return capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Capture device already initialized");
   } else if (capture_engine_state_ ==
@@ -334,35 +329,6 @@ void CaptureControllerImpl::InitCaptureDevice(
     ResetCaptureController();
     return;
   }
-}
-
-const FlutterDesktopPixelBuffer*
-CaptureControllerImpl::ConvertPixelBufferForFlutter(size_t target_width,
-                                                    size_t target_height) {
-  if (this->source_buffer_ && this->source_buffer_size_ > 0 &&
-      this->preview_frame_width_ > 0 && this->preview_frame_height_ > 0) {
-    uint32_t pixels_total =
-        this->preview_frame_width_ * this->preview_frame_height_;
-    dest_buffer_ = std::make_unique<uint8_t[]>(pixels_total * 4);
-
-    MFVideoFormatRGB32Pixel* src =
-        (MFVideoFormatRGB32Pixel*)this->source_buffer_.get();
-    FlutterDesktopPixel* dst = (FlutterDesktopPixel*)dest_buffer_.get();
-
-    for (uint32_t i = 0; i < pixels_total; i++) {
-      dst[i].r = src[i].r;
-      dst[i].g = src[i].g;
-      dst[i].b = src[i].b;
-      dst[i].a = 255;
-    }
-
-    // TODO: add release_callback and clear dest_buffer after each frame.
-    this->flutter_desktop_pixel_buffer_.buffer = dest_buffer_.get();
-    this->flutter_desktop_pixel_buffer_.width = this->preview_frame_width_;
-    this->flutter_desktop_pixel_buffer_.height = this->preview_frame_height_;
-    return &this->flutter_desktop_pixel_buffer_;
-  }
-  return nullptr;
 }
 
 void CaptureControllerImpl::TakePicture(const std::string file_path) {
@@ -590,8 +556,10 @@ void CaptureControllerImpl::StopTimedRecord() {
 void CaptureControllerImpl::StartPreview() {
   assert(capture_engine_callback_handler_);
   assert(capture_engine_);
+  assert(texture_handler_);
 
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED ||
+      !texture_handler_) {
     return OnPreviewStarted(false,
                             "Camera not initialized. Camera should be "
                             "disposed and reinitialized.");
@@ -603,6 +571,9 @@ void CaptureControllerImpl::StartPreview() {
       return OnPreviewStarted(false, "Failed to initialize video preview");
     }
   }
+
+  texture_handler_->UpdateTextureSize(preview_frame_width_,
+                                      preview_frame_height_);
 
   if (!preview_handler_) {
     preview_handler_ = std::make_unique<PreviewHandler>();
@@ -749,19 +720,12 @@ void CaptureControllerImpl::OnPicture(bool success, const std::string& error) {
 void CaptureControllerImpl::OnCaptureEngineInitialized(
     bool success, const std::string& error) {
   if (capture_controller_listener_) {
-    // Create flutter desktop pixelbuffer texture;
-    texture_ =
-        std::make_unique<flutter::TextureVariant>(flutter::PixelBufferTexture(
-            [this](size_t width,
-                   size_t height) -> const FlutterDesktopPixelBuffer* {
-              return this->ConvertPixelBufferForFlutter(width, height);
-            }));
+    // Create texture handler and register new texture.
+    texture_handler_ = std::make_unique<TextureHandler>(texture_registrar_);
 
-    auto new_texture_id = texture_registrar_->RegisterTexture(texture_.get());
-
-    if (new_texture_id >= 0) {
-      texture_id_ = new_texture_id;
-      capture_controller_listener_->OnCreateCaptureEngineSucceeded(texture_id_);
+    int64_t texture_id = texture_handler_->RegisterTexture();
+    if (texture_id >= 0) {
+      capture_controller_listener_->OnCreateCaptureEngineSucceeded(texture_id);
       capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_INITIALIZED;
     } else {
       capture_controller_listener_->OnCreateCaptureEngineFailed(
@@ -861,26 +825,15 @@ void CaptureControllerImpl::OnRecordStopped(bool success,
   }
 }
 
-// Returns pointer to databuffer.
+// Updates texture handlers buffer with given data.
 // Called via IMFCaptureEngineOnSampleCallback implementation.
-// Implements CaptureEngineObserver::GetFrameBuffer.
-uint8_t* CaptureControllerImpl::GetFrameBuffer(uint32_t new_length) {
-  if (this->source_buffer_ == nullptr ||
-      this->source_buffer_size_ != new_length) {
-    // Update source buffer size.
-    this->source_buffer_ = std::make_unique<uint8_t[]>(new_length);
-    this->source_buffer_size_ = new_length;
+// Implements CaptureEngineObserver::UpdateBuffer.
+bool CaptureControllerImpl::UpdateBuffer(uint8_t* buffer,
+                                         uint32_t data_length) {
+  if (!texture_handler_) {
+    return false;
   }
-  return this->source_buffer_.get();
-}
-
-// Marks texture frame available after buffer is updated.
-// Called via IMFCaptureEngineOnSampleCallback implementation.
-// Implements CaptureEngineObserver::OnBufferUpdated.
-void CaptureControllerImpl::OnBufferUpdated() {
-  if (this->texture_registrar_ && this->texture_id_ >= 0) {
-    this->texture_registrar_->MarkTextureFrameAvailable(this->texture_id_);
-  }
+  return texture_handler_->UpdateBuffer(buffer, data_length);
 }
 
 // Handles capture time update from each processed frame.

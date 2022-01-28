@@ -26,6 +26,8 @@ list(APPEND PLUGIN_SOURCES
   "record_handler.cpp"
   "photo_handler.h"
   "photo_handler.cpp"
+  "texture_handler.h"
+  "texture_handler.cpp"
   "com_heap_ptr.h"
 )
 

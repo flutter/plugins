@@ -18,15 +18,11 @@ class CaptureEngineObserver {
   // Returns true if sample can be processed.
   virtual bool IsReadyForSample() = 0;
 
-  // Handles CaptureEngine media events.
+  // Handles Capture Engine media events.
   virtual void OnEvent(IMFMediaEvent* event) = 0;
 
-  // Returns frame buffer target for new capture sample.
-  virtual uint8_t* GetFrameBuffer(uint32_t new_length) = 0;
-
-  // Handles buffer update events.
-  // Informs texture registrar of the new frame.
-  virtual void OnBufferUpdated() = 0;
+  // Updates texture buffer
+  virtual bool UpdateBuffer(uint8_t* data, uint32_t new_length) = 0;
 
   // Handles capture timestamps updates.
   // Used to stop timed recordings when recorded time is exceeded.

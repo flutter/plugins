@@ -218,7 +218,6 @@ class MockCaptureController : public CaptureController {
                ResolutionPreset resolution_preset),
               (override));
 
-  MOCK_METHOD(int64_t, GetTextureId, (), (override));
   MOCK_METHOD(uint32_t, GetPreviewWidth, (), (override));
   MOCK_METHOD(uint32_t, GetPreviewHeight, (), (override));
 

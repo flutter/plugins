@@ -70,7 +70,7 @@ class CameraImpl : public Camera {
   CameraImpl(const CameraImpl&) = delete;
   CameraImpl& operator=(const CameraImpl&) = delete;
 
-  // From CaptureControllerListener.
+  // CaptureControllerListener
   void OnCreateCaptureEngineSucceeded(int64_t texture_id) override;
   void OnCreateCaptureEngineFailed(const std::string& error) override;
   void OnStartPreviewSucceeded(int32_t width, int32_t height) override;
@@ -90,7 +90,7 @@ class CameraImpl : public Camera {
   void OnVideoRecordFailed(const std::string& error) override;
   void OnCaptureError(const std::string& error) override;
 
-  // From Camera.
+  // Camera
   bool HasDeviceId(std::string& device_id) override {
     return device_id_ == device_id;
   };
@@ -150,6 +150,7 @@ class CameraFactory {
   CameraFactory(const CameraFactory&) = delete;
   CameraFactory& operator=(const CameraFactory&) = delete;
 
+  // Creates camera for given device id.
   virtual std::unique_ptr<Camera> CreateCamera(
       const std::string& device_id) = 0;
 };

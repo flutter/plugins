@@ -60,7 +60,7 @@ void MockInitCaptureController(CaptureControllerImpl* capture_controller,
   EXPECT_CALL(*engine, Initialize).Times(1);
 
   capture_controller->InitCaptureDevice(
-      texture_registrar, MOCK_DEVICE_ID, false,
+      texture_registrar, MOCK_DEVICE_ID, true,
       ResolutionPreset::RESOLUTION_PRESET_AUTO);
 
   // MockCaptureEngine::Initialize is called
@@ -184,7 +184,7 @@ void MockRecordStart(CaptureControllerImpl* capture_controller,
       });
 
   EXPECT_CALL(*record_sink, RemoveAllStreams).Times(1).WillOnce(Return(S_OK));
-  EXPECT_CALL(*record_sink, AddStream).Times(1).WillOnce(Return(S_OK));
+  EXPECT_CALL(*record_sink, AddStream).Times(2).WillRepeatedly(Return(S_OK));
   EXPECT_CALL(*record_sink, SetOutputFileName).Times(1).WillOnce(Return(S_OK));
 
   capture_controller->StartRecord(mock_path_to_video, -1);

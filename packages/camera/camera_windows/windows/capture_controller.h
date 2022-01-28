@@ -22,23 +22,11 @@
 #include "photo_handler.h"
 #include "preview_handler.h"
 #include "record_handler.h"
+#include "texture_handler.h"
 
 namespace camera_windows {
+using flutter::TextureRegistrar;
 using Microsoft::WRL::ComPtr;
-
-struct FlutterDesktopPixel {
-  BYTE r = 0;
-  BYTE g = 0;
-  BYTE b = 0;
-  BYTE a = 0;
-};
-
-struct MFVideoFormatRGB32Pixel {
-  BYTE b = 0;
-  BYTE g = 0;
-  BYTE r = 0;
-  BYTE x = 0;
-};
 
 enum ResolutionPreset {
   // AUTO
@@ -94,13 +82,10 @@ class CaptureController {
   // record_audio:      A boolean value telling if audio should be captured on
   //                    video recording.
   // resolution_preset: Maximum capture resolution height.
-  virtual void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
+  virtual void InitCaptureDevice(TextureRegistrar* texture_registrar,
                                  const std::string& device_id,
                                  bool record_audio,
                                  ResolutionPreset resolution_preset) = 0;
-
-  // Returns texture id for preview
-  virtual int64_t GetTextureId() = 0;
 
   // Returns preview frame width
   virtual uint32_t GetPreviewWidth() = 0;
@@ -145,11 +130,10 @@ class CaptureControllerImpl : public CaptureController,
   CaptureControllerImpl(const CaptureControllerImpl&) = delete;
   CaptureControllerImpl& operator=(const CaptureControllerImpl&) = delete;
 
-  // From CaptureController
-  void InitCaptureDevice(flutter::TextureRegistrar* texture_registrar,
+  // CaptureController
+  void InitCaptureDevice(TextureRegistrar* texture_registrar,
                          const std::string& device_id, bool record_audio,
                          ResolutionPreset resolution_preset) override;
-  int64_t GetTextureId() override { return texture_id_; }
   uint32_t GetPreviewWidth() override { return preview_frame_width_; }
   uint32_t GetPreviewHeight() override { return preview_frame_height_; }
   void StartPreview() override;
@@ -160,15 +144,14 @@ class CaptureControllerImpl : public CaptureController,
   void StopRecord() override;
   void TakePicture(const std::string file_path) override;
 
-  // From CaptureEngineObserver.
+  // CaptureEngineObserver
+  void OnEvent(IMFMediaEvent* event) override;
   bool IsReadyForSample() override {
     return capture_engine_state_ ==
                CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
            preview_handler_ && preview_handler_->IsRunning();
   }
-  void OnEvent(IMFMediaEvent* event) override;
-  uint8_t* GetFrameBuffer(uint32_t current_length) override;
-  void OnBufferUpdated() override;
+  bool UpdateBuffer(uint8_t* data, uint32_t data_length) override;
   void UpdateCaptureTime(uint64_t capture_time) override;
 
   // Sets capture engine, for testing purposes.
@@ -239,10 +222,6 @@ class CaptureControllerImpl : public CaptureController,
   // Handles record stopped events.
   void OnRecordStopped(bool success, const std::string& error);
 
-  // Converts local pixel buffer to flutter pixel buffer.
-  const FlutterDesktopPixelBuffer* ConvertPixelBufferForFlutter(size_t width,
-                                                                size_t height);
-
   bool media_foundation_started_ = false;
   bool record_audio_ = false;
   uint32_t preview_frame_width_ = 0;
@@ -251,7 +230,9 @@ class CaptureControllerImpl : public CaptureController,
   std::unique_ptr<RecordHandler> record_handler_ = nullptr;
   std::unique_ptr<PreviewHandler> preview_handler_ = nullptr;
   std::unique_ptr<PhotoHandler> photo_handler_ = nullptr;
+  std::unique_ptr<TextureHandler> texture_handler_ = nullptr;
   CaptureControllerListener* capture_controller_listener_ = nullptr;
+
   std::string video_device_id_;
   CaptureEngineState capture_engine_state_ =
       CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
@@ -266,15 +247,7 @@ class CaptureControllerImpl : public CaptureController,
   ComPtr<IMFMediaSource> video_source_;
   ComPtr<IMFMediaSource> audio_source_;
 
-  // Texture
-  int64_t texture_id_ = -1;
-  uint32_t bytes_per_pixel_ = 4;
-  uint32_t source_buffer_size_ = 0;
-  std::unique_ptr<uint8_t[]> source_buffer_ = nullptr;
-  std::unique_ptr<uint8_t[]> dest_buffer_ = nullptr;
-  std::unique_ptr<flutter::TextureVariant> texture_;
-  flutter::TextureRegistrar* texture_registrar_ = nullptr;
-  FlutterDesktopPixelBuffer flutter_desktop_pixel_buffer_ = {};
+  TextureRegistrar* texture_registrar_ = nullptr;
 };
 
 class CaptureControllerFactory {
