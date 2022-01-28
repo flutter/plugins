@@ -35,7 +35,6 @@ await prefs.setStringList('items', <String>['Earth', 'Moon', 'Sun']);
 
 #### Read data
 ```dart 
-final SharedPreferences prefs = await _prefs;
 // Try reading data from the 'counter' key. If it doesn't exist, returns null.
 final int? counter = prefs.getInt('counter');
 // Try reading data from the 'repeat' key. If it doesn't exist, returns null.
@@ -50,7 +49,7 @@ final List<String>? items = prefs.getStringList('items');
 
 #### Remove an entry
 ```dart 
-// Remove data from the provided key.
+// Remove data for the 'counter' key. 
 final success = await prefs.remove('counter');
 ```
 
@@ -73,5 +72,3 @@ SharedPreferences.setMockInitialValues(values);
 | macOS | NSUserDefaults |
 | Web | LocalStorage |
 | Windows | In the roaming AppData directory |
-
-[example]:./example
