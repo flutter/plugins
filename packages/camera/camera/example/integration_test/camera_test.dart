@@ -309,7 +309,7 @@ void main() {
 
       await controller.initialize();
 
-      await controller.startImageStream((CameraImage image) {}, frameStack: 3);
+      await controller.startImageStream((CameraImage image) {});
 
       await Future.delayed(Duration(seconds: 5));
 

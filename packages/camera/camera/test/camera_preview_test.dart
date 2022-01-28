@@ -97,7 +97,7 @@ class FakeController extends ValueNotifier<CameraValue>
   Future<void> setZoomLevel(double zoom) async {}
 
   @override
-  Future<void> startImageStream(onAvailable, {int frameStack = 0}) async {}
+  Future<void> startImageStream(onAvailable) async {}
 
   @override
   Future<void> startVideoRecording() async {}
