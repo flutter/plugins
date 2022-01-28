@@ -1,10 +1,6 @@
-//
-//  SampleBufferQueueTests.m
-//  RunnerTests
-//
-//  Created by Huan Lin on 1/27/22.
-//  Copyright © 2022 The Flutter Authors. All rights reserved.
-//
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 @import camera;
 @import camera.Test;
@@ -18,7 +14,7 @@
 
 @implementation SampleBufferQueueTests
 
-- (void)testSampleBufferDelegateCallbackMustRunOnCaptureSessionQueue {
+- (void)testSampleBufferCallbackQueueMustBeCaptureSessionQueue {
   id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
   OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
       .andReturn(inputMock);
