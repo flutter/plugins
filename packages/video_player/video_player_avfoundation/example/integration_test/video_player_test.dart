@@ -145,7 +145,10 @@ void main() {
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);
-    }, skip: defaultTargetPlatform != TargetPlatform.android);
+    },
+        // TODO(stuartmorgan): Skipped on iOS without explanation in main
+        // package. Needs investigation.
+        skip: true);
 
     testWidgets('live stream duration != 0', (WidgetTester tester) async {
       final MiniController livestreamController = MiniController.network(
