@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This test is run using `flutter drive` by the CI (see /script/tool/README.md
+// in this repository for details on driving that tooling manually), but can
+// also be run using `flutter test` directly during development.
+
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -19,19 +24,31 @@ import 'package:webview_flutter_android_example/navigation_request.dart';
 import 'package:webview_flutter_android_example/web_view.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-void main() {
+Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
-  // URLs to navigate to in tests. These need to be URLs that we are confident will
-  // always be accessible, and won't do redirection. (E.g., just
-  // 'https://www.google.com/' will sometimes redirect traffic that looks
-  // like it's coming from a bot, which is true of these tests).
-  const String primaryUrl = 'https://flutter.dev/';
-  const String secondaryUrl = 'https://www.google.com/robots.txt';
 
   const bool _skipDueToIssue86757 = true;
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  final HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 0);
+  server.forEach((HttpRequest request) {
+    if (request.uri.path == '/hello.txt') {
+      request.response.writeln('Hello, world.');
+    } else if (request.uri.path == '/secondary.txt') {
+      request.response.writeln('How are you today?');
+    } else if (request.uri.path == '/headers') {
+      request.response.writeln('${request.headers}');
+    } else if (request.uri.path == '/favicon.ico') {
+      request.response.statusCode = HttpStatus.notFound;
+    } else {
+      fail('unexpected request: ${request.method} ${request.uri}');
+    }
+    request.response.close();
+  });
+  final String prefixUrl = 'http://${server.address.address}:${server.port}';
+  final String primaryUrl = '$prefixUrl/hello.txt';
+  final String secondaryUrl = '$prefixUrl/secondary.txt';
+  final String headersUrl = '$prefixUrl/headers';
+
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -54,7 +71,7 @@ void main() {
     expect(currentUrl, primaryUrl);
   }, skip: _skipDueToIssue86757);
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -97,7 +114,7 @@ void main() {
     expect(result, equals('2'));
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -126,10 +143,9 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'test_header': 'flutter_test_header'
     };
-    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
-        headers: headers);
+    await controller.loadUrl(headersUrl, headers: headers);
     final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
+    expect(currentUrl, headersUrl);
 
     await pageStarts.stream.firstWhere((String url) => url == currentUrl);
     await pageLoads.stream.firstWhere((String url) => url == currentUrl);
@@ -139,7 +155,7 @@ void main() {
     expect(content.contains('flutter_test_header'), isTrue);
   }, skip: _skipDueToIssue86757);
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
   testWidgets('JavascriptChannel', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -251,7 +267,7 @@ void main() {
     expect(customUserAgent2, 'Custom_User_Agent2');
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
   testWidgets('use default platform userAgent after webView is rebuilt',
       (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -727,7 +743,7 @@ void main() {
   });
 
   group('Programmatic Scroll', () {
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       const String scrollTestPage = '''
         <!DOCTYPE html>
@@ -814,7 +830,7 @@ void main() {
       WebView.platform = AndroidWebView();
     });
 
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       const String scrollTestPage = '''
         <!DOCTYPE html>
@@ -883,7 +899,7 @@ void main() {
       expect(Y_SCROLL * 2, scrollPosY);
     }, skip: _skipDueToIssue86757);
 
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
     testWidgets('inputs are scrolled into view when focused',
         (WidgetTester tester) async {
       const String scrollTestPage = '''
@@ -1253,7 +1269,7 @@ void main() {
       // Flaky on Android: https://github.com/flutter/flutter/issues/86757
       skip: _skipDueToIssue86757);
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {

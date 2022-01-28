@@ -43,6 +43,7 @@ class VideoPlayerValue {
     this.size = Size.zero,
     this.position = Duration.zero,
     this.caption = Caption.none,
+    this.captionOffset = Duration.zero,
     this.buffered = const <DurationRange>[],
     this.isInitialized = false,
     this.isPlaying = false,
@@ -77,6 +78,11 @@ class VideoPlayerValue {
   /// This field will never be null. If there is no caption for the current
   /// [position], this will be a [Caption.none] object.
   final Caption caption;
+
+  /// The [Duration] that should be used to offset the current [position] to get the correct [Caption].
+  ///
+  /// Defaults to Duration.zero.
+  final Duration captionOffset;
 
   /// The currently buffered ranges.
   final List<DurationRange> buffered;
@@ -135,6 +141,7 @@ class VideoPlayerValue {
     Size? size,
     Duration? position,
     Caption? caption,
+    Duration? captionOffset,
     List<DurationRange>? buffered,
     bool? isInitialized,
     bool? isPlaying,
@@ -149,6 +156,7 @@ class VideoPlayerValue {
       size: size ?? this.size,
       position: position ?? this.position,
       caption: caption ?? this.caption,
+      captionOffset: captionOffset ?? this.captionOffset,
       buffered: buffered ?? this.buffered,
       isInitialized: isInitialized ?? this.isInitialized,
       isPlaying: isPlaying ?? this.isPlaying,
@@ -169,6 +177,7 @@ class VideoPlayerValue {
         'size: $size, '
         'position: $position, '
         'caption: $caption, '
+        'captionOffset: $captionOffset, '
         'buffered: [${buffered.join(', ')}], '
         'isInitialized: $isInitialized, '
         'isPlaying: $isPlaying, '
@@ -581,6 +590,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyPlaybackSpeed();
   }
 
+  /// Sets the caption offset.
+  ///
+  /// The [offset] will be used when getting the correct caption for a specific position.
+  /// The [offset] can be positive or negative.
+  ///
+  /// The values will be handled as follows:
+  /// *  0: This is the default behaviour. No offset will be applied.
+  /// * >0: The caption will have a negative offset. So you will get caption text from the past.
+  /// * <0: The caption will have a positive offset. So you will get caption text from the future.
+  void setCaptionOffset(Duration offset) {
+    value = value.copyWith(
+      captionOffset: offset,
+      caption: _getCaptionAt(value.position),
+    );
+  }
+
   /// The closed caption based on the current [position] in the video.
   ///
   /// If there are no closed captions at the current [position], this will
@@ -593,9 +618,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return Caption.none;
     }
 
+    final delayedPosition = position + value.captionOffset;
     // TODO: This would be more efficient as a binary search.
     for (final caption in _closedCaptionFile!.captions) {
-      if (caption.start <= position && caption.end >= position) {
+      if (caption.start <= delayedPosition && caption.end >= delayedPosition) {
         return caption;
       }
     }
@@ -604,8 +630,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   void _updatePosition(Duration position) {
-    value = value.copyWith(position: position);
-    value = value.copyWith(caption: _getCaptionAt(position));
+    value = value.copyWith(
+      position: position,
+      caption: _getCaptionAt(position),
+    );
   }
 
   @override
