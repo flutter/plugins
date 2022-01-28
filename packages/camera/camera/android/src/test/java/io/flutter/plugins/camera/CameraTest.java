@@ -22,7 +22,6 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
@@ -247,20 +246,6 @@ public class CameraTest {
 
     verify(mockZoomLevelFeature, times(1)).getMinimumZoomLevel();
     assertEquals(expectedMinZoomLevel, actualMinZoomLevel, 0);
-  }
-
-  @Test
-  public void getRecordingProfile() {
-    ResolutionFeature mockResolutionFeature =
-        mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
-    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
-
-    when(mockResolutionFeature.getRecordingProfile()).thenReturn(mockCamcorderProfile);
-
-    CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
-
-    verify(mockResolutionFeature, times(1)).getRecordingProfile();
-    assertEquals(mockCamcorderProfile, actualRecordingProfile);
   }
 
   @Test

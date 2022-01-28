@@ -23,24 +23,6 @@ PurchaseWrapper _$PurchaseWrapperFromJson(Map json) => PurchaseWrapper(
       obfuscatedProfileId: json['obfuscatedProfileId'] as String?,
     );
 
-Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
-    <String, dynamic>{
-      'orderId': instance.orderId,
-      'packageName': instance.packageName,
-      'purchaseTime': instance.purchaseTime,
-      'purchaseToken': instance.purchaseToken,
-      'signature': instance.signature,
-      'sku': instance.sku,
-      'isAutoRenewing': instance.isAutoRenewing,
-      'originalJson': instance.originalJson,
-      'developerPayload': instance.developerPayload,
-      'isAcknowledged': instance.isAcknowledged,
-      'purchaseState':
-          const PurchaseStateConverter().toJson(instance.purchaseState),
-      'obfuscatedAccountId': instance.obfuscatedAccountId,
-      'obfuscatedProfileId': instance.obfuscatedProfileId,
-    };
-
 PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) =>
     PurchaseHistoryRecordWrapper(
       purchaseTime: json['purchaseTime'] as int? ?? 0,
@@ -50,17 +32,6 @@ PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) =>
       originalJson: json['originalJson'] as String? ?? '',
       developerPayload: json['developerPayload'] as String?,
     );
-
-Map<String, dynamic> _$PurchaseHistoryRecordWrapperToJson(
-        PurchaseHistoryRecordWrapper instance) =>
-    <String, dynamic>{
-      'purchaseTime': instance.purchaseTime,
-      'purchaseToken': instance.purchaseToken,
-      'signature': instance.signature,
-      'sku': instance.sku,
-      'originalJson': instance.originalJson,
-      'developerPayload': instance.developerPayload,
-    };
 
 PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) =>
     PurchasesResultWrapper(
@@ -77,15 +48,6 @@ PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) =>
           [],
     );
 
-Map<String, dynamic> _$PurchasesResultWrapperToJson(
-        PurchasesResultWrapper instance) =>
-    <String, dynamic>{
-      'billingResult': instance.billingResult,
-      'responseCode':
-          const BillingResponseConverter().toJson(instance.responseCode),
-      'purchasesList': instance.purchasesList,
-    };
-
 PurchasesHistoryResult _$PurchasesHistoryResultFromJson(Map json) =>
     PurchasesHistoryResult(
       billingResult:
@@ -100,9 +62,8 @@ PurchasesHistoryResult _$PurchasesHistoryResultFromJson(Map json) =>
               [],
     );
 
-Map<String, dynamic> _$PurchasesHistoryResultToJson(
-        PurchasesHistoryResult instance) =>
-    <String, dynamic>{
-      'billingResult': instance.billingResult,
-      'purchaseHistoryRecordList': instance.purchaseHistoryRecordList,
-    };
+const _$PurchaseStateWrapperEnumMap = {
+  PurchaseStateWrapper.unspecified_state: 0,
+  PurchaseStateWrapper.purchased: 1,
+  PurchaseStateWrapper.pending: 2,
+};

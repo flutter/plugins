@@ -1,6 +1,14 @@
-## 2.0.5
+## 2.0.7
 
 - Fixed invalid routes when opening a `Link` in a new tab
+
+## 2.0.6
+
+* Removes dependency on `meta`.
+
+## 2.0.5
+
+* Updates code for new analysis options.
 
 ## 2.0.4
 

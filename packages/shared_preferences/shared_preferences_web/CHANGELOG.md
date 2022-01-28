@@ -1,3 +1,8 @@
+## 2.0.3
+
+* Fixes newly enabled analyzer options.
+* Removes dependency on `meta`.
+
 ## 2.0.2
 
 * Add `implements` to pubspec.

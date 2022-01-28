@@ -1,3 +1,37 @@
+## NEXT
+
+* Minor iOS internal code cleanup related to camera class and its delegate. 
+* Minor iOS internal code cleanup related to resolution preset, video format, focus mode, exposure mode and device orientation.
+* Minor iOS internal code cleanup related to flash mode.
+
+## 0.9.4+8
+
+* Fixes a bug where ImageFormatGroup was ignored in `startImageStream` on iOS.
+
+## 0.9.4+7
+
+* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.  
+* Minor iOS internal code cleanup related to dispatch queue.
+
+## 0.9.4+6
+
+* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
+
+## 0.9.4+5
+
+* Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
+* Fixes integration tests.
+
+## 0.9.4+4
+
+* Change Android compileSdkVersion to 31.
+* Remove usages of deprecated Android API `CamcorderProfile`.
+* Update gradle version to 7.0.2 on Android.
+
+## 0.9.4+3
+
+* Fix registerTexture and result being called on background thread on iOS.
+
 ## 0.9.4+2
 
 * Updated package description;

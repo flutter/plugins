@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'enum_converters.dart';
+
 import 'billing_client_wrapper.dart';
 import 'sku_details_wrapper.dart';
 
@@ -323,6 +324,7 @@ class PurchasesHistoryResult {
 /// Wraps
 /// [`BillingClient.api.Purchase.PurchaseState`](https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState.html).
 /// * See also: [PurchaseWrapper].
+@JsonEnum(alwaysCreate: true)
 enum PurchaseStateWrapper {
   /// The state is unspecified.
   ///
@@ -347,4 +349,40 @@ enum PurchaseStateWrapper {
   /// [PurchaseWrapper] is still in the `pending` state in the future while calling [BillingClient.queryPurchases].
   @JsonValue(2)
   pending,
+}
+
+/// Serializer for [PurchaseStateWrapper].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@PurchaseStateConverter()`.
+class PurchaseStateConverter
+    implements JsonConverter<PurchaseStateWrapper, int?> {
+  /// Default const constructor.
+  const PurchaseStateConverter();
+
+  @override
+  PurchaseStateWrapper fromJson(int? json) {
+    if (json == null) {
+      return PurchaseStateWrapper.unspecified_state;
+    }
+    return $enumDecode(_$PurchaseStateWrapperEnumMap, json);
+  }
+
+  @override
+  int toJson(PurchaseStateWrapper object) =>
+      _$PurchaseStateWrapperEnumMap[object]!;
+
+  /// Converts the purchase state stored in `object` to a [PurchaseStatus].
+  ///
+  /// [PurchaseStateWrapper.unspecified_state] is mapped to [PurchaseStatus.error].
+  PurchaseStatus toPurchaseStatus(PurchaseStateWrapper object) {
+    switch (object) {
+      case PurchaseStateWrapper.pending:
+        return PurchaseStatus.pending;
+      case PurchaseStateWrapper.purchased:
+        return PurchaseStatus.purchased;
+      case PurchaseStateWrapper.unspecified_state:
+        return PurchaseStatus.error;
+    }
+  }
 }

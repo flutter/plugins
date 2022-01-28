@@ -18,12 +18,12 @@ void main() {
   });
 
   Future<String> _getFilePath() async {
-    final pathProvider = PathProviderLinux();
-    final directory = await pathProvider.getApplicationSupportPath();
+    final PathProviderLinux pathProvider = PathProviderLinux();
+    final String? directory = await pathProvider.getApplicationSupportPath();
     return path.join(directory!, 'shared_preferences.json');
   }
 
-  _writeTestFile(String value) async {
+  Future<void> _writeTestFile(String value) async {
     fs.file(await _getFilePath())
       ..createSync(recursive: true)
       ..writeAsStringSync(value);
@@ -34,7 +34,7 @@ void main() {
   }
 
   SharedPreferencesLinux _getPreferences() {
-    var prefs = SharedPreferencesLinux();
+    final SharedPreferencesLinux prefs = SharedPreferencesLinux();
     prefs.fs = fs;
     return prefs;
   }
@@ -46,9 +46,9 @@ void main() {
 
   test('getAll', () async {
     await _writeTestFile('{"key1": "one", "key2": 2}');
-    var prefs = _getPreferences();
+    final SharedPreferencesLinux prefs = _getPreferences();
 
-    var values = await prefs.getAll();
+    final Map<String, Object> values = await prefs.getAll();
     expect(values, hasLength(2));
     expect(values['key1'], 'one');
     expect(values['key2'], 2);
@@ -56,7 +56,7 @@ void main() {
 
   test('remove', () async {
     await _writeTestFile('{"key1":"one","key2":2}');
-    var prefs = _getPreferences();
+    final SharedPreferencesLinux prefs = _getPreferences();
 
     await prefs.remove('key2');
 
@@ -65,7 +65,7 @@ void main() {
 
   test('setValue', () async {
     await _writeTestFile('{}');
-    var prefs = _getPreferences();
+    final SharedPreferencesLinux prefs = _getPreferences();
 
     await prefs.setValue('', 'key1', 'one');
     await prefs.setValue('', 'key2', 2);
@@ -75,7 +75,7 @@ void main() {
 
   test('clear', () async {
     await _writeTestFile('{"key1":"one","key2":2}');
-    var prefs = _getPreferences();
+    final SharedPreferencesLinux prefs = _getPreferences();
 
     await prefs.clear();
     expect(await _readTestFile(), '{}');

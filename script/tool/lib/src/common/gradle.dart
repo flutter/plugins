@@ -14,9 +14,6 @@ const String _gradleWrapperNonWindows = 'gradlew';
 class GradleProject {
   /// Creates an instance that runs commands for [project] with the given
   /// [processRunner].
-  ///
-  /// If [log] is true, commands run by this instance will long various status
-  /// messages.
   GradleProject(
     this.flutterProject, {
     this.processRunner = const ProcessRunner(),

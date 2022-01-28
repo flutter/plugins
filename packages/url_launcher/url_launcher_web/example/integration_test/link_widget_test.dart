@@ -80,14 +80,14 @@ void main() {
         textDirection: TextDirection.ltr,
         child: Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(100.0, 100.0)),
+            constraints: BoxConstraints.tight(const Size(100.0, 100.0)),
             child: WebLinkDelegate(TestLinkInfo(
               uri: uri,
               target: LinkTarget.blank,
               builder: (BuildContext context, FollowLink? followLink) {
                 return Container(
                   key: containerKey,
-                  child: SizedBox(width: 50.0, height: 50.0),
+                  child: const SizedBox(width: 50.0, height: 50.0),
                 );
               },
             )),
@@ -149,6 +149,12 @@ html.Element _findSingleAnchor() {
 }
 
 class TestLinkInfo extends LinkInfo {
+  TestLinkInfo({
+    required this.uri,
+    required this.target,
+    required this.builder,
+  });
+
   @override
   final LinkWidgetBuilder builder;
 
@@ -160,10 +166,4 @@ class TestLinkInfo extends LinkInfo {
 
   @override
   bool get isDisabled => uri == null;
-
-  TestLinkInfo({
-    required this.uri,
-    required this.target,
-    required this.builder,
-  });
 }
