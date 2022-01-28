@@ -425,12 +425,14 @@ uint32_t CaptureControllerImpl::GetMaxPreviewHeight() {
 bool FindBestMediaType(DWORD source_stream_index, IMFCaptureSource* source,
                        IMFMediaType** target_media_type, uint32_t max_height,
                        uint32_t* target_frame_width,
-                       uint32_t* target_frame_height) {
+                       uint32_t* target_frame_height,
+                       float minimum_accepted_framerate = 15.f) {
   assert(source);
   ComPtr<IMFMediaType> media_type;
 
   uint32_t best_width = 0;
   uint32_t best_height = 0;
+  float best_framerate = 0.f;
 
   // Loop native media types.
   for (int i = 0;; i++) {
@@ -439,16 +441,32 @@ bool FindBestMediaType(DWORD source_stream_index, IMFCaptureSource* source,
       break;
     }
 
+    uint32_t frame_rate_numerator, frame_rate_denominator;
+    if (FAILED(MFGetAttributeRatio(media_type.Get(), MF_MT_FRAME_RATE,
+                                   &frame_rate_numerator,
+                                   &frame_rate_denominator)) ||
+        !frame_rate_denominator) {
+      continue;
+    }
+
+    float frame_rate =
+        static_cast<float>(frame_rate_numerator) / frame_rate_denominator;
+    if (frame_rate < minimum_accepted_framerate) {
+      continue;
+    }
+
     uint32_t frame_width;
     uint32_t frame_height;
     if (SUCCEEDED(MFGetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
                                      &frame_width, &frame_height))) {
       // Update target mediatype
       if (frame_height <= max_height &&
-          (best_width < frame_width || best_height < frame_height)) {
+          (best_width < frame_width || best_height < frame_height ||
+           best_framerate < frame_rate)) {
         media_type.CopyTo(target_media_type);
         best_width = frame_width;
         best_height = frame_height;
+        best_framerate = frame_rate;
       }
     }
   }

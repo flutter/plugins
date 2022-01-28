@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   bool _recordAudio = true;
   bool _previewPaused = false;
   Size? _previewSize;
-  ResolutionPreset _resolutionPreset = ResolutionPreset.max;
+  ResolutionPreset _resolutionPreset = ResolutionPreset.veryHigh;
   StreamSubscription<CameraErrorEvent>? _errorStreamSubscription;
 
   @override
