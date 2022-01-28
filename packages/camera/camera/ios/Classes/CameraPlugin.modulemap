@@ -7,5 +7,6 @@ framework module camera {
   explicit module Test {
     header "CameraPlugin_Test.h"
     header "CameraProperties.h"
+    header "FLTCam.h"
   }
 }
