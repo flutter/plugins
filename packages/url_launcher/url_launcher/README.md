@@ -96,16 +96,18 @@ takes a string argument containing a URL. This URL
 can be formatted using a number of different URL schemes. The supported
 URL schemes depend on the underlying platform and installed apps.
 
-Common schemes supported by both iOS and Android:
+Common schemes supported:
 
 | Scheme | Action |
-|---|---|
-| `http:<URL>` , `https:<URL>`, e.g. `http://flutter.dev` | Open URL in the default browser |
-| `mailto:<email address>?subject=<subject>&body=<body>`, e.g. `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
-| `tel:<phone number>`, e.g. `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
-| `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
+|:---|:---|
+| `http:<URL>` , `https:<URL>`, e.g `http://flutter.dev` | Open URL in the default browser |
+| `mailto:<email address>?subject=<subject>&body=<body>`, e.g `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
+| `tel:<phone number>`, e.g `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
+| `sms:<phone number>`, e.g `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
+| `file:/<path>`, e.g `file:/home` | Opens file or folder using default app association, supported on desktop platforms |
 
-More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
+More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html)
+and [Android](https://developer.android.com/guide/components/intents-common.html)
 
 **Note**: URL schemes are only supported if there are apps installed on the device that can
 support them. For example, iOS simulators don't have a default email or phone
@@ -115,7 +117,7 @@ apps installed, so can't open `tel:` or `mailto:` links.
 
 URLs must be properly encoded, especially when including spaces or other special
 characters. This can be done using the
-[`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html).
+[`Uri` class](https://api.dart.dev/dart-core/Uri-class.html).
 For example:
 ```dart
 String? encodeQueryParameters(Map<String, String> params) {
@@ -164,3 +166,39 @@ If you do this for a URL of a page containing JavaScript, make sure to pass in
 `enableJavaScript: true`, or else the launch method will not work properly. On
 iOS, the default behavior is to open all web URLs within the app. Everything
 else is redirected to the app handler.
+
+## File scheme handling
+`file:` scheme can be used on desktop platforms: `macOS`, `Linux` and `Windows`.
+
+We recommend checking first whether the directory and/or file exists before calling the `launch`.
+
+Example:
+```dart
+var filePath = '/path/to/file';
+final Uri uri = Uri.file(filePath, windows: Platform.isWindows);
+
+if (await File(uri.toFilePath(windows: Platform.isWindows)).exists()) {
+    if (!await launch(uri.toString())) {
+      throw 'Could not launch $uri';
+    }
+}
+```
+
+### macOS file access configuration
+
+Upon first app launch, the operating system creates a special directory for use by your app
+(and only by your app) called a container. Your app has unrestricted read/write access to the
+container and its subdirectories. To access file system locations outside of its container use
+entitlements. See
+[the Apple documentation](https://developer.apple.com/documentation/security/app_sandbox)
+for more information.
+
+.entitlements file content example:
+```xml
+<dict>
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    <key>com.apple.security.files.user-selected.read-only</key>
+    <true/>
+</dict>
+```
