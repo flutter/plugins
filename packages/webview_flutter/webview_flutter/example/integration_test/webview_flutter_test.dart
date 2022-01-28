@@ -901,7 +901,7 @@ Future<void> main() async {
       await loadCompleter.future;
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, primaryUrl);
-    });
+    }, skip: !Platform.isAndroid);
   });
 
   group('NavigationDelegate', () {
