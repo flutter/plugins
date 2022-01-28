@@ -29,7 +29,7 @@
       (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
   NSObject<FlutterPluginRegistrar> *registrar =
       [registry registrarForPlugin:@"SeekToInvokestextureFrameAvailable"];
-  id partialRegistrar = OCMPartialMock(registrar);
+  NSObject<FlutterPluginRegistrar> *partialRegistrar = OCMPartialMock(registrar);
   OCMStub([partialRegistrar textures]).andReturn(mockTextureRegistry);
   FLTVideoPlayerPlugin *videoPlayerPlugin =
       (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:partialRegistrar];
@@ -39,7 +39,6 @@
   FlutterError *error;
   [videoPlayerPlugin seekTo:message error:&error];
   OCMVerify([mockTextureRegistry textureFrameAvailable:message.textureId.intValue]);
-  [partialRegistrar stopMocking];
 }
 
 - (void)testDeregistersFromPlayer {
@@ -126,8 +125,6 @@
                           initializationEvent = event;
                           XCTAssertEqual(event.count, 4);
                           [initializedExpectation fulfill];
-                        } else {
-                          XCTFail(@"Unexpected event: %@", event);
                         }
                       }];
   [self waitForExpectationsWithTimeout:1.0 handler:nil];
