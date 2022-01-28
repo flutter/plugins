@@ -837,6 +837,9 @@ class FakeMediaType : public FakeIMFAttributesBase<IMFMediaType> {
     if (key == MF_MT_FRAME_SIZE) {
       *value = (int64_t)width_ << 32 | (int64_t)height_;
       return S_OK;
+    } else if (key == MF_MT_FRAME_RATE) {
+      *value = (int64_t)frame_rate_ << 32 | 1;
+      return S_OK;
     }
     return E_FAIL;
   };
@@ -857,6 +860,7 @@ class FakeMediaType : public FakeIMFAttributesBase<IMFMediaType> {
   HRESULT CopyAllItems(IMFAttributes* pDest) override {
     pDest->SetUINT64(MF_MT_FRAME_SIZE,
                      (int64_t)width_ << 32 | (int64_t)height_);
+    pDest->SetUINT64(MF_MT_FRAME_RATE, (int64_t)frame_rate_ << 32 | 1);
     pDest->SetGUID(MF_MT_MAJOR_TYPE, major_type_);
     pDest->SetGUID(MF_MT_SUBTYPE, sub_type_);
     return S_OK;
@@ -922,6 +926,7 @@ class FakeMediaType : public FakeIMFAttributesBase<IMFMediaType> {
   const GUID sub_type_;
   const int width_;
   const int height_;
+  const int frame_rate_ = 30;
 };
 
 class MockCaptureEngine : public IMFCaptureEngine {
