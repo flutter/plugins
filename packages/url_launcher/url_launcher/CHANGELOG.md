@@ -2,7 +2,7 @@
 
 * Updates README:
   * Adds description for `file` scheme usage.
-  * Updates `Uri` class API documentation link.
+  * Updates `Uri` class link to SDK documentation.
 
 ## 6.0.18
 
