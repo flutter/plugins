@@ -126,6 +126,16 @@ class MethodChannelCamera extends CameraPlatform {
         'cameraId': cameraId,
         'imageFormatGroup': imageFormatGroup.name(),
       },
+    ).catchError(
+      (Object error, StackTrace stackTrace) {
+        if (error is! PlatformException) {
+          throw error;
+        }
+        _completer.completeError(
+          CameraException(error.code, error.message),
+          stackTrace,
+        );
+      },
     );
 
     return _completer.future;

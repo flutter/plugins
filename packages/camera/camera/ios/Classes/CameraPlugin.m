@@ -10,7 +10,10 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
+#import "FLTThreadSafeEventChannel.h"
 #import "FLTThreadSafeFlutterResult.h"
+#import "FLTThreadSafeMethodChannel.h"
+#import "FLTThreadSafeTextureRegistry.h"
 
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
@@ -18,19 +21,34 @@
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+// The queue on which `eventSink` property should be accessed
+@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
+// `eventSink` property should be accessed on `captureSessionQueue`.
+// The block itself should be invoked on the main queue.
 @property FlutterEventSink eventSink;
 @end
 
 @implementation FLTImageStreamHandler
 
+- (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
+  self = [super init];
+  NSAssert(self, @"super init cannot be nil");
+  _captureSessionQueue = captureSessionQueue;
+  return self;
+}
+
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
-  _eventSink = nil;
+  dispatch_async(self.captureSessionQueue, ^{
+    self.eventSink = nil;
+  });
   return nil;
 }
 
 - (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
-  _eventSink = events;
+  dispatch_async(self.captureSessionQueue, ^{
+    self.eventSink = events;
+  });
   return nil;
 }
 @end
@@ -305,7 +323,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
 @property BOOL enableAudio;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
-@property(nonatomic) FlutterMethodChannel *methodChannel;
+@property(nonatomic) FLTThreadSafeMethodChannel *methodChannel;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
@@ -342,7 +360,9 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @end
 
 @implementation FLTCam {
-  dispatch_queue_t _dispatchQueue;
+  // All FLTCam's state access and capture session related operations should be on run on this
+  // queue.
+  dispatch_queue_t _captureSessionQueue;
   UIDeviceOrientation _deviceOrientation;
 }
 // Format used for video and image streaming.
@@ -353,7 +373,7 @@ NSString *const errorMethod = @"error";
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
                        orientation:(UIDeviceOrientation)orientation
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
+               captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
@@ -363,7 +383,7 @@ NSString *const errorMethod = @"error";
     *error = e;
   }
   _enableAudio = enableAudio;
-  _dispatchQueue = dispatchQueue;
+  _captureSessionQueue = captureSessionQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FlashModeAuto : FlashModeOff;
@@ -605,8 +625,10 @@ NSString *const errorMethod = @"error";
     return;
   }
   if (_isStreamingImages) {
-    if (_imageStreamHandler.eventSink) {
+    FlutterEventSink eventSink = _imageStreamHandler.eventSink;
+    if (eventSink) {
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      // Must lock base address before accessing the pixel data
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
       size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
@@ -651,6 +673,9 @@ NSString *const errorMethod = @"error";
 
         [planes addObject:planeBuffer];
       }
+      // Before accessing pixel data, we should lock the base address, and unlock it afterwards.
+      // Done accessing the `pixelBuffer` at this point.
+      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
       imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
@@ -663,9 +688,9 @@ NSString *const errorMethod = @"error";
       imageBuffer[@"sensorExposureTime"] = [NSNumber numberWithInt:nsExposureDuration];
       imageBuffer[@"sensorSensitivity"] = [NSNumber numberWithFloat:[_captureDevice ISO]];
 
-      _imageStreamHandler.eventSink(imageBuffer);
-
-      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        eventSink(imageBuffer);
+      });
     }
   }
   if (_isRecording && !_isRecordingPaused) {
@@ -1115,11 +1140,17 @@ NSString *const errorMethod = @"error";
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
                                   binaryMessenger:messenger];
+    FLTThreadSafeEventChannel *threadSafeEventChannel =
+        [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
-    _imageStreamHandler = [[FLTImageStreamHandler alloc] init];
-    [eventChannel setStreamHandler:_imageStreamHandler];
-
-    _isStreamingImages = YES;
+    _imageStreamHandler =
+        [[FLTImageStreamHandler alloc] initWithCaptureSessionQueue:_captureSessionQueue];
+    [threadSafeEventChannel setStreamHandler:_imageStreamHandler
+                                  completion:^{
+                                    dispatch_async(self->_captureSessionQueue, ^{
+                                      self.isStreamingImages = YES;
+                                    });
+                                  }];
   } else {
     [_methodChannel invokeMethod:errorMethod
                        arguments:@"Images from camera are already streaming!"];
@@ -1240,7 +1271,7 @@ NSString *const errorMethod = @"error";
     _audioWriterInput.expectsMediaDataInRealTime = YES;
 
     [_videoWriter addInput:_audioWriterInput];
-    [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+    [_audioOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
   }
 
   if (_flashMode == FlashModeTorch) {
@@ -1251,7 +1282,7 @@ NSString *const errorMethod = @"error";
 
   [_videoWriter addInput:_videoWriterInput];
 
-  [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:_captureSessionQueue];
 
   return YES;
 }
@@ -1285,15 +1316,13 @@ NSString *const errorMethod = @"error";
 @end
 
 @interface CameraPlugin ()
-@property(readonly, nonatomic) NSObject<FlutterTextureRegistry> *registry;
+@property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, nonatomic) FLTCam *camera;
-@property(readonly, nonatomic) FlutterMethodChannel *deviceEventMethodChannel;
+@property(readonly, nonatomic) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 @end
 
-@implementation CameraPlugin {
-  dispatch_queue_t _dispatchQueue;
-}
+@implementation CameraPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -1308,17 +1337,20 @@ NSString *const errorMethod = @"error";
                        messenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _registry = registry;
+  _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
+  _captureSessionQueue = dispatch_queue_create("io.flutter.camera.captureSessionQueue", NULL);
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
   return self;
 }
 
 - (void)initDeviceEventMethodChannel {
-  _deviceEventMethodChannel =
+  FlutterMethodChannel *methodChannel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/cameraPlugin/device"
                                   binaryMessenger:_messenger];
+  _deviceEventMethodChannel =
+      [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
 }
 
 - (void)startOrientationListener {
@@ -1352,12 +1384,8 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (_dispatchQueue == nil) {
-    _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
-  }
-
   // Invoke the plugin on another dispatch queue to avoid blocking the UI.
-  dispatch_async(_dispatchQueue, ^{
+  dispatch_async(_captureSessionQueue, ^{
     FLTThreadSafeFlutterResult *threadSafeResult =
         [[FLTThreadSafeFlutterResult alloc] initWithResult:result];
 
@@ -1408,7 +1436,7 @@ NSString *const errorMethod = @"error";
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
                                          orientation:[[UIDevice currentDevice] orientation]
-                                       dispatchQueue:_dispatchQueue
+                                 captureSessionQueue:_captureSessionQueue
                                                error:&error];
 
     if (error) {
@@ -1417,11 +1445,13 @@ NSString *const errorMethod = @"error";
       if (_camera) {
         [_camera close];
       }
-      int64_t textureId = [self.registry registerTexture:cam];
       _camera = cam;
-      [result sendSuccessWithData:@{
-        @"cameraId" : @(textureId),
-      }];
+      [self.registry registerTexture:cam
+                          completion:^(int64_t textureId) {
+                            [result sendSuccessWithData:@{
+                              @"cameraId" : @(textureId),
+                            }];
+                          }];
     }
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
@@ -1446,8 +1476,10 @@ NSString *const errorMethod = @"error";
           methodChannelWithName:[NSString stringWithFormat:@"flutter.io/cameraPlugin/camera%lu",
                                                            (unsigned long)cameraId]
                 binaryMessenger:_messenger];
-      _camera.methodChannel = methodChannel;
-      [methodChannel
+      FLTThreadSafeMethodChannel *threadSafeMethodChannel =
+          [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
+      _camera.methodChannel = threadSafeMethodChannel;
+      [threadSafeMethodChannel
           invokeMethod:@"initialized"
              arguments:@{
                @"previewWidth" : @(_camera.previewSize.width),
@@ -1470,7 +1502,6 @@ NSString *const errorMethod = @"error";
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:cameraId];
       [_camera close];
-      _dispatchQueue = nil;
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       [_camera setUpCaptureSessionForAudio];
