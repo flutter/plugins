@@ -344,13 +344,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
           // Cancelled, or something failed.
           return;
         }
-        // This completion block will run on an unknown AVFoundation completion
-        // queue thread. Hop back to the main thread to set up event sink.
-        if (!NSThread.isMainThread) {
-          [self performSelector:_cmd onThread:NSThread.mainThread withObject:self waitUntilDone:NO];
-        } else {
-          [self setupEventSinkIfReadyToPlay];
-        }
+        // This completion block will run on an AVFoundation background queue.
+        // Hop back to the main thread to set up event sink.
+        [self performSelector:_cmd onThread:NSThread.mainThread withObject:self waitUntilDone:NO];
       };
       [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ]
                            completionHandler:trackCompletionHandler];
