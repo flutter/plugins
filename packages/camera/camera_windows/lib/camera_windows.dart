@@ -174,7 +174,10 @@ class CameraWindows extends CameraPlatform {
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     // TODO(jokerttu): Implement device orientation detection, https://github.com/flutter/flutter/issues/97540.
-    return const Stream<DeviceOrientationChangedEvent>.empty();
+    // Force device orientation to landscape as by default camera plugin uses portraitUp orientation.
+    return Stream<DeviceOrientationChangedEvent>.value(
+      const DeviceOrientationChangedEvent(DeviceOrientation.landscapeRight),
+    );
   }
 
   @override

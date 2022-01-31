@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,13 +79,21 @@ void main() {
   });
 
   group('onDeviceOrientationChanged', () {
-    testWidgets('returns empty stream', (WidgetTester _) async {
+    testWidgets('emits the initial DeviceOrientationChangedEvent',
+        (WidgetTester _) async {
       final Stream<DeviceOrientationChangedEvent> eventStream =
           CameraPlatform.instance.onDeviceOrientationChanged();
 
+      final StreamQueue<DeviceOrientationChangedEvent> streamQueue =
+          StreamQueue<DeviceOrientationChangedEvent>(eventStream);
+
       expect(
-        await eventStream.isEmpty,
-        equals(true),
+        await streamQueue.next,
+        equals(
+          const DeviceOrientationChangedEvent(
+            DeviceOrientation.landscapeRight,
+          ),
+        ),
       );
     });
   });
