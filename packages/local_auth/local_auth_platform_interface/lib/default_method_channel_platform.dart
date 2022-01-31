@@ -61,6 +61,11 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
   }
 
   @override
+  Future<bool> canCheckBiometrics() async {
+    return (await getAvailableBiometrics()).isNotEmpty;
+  }
+
+  @override
   Future<bool> isDeviceSupported() async =>
       (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
 

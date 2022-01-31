@@ -21,6 +21,13 @@ void main() {
   final List<MethodCall> log = <MethodCall>[];
   late LocalAuthPlatform localAuthentication;
 
+  test(
+      'DefaultLocalAuthPlatform is registered as the default platform implementation',
+      () async {
+    expect(LocalAuthPlatform.instance,
+        const TypeMatcher<DefaultLocalAuthPlatform>());
+  });
+
   test('getAvailableBiometrics', () async {
     channel.setMockMethodCallHandler((MethodCall methodCall) {
       log.add(methodCall);
