@@ -69,6 +69,20 @@ const EncodableValue* ValueOrNull(const EncodableMap& map, const char* key) {
   return &(it->second);
 }
 
+// Looks for |key| in |map|, returning the associated int64 value if it is
+// present, or a nullptr if not.
+const int64_t* Int64OrNull(const EncodableMap& map, const char* key) {
+  auto value = ValueOrNull(map, key);
+  if (!value) {
+    return nullptr;
+  }
+
+  if (std::holds_alternative<int32_t>(*value)) {
+    return (int64_t*)std::get_if<int32_t>(value);
+  }
+  return std::get_if<int64_t>(value);
+}
+
 // Parses resolution preset argument to enum value.
 ResolutionPreset ParseResolutionPreset(const std::string& resolution_preset) {
   if (resolution_preset.compare(kResolutionPresetValueLow) == 0) {
@@ -387,7 +401,7 @@ void CameraPlugin::CreateMethodHandler(
 
 void CameraPlugin::InitializeMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
@@ -413,7 +427,7 @@ void CameraPlugin::InitializeMethodHandler(
 
 void CameraPlugin::PausePreviewMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
@@ -439,7 +453,7 @@ void CameraPlugin::PausePreviewMethodHandler(
 
 void CameraPlugin::ResumePreviewMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
@@ -465,7 +479,7 @@ void CameraPlugin::ResumePreviewMethodHandler(
 
 void CameraPlugin::StartVideoRecordingMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
@@ -506,7 +520,7 @@ void CameraPlugin::StartVideoRecordingMethodHandler(
 
 void CameraPlugin::StopVideoRecordingMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
@@ -532,7 +546,7 @@ void CameraPlugin::StopVideoRecordingMethodHandler(
 
 void CameraPlugin::TakePictureMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
@@ -563,7 +577,7 @@ void CameraPlugin::TakePictureMethodHandler(
 
 void CameraPlugin::DisposeMethodHandler(
     const EncodableMap& args, std::unique_ptr<flutter::MethodResult<>> result) {
-  auto camera_id = std::get_if<std::int64_t>(ValueOrNull(args, kCameraIdKey));
+  auto camera_id = Int64OrNull(args, kCameraIdKey);
   if (!camera_id) {
     return result->Error("argument_error",
                          std::string(kCameraIdKey) + " missing");
