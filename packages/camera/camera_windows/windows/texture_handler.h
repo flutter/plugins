@@ -59,6 +59,9 @@ class TextureHandler {
   const FlutterDesktopPixelBuffer* ConvertPixelBufferForFlutter(size_t width,
                                                                 size_t height);
 
+  // Check if texture id is available and texture registrar is available
+  bool TextureRegistered() { return texture_registrar_ && texture_id_ > -1; }
+
   int64_t texture_id_ = -1;
   uint32_t bytes_per_pixel_ = 4;
   uint32_t source_buffer_size_ = 0;
@@ -70,7 +73,7 @@ class TextureHandler {
   FlutterDesktopPixelBuffer flutter_desktop_pixel_buffer_ = {};
   flutter::TextureRegistrar* texture_registrar_ = nullptr;
 
-  std::mutex source_buffer_mutex;
+  std::mutex buffer_mutex_;
 };
 }  // namespace camera_windows
 

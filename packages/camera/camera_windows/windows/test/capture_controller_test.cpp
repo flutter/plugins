@@ -289,6 +289,9 @@ TEST(CaptureController, StartPreviewStartsProcessingSamples) {
           EXPECT_EQ(converted_buffer_data[i].g, mock_green_pixel);
           EXPECT_EQ(converted_buffer_data[i].b, mock_blue_pixel);
         }
+
+        // Call release callback to get mutex lock unlocked.
+        converted_buffer->release_callback(converted_buffer->release_context);
       }
       converted_buffer = nullptr;
     }
