@@ -175,7 +175,7 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    // TODO(jokerttu): Implement device orientation detection.
+    // TODO(jokerttu): Implement device orientation detection, https://github.com/flutter/flutter/issues/97540.
     //
     // Returns empty stream.
     return const Stream<DeviceOrientationChangedEvent>.empty();
@@ -186,13 +186,13 @@ class CameraWindows extends CameraPlatform {
     int cameraId,
     DeviceOrientation orientation,
   ) async {
-    // TODO(jokerttu): Implement lock capture orientation feature.
+    // TODO(jokerttu): Implement lock capture orientation feature, https://github.com/flutter/flutter/issues/97540.
     throw UnimplementedError('lockCaptureOrientation() is not implemented.');
   }
 
   @override
   Future<void> unlockCaptureOrientation(int cameraId) async {
-    // TODO(jokerttu): Implement unlock capture orientation feature.
+    // TODO(jokerttu): Implement unlock capture orientation feature, https://github.com/flutter/flutter/issues/97540.
     throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
   }
 
@@ -251,13 +251,13 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> setFlashMode(int cameraId, FlashMode mode) async {
-    // TODO(jokerttu): Implement flash mode support
+    // TODO(jokerttu): Implement flash mode support, https://github.com/flutter/flutter/issues/97537.
     throw UnimplementedError('setFlashMode() is not implemented.');
   }
 
   @override
   Future<void> setExposureMode(int cameraId, ExposureMode mode) async {
-    // TODO(jokerttu): Implement explosure mode support
+    // TODO(jokerttu): Implement explosure mode support, https://github.com/flutter/flutter/issues/97537.
     throw UnimplementedError('setExposureMode() is not implemented.');
   }
 
@@ -272,34 +272,34 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<double> getMinExposureOffset(int cameraId) async {
-    // TODO(jokerttu): Implement exposure offset support.
+    // TODO(jokerttu): Implement exposure control support, https://github.com/flutter/flutter/issues/97537.
     // Value is returned to support existing implementations.
     return 0.0;
   }
 
   @override
   Future<double> getMaxExposureOffset(int cameraId) async {
-    // TODO(jokerttu): Implement exposure offset support.
+    // TODO(jokerttu): Implement exposure control support, https://github.com/flutter/flutter/issues/97537.
     // Value is returned to support existing implementations.
     return 0.0;
   }
 
   @override
   Future<double> getExposureOffsetStepSize(int cameraId) async {
-    // TODO(jokerttu): Implement exposure offset support.
+    // TODO(jokerttu): Implement exposure control support, https://github.com/flutter/flutter/issues/97537.
     // Value is returned to support existing implementations.
     return 1.0;
   }
 
   @override
   Future<double> setExposureOffset(int cameraId, double offset) async {
-    // TODO(jokerttu): Implement exposure offset support.
+    // TODO(jokerttu): Implement exposure control support, https://github.com/flutter/flutter/issues/97537.
     throw UnimplementedError('setExposureOffset() is not implemented.');
   }
 
   @override
   Future<void> setFocusMode(int cameraId, FocusMode mode) async {
-    // TODO(jokerttu): Implement focus mode support.
+    // TODO(jokerttu): Implement focus mode support, https://github.com/flutter/flutter/issues/97537.
     throw UnimplementedError('setFocusMode() is not implemented.');
   }
 
@@ -314,21 +314,21 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<double> getMinZoomLevel(int cameraId) async {
-    // TODO(jokerttu): Implement zoom level support.
+    // TODO(jokerttu): Implement zoom level support, https://github.com/flutter/flutter/issues/97537.
     // Value is returned to support existing implementations.
     return 1.0;
   }
 
   @override
   Future<double> getMaxZoomLevel(int cameraId) async {
-    // TODO(jokerttu): Implement zoom level support.
+    // TODO(jokerttu): Implement zoom level support, https://github.com/flutter/flutter/issues/97537.
     // Value is returned to support existing implementations.
     return 1.0;
   }
 
   @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {
-    // TODO(jokerttu): Implement zoom level support.
+    // TODO(jokerttu): Implement zoom level support, https://github.com/flutter/flutter/issues/97537.
     throw UnimplementedError('setZoomLevel() is not implemented.');
   }
 
