@@ -29,3 +29,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  google_sign_in_platform_interface:
+    path: ../google_sign_in_platform_interface
