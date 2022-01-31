@@ -1,3 +1,6 @@
+## 0.9.4+10
+* Fix a halt issue for pixel 6 users
+
 ## 0.9.4+9
 
 * iOS performance improvement by moving sample buffer handling from the main queue to a background session queue. 
