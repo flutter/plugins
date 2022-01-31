@@ -320,8 +320,10 @@ TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
       .WillOnce(
           []() { return std::make_unique<NiceMock<MockCaptureController>>(); });
 
-  // TODO: test binary content
-  EXPECT_CALL(*binary_messenger, Send(Eq(camera_channel), _, _, _)).Times(1);
+  // TODO: test binary content.
+  // First time is video record success message,
+  // and second is camera closing message.
+  EXPECT_CALL(*binary_messenger, Send(Eq(camera_channel), _, _, _)).Times(2);
 
   // Init camera with mock capture controller factory
   camera->InitCamera(std::move(capture_controller_factory),
@@ -333,6 +335,9 @@ TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
   camera->OnCreateCaptureEngineSucceeded(camera_id);
 
   camera->OnVideoRecordSucceeded(file_path, video_duration);
+
+  // Dispose camera before message channel.
+  camera = nullptr;
 }
 
 }  // namespace test
