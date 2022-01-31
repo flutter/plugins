@@ -293,7 +293,7 @@ void CaptureControllerImpl::InitCaptureDevice(
     bool record_audio, ResolutionPreset resolution_preset) {
   assert(capture_controller_listener_);
 
-  if (capture_engine_state_ == CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (IsInitialized()) {
     return capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Capture device already initialized");
   } else if (capture_engine_state_ ==
@@ -335,7 +335,7 @@ void CaptureControllerImpl::TakePicture(const std::string file_path) {
   assert(capture_engine_callback_handler_);
   assert(capture_engine_);
 
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (!IsInitialized()) {
     return OnPicture(false, "Not initialized");
   }
 
@@ -446,7 +446,7 @@ bool FindBestMediaType(DWORD source_stream_index, IMFCaptureSource* source,
 }
 
 HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (!IsInitialized()) {
     return E_FAIL;
   }
 
@@ -480,7 +480,7 @@ void CaptureControllerImpl::StartRecord(const std::string& file_path,
                                         int64_t max_video_duration_ms) {
   assert(capture_engine_);
 
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (!IsInitialized()) {
     return OnRecordStarted(false,
                            "Camera not initialized. Camera should be "
                            "disposed and reinitialized.");
@@ -516,7 +516,7 @@ void CaptureControllerImpl::StartRecord(const std::string& file_path,
 void CaptureControllerImpl::StopRecord() {
   assert(capture_controller_listener_);
 
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (!IsInitialized()) {
     return OnRecordStopped(false,
                            "Camera not initialized. Camera should be "
                            "disposed and reinitialized.");
@@ -558,8 +558,7 @@ void CaptureControllerImpl::StartPreview() {
   assert(capture_engine_);
   assert(texture_handler_);
 
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED ||
-      !texture_handler_) {
+  if (!IsInitialized() || !texture_handler_) {
     return OnPreviewStarted(false,
                             "Camera not initialized. Camera should be "
                             "disposed and reinitialized.");
@@ -602,8 +601,7 @@ void CaptureControllerImpl::StartPreview() {
 void CaptureControllerImpl::StopPreview() {
   assert(capture_engine_);
 
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
-      !preview_handler_) {
+  if (!IsInitialized() && !preview_handler_) {
     return;
   }
 
@@ -653,9 +651,8 @@ void CaptureControllerImpl::ResumePreview() {
 // Called via IMFCaptureEngineOnEventCallback implementation.
 // Implements CaptureEngineObserver::OnEvent.
 void CaptureControllerImpl::OnEvent(IMFMediaEvent* event) {
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
-      capture_engine_state_ !=
-          CaptureEngineState::CAPTURE_ENGINE_INITIALIZING) {
+  if (!IsInitialized() && capture_engine_state_ !=
+                              CaptureEngineState::CAPTURE_ENGINE_INITIALIZING) {
     return;
   }
 
@@ -841,7 +838,7 @@ bool CaptureControllerImpl::UpdateBuffer(uint8_t* buffer,
 // Called via IMFCaptureEngineOnSampleCallback implementation.
 // Implements CaptureEngineObserver::UpdateCaptureTime.
 void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
-  if (capture_engine_state_ != CaptureEngineState::CAPTURE_ENGINE_INITIALIZED) {
+  if (!IsInitialized()) {
     return;
   }
 

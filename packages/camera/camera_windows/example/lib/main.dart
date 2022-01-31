@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    _getAvailableCameras();
+    _fetchCameras();
   }
 
   @override
@@ -48,42 +48,45 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// Fetches list of available cameras from camera_windows plugin.
-  Future<void> _getAvailableCameras() async {
+  Future<void> _fetchCameras() async {
     String cameraInfo;
     List<CameraDescription> cameras = <CameraDescription>[];
 
-    int cameraIndex = _cameraIndex;
+    int cameraIndex = 0;
     try {
       cameras = await CameraPlatform.instance.availableCameras();
-      cameraIndex = cameraIndex % cameras.length;
       if (cameras.isEmpty) {
         cameraInfo = 'No available cameras';
       } else {
+        cameraIndex = _cameraIndex % cameras.length;
         cameraInfo = 'Found camera: ${cameras[cameraIndex].name}';
       }
     } on PlatformException catch (e) {
       cameraInfo = 'Failed to get cameras: ${e.code}: ${e.message}';
     }
 
-    if (!mounted) {
-      return;
+    if (mounted) {
+      setState(() {
+        _cameraIndex = cameraIndex;
+        _cameras = cameras;
+        _cameraInfo = cameraInfo;
+      });
     }
-
-    setState(() {
-      _cameraIndex = cameraIndex;
-      _cameras = cameras;
-      _cameraInfo = cameraInfo;
-    });
   }
 
   /// Initializes the camera on the device.
   Future<void> _initializeCamera() async {
-    assert(_cameras.isNotEmpty);
     assert(!_initialized);
-    final Completer<CameraInitializedEvent> _initializeCompleter =
-        Completer<CameraInitializedEvent>();
+
+    if (_cameras.isEmpty) {
+      return;
+    }
+
     int cameraId = -1;
     try {
+      final Completer<CameraInitializedEvent> _initializeCompleter =
+          Completer<CameraInitializedEvent>();
+
       final int cameraIndex = _cameraIndex % _cameras.length;
       final CameraDescription camera = _cameras[cameraIndex];
 
@@ -117,12 +120,14 @@ class _MyAppState extends State<MyApp> {
         ),
       );
 
-      setState(() {
-        _initialized = true;
-        _cameraId = cameraId;
-        _cameraIndex = cameraIndex;
-        _cameraInfo = 'Capturing camera: ${camera.name}';
-      });
+      if (mounted) {
+        setState(() {
+          _initialized = true;
+          _cameraId = cameraId;
+          _cameraIndex = cameraIndex;
+          _cameraInfo = 'Capturing camera: ${camera.name}';
+        });
+      }
     } on CameraException catch (e) {
       try {
         if (cameraId >= 0) {
@@ -132,17 +137,19 @@ class _MyAppState extends State<MyApp> {
         debugPrint('Failed to dispose camera: ${e.code}: ${e.description}');
       }
 
-      /// Reset state.
-      setState(() {
-        _initialized = false;
-        _cameraId = -1;
-        _cameraInfo = 'Camera disposed';
-        _previewSize = null;
-        _recording = false;
-        _recordingTimed = false;
-        _cameraInfo =
-            'Failed to initialize camera: ${e.code}: ${e.description}';
-      });
+      // Reset state.
+      if (mounted) {
+        setState(() {
+          _initialized = false;
+          _cameraId = -1;
+          _cameraIndex = 0;
+          _previewSize = null;
+          _recording = false;
+          _recordingTimed = false;
+          _cameraInfo =
+              'Failed to initialize camera: ${e.code}: ${e.description}';
+        });
+      }
     }
   }
 
@@ -151,20 +158,24 @@ class _MyAppState extends State<MyApp> {
     assert(_initialized);
     try {
       await CameraPlatform.instance.dispose(_cameraId);
-      setState(() {
-        _initialized = false;
-        _cameraId = -1;
-        _cameraInfo = 'Camera disposed';
-        _previewSize = null;
-        _recording = false;
-        _recordingTimed = false;
-        _previewPaused = false;
-      });
-      await _getAvailableCameras();
+
+      if (mounted) {
+        setState(() {
+          _initialized = false;
+          _cameraId = -1;
+          _previewSize = null;
+          _recording = false;
+          _recordingTimed = false;
+          _previewPaused = false;
+          _cameraInfo = 'Camera disposed';
+        });
+      }
     } on CameraException catch (e) {
-      setState(() {
-        _cameraInfo = 'Failed to dispose camera: ${e.code}: ${e.description}';
-      });
+      if (mounted) {
+        setState(() {
+          _cameraInfo = 'Failed to dispose camera: ${e.code}: ${e.description}';
+        });
+      }
     }
   }
 
@@ -197,9 +208,11 @@ class _MyAppState extends State<MyApp> {
         maxVideoDuration: Duration(seconds: seconds),
       );
 
-      setState(() {
-        _recordingTimed = true;
-      });
+      if (mounted) {
+        setState(() {
+          _recordingTimed = true;
+        });
+      }
     }
   }
 
@@ -217,9 +230,12 @@ class _MyAppState extends State<MyApp> {
 
           _showInSnackBar('Video captured to: ${_file.path}');
         }
-        setState(() {
-          _recording = !_recording;
-        });
+
+        if (mounted) {
+          setState(() {
+            _recording = !_recording;
+          });
+        }
       }
     }
   }
@@ -231,32 +247,36 @@ class _MyAppState extends State<MyApp> {
       } else {
         await CameraPlatform.instance.resumePreview(_cameraId);
       }
-      setState(() {
-        _previewPaused = !_previewPaused;
-      });
+      if (mounted) {
+        setState(() {
+          _previewPaused = !_previewPaused;
+        });
+      }
     }
   }
 
   Future<void> _switchCamera() async {
-    _cameraIndex = (_cameraIndex + 1) % _cameras.length;
-    if (_initialized && _cameraId >= 0) {
-      await _disposeCurrentCamera();
-      if (_cameras.isNotEmpty) {
-        await _initializeCamera();
+    if (_cameras.isNotEmpty) {
+      // select next index;
+      _cameraIndex = (_cameraIndex + 1) % _cameras.length;
+      if (_initialized && _cameraId >= 0) {
+        await _disposeCurrentCamera();
+        await _fetchCameras();
+        if (_cameras.isNotEmpty) {
+          await _initializeCamera();
+        }
+      } else {
+        await _fetchCameras();
       }
-    } else {
-      await _getAvailableCameras();
     }
   }
 
-  Future<void> _onResolutionChange(ResolutionPreset? newValue) async {
-    if (newValue == null) {
-      return;
-    }
+  Future<void> _onResolutionChange(ResolutionPreset newValue) async {
     setState(() {
       _resolutionPreset = newValue;
     });
     if (_initialized && _cameraId >= 0) {
+      // Re-inits camera with new resolution preset.
       await _disposeCurrentCamera();
       await _initializeCamera();
     }
@@ -267,14 +287,21 @@ class _MyAppState extends State<MyApp> {
       _recordAudio = recordAudio;
     });
     if (_initialized && _cameraId >= 0) {
+      // Re-inits camera with new record audio setting.
       await _disposeCurrentCamera();
       await _initializeCamera();
     }
   }
 
   void _onCameraError(CameraErrorEvent event) {
-    _scaffoldMessengerKey.currentState
-        ?.showSnackBar(SnackBar(content: Text('Error: ${event.description}')));
+    if (mounted) {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(content: Text('Error: ${event.description}')));
+
+      // Dispose camera on camera error as it can not be used anymore.
+      _disposeCurrentCamera();
+      _fetchCameras();
+    }
   }
 
   void _showInSnackBar(String message) {
@@ -315,7 +342,7 @@ class _MyAppState extends State<MyApp> {
             ),
             if (_cameras.isEmpty)
               ElevatedButton(
-                onPressed: _getAvailableCameras,
+                onPressed: _fetchCameras,
                 child: const Text('Re-check available cameras'),
               ),
             if (_cameras.isNotEmpty)
@@ -324,14 +351,15 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   DropdownButton<ResolutionPreset>(
                     value: _resolutionPreset,
-                    onChanged: (ResolutionPreset? value) =>
-                        _onResolutionChange(value),
+                    onChanged: (ResolutionPreset? value) {
+                      if (value != null) {
+                        _onResolutionChange(value);
+                      }
+                    },
                     items: resolutionItems,
                   ),
                   const SizedBox(width: 20),
-                  const Text(
-                    'Audio:',
-                  ),
+                  const Text('Audio:'),
                   Switch(
                       value: _recordAudio,
                       onChanged: (bool state) => _onAudioChange(state)),

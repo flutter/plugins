@@ -64,9 +64,6 @@ bool CameraImpl::AddPendingResult(
 
 std::unique_ptr<flutter::MethodResult<>> CameraImpl::GetPendingResultByType(
     PendingResultType type) {
-  if (pending_results_.empty()) {
-    return nullptr;
-  }
   auto it = pending_results_.find(type);
   if (it == pending_results_.end()) {
     return nullptr;
@@ -77,9 +74,6 @@ std::unique_ptr<flutter::MethodResult<>> CameraImpl::GetPendingResultByType(
 }
 
 bool CameraImpl::HasPendingResultByType(PendingResultType type) {
-  if (pending_results_.empty()) {
-    return false;
-  }
   auto it = pending_results_.find(type);
   if (it == pending_results_.end()) {
     return false;
@@ -90,7 +84,7 @@ bool CameraImpl::HasPendingResultByType(PendingResultType type) {
 void CameraImpl::SendErrorForPendingResults(const std::string& error_code,
                                             const std::string& descripion) {
   for (const auto& pending_result : pending_results_) {
-    std::move(pending_result.second)->Error(error_code, descripion);
+    pending_result.second->Error(error_code, descripion);
   }
   pending_results_.clear();
 }

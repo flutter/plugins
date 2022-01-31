@@ -170,6 +170,12 @@ class CaptureControllerImpl : public CaptureController,
   };
 
  private:
+  // Helper function to return initialized state as boolean;
+  bool IsInitialized() {
+    return capture_engine_state_ ==
+           CaptureEngineState::CAPTURE_ENGINE_INITIALIZED;
+  };
+
   // Resets capture controller state.
   // This is called if capture engine creation fails or is disposed.
   void ResetCaptureController();
