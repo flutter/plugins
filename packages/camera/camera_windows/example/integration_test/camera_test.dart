@@ -32,7 +32,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.takePicture(1234),
-          throwsA(isA<CameraException>()));
+          throwsA(isA<PlatformException>()));
     });
   });
 
@@ -42,7 +42,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.startVideoRecording(1234),
-          throwsA(isA<CameraException>()));
+          throwsA(isA<PlatformException>()));
     });
   });
 
@@ -52,7 +52,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.stopVideoRecording(1234),
-          throwsA(isA<CameraException>()));
+          throwsA(isA<PlatformException>()));
     });
   });
 
@@ -62,7 +62,7 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.pausePreview(1234),
-          throwsA(isA<CameraException>()));
+          throwsA(isA<PlatformException>()));
     });
   });
 
@@ -72,26 +72,18 @@ void main() {
       final CameraPlatform camera = CameraPlatform.instance;
 
       expect(() async => await camera.resumePreview(1234),
-          throwsA(isA<CameraException>()));
+          throwsA(isA<PlatformException>()));
     });
   });
 
   group('onDeviceOrientationChanged', () {
-    testWidgets('emits the initial DeviceOrientationChangedEvent',
-        (WidgetTester _) async {
+    testWidgets('returns empty stream', (WidgetTester _) async {
       final Stream<DeviceOrientationChangedEvent> eventStream =
           CameraPlatform.instance.onDeviceOrientationChanged();
 
-      final StreamQueue<DeviceOrientationChangedEvent> streamQueue =
-          StreamQueue<DeviceOrientationChangedEvent>(eventStream);
-
       expect(
-        await streamQueue.next,
-        equals(
-          const DeviceOrientationChangedEvent(
-            DeviceOrientation.landscapeRight,
-          ),
-        ),
+        await eventStream.isEmpty,
+        equals(true),
       );
     });
   });
