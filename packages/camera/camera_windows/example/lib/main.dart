@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   Size? _previewSize;
   ResolutionPreset _resolutionPreset = ResolutionPreset.veryHigh;
   StreamSubscription<CameraErrorEvent>? _errorStreamSubscription;
+  StreamSubscription<CameraClosingEvent>? _cameraClosingStreamSubscription;
 
   @override
   void initState() {
@@ -44,6 +45,8 @@ class _MyAppState extends State<MyApp> {
     _disposeCurrentCamera();
     _errorStreamSubscription?.cancel();
     _errorStreamSubscription = null;
+    _cameraClosingStreamSubscription?.cancel();
+    _cameraClosingStreamSubscription = null;
     super.dispose();
   }
 
@@ -100,6 +103,11 @@ class _MyAppState extends State<MyApp> {
       _errorStreamSubscription = CameraPlatform.instance
           .onCameraError(cameraId)
           .listen(_onCameraError);
+
+      _cameraClosingStreamSubscription?.cancel();
+      _cameraClosingStreamSubscription = CameraPlatform.instance
+          .onCameraClosing(cameraId)
+          .listen(_onCameraClosing);
 
       unawaited(CameraPlatform.instance
           .onCameraInitialized(cameraId)
@@ -301,6 +309,12 @@ class _MyAppState extends State<MyApp> {
       // Dispose camera on camera error as it can not be used anymore.
       _disposeCurrentCamera();
       _fetchCameras();
+    }
+  }
+
+  void _onCameraClosing(CameraClosingEvent event) {
+    if (mounted) {
+      _showInSnackBar('Camera is closing');
     }
   }
 

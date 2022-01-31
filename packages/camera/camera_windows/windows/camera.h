@@ -125,7 +125,11 @@ class CameraImpl : public Camera {
   void SendErrorForPendingResults(const std::string& error_code,
                                   const std::string& descripion);
 
-  // Initializes method channel instance and returns pointer it
+  // Called when camera is disposed.
+  // Sends camera closing message to the cameras method channel.
+  void OnCameraClosing();
+
+  // Initializes method channel instance and returns pointer it.
   MethodChannel<>* GetMethodChannel();
 
   // Finds pending result by type.

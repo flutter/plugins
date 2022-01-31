@@ -6,9 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_windows/src/utils/utils.dart';
 import 'package:cross_file/cross_file.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -31,15 +29,12 @@ class CameraWindows extends CameraPlatform {
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
-  /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
-  @visibleForTesting
-  final StreamController<CameraEvent> cameraEventStreamController =
+  final StreamController<CameraEvent> _cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
 
   /// Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
-      cameraEventStreamController.stream
+      _cameraEventStreamController.stream
           .where((CameraEvent event) => event.cameraId == cameraId);
 
   @override
@@ -56,7 +51,7 @@ class CameraWindows extends CameraPlatform {
         return CameraDescription(
           name: camera['name'] as String,
           lensDirection:
-              parseCameraLensDirection(camera['lensFacing'] as String),
+              _parseCameraLensDirection(camera['lensFacing'] as String),
           sensorOrientation: camera['sensorOrientation'] as int,
         );
       }).toList();
@@ -72,12 +67,11 @@ class CameraWindows extends CameraPlatform {
     bool enableAudio = false,
   }) async {
     try {
+      // If resolutionPreset is not specified, plugin selects the highest resolution possible.
       final Map<String, dynamic>? reply = await _pluginChannel
           .invokeMapMethod<String, dynamic>('create', <String, dynamic>{
         'cameraName': cameraDescription.name,
-        'resolutionPreset': resolutionPreset != null
-            ? _serializeResolutionPreset(resolutionPreset)
-            : null,
+        'resolutionPreset': _serializeResolutionPreset(resolutionPreset),
         'enableAudio': enableAudio,
       });
 
@@ -103,7 +97,7 @@ class CameraWindows extends CameraPlatform {
       final MethodChannel channel =
           MethodChannel('flutter.io/cameraPlugin/camera$requestedCameraId');
       channel.setMethodCallHandler(
-        (MethodCall call) => handleCameraMethodCall(call, requestedCameraId),
+        (MethodCall call) => _handleCameraMethodCall(call, requestedCameraId),
       );
       return channel;
     });
@@ -120,7 +114,7 @@ class CameraWindows extends CameraPlatform {
       throw CameraException(e.code, e.message);
     }
 
-    cameraEventStreamController.add(
+    _cameraEventStreamController.add(
       CameraInitializedEvent(
         requestedCameraId,
         reply!['previewWidth']!,
@@ -135,19 +129,16 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> dispose(int cameraId) async {
+    await _pluginChannel.invokeMethod<void>(
+      'dispose',
+      <String, dynamic>{'cameraId': cameraId},
+    );
+
+    // Destroy method channel after camera is disposed to be able to handle last messages.
     if (_cameraChannels.containsKey(cameraId)) {
       final MethodChannel? cameraChannel = _cameraChannels[cameraId];
       cameraChannel?.setMethodCallHandler(null);
       _cameraChannels.remove(cameraId);
-    }
-
-    try {
-      await _pluginChannel.invokeMethod<void>(
-        'dispose',
-        <String, dynamic>{'cameraId': cameraId},
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
     }
   }
 
@@ -158,7 +149,12 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
-    /// Windows camera plugin does not support resolution changed events.
+    /// Windows API does not automatically change the camera's resolution
+    /// during capture so these events are never send from the platform.
+    /// Support for changing resolution should be implemented, if support for
+    /// requesting resolution change is added to camera platform interface.
+    ///
+    /// Returns empty stream.
     return const Stream<CameraResolutionChangedEvent>.empty();
   }
 
@@ -179,11 +175,10 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    /// Windows camera plugin does not support capture orientations.
-    /// Force device orientation to landscape as by default camera plugin uses portraitUp orientation.
-    return Stream<DeviceOrientationChangedEvent>.value(
-      const DeviceOrientationChangedEvent(DeviceOrientation.landscapeRight),
-    );
+    // TODO(jokerttu): Implement device orientation detection.
+    //
+    // Returns empty stream.
+    return const Stream<DeviceOrientationChangedEvent>.empty();
   }
 
   @override
@@ -191,89 +186,78 @@ class CameraWindows extends CameraPlatform {
     int cameraId,
     DeviceOrientation orientation,
   ) async {
+    // TODO(jokerttu): Implement lock capture orientation feature.
     throw UnimplementedError('lockCaptureOrientation() is not implemented.');
   }
 
   @override
   Future<void> unlockCaptureOrientation(int cameraId) async {
+    // TODO(jokerttu): Implement unlock capture orientation feature.
     throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
   }
 
   @override
   Future<XFile> takePicture(int cameraId) async {
     final String? path;
-    try {
-      path = await _pluginChannel.invokeMethod<String>(
-        'takePicture',
-        <String, dynamic>{'cameraId': cameraId},
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
+    path = await _pluginChannel.invokeMethod<String>(
+      'takePicture',
+      <String, dynamic>{'cameraId': cameraId},
+    );
 
     return XFile(path!);
   }
 
   @override
-  Future<void> prepareForVideoRecording() async {
-    try {
+  Future<void> prepareForVideoRecording() =>
       _pluginChannel.invokeMethod<void>('prepareForVideoRecording');
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
-  }
 
   @override
   Future<void> startVideoRecording(
     int cameraId, {
     Duration? maxVideoDuration,
   }) async {
-    try {
-      await _pluginChannel.invokeMethod<void>(
-        'startVideoRecording',
-        <String, dynamic>{
-          'cameraId': cameraId,
-          'maxVideoDuration': maxVideoDuration?.inMilliseconds,
-        },
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
+    await _pluginChannel.invokeMethod<void>(
+      'startVideoRecording',
+      <String, dynamic>{
+        'cameraId': cameraId,
+        'maxVideoDuration': maxVideoDuration?.inMilliseconds,
+      },
+    );
   }
 
   @override
   Future<XFile> stopVideoRecording(int cameraId) async {
     final String? path;
 
-    try {
-      path = await _pluginChannel.invokeMethod<String>(
-        'stopVideoRecording',
-        <String, dynamic>{'cameraId': cameraId},
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
+    path = await _pluginChannel.invokeMethod<String>(
+      'stopVideoRecording',
+      <String, dynamic>{'cameraId': cameraId},
+    );
 
     return XFile(path!);
   }
 
   @override
   Future<void> pauseVideoRecording(int cameraId) async {
-    throw UnimplementedError('pauseVideoRecording() is not implemented.');
+    throw UnsupportedError(
+        'pauseVideoRecording() is not supported due to Win32 API limitations.');
   }
 
   @override
   Future<void> resumeVideoRecording(int cameraId) async {
-    throw UnimplementedError('resumeVideoRecording() is not implemented.');
+    throw UnsupportedError(
+        'resumeVideoRecording() is not supported due to Win32 API limitations.');
   }
 
   @override
   Future<void> setFlashMode(int cameraId, FlashMode mode) async {
+    // TODO(jokerttu): Implement flash mode support
     throw UnimplementedError('setFlashMode() is not implemented.');
   }
 
   @override
   Future<void> setExposureMode(int cameraId, ExposureMode mode) async {
+    // TODO(jokerttu): Implement explosure mode support
     throw UnimplementedError('setExposureMode() is not implemented.');
   }
 
@@ -282,39 +266,40 @@ class CameraWindows extends CameraPlatform {
     assert(point == null || point.x >= 0 && point.x <= 1);
     assert(point == null || point.y >= 0 && point.y <= 1);
 
-    throw UnimplementedError('setExposurePoint() is not implemented.');
+    throw UnsupportedError(
+        'setExposurePoint() is not supported due to Win32 API limitations.');
   }
 
   @override
   Future<double> getMinExposureOffset(int cameraId) async {
-    /// Explosure offset is not supported by camera windows plugin yet.
-    /// Default min offset value is returned.
+    // TODO(jokerttu): Implement exposure offset support.
+    // Value is returned to support existing implementations.
     return 0.0;
   }
 
   @override
   Future<double> getMaxExposureOffset(int cameraId) async {
-    /// Explosure offset is not supported by camera windows plugin yet.
-    /// Default max offset value is returned.
+    // TODO(jokerttu): Implement exposure offset support.
+    // Value is returned to support existing implementations.
     return 0.0;
   }
 
   @override
   Future<double> getExposureOffsetStepSize(int cameraId) async {
-    /// Explosure offset is not supported by camera windows plugin yet.
-    /// Default step value is returned.
+    // TODO(jokerttu): Implement exposure offset support.
+    // Value is returned to support existing implementations.
     return 1.0;
   }
 
   @override
   Future<double> setExposureOffset(int cameraId, double offset) async {
-    /// Explosure offset is not supported by camera windows plugin yet.
-    /// Default exposure offset value is returned as a response.
-    return 0.0;
+    // TODO(jokerttu): Implement exposure offset support.
+    throw UnimplementedError('setExposureOffset() is not implemented.');
   }
 
   @override
   Future<void> setFocusMode(int cameraId, FocusMode mode) async {
+    // TODO(jokerttu): Implement focus mode support.
     throw UnimplementedError('setFocusMode() is not implemented.');
   }
 
@@ -323,50 +308,44 @@ class CameraWindows extends CameraPlatform {
     assert(point == null || point.x >= 0 && point.x <= 1);
     assert(point == null || point.y >= 0 && point.y <= 1);
 
-    throw UnimplementedError('setFocusPoint() is not implemented.');
+    throw UnsupportedError(
+        'setFocusPoint() is not supported due to Win32 API limitations.');
   }
 
   @override
   Future<double> getMinZoomLevel(int cameraId) async {
-    /// Zoom level is not supported by camera windows plugin yet.
-    /// Default min zoom level value is returned as a response.
+    // TODO(jokerttu): Implement zoom level support.
+    // Value is returned to support existing implementations.
     return 1.0;
   }
 
   @override
   Future<double> getMaxZoomLevel(int cameraId) async {
-    /// Zoom level is not supported by camera windows plugin yet.
-    /// Default max zoom level value is returned as a response.
+    // TODO(jokerttu): Implement zoom level support.
+    // Value is returned to support existing implementations.
     return 1.0;
   }
 
   @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {
+    // TODO(jokerttu): Implement zoom level support.
     throw UnimplementedError('setZoomLevel() is not implemented.');
   }
 
   @override
   Future<void> pausePreview(int cameraId) async {
-    try {
-      await _pluginChannel.invokeMethod<double>(
-        'pausePreview',
-        <String, dynamic>{'cameraId': cameraId},
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
+    await _pluginChannel.invokeMethod<double>(
+      'pausePreview',
+      <String, dynamic>{'cameraId': cameraId},
+    );
   }
 
   @override
   Future<void> resumePreview(int cameraId) async {
-    try {
-      await _pluginChannel.invokeMethod<double>(
-        'resumePreview',
-        <String, dynamic>{'cameraId': cameraId},
-      );
-    } on PlatformException catch (e) {
-      throw CameraException(e.code, e.message);
-    }
+    await _pluginChannel.invokeMethod<double>(
+      'resumePreview',
+      <String, dynamic>{'cameraId': cameraId},
+    );
   }
 
   @override
@@ -374,9 +353,11 @@ class CameraWindows extends CameraPlatform {
     return Texture(textureId: cameraId);
   }
 
-  /// Returns the resolution preset as a String.
-  String _serializeResolutionPreset(ResolutionPreset resolutionPreset) {
+  /// Returns the resolution preset as a nullable String.
+  String? _serializeResolutionPreset(ResolutionPreset? resolutionPreset) {
     switch (resolutionPreset) {
+      case null:
+        return null;
       case ResolutionPreset.max:
         return 'max';
       case ResolutionPreset.ultraHigh:
@@ -389,20 +370,14 @@ class CameraWindows extends CameraPlatform {
         return 'medium';
       case ResolutionPreset.low:
         return 'low';
-      default:
-        throw ArgumentError('Unknown ResolutionPreset value');
     }
   }
 
   /// Converts messages received from the native platform into camera events.
-  ///
-  /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
-  @visibleForTesting
-  Future<dynamic> handleCameraMethodCall(MethodCall call, int cameraId) async {
+  Future<dynamic> _handleCameraMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
       case 'camera_closing':
-        cameraEventStreamController.add(
+        _cameraEventStreamController.add(
           CameraClosingEvent(
             cameraId,
           ),
@@ -410,7 +385,7 @@ class CameraWindows extends CameraPlatform {
         break;
       case 'video_recorded':
         // This is called if maxVideoDuration was given on record start.
-        cameraEventStreamController.add(
+        _cameraEventStreamController.add(
           VideoRecordedEvent(
             cameraId,
             XFile(call.arguments['path'] as String),
@@ -423,7 +398,7 @@ class CameraWindows extends CameraPlatform {
         );
         break;
       case 'error':
-        cameraEventStreamController.add(
+        _cameraEventStreamController.add(
           CameraErrorEvent(
             cameraId,
             call.arguments['description'] as String,
@@ -433,5 +408,17 @@ class CameraWindows extends CameraPlatform {
       default:
         throw MissingPluginException();
     }
+  }
+
+  CameraLensDirection _parseCameraLensDirection(String string) {
+    switch (string) {
+      case 'front':
+        return CameraLensDirection.front;
+      case 'back':
+        return CameraLensDirection.back;
+      case 'external':
+        return CameraLensDirection.external;
+    }
+    throw ArgumentError('Unknown CameraLensDirection value');
   }
 }

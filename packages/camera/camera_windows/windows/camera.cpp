@@ -13,14 +13,17 @@ using flutter::EncodableValue;
 constexpr char kCameraMethodChannelBaseName[] =
     "flutter.io/cameraPlugin/camera";
 constexpr char kVideoRecordedEvent[] = "video_recorded";
+constexpr char kCameraClosingEvent[] = "camera_closing";
 constexpr char kErrorEvent[] = "error";
 
 CameraImpl::CameraImpl(const std::string& device_id)
     : device_id_(device_id), Camera(device_id) {}
 
 CameraImpl::~CameraImpl() {
-  capture_controller_ = nullptr;
+  // Sends camera closing event.
+  OnCameraClosing();
 
+  capture_controller_ = nullptr;
   SendErrorForPendingResults("plugin_disposed",
                              "Plugin disposed before request was handled");
 }
@@ -246,6 +249,14 @@ void CameraImpl::OnCaptureError(const std::string& error) {
   }
 
   SendErrorForPendingResults("capture_error", error);
+}
+
+void CameraImpl::OnCameraClosing() {
+  if (messenger_ && camera_id_ >= 0) {
+    auto channel = GetMethodChannel();
+    channel->InvokeMethod(kCameraClosingEvent,
+                          std::move(std::make_unique<EncodableValue>()));
+  }
 }
 
 }  // namespace camera_windows
