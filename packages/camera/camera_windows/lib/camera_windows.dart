@@ -405,7 +405,7 @@ class CameraWindows extends CameraPlatform {
         );
         break;
       default:
-        throw MissingPluginException();
+        throw UnimplementedError();
     }
   }
 
