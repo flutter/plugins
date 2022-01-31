@@ -153,8 +153,6 @@ class CameraWindows extends CameraPlatform {
     /// during capture so these events are never send from the platform.
     /// Support for changing resolution should be implemented, if support for
     /// requesting resolution change is added to camera platform interface.
-    ///
-    /// Returns empty stream.
     return const Stream<CameraResolutionChangedEvent>.empty();
   }
 
@@ -176,8 +174,6 @@ class CameraWindows extends CameraPlatform {
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     // TODO(jokerttu): Implement device orientation detection, https://github.com/flutter/flutter/issues/97540.
-    //
-    // Returns empty stream.
     return const Stream<DeviceOrientationChangedEvent>.empty();
   }
 
