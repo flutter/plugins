@@ -60,5 +60,7 @@ class ComHeapPtr {
   // Pointer to memory.
   T* p_obj_;
 };
+
 }  // namespace camera_windows
+
 #endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_COMHEAPPTR_H_

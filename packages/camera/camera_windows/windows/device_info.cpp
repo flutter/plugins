@@ -26,4 +26,5 @@ std::unique_ptr<CaptureDeviceInfo> ParseDeviceInfoFromCameraName(
 
   return nullptr;
 }
+
 }  // namespace camera_windows

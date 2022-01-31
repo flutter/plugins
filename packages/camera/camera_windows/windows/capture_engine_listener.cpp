@@ -86,4 +86,5 @@ HRESULT CaptureEngineListener::OnSample(IMFSample* sample) {
   }
   return hr;
 }
+
 }  // namespace camera_windows

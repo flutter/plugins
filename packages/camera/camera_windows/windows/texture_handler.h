@@ -79,6 +79,7 @@ class TextureHandler {
 
   std::mutex buffer_mutex_;
 };
+
 }  // namespace camera_windows
 
 #endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_TEXTURE_HANDLER_H_

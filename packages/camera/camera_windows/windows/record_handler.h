@@ -106,6 +106,7 @@ class RecordHandler {
   RecordingType type_;
   ComPtr<IMFCaptureRecordSink> record_sink_;
 };
+
 }  // namespace camera_windows
 
 #endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_RECORD_HANDLER_H_

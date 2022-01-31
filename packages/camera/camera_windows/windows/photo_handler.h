@@ -70,6 +70,7 @@ class PhotoHandler {
   PhotoState photo_state_ = PhotoState::PHOTO_STATE__NOT_STARTED;
   ComPtr<IMFCapturePhotoSink> photo_sink_;
 };
+
 }  // namespace camera_windows
 
 #endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_PHOTO_HANDLER_H_

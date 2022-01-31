@@ -1007,6 +1007,7 @@ class MockCaptureEngine : public IMFCaptureEngine {
 #define MOCK_DEVICE_ID "mock_device_id"
 #define MOCK_CAMERA_NAME "mock_camera_name <" MOCK_DEVICE_ID ">"
 #define MOCK_INVALID_CAMERA_NAME "invalid_camera_name"
+
 }  // namespace
 }  // namespace test
 }  // namespace camera_windows

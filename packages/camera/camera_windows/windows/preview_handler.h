@@ -94,6 +94,7 @@ class PreviewHandler {
   PreviewState preview_state_ = PreviewState::PREVIEW_STATE__NOT_STARTED;
   ComPtr<IMFCapturePreviewSink> preview_sink_;
 };
+
 }  // namespace camera_windows
 
 #endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_PREVIEW_HANDLER_H_
