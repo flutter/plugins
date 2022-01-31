@@ -51,6 +51,9 @@ class TextureHandler {
     preview_frame_height_ = height;
   };
 
+  // Sets software mirror state.
+  void SetMirrorPreviewState(bool mirror) { mirror_preview_ = mirror; };
+
  private:
   // Informs flutter texture registrar of updated texture.
   void OnBufferUpdated();
@@ -62,6 +65,7 @@ class TextureHandler {
   // Check if texture id is available and texture registrar is available
   bool TextureRegistered() { return texture_registrar_ && texture_id_ > -1; }
 
+  bool mirror_preview_ = false;
   int64_t texture_id_ = -1;
   uint32_t bytes_per_pixel_ = 4;
   uint32_t source_buffer_size_ = 0;
