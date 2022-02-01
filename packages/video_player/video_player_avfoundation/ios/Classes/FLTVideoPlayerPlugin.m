@@ -331,25 +331,44 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setupEventSinkIfReadyToPlay {
   if (_eventSink && !_isInitialized) {
-    BOOL hasVideoTracks =
-        [[self.player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo] count] != 0;
-    CGSize size = [self.player currentItem].presentationSize;
+    AVPlayerItem *currentItem = self.player.currentItem;
+    CGSize size = currentItem.presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
+
+    // Wait until tracks are loaded to check duration or if there are any videos.
+    AVAsset *asset = currentItem.asset;
+    if ([asset statusOfValueForKey:@"tracks" error:nil] != AVKeyValueStatusLoaded) {
+      void (^trackCompletionHandler)(void) = ^{
+        if ([asset statusOfValueForKey:@"tracks" error:nil] != AVKeyValueStatusLoaded) {
+          // Cancelled, or something failed.
+          return;
+        }
+        // This completion block will run on an AVFoundation background queue.
+        // Hop back to the main thread to set up event sink.
+        [self performSelector:_cmd onThread:NSThread.mainThread withObject:self waitUntilDone:NO];
+      };
+      [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ]
+                           completionHandler:trackCompletionHandler];
+      return;
+    }
+
+    BOOL hasVideoTracks = [asset tracksWithMediaType:AVMediaTypeVideo].count != 0;
 
     // The player has not yet initialized when it contains video tracks.
     if (hasVideoTracks && height == CGSizeZero.height && width == CGSizeZero.width) {
       return;
     }
     // The player may be initialized but still needs to determine the duration.
-    if ([self duration] == 0) {
+    int64_t duration = [self duration];
+    if (duration == 0) {
       return;
     }
 
     _isInitialized = YES;
     _eventSink(@{
       @"event" : @"initialized",
-      @"duration" : @([self duration]),
+      @"duration" : @(duration),
       @"width" : @(width),
       @"height" : @(height)
     });

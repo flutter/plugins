@@ -2,6 +2,10 @@
 
 * Moves Android and iOS implementations to federated packages.
 
+## 2.2.17
+
+* Avoid blocking the main thread loading video count on iOS.
+
 ## 2.2.16
 
 * Introduces `setCaptionOffset` to offset the caption display based on a Duration.

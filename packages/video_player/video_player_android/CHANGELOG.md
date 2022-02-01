@@ -1,3 +1,3 @@
-## 2.2.11
+## 2.2.17
 
 * Splits from `video_player` as a federated implementation.
