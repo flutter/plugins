@@ -3,7 +3,7 @@
 The Windows implementation of [`camera`][camera].
 
 *Note*: This plugin is under development.
-See [missing implementations and limitations](#limitations-on-the-windows-platform).
+See [missing implementations and limitations](#missing-features-on-the-windows-platform).
 
 ## Usage
 
@@ -17,21 +17,21 @@ implementation of the [`camera`][camera] plugin, so you'll need to
 
 ### Device orientation
 
-The device orientation detection
+Device orientation detection
 is not yet implemented: [issue #97540][device-orientation-issue].
 
 ### Pause and Resume video recording
 
 Pausing and resuming the video recording
-is not supported due to Win32 API limitations.
+is not supported due to Windows API limitations.
 
 ### Exposure mode, point and offset
 
 Support for explosure mode and offset
 is not yet implemented: [issue #97537][camera-control-issue].
 
-Explosure points are not supported due to
-the current limitations of the Win32 API.
+Exposure points are not supported due to
+limitations of the Windows API.
 
 ### Focus mode and point
 
@@ -43,16 +43,15 @@ is not yet implemented: [issue #97537][camera-control-issue].
 Support for flash mode is not yet implemented: [issue #97537][camera-control-issue].
 
 Focus points are not supported due to
-the current limitations of the Win32 API.
+current limitations of the Windows API.
 
 ### Streaming of frames
 
 Support for image streaming is not yet implemented: [issue #97542][image-streams-issue].
 
-
 ## Error handling
 
-Camera errors can be listened using platforms `onCameraError` method.
+Camera errors can be listened using the platform's `onCameraError` method.
 
 Listening to errors is important, and in certain situations,
 disposing of the camera is the only way to reset the situation.
