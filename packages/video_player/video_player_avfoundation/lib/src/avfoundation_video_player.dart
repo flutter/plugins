@@ -11,7 +11,8 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 
 import 'messages.dart';
 
-/// An iOS implementation of [VideoPlayerPlatform] that uses method channels.
+/// An iOS implementation of [VideoPlayerPlatform] that uses the
+/// Pigeon-generated [VideoPlayerApi].
 class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   final VideoPlayerApi _api = VideoPlayerApi();
 

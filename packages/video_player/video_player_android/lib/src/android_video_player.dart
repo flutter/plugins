@@ -11,8 +11,8 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 
 import 'messages.dart';
 
-/// An Android implementation of [VideoPlayerPlatform] that uses method
-/// channels.
+/// An Android implementation of [VideoPlayerPlatform] that uses the
+/// Pigeon-generated [VideoPlayerApi].
 class AndroidVideoPlayer extends VideoPlayerPlatform {
   final VideoPlayerApi _api = VideoPlayerApi();
 

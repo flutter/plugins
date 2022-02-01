@@ -1,5 +1,18 @@
 ## Updating pigeon-generated files
 
+**WARNING**: Because `messages.dart` is part of the public API of this package,
+breaking changes in that file are breaking changes for the package. This means
+that:
+- You should never update the version of Pigeon used for this package unless
+  making a breaking change to the package for other reasons.
+- Because the method channel is a legacy implementation for compatibility with
+  existing third-party `video_player` implementations, in many cases the best
+  option may be to simply not implemented new features in
+  `MethodChannelVideoPlayer`. Breaking changes in this package should never
+  be made solely to change `MethodChannelVideoPlayer`.
+
+### Update process
+
 If you update files in the pigeons/ directory, run the following
 command in this directory (ignore the errors you get about
 dependencies in the examples directory):

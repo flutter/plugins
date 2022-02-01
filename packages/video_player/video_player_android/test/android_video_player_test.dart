@@ -93,6 +93,11 @@ class _ApiLogger implements TestHostVideoPlayerApi {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('registration', () async {
+    AndroidVideoPlayer.registerWith();
+    expect(VideoPlayerPlatform.instance, isA<AndroidVideoPlayer>());
+  });
+
   group('$AndroidVideoPlayer', () {
     final AndroidVideoPlayer player = AndroidVideoPlayer();
     late _ApiLogger log;
