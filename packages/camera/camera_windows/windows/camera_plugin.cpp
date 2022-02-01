@@ -160,7 +160,7 @@ std::string GetCurrentTimeString() {
 
 // Builds file path for picture capture.
 std::optional<std::string> GetFilePathForPicture() {
-  wchar_t* known_folder_path = nullptr;
+  ComHeapPtr<wchar_t> known_folder_path;
   HRESULT hr = SHGetKnownFolderPath(FOLDERID_Pictures, KF_FLAG_CREATE, nullptr,
                                     &known_folder_path);
   if (FAILED(hr)) {
@@ -175,7 +175,7 @@ std::optional<std::string> GetFilePathForPicture() {
 
 // Builds file path for video capture.
 std::optional<std::string> GetFilePathForVideo() {
-  wchar_t* known_folder_path = nullptr;
+  ComHeapPtr<wchar_t> known_folder_path;
   HRESULT hr = SHGetKnownFolderPath(FOLDERID_Videos, KF_FLAG_CREATE, nullptr,
                                     &known_folder_path);
   if (FAILED(hr)) {
