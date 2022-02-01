@@ -109,6 +109,9 @@ typedef void (^GetSavedPath)(NSString *);
   }
 }
 
+/*
+ * This method processes the image and save it to the file.
+ */
 - (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
   PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
 
@@ -118,14 +121,7 @@ typedef void (^GetSavedPath)(NSString *);
                                             maxHeight:self.maxHeight
                                   isMetadataAvailable:originalAsset != nil];
   }
-  if (!originalAsset) {
-    // Image picked without an original asset (e.g. User pick image without permission)
-    NSString *savedPath =
-        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                        image:localImage
-                                                 imageQuality:self.desiredImageQuality];
-    [self completeOperationWithPath:savedPath];
-  } else {
+  if (originalAsset) {
     [[PHImageManager defaultManager]
         requestImageDataForAsset:originalAsset
                          options:nil
@@ -140,6 +136,13 @@ typedef void (^GetSavedPath)(NSString *);
                                            imageQuality:self.desiredImageQuality];
                      [self completeOperationWithPath:savedPath];
                    }];
+  } else {
+    // Image picked without an original asset (e.g. User pick image without permission)
+    NSString *savedPath =
+        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                        image:localImage
+                                                 imageQuality:self.desiredImageQuality];
+    [self completeOperationWithPath:savedPath];
   }
 }
 
