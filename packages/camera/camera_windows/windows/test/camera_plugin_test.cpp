@@ -100,12 +100,12 @@ TEST(CameraPlugin, CreateHandlerCallsInitCamera) {
       std::make_unique<MockCamera>(MOCK_DEVICE_ID);
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::CREATE_CAMERA)))
+              HasPendingResultByType(Eq(PendingResultType::kCreateCamera)))
       .Times(1)
       .WillOnce(Return(false));
 
   EXPECT_CALL(*camera,
-              AddPendingResult(Eq(PendingResultType::CREATE_CAMERA), _))
+              AddPendingResult(Eq(PendingResultType::kCreateCamera), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -186,12 +186,12 @@ TEST(CameraPlugin, CreateHandlerErrorOnExistingDeviceId) {
       std::make_unique<MockCamera>(MOCK_DEVICE_ID);
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::CREATE_CAMERA)))
+              HasPendingResultByType(Eq(PendingResultType::kCreateCamera)))
       .Times(1)
       .WillOnce(Return(false));
 
   EXPECT_CALL(*camera,
-              AddPendingResult(Eq(PendingResultType::CREATE_CAMERA), _))
+              AddPendingResult(Eq(PendingResultType::kCreateCamera), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -265,11 +265,11 @@ TEST(CameraPlugin, InitializeHandlerCallStartPreview) {
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::INITIALIZE)))
+              HasPendingResultByType(Eq(PendingResultType::kInitialize)))
       .Times(1)
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::INITIALIZE), _))
+  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::kInitialize), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -379,11 +379,11 @@ TEST(CameraPlugin, TakePictureHandlerCallsTakePictureWithPath) {
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::TAKE_PICTURE)))
+              HasPendingResultByType(Eq(PendingResultType::kTakePicture)))
       .Times(1)
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::TAKE_PICTURE), _))
+  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::kTakePicture), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -493,11 +493,11 @@ TEST(CameraPlugin, StartVideoRecordingHandlerCallsStartRecordWithPath) {
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::START_RECORD)))
+              HasPendingResultByType(Eq(PendingResultType::kStartRecord)))
       .Times(1)
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::START_RECORD), _))
+  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::kStartRecord), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -564,11 +564,11 @@ TEST(CameraPlugin,
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::START_RECORD)))
+              HasPendingResultByType(Eq(PendingResultType::kStartRecord)))
       .Times(1)
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::START_RECORD), _))
+  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::kStartRecord), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -681,11 +681,11 @@ TEST(CameraPlugin, StopVideoRecordingHandlerCallsStopRecord) {
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::STOP_RECORD)))
+              HasPendingResultByType(Eq(PendingResultType::kStopRecord)))
       .Times(1)
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::STOP_RECORD), _))
+  EXPECT_CALL(*camera, AddPendingResult(Eq(PendingResultType::kStopRecord), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -795,12 +795,12 @@ TEST(CameraPlugin, ResumePreviewHandlerCallsResumePreview) {
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::RESUME_PREVIEW)))
+              HasPendingResultByType(Eq(PendingResultType::kResumePreview)))
       .Times(1)
       .WillOnce(Return(false));
 
   EXPECT_CALL(*camera,
-              AddPendingResult(Eq(PendingResultType::RESUME_PREVIEW), _))
+              AddPendingResult(Eq(PendingResultType::kResumePreview), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {
@@ -910,12 +910,12 @@ TEST(CameraPlugin, PausePreviewHandlerCallsPausePreview) {
       });
 
   EXPECT_CALL(*camera,
-              HasPendingResultByType(Eq(PendingResultType::PAUSE_PREVIEW)))
+              HasPendingResultByType(Eq(PendingResultType::kPausePreview)))
       .Times(1)
       .WillOnce(Return(false));
 
   EXPECT_CALL(*camera,
-              AddPendingResult(Eq(PendingResultType::PAUSE_PREVIEW), _))
+              AddPendingResult(Eq(PendingResultType::kPausePreview), _))
       .Times(1)
       .WillOnce([cam = camera.get()](PendingResultType type,
                                      std::unique_ptr<MethodResult<>> result) {

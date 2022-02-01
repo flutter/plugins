@@ -124,40 +124,40 @@ bool PreviewHandler::StartPreview(IMFCaptureEngine* capture_engine,
     return false;
   }
 
-  preview_state_ = PreviewState::PREVIEW_STATE__STARTING;
+  preview_state_ = PreviewState::kStarting;
   return SUCCEEDED(capture_engine->StartPreview());
 }
 
 bool PreviewHandler::StopPreview(IMFCaptureEngine* capture_engine) {
-  if (preview_state_ == PreviewState::PREVIEW_STATE__STARTING ||
-      preview_state_ == PreviewState::PREVIEW_STATE__RUNNING ||
-      preview_state_ == PreviewState::PREVIEW_STATE__PAUSED) {
-    preview_state_ = PreviewState::PREVIEW_STATE__STOPPING;
+  if (preview_state_ == PreviewState::kStarting ||
+      preview_state_ == PreviewState::kRunning ||
+      preview_state_ == PreviewState::kPaused) {
+    preview_state_ = PreviewState::kStopping;
     return SUCCEEDED(capture_engine->StopPreview());
   }
   return false;
 }
 
 bool PreviewHandler::PausePreview() {
-  if (preview_state_ != PreviewState::PREVIEW_STATE__RUNNING) {
+  if (preview_state_ != PreviewState::kRunning) {
     return false;
   }
-  preview_state_ = PreviewState::PREVIEW_STATE__PAUSED;
+  preview_state_ = PreviewState::kPaused;
   return true;
 }
 
 bool PreviewHandler::ResumePreview() {
-  if (preview_state_ != PreviewState::PREVIEW_STATE__PAUSED) {
+  if (preview_state_ != PreviewState::kPaused) {
     return false;
   }
-  preview_state_ = PreviewState::PREVIEW_STATE__RUNNING;
+  preview_state_ = PreviewState::kRunning;
   return true;
 }
 
 void PreviewHandler::OnPreviewStarted() {
-  assert(preview_state_ == PreviewState::PREVIEW_STATE__STARTING);
-  if (preview_state_ == PreviewState::PREVIEW_STATE__STARTING) {
-    preview_state_ = PreviewState::PREVIEW_STATE__RUNNING;
+  assert(preview_state_ == PreviewState::kStarting);
+  if (preview_state_ == PreviewState::kStarting) {
+    preview_state_ = PreviewState::kRunning;
   }
 }
 

@@ -28,34 +28,24 @@ namespace camera_windows {
 using flutter::TextureRegistrar;
 using Microsoft::WRL::ComPtr;
 
-enum ResolutionPreset {
-  // AUTO
-  RESOLUTION_PRESET_AUTO,
-
+enum class ResolutionPreset {
+  // Automatic resolution
+  kAuto,
   // 240p (320x240)
-  RESOLUTION_PRESET_LOW,
-
+  kLow,
   // 480p (720x480)
-  RESOLUTION_PRESET_MEDIUM,
-
+  kMedium,
   // 720p (1280x720)
-  RESOLUTION_PRESET_HIGH,
-
+  kHigh,
   // 1080p (1920x1080)
-  RESOLUTION_PRESET_VERY_HIGH,
-
+  kVeryHigh,
   // 2160p (4096x2160)
-  RESOLUTION_PRESET_ULTRA_HIGH,
-
+  kUltraHigh,
   // The highest resolution available.
-  RESOLUTION_PRESET_MAX,
+  kMax,
 };
 
-enum CaptureEngineState {
-  CAPTURE_ENGINE_NOT_INITIALIZED,
-  CAPTURE_ENGINE_INITIALIZING,
-  CAPTURE_ENGINE_INITIALIZED
-};
+enum class CaptureEngineState { kNotInitialized, kInitializing, kInitialized };
 
 class VideoCaptureDeviceEnumerator {
  private:
@@ -65,7 +55,7 @@ class VideoCaptureDeviceEnumerator {
 
 class CaptureController {
  public:
-  CaptureController(){};
+  CaptureController() {}
   virtual ~CaptureController() = default;
 
   // Disallow copy and move.
@@ -123,7 +113,7 @@ class CaptureControllerImpl : public CaptureController,
   static bool EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
                                                  UINT32* count);
 
-  CaptureControllerImpl(CaptureControllerListener* listener);
+  explicit CaptureControllerImpl(CaptureControllerListener* listener);
   virtual ~CaptureControllerImpl();
 
   // Disallow copy and move.
@@ -147,8 +137,7 @@ class CaptureControllerImpl : public CaptureController,
   // CaptureEngineObserver
   void OnEvent(IMFMediaEvent* event) override;
   bool IsReadyForSample() override {
-    return capture_engine_state_ ==
-               CaptureEngineState::CAPTURE_ENGINE_INITIALIZED &&
+    return capture_engine_state_ == CaptureEngineState::kInitialized &&
            preview_handler_ && preview_handler_->IsRunning();
   }
   bool UpdateBuffer(uint8_t* data, uint32_t data_length) override;
@@ -157,24 +146,23 @@ class CaptureControllerImpl : public CaptureController,
   // Sets capture engine, for testing purposes.
   void SetCaptureEngine(IMFCaptureEngine* capture_engine) {
     capture_engine_ = capture_engine;
-  };
+  }
 
   // Sets video source, for testing purposes.
   void SetVideoSource(IMFMediaSource* video_source) {
     video_source_ = video_source;
-  };
+  }
 
   // Sets audio source, for testing purposes.
   void SetAudioSource(IMFMediaSource* audio_source) {
     audio_source_ = audio_source;
-  };
+  }
 
  private:
   // Helper function to return initialized state as boolean;
   bool IsInitialized() {
-    return capture_engine_state_ ==
-           CaptureEngineState::CAPTURE_ENGINE_INITIALIZED;
-  };
+    return capture_engine_state_ == CaptureEngineState::kInitialized;
+  }
 
   // Resets capture controller state.
   // This is called if capture engine creation fails or is disposed.
@@ -241,9 +229,8 @@ class CaptureControllerImpl : public CaptureController,
 
   std::string video_device_id_;
   CaptureEngineState capture_engine_state_ =
-      CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
-  ResolutionPreset resolution_preset_ =
-      ResolutionPreset::RESOLUTION_PRESET_MEDIUM;
+      CaptureEngineState::kNotInitialized;
+  ResolutionPreset resolution_preset_ = ResolutionPreset::kMedium;
   ComPtr<IMFCaptureEngine> capture_engine_;
   ComPtr<CaptureEngineListener> capture_engine_callback_handler_;
   ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;
@@ -258,7 +245,7 @@ class CaptureControllerImpl : public CaptureController,
 
 class CaptureControllerFactory {
  public:
-  CaptureControllerFactory(){};
+  CaptureControllerFactory() {}
   virtual ~CaptureControllerFactory() = default;
 
   // Disallow copy and move.
@@ -271,7 +258,7 @@ class CaptureControllerFactory {
 
 class CaptureControllerFactoryImpl : public CaptureControllerFactory {
  public:
-  CaptureControllerFactoryImpl(){};
+  CaptureControllerFactoryImpl() {}
   virtual ~CaptureControllerFactoryImpl() = default;
 
   // Disallow copy and move.
@@ -282,7 +269,7 @@ class CaptureControllerFactoryImpl : public CaptureControllerFactory {
   std::unique_ptr<CaptureController> CreateCaptureController(
       CaptureControllerListener* listener) override {
     return std::make_unique<CaptureControllerImpl>(listener);
-  };
+  }
 };
 
 }  // namespace camera_windows

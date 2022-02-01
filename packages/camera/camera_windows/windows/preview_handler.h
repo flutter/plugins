@@ -17,17 +17,17 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-enum PreviewState {
-  PREVIEW_STATE__NOT_STARTED,
-  PREVIEW_STATE__STARTING,
-  PREVIEW_STATE__RUNNING,
-  PREVIEW_STATE__PAUSED,
-  PREVIEW_STATE__STOPPING
+enum class PreviewState {
+  kNotStarted,
+  kStarting,
+  kRunning,
+  kPaused,
+  kStopping
 };
 
 class PreviewHandler {
  public:
-  PreviewHandler(){};
+  PreviewHandler() {}
   virtual ~PreviewHandler() = default;
 
   // Prevent copying.
@@ -66,24 +66,18 @@ class PreviewHandler {
 
   // Returns true if preview state is running or paused.
   bool IsInitialized() {
-    return preview_state_ == PreviewState::PREVIEW_STATE__RUNNING &&
-           preview_state_ == PreviewState::PREVIEW_STATE__PAUSED;
-  };
+    return preview_state_ == PreviewState::kRunning &&
+           preview_state_ == PreviewState::kPaused;
+  }
 
   // Returns true if preview state is running.
-  bool IsRunning() {
-    return preview_state_ == PreviewState::PREVIEW_STATE__RUNNING;
-  };
+  bool IsRunning() { return preview_state_ == PreviewState::kRunning; }
 
   // Return true if preview state is paused.
-  bool IsPaused() {
-    return preview_state_ == PreviewState::PREVIEW_STATE__PAUSED;
-  };
+  bool IsPaused() { return preview_state_ == PreviewState::kPaused; }
 
   // Returns true if preview state is starting.
-  bool IsStarting() {
-    return preview_state_ == PreviewState::PREVIEW_STATE__STARTING;
-  };
+  bool IsStarting() { return preview_state_ == PreviewState::kStarting; }
 
  private:
   // Initializes record sink for video file capture.
@@ -91,7 +85,7 @@ class PreviewHandler {
                           IMFMediaType* base_media_type,
                           CaptureEngineListener* sample_callback);
 
-  PreviewState preview_state_ = PreviewState::PREVIEW_STATE__NOT_STARTED;
+  PreviewState preview_state_ = PreviewState::kNotStarted;
   ComPtr<IMFCapturePreviewSink> preview_sink_;
 };
 

@@ -43,7 +43,7 @@ TEST(Camera, InitCameraCreatesCaptureController) {
   camera->InitCamera(std::move(capture_controller_factory),
                      std::make_unique<MockTextureRegistrar>().get(),
                      std::make_unique<MockBinaryMessenger>().get(), false,
-                     ResolutionPreset::RESOLUTION_PRESET_AUTO);
+                     ResolutionPreset::kAuto);
 
   EXPECT_TRUE(camera->GetCaptureController() != nullptr);
 }
@@ -60,11 +60,11 @@ TEST(Camera, AddPendingResultReturnsErrorForDuplicates) {
   EXPECT_CALL(*first_pending_result, SuccessInternal);
   EXPECT_CALL(*second_pending_result, ErrorInternal).Times(1);
 
-  camera->AddPendingResult(PendingResultType::CREATE_CAMERA,
+  camera->AddPendingResult(PendingResultType::kCreateCamera,
                            std::move(first_pending_result));
 
   // This should fail
-  camera->AddPendingResult(PendingResultType::CREATE_CAMERA,
+  camera->AddPendingResult(PendingResultType::kCreateCamera,
                            std::move(second_pending_result));
 
   // Mark pending result as succeeded
@@ -85,7 +85,7 @@ TEST(Camera, OnCreateCaptureEngineSucceededReturnsCameraId) {
       SuccessInternal(Pointee(EncodableValue(EncodableMap(
           {{EncodableValue("cameraId"), EncodableValue(texture_id)}})))));
 
-  camera->AddPendingResult(PendingResultType::CREATE_CAMERA, std::move(result));
+  camera->AddPendingResult(PendingResultType::kCreateCamera, std::move(result));
 
   camera->OnCreateCaptureEngineSucceeded(texture_id);
 }
@@ -101,7 +101,7 @@ TEST(Camera, OnCreateCaptureEngineFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::CREATE_CAMERA, std::move(result));
+  camera->AddPendingResult(PendingResultType::kCreateCamera, std::move(result));
 
   camera->OnCreateCaptureEngineFailed(error_text);
 }
@@ -123,7 +123,7 @@ TEST(Camera, OnStartPreviewSucceededReturnsFrameSize) {
           {EncodableValue("previewHeight"), EncodableValue((float)height)},
       })))));
 
-  camera->AddPendingResult(PendingResultType::INITIALIZE, std::move(result));
+  camera->AddPendingResult(PendingResultType::kInitialize, std::move(result));
 
   camera->OnStartPreviewSucceeded(width, height);
 }
@@ -139,7 +139,7 @@ TEST(Camera, OnStartPreviewFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::INITIALIZE, std::move(result));
+  camera->AddPendingResult(PendingResultType::kInitialize, std::move(result));
 
   camera->OnStartPreviewFailed(error_text);
 }
@@ -153,7 +153,7 @@ TEST(Camera, OnPausePreviewSucceededReturnsSuccess) {
   EXPECT_CALL(*result, ErrorInternal).Times(0);
   EXPECT_CALL(*result, SuccessInternal(nullptr));
 
-  camera->AddPendingResult(PendingResultType::PAUSE_PREVIEW, std::move(result));
+  camera->AddPendingResult(PendingResultType::kPausePreview, std::move(result));
 
   camera->OnPausePreviewSucceeded();
 }
@@ -169,7 +169,7 @@ TEST(Camera, OnPausePreviewFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::PAUSE_PREVIEW, std::move(result));
+  camera->AddPendingResult(PendingResultType::kPausePreview, std::move(result));
 
   camera->OnPausePreviewFailed(error_text);
 }
@@ -183,7 +183,7 @@ TEST(Camera, OnResumePreviewSucceededReturnsSuccess) {
   EXPECT_CALL(*result, ErrorInternal).Times(0);
   EXPECT_CALL(*result, SuccessInternal(nullptr));
 
-  camera->AddPendingResult(PendingResultType::RESUME_PREVIEW,
+  camera->AddPendingResult(PendingResultType::kResumePreview,
                            std::move(result));
 
   camera->OnResumePreviewSucceeded();
@@ -200,7 +200,7 @@ TEST(Camera, OnResumePreviewFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::RESUME_PREVIEW,
+  camera->AddPendingResult(PendingResultType::kResumePreview,
                            std::move(result));
 
   camera->OnResumePreviewFailed(error_text);
@@ -215,7 +215,7 @@ TEST(Camera, OnStartRecordSucceededReturnsSuccess) {
   EXPECT_CALL(*result, ErrorInternal).Times(0);
   EXPECT_CALL(*result, SuccessInternal(nullptr));
 
-  camera->AddPendingResult(PendingResultType::START_RECORD, std::move(result));
+  camera->AddPendingResult(PendingResultType::kStartRecord, std::move(result));
 
   camera->OnStartRecordSucceeded();
 }
@@ -231,7 +231,7 @@ TEST(Camera, OnStartRecordFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::START_RECORD, std::move(result));
+  camera->AddPendingResult(PendingResultType::kStartRecord, std::move(result));
 
   camera->OnStartRecordFailed(error_text);
 }
@@ -247,7 +247,7 @@ TEST(Camera, OnStopRecordSucceededReturnsSuccess) {
   EXPECT_CALL(*result, ErrorInternal).Times(0);
   EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(file_path))));
 
-  camera->AddPendingResult(PendingResultType::STOP_RECORD, std::move(result));
+  camera->AddPendingResult(PendingResultType::kStopRecord, std::move(result));
 
   camera->OnStopRecordSucceeded(file_path);
 }
@@ -263,7 +263,7 @@ TEST(Camera, OnStopRecordFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::STOP_RECORD, std::move(result));
+  camera->AddPendingResult(PendingResultType::kStopRecord, std::move(result));
 
   camera->OnStopRecordFailed(error_text);
 }
@@ -279,7 +279,7 @@ TEST(Camera, OnTakePictureSucceededReturnsSuccess) {
   EXPECT_CALL(*result, ErrorInternal).Times(0);
   EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(file_path))));
 
-  camera->AddPendingResult(PendingResultType::TAKE_PICTURE, std::move(result));
+  camera->AddPendingResult(PendingResultType::kTakePicture, std::move(result));
 
   camera->OnTakePictureSucceeded(file_path);
 }
@@ -295,7 +295,7 @@ TEST(Camera, OnTakePictureFailedReturnsError) {
   EXPECT_CALL(*result, SuccessInternal).Times(0);
   EXPECT_CALL(*result, ErrorInternal(_, Eq(error_text), _));
 
-  camera->AddPendingResult(PendingResultType::TAKE_PICTURE, std::move(result));
+  camera->AddPendingResult(PendingResultType::kTakePicture, std::move(result));
 
   camera->OnTakePictureFailed(error_text);
 }
@@ -328,8 +328,7 @@ TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
   // Init camera with mock capture controller factory
   camera->InitCamera(std::move(capture_controller_factory),
                      std::make_unique<MockTextureRegistrar>().get(),
-                     binary_messenger.get(), false,
-                     ResolutionPreset::RESOLUTION_PRESET_AUTO);
+                     binary_messenger.get(), false, ResolutionPreset::kAuto);
 
   // Pass camera id for camera
   camera->OnCreateCaptureEngineSucceeded(camera_id);

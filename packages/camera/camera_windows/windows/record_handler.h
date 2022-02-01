@@ -15,18 +15,13 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-enum RecordingType { CONTINUOUS, TIMED };
+enum class RecordingType { kContinuous, kTimed };
 
-enum RecordState {
-  RECORD_STATE__NOT_STARTED,
-  RECORD_STATE__STARTING,
-  RECORD_STATE__RUNNING,
-  RECORD_STATE__STOPPING
-};
+enum class RecordState { kNotStarted, kStarting, kRunning, kStopping };
 
 class RecordHandler {
  public:
-  RecordHandler(bool record_audio) : record_audio_(record_audio){};
+  RecordHandler(bool record_audio) : record_audio_(record_audio) {}
   virtual ~RecordHandler() = default;
 
   // Prevent copying.
@@ -64,26 +59,22 @@ class RecordHandler {
   void OnRecordStopped();
 
   // Returns true if recording type is continuous recording.
-  bool IsContinuousRecording() { return type_ == RecordingType::CONTINUOUS; };
+  bool IsContinuousRecording() { return type_ == RecordingType::kContinuous; }
 
   // Returns true if recording type is timed recording.
-  bool IsTimedRecording() { return type_ == RecordingType::TIMED; };
+  bool IsTimedRecording() { return type_ == RecordingType::kTimed; }
 
   // Returns true if new recording can be started.
-  bool CanStart() {
-    return recording_state_ == RecordState::RECORD_STATE__NOT_STARTED;
-  };
+  bool CanStart() { return recording_state_ == RecordState::kNotStarted; }
 
   // Returns true if recording can be stopped.
-  bool CanStop() {
-    return recording_state_ == RecordState::RECORD_STATE__RUNNING;
-  };
+  bool CanStop() { return recording_state_ == RecordState::kRunning; }
 
   // Returns path to video recording.
-  std::string GetRecordPath() { return file_path_; };
+  std::string GetRecordPath() { return file_path_; }
 
   // Returns path to video recording in microseconds.
-  uint64_t GetRecordedDuration() { return recording_duration_us_; };
+  uint64_t GetRecordedDuration() { return recording_duration_us_; }
 
   // Calculates new recording time from capture timestamp.
   void UpdateRecordingTime(uint64_t timestamp);
@@ -102,7 +93,7 @@ class RecordHandler {
   int64_t recording_start_timestamp_us_ = -1;
   uint64_t recording_duration_us_ = 0;
   std::string file_path_ = "";
-  RecordState recording_state_ = RecordState::RECORD_STATE__NOT_STARTED;
+  RecordState recording_state_ = RecordState::kNotStarted;
   RecordingType type_;
   ComPtr<IMFCaptureRecordSink> record_sink_;
 };

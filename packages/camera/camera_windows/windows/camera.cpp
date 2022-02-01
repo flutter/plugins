@@ -114,7 +114,7 @@ void CameraImpl::OnCreateCaptureEngineSucceeded(int64_t texture_id) {
   // Use texture id as camera id
   camera_id_ = texture_id;
   auto pending_result =
-      GetPendingResultByType(PendingResultType::CREATE_CAMERA);
+      GetPendingResultByType(PendingResultType::kCreateCamera);
   if (pending_result) {
     pending_result->Success(EncodableMap(
         {{EncodableValue("cameraId"), EncodableValue(texture_id)}}));
@@ -123,24 +123,26 @@ void CameraImpl::OnCreateCaptureEngineSucceeded(int64_t texture_id) {
 
 void CameraImpl::OnCreateCaptureEngineFailed(const std::string& error) {
   auto pending_result =
-      GetPendingResultByType(PendingResultType::CREATE_CAMERA);
+      GetPendingResultByType(PendingResultType::kCreateCamera);
   if (pending_result) {
     pending_result->Error("camera_error", error);
   }
 }
 
 void CameraImpl::OnStartPreviewSucceeded(int32_t width, int32_t height) {
-  auto pending_result = GetPendingResultByType(PendingResultType::INITIALIZE);
+  auto pending_result = GetPendingResultByType(PendingResultType::kInitialize);
   if (pending_result) {
     pending_result->Success(EncodableValue(EncodableMap({
-        {EncodableValue("previewWidth"), EncodableValue((float)width)},
-        {EncodableValue("previewHeight"), EncodableValue((float)height)},
+        {EncodableValue("previewWidth"),
+         EncodableValue(static_cast<float>(width))},
+        {EncodableValue("previewHeight"),
+         EncodableValue(static_cast<float>(height))},
     })));
   }
 };
 
 void CameraImpl::OnStartPreviewFailed(const std::string& error) {
-  auto pending_result = GetPendingResultByType(PendingResultType::INITIALIZE);
+  auto pending_result = GetPendingResultByType(PendingResultType::kInitialize);
   if (pending_result) {
     pending_result->Error("camera_error", error);
   }
@@ -148,7 +150,7 @@ void CameraImpl::OnStartPreviewFailed(const std::string& error) {
 
 void CameraImpl::OnResumePreviewSucceeded() {
   auto pending_result =
-      GetPendingResultByType(PendingResultType::RESUME_PREVIEW);
+      GetPendingResultByType(PendingResultType::kResumePreview);
   if (pending_result) {
     pending_result->Success();
   }
@@ -156,7 +158,7 @@ void CameraImpl::OnResumePreviewSucceeded() {
 
 void CameraImpl::OnResumePreviewFailed(const std::string& error) {
   auto pending_result =
-      GetPendingResultByType(PendingResultType::RESUME_PREVIEW);
+      GetPendingResultByType(PendingResultType::kResumePreview);
   if (pending_result) {
     pending_result->Error("camera_error", error);
   }
@@ -164,7 +166,7 @@ void CameraImpl::OnResumePreviewFailed(const std::string& error) {
 
 void CameraImpl::OnPausePreviewSucceeded() {
   auto pending_result =
-      GetPendingResultByType(PendingResultType::PAUSE_PREVIEW);
+      GetPendingResultByType(PendingResultType::kPausePreview);
   if (pending_result) {
     pending_result->Success();
   }
@@ -172,42 +174,42 @@ void CameraImpl::OnPausePreviewSucceeded() {
 
 void CameraImpl::OnPausePreviewFailed(const std::string& error) {
   auto pending_result =
-      GetPendingResultByType(PendingResultType::PAUSE_PREVIEW);
+      GetPendingResultByType(PendingResultType::kPausePreview);
   if (pending_result) {
     pending_result->Error("camera_error", error);
   }
 }
 
 void CameraImpl::OnStartRecordSucceeded() {
-  auto pending_result = GetPendingResultByType(PendingResultType::START_RECORD);
+  auto pending_result = GetPendingResultByType(PendingResultType::kStartRecord);
   if (pending_result) {
     pending_result->Success();
   }
 };
 
 void CameraImpl::OnStartRecordFailed(const std::string& error) {
-  auto pending_result = GetPendingResultByType(PendingResultType::START_RECORD);
+  auto pending_result = GetPendingResultByType(PendingResultType::kStartRecord);
   if (pending_result) {
     pending_result->Error("camera_error", error);
   }
 };
 
 void CameraImpl::OnStopRecordSucceeded(const std::string& file_path) {
-  auto pending_result = GetPendingResultByType(PendingResultType::STOP_RECORD);
+  auto pending_result = GetPendingResultByType(PendingResultType::kStopRecord);
   if (pending_result) {
     pending_result->Success(EncodableValue(file_path));
   }
 };
 
 void CameraImpl::OnStopRecordFailed(const std::string& error) {
-  auto pending_result = GetPendingResultByType(PendingResultType::STOP_RECORD);
+  auto pending_result = GetPendingResultByType(PendingResultType::kStopRecord);
   if (pending_result) {
     pending_result->Error("camera_error", error);
   }
 };
 
 void CameraImpl::OnTakePictureSucceeded(const std::string& file_path) {
-  auto pending_result = GetPendingResultByType(PendingResultType::TAKE_PICTURE);
+  auto pending_result = GetPendingResultByType(PendingResultType::kTakePicture);
   if (pending_result) {
     pending_result->Success(EncodableValue(file_path));
   }
@@ -215,7 +217,7 @@ void CameraImpl::OnTakePictureSucceeded(const std::string& file_path) {
 
 void CameraImpl::OnTakePictureFailed(const std::string& error) {
   auto pending_take_picture_result =
-      GetPendingResultByType(PendingResultType::TAKE_PICTURE);
+      GetPendingResultByType(PendingResultType::kTakePicture);
   if (pending_take_picture_result) {
     pending_take_picture_result->Error("camera_error", error);
   }

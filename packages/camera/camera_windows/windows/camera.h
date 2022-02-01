@@ -18,19 +18,19 @@ using flutter::EncodableMap;
 using flutter::MethodChannel;
 using flutter::MethodResult;
 
-enum PendingResultType {
-  CREATE_CAMERA,
-  INITIALIZE,
-  TAKE_PICTURE,
-  START_RECORD,
-  STOP_RECORD,
-  PAUSE_PREVIEW,
-  RESUME_PREVIEW,
+enum class PendingResultType {
+  kCreateCamera,
+  kInitialize,
+  kTakePicture,
+  kStartRecord,
+  kStopRecord,
+  kPausePreview,
+  kResumePreview,
 };
 
 class Camera : public CaptureControllerListener {
  public:
-  Camera(const std::string& device_id){};
+  explicit Camera(const std::string& device_id) {}
   virtual ~Camera() = default;
 
   // Disallow copy and move.
@@ -63,7 +63,7 @@ class Camera : public CaptureControllerListener {
 
 class CameraImpl : public Camera {
  public:
-  CameraImpl(const std::string& device_id);
+  explicit CameraImpl(const std::string& device_id);
   virtual ~CameraImpl();
 
   // Disallow copy and move.
@@ -93,16 +93,16 @@ class CameraImpl : public Camera {
   // Camera
   bool HasDeviceId(std::string& device_id) override {
     return device_id_ == device_id;
-  };
+  }
   bool HasCameraId(int64_t camera_id) override {
     return camera_id_ == camera_id;
-  };
+  }
   bool AddPendingResult(PendingResultType type,
                         std::unique_ptr<MethodResult<>> result) override;
   bool HasPendingResultByType(PendingResultType type) override;
   camera_windows::CaptureController* GetCaptureController() override {
     return capture_controller_.get();
-  };
+  }
   void InitCamera(flutter::TextureRegistrar* texture_registrar,
                   flutter::BinaryMessenger* messenger, bool record_audio,
                   ResolutionPreset resolution_preset) override;
@@ -147,7 +147,7 @@ class CameraImpl : public Camera {
 
 class CameraFactory {
  public:
-  CameraFactory(){};
+  CameraFactory() {}
   virtual ~CameraFactory() = default;
 
   // Disallow copy and move.
@@ -161,7 +161,7 @@ class CameraFactory {
 
 class CameraFactoryImpl : public CameraFactory {
  public:
-  CameraFactoryImpl(){};
+  CameraFactoryImpl() {}
   virtual ~CameraFactoryImpl() = default;
 
   // Disallow copy and move.
@@ -170,7 +170,7 @@ class CameraFactoryImpl : public CameraFactory {
 
   std::unique_ptr<Camera> CreateCamera(const std::string& device_id) override {
     return std::make_unique<CameraImpl>(device_id);
-  };
+  }
 };
 
 }  // namespace camera_windows

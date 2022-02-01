@@ -200,7 +200,7 @@ bool RecordHandler::StartRecord(const std::string& file_path,
   assert(capture_engine);
   assert(base_media_type);
 
-  type_ = max_duration < 0 ? RecordingType::CONTINUOUS : RecordingType::TIMED;
+  type_ = max_duration < 0 ? RecordingType::kContinuous : RecordingType::kTimed;
   max_video_duration_ms_ = max_duration;
   file_path_ = file_path;
   recording_start_timestamp_us_ = -1;
@@ -210,15 +210,15 @@ bool RecordHandler::StartRecord(const std::string& file_path,
     return false;
   }
 
-  recording_state_ = RecordState::RECORD_STATE__STARTING;
+  recording_state_ = RecordState::kStarting;
   capture_engine->StartRecord();
 
   return true;
 }
 
 bool RecordHandler::StopRecord(IMFCaptureEngine* capture_engine) {
-  if (recording_state_ == RecordState::RECORD_STATE__RUNNING) {
-    recording_state_ = RecordState::RECORD_STATE__STOPPING;
+  if (recording_state_ == RecordState::kRunning) {
+    recording_state_ = RecordState::kStopping;
     HRESULT hr = capture_engine->StopRecord(true, false);
     return SUCCEEDED(hr);
   }
@@ -226,18 +226,18 @@ bool RecordHandler::StopRecord(IMFCaptureEngine* capture_engine) {
 }
 
 void RecordHandler::OnRecordStarted() {
-  if (recording_state_ == RecordState::RECORD_STATE__STARTING) {
-    recording_state_ = RecordState::RECORD_STATE__RUNNING;
+  if (recording_state_ == RecordState::kStarting) {
+    recording_state_ = RecordState::kRunning;
   }
 }
 
 void RecordHandler::OnRecordStopped() {
-  if (recording_state_ == RecordState::RECORD_STATE__STOPPING) {
+  if (recording_state_ == RecordState::kStopping) {
     file_path_ = "";
     recording_start_timestamp_us_ = -1;
     recording_duration_us_ = 0;
     max_video_duration_ms_ = -1;
-    recording_state_ = RecordState::RECORD_STATE__NOT_STARTED;
+    recording_state_ = RecordState::kNotStarted;
   }
 }
 
@@ -250,8 +250,8 @@ void RecordHandler::UpdateRecordingTime(uint64_t timestamp) {
 }
 
 bool RecordHandler::ShouldStopTimedRecording() {
-  return type_ == RecordingType::TIMED &&
-         recording_state_ == RecordState::RECORD_STATE__RUNNING &&
+  return type_ == RecordingType::kTimed &&
+         recording_state_ == RecordState::kRunning &&
          max_video_duration_ms_ > 0 &&
          recording_duration_us_ >=
              (static_cast<uint64_t>(max_video_duration_ms_) * 1000);

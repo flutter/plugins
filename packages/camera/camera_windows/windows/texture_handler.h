@@ -32,7 +32,7 @@ struct MFVideoFormatRGB32Pixel {
 class TextureHandler {
  public:
   TextureHandler(flutter::TextureRegistrar* texture_registrar)
-      : texture_registrar_(texture_registrar){};
+      : texture_registrar_(texture_registrar) {}
   virtual ~TextureHandler();
 
   // Prevent copying.
@@ -49,10 +49,10 @@ class TextureHandler {
   void UpdateTextureSize(uint32_t width, uint32_t height) {
     preview_frame_width_ = width;
     preview_frame_height_ = height;
-  };
+  }
 
   // Sets software mirror state.
-  void SetMirrorPreviewState(bool mirror) { mirror_preview_ = mirror; };
+  void SetMirrorPreviewState(bool mirror) { mirror_preview_ = mirror; }
 
  private:
   // Informs flutter texture registrar of updated texture.

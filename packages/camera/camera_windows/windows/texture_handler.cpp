@@ -11,7 +11,6 @@ namespace camera_windows {
 TextureHandler::~TextureHandler() {
   // Texture might still be processed while destructor is called.
   // Lock mutex for safe destruction
-
   const std::lock_guard<std::mutex> lock(buffer_mutex_);
   if (TextureRegistered()) {
     texture_registrar_->UnregisterTexture(texture_id_);

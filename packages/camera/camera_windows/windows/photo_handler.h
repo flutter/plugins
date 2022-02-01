@@ -17,15 +17,15 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-enum PhotoState {
-  PHOTO_STATE__NOT_STARTED,
-  PHOTO_STATE__IDLE,
-  PHOTO_STATE__TAKING,
+enum class PhotoState {
+  kNotStarted,
+  kIdle,
+  kTakingPhoto,
 };
 
 class PhotoHandler {
  public:
-  PhotoHandler(){};
+  PhotoHandler() {}
   virtual ~PhotoHandler() = default;
 
   // Prevent copying.
@@ -49,17 +49,13 @@ class PhotoHandler {
   void OnPhotoTaken();
 
   // Returns true if photo state is idle
-  bool IsInitialized() {
-    return photo_state_ == PhotoState::PHOTO_STATE__IDLE;
-  };
+  bool IsInitialized() { return photo_state_ == PhotoState::kIdle; }
 
   // Returns true if photo state is taking.
-  bool IsTakingPhoto() {
-    return photo_state_ == PhotoState::PHOTO_STATE__TAKING;
-  };
+  bool IsTakingPhoto() { return photo_state_ == PhotoState::kTakingPhoto; }
 
   // Returns path to photo capture.
-  std::string GetPhotoPath() { return file_path_; };
+  std::string GetPhotoPath() { return file_path_; }
 
  private:
   // Initializes record sink for video file capture.
@@ -67,7 +63,7 @@ class PhotoHandler {
                         IMFMediaType* base_media_type);
 
   std::string file_path_ = "";
-  PhotoState photo_state_ = PhotoState::PHOTO_STATE__NOT_STARTED;
+  PhotoState photo_state_ = PhotoState::kNotStarted;
   ComPtr<IMFCapturePhotoSink> photo_sink_;
 };
 

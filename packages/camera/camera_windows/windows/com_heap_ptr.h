@@ -15,30 +15,30 @@ namespace camera_windows {
 template <typename T>
 class ComHeapPtr {
  public:
-  ComHeapPtr() : p_obj_(nullptr){};
-  ComHeapPtr(T* p_obj) : p_obj_(p_obj){};
+  ComHeapPtr() : p_obj_(nullptr) {}
+  ComHeapPtr(T* p_obj) : p_obj_(p_obj) {}
 
   // Frees memory on destruction.
-  ~ComHeapPtr() { Free(); };
+  ~ComHeapPtr() { Free(); }
 
   // Prevent copying / ownership transfer as not currently needed.
   ComHeapPtr(ComHeapPtr const&) = delete;
   ComHeapPtr& operator=(ComHeapPtr const&) = delete;
 
   // Returns the pointer to the memory.
-  operator T*() { return p_obj_; };
+  operator T*() { return p_obj_; }
 
   // Returns the pointer to the memory.
   T* operator->() {
     assert(p_obj_ != nullptr);
     return p_obj_;
-  };
+  }
 
   // Returns the pointer to the memory.
   const T* operator->() const {
     assert(p_obj_ != nullptr);
     return p_obj_;
-  };
+  }
 
   // Returns the pointer to the memory.
   T** operator&() {
@@ -46,7 +46,7 @@ class ComHeapPtr {
     // Object can be released with Reset(nullptr).
     assert(p_obj_ == nullptr);
     return &p_obj_;
-  };
+  }
 
   // Free the memory pointed to, and set the pointer to nullptr.
   void Free() {

@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device_info.h"
+#include "capture_device_info.h"
 
 #include <memory>
 #include <string>
 
 namespace camera_windows {
-std::string GetUniqueDeviceName(
-    std::unique_ptr<CaptureDeviceInfo> device_info) {
-  return device_info->display_name + " <" + device_info->device_id + ">";
+std::string CaptureDeviceInfo::GetUniqueDeviceName() {
+  return display_name_ + " <" + device_id_ + ">";
 }
 
-std::unique_ptr<CaptureDeviceInfo> ParseDeviceInfoFromCameraName(
+bool CaptureDeviceInfo::ParseDeviceInfoFromCameraName(
     const std::string& camera_name) {
   size_t delimeter_index = camera_name.rfind(' ', camera_name.length());
   if (delimeter_index != std::string::npos) {
     auto deviceInfo = std::make_unique<CaptureDeviceInfo>();
-    deviceInfo->display_name = camera_name.substr(0, delimeter_index);
-    deviceInfo->device_id = camera_name.substr(
-        delimeter_index + 2, camera_name.length() - delimeter_index - 3);
-    return deviceInfo;
+    display_name_ = camera_name.substr(0, delimeter_index);
+    device_id_ = camera_name.substr(delimeter_index + 2,
+                                    camera_name.length() - delimeter_index - 3);
+    return true;
   }
 
-  return nullptr;
+  return false;
 }
 
 }  // namespace camera_windows

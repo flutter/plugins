@@ -265,7 +265,7 @@ void CaptureControllerImpl::ResetCaptureController() {
 
   // States
   media_foundation_started_ = false;
-  capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_NOT_INITIALIZED;
+  capture_engine_state_ = CaptureEngineState::kNotInitialized;
   preview_frame_width_ = 0;
   preview_frame_height_ = 0;
   capture_engine_callback_handler_ = nullptr;
@@ -296,13 +296,12 @@ void CaptureControllerImpl::InitCaptureDevice(
   if (IsInitialized()) {
     return capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Capture device already initialized");
-  } else if (capture_engine_state_ ==
-             CaptureEngineState::CAPTURE_ENGINE_INITIALIZING) {
+  } else if (capture_engine_state_ == CaptureEngineState::kInitializing) {
     return capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Capture device already initializing");
   }
 
-  capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_INITIALIZING;
+  capture_engine_state_ = CaptureEngineState::kInitializing;
   resolution_preset_ = resolution_preset;
   record_audio_ = record_audio;
   texture_registrar_ = texture_registrar;
@@ -364,22 +363,23 @@ void CaptureControllerImpl::TakePicture(const std::string file_path) {
 
 uint32_t CaptureControllerImpl::GetMaxPreviewHeight() {
   switch (resolution_preset_) {
-    case RESOLUTION_PRESET_LOW:
+    case ResolutionPreset::kLow:
       return 240;
       break;
-    case RESOLUTION_PRESET_MEDIUM:
+    case ResolutionPreset::kMedium:
       return 480;
       break;
-    case RESOLUTION_PRESET_HIGH:
+    case ResolutionPreset::kHigh:
       return 720;
       break;
-    case RESOLUTION_PRESET_VERY_HIGH:
+    case ResolutionPreset::kVeryHigh:
       return 1080;
       break;
-    case RESOLUTION_PRESET_ULTRA_HIGH:
+    case ResolutionPreset::kUltraHigh:
       return 2160;
       break;
-    case RESOLUTION_PRESET_AUTO:
+    case ResolutionPreset::kMax:
+    case ResolutionPreset::kAuto:
     default:
       // no limit.
       return 0xffffffff;
@@ -468,8 +468,8 @@ HRESULT CaptureControllerImpl::FindBaseMediaTypes() {
   // Find base media type for record and photo capture.
   if (!FindBestMediaType(
           (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_VIDEO_RECORD,
-          source.Get(), base_capture_media_type_.GetAddressOf(),
-          (uint32_t)0xffffffff, nullptr, nullptr)) {
+          source.Get(), base_capture_media_type_.GetAddressOf(), 0xffffffff,
+          nullptr, nullptr)) {
     return E_FAIL;
   }
 
@@ -651,8 +651,8 @@ void CaptureControllerImpl::ResumePreview() {
 // Called via IMFCaptureEngineOnEventCallback implementation.
 // Implements CaptureEngineObserver::OnEvent.
 void CaptureControllerImpl::OnEvent(IMFMediaEvent* event) {
-  if (!IsInitialized() && capture_engine_state_ !=
-                              CaptureEngineState::CAPTURE_ENGINE_INITIALIZING) {
+  if (!IsInitialized() &&
+      capture_engine_state_ != CaptureEngineState::kInitializing) {
     return;
   }
 
@@ -723,7 +723,7 @@ void CaptureControllerImpl::OnCaptureEngineInitialized(
     int64_t texture_id = texture_handler_->RegisterTexture();
     if (texture_id >= 0) {
       capture_controller_listener_->OnCreateCaptureEngineSucceeded(texture_id);
-      capture_engine_state_ = CaptureEngineState::CAPTURE_ENGINE_INITIALIZED;
+      capture_engine_state_ = CaptureEngineState::kInitialized;
     } else {
       capture_controller_listener_->OnCreateCaptureEngineFailed(
           "Failed to create texture_id");

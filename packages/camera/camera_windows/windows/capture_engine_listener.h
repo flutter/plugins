@@ -7,6 +7,7 @@
 
 #include <mfcaptureengine.h>
 
+#include <cassert>
 #include <functional>
 
 namespace camera_windows {
@@ -29,13 +30,18 @@ class CaptureEngineObserver {
   virtual void UpdateCaptureTime(uint64_t capture_time) = 0;
 };
 
+// Listener for capture engine events and samples.
+// Events are redirected for observers for processing.
+// Samples are preprosessed and send to observer if it
+// is ready to process samples.
 class CaptureEngineListener : public IMFCaptureEngineOnSampleCallback,
                               public IMFCaptureEngineOnEventCallback {
  public:
-  CaptureEngineListener(CaptureEngineObserver* observer)
-      : observer_(observer) {}
+  CaptureEngineListener(CaptureEngineObserver* observer) : observer_(observer) {
+    assert(observer);
+  }
 
-  ~CaptureEngineListener(){};
+  ~CaptureEngineListener() {}
 
   // Disallow copy and move.
   CaptureEngineListener(const CaptureEngineListener&) = delete;

@@ -59,9 +59,8 @@ void MockInitCaptureController(CaptureControllerImpl* capture_controller,
       .Times(1);
   EXPECT_CALL(*engine, Initialize).Times(1);
 
-  capture_controller->InitCaptureDevice(
-      texture_registrar, MOCK_DEVICE_ID, true,
-      ResolutionPreset::RESOLUTION_PRESET_AUTO);
+  capture_controller->InitCaptureDevice(texture_registrar, MOCK_DEVICE_ID, true,
+                                        ResolutionPreset::kAuto);
 
   // MockCaptureEngine::Initialize is called
   EXPECT_TRUE(engine->initialized_);

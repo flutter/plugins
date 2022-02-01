@@ -103,6 +103,7 @@ HRESULT PhotoHandler::InitPhotoSink(IMFCaptureEngine* capture_engine,
       (DWORD)MF_CAPTURE_ENGINE_PREFERRED_SOURCE_STREAM_FOR_PHOTO,
       photo_media_type.Get(), nullptr, &photo_sink_stream_index);
   if (FAILED(hr)) {
+    photo_sink_ = nullptr;
     return hr;
   }
 
@@ -128,13 +129,13 @@ bool PhotoHandler::TakePhoto(const std::string& file_path,
     return false;
   }
 
-  photo_state_ = PhotoState::PHOTO_STATE__TAKING;
+  photo_state_ = PhotoState::kTakingPhoto;
   return SUCCEEDED(capture_engine->TakePhoto());
 }
 
 void PhotoHandler::OnPhotoTaken() {
-  assert(photo_state_ == PhotoState::PHOTO_STATE__TAKING);
-  photo_state_ = PhotoState::PHOTO_STATE__IDLE;
+  assert(photo_state_ == PhotoState::kTakingPhoto);
+  photo_state_ = PhotoState::kIdle;
 }
 
 }  // namespace camera_windows
