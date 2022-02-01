@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Moved away from shared method channel implementation.
+
 ## 2.0.3
 
 * Updates code for new analysis options.

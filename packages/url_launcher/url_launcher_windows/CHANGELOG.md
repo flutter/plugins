@@ -1,5 +1,6 @@
-## NEXT
+## 2.0.3
 
+* Moved away from shared method channel implementation.
 * Adds unit tests.
 * Updates code for new analysis options.
 
