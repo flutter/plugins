@@ -34,7 +34,7 @@ class PurchaseDetails {
   ///
   /// Milliseconds since epoch.
   ///
-  /// The value is `null` if [status] is not [PurchaseStatus.purchased].
+  /// The value is `null` if [status] is neither [PurchaseStatus.purchased] nor [PurchaseStatus.restored].
   final String? transactionDate;
 
   /// The status that this [PurchaseDetails] is currently on.
