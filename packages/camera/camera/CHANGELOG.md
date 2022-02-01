@@ -1,3 +1,7 @@
+## 0.9.4+10
+
+* iOS performance improvement by writing captured photo file on a background IO queue. 
+
 ## 0.9.4+9
 
 * iOS performance improvement by moving sample buffer handling from the main queue to a background session queue. 
