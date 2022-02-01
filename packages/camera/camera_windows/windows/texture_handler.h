@@ -62,8 +62,10 @@ class TextureHandler {
   const FlutterDesktopPixelBuffer* ConvertPixelBufferForFlutter(size_t width,
                                                                 size_t height);
 
-  // Check if texture id is available and texture registrar is available
-  bool TextureRegistered() { return texture_registrar_ && texture_id_ > -1; }
+  // Checks if texture registrar, texture id and texture are available.
+  bool TextureRegistered() {
+    return texture_registrar_ && texture_ && texture_id_ > -1;
+  }
 
   bool mirror_preview_ = false;
   int64_t texture_id_ = -1;
@@ -71,10 +73,12 @@ class TextureHandler {
   uint32_t source_buffer_size_ = 0;
   uint32_t preview_frame_width_ = 0;
   uint32_t preview_frame_height_ = 0;
-  std::unique_ptr<uint8_t[]> source_buffer_ = nullptr;
-  std::unique_ptr<uint8_t[]> dest_buffer_ = nullptr;
+
+  std::vector<uint8_t> source_buffer_;
+  std::vector<uint8_t> dest_buffer_;
   std::unique_ptr<flutter::TextureVariant> texture_;
-  FlutterDesktopPixelBuffer flutter_desktop_pixel_buffer_ = {};
+  std::unique_ptr<FlutterDesktopPixelBuffer> flutter_desktop_pixel_buffer_ =
+      nullptr;
   flutter::TextureRegistrar* texture_registrar_ = nullptr;
 
   std::mutex buffer_mutex_;
