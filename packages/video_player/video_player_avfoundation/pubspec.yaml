@@ -10,8 +10,10 @@ environment:
 
 flutter:
   plugin:
+    implements: video_player
     platforms:
       ios:
+        dartPluginClass: AVFoundationVideoPlayer
         pluginClass: FLTVideoPlayerPlugin
 
 dependencies:
