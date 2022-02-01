@@ -18,7 +18,7 @@ Additional resources specific to the plugins repository:
 - [Plugin tests](https://github.com/flutter/flutter/wiki/Plugin-Tests), which explains
   the different kinds of tests used for plugins, where to find them, and how to run them.
   As explained in the Flutter guide,
-  [**PRs needs tests**](https://github.com/flutter/flutter/wiki/Tree-hygiene#tests), so
+  [**PRs need tests**](https://github.com/flutter/flutter/wiki/Tree-hygiene#tests), so
   this is critical to read before submitting a PR.
 - [Contributing to Plugins and Packages](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages),
   for more information about how to make PRs for this repository, especially when

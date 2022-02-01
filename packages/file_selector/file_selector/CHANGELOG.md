@@ -1,3 +1,7 @@
+## 0.8.3
+
+* Adds an endorsed Windows implementation.
+
 ## 0.8.2+1
 
 * Minor code cleanup for new analysis rules.

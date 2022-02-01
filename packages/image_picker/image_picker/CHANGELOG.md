@@ -1,7 +1,12 @@
 ## 0.8.5
+
+* Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
+
+## 0.8.4+5
+
+* Improves the documentation on handling MainActivity being killed by the Android OS.
 * Updates Android compileSdkVersion to 31.
 * Fix iOS RunnerUITests search paths.
-* Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
 
 ## 0.8.4+4
 
