@@ -23,6 +23,7 @@
 
 @interface FLTImagePickerPlugin (Test)
 @property(copy, nonatomic) FlutterResult result;
+@property(copy, nonatomic) NSDictionary *arguments;
 - (void)handleSavedPathList:(NSMutableArray *)pathList;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 @end
@@ -170,6 +171,61 @@
   // To ensure the flow does not crash by multiple cancel call
   [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
   [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
+}
+
+#pragma mark - Test that arguments and results are set for all method calls
+- (void)testPickImageShouldSetArgumentsAndResult {
+  FlutterResult expectedResult = ^(id _Nullable r) {
+  };
+  NSDictionary *expectedArguments =
+      @{@"source" : @(1), @"maxWidth" : @(200), @"maxHeight" : @(200), @"imageQuality" : @(50)};
+
+  // Run test
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                                              arguments:expectedArguments];
+
+  [plugin handleMethodCall:call result:expectedResult];
+
+  XCTAssertEqual(plugin.result, expectedResult);
+  XCTAssertEqual(plugin.arguments, expectedArguments);
+}
+
+- (void)testPickMultiImageShouldSetArgumentsAndResult {
+  FlutterResult expectedResult = ^(id _Nullable r) {
+  };
+  NSDictionary *expectedArguments =
+      @{@"maxWidth" : @(200), @"maxHeight" : @(200), @"imageQuality" : @(50)};
+
+  // Run test
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImage"
+                                                              arguments:expectedArguments];
+
+  [plugin handleMethodCall:call result:expectedResult];
+
+  XCTAssertEqual(plugin.result, expectedResult);
+  XCTAssertEqual(plugin.arguments, expectedArguments);
+}
+
+- (void)testPickVideoShouldSetArgumentsAndResult {
+  // AVAuthorizationStatusAuthorized is supported
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
+  FlutterResult expectedResult = ^(id _Nullable r) {
+  };
+  NSDictionary *expectedArguments = @{@"source" : @(1), @"maxDuration" : @(200)};
+
+  // Run test
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickVideo"
+                                                              arguments:expectedArguments];
+
+  [plugin handleMethodCall:call result:expectedResult];
+
+  XCTAssertEqual(plugin.result, expectedResult);
+  XCTAssertEqual(plugin.arguments, expectedArguments);
 }
 
 #pragma mark - Test video duration

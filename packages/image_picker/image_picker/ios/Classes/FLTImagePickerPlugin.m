@@ -111,7 +111,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   _imagePickerController.delegate = self;
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
-  
+
   self.maxImagesAllowed = 1;
 
   switch (imageSource) {
@@ -136,12 +136,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                     details:nil]);
     self.result = nil;
   }
-  
+
   self.result = result;
   self.arguments = call.arguments;
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    int imageSource = [[self.arguments objectForKey:@"source"] intValue];
 
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
@@ -169,10 +169,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       (NSString *)kUTTypeMPEG4
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
-    
-    int imageSource = [[_arguments objectForKey:@"source"] intValue];
-    if ([[_arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
-      NSTimeInterval max = [[_arguments objectForKey:@"maxDuration"] doubleValue];
+
+    int imageSource = [[self.arguments objectForKey:@"source"] intValue];
+    if ([[self.arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
+      NSTimeInterval max = [[self.arguments objectForKey:@"maxDuration"] doubleValue];
       _imagePickerController.videoMaximumDuration = max;
     }
 
