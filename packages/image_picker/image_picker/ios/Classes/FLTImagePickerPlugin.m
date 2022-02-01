@@ -402,27 +402,23 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
-    NSMutableArray *pickResult = [self createNSMutableArrayWithSize:results.count];
+    NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation = [[FLTPHPickerSaveImageToPathOperation alloc]
-               initWithResult:result
-                    maxHeight:maxHeight
-                     maxWidth:maxWidth
-          desiredImageQuality:desiredImageQuality
-               savedPathBlock:^(NSString *savedPath, NSError *error) {
-                 if (error == nil) {
-                   pickResult[i] = savedPath;
-                 } else {
-                   pickResult[i] = error;
-                 }
-               }];
+      FLTPHPickerSaveImageToPathOperation *operation =
+          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
+                                                            maxHeight:maxHeight
+                                                             maxWidth:maxWidth
+                                                  desiredImageQuality:desiredImageQuality
+                                                       savedPathBlock:^(NSString *savedPath) {
+                                                         pathList[i] = savedPath;
+                                                       }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self handleSavedPathList:pickResult];
+      [self handleSavedPathList:pathList];
     });
   });
 }

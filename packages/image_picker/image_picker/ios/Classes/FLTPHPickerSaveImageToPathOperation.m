@@ -16,7 +16,7 @@ API_AVAILABLE(ios(14))
 
 @end
 
-typedef void (^GetSavedPath)(NSString *, NSError *Error);
+typedef void (^GetSavedPath)(NSString *);
 
 @implementation FLTPHPickerSaveImageToPathOperation {
   BOOL executing;
@@ -74,13 +74,7 @@ typedef void (^GetSavedPath)(NSString *, NSError *Error);
 - (void)completeOperationWithPath:(NSString *)savedPath {
   [self setExecuting:NO];
   [self setFinished:YES];
-  getSavedPath(savedPath, nil);
-}
-
-- (void)terminateOperationWithError:(NSError *)error {
-  [self setExecuting:NO];
-  [self setFinished:YES];
-  getSavedPath(nil, error);
+  getSavedPath(savedPath);
 }
 
 - (void)start {
@@ -96,13 +90,8 @@ typedef void (^GetSavedPath)(NSString *, NSError *Error);
           loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier
                                 completionHandler:^(NSData *_Nullable data,
                                                     NSError *_Nullable error) {
-                                  if (error != nil) {
-                                    [self terminateOperationWithError:error];
-                                    return;
-                                  } else {
-                                    UIImage *image = [[UIImage alloc] initWithData:data];
-                                    [self processImage:image];
-                                  }
+                                  UIImage *image = [[UIImage alloc] initWithData:data];
+                                  [self processImage:image];
                                 }];
       return;
     }
@@ -111,9 +100,7 @@ typedef void (^GetSavedPath)(NSString *, NSError *Error);
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
-          if (error != nil) {
-            [self terminateOperationWithError:error];
-          } else if ([image isKindOfClass:[UIImage class]]) {
+          if ([image isKindOfClass:[UIImage class]]) {
             [self processImage:image];
           }
         }];
@@ -122,9 +109,6 @@ typedef void (^GetSavedPath)(NSString *, NSError *Error);
   }
 }
 
-/*
- * This method processes the image and save it to the file.
- */
 - (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
   PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
 
@@ -134,7 +118,14 @@ typedef void (^GetSavedPath)(NSString *, NSError *Error);
                                             maxHeight:self.maxHeight
                                   isMetadataAvailable:originalAsset != nil];
   }
-  if (originalAsset) {
+  if (!originalAsset) {
+    // Image picked without an original asset (e.g. User pick image without permission)
+    NSString *savedPath =
+        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                        image:localImage
+                                                 imageQuality:self.desiredImageQuality];
+    [self completeOperationWithPath:savedPath];
+  } else {
     [[PHImageManager defaultManager]
         requestImageDataForAsset:originalAsset
                          options:nil
@@ -149,13 +140,6 @@ typedef void (^GetSavedPath)(NSString *, NSError *Error);
                                            imageQuality:self.desiredImageQuality];
                      [self completeOperationWithPath:savedPath];
                    }];
-  } else {
-    // Image picked without an original asset (e.g. User pick image without permission)
-    NSString *savedPath =
-        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                        image:localImage
-                                                 imageQuality:self.desiredImageQuality];
-    [self completeOperationWithPath:savedPath];
   }
 }
 
