@@ -162,27 +162,28 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _disposeCurrentCamera() async {
-    assert(_cameraId > 0);
-    assert(_initialized);
-    try {
-      await CameraPlatform.instance.dispose(_cameraId);
+    if (_cameraId >= 0 && _initialized) {
+      try {
+        await CameraPlatform.instance.dispose(_cameraId);
 
-      if (mounted) {
-        setState(() {
-          _initialized = false;
-          _cameraId = -1;
-          _previewSize = null;
-          _recording = false;
-          _recordingTimed = false;
-          _previewPaused = false;
-          _cameraInfo = 'Camera disposed';
-        });
-      }
-    } on CameraException catch (e) {
-      if (mounted) {
-        setState(() {
-          _cameraInfo = 'Failed to dispose camera: ${e.code}: ${e.description}';
-        });
+        if (mounted) {
+          setState(() {
+            _initialized = false;
+            _cameraId = -1;
+            _previewSize = null;
+            _recording = false;
+            _recordingTimed = false;
+            _previewPaused = false;
+            _cameraInfo = 'Camera disposed';
+          });
+        }
+      } on CameraException catch (e) {
+        if (mounted) {
+          setState(() {
+            _cameraInfo =
+                'Failed to dispose camera: ${e.code}: ${e.description}';
+          });
+        }
       }
     }
   }
