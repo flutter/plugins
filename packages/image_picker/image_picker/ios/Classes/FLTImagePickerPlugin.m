@@ -101,13 +101,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)pickImageWithUIImagePicker {
+  int imageSource = [[_arguments objectForKey:@"source"] intValue];
+
+  [self launchUIImagePickerWithSource:imageSource];
+}
+
+- (void)launchUIImagePickerWithSource:(int)imageSource {
   _imagePickerController = [[UIImagePickerController alloc] init];
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   _imagePickerController.delegate = self;
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
-
-  int imageSource = [[_arguments objectForKey:@"source"] intValue];
-
+  
   self.maxImagesAllowed = 1;
 
   switch (imageSource) {
@@ -132,10 +136,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                     details:nil]);
     self.result = nil;
   }
+  
+  self.result = result;
+  self.arguments = call.arguments;
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    self.result = result;
-    _arguments = call.arguments;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
@@ -151,11 +156,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
-      self.result = result;
-      _arguments = call.arguments;
       [self pickImageWithPHPicker:0];
     } else {
-      [self pickImageWithUIImagePicker];
+      [self launchUIImagePickerWithSource:SOURCE_GALLERY];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
@@ -166,10 +169,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       (NSString *)kUTTypeMPEG4
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
-
-    self.result = result;
-    _arguments = call.arguments;
-
+    
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
     if ([[_arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
       NSTimeInterval max = [[_arguments objectForKey:@"maxDuration"] doubleValue];

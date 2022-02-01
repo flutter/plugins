@@ -1,3 +1,8 @@
+## 0.8.4+6
+
+* Fixes a bug where picking multiple images on pre-iOS 14 devices shows the 
+camera instead of expected gallery.
+
 ## 0.8.4+5
 
 * Improves the documentation on handling MainActivity being killed by the Android OS.
