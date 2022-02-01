@@ -571,19 +571,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   if (pathList) {
     if (![pathList containsObject:[NSNull null]]) {
-      NSMutableArray *formattedPathList = [[NSMutableArray alloc] initWithCapacity:pathList.count];
-      for (int x = 0; x < pathList.count; x++) {
-        if ([pathList[x] isKindOfClass:[NSString class]]) {
-          formattedPathList[x] = @{
-            @"type" : @"path",
-            @"value" : pathList[x],
-          };
-        } else if ([pathList[x] isKindOfClass:[NSError class]]) {
-          formattedPathList[x] =
-              @{@"type" : @"error", @"value" : ((NSError *)pathList[x]).localizedDescription};
-        }
-      }
-
       if ((self.maxImagesAllowed == 1)) {
         self.result(pathList.firstObject);
       } else {
