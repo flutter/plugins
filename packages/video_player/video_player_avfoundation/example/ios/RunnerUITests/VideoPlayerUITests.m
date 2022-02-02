@@ -30,12 +30,6 @@
   XCTAssertTrue([playButton waitForExistenceWithTimeout:30.0]);
   [playButton tap];
 
-  XCUIElement *chirpClosedCaption = app.staticTexts[@"[ Birds chirping ]"];
-  XCTAssertTrue([chirpClosedCaption waitForExistenceWithTimeout:30.0]);
-
-  XCUIElement *buzzClosedCaption = app.staticTexts[@"[ Buzzing ]"];
-  XCTAssertTrue([buzzClosedCaption waitForExistenceWithTimeout:30.0]);
-
   XCUIElement *playbackSpeed1x = app.staticTexts[@"Playback speed\n1.0x"];
   XCTAssertTrue([playbackSpeed1x waitForExistenceWithTimeout:30.0]);
   [playbackSpeed1x tap];
