@@ -4,12 +4,12 @@
 
 #include "capture_controller.h"
 
+#include <comdef.h>
 #include <wincodec.h>
 #include <wrl/client.h>
 
 #include <cassert>
 #include <chrono>
-#include <system_error>
 
 #include "com_heap_ptr.h"
 #include "photo_handler.h"
@@ -667,7 +667,8 @@ void CaptureControllerImpl::OnEvent(IMFMediaEvent* event) {
 
     if (FAILED(event_hr)) {
       // Reads system error
-      error = std::system_category().message(event_hr);
+      _com_error err(event_hr);
+      error = Utf8FromUtf16(err.ErrorMessage());
     }
 
     if (extended_type_guid == MF_CAPTURE_ENGINE_ERROR) {
