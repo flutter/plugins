@@ -11,7 +11,7 @@ using flutter::EncodableValue;
 
 // Camera channel events.
 constexpr char kCameraMethodChannelBaseName[] =
-    "flutter.io/cameraPlugin/camera";
+    "plugins.flutter.io/camera_windows/camera";
 constexpr char kVideoRecordedEvent[] = "video_recorded";
 constexpr char kCameraClosingEvent[] = "camera_closing";
 constexpr char kErrorEvent[] = "error";

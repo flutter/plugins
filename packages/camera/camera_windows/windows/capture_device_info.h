@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_DEVICE_INFO_H_
-#define PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_DEVICE_INFO_H_
+#ifndef PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_CAPTURE_DEVICE_INFO_H_
+#define PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_CAPTURE_DEVICE_INFO_H_
 
-#include <memory>
 #include <string>
 
 namespace camera_windows {
@@ -46,4 +45,4 @@ class CaptureDeviceInfo {
 
 }  // namespace camera_windows
 
-#endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_DEVICE_INFO_H_
+#endif  // PACKAGES_CAMERA_CAMERA_WINDOWS_WINDOWS_CAPTURE_DEVICE_INFO_H_

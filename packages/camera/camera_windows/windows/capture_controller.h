@@ -221,11 +221,11 @@ class CaptureControllerImpl : public CaptureController,
   uint32_t preview_frame_width_ = 0;
   uint32_t preview_frame_height_ = 0;
   UINT dx_device_reset_token_ = 0;
-  std::unique_ptr<RecordHandler> record_handler_ = nullptr;
-  std::unique_ptr<PreviewHandler> preview_handler_ = nullptr;
-  std::unique_ptr<PhotoHandler> photo_handler_ = nullptr;
-  std::unique_ptr<TextureHandler> texture_handler_ = nullptr;
-  CaptureControllerListener* capture_controller_listener_ = nullptr;
+  std::unique_ptr<RecordHandler> record_handler_;
+  std::unique_ptr<PreviewHandler> preview_handler_;
+  std::unique_ptr<PhotoHandler> photo_handler_;
+  std::unique_ptr<TextureHandler> texture_handler_;
+  CaptureControllerListener* capture_controller_listener_;
 
   std::string video_device_id_;
   CaptureEngineState capture_engine_state_ =

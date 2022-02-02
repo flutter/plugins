@@ -62,7 +62,7 @@ class PhotoHandler {
   HRESULT InitPhotoSink(IMFCaptureEngine* capture_engine,
                         IMFMediaType* base_media_type);
 
-  std::string file_path_ = "";
+  std::string file_path_;
   PhotoState photo_state_ = PhotoState::kNotStarted;
   ComPtr<IMFCapturePhotoSink> photo_sink_;
 };

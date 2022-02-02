@@ -48,7 +48,7 @@ class ComHeapPtr {
     return &p_obj_;
   }
 
-  // Free the memory pointed to, and set the pointer to nullptr.
+  // Frees the memory pointed to, and sets the pointer to nullptr.
   void Free() {
     if (p_obj_) {
       CoTaskMemFree(p_obj_);

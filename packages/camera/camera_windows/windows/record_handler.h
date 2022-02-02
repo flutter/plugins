@@ -92,7 +92,7 @@ class RecordHandler {
   int64_t max_video_duration_ms_ = -1;
   int64_t recording_start_timestamp_us_ = -1;
   uint64_t recording_duration_us_ = 0;
-  std::string file_path_ = "";
+  std::string file_path_;
   RecordState recording_state_ = RecordState::kNotStarted;
   RecordingType type_;
   ComPtr<IMFCaptureRecordSink> record_sink_;

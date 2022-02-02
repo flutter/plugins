@@ -138,8 +138,8 @@ class CameraImpl : public Camera {
       PendingResultType type);
 
   std::map<PendingResultType, std::unique_ptr<MethodResult<>>> pending_results_;
-  std::unique_ptr<CaptureController> capture_controller_ = nullptr;
-  std::unique_ptr<MethodChannel<>> camera_channel_ = nullptr;
+  std::unique_ptr<CaptureController> capture_controller_;
+  std::unique_ptr<MethodChannel<>> camera_channel_;
   flutter::BinaryMessenger* messenger_ = nullptr;
   int64_t camera_id_ = -1;
   std::string device_id_;

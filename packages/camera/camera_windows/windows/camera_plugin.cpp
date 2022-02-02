@@ -30,7 +30,7 @@ using flutter::EncodableValue;
 namespace {
 
 // Channel events
-constexpr char kChannelName[] = "plugins.flutter.io/camera";
+constexpr char kChannelName[] = "plugins.flutter.io/camera_windows";
 
 constexpr char kAvailableCamerasMethod[] = "availableCameras";
 constexpr char kCreateMethod[] = "create";

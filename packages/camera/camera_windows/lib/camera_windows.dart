@@ -20,7 +20,7 @@ class CameraWindows extends CameraPlatform {
 
   /// The method channel used to interact with the native platform.
   final MethodChannel _pluginChannel =
-      const MethodChannel('plugins.flutter.io/camera');
+      const MethodChannel('plugins.flutter.io/camera_windows');
 
   /// Camera specific method channels to allow comminicating with specific cameras.
   final Map<int, MethodChannel> _cameraChannels = <int, MethodChannel>{};
@@ -94,8 +94,8 @@ class CameraWindows extends CameraPlatform {
 
     /// Creates channel for camera events.
     _cameraChannels.putIfAbsent(requestedCameraId, () {
-      final MethodChannel channel =
-          MethodChannel('flutter.io/cameraPlugin/camera$requestedCameraId');
+      final MethodChannel channel = MethodChannel(
+          'plugins.flutter.io/camera_windows/camera$requestedCameraId');
       channel.setMethodCallHandler(
         (MethodCall call) => _handleCameraMethodCall(call, requestedCameraId),
       );

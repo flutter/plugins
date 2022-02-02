@@ -312,7 +312,8 @@ TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
   std::string file_path = "C:\temp\filename.mp4";
   int64_t camera_id = 12345;
   std::string camera_channel =
-      std::string("flutter.io/cameraPlugin/camera") + std::to_string(camera_id);
+      std::string("plugins.flutter.io/camera_windows/camera") +
+      std::to_string(camera_id);
   int64_t video_duration = 1000000;
 
   EXPECT_CALL(*capture_controller_factory, CreateCaptureController)
