@@ -4,6 +4,7 @@
 
 #import "FLTCam.h"
 #import "FLTCam_Test.h"
+#import "FLTSavePhotoDelegate.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
@@ -39,74 +40,6 @@
   });
   return nil;
 }
-@end
-
-@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
-@property(readonly, nonatomic) NSString *path;
-@property(readonly, nonatomic) FLTThreadSafeFlutterResult *result;
-/// The queue on which captured photos are wrote to disk.
-@property(strong, nonatomic) dispatch_queue_t ioQueue;
-/// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
-@property(strong, nonatomic) FLTSavePhotoDelegate *selfReference;
-@end
-
-@implementation FLTSavePhotoDelegate
-
-- initWithPath:(NSString *)path
-        result:(FLTThreadSafeFlutterResult *)result
-       ioQueue:(dispatch_queue_t)ioQueue {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  _path = path;
-  _selfReference = self;
-  _result = result;
-  _ioQueue = ioQueue;
-  return self;
-}
-
-- (void)handlePhotoCaptureResultWithError:(NSError *)error
-                        photoDataProvider:(NSData * (^)(void))photoDataProvider {
-  self.selfReference = nil;
-  if (error) {
-    [self.result sendError:error];
-    return;
-  }
-  dispatch_async(self.ioQueue, ^{
-    NSData *data = photoDataProvider();
-    bool success = [data writeToFile:self.path atomically:YES];
-
-    if (!success) {
-      [self.result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
-      return;
-    }
-    [self.result sendSuccessWithData:self.path];
-  });
-}
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
-                previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
-                        resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
-                         bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
-                                   error:(NSError *)error API_AVAILABLE(ios(10)) {
-  [self handlePhotoCaptureResultWithError:error
-                        photoDataProvider:^NSData * {
-                          return [AVCapturePhotoOutput
-                              JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
-                                                    previewPhotoSampleBuffer:
-                                                        previewPhotoSampleBuffer];
-                        }];
-}
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhoto:(AVCapturePhoto *)photo
-                       error:(NSError *)error API_AVAILABLE(ios(11.0)) {
-  [self handlePhotoCaptureResultWithError:error
-                        photoDataProvider:^NSData * {
-                          return [photo fileDataRepresentation];
-                        }];
-}
-
 @end
 
 @interface FLTCam () <AVCaptureVideoDataOutputSampleBufferDelegate,

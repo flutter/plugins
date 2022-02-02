@@ -9,5 +9,6 @@ framework module camera {
     header "CameraProperties.h"
     header "FLTCam.h"
     header "FLTCam_Test.h"
+    header "FLTSavePhotoDelegate_Test.h"
   }
 }

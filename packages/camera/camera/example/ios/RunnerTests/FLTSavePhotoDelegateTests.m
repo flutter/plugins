@@ -8,15 +8,6 @@
 @import XCTest;
 #import <OCMock/OCMock.h>
 
-@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
-@property(readonly, nonatomic) NSString *path;
-- initWithPath:(NSString *)path
-        result:(FLTThreadSafeFlutterResult *)result
-       ioQueue:(dispatch_queue_t)ioQueue;
-- (void)handlePhotoCaptureResultWithError:(nullable NSError *)error
-                        photoDataProvider:(NSData * (^)(void))photoDataProvider;
-@end
-
 @interface FLTSavePhotoDelegateTests : XCTestCase
 
 @end
