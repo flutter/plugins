@@ -9,7 +9,8 @@
 
 namespace camera_windows {
 
-// Interface for classes that listen events from the capture controller.
+// Interface for classes that receives callbacks on events from the associated
+// |CaptureController|.
 class CaptureControllerListener {
  public:
   virtual ~CaptureControllerListener() = default;
@@ -61,7 +62,7 @@ class CaptureControllerListener {
 
   // Called by CaptureController on successfully stopped recording.
   //
-  // file_path: File path to the recorded video file.
+  // file_path: Filesystem path of the recorded video file.
   virtual void OnStopRecordSucceeded(const std::string& file_path) = 0;
 
   // Called by CaptureController if stopping the recording fails.
@@ -71,7 +72,7 @@ class CaptureControllerListener {
 
   // Called by CaptureController on successfully captured picture.
   //
-  // file_path: File path to the captured image.
+  // file_path: Filesystem path of the captured image.
   virtual void OnTakePictureSucceeded(const std::string& file_path) = 0;
 
   // Called by CaptureController if taking picture fails.
@@ -81,7 +82,7 @@ class CaptureControllerListener {
 
   // Called by CaptureController when timed recording is successfully recorded.
   //
-  // file_path: File path to the captured image.
+  // file_path: Filesystem path of the captured image.
   // video_duration: Duration of recorded video in milliseconds.
   virtual void OnVideoRecordSucceeded(const std::string& file_path,
                                       int64_t video_duration_ms) = 0;

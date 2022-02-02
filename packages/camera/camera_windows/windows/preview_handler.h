@@ -17,10 +17,11 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-// States the preview handler can be in. When created, the handler starts in
-// not started state and mostly transitions in sequential order of the states.
-// When the preview is running, it can be set to the pause state and resumed to
-// running state.
+// States the preview handler can be in.
+//
+// When created, the handler starts in |kNotStarted| state and mostly
+// transitions in sequential order of the states. When the preview is running,
+// it can be set to the |kPaused| state and later resumed to |kRunning| state.
 enum class PreviewState {
   kNotStarted,
   kStarting,
@@ -29,7 +30,10 @@ enum class PreviewState {
   kStopping
 };
 
-// Handles the preview sink initialization and tracks preview states.
+// Handler for a camera's video preview.
+//
+// Handles preview sink initialization and manages the state of the video
+// preview.
 class PreviewHandler {
  public:
   PreviewHandler() {}

@@ -30,8 +30,10 @@ enum class PendingResultType {
   kResumePreview,
 };
 
-// Interface for a class that handles camera messaging and its capture
-// controller instance.
+// Interface implemented by cameras.
+//
+// Access is provided to an associated |CaptureController|, which can be used
+// to capture video or photo from the camera.
 class Camera : public CaptureControllerListener {
  public:
   explicit Camera(const std::string& device_id) {}
@@ -41,33 +43,37 @@ class Camera : public CaptureControllerListener {
   Camera(const Camera&) = delete;
   Camera& operator=(const Camera&) = delete;
 
-  // Tests if current camera has given device id.
+  // Tests if this camera has the specified device ID.
   virtual bool HasDeviceId(std::string& device_id) = 0;
 
-  // Tests if current camera has given camera id.
+  // Tests if this camera has the specified camera ID.
   virtual bool HasCameraId(int64_t camera_id) = 0;
 
   // Adds a pending result.
+  //
   // Returns an error result if the result has already been added.
   virtual bool AddPendingResult(PendingResultType type,
                                 std::unique_ptr<MethodResult<>> result) = 0;
 
-  // Checks if pending result with given type already exists.
+  // Checks if a pending result of the specified type already exists.
   virtual bool HasPendingResultByType(PendingResultType type) = 0;
 
-  // Returns pointer to capture controller.
+  // Returns a |CaptureController| that allows capturing video or still photos
+  // from this camera.
   virtual camera_windows::CaptureController* GetCaptureController() = 0;
 
-  // Initializes camera and capture controller.
+  // Initializes this camera and its associated capture controller.
   virtual void InitCamera(flutter::TextureRegistrar* texture_registrar,
                           flutter::BinaryMessenger* messenger,
                           bool record_audio,
                           ResolutionPreset resolution_preset) = 0;
 };
 
-// The camera wrapper, which initializes the capture controller, listens for its
-// events, processes pending results and sends processed events through the
-// method channel.
+// Concrete implementation of the |Camera| interface.
+//
+// This implementation is responsible for initializing the capture controller,
+// listening for camera events, processing pending results, and notifying
+// application code of processed events via the method channel.
 class CameraImpl : public Camera {
  public:
   explicit CameraImpl(const std::string& device_id);
@@ -114,8 +120,10 @@ class CameraImpl : public Camera {
                   flutter::BinaryMessenger* messenger, bool record_audio,
                   ResolutionPreset resolution_preset) override;
 
-  // Inits camera with capture controller factory.
-  // Called by InitCamera implementation but also used in tests.
+  // Initializes the camera and its associated capture controller.
+  //
+  // This is a convenience method called by |InitCamera| but also used in
+  // tests.
   void InitCamera(
       std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
       flutter::TextureRegistrar* texture_registrar,
@@ -123,9 +131,8 @@ class CameraImpl : public Camera {
       ResolutionPreset resolution_preset);
 
  private:
-  // Loops through all pending results and calls their
-  // error handler with given error id and description.
-  // Pending results are cleared in the process.
+  // Loops through all pending results and calls their error handler with given
+  // error ID and description. Pending results are cleared in the process.
   //
   // error_code: A string error code describing the error.
   // error_message: A user-readable error message (optional).
@@ -152,7 +159,7 @@ class CameraImpl : public Camera {
   std::string device_id_;
 };
 
-// Interface for a class that creates camera objects.
+// Factory class for creating |Camera| instances from a specified device ID.
 class CameraFactory {
  public:
   CameraFactory() {}
@@ -167,7 +174,7 @@ class CameraFactory {
       const std::string& device_id) = 0;
 };
 
-// Creates camera instances.
+// Concrete implementation of |CameraFactory|.
 class CameraFactoryImpl : public CameraFactory {
  public:
   CameraFactoryImpl() {}

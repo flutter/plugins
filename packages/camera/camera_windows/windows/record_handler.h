@@ -22,12 +22,15 @@ enum class RecordingType {
   kTimed
 };
 
-// Various states that the record handler can be in. When created the handler
-// is in an not started state and transtions in sequential order of the
-// states.
+// States that the record handler can be in.
+//
+// When created, the handler is in an not started state and transtions in
+// sequential order through the states.
 enum class RecordState { kNotStarted, kStarting, kRunning, kStopping };
 
-// Handles the record sink initialization and tracks record capture states.
+// Handler for video recording via the camera.
+//
+// Handles record sink initialization and manages the state of video recording.
 class RecordHandler {
  public:
   RecordHandler(bool record_audio) : record_audio_(record_audio) {}
@@ -38,6 +41,7 @@ class RecordHandler {
   RecordHandler& operator=(RecordHandler const&) = delete;
 
   // Initializes record sink and requests capture engine to start recording.
+  //
   // Sets record state to: starting.
   // Returns false if recording cannot be started.
   //
@@ -79,17 +83,17 @@ class RecordHandler {
   // Returns true if recording can be stopped.
   bool CanStop() { return recording_state_ == RecordState::kRunning; }
 
-  // Returns path to video recording.
+  // Returns the filesystem path of the video recording.
   std::string GetRecordPath() { return file_path_; }
 
-  // Returns path to video recording in microseconds.
+  // Returns the duration of the video recording in microseconds.
   uint64_t GetRecordedDuration() { return recording_duration_us_; }
 
   // Calculates new recording time from capture timestamp.
   void UpdateRecordingTime(uint64_t timestamp);
 
-  // Tests if recording time has overlapped the max duration
-  // given for timed recordings.
+  // Returns true if recording time has exceeded the maximum duration for timed
+  // recordings.
   bool ShouldStopTimedRecording();
 
  private:

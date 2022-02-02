@@ -376,8 +376,10 @@ class CameraWindows extends CameraPlatform {
     }
   }
 
-  /// Converts messages received from the native platform into camera events. /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
+  /// Converts messages received from the native platform into camera events.
+  ///
+  /// This is only exposed for test purposes. It shouldn't be used by clients
+  /// of the plugin as it may break or change at any time.
   @visibleForTesting
   Future<dynamic> handleCameraMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {

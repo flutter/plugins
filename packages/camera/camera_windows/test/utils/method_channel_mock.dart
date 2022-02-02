@@ -5,7 +5,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// A mock [MethodChannel] implementation for use in tests.
 class MethodChannelMock {
+  /// Creates a new instance with the specified channel name.
+  ///
+  /// This method channel will handle all method invocations specified by
+  /// returning the value mapped to the method name key. If a delay is
+  /// specified, results are returned after the delay has elapsed.
   MethodChannelMock({
     required String channelName,
     this.delay,

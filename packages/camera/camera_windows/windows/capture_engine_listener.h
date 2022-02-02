@@ -12,8 +12,7 @@
 
 namespace camera_windows {
 
-// An interface for a class that listens and handles the
-// events from capture engine listener.
+// A class that implements callbacks for events from a |CaptureEngineListneer|.
 class CaptureEngineObserver {
  public:
   virtual ~CaptureEngineObserver() = default;
@@ -32,10 +31,10 @@ class CaptureEngineObserver {
   virtual void UpdateCaptureTime(uint64_t capture_time) = 0;
 };
 
-// Listener for capture engine events and samples.
-// Events are redirected for observers for processing.
-// Samples are preprosessed and send to observer if it
-// is ready to process samples.
+// Listener for Windows Media Foundation capture engine events and samples.
+//
+// Events are redirected to observers for processing. Samples are preprosessed
+// and sent to the associated observer if it is ready to process samples.
 class CaptureEngineListener : public IMFCaptureEngineOnSampleCallback,
                               public IMFCaptureEngineOnEventCallback {
  public:

@@ -28,7 +28,7 @@ namespace camera_windows {
 using flutter::TextureRegistrar;
 using Microsoft::WRL::ComPtr;
 
-// A set of presets that can be used to request a capture resolution.
+// Camera resolution presets. Used to request a capture resolution.
 enum class ResolutionPreset {
   // Automatic resolution, uses the highest resolution available.
   kAuto,
@@ -46,9 +46,11 @@ enum class ResolutionPreset {
   kMax,
 };
 
-// Various states that the capture controller can have for capture engine
-// it controls. When created the state is in an not initialized state
-// and transtions in sequential order of the states.
+// Camera capture engine state.
+//
+// On creation, |CaptureControllers| start in state |kNotInitialized| then. On
+// initialization, the capture controller transitions to the |kInitializing|
+// and then |kInitialized| state.
 enum class CaptureEngineState { kNotInitialized, kInitializing, kInitialized };
 
 // Interface for a class that enumerates video capture device sources.
@@ -58,7 +60,10 @@ class VideoCaptureDeviceEnumerator {
                                                   UINT32* count) = 0;
 };
 
-// Interface for a capture controller.
+// Interface implemented by capture controllers.
+//
+// Capture controllers are used to capture video streams or still photos from
+// their associated |Camera|.
 class CaptureController {
  public:
   CaptureController() {}
@@ -68,8 +73,7 @@ class CaptureController {
   CaptureController(const CaptureController&) = delete;
   CaptureController& operator=(const CaptureController&) = delete;
 
-  // Initializes capture controller with given device id.
-  // Requests to initialize capture engine.
+  // Initializes the capture controller with the specified device id.
   //
   // texture_registrar: Pointer to Flutter TextureRegistrar instance. Used to
   //                    register texture for capture preview.
@@ -90,7 +94,6 @@ class CaptureController {
   virtual uint32_t GetPreviewHeight() = 0;
 
   // Starts the preview.
-  // Initializes preview handler and requests to start preview.
   virtual void StartPreview() = 0;
 
   // Pauses the preview.
@@ -99,22 +102,22 @@ class CaptureController {
   // Resumes the preview.
   virtual void ResumePreview() = 0;
 
-  // Starts the record.
-  // Initializes record handler and requests to start recording.
+  // Starts recording video.
   virtual void StartRecord(const std::string& file_path,
                            int64_t max_video_duration_ms) = 0;
 
-  // Stops the on going recording.
-  // Uses existing record handler and requests to stop recording.
+  // Stops the current video recording.
   virtual void StopRecord() = 0;
 
-  // Captures photo.
-  // Initializes photo handler and requests to take photo.
+  // Captures a still photo.
   virtual void TakePicture(const std::string file_path) = 0;
 };
 
-// Handles creating the capture engine for preview, video capture and photo
-// capture. Processes events and samples sent by the capture engine instance.
+// Concrete implementation of the |CaptureController| interface.
+//
+// Handles the video preview stream via a |PreviewHandler| instance, video
+// capture via a |RecordHandler| instance, and still photo capture via a
+// |PhotoHandler| instance.
 class CaptureControllerImpl : public CaptureController,
                               public CaptureEngineObserver {
  public:
@@ -251,7 +254,7 @@ class CaptureControllerImpl : public CaptureController,
   TextureRegistrar* texture_registrar_ = nullptr;
 };
 
-// Interface for a class that creates capture controllers.
+// Inferface for factory classes that create |CaptureController| instances.
 class CaptureControllerFactory {
  public:
   CaptureControllerFactory() {}
@@ -261,11 +264,13 @@ class CaptureControllerFactory {
   CaptureControllerFactory(const CaptureControllerFactory&) = delete;
   CaptureControllerFactory& operator=(const CaptureControllerFactory&) = delete;
 
+  // Create and return a |CaptureController| that makes callbacks on the
+  // specified |CaptureControllerListener|, which must not be null.
   virtual std::unique_ptr<CaptureController> CreateCaptureController(
       CaptureControllerListener* listener) = 0;
 };
 
-// Creates capture controller instance.
+// Concreate implementation of |CaptureControllerFactory|.
 class CaptureControllerFactoryImpl : public CaptureControllerFactory {
  public:
   CaptureControllerFactoryImpl() {}

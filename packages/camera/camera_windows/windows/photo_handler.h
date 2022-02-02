@@ -17,15 +17,17 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-// Various states that the photo handler can be in. When created the handler is
-// in an not started state and transtions in sequential order of the states.
+// Various states that the photo handler can be in.
+//
+// When created, the handler is in |kNotStarted| state and transtions in
+// sequential order through the states.
 enum class PhotoState {
   kNotStarted,
   kIdle,
   kTakingPhoto,
 };
 
-// Handles the photo sink initialization and tracks photo capture states.
+// Handles photo sink initialization and tracks photo capture states.
 class PhotoHandler {
  public:
   PhotoHandler() {}
@@ -35,9 +37,10 @@ class PhotoHandler {
   PhotoHandler(PhotoHandler const&) = delete;
   PhotoHandler& operator=(PhotoHandler const&) = delete;
 
-  // Initializes photo sink if not initialized and requests
-  // capture engine to take photo.
-  // Sets photo state to: taking.
+  // Initializes photo sink if not initialized and requests the capture engine
+  // to take photo.
+  //
+  // Sets photo state to: kTakingPhoto.
   // Returns false if photo cannot be taken.
   //
   // capture_engine:  A pointer to capture engine instance.
@@ -48,16 +51,16 @@ class PhotoHandler {
   bool TakePhoto(const std::string& file_path, IMFCaptureEngine* capture_engine,
                  IMFMediaType* base_media_type);
 
-  // Set the photo handler recording state to: idle.
+  // Set the photo handler recording state to: kIdel.
   void OnPhotoTaken();
 
-  // Returns true if photo state is idle
+  // Returns true if photo state is kIdle.
   bool IsInitialized() { return photo_state_ == PhotoState::kIdle; }
 
-  // Returns true if photo state is taking.
+  // Returns true if photo state is kTakingPhoto.
   bool IsTakingPhoto() { return photo_state_ == PhotoState::kTakingPhoto; }
 
-  // Returns path to photo capture.
+  // Returns the filesystem path of the captured photo.
   std::string GetPhotoPath() { return file_path_; }
 
  private:
