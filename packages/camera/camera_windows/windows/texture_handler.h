@@ -67,7 +67,7 @@ class TextureHandler {
     return texture_registrar_ && texture_ && texture_id_ > -1;
   }
 
-  bool mirror_preview_ = false;
+  bool mirror_preview_ = true;
   int64_t texture_id_ = -1;
   uint32_t bytes_per_pixel_ = 4;
   uint32_t source_buffer_size_ = 0;
