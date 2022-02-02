@@ -113,9 +113,8 @@ class CaptureController {
   virtual void TakePicture(const std::string file_path) = 0;
 };
 
-// Handles capture engine creating on capture process for previewing,
-// capturing videos, and taking photos.
-// Processes events and samples send by capture engine instance.
+// Handles creating the capture engine for preview, video capture and photo
+// capture. Processes events and samples sent by the capture engine instance.
 class CaptureControllerImpl : public CaptureController,
                               public CaptureEngineObserver {
  public:
