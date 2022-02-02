@@ -34,7 +34,14 @@
       [self expectationWithDescription:@"Must send IOError to the result if failed to write file."];
   dispatch_queue_t ioQueue = dispatch_queue_create("test", NULL);
   id mockResult = OCMClassMock([FLTThreadSafeFlutterResult class]);
-  OCMStub([mockResult sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil])
+
+  NSError *ioError = [NSError errorWithDomain:@"IOError"
+                                         code:0
+                                     userInfo:@{NSLocalizedDescriptionKey : @"Localized IO Error"}];
+
+  OCMStub([mockResult sendErrorWithCode:@"IOError"
+                                message:@"Unable to write file"
+                                details:ioError.localizedDescription])
       .andDo(^(NSInvocation *invocation) {
         [resultExpectation fulfill];
       });
@@ -45,7 +52,10 @@
   // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
-  OCMStub([mockData writeToFile:OCMOCK_ANY atomically:OCMOCK_ANY]).andReturn(NO);
+  OCMStub([mockData writeToFile:OCMOCK_ANY
+                        options:NSDataWritingAtomic
+                          error:[OCMArg setTo:ioError]])
+      .andReturn(NO);
   [delegate handlePhotoCaptureResultWithError:nil
                             photoDataProvider:^NSData * {
                               return mockData;
@@ -69,7 +79,8 @@
   // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
-  OCMStub([mockData writeToFile:OCMOCK_ANY atomically:OCMOCK_ANY]).andReturn(YES);
+  OCMStub([mockData writeToFile:OCMOCK_ANY options:NSDataWritingAtomic error:[OCMArg setTo:nil]])
+      .andReturn(YES);
 
   [delegate handlePhotoCaptureResultWithError:nil
                             photoDataProvider:^NSData * {
@@ -97,7 +108,7 @@
   // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
-  OCMStub([mockData writeToFile:OCMOCK_ANY atomically:OCMOCK_ANY])
+  OCMStub([mockData writeToFile:OCMOCK_ANY options:NSDataWritingAtomic error:[OCMArg setTo:nil]])
       .andDo(^(NSInvocation *invocation) {
         if (dispatch_get_specific(ioQueueSpecific)) {
           [writeFileQueueExpectation fulfill];
