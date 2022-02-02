@@ -1,4 +1,4 @@
-## NEXT
+## 2.2.18
 
 * Moves Android and iOS implementations to federated packages.
 * Update audio URL in iOS tests.
