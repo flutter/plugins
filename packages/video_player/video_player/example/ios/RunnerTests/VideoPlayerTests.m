@@ -96,11 +96,11 @@
 
   NSDictionary<NSString *, id> *audioInitialization =
       [self testPlugin:videoPlayerPlugin
-                   uri:@"https://cdn.pixabay.com/audio/2021/09/06/audio_bacd4d6020.mp3"];
+                   uri:@"https://flutter.github.io/assets-for-api-docs/assets/audio/rooster.mp3"];
   XCTAssertEqualObjects(audioInitialization[@"height"], @0);
   XCTAssertEqualObjects(audioInitialization[@"width"], @0);
   // Perfect precision not guaranteed.
-  XCTAssertEqualWithAccuracy([audioInitialization[@"duration"] intValue], 68500, 200);
+  XCTAssertEqualWithAccuracy([audioInitialization[@"duration"] intValue], 5400, 200);
 }
 
 - (NSDictionary<NSString *, id> *)testPlugin:(FLTVideoPlayerPlugin *)videoPlayerPlugin
