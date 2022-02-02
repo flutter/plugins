@@ -19,7 +19,8 @@ class CameraWindows extends CameraPlatform {
   }
 
   /// The method channel used to interact with the native platform.
-  final MethodChannel _pluginChannel =
+  @visibleForTesting
+  final MethodChannel pluginChannel =
       const MethodChannel('plugins.flutter.io/camera_windows');
 
   /// Camera specific method channels to allow comminicating with specific cameras.
@@ -40,7 +41,7 @@ class CameraWindows extends CameraPlatform {
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
-      final List<Map<dynamic, dynamic>>? cameras = await _pluginChannel
+      final List<Map<dynamic, dynamic>>? cameras = await pluginChannel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
 
       if (cameras == null) {
@@ -68,7 +69,7 @@ class CameraWindows extends CameraPlatform {
   }) async {
     try {
       // If resolutionPreset is not specified, plugin selects the highest resolution possible.
-      final Map<String, dynamic>? reply = await _pluginChannel
+      final Map<String, dynamic>? reply = await pluginChannel
           .invokeMapMethod<String, dynamic>('create', <String, dynamic>{
         'cameraName': cameraDescription.name,
         'resolutionPreset': _serializeResolutionPreset(resolutionPreset),
@@ -104,7 +105,7 @@ class CameraWindows extends CameraPlatform {
 
     final Map<String, double>? reply;
     try {
-      reply = await _pluginChannel.invokeMapMethod<String, double>(
+      reply = await pluginChannel.invokeMapMethod<String, double>(
         'initialize',
         <String, dynamic>{
           'cameraId': requestedCameraId,
@@ -129,7 +130,7 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> dispose(int cameraId) async {
-    await _pluginChannel.invokeMethod<void>(
+    await pluginChannel.invokeMethod<void>(
       'dispose',
       <String, dynamic>{'cameraId': cameraId},
     );
@@ -198,7 +199,7 @@ class CameraWindows extends CameraPlatform {
   @override
   Future<XFile> takePicture(int cameraId) async {
     final String? path;
-    path = await _pluginChannel.invokeMethod<String>(
+    path = await pluginChannel.invokeMethod<String>(
       'takePicture',
       <String, dynamic>{'cameraId': cameraId},
     );
@@ -208,14 +209,14 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> prepareForVideoRecording() =>
-      _pluginChannel.invokeMethod<void>('prepareForVideoRecording');
+      pluginChannel.invokeMethod<void>('prepareForVideoRecording');
 
   @override
   Future<void> startVideoRecording(
     int cameraId, {
     Duration? maxVideoDuration,
   }) async {
-    await _pluginChannel.invokeMethod<void>(
+    await pluginChannel.invokeMethod<void>(
       'startVideoRecording',
       <String, dynamic>{
         'cameraId': cameraId,
@@ -228,7 +229,7 @@ class CameraWindows extends CameraPlatform {
   Future<XFile> stopVideoRecording(int cameraId) async {
     final String? path;
 
-    path = await _pluginChannel.invokeMethod<String>(
+    path = await pluginChannel.invokeMethod<String>(
       'stopVideoRecording',
       <String, dynamic>{'cameraId': cameraId},
     );
@@ -333,7 +334,7 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> pausePreview(int cameraId) async {
-    await _pluginChannel.invokeMethod<double>(
+    await pluginChannel.invokeMethod<double>(
       'pausePreview',
       <String, dynamic>{'cameraId': cameraId},
     );
@@ -341,7 +342,7 @@ class CameraWindows extends CameraPlatform {
 
   @override
   Future<void> resumePreview(int cameraId) async {
-    await _pluginChannel.invokeMethod<double>(
+    await pluginChannel.invokeMethod<double>(
       'resumePreview',
       <String, dynamic>{'cameraId': cameraId},
     );
