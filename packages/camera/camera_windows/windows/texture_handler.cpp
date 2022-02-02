@@ -64,6 +64,15 @@ void TextureHandler::OnBufferUpdated() {
 
 const FlutterDesktopPixelBuffer* TextureHandler::ConvertPixelBufferForFlutter(
     size_t target_width, size_t target_height) {
+  // TODO: optimize image processing size by adjusting capture size
+  // dynamically to match target_width and target_height.
+  // If target size changes, create new media type for preview and set new
+  // target framesize to MF_MT_FRAME_SIZE attribute.
+  // Size should be kept inside requested resolution preset.
+  // Update output media type with IMFCaptureSink2::SetOutputMediaType method
+  // call and implement IMFCaptureEngineOnSampleCallback2::OnSynchronizedEvent
+  // to detect size changes.
+
   // Lock buffer mutex to protect texture processing
   std::unique_lock<std::mutex> buffer_lock(buffer_mutex_);
   if (!TextureRegistered()) {
@@ -80,8 +89,9 @@ const FlutterDesktopPixelBuffer* TextureHandler::ConvertPixelBufferForFlutter(
 
     // Map buffers to structs for easier conversion.
     MFVideoFormatRGB32Pixel* src =
-        (MFVideoFormatRGB32Pixel*)source_buffer_.data();
-    FlutterDesktopPixel* dst = (FlutterDesktopPixel*)dest_buffer_.data();
+        reinterpret_cast<MFVideoFormatRGB32Pixel*>(source_buffer_.data());
+    FlutterDesktopPixel* dst =
+        reinterpret_cast<FlutterDesktopPixel*>(dest_buffer_.data());
 
     for (uint32_t y = 0; y < preview_frame_height_; y++) {
       for (uint32_t x = 0; x < preview_frame_width_; x++) {
