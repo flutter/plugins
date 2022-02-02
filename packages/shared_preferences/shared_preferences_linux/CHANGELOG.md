@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Updated to make use of `dartPluginClass` only.
+
 ## 2.0.4
 
 * Removes dependency on `meta`.

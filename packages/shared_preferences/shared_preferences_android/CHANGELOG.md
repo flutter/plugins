@@ -1,3 +1,7 @@
+## 2.0.11
+
+* Removes use of shared method channel implementation. 
+
 ## 2.0.10
 
 * Removes dependency on `meta`.
