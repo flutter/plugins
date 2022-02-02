@@ -21,7 +21,7 @@ class CaptureDeviceInfo {
 
   // Build unique device name from display name and device id.
   // Format: "display_name <device_id>".
-  std::string GetUniqueDeviceName();
+  std::string GetUniqueDeviceName() const;
 
   // Parses display name and device id from unique device name format.
   // Format: "display_name <device_id>".
@@ -37,7 +37,7 @@ class CaptureDeviceInfo {
   void SetDeviceID(const std::string& device_id) { device_id_ = device_id; }
 
   // Returns device id.
-  std::string GetDeviceId() { return device_id_; }
+  std::string GetDeviceId() const { return device_id_; }
 
  private:
   std::string display_name_;

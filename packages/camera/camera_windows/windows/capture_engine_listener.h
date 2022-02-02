@@ -18,7 +18,7 @@ class CaptureEngineObserver {
   virtual ~CaptureEngineObserver() = default;
 
   // Returns true if sample can be processed.
-  virtual bool IsReadyForSample() = 0;
+  virtual bool IsReadyForSample() const = 0;
 
   // Handles Capture Engine media events.
   virtual void OnEvent(IMFMediaEvent* event) = 0;

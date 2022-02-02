@@ -44,10 +44,10 @@ class Camera : public CaptureControllerListener {
   Camera& operator=(const Camera&) = delete;
 
   // Tests if this camera has the specified device ID.
-  virtual bool HasDeviceId(std::string& device_id) = 0;
+  virtual bool HasDeviceId(std::string& device_id) const = 0;
 
   // Tests if this camera has the specified camera ID.
-  virtual bool HasCameraId(int64_t camera_id) = 0;
+  virtual bool HasCameraId(int64_t camera_id) const = 0;
 
   // Adds a pending result.
   //
@@ -56,7 +56,7 @@ class Camera : public CaptureControllerListener {
                                 std::unique_ptr<MethodResult<>> result) = 0;
 
   // Checks if a pending result of the specified type already exists.
-  virtual bool HasPendingResultByType(PendingResultType type) = 0;
+  virtual bool HasPendingResultByType(PendingResultType type) const = 0;
 
   // Returns a |CaptureController| that allows capturing video or still photos
   // from this camera.
@@ -104,15 +104,15 @@ class CameraImpl : public Camera {
   void OnCaptureError(const std::string& error) override;
 
   // Camera
-  bool HasDeviceId(std::string& device_id) override {
+  bool HasDeviceId(std::string& device_id) const override {
     return device_id_ == device_id;
   }
-  bool HasCameraId(int64_t camera_id) override {
+  bool HasCameraId(int64_t camera_id) const override {
     return camera_id_ == camera_id;
   }
   bool AddPendingResult(PendingResultType type,
                         std::unique_ptr<MethodResult<>> result) override;
-  bool HasPendingResultByType(PendingResultType type) override;
+  bool HasPendingResultByType(PendingResultType type) const override;
   camera_windows::CaptureController* GetCaptureController() override {
     return capture_controller_.get();
   }

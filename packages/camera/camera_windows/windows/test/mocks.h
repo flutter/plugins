@@ -170,14 +170,14 @@ class MockCamera : public Camera {
               (override));
   MOCK_METHOD(void, OnCaptureError, (const std::string& error), (override));
 
-  MOCK_METHOD(bool, HasDeviceId, (std::string & device_id), (override));
-  MOCK_METHOD(bool, HasCameraId, (int64_t camera_id), (override));
+  MOCK_METHOD(bool, HasDeviceId, (std::string & device_id), (const override));
+  MOCK_METHOD(bool, HasCameraId, (int64_t camera_id), (const override));
 
   MOCK_METHOD(bool, AddPendingResult,
               (PendingResultType type, std::unique_ptr<MethodResult<>> result),
               (override));
   MOCK_METHOD(bool, HasPendingResultByType, (PendingResultType type),
-              (override));
+              (const override));
 
   MOCK_METHOD(camera_windows::CaptureController*, GetCaptureController, (),
               (override));
@@ -218,8 +218,8 @@ class MockCaptureController : public CaptureController {
                ResolutionPreset resolution_preset),
               (override));
 
-  MOCK_METHOD(uint32_t, GetPreviewWidth, (), (override));
-  MOCK_METHOD(uint32_t, GetPreviewHeight, (), (override));
+  MOCK_METHOD(uint32_t, GetPreviewWidth, (), (const override));
+  MOCK_METHOD(uint32_t, GetPreviewHeight, (), (const override));
 
   // Actions
   MOCK_METHOD(void, StartPreview, (), (override));

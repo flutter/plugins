@@ -76,7 +76,7 @@ std::unique_ptr<flutter::MethodResult<>> CameraImpl::GetPendingResultByType(
   return result;
 }
 
-bool CameraImpl::HasPendingResultByType(PendingResultType type) {
+bool CameraImpl::HasPendingResultByType(PendingResultType type) const {
   auto it = pending_results_.find(type);
   if (it == pending_results_.end()) {
     return false;

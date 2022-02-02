@@ -8,7 +8,7 @@
 #include <string>
 
 namespace camera_windows {
-std::string CaptureDeviceInfo::GetUniqueDeviceName() {
+std::string CaptureDeviceInfo::GetUniqueDeviceName() const {
   return display_name_ + " <" + device_id_ + ">";
 }
 

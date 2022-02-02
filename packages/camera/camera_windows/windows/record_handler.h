@@ -72,29 +72,29 @@ class RecordHandler {
   void OnRecordStopped();
 
   // Returns true if recording type is continuous recording.
-  bool IsContinuousRecording() { return type_ == RecordingType::kContinuous; }
+  bool IsContinuousRecording() const { return type_ == RecordingType::kContinuous; }
 
   // Returns true if recording type is timed recording.
-  bool IsTimedRecording() { return type_ == RecordingType::kTimed; }
+  bool IsTimedRecording() const { return type_ == RecordingType::kTimed; }
 
   // Returns true if new recording can be started.
-  bool CanStart() { return recording_state_ == RecordState::kNotStarted; }
+  bool CanStart() const { return recording_state_ == RecordState::kNotStarted; }
 
   // Returns true if recording can be stopped.
-  bool CanStop() { return recording_state_ == RecordState::kRunning; }
+  bool CanStop() const { return recording_state_ == RecordState::kRunning; }
 
   // Returns the filesystem path of the video recording.
-  std::string GetRecordPath() { return file_path_; }
+  std::string GetRecordPath() const { return file_path_; }
 
   // Returns the duration of the video recording in microseconds.
-  uint64_t GetRecordedDuration() { return recording_duration_us_; }
+  uint64_t GetRecordedDuration() const { return recording_duration_us_; }
 
   // Calculates new recording time from capture timestamp.
   void UpdateRecordingTime(uint64_t timestamp);
 
   // Returns true if recording time has exceeded the maximum duration for timed
   // recordings.
-  bool ShouldStopTimedRecording();
+  bool ShouldStopTimedRecording() const;
 
  private:
   // Initializes record sink for video file capture.

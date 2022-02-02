@@ -74,19 +74,19 @@ class PreviewHandler {
   void OnPreviewStarted();
 
   // Returns true if preview state is running or paused.
-  bool IsInitialized() {
+  bool IsInitialized() const {
     return preview_state_ == PreviewState::kRunning &&
            preview_state_ == PreviewState::kPaused;
   }
 
   // Returns true if preview state is running.
-  bool IsRunning() { return preview_state_ == PreviewState::kRunning; }
+  bool IsRunning() const { return preview_state_ == PreviewState::kRunning; }
 
   // Return true if preview state is paused.
-  bool IsPaused() { return preview_state_ == PreviewState::kPaused; }
+  bool IsPaused() const { return preview_state_ == PreviewState::kPaused; }
 
   // Returns true if preview state is starting.
-  bool IsStarting() { return preview_state_ == PreviewState::kStarting; }
+  bool IsStarting() const { return preview_state_ == PreviewState::kStarting; }
 
  private:
   // Initializes record sink for video file capture.

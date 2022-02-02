@@ -88,10 +88,10 @@ class CaptureController {
                                  ResolutionPreset resolution_preset) = 0;
 
   // Returns preview frame width
-  virtual uint32_t GetPreviewWidth() = 0;
+  virtual uint32_t GetPreviewWidth() const = 0;
 
   // Returns preview frame height
-  virtual uint32_t GetPreviewHeight() = 0;
+  virtual uint32_t GetPreviewHeight() const = 0;
 
   // Starts the preview.
   virtual void StartPreview() = 0;
@@ -135,8 +135,8 @@ class CaptureControllerImpl : public CaptureController,
   void InitCaptureDevice(TextureRegistrar* texture_registrar,
                          const std::string& device_id, bool record_audio,
                          ResolutionPreset resolution_preset) override;
-  uint32_t GetPreviewWidth() override { return preview_frame_width_; }
-  uint32_t GetPreviewHeight() override { return preview_frame_height_; }
+  uint32_t GetPreviewWidth() const override { return preview_frame_width_; }
+  uint32_t GetPreviewHeight() const override { return preview_frame_height_; }
   void StartPreview() override;
   void PausePreview() override;
   void ResumePreview() override;
@@ -147,7 +147,7 @@ class CaptureControllerImpl : public CaptureController,
 
   // CaptureEngineObserver
   void OnEvent(IMFMediaEvent* event) override;
-  bool IsReadyForSample() override {
+  bool IsReadyForSample() const override {
     return capture_engine_state_ == CaptureEngineState::kInitialized &&
            preview_handler_ && preview_handler_->IsRunning();
   }
@@ -171,7 +171,7 @@ class CaptureControllerImpl : public CaptureController,
 
  private:
   // Helper function to return initialized state as boolean;
-  bool IsInitialized() {
+  bool IsInitialized() const {
     return capture_engine_state_ == CaptureEngineState::kInitialized;
   }
 
@@ -180,7 +180,7 @@ class CaptureControllerImpl : public CaptureController,
   void ResetCaptureController();
 
   // Returns max preview height calculated from resolution present.
-  uint32_t GetMaxPreviewHeight();
+  uint32_t GetMaxPreviewHeight() const;
 
   // Uses first audio source to capture audio.
   // Note: Enumerating audio sources via platform interface is not supported.

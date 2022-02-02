@@ -361,7 +361,7 @@ void CaptureControllerImpl::TakePicture(const std::string file_path) {
   }
 }
 
-uint32_t CaptureControllerImpl::GetMaxPreviewHeight() {
+uint32_t CaptureControllerImpl::GetMaxPreviewHeight() const {
   switch (resolution_preset_) {
     case ResolutionPreset::kLow:
       return 240;

@@ -249,7 +249,7 @@ void RecordHandler::UpdateRecordingTime(uint64_t timestamp) {
   recording_duration_us_ = (timestamp - recording_start_timestamp_us_);
 }
 
-bool RecordHandler::ShouldStopTimedRecording() {
+bool RecordHandler::ShouldStopTimedRecording() const {
   return type_ == RecordingType::kTimed &&
          recording_state_ == RecordState::kRunning &&
          max_video_duration_ms_ > 0 &&
