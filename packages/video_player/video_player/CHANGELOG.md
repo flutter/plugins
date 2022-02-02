@@ -1,3 +1,8 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+* Update audio URL in iOS tests.
+
 ## 2.2.17
 
 * Avoid blocking the main thread loading video count on iOS.
