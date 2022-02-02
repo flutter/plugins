@@ -30,7 +30,7 @@ void main() {
 
     late SharedPreferencesWindows preferences;
 
-    setUp(() async {
+    setUpAll(() async {
       preferences = SharedPreferencesWindows();
     });
 
