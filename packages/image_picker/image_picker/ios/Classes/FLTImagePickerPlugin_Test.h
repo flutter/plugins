@@ -6,11 +6,37 @@
 
 #import <image_picker/FLTImagePickerPlugin.h>
 
-/// Methods exposed for unit testing.
+/** Methods exposed for unit testing. */
 @interface FLTImagePickerPlugin ()
 
+/** The Flutter result callback use to report results back to Flutter App. */
 @property(copy, nonatomic) FlutterResult result;
+
+/**
+ * Applies NSMutableArray on the FLutterResult.
+ *
+ * NSString must be returned by FlutterResult if the single image
+ * mode is active. It is checked by maxImagesAllowed and
+ * returns the first object of the pathlist.
+ *
+ * NSMutableArray must be returned by FlutterResult if the multi-image
+ * mode is active. After the pathlist count is checked then it returns
+ * the pathlist.
+ *
+ * @param pathList that should be applied to FlutterResult.
+ */
 - (void)handleSavedPathList:(NSArray *)pathList;
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
+
+/**
+ * Tells the delegate that the user cancelled the pick operation.
+ *
+ * Your delegate’s implementation of this method should dismiss the picker view
+ * by calling the dismissModalViewControllerAnimated: method of the parent
+ * view controller.
+ *
+ * Implementation of this method is optional, but expected.
+ *
+ * @param picker The controller object managing the image picker interface.
+ */- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
 @end
