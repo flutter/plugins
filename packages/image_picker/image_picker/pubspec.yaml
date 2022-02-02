@@ -3,7 +3,7 @@ description: Flutter plugin for selecting images from the Android and iOS image
   library, and taking new pictures with the camera.
 repository: https://github.com/flutter/plugins/tree/main/packages/image_picker/image_picker
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+image_picker%22
-version: 0.8.4+6
+version: 0.8.4+7
 
 environment:
   sdk: ">=2.14.0 <3.0.0"

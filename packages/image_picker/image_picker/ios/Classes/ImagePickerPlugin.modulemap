@@ -1,0 +1,10 @@
+framework module image_picker {
+  umbrella header "image_picker-umbrella.h"
+  
+  export *
+  module * { export * }
+
+  explicit module Test {
+    header "FLTImagePickerPlugin_Test.h"
+  }
+}
