@@ -17,12 +17,15 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
+// Various states that the photo handler can be in. When created the handler is
+// in an not started state and transtions in sequential order of the states.
 enum class PhotoState {
   kNotStarted,
   kIdle,
   kTakingPhoto,
 };
 
+// Handles the photo sink initialization and tracks photo capture states.
 class PhotoHandler {
  public:
   PhotoHandler() {}

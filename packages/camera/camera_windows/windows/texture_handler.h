@@ -29,6 +29,8 @@ struct MFVideoFormatRGB32Pixel {
   uint8_t x = 0;
 };
 
+// Handles the registration of flutter textures, pixel buffers,
+// and the conversion of texture formats.
 class TextureHandler {
  public:
   TextureHandler(flutter::TextureRegistrar* texture_registrar)

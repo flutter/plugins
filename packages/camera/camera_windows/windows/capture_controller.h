@@ -28,8 +28,9 @@ namespace camera_windows {
 using flutter::TextureRegistrar;
 using Microsoft::WRL::ComPtr;
 
+// A set of presets that can be used to request a capture resolution.
 enum class ResolutionPreset {
-  // Automatic resolution
+  // Automatic resolution, uses the highest resolution available.
   kAuto,
   // 240p (320x240)
   kLow,
@@ -45,14 +46,19 @@ enum class ResolutionPreset {
   kMax,
 };
 
+// Various states that the capture controller can have for capture engine
+// it controls. When created the state is in an not initialized state
+// and transtions in sequential order of the states.
 enum class CaptureEngineState { kNotInitialized, kInitializing, kInitialized };
 
+// Interface for a class that enumerates video capture device sources.
 class VideoCaptureDeviceEnumerator {
  private:
   virtual bool EnumerateVideoCaptureDeviceSources(IMFActivate*** devices,
                                                   UINT32* count) = 0;
 };
 
+// Interface for a capture controller.
 class CaptureController {
  public:
   CaptureController() {}
@@ -107,6 +113,9 @@ class CaptureController {
   virtual void TakePicture(const std::string file_path) = 0;
 };
 
+// Handles capture engine creating on capture process for previewing,
+// capturing videos, and taking photos.
+// Processes events and samples send by capture engine instance.
 class CaptureControllerImpl : public CaptureController,
                               public CaptureEngineObserver {
  public:
@@ -243,6 +252,7 @@ class CaptureControllerImpl : public CaptureController,
   TextureRegistrar* texture_registrar_ = nullptr;
 };
 
+// Interface for a class that creates capture controllers.
 class CaptureControllerFactory {
  public:
   CaptureControllerFactory() {}
@@ -256,6 +266,7 @@ class CaptureControllerFactory {
       CaptureControllerListener* listener) = 0;
 };
 
+// Creates capture controller instance.
 class CaptureControllerFactoryImpl : public CaptureControllerFactory {
  public:
   CaptureControllerFactoryImpl() {}

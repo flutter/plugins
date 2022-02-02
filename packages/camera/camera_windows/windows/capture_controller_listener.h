@@ -9,6 +9,7 @@
 
 namespace camera_windows {
 
+// Interface for classes that listen events from the capture controller.
 class CaptureControllerListener {
  public:
   virtual ~CaptureControllerListener() = default;

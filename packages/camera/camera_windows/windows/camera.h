@@ -18,6 +18,8 @@ using flutter::EncodableMap;
 using flutter::MethodChannel;
 using flutter::MethodResult;
 
+// A set of result types that are stored
+// for processing asynchronous commands.
 enum class PendingResultType {
   kCreateCamera,
   kInitialize,
@@ -28,6 +30,8 @@ enum class PendingResultType {
   kResumePreview,
 };
 
+// Interface for a class that handles camera messaging and its capture
+// controller instance.
 class Camera : public CaptureControllerListener {
  public:
   explicit Camera(const std::string& device_id) {}
@@ -61,6 +65,9 @@ class Camera : public CaptureControllerListener {
                           ResolutionPreset resolution_preset) = 0;
 };
 
+// The camera wrapper, which initializes the capture controller, listens for its
+// events, processes pending results and sends processed events through the
+// method channel.
 class CameraImpl : public Camera {
  public:
   explicit CameraImpl(const std::string& device_id);
@@ -145,6 +152,7 @@ class CameraImpl : public Camera {
   std::string device_id_;
 };
 
+// Interface for a class that creates camera objects.
 class CameraFactory {
  public:
   CameraFactory() {}
@@ -159,6 +167,7 @@ class CameraFactory {
       const std::string& device_id) = 0;
 };
 
+// Creates camera instances.
 class CameraFactoryImpl : public CameraFactory {
  public:
   CameraFactoryImpl() {}

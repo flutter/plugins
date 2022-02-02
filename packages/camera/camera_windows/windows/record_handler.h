@@ -15,10 +15,19 @@
 namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
-enum class RecordingType { kContinuous, kTimed };
+enum class RecordingType {
+  // Recording continues until it is stopped with a separate stop command.
+  kContinuous,
+  // Recording stops automatically after requested record time is passed.
+  kTimed
+};
 
+// Various states that the record handler can be in. When created the handler
+// is in an not started state and transtions in sequential order of the
+// states.
 enum class RecordState { kNotStarted, kStarting, kRunning, kStopping };
 
+// Handles the record sink initialization and tracks record capture states.
 class RecordHandler {
  public:
   RecordHandler(bool record_audio) : record_audio_(record_audio) {}

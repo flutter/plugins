@@ -12,6 +12,8 @@
 
 namespace camera_windows {
 
+// An interface for a class that listens and handles the
+// events from capture engine listener.
 class CaptureEngineObserver {
  public:
   virtual ~CaptureEngineObserver() = default;

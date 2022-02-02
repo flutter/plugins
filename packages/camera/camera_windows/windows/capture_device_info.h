@@ -9,6 +9,8 @@
 
 namespace camera_windows {
 
+// Holds capture device information and converts it to a unique device name.
+// Parses device name back to a display id and device id.
 class CaptureDeviceInfo {
  public:
   CaptureDeviceInfo() {}
