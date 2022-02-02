@@ -106,7 +106,4 @@ class FakePathProviderLinux extends PathProviderPlatform
 
   @override
   Future<String?> getDownloadsPath() async => null;
-
-  @override
-  Future<String> getPath(String folderID) async => '';
 }
