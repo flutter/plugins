@@ -30,12 +30,15 @@ class CameraWindows extends CameraPlatform {
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
-  final StreamController<CameraEvent> _cameraEventStreamController =
+  /// This is only exposed for test purposes. It shouldn't be used by clients of
+  /// the plugin as it may break or change at any time.
+  @visibleForTesting
+  final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
 
   /// Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
-      _cameraEventStreamController.stream
+      cameraEventStreamController.stream
           .where((CameraEvent event) => event.cameraId == cameraId);
 
   @override
@@ -52,7 +55,7 @@ class CameraWindows extends CameraPlatform {
         return CameraDescription(
           name: camera['name'] as String,
           lensDirection:
-              _parseCameraLensDirection(camera['lensFacing'] as String),
+              parseCameraLensDirection(camera['lensFacing'] as String),
           sensorOrientation: camera['sensorOrientation'] as int,
         );
       }).toList();
@@ -98,7 +101,7 @@ class CameraWindows extends CameraPlatform {
       final MethodChannel channel = MethodChannel(
           'plugins.flutter.io/camera_windows/camera$requestedCameraId');
       channel.setMethodCallHandler(
-        (MethodCall call) => _handleCameraMethodCall(call, requestedCameraId),
+        (MethodCall call) => handleCameraMethodCall(call, requestedCameraId),
       );
       return channel;
     });
@@ -115,7 +118,7 @@ class CameraWindows extends CameraPlatform {
       throw CameraException(e.code, e.message);
     }
 
-    _cameraEventStreamController.add(
+    cameraEventStreamController.add(
       CameraInitializedEvent(
         requestedCameraId,
         reply!['previewWidth']!,
@@ -373,11 +376,13 @@ class CameraWindows extends CameraPlatform {
     }
   }
 
-  /// Converts messages received from the native platform into camera events.
-  Future<dynamic> _handleCameraMethodCall(MethodCall call, int cameraId) async {
+  /// Converts messages received from the native platform into camera events. /// This is only exposed for test purposes. It shouldn't be used by clients of
+  /// the plugin as it may break or change at any time.
+  @visibleForTesting
+  Future<dynamic> handleCameraMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
       case 'camera_closing':
-        _cameraEventStreamController.add(
+        cameraEventStreamController.add(
           CameraClosingEvent(
             cameraId,
           ),
@@ -385,7 +390,7 @@ class CameraWindows extends CameraPlatform {
         break;
       case 'video_recorded':
         // This is called if maxVideoDuration was given on record start.
-        _cameraEventStreamController.add(
+        cameraEventStreamController.add(
           VideoRecordedEvent(
             cameraId,
             XFile(call.arguments['path'] as String),
@@ -398,7 +403,7 @@ class CameraWindows extends CameraPlatform {
         );
         break;
       case 'error':
-        _cameraEventStreamController.add(
+        cameraEventStreamController.add(
           CameraErrorEvent(
             cameraId,
             call.arguments['description'] as String,
@@ -410,7 +415,9 @@ class CameraWindows extends CameraPlatform {
     }
   }
 
-  CameraLensDirection _parseCameraLensDirection(String string) {
+  /// Parses string presentation of the camera lens direction and returns enum value.
+  @visibleForTesting
+  CameraLensDirection parseCameraLensDirection(String string) {
     switch (string) {
       case 'front':
         return CameraLensDirection.front;
