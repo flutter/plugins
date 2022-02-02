@@ -39,21 +39,22 @@ void main() {
   late MiniController _controller;
   tearDown(() async => _controller.dispose());
 
-  testWidgets('registers expected implementation', (WidgetTester tester) async {
-    AVFoundationVideoPlayer.registerWith();
-    expect(VideoPlayerPlatform.instance, isA<AVFoundationVideoPlayer>());
-  });
-
   group('asset videos', () {
     setUp(() {
       _controller = MiniController.asset(_videoAssetKey);
+    });
+
+    testWidgets('registers expected implementation',
+        (WidgetTester tester) async {
+      AVFoundationVideoPlayer.registerWith();
+      expect(VideoPlayerPlatform.instance, isA<AVFoundationVideoPlayer>());
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(_controller.value.position, const Duration(seconds: 0));
+      expect(await _controller.position, const Duration(seconds: 0));
       expect(_controller.value.duration,
           const Duration(seconds: 7, milliseconds: 540));
     });
@@ -64,8 +65,8 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(_controller.value.position,
-          (Duration position) => position > const Duration(seconds: 0));
+      expect(
+          await _controller.position, greaterThan(const Duration(seconds: 0)));
     });
 
     testWidgets('can seek', (WidgetTester tester) async {
@@ -73,6 +74,9 @@ void main() {
 
       await _controller.seekTo(const Duration(seconds: 3));
 
+      // TODO(stuartmorgan): Switch to _controller.position once seekTo is
+      // fixed on the native side to wait for completion, so this is testing
+      // the native code rather than the MiniController position cache.
       expect(_controller.value.position, const Duration(seconds: 3));
     });
 
@@ -83,11 +87,11 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
       await _controller.pause();
-      final Duration pausedPosition = _controller.value.position;
+      final Duration pausedPosition = (await _controller.position)!;
       await tester.pumpAndSettle(_playDuration);
 
       // Verify that we stopped playing after the pause.
-      expect(_controller.value.position, pausedPosition);
+      expect(await _controller.position, pausedPosition);
     });
   });
 
@@ -112,8 +116,8 @@ void main() {
       await _controller.play();
       await tester.pumpAndSettle(_playDuration);
 
-      expect(_controller.value.position,
-          (Duration position) => position > const Duration(seconds: 0));
+      expect(
+          await _controller.position, greaterThan(const Duration(seconds: 0)));
     });
   });
 
@@ -144,8 +148,11 @@ void main() {
       await tester.pumpAndSettle(_playDuration);
       await _controller.pause();
 
-      expect(_controller.value.position,
-          (Duration position) => position > const Duration(seconds: 0));
+      // TODO(stuartmorgan): Switch to _controller.position once seekTo is
+      // fixed on the native side to wait for completion, so this is testing
+      // the native code rather than the MiniController position cache.
+      expect(
+          _controller.value.position, greaterThan(const Duration(seconds: 0)));
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);
