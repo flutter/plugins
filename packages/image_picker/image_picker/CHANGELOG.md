@@ -1,6 +1,6 @@
 ## 0.8.4+7
 
-* Refactores unit test to expose private interface via a separate test header instead of the inline declaration.
+* Refactors unit test to expose private interface via a separate test header instead of the inline declaration.
 
 ## 0.8.4+6
 
