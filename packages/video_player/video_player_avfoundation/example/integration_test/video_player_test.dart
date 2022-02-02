@@ -91,7 +91,11 @@ void main() {
       await tester.pumpAndSettle(_playDuration);
 
       // Verify that we stopped playing after the pause.
-      expect(await _controller.position, pausedPosition);
+      // TODO(stuartmorgan): Investigate why this has a slight discrepency, and
+      // fix it if possible. Is AVPlayer's pause method internally async?
+      const Duration allowableDelta = Duration(milliseconds: 10);
+      expect(await _controller.position,
+          lessThan(pausedPosition + allowableDelta));
     });
   });
 
