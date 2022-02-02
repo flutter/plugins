@@ -8,5 +8,6 @@ framework module camera {
     header "CameraPlugin_Test.h"
     header "CameraProperties.h"
     header "FLTCam.h"
+    header "FLTCam_Test.h"
   }
 }

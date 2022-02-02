@@ -1,5 +1,6 @@
-## NEXT
+## 0.9.4+9
 
+* iOS performance improvement by moving sample buffer handling from the main queue to a background session queue. 
 * Minor iOS internal code cleanup related to camera class and its delegate. 
 * Minor iOS internal code cleanup related to resolution preset, video format, focus mode, exposure mode and device orientation.
 * Minor iOS internal code cleanup related to flash mode.

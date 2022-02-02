@@ -8,7 +8,7 @@
 
 #import <OCMock/OCMock.h>
 
-@interface FLTVideoPlayer : NSObject
+@interface FLTVideoPlayer : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
 @end
 
@@ -68,6 +68,93 @@
 
   [self keyValueObservingExpectationForObject:avPlayer keyPath:@"currentItem" expectedValue:nil];
   [self waitForExpectationsWithTimeout:1 handler:nil];
+}
+
+- (void)testVideoControls {
+  NSObject<FlutterPluginRegistry> *registry =
+      (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
+  NSObject<FlutterPluginRegistrar> *registrar = [registry registrarForPlugin:@"TestVideoControls"];
+
+  FLTVideoPlayerPlugin *videoPlayerPlugin =
+      (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
+
+  NSDictionary<NSString *, id> *videoInitialization =
+      [self testPlugin:videoPlayerPlugin
+                   uri:@"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"];
+  XCTAssertEqualObjects(videoInitialization[@"height"], @720);
+  XCTAssertEqualObjects(videoInitialization[@"width"], @1280);
+  XCTAssertEqualWithAccuracy([videoInitialization[@"duration"] intValue], 4000, 200);
+}
+
+- (void)testAudioControls {
+  NSObject<FlutterPluginRegistry> *registry =
+      (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
+  NSObject<FlutterPluginRegistrar> *registrar = [registry registrarForPlugin:@"TestAudioControls"];
+
+  FLTVideoPlayerPlugin *videoPlayerPlugin =
+      (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
+
+  NSDictionary<NSString *, id> *audioInitialization =
+      [self testPlugin:videoPlayerPlugin
+                   uri:@"https://cdn.pixabay.com/audio/2021/09/06/audio_bacd4d6020.mp3"];
+  XCTAssertEqualObjects(audioInitialization[@"height"], @0);
+  XCTAssertEqualObjects(audioInitialization[@"width"], @0);
+  // Perfect precision not guaranteed.
+  XCTAssertEqualWithAccuracy([audioInitialization[@"duration"] intValue], 68500, 200);
+}
+
+- (NSDictionary<NSString *, id> *)testPlugin:(FLTVideoPlayerPlugin *)videoPlayerPlugin
+                                         uri:(NSString *)uri {
+  FlutterError *error;
+  [videoPlayerPlugin initialize:&error];
+  XCTAssertNil(error);
+
+  FLTCreateMessage *create = [[FLTCreateMessage alloc] init];
+  create.uri = uri;
+  FLTTextureMessage *textureMessage = [videoPlayerPlugin create:create error:&error];
+
+  NSNumber *textureId = textureMessage.textureId;
+  FLTVideoPlayer *player = videoPlayerPlugin.playersByTextureId[textureId];
+  XCTAssertNotNil(player);
+
+  XCTestExpectation *initializedExpectation = [self expectationWithDescription:@"initialized"];
+  __block NSDictionary<NSString *, id> *initializationEvent;
+  [player onListenWithArguments:nil
+                      eventSink:^(NSDictionary<NSString *, id> *event) {
+                        if ([event[@"event"] isEqualToString:@"initialized"]) {
+                          initializationEvent = event;
+                          XCTAssertEqual(event.count, 4);
+                          [initializedExpectation fulfill];
+                        }
+                      }];
+  [self waitForExpectationsWithTimeout:1.0 handler:nil];
+
+  // Starts paused.
+  AVPlayer *avPlayer = player.player;
+  XCTAssertEqual(avPlayer.rate, 0);
+  XCTAssertEqual(avPlayer.volume, 1);
+  XCTAssertEqual(avPlayer.timeControlStatus, AVPlayerTimeControlStatusPaused);
+
+  // Change playback speed.
+  FLTPlaybackSpeedMessage *playback = [[FLTPlaybackSpeedMessage alloc] init];
+  playback.textureId = textureId;
+  playback.speed = @2;
+  [videoPlayerPlugin setPlaybackSpeed:playback error:&error];
+  XCTAssertNil(error);
+  XCTAssertEqual(avPlayer.rate, 2);
+  XCTAssertEqual(avPlayer.timeControlStatus, AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate);
+
+  // Volume
+  FLTVolumeMessage *volume = [[FLTVolumeMessage alloc] init];
+  volume.textureId = textureId;
+  volume.volume = @(0.1);
+  [videoPlayerPlugin setVolume:volume error:&error];
+  XCTAssertNil(error);
+  XCTAssertEqual(avPlayer.volume, 0.1f);
+
+  [player onCancelWithArguments:nil];
+
+  return initializationEvent;
 }
 
 @end

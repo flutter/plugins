@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTCam.h"
+#import "FLTCam_Test.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
@@ -114,7 +115,6 @@
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
-@property(readonly, nonatomic) AVCaptureVideoDataOutput *captureVideoOutput;
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
 @property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
 @property(readonly, nonatomic) CGSize captureSize;
@@ -184,7 +184,7 @@ NSString *const errorMethod = @"error";
   _captureVideoOutput.videoSettings =
       @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
-  [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:captureSessionQueue];
 
   AVCaptureConnection *connection =
       [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
