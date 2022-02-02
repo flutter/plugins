@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTImagePickerPlugin.h"
+#import "FLTImagePickerPlugin_Test.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -20,8 +21,6 @@
                                     UIImagePickerControllerDelegate,
                                     PHPickerViewControllerDelegate,
                                     UIAdaptivePresentationControllerDelegate>
-
-@property(copy, nonatomic) FlutterResult result;
 
 @property(assign, nonatomic) int maxImagesAllowed;
 

@@ -1,3 +1,7 @@
+## 0.8.4+6
+
+* Refactores unit test to expose private interface via a separate test header instead of the inline declaration.
+
 ## 0.8.4+5
 
 * Improves the documentation on handling MainActivity being killed by the Android OS.
