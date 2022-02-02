@@ -27,13 +27,11 @@
   }
   dispatch_async(self.ioQueue, ^{
     NSData *data = photoDataProvider();
-    bool success = [data writeToFile:self.path atomically:YES];
-
-    if (!success) {
+    if ([data writeToFile:self.path atomically:YES]) {
+      [self.result sendSuccessWithData:self.path];
+    } else {
       [self.result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
-      return;
     }
-    [self.result sendSuccessWithData:self.path];
   });
 }
 

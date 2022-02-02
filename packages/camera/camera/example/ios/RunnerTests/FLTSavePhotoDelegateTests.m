@@ -26,7 +26,7 @@
                             photoDataProvider:^NSData * {
                               return nil;
                             }];
-  OCMVerify(times(1), [mockResult sendError:error]);
+  OCMVerify([mockResult sendError:error]);
 }
 
 - (void)testHandlePhotoCaptureResult_mustSendErrorIfFailedToWrite {
@@ -45,7 +45,7 @@
   // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
-  OCMStub([mockData writeToFile:[OCMArg any] atomically:[OCMArg any]]).andReturn(NO);
+  OCMStub([mockData writeToFile:OCMOCK_ANY atomically:OCMOCK_ANY]).andReturn(NO);
   [delegate handlePhotoCaptureResultWithError:nil
                             photoDataProvider:^NSData * {
                               return mockData;
@@ -69,7 +69,7 @@
   // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
-  OCMStub([mockData writeToFile:[OCMArg any] atomically:[OCMArg any]]).andReturn(YES);
+  OCMStub([mockData writeToFile:OCMOCK_ANY atomically:OCMOCK_ANY]).andReturn(YES);
 
   [delegate handlePhotoCaptureResultWithError:nil
                             photoDataProvider:^NSData * {
@@ -90,14 +90,14 @@
   const char *ioQueueSpecific = "io_queue_specific";
   dispatch_queue_set_specific(ioQueue, ioQueueSpecific, (void *)ioQueueSpecific, NULL);
   id mockResult = OCMClassMock([FLTThreadSafeFlutterResult class]);
-  OCMStub([mockResult sendSuccessWithData:[OCMArg any]]).andDo(^(NSInvocation *invocation) {
+  OCMStub([mockResult sendSuccessWithData:OCMOCK_ANY]).andDo(^(NSInvocation *invocation) {
     [resultExpectation fulfill];
   });
 
   // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
-  OCMStub([mockData writeToFile:[OCMArg any] atomically:[OCMArg any]])
+  OCMStub([mockData writeToFile:OCMOCK_ANY atomically:OCMOCK_ANY])
       .andDo(^(NSInvocation *invocation) {
         if (dispatch_get_specific(ioQueueSpecific)) {
           [writeFileQueueExpectation fulfill];
