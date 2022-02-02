@@ -87,9 +87,6 @@ class _MyAppState extends State<MyApp> {
 
     int cameraId = -1;
     try {
-      final Completer<CameraInitializedEvent> _initializeCompleter =
-          Completer<CameraInitializedEvent>();
-
       final int cameraIndex = _cameraIndex % _cameras.length;
       final CameraDescription camera = _cameras[cameraIndex];
 
@@ -109,23 +106,18 @@ class _MyAppState extends State<MyApp> {
           .onCameraClosing(cameraId)
           .listen(_onCameraClosing);
 
-      unawaited(CameraPlatform.instance
-          .onCameraInitialized(cameraId)
-          .first
-          .then((CameraInitializedEvent event) {
-        _initializeCompleter.complete(event);
-      }));
+      final Future<CameraInitializedEvent> initialized =
+          CameraPlatform.instance.onCameraInitialized(cameraId).first;
 
       await CameraPlatform.instance.initializeCamera(
         cameraId,
         imageFormatGroup: ImageFormatGroup.unknown,
       );
 
-      _previewSize = await _initializeCompleter.future.then(
-        (CameraInitializedEvent event) => Size(
-          event.previewWidth,
-          event.previewHeight,
-        ),
+      final CameraInitializedEvent event = await initialized;
+      _previewSize = Size(
+        event.previewWidth,
+        event.previewHeight,
       );
 
       if (mounted) {
