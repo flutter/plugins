@@ -67,7 +67,7 @@
   XCTAssertNil(error);
 
   [self keyValueObservingExpectationForObject:avPlayer keyPath:@"currentItem" expectedValue:nil];
-  [self waitForExpectationsWithTimeout:1 handler:nil];
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
 - (void)testVideoControls {
@@ -127,7 +127,7 @@
                           [initializedExpectation fulfill];
                         }
                       }];
-  [self waitForExpectationsWithTimeout:1.0 handler:nil];
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
 
   // Starts paused.
   AVPlayer *avPlayer = player.player;
