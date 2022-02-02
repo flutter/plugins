@@ -24,5 +24,6 @@ dependencies:
   stream_transform: ^2.0.0
 
 dev_dependencies:
+  async: ^2.5.0
   flutter_test:
     sdk: flutter
