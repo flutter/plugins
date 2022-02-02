@@ -42,7 +42,7 @@
   XCTAssertTrue([playbackSpeed5x waitForExistenceWithTimeout:30.0]);
 
   // Cycle through tabs.
-  for (NSString *tabName in @[ @"Asset", @"List example" ]) {
+  for (NSString *tabName in @[ @"Asset", @"Remote" ]) {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"label BEGINSWITH %@", tabName];
     XCUIElement *unselectedTab = [app.staticTexts elementMatchingPredicate:predicate];
     XCTAssertTrue([unselectedTab waitForExistenceWithTimeout:30.0]);
