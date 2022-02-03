@@ -40,7 +40,7 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
-      name: "plugins.flutter.io/file_selector",
+      name: "plugins.flutter.io/file_selector_macos",
       binaryMessenger: registrar.messenger)
     let instance = FileSelectorPlugin(
       registrar: registrar,

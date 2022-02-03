@@ -1,8 +1,9 @@
 ## 0.8.2
 
-* Moved to flutter/plugins
-* Added native unit tests
-* Rewrote in Swift
+* Moves source to flutter/plugins.
+* Adds native unit tests.
+* Converts native implementation to Swift.
+* Switches to an internal method channel implementation.
 
 ## 0.0.4+1
 
