@@ -26,44 +26,22 @@ class TestPanelController: NSObject, PanelController {
   }
 }
 
-// Unused stub for TestRegistrar.
-class TestMessenger: NSObject, FlutterBinaryMessenger {
-  func send(onChannel channel: String, message: Data?) {}
-  func send(onChannel channel: String, message: Data?, binaryReply callback: FlutterBinaryReply? = nil) {}
-  func setMessageHandlerOnChannel(_ channel: String, binaryMessageHandler handler: FlutterBinaryMessageHandler? = nil) -> FlutterBinaryMessengerConnection { return 0 }
-  func cleanupConnection(_ connection: FlutterBinaryMessengerConnection) {}
-  func cleanUpConnection(_ connection: FlutterBinaryMessengerConnection) {}
-}
-
-// Unused stub for TestRegistrar.
-class TestTextureRegistry: NSObject, FlutterTextureRegistry {
-  func register(_ texture: FlutterTexture) -> Int64 { return 0 }
-  func textureFrameAvailable(_ textureId: Int64) {}
-  func unregisterTexture(_ textureId: Int64) {}
-}
-
-class TestRegistrar: NSObject, FlutterPluginRegistrar {
-  func register(_ factory: FlutterPlatformViewFactory, withId factoryId: String) {}
-
+class TestViewProvider: NSObject, ViewProvider {
   var view: NSView? {
     get {
       window?.contentView
     }
   }
   var window: NSWindow? = NSWindow()
-
-  // Unused.
-  var messenger: FlutterBinaryMessenger = TestMessenger()
-  var textures: FlutterTextureRegistry = TestTextureRegistry()
-  func addMethodCallDelegate(_ delegate: FlutterPlugin, channel: FlutterMethodChannel) {}
 }
 
 class exampleTests: XCTestCase {
 
   func testOpenSimple() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
@@ -85,9 +63,10 @@ class exampleTests: XCTestCase {
   }
 
   func testOpenWithArguments() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
@@ -116,9 +95,10 @@ class exampleTests: XCTestCase {
   }
 
   func testOpenMultiple() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPaths = ["/foo/bar", "/foo/baz"]
     panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
@@ -141,9 +121,10 @@ class exampleTests: XCTestCase {
   }
 
   func testOpenWithWildcardFilter() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
@@ -183,9 +164,10 @@ class exampleTests: XCTestCase {
   }
 
   func testOpenWithFilter() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
@@ -218,9 +200,10 @@ class exampleTests: XCTestCase {
   }
 
   func testOpenCancel() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let called = XCTestExpectation()
     let call = FlutterMethodCall(methodName: "openFile", arguments: [:])
@@ -234,9 +217,10 @@ class exampleTests: XCTestCase {
   }
 
   func testSaveSimple() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.saveURL = URL(fileURLWithPath: returnPath)
@@ -253,9 +237,10 @@ class exampleTests: XCTestCase {
   }
 
   func testSaveWithArguments() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.saveURL = URL(fileURLWithPath: returnPath)
@@ -282,9 +267,10 @@ class exampleTests: XCTestCase {
   }
 
   func testSaveCancel() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let called = XCTestExpectation()
     let call = FlutterMethodCall(methodName: "getSavePath", arguments: [:])
@@ -298,9 +284,10 @@ class exampleTests: XCTestCase {
   }
 
   func testGetDirectorySimple() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let returnPath = "/foo/bar"
     panelController.openURLs = [URL(fileURLWithPath: returnPath)]
@@ -325,9 +312,10 @@ class exampleTests: XCTestCase {
   }
 
   func testGetDirectoryCancel() throws {
-    let registrar = TestRegistrar()
     let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(registrar: registrar, panelController: panelController)
+    let plugin = FileSelectorPlugin(
+      viewProvider: TestViewProvider(),
+      panelController: panelController)
 
     let called = XCTestExpectation()
     let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: [:])

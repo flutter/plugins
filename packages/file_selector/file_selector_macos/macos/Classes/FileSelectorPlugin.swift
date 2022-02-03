@@ -5,7 +5,7 @@
 import FlutterMacOS
 import Foundation
 
-/// Protocol for showing panels, allowing for depenedncy injection in tests.
+/// Protocol for showing panels, allowing for depenedency injection in tests.
 protocol PanelController {
   /// Displays the given save panel, and provides the selected URL, or nil if the panel is
   /// cancelled, to the handler.
@@ -30,8 +30,18 @@ protocol PanelController {
     completionHandler: @escaping ([URL]?) -> Void);
 }
 
+/// Protocol to provide access to the Flutter view, allowing for dependency injection in tests.
+///
+/// This is necessary because Swift doesn't allow for only partially implementing a protocol, so
+/// a stub implementation of FlutterPluginRegistrar for tests would break any time something was
+/// added to that protocol.
+protocol ViewProvider {
+  /// Returns the view associated with the Flutter content.
+  var view: NSView? { get }
+}
+
 public class FileSelectorPlugin: NSObject, FlutterPlugin {
-  private let registrar: FlutterPluginRegistrar
+  private let viewProvider: ViewProvider
   private let panelController: PanelController
 
   private let openMethod = "openFile"
@@ -43,13 +53,13 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
       name: "plugins.flutter.io/file_selector_macos",
       binaryMessenger: registrar.messenger)
     let instance = FileSelectorPlugin(
-      registrar: registrar,
+      viewProvider: DefaultViewProvider(registrar: registrar),
       panelController: DefaultPanelController())
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-  init(registrar: FlutterPluginRegistrar, panelController: PanelController) {
-    self.registrar = registrar
+  init(viewProvider: ViewProvider, panelController: PanelController) {
+    self.viewProvider = viewProvider
     self.panelController = panelController
   }
 
@@ -62,7 +72,7 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
       let panel = NSOpenPanel()
       configure(panel: panel, with: arguments)
       configure(openPanel: panel, with: arguments, choosingDirectory: choosingDirectory)
-      panelController.display(panel, for: registrar.view?.window) { (selection: [URL]?) in
+      panelController.display(panel, for: viewProvider.view?.window) { (selection: [URL]?) in
         if (choosingDirectory) {
           result(selection?.first?.path)
         } else {
@@ -72,7 +82,7 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
     case saveMethod:
       let panel = NSSavePanel()
       configure(panel: panel, with: arguments)
-      panelController.display(panel, for: registrar.view?.window) { (selection: URL?) in
+      panelController.display(panel, for: viewProvider.view?.window) { (selection: URL?) in
         result(selection?.path)
       }
     default:
@@ -168,6 +178,21 @@ private class DefaultPanelController: PanelController {
       panel.beginSheetModal(for: window, completionHandler: completionAdapter)
     } else {
       completionAdapter(panel.runModal())
+    }
+  }
+}
+
+/// Non-test implementation of PanelController that forwards to the plugin registrar.
+private class DefaultViewProvider: ViewProvider {
+  private let registrar: FlutterPluginRegistrar
+
+  init(registrar: FlutterPluginRegistrar) {
+    self.registrar = registrar
+  }
+
+  var view: NSView? {
+    get {
+      registrar.view
     }
   }
 }
