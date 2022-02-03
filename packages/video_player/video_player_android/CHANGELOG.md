@@ -1,6 +1,6 @@
 ## 2.3.0
 
-* Update Pigeon to ^1.0.16.
+* Updates Pigeon to ^1.0.16.
 
 ## 2.2.17
 
