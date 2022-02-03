@@ -58,7 +58,9 @@ class PhotoHandler {
   bool IsInitialized() const { return photo_state_ == PhotoState::kIdle; }
 
   // Returns true if photo state is kTakingPhoto.
-  bool IsTakingPhoto() const { return photo_state_ == PhotoState::kTakingPhoto; }
+  bool IsTakingPhoto() const {
+    return photo_state_ == PhotoState::kTakingPhoto;
+  }
 
   // Returns the filesystem path of the captured photo.
   std::string GetPhotoPath() const { return file_path_; }
