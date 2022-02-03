@@ -32,6 +32,7 @@ class TestMessenger: NSObject, FlutterBinaryMessenger {
   func send(onChannel channel: String, message: Data?, binaryReply callback: FlutterBinaryReply? = nil) {}
   func setMessageHandlerOnChannel(_ channel: String, binaryMessageHandler handler: FlutterBinaryMessageHandler? = nil) -> FlutterBinaryMessengerConnection { return 0 }
   func cleanupConnection(_ connection: FlutterBinaryMessengerConnection) {}
+  func cleanUpConnection(_ connection: FlutterBinaryMessengerConnection) {}
 }
 
 // Unused stub for TestRegistrar.
@@ -42,6 +43,8 @@ class TestTextureRegistry: NSObject, FlutterTextureRegistry {
 }
 
 class TestRegistrar: NSObject, FlutterPluginRegistrar {
+  func register(_ factory: FlutterPlatformViewFactory, withId factoryId: String) {}
+
   var view: NSView? {
     get {
       window?.contentView
