@@ -36,6 +36,7 @@ static const int SOURCE_GALLERY = 1;
 typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPickerClassType };
 
 @implementation FLTImagePickerPlugin {
+  UIImagePickerController *_imagePickerControllerOverride;
   UIImagePickerController *_imagePickerController;
 }
 
@@ -47,8 +48,30 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
+/**
+ * Initializes the _imagePickerController member with a new instance of the
+ * UIImagePickerController class.
+ *
+ * A new instance of the UIImagePickerController is created every time the
+ * initImagePickerController method is called. For testing purposes this can
+ * be overriden using the setImagePickerControllerOverride method, in which
+ * case the set instance of the UIImagePickerController is used to initialize
+ * the _imagePickerController member.
+ */
+- (void)initImagePickerController {
+  if (_imagePickerControllerOverride) {
+    _imagePickerController = _imagePickerControllerOverride;
+  } else {
+    _imagePickerController = [[UIImagePickerController alloc] init];
+  }
+}
+
 - (UIImagePickerController *)getImagePickerController {
   return _imagePickerController;
+}
+
+- (void)setImagePickerControllerOverride:(UIImagePickerController *)imagePickerController {
+  _imagePickerControllerOverride = imagePickerController;
 }
 
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window {
@@ -106,7 +129,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)launchUIImagePickerWithSource:(int)imageSource {
-  _imagePickerController = [[UIImagePickerController alloc] init];
+  [self initImagePickerController];
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   _imagePickerController.delegate = self;
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
@@ -160,7 +183,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self launchUIImagePickerWithSource:SOURCE_GALLERY];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
-    _imagePickerController = [[UIImagePickerController alloc] init];
+    [self initImagePickerController];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[

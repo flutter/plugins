@@ -22,6 +22,9 @@
 
 @end
 
+// Set a long timeout to avoid flake due to slow CI.
+static const NSTimeInterval kTimeout = 30.0;
+
 @interface ImagePickerPluginTests : XCTestCase
 @property(readonly, nonatomic) id mockUIImagePicker;
 @property(readonly, nonatomic) id mockAVCaptureDevice;
@@ -146,6 +149,32 @@
                  UIImagePickerControllerCameraDeviceFront);
 }
 
+- (void)testPickMultiImageShouldUseUIImagePickerControllerOnPreiOS14 {
+  if (@available(iOS 14, *)) {
+    return;
+  }
+
+  id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
+  OCMStub(ClassMethod([photoLibrary authorizationStatus]))
+      .andReturn(PHAuthorizationStatusAuthorized);
+
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  [plugin setImagePickerControllerOverride:_mockUIImagePicker];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImage"
+                                                              arguments:@{
+                                                                @"maxWidth" : @(100),
+                                                                @"maxHeight" : @(200),
+                                                                @"imageQuality" : @(50),
+                                                              }];
+
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+
+  OCMVerify(times(1),
+            [self->_mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
+}
+
 #pragma mark - Test camera devices, no op on simulators
 
 - (void)testPluginPickImageDeviceCancelClickMultipleTimes {
@@ -165,61 +194,6 @@
   // To ensure the flow does not crash by multiple cancel call
   [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
   [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
-}
-
-#pragma mark - Test that arguments and results are set for all method calls
-- (void)testPickImageShouldSetArgumentsAndResult {
-  FlutterResult expectedResult = ^(id _Nullable r) {
-  };
-  NSDictionary *expectedArguments =
-      @{@"source" : @(1), @"maxWidth" : @(200), @"maxHeight" : @(200), @"imageQuality" : @(50)};
-
-  // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
-                                                              arguments:expectedArguments];
-
-  [plugin handleMethodCall:call result:expectedResult];
-
-  XCTAssertEqual(plugin.result, expectedResult);
-  XCTAssertEqual(plugin.arguments, expectedArguments);
-}
-
-- (void)testPickMultiImageShouldSetArgumentsAndResult {
-  FlutterResult expectedResult = ^(id _Nullable r) {
-  };
-  NSDictionary *expectedArguments =
-      @{@"maxWidth" : @(200), @"maxHeight" : @(200), @"imageQuality" : @(50)};
-
-  // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImage"
-                                                              arguments:expectedArguments];
-
-  [plugin handleMethodCall:call result:expectedResult];
-
-  XCTAssertEqual(plugin.result, expectedResult);
-  XCTAssertEqual(plugin.arguments, expectedArguments);
-}
-
-- (void)testPickVideoShouldSetArgumentsAndResult {
-  // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
-      .andReturn(AVAuthorizationStatusAuthorized);
-
-  FlutterResult expectedResult = ^(id _Nullable r) {
-  };
-  NSDictionary *expectedArguments = @{@"source" : @(1), @"maxDuration" : @(200)};
-
-  // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickVideo"
-                                                              arguments:expectedArguments];
-
-  [plugin handleMethodCall:call result:expectedResult];
-
-  XCTAssertEqual(plugin.result, expectedResult);
-  XCTAssertEqual(plugin.arguments, expectedArguments);
 }
 
 #pragma mark - Test video duration

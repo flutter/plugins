@@ -38,6 +38,13 @@
  *
  * @param picker The controller object managing the image picker interface.
  */
--(void)imagePickerControllerDidCancel : (UIImagePickerController *)picker;
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
+/**
+ * Sets the UIImagePickerController instance that should be used by the
+ * image_picker plugin.
+ *
+ * Should be used for testing purposes only.
+ */
+- (void)setImagePickerControllerOverride:(UIImagePickerController *)imagePickerController;
 @end
