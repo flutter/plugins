@@ -330,7 +330,7 @@ void CaptureControllerImpl::InitCaptureDevice(
   }
 }
 
-void CaptureControllerImpl::TakePicture(const std::string file_path) {
+void CaptureControllerImpl::TakePicture(const std::string& file_path) {
   assert(capture_engine_callback_handler_);
   assert(capture_engine_);
 

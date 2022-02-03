@@ -400,7 +400,7 @@ TEST(CameraPlugin, TakePictureHandlerCallsTakePictureWithPath) {
 
   EXPECT_CALL(*capture_controller, TakePicture(EndsWith(".jpeg")))
       .Times(1)
-      .WillOnce([cam = camera.get()](const std::string file_path) {
+      .WillOnce([cam = camera.get()](const std::string& file_path) {
         assert(cam->pending_result_);
         return cam->pending_result_->Success();
       });
@@ -514,7 +514,7 @@ TEST(CameraPlugin, StartVideoRecordingHandlerCallsStartRecordWithPath) {
 
   EXPECT_CALL(*capture_controller, StartRecord(EndsWith(".mp4"), -1))
       .Times(1)
-      .WillOnce([cam = camera.get()](const std::string file_path,
+      .WillOnce([cam = camera.get()](const std::string& file_path,
                                      int64_t max_video_duration_ms) {
         assert(cam->pending_result_);
         return cam->pending_result_->Success();
@@ -586,7 +586,7 @@ TEST(CameraPlugin,
   EXPECT_CALL(*capture_controller,
               StartRecord(EndsWith(".mp4"), Eq(mock_video_duration)))
       .Times(1)
-      .WillOnce([cam = camera.get()](const std::string file_path,
+      .WillOnce([cam = camera.get()](const std::string& file_path,
                                      int64_t max_video_duration_ms) {
         assert(cam->pending_result_);
         return cam->pending_result_->Success();
