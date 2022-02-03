@@ -6,7 +6,8 @@ import 'dart:typed_data';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/material.dart';
 
-/// Page for showing an example of saving with file_selector
+/// Screen that allows the user to select a save location using `getSavePath`,
+/// then writes text to a file at that location.
 class SaveTextPage extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();

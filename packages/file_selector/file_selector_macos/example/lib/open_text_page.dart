@@ -5,7 +5,8 @@
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/material.dart';
 
-/// Screen that shows an example of openFile
+/// Screen that allows the user to select a text file using `openFile`, then
+/// displays its contents in a dialog.
 class OpenTextPage extends StatelessWidget {
   Future<void> _openTextFile(BuildContext context) async {
     final XTypeGroup typeGroup = XTypeGroup(
@@ -52,15 +53,15 @@ class OpenTextPage extends StatelessWidget {
   }
 }
 
-/// Widget that displays a text file in a dialog
+/// Widget that displays a text file in a dialog.
 class TextDisplay extends StatelessWidget {
-  /// Default Constructor
+  /// Default Constructor.
   const TextDisplay(this.fileName, this.fileContent);
 
-  /// File's name
+  /// The name of the selected file.
   final String fileName;
 
-  /// File to display
+  /// The contents of the text file.
   final String fileContent;
 
   @override

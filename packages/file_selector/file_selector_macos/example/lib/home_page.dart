@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 
-/// Home Page of the application
+/// Home Page of the application.
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
