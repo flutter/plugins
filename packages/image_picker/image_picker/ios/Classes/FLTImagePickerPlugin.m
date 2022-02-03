@@ -20,8 +20,8 @@
  * Returns the value for the given key in 'dict', or nil if the value is
  * NSNull.
  */
-NSObject *GetNullableValueForKey(NSDictionary *dict, NSString *key) {
-  NSObject *value = dict[key];
+id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
+  id value = dict[key];
   return value == [NSNull null] ? nil : value;
 }
 
