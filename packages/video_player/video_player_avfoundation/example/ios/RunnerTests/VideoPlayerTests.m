@@ -103,10 +103,10 @@
   XCTAssertEqualWithAccuracy([audioInitialization[@"duration"] intValue], 5400, 200);
 }
 
-- (void)testHlsControls {
+- (void)testHLSControls {
   NSObject<FlutterPluginRegistry> *registry =
       (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
-  NSObject<FlutterPluginRegistrar> *registrar = [registry registrarForPlugin:@"TestHlsControls"];
+  NSObject<FlutterPluginRegistrar> *registrar = [registry registrarForPlugin:@"TestHLSControls"];
 
   FLTVideoPlayerPlugin *videoPlayerPlugin =
       (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
