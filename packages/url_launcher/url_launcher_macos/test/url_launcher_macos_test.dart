@@ -90,8 +90,6 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
