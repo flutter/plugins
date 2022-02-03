@@ -8,6 +8,8 @@
 
 int main(int argc, char *argv[]) {
   @autoreleasepool {
-    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+    BOOL isTesting = NSClassFromString(@"XCTestCase") != nil;
+    return UIApplicationMain(argc, argv, nil,
+                             isTesting ? nil : NSStringFromClass([AppDelegate class]));
   }
 }
