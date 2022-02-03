@@ -24,7 +24,7 @@ enum class RecordingType {
 
 // States that the record handler can be in.
 //
-// When created, the handler is in an not started state and transtions in
+// When created, the handler starts in |kNotStarted| state and transtions in
 // sequential order through the states.
 enum class RecordState { kNotStarted, kStarting, kRunning, kStopping };
 
@@ -72,7 +72,9 @@ class RecordHandler {
   void OnRecordStopped();
 
   // Returns true if recording type is continuous recording.
-  bool IsContinuousRecording() const { return type_ == RecordingType::kContinuous; }
+  bool IsContinuousRecording() const {
+    return type_ == RecordingType::kContinuous;
+  }
 
   // Returns true if recording type is timed recording.
   bool IsTimedRecording() const { return type_ == RecordingType::kTimed; }

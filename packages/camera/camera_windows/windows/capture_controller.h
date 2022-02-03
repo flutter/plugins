@@ -48,8 +48,8 @@ enum class ResolutionPreset {
 
 // Camera capture engine state.
 //
-// On creation, |CaptureControllers| start in state |kNotInitialized| then. On
-// initialization, the capture controller transitions to the |kInitializing|
+// On creation, |CaptureControllers| start in state |kNotInitialized|.
+// On initialization, the capture controller transitions to the |kInitializing|
 // and then |kInitialized| state.
 enum class CaptureEngineState { kNotInitialized, kInitializing, kInitialized };
 

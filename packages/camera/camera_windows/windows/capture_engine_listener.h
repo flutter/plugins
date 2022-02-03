@@ -12,7 +12,7 @@
 
 namespace camera_windows {
 
-// A class that implements callbacks for events from a |CaptureEngineListneer|.
+// A class that implements callbacks for events from a |CaptureEngineListener|.
 class CaptureEngineObserver {
  public:
   virtual ~CaptureEngineObserver() = default;
