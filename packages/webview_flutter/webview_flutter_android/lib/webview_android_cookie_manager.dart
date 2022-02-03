@@ -4,8 +4,7 @@
 
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'src/android_webkit/android_webkit.dart'
-    as android_webkit;
+import 'src/android_webkit/android_webkit.dart' as android_webkit;
 
 /// Handles all cookie operations for the current platform.
 class WebViewAndroidCookieManager extends WebViewCookieManagerPlatform {
