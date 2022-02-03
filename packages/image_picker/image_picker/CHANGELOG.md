@@ -1,9 +1,13 @@
-## 0.8.4+6
+## 0.8.4+7
 
 * Ensures the `result` callback and method call `arguments` send to iOS are 
 taken into consideration when picking multiple images on pre-iOS 14 devices;
-* Configures the `UIImagePicker` to default to gallery instead of camera on 
-pre-iOS 14 devices when picking multiple images on pre-iOS 14 devices.
+* Configures the `UIImagePicker` to default to gallery instead of camera when
+picking multiple images on pre-iOS 14 devices.
+
+## 0.8.4+6
+
+* Refactors unit test to expose private interface via a separate test header instead of the inline declaration.
 
 ## 0.8.4+5
 
