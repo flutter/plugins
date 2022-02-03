@@ -206,7 +206,10 @@ class LicenseCheckCommand extends PluginCommand {
 
     for (final File file in codeFiles) {
       print('Checking ${file.path}');
-      final String content = await file.readAsString();
+      // On Windows, git may auto-convert line endings on checkout; this should
+      // still pass since they will be converted back on commit.
+      final String content =
+          (await file.readAsString()).replaceAll('\r\n', '\n');
 
       final String firstParyLicense =
           firstPartyLicenseBlockByExtension[p.extension(file.path)] ??
@@ -244,7 +247,10 @@ class LicenseCheckCommand extends PluginCommand {
 
     for (final File file in files) {
       print('Checking ${file.path}');
-      if (!file.readAsStringSync().contains(_fullBsdLicenseText)) {
+      // On Windows, git may auto-convert line endings on checkout; this should
+      // still pass since they will be converted back on commit.
+      final String contents = file.readAsStringSync().replaceAll('\r\n', '\n');
+      if (!contents.contains(_fullBsdLicenseText)) {
         incorrectLicenseFiles.add(file);
       }
     }

@@ -1,3 +1,11 @@
+## 2.1.1
+
+* Removes dependency on `meta`.
+
+## 2.1.0
+
+* Add serverAuthCode attribute to user data
+
 ## 2.0.1
 
 * Updates `init` function in `MethodChannelGoogleSignIn` to parametrize `clientId` property.

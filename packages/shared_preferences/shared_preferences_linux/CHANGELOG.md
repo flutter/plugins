@@ -1,3 +1,12 @@
+## 2.0.4
+
+* Removes dependency on `meta`.
+
+## 2.0.3
+
+* Removed obsolete `pluginClass: none` from pubpsec.
+* Fixes newly enabled analyzer options.
+
 ## 2.0.2
 
 * Updated installation instructions in README.

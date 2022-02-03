@@ -11,7 +11,7 @@
 @implementation QuickActionsTests
 
 - (void)testPlugin {
-  FLTQuickActionsPlugin* plugin = [[FLTQuickActionsPlugin alloc] init];
+  FLTQuickActionsPlugin *plugin = [[FLTQuickActionsPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 

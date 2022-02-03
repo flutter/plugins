@@ -1,0 +1,13 @@
+framework module camera {
+  umbrella header "camera-umbrella.h"
+
+  export *
+  module * { export * }
+
+  explicit module Test {
+    header "CameraPlugin_Test.h"
+    header "CameraProperties.h"
+    header "FLTCam.h"
+    header "FLTCam_Test.h"
+  }
+}

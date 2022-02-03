@@ -7,20 +7,21 @@ import 'package:flutter/widgets.dart';
 import 'javascript_mode.dart';
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
+@immutable
 class WebSetting<T> {
   /// Constructs an absent setting instance.
   ///
   /// The [isPresent] field for the instance will be false.
   ///
   /// Accessing [value] for an absent instance will throw.
-  WebSetting.absent()
+  const WebSetting.absent()
       : _value = null,
         isPresent = false;
 
   /// Constructs a setting of the given `value`.
   ///
   /// The [isPresent] field for the instance will be true.
-  WebSetting.of(T value)
+  const WebSetting.of(T value)
       : _value = value,
         isPresent = true;
 
@@ -51,9 +52,13 @@ class WebSetting<T> {
 
   @override
   bool operator ==(Object other) {
-    if (other.runtimeType != runtimeType) return false;
-    final WebSetting<T> typedOther = other as WebSetting<T>;
-    return typedOther.isPresent == isPresent && typedOther._value == _value;
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    return other is WebSetting<T> &&
+        other.isPresent == isPresent &&
+        other._value == _value;
   }
 
   @override

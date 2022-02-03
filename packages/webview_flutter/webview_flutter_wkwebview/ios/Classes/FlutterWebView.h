@@ -5,21 +5,9 @@
 #import <Flutter/Flutter.h>
 #import <WebKit/WebKit.h>
 
+#import "FLTCookieManager.h"
+
 NS_ASSUME_NONNULL_BEGIN
-
-@interface FLTWebViewController : NSObject <FlutterPlatformView, WKUIDelegate>
-
-- (instancetype)initWithFrame:(CGRect)frame
-               viewIdentifier:(int64_t)viewId
-                    arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
-
-- (UIView*)view;
-@end
-
-@interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
-@end
 
 /**
  * The WkWebView used for the plugin.
@@ -27,6 +15,26 @@ NS_ASSUME_NONNULL_BEGIN
  * This class overrides some methods in `WKWebView` to serve the needs for the plugin.
  */
 @interface FLTWKWebView : WKWebView
+@end
+
+@interface FLTWebViewController : NSObject <FlutterPlatformView, WKUIDelegate>
+
+@property(nonatomic) FLTWKWebView *webView;
+
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+              binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
+
+- (UIView *)view;
+
+- (void)onMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
+
+@end
+
+@interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                    cookieManager:(FLTCookieManager *)cookieManager;
 @end
 
 NS_ASSUME_NONNULL_END

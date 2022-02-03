@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:flutter/services.dart';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import '../../billing_client_wrappers.dart';
 import '../channel.dart';
 import 'purchase_wrapper.dart';
 import 'sku_details_wrapper.dart';
-import 'enum_converters.dart';
+
+part 'billing_client_wrapper.g.dart';
 
 /// Method identifier for the OnPurchaseUpdated method channel method.
 @visibleForTesting
@@ -50,8 +53,6 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
-  bool _enablePendingPurchases = false;
-
   /// Creates a billing client.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     channel.setMethodCallHandler(callHandler);
@@ -79,14 +80,12 @@ class BillingClient {
 
   /// Enable the [BillingClientWrapper] to handle pending purchases.
   ///
-  /// Play requires that you call this method when initializing your application.
-  /// It is to acknowledge your application has been updated to support pending purchases.
-  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
-  /// for more details.
-  ///
-  /// Failure to call this method before any other method in the [startConnection] will throw an exception.
+  /// **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application.
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
   void enablePendingPurchases() {
-    _enablePendingPurchases = true;
+    // No-op, until it is time to completely remove this method from the API.
   }
 
   /// Calls
@@ -102,8 +101,6 @@ class BillingClient {
   Future<BillingResultWrapper> startConnection(
       {required OnBillingServiceDisconnected
           onBillingServiceDisconnected}) async {
-    assert(_enablePendingPurchases,
-        'enablePendingPurchases() must be called before calling startConnection');
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
@@ -112,7 +109,6 @@ class BillingClient {
                 "BillingClient#startConnection(BillingClientStateListener)",
                 <String, dynamic>{
               'handle': disconnectCallbacks.length - 1,
-              'enablePendingPurchases': _enablePendingPurchases
             })) ??
         <String, dynamic>{});
   }
@@ -364,6 +360,7 @@ typedef void OnBillingServiceDisconnected();
 /// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse).
 /// See the `BillingResponse` docs for more explanation of the different
 /// constants.
+@JsonEnum(alwaysCreate: true)
 enum BillingResponse {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -418,11 +415,32 @@ enum BillingResponse {
   itemNotOwned,
 }
 
+/// Serializer for [BillingResponse].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@BillingResponseConverter()`.
+class BillingResponseConverter implements JsonConverter<BillingResponse, int?> {
+  /// Default const constructor.
+  const BillingResponseConverter();
+
+  @override
+  BillingResponse fromJson(int? json) {
+    if (json == null) {
+      return BillingResponse.error;
+    }
+    return $enumDecode(_$BillingResponseEnumMap, json);
+  }
+
+  @override
+  int toJson(BillingResponse object) => _$BillingResponseEnumMap[object]!;
+}
+
 /// Enum representing potential [SkuDetailsWrapper.type]s.
 ///
 /// Wraps
 /// [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
 /// See the linked documentation for an explanation of the different constants.
+@JsonEnum(alwaysCreate: true)
 enum SkuType {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -437,6 +455,26 @@ enum SkuType {
   subs,
 }
 
+/// Serializer for [SkuType].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@SkuTypeConverter()`.
+class SkuTypeConverter implements JsonConverter<SkuType, String?> {
+  /// Default const constructor.
+  const SkuTypeConverter();
+
+  @override
+  SkuType fromJson(String? json) {
+    if (json == null) {
+      return SkuType.inapp;
+    }
+    return $enumDecode(_$SkuTypeEnumMap, json);
+  }
+
+  @override
+  String toJson(SkuType object) => _$SkuTypeEnumMap[object]!;
+}
+
 /// Enum representing the proration mode.
 ///
 /// When upgrading or downgrading a subscription, set this mode to provide details
@@ -444,6 +482,7 @@ enum SkuType {
 ///
 /// Wraps [`BillingFlowParams.ProrationMode`](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode)
 /// See the linked documentation for an explanation of the different constants.
+@JsonEnum(alwaysCreate: true)
 enum ProrationMode {
 // WARNING: Changes to this class need to be reflected in our generated code.
 // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -477,7 +516,28 @@ enum ProrationMode {
   deferred,
 }
 
+/// Serializer for [ProrationMode].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@ProrationModeConverter()`.
+class ProrationModeConverter implements JsonConverter<ProrationMode, int?> {
+  /// Default const constructor.
+  const ProrationModeConverter();
+
+  @override
+  ProrationMode fromJson(int? json) {
+    if (json == null) {
+      return ProrationMode.unknownSubscriptionUpgradeDowngradePolicy;
+    }
+    return $enumDecode(_$ProrationModeEnumMap, json);
+  }
+
+  @override
+  int toJson(ProrationMode object) => _$ProrationModeEnumMap[object]!;
+}
+
 /// Features/capabilities supported by [BillingClient.isFeatureSupported()](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.FeatureType).
+@JsonEnum(alwaysCreate: true)
 enum BillingClientFeature {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
@@ -503,4 +563,25 @@ enum BillingClientFeature {
   /// Subscriptions update/replace.
   @JsonValue('subscriptionsUpdate')
   subscriptionsUpdate
+}
+
+/// Serializer for [BillingClientFeature].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@BillingClientFeatureConverter()`.
+class BillingClientFeatureConverter
+    implements JsonConverter<BillingClientFeature, String> {
+  /// Default const constructor.
+  const BillingClientFeatureConverter();
+
+  @override
+  BillingClientFeature fromJson(String json) {
+    return $enumDecode<BillingClientFeature, dynamic>(
+        _$BillingClientFeatureEnumMap.cast<BillingClientFeature, dynamic>(),
+        json);
+  }
+
+  @override
+  String toJson(BillingClientFeature object) =>
+      _$BillingClientFeatureEnumMap[object]!;
 }

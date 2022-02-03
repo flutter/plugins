@@ -1,3 +1,12 @@
+## 2.1.5
+
+* Removes dependency on `meta`.
+
+## 2.1.4
+
+* Implemented `maxWidth`, `maxHeight` and `imageQuality` when selecting images
+  (except for gifs).
+
 ## 2.1.3
 
 * Add `implements` to pubspec.
