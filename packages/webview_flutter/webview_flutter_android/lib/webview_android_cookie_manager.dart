@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:webview_flutter_android/src/android_webview.dart'
-    as android_webview;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+
+import 'src/android_webkit/android_webkit.dart'
+    as android_webkit;
 
 /// Handles all cookie operations for the current platform.
 class WebViewAndroidCookieManager extends WebViewCookieManagerPlatform {
   @override
   Future<bool> clearCookies() =>
-      android_webview.CookieManager.instance.clearCookies();
+      android_webkit.CookieManager.instance.clearCookies();
 
   @override
   Future<void> setCookie(WebViewCookie cookie) {
@@ -18,7 +19,7 @@ class WebViewAndroidCookieManager extends WebViewCookieManagerPlatform {
       throw ArgumentError(
           'The path property for the provided cookie was not given a legal value.');
     }
-    return android_webview.CookieManager.instance.setCookie(
+    return android_webkit.CookieManager.instance.setCookie(
       cookie.domain,
       '${Uri.encodeComponent(cookie.name)}=${Uri.encodeComponent(cookie.value)}; path=${cookie.path}',
     );

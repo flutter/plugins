@@ -13,8 +13,8 @@ flutter:
     implements: webview_flutter
     platforms:
       android:
-        package: io.flutter.plugins.webviewflutter
-        pluginClass: WebViewFlutterPlugin
+        package: io.flutter.plugins.webviewflutterandroid
+        pluginClass: WebViewFlutterAndroidPlugin
 
 dependencies:
   flutter:

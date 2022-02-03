@@ -9,10 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'src/android_webview.dart';
+import 'src/android_webkit/android_webkit.dart';
 import 'src/instance_manager.dart';
+import 'src/webview_android_widget.dart';
 import 'webview_android.dart';
-import 'webview_android_widget.dart';
 
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
 ///

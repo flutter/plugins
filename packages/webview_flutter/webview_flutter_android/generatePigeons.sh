@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 flutter pub run pigeon \
---input pigeons/android_webview.dart \
---dart_out lib/src/android_webview.pigeon.dart \
---dart_test_out test/android_webview.pigeon.dart \
---java_out android/src/main/java/io/flutter/plugins/webviewflutter/GeneratedAndroidWebView.Java \
---java_package io.flutter.plugins.webviewflutter
+--input pigeons/android_webkit.dart \
+--dart_out lib/src/android_webkit/android_webkit.pigeon.dart \
+--dart_test_out lib/src/android_webkit/test_android_webkit.pigeon.dart \
+--java_out android/src/main/java/io/flutter/plugins/webviewflutterandroid/GeneratedAndroidWebKit.java \
+--java_package io.flutter.plugins.webviewflutterandroid

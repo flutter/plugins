@@ -7,7 +7,7 @@ package io.flutter.plugins.webviewflutterexample;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.core.app.ActivityScenario;
-import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
+import io.flutter.plugins.webviewflutterandroid.WebViewFlutterAndroidPlugin;
 import org.junit.Test;
 
 public class WebViewTest {
@@ -17,7 +17,7 @@ public class WebViewTest {
         ActivityScenario.launch(WebViewTestActivity.class);
     scenario.onActivity(
         activity -> {
-          assertTrue(activity.engine.getPlugins().has(WebViewFlutterPlugin.class));
+          assertTrue(activity.engine.getPlugins().has(WebViewFlutterAndroidPlugin.class));
         });
   }
 }
