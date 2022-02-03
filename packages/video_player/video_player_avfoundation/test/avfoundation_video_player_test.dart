@@ -6,7 +6,7 @@ import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_avfoundation/src/messages.dart';
+import 'package:video_player_avfoundation/src/messages.g.dart';
 import 'package:video_player_avfoundation/video_player_avfoundation.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
