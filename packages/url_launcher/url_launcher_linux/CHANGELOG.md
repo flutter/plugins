@@ -1,6 +1,6 @@
 ## 2.0.4
 
-* Moved away from shared method channel implementation.
+* Switches to an in-package method channel implementation.
 
 ## 2.0.3
 

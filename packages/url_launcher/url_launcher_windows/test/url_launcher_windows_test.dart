@@ -4,6 +4,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import 'package:url_launcher_windows/url_launcher_windows.dart';
 
 void main() {
@@ -22,6 +23,11 @@ void main() {
     });
 
     final UrlLauncherWindows launcher = UrlLauncherWindows();
+
+    test('registers instance', () {
+      UrlLauncherWindows.registerWith();
+      expect(UrlLauncherPlatform.instance, isA<UrlLauncherWindows>());
+    });
 
     tearDown(() {
       log.clear();
@@ -60,8 +66,6 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
@@ -86,38 +90,10 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{'key': 'value'},
-          })
-        ],
-      );
-    });
-
-    test('launch force SafariVC', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
           })
         ],
       );
@@ -138,115 +114,9 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': false,
-            'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': true,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch force WebView', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: true,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': true,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch force WebView enable javascript', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: true,
-        enableJavaScript: true,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': true,
-            'enableJavaScript': true,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch force WebView enable DOM storage', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: true,
-        enableJavaScript: false,
-        enableDomStorage: true,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': true,
-            'enableJavaScript': false,
-            'enableDomStorage': true,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch force SafariVC to false', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: false,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': false,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
             'headers': <String, String>{},
           })
         ],

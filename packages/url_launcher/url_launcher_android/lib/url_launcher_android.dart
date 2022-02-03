@@ -11,7 +11,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/url_launcher_android');
 
-/// An implementation of [UrlLauncherPlatform] that uses method channels.
+/// An implementation of [UrlLauncherPlatform] for Android.
 class UrlLauncherAndroid extends UrlLauncherPlatform {
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith() {
@@ -49,7 +49,6 @@ class UrlLauncherAndroid extends UrlLauncherPlatform {
       'launch',
       <String, Object>{
         'url': url,
-        'useSafariVC': useSafariVC,
         'useWebView': useWebView,
         'enableJavaScript': enableJavaScript,
         'enableDomStorage': enableDomStorage,

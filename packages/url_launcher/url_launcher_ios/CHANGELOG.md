@@ -1,6 +1,6 @@
 ## 6.0.15
 
-* Moved away from shared method channel implementation.
+* Switches to an in-package method channel implementation.
 
 ## 6.0.14
 

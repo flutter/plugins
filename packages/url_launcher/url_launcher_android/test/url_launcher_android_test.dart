@@ -5,6 +5,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_android/url_launcher_android.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,11 @@ void main() {
 
     tearDown(() {
       log.clear();
+    });
+
+    test('registers instance', () {
+      UrlLauncherAndroid.registerWith();
+      expect(UrlLauncherPlatform.instance, isA<UrlLauncherAndroid>());
     });
 
     test('canLaunch', () async {
@@ -60,7 +66,6 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
             'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
@@ -86,38 +91,11 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
             'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{'key': 'value'},
-          })
-        ],
-      );
-    });
-
-    test('launch force SafariVC', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
           })
         ],
       );
@@ -138,7 +116,6 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': false,
             'useWebView': false,
             'enableJavaScript': false,
             'enableDomStorage': false,
@@ -164,7 +141,6 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
             'useWebView': true,
             'enableJavaScript': false,
             'enableDomStorage': false,
@@ -190,7 +166,6 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
             'useWebView': true,
             'enableJavaScript': true,
             'enableDomStorage': false,
@@ -216,36 +191,9 @@ void main() {
         <Matcher>[
           isMethodCall('launch', arguments: <String, Object>{
             'url': 'http://example.com/',
-            'useSafariVC': true,
             'useWebView': true,
             'enableJavaScript': false,
             'enableDomStorage': true,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch force SafariVC to false', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: false,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': false,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{},
           })
