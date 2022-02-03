@@ -62,6 +62,12 @@ void main() {
       await testData.clear();
     });
 
+    test('registers instance', () {
+      SharedPreferencesMacOS.registerWith();
+      expect(SharedPreferencesStorePlatform.instance,
+          isA<SharedPreferencesMacOS>());
+    });
+
     test('getAll', () async {
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await store.getAll(), kTestValues);

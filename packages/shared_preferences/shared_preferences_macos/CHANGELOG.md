@@ -1,6 +1,6 @@
 ## 2.0.3
 
-* Removes use of shared method channel implementation.
+* Switches to an in-package method channel implementation.
 * Fixes newly enabled analyzer options.
 
 ## 2.0.2

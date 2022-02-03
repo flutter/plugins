@@ -1,6 +1,6 @@
 ## 2.0.10
 
-* Removes use of shared method channel implementation.
+* Switches to an in-package method channel implementation.
 
 ## 2.0.9
 

@@ -43,6 +43,7 @@ void main() {
   }
 
   test('registered instance', () {
+    SharedPreferencesLinux.registerWith();
     expect(
         SharedPreferencesStorePlatform.instance, isA<SharedPreferencesLinux>());
   });
@@ -85,11 +86,11 @@ void main() {
   });
 }
 
-/// Fake implementation of PathProviderWindows that returns hard-coded paths,
+/// Fake implementation of PathProviderLinux that returns hard-coded paths,
 /// allowing tests to run on any platform.
 ///
 /// Note that this should only be used with an in-memory filesystem, as the
-/// path it returns is a root path that does not actually exist on Windows.
+/// path it returns is a root path that does not actually exist on Linux.
 class FakePathProviderLinux extends PathProviderPlatform
     implements PathProviderLinux {
   @override
