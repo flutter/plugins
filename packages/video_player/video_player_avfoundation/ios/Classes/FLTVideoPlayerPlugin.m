@@ -5,7 +5,7 @@
 #import "FLTVideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
-#import "messages.h"
+#import "messages.g.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.

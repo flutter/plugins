@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-import 'messages.dart';
+import 'messages.g.dart';
 
 /// An iOS implementation of [VideoPlayerPlatform] that uses the
 /// Pigeon-generated [VideoPlayerApi].
@@ -28,7 +28,7 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) {
-    return _api.dispose(TextureMessage()..textureId = textureId);
+    return _api.dispose(TextureMessage(textureId: textureId));
   }
 
   @override
@@ -59,48 +59,52 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setLooping(int textureId, bool looping) {
-    return _api.setLooping(LoopingMessage()
-      ..textureId = textureId
-      ..isLooping = looping);
+    return _api.setLooping(LoopingMessage(
+      textureId: textureId,
+      isLooping: looping,
+    ));
   }
 
   @override
   Future<void> play(int textureId) {
-    return _api.play(TextureMessage()..textureId = textureId);
+    return _api.play(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<void> pause(int textureId) {
-    return _api.pause(TextureMessage()..textureId = textureId);
+    return _api.pause(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<void> setVolume(int textureId, double volume) {
-    return _api.setVolume(VolumeMessage()
-      ..textureId = textureId
-      ..volume = volume);
+    return _api.setVolume(VolumeMessage(
+      textureId: textureId,
+      volume: volume,
+    ));
   }
 
   @override
   Future<void> setPlaybackSpeed(int textureId, double speed) {
     assert(speed > 0);
 
-    return _api.setPlaybackSpeed(PlaybackSpeedMessage()
-      ..textureId = textureId
-      ..speed = speed);
+    return _api.setPlaybackSpeed(PlaybackSpeedMessage(
+      textureId: textureId,
+      speed: speed,
+    ));
   }
 
   @override
   Future<void> seekTo(int textureId, Duration position) {
-    return _api.seekTo(PositionMessage()
-      ..textureId = textureId
-      ..position = position.inMilliseconds);
+    return _api.seekTo(PositionMessage(
+      textureId: textureId,
+      position: position.inMilliseconds,
+    ));
   }
 
   @override
   Future<Duration> getPosition(int textureId) async {
     final PositionMessage response =
-        await _api.position(TextureMessage()..textureId = textureId);
+        await _api.position(TextureMessage(textureId: textureId));
     return Duration(milliseconds: response.position!);
   }
 
@@ -146,9 +150,8 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) {
-    return _api.setMixWithOthers(
-      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
-    );
+    return _api
+        .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
   }
 
   EventChannel _eventChannelFor(int textureId) {
