@@ -37,6 +37,7 @@
  * Implementation of this method is optional, but expected.
  *
  * @param picker The controller object managing the image picker interface.
- */- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
+ */
+-(void)imagePickerControllerDidCancel : (UIImagePickerController *)picker;
 
 @end
