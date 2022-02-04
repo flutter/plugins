@@ -1,6 +1,10 @@
-## 2.0.6
+## 2.0.7
 
 * Marks the `Link` widget as invisible so it can be optimized by the engine.
+
+## 2.0.6
+
+* Removes dependency on `meta`.
 
 ## 2.0.5
 

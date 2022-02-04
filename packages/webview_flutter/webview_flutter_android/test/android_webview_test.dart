@@ -14,6 +14,7 @@ import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  CookieManagerHostApi,
   DownloadListener,
   JavaScriptChannel,
   TestDownloadListenerHostApi,
@@ -22,6 +23,7 @@ import 'android_webview_test.mocks.dart';
   TestWebSettingsHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
+  TestAssetManagerHostApi,
   WebChromeClient,
   WebView,
   WebViewClient,
@@ -428,6 +430,14 @@ void main() {
           true,
         ));
       });
+
+      test('setAllowFileAccess', () {
+        webSettings.setAllowFileAccess(true);
+        verify(mockPlatformHostApi.setAllowFileAccess(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
     });
 
     group('$JavaScriptChannel', () {
@@ -644,6 +654,22 @@ void main() {
         );
         verify(mockWebChromeClient.onProgressChanged(mockWebView, 76));
       });
+    });
+  });
+
+  group('CookieManager', () {
+    test('setCookie calls setCookie on CookieManagerHostApi', () {
+      CookieManager.api = MockCookieManagerHostApi();
+      CookieManager.instance.setCookie('foo', 'bar');
+      verify(CookieManager.api.setCookie('foo', 'bar'));
+    });
+
+    test('clearCookies calls clearCookies on CookieManagerHostApi', () {
+      CookieManager.api = MockCookieManagerHostApi();
+      when(CookieManager.api.clearCookies())
+          .thenAnswer((_) => Future<bool>.value(true));
+      CookieManager.instance.clearCookies();
+      verify(CookieManager.api.clearCookies());
     });
   });
 }

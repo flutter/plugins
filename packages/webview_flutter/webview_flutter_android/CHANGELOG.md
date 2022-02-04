@@ -1,3 +1,32 @@
+## NEXT
+
+* Fixes an integration test race condition.
+
+## 2.8.2
+
+* Adds the `WebSettings.setAllowFileAccess()` method and ensure that file access is allowed when the `WebViewAndroidWidget.loadFile()` method is executed.
+
+## 2.8.1
+
+* Fixes bug where the default user agent string was being set for every rebuild. See
+  https://github.com/flutter/flutter/issues/94847.
+
+## 2.8.0
+
+* Implements new cookie manager for setting cookies and providing initial cookies.
+
+## 2.7.0
+
+* Adds support for the `loadRequest` method from the platform interface.
+
+## 2.6.0
+
+* Adds implementation of the `loadFlutterAsset` method from the platform interface.
+
+## 2.5.0
+
+* Adds an option to set the background color of the webview.
+
 ## 2.4.0
 
 * Adds support for Android's `WebView.loadData` and `WebView.loadDataWithBaseUrl` methods and implements the `loadFile` and `loadHtmlString` methods from the platform interface.
@@ -27,13 +56,12 @@ when it is created without Hybrid Composition.
 
 ## 2.0.15
 
-* Added Overrides in  FlutterWebView.java 
-  
+* Added Overrides in  FlutterWebView.java
+
 ## 2.0.14
 
-* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package). 
+* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package).
 
 ## 2.0.13
 
 * Extract Android implementation from `webview_flutter`.
-

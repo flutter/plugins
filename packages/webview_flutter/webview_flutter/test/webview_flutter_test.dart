@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
@@ -21,10 +23,12 @@ void main() {
 
   late MockWebViewPlatform mockWebViewPlatform;
   late MockWebViewPlatformController mockWebViewPlatformController;
+  late MockWebViewCookieManagerPlatform mockWebViewCookieManagerPlatform;
 
   setUp(() {
     mockWebViewPlatformController = MockWebViewPlatformController();
     mockWebViewPlatform = MockWebViewPlatform();
+    mockWebViewCookieManagerPlatform = MockWebViewCookieManagerPlatform();
     when(mockWebViewPlatform.build(
       context: anyNamed('context'),
       creationParams: anyNamed('creationParams'),
@@ -44,6 +48,11 @@ void main() {
     });
 
     WebView.platform = mockWebViewPlatform;
+    WebViewCookieManagerPlatform.instance = mockWebViewCookieManagerPlatform;
+  });
+
+  tearDown(() {
+    mockWebViewCookieManagerPlatform.reset();
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
@@ -86,6 +95,132 @@ void main() {
     ).single as CreationParams;
 
     expect(disabledparams.webSettings!.javascriptMode, JavascriptMode.disabled);
+  });
+
+  testWidgets('Load file', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadFile('/test/path/index.html');
+
+    verify(mockWebViewPlatformController.loadFile(
+      '/test/path/index.html',
+    ));
+  });
+
+  testWidgets('Load file with empty path', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadFile(''), throwsAssertionError);
+  });
+
+  testWidgets('Load Flutter asset', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadFlutterAsset('assets/index.html');
+
+    verify(mockWebViewPlatformController.loadFlutterAsset(
+      'assets/index.html',
+    ));
+  });
+
+  testWidgets('Load Flutter asset with empty key', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadFlutterAsset(''), throwsAssertionError);
+  });
+
+  testWidgets('Load HTML string without base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString('<p>This is a test paragraph.</p>');
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+    ));
+  });
+
+  testWidgets('Load HTML string with base URL', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    );
+
+    verify(mockWebViewPlatformController.loadHtmlString(
+      '<p>This is a test paragraph.</p>',
+      baseUrl: 'https://flutter.dev',
+    ));
+  });
+
+  testWidgets('Load HTML string with empty string',
+      (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    expect(() => controller!.loadHtmlString(''), throwsAssertionError);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
@@ -152,6 +287,29 @@ void main() {
       'https://flutter.io',
       <String, String>{'CACHE-CONTROL': 'ABC'},
     ));
+  });
+
+  testWidgets('loadRequest', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(controller, isNotNull);
+
+    final WebViewRequest req = WebViewRequest(
+      uri: Uri.parse('https://flutter.dev'),
+      method: WebViewRequestMethod.post,
+      headers: <String, String>{'foo': 'bar'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+
+    await controller!.loadRequest(req);
+
+    verify(mockWebViewPlatformController.loadRequest(req));
   });
 
   testWidgets('Clear Cache', (WidgetTester tester) async {
@@ -382,9 +540,6 @@ void main() {
   });
 
   testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
-    when(mockWebViewPlatform.clearCookies())
-        .thenAnswer((_) => Future<bool>.value(true));
-
     await tester.pumpWidget(
       const WebView(
         initialUrl: 'https://flutter.io',
@@ -393,6 +548,21 @@ void main() {
     final CookieManager cookieManager = CookieManager();
     final bool hasCookies = await cookieManager.clearCookies();
     expect(hasCookies, true);
+  });
+
+  testWidgets('Cookies can be set', (WidgetTester tester) async {
+    const WebViewCookie cookie =
+        WebViewCookie(name: 'foo', value: 'bar', domain: 'flutter.dev');
+
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final CookieManager cookieManager = CookieManager();
+    await cookieManager.setCookie(cookie);
+    expect(mockWebViewCookieManagerPlatform.setCookieCalls,
+        <WebViewCookie>[cookie]);
   });
 
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
@@ -928,6 +1098,34 @@ void main() {
     });
   });
 
+  group('Background color', () {
+    testWidgets('Defaults to null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, null);
+    });
+
+    testWidgets('Can be transparent', (WidgetTester tester) async {
+      const Color transparentColor = Color(0x00000000);
+
+      await tester.pumpWidget(const WebView(
+        backgroundColor: transparentColor,
+      ));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single as CreationParams;
+
+      expect(params.backgroundColor, transparentColor);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUp(() {
       WebView.platform = MyWebViewPlatform();
@@ -1161,5 +1359,21 @@ class MatchesCreationParams extends Matcher {
             .matches(creationParams.webSettings!, matchState) &&
         orderedEquals(_creationParams.javascriptChannelNames)
             .matches(creationParams.javascriptChannelNames, matchState);
+  }
+}
+
+class MockWebViewCookieManagerPlatform extends WebViewCookieManagerPlatform {
+  List<WebViewCookie> setCookieCalls = <WebViewCookie>[];
+
+  @override
+  Future<bool> clearCookies() async => true;
+
+  @override
+  Future<void> setCookie(WebViewCookie cookie) async {
+    setCookieCalls.add(cookie);
+  }
+
+  void reset() {
+    setCookieCalls = <WebViewCookie>[];
   }
 }

@@ -1,7 +1,54 @@
-## NEXT
+## 2.2.18
 
+* Moves Android and iOS implementations to federated packages.
+* Update audio URL in iOS tests.
+
+## 2.2.17
+
+* Avoid blocking the main thread loading video count on iOS.
+
+## 2.2.16
+
+* Introduces `setCaptionOffset` to offset the caption display based on a Duration.
+
+## 2.2.15
+
+* Updates README discussion of permissions.
+
+## 2.2.14
+
+* Removes KVO observer on AVPlayerItem on iOS.
+
+## 2.2.13
+
+* Fixes persisting of hasError even after successful initialize.
+
+## 2.2.12
+
+* iOS: Validate size only when assets contain video tracks.
+
+## 2.2.11
+
+* Removes dependency on `meta`.
+
+## 2.2.10
+
+* iOS: Updates texture on `seekTo`.
+
+## 2.2.9
+
+* Adds compatibility with `video_player_platform_interface` 5.0, which does not
+  include non-dev test dependencies.
+
+## 2.2.8
+
+* Changes the way the `VideoPlayerPlatform` instance is cached in the
+  controller, so that it's no longer impossible to change after the first use.
+* Updates unit tests to be self-contained.
 * Fixes integration tests.
 * Updates Android compileSdkVersion to 31.
+* Fixes a flaky integration test.
+* Integration tests now use WebM on web, to allow running with Chromium.
 
 ## 2.2.7
 
