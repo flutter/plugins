@@ -4,5 +4,9 @@
 # These names are just suggestions. It is fine to have your changes
 # reviewed by someone else.
 
-packages/**/*_web/**                           @ditman
+# Plugin-level rules.
 packages/webview_flutter/**                    @bparrishMines
+
+# Sub-package-level rules. These should stay last, since the last matching
+# entry takes precedence.
+packages/**/*_web/**                           @ditman
