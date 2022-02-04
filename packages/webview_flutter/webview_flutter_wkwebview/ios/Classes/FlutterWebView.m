@@ -9,12 +9,12 @@
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
-  NSObject<FlutterBinaryMessenger>* _messenger;
-  FLTCookieManager* _cookieManager;
+  NSObject<FlutterBinaryMessenger> *_messenger;
+  FLTCookieManager *_cookieManager;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
-                    cookieManager:(FLTCookieManager*)cookieManager {
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                    cookieManager:(FLTCookieManager *)cookieManager {
   self = [super init];
   if (self) {
     _messenger = messenger;
@@ -23,18 +23,18 @@
   return self;
 }
 
-- (NSObject<FlutterMessageCodec>*)createArgsCodec {
+- (NSObject<FlutterMessageCodec> *)createArgsCodec {
   return [FlutterStandardMessageCodec sharedInstance];
 }
 
-- (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
-                                   viewIdentifier:(int64_t)viewId
-                                        arguments:(id _Nullable)args {
+- (NSObject<FlutterPlatformView> *)createWithFrame:(CGRect)frame
+                                    viewIdentifier:(int64_t)viewId
+                                         arguments:(id _Nullable)args {
   if (@available(iOS 11.0, *)) {
     [_cookieManager setCookiesForData:args[@"cookies"]];
   }
 
-  FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
+  FLTWebViewController *webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
                                                                         binaryMessenger:_messenger];
@@ -66,37 +66,37 @@
 @end
 
 @implementation FLTWebViewController {
-  FLTWKWebView* _webView;
+  FLTWKWebView *_webView;
   int64_t _viewId;
-  FlutterMethodChannel* _channel;
-  NSString* _currentUrl;
+  FlutterMethodChannel *_channel;
+  NSString *_currentUrl;
   // The set of registered JavaScript channel names.
-  NSMutableSet* _javaScriptChannelNames;
-  FLTWKNavigationDelegate* _navigationDelegate;
-  FLTWKProgressionDelegate* _progressionDelegate;
+  NSMutableSet *_javaScriptChannelNames;
+  FLTWKNavigationDelegate *_navigationDelegate;
+  FLTWKProgressionDelegate *_progressionDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+              binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   if (self = [super init]) {
     _viewId = viewId;
 
-    NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
+    NSString *channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
-    WKUserContentController* userContentController = [[WKUserContentController alloc] init];
+    WKUserContentController *userContentController = [[WKUserContentController alloc] init];
     if ([args[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
-      NSArray* javaScriptChannelNames = args[@"javascriptChannelNames"];
+      NSArray *javaScriptChannelNames = args[@"javascriptChannelNames"];
       [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
-    NSDictionary<NSString*, id>* settings = args[@"settings"];
+    NSDictionary<NSString *, id> *settings = args[@"settings"];
 
-    WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
     [self applyConfigurationSettings:settings toConfiguration:configuration];
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
@@ -105,10 +105,10 @@
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
 
     // Background color
-    NSNumber* backgroundColorNSNumber = args[@"backgroundColor"];
+    NSNumber *backgroundColorNSNumber = args[@"backgroundColor"];
     if ([backgroundColorNSNumber isKindOfClass:[NSNumber class]]) {
       int backgroundColorInt = [backgroundColorNSNumber intValue];
-      UIColor* backgroundColor = [UIColor colorWithRed:(backgroundColorInt >> 16 & 0xff) / 255.0
+      UIColor *backgroundColor = [UIColor colorWithRed:(backgroundColorInt >> 16 & 0xff) / 255.0
                                                  green:(backgroundColorInt >> 8 & 0xff) / 255.0
                                                   blue:(backgroundColorInt & 0xff) / 255.0
                                                  alpha:(backgroundColorInt >> 24 & 0xff) / 255.0];
@@ -121,7 +121,7 @@
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
-    [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+    [_channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
 
@@ -136,11 +136,11 @@
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
 
-    NSString* initialUrl = args[@"initialUrl"];
+    NSString *initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      NSURL* url = [NSURL URLWithString:initialUrl];
+      NSURL *url = [NSURL URLWithString:initialUrl];
       if (url) {
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         [_webView loadRequest:request];
       }
     }
@@ -154,11 +154,11 @@
   }
 }
 
-- (UIView*)view {
+- (UIView *)view {
   return _webView;
 }
 
-- (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"updateSettings"]) {
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadFile"]) {
@@ -210,8 +210,8 @@
   }
 }
 
-- (void)onUpdateSettings:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* error = [self applySettings:[call arguments]];
+- (void)onUpdateSettings:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *error = [self applySettings:[call arguments]];
   if (error == nil) {
     result(nil);
     return;
@@ -219,8 +219,8 @@
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
-- (void)onLoadFile:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* error = nil;
+- (void)onLoadFile:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *error = nil;
   if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
     result([FlutterError errorWithCode:@"loadFile_failed"
                                message:@"Failed parsing file path."
@@ -228,10 +228,10 @@
     return;
   }
 
-  NSURL* url = [NSURL fileURLWithPath:[call arguments] isDirectory:NO];
+  NSURL *url = [NSURL fileURLWithPath:[call arguments] isDirectory:NO];
 
   if (!url) {
-    NSString* errorDetails = [NSString stringWithFormat:@"Initializing NSURL with the supplied "
+    NSString *errorDetails = [NSString stringWithFormat:@"Initializing NSURL with the supplied "
                                                         @"'%@' path resulted in a nil value.",
                                                         [call arguments]];
     result([FlutterError errorWithCode:@"loadFile_failed"
@@ -240,14 +240,14 @@
     return;
   }
 
-  NSURL* baseUrl = [url URLByDeletingLastPathComponent];
+  NSURL *baseUrl = [url URLByDeletingLastPathComponent];
 
   [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
   result(nil);
 }
 
-- (void)onLoadFlutterAsset:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* error = nil;
+- (void)onLoadFlutterAsset:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *error = nil;
   if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
     result([FlutterError errorWithCode:@"loadFlutterAsset_invalidKey"
                                message:@"Supplied asset key is not valid."
@@ -255,9 +255,9 @@
     return;
   }
 
-  NSString* assetKey = [call arguments];
-  NSString* assetFilePath = [FlutterDartProject lookupKeyForAsset:assetKey];
-  NSURL* url = [[NSBundle mainBundle] URLForResource:[assetFilePath stringByDeletingPathExtension]
+  NSString *assetKey = [call arguments];
+  NSString *assetFilePath = [FlutterDartProject lookupKeyForAsset:assetKey];
+  NSURL *url = [[NSBundle mainBundle] URLForResource:[assetFilePath stringByDeletingPathExtension]
                                        withExtension:assetFilePath.pathExtension];
 
   if (!url) {
@@ -274,8 +274,8 @@
   result(nil);
 }
 
-- (void)onLoadHtmlString:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSDictionary* arguments = [call arguments];
+- (void)onLoadHtmlString:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSDictionary *arguments = [call arguments];
   if (![arguments isKindOfClass:NSDictionary.class]) {
     result([FlutterError
         errorWithCode:@"loadHtmlString_failed"
@@ -286,10 +286,10 @@
     return;
   }
 
-  NSString* htmlString = [call arguments][@"html"];
-  NSString* baseUrl =
+  NSString *htmlString = [call arguments][@"html"];
+  NSString *baseUrl =
       [call arguments][@"baseUrl"] == [NSNull null] ? nil : [call arguments][@"baseUrl"];
-  NSString* error = nil;
+  NSString *error = nil;
   if (![FLTWebViewController isValidStringArgument:htmlString withErrorMessage:&error]) {
     result([FlutterError errorWithCode:@"loadHtmlString_failed"
                                message:@"Failed parsing HTML string argument."
@@ -301,15 +301,15 @@
   result(nil);
 }
 
-- (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSMutableDictionary* requestData = [[NSMutableDictionary alloc] init];
+- (void)onLoadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSMutableDictionary *requestData = [[NSMutableDictionary alloc] init];
   if (call.arguments[@"url"]) {
     requestData[@"uri"] = call.arguments[@"url"];
   }
   if (call.arguments[@"headers"]) {
     requestData[@"headers"] = call.arguments[@"headers"];
   }
-  NSURLRequest* request = [self buildNSURLRequest:@{@"request" : requestData}];
+  NSURLRequest *request = [self buildNSURLRequest:@{@"request" : requestData}];
   if (!request) {
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
@@ -321,8 +321,8 @@
   }
 }
 
-- (void)onLoadRequest:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSURLRequest* request = [self buildNSURLRequest:[call arguments]];
+- (void)onLoadRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSURLRequest *request = [self buildNSURLRequest:[call arguments]];
   if (!request) {
     result([FlutterError
         errorWithCode:@"loadRequest_failed"
@@ -334,38 +334,38 @@
   }
 }
 
-- (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onCanGoBack:(FlutterMethodCall *)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
   result(@(canGoBack));
 }
 
-- (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onCanGoForward:(FlutterMethodCall *)call result:(FlutterResult)result {
   BOOL canGoForward = [_webView canGoForward];
   result(@(canGoForward));
 }
 
-- (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onGoBack:(FlutterMethodCall *)call result:(FlutterResult)result {
   [_webView goBack];
   result(nil);
 }
 
-- (void)onGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onGoForward:(FlutterMethodCall *)call result:(FlutterResult)result {
   [_webView goForward];
   result(nil);
 }
 
-- (void)onReload:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onReload:(FlutterMethodCall *)call result:(FlutterResult)result {
   [_webView reload];
   result(nil);
 }
 
-- (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onCurrentUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
   _currentUrl = [[_webView URL] absoluteString];
   result(_currentUrl);
 }
 
-- (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* jsString = [call arguments];
+- (void)onEvaluateJavaScript:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
                                message:@"JavaScript String cannot be null"
@@ -373,7 +373,7 @@
     return;
   }
   [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+             completionHandler:^(_Nullable id evaluateResult, NSError *_Nullable error) {
                if (error) {
                  result([FlutterError
                      errorWithCode:@"evaluateJavaScript_failed"
@@ -386,10 +386,10 @@
              }];
 }
 
-- (void)onRunJavaScript:(FlutterMethodCall*)call
+- (void)onRunJavaScript:(FlutterMethodCall *)call
                  result:(FlutterResult)result
         sendReturnValue:(BOOL)sendReturnValue {
-  NSString* jsString = [call arguments];
+  NSString *jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"runJavascript_failed"
                                message:@"JavaScript String cannot be null"
@@ -398,7 +398,7 @@
   }
   [_webView
       evaluateJavaScript:jsString
-       completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+       completionHandler:^(_Nullable id evaluateResult, NSError *_Nullable error) {
          if (error) {
            // WebKit will throw an error (WKErrorJavaScriptResultTypeIsUnsupported) when the
            // type of the evaluated value is unsupported. This also goes for
@@ -421,25 +421,25 @@
        }];
 }
 
-- (void)onAddJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSArray* channelNames = [call arguments];
-  NSSet* channelNamesSet = [[NSSet alloc] initWithArray:channelNames];
+- (void)onAddJavaScriptChannels:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSArray *channelNames = [call arguments];
+  NSSet *channelNamesSet = [[NSSet alloc] initWithArray:channelNames];
   [_javaScriptChannelNames addObjectsFromArray:channelNames];
   [self registerJavaScriptChannels:channelNamesSet
                         controller:_webView.configuration.userContentController];
   result(nil);
 }
 
-- (void)onRemoveJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onRemoveJavaScriptChannels:(FlutterMethodCall *)call result:(FlutterResult)result {
   // WkWebView does not support removing a single user script, so instead we remove all
   // user scripts, all message handlers. And re-register channels that shouldn't be removed.
   [_webView.configuration.userContentController removeAllUserScripts];
-  for (NSString* channelName in _javaScriptChannelNames) {
+  for (NSString *channelName in _javaScriptChannelNames) {
     [_webView.configuration.userContentController removeScriptMessageHandlerForName:channelName];
   }
 
-  NSArray* channelNamesToRemove = [call arguments];
-  for (NSString* channelName in channelNamesToRemove) {
+  NSArray *channelNamesToRemove = [call arguments];
+  for (NSString *channelName in channelNamesToRemove) {
     [_javaScriptChannelNames removeObject:channelName];
   }
 
@@ -450,9 +450,9 @@
 
 - (void)clearCache:(FlutterResult)result {
   if (@available(iOS 9.0, *)) {
-    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
-    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
-    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    NSSet *cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
+    NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
     [dataStore removeDataOfTypes:cacheDataTypes
                    modifiedSince:dateFrom
                completionHandler:^{
@@ -465,12 +465,12 @@
 }
 
 - (void)onGetTitle:(FlutterResult)result {
-  NSString* title = _webView.title;
+  NSString *title = _webView.title;
   result(title);
 }
 
-- (void)onScrollTo:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSDictionary* arguments = [call arguments];
+- (void)onScrollTo:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSDictionary *arguments = [call arguments];
   int x = [arguments[@"x"] intValue];
   int y = [arguments[@"y"] intValue];
 
@@ -478,10 +478,10 @@
   result(nil);
 }
 
-- (void)onScrollBy:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onScrollBy:(FlutterMethodCall *)call result:(FlutterResult)result {
   CGPoint contentOffset = _webView.scrollView.contentOffset;
 
-  NSDictionary* arguments = [call arguments];
+  NSDictionary *arguments = [call arguments];
   int x = [arguments[@"x"] intValue] + contentOffset.x;
   int y = [arguments[@"y"] intValue] + contentOffset.y;
 
@@ -489,28 +489,28 @@
   result(nil);
 }
 
-- (void)getScrollX:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)getScrollX:(FlutterMethodCall *)call result:(FlutterResult)result {
   int offsetX = _webView.scrollView.contentOffset.x;
   result(@(offsetX));
 }
 
-- (void)getScrollY:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)getScrollY:(FlutterMethodCall *)call result:(FlutterResult)result {
   int offsetY = _webView.scrollView.contentOffset.y;
   result(@(offsetY));
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
-- (NSString*)applySettings:(NSDictionary<NSString*, id>*)settings {
-  NSMutableArray<NSString*>* unknownKeys = [[NSMutableArray alloc] init];
-  for (NSString* key in settings) {
+- (NSString *)applySettings:(NSDictionary<NSString *, id> *)settings {
+  NSMutableArray<NSString *> *unknownKeys = [[NSMutableArray alloc] init];
+  for (NSString *key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
-      NSNumber* mode = settings[key];
+      NSNumber *mode = settings[key];
       [self updateJsMode:mode];
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
-      NSNumber* hasDartNavigationDelegate = settings[key];
+      NSNumber *hasDartNavigationDelegate = settings[key];
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"hasProgressTracking"]) {
-      NSNumber* hasProgressTrackingValue = settings[key];
+      NSNumber *hasProgressTrackingValue = settings[key];
       bool hasProgressTracking = [hasProgressTrackingValue boolValue];
       if (hasProgressTracking) {
         _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView:_webView
@@ -519,14 +519,14 @@
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
     } else if ([key isEqualToString:@"gestureNavigationEnabled"]) {
-      NSNumber* allowsBackForwardNavigationGestures = settings[key];
+      NSNumber *allowsBackForwardNavigationGestures = settings[key];
       _webView.allowsBackForwardNavigationGestures =
           [allowsBackForwardNavigationGestures boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
-      NSString* userAgent = settings[key];
+      NSString *userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else if ([key isEqualToString:@"zoomEnabled"]) {
-      NSNumber* zoomEnabled = settings[key];
+      NSNumber *zoomEnabled = settings[key];
       _navigationDelegate.shouldEnableZoom = [zoomEnabled boolValue];
     } else {
       [unknownKeys addObject:key];
@@ -539,20 +539,20 @@
                                     [unknownKeys componentsJoinedByString:@", "]];
 }
 
-- (void)applyConfigurationSettings:(NSDictionary<NSString*, id>*)settings
-                   toConfiguration:(WKWebViewConfiguration*)configuration {
+- (void)applyConfigurationSettings:(NSDictionary<NSString *, id> *)settings
+                   toConfiguration:(WKWebViewConfiguration *)configuration {
   NSAssert(configuration != _webView.configuration,
            @"configuration needs to be updated before webView.configuration.");
-  for (NSString* key in settings) {
+  for (NSString *key in settings) {
     if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
-      NSNumber* allowsInlineMediaPlayback = settings[key];
+      NSNumber *allowsInlineMediaPlayback = settings[key];
       configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
     }
   }
 }
 
-- (void)updateJsMode:(NSNumber*)mode {
-  WKPreferences* preferences = [[_webView configuration] preferences];
+- (void)updateJsMode:(NSNumber *)mode {
+  WKPreferences *preferences = [[_webView configuration] preferences];
   switch ([mode integerValue]) {
     case 0:  // disabled
       [preferences setJavaScriptEnabled:NO];
@@ -565,8 +565,8 @@
   }
 }
 
-- (void)updateAutoMediaPlaybackPolicy:(NSNumber*)policy
-                      inConfiguration:(WKWebViewConfiguration*)configuration {
+- (void)updateAutoMediaPlaybackPolicy:(NSNumber *)policy
+                      inConfiguration:(WKWebViewConfiguration *)configuration {
   switch ([policy integerValue]) {
     case 0:  // require_user_action_for_all_media_types
       if (@available(iOS 10.0, *)) {
@@ -604,25 +604,25 @@
  *
  * @return NSURLRequest object.
  */
-- (NSURLRequest*)buildNSURLRequest:(NSDictionary<NSString*, id>*)arguments {
+- (NSURLRequest *)buildNSURLRequest:(NSDictionary<NSString *, id> *)arguments {
   id requestParameters = arguments[@"request"];
   if (![requestParameters isKindOfClass:[NSDictionary class]]) {
     return nil;
   }
 
-  NSString* urlString = requestParameters[@"uri"];
+  NSString *urlString = requestParameters[@"uri"];
   if (!urlString) {
     return nil;
   }
 
-  NSURL* url = [NSURL URLWithString:urlString];
+  NSURL *url = [NSURL URLWithString:urlString];
   if (!url) {
     return nil;
   }
 
-  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 
-  NSString* httpMethod = requestParameters[@"method"];
+  NSString *httpMethod = requestParameters[@"method"];
   if (httpMethod) {
     [request setHTTPMethod:httpMethod];
   }
@@ -640,16 +640,16 @@
   return request;
 }
 
-- (void)registerJavaScriptChannels:(NSSet*)channelNames
-                        controller:(WKUserContentController*)userContentController {
-  for (NSString* channelName in channelNames) {
-    FLTJavaScriptChannel* channel =
+- (void)registerJavaScriptChannels:(NSSet *)channelNames
+                        controller:(WKUserContentController *)userContentController {
+  for (NSString *channelName in channelNames) {
+    FLTJavaScriptChannel *channel =
         [[FLTJavaScriptChannel alloc] initWithMethodChannel:_channel
                                       javaScriptChannelName:channelName];
     [userContentController addScriptMessageHandler:channel name:channelName];
-    NSString* wrapperSource = [NSString
+    NSString *wrapperSource = [NSString
         stringWithFormat:@"window.%@ = webkit.messageHandlers.%@;", channelName, channelName];
-    WKUserScript* wrapperScript =
+    WKUserScript *wrapperScript =
         [[WKUserScript alloc] initWithSource:wrapperSource
                                injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                             forMainFrameOnly:NO];
@@ -657,7 +657,7 @@
   }
 }
 
-- (void)updateUserAgent:(NSString*)userAgent {
+- (void)updateUserAgent:(NSString *)userAgent {
   if (@available(iOS 9.0, *)) {
     [_webView setCustomUserAgent:userAgent];
   } else {
@@ -673,7 +673,7 @@
  * case the supplied argument is not valid.
  * @return `YES` if the given `argument` is a valid non-null, non-empty string; otherwise `NO`.
  */
-+ (BOOL)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
++ (BOOL)isValidStringArgument:(id)argument withErrorMessage:(NSString **)errorDetails {
   if (!argument) {
     if (errorDetails) {
       *errorDetails = @"Argument is nil.";
@@ -698,10 +698,10 @@
 
 #pragma mark WKUIDelegate
 
-- (WKWebView*)webView:(WKWebView*)webView
-    createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
-               forNavigationAction:(WKNavigationAction*)navigationAction
-                    windowFeatures:(WKWindowFeatures*)windowFeatures {
+- (WKWebView *)webView:(WKWebView *)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
+               forNavigationAction:(WKNavigationAction *)navigationAction
+                    windowFeatures:(WKWindowFeatures *)windowFeatures {
   if (!navigationAction.targetFrame.isMainFrame) {
     [webView loadRequest:navigationAction.request];
   }
