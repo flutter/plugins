@@ -1,0 +1,8 @@
+# Below is a list of Flutter team members who are suggested reviewers
+# for contributions to plugins in this repository.
+#
+# These names are just suggestions. It is fine to have your changes
+# reviewed by someone else.
+
+packages/**/*_web/**                           @ditman
+packages/webview_flutter/**                    @bparrishMines
