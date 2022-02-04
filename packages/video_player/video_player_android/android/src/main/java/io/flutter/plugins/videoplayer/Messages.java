@@ -22,22 +22,29 @@ import java.util.Map;
 /** Generated class from Pigeon. */
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class Messages {
+
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class TextureMessage {
-    private @Nullable Long textureId;
+    private @NonNull Long textureId;
 
-    public @Nullable Long getTextureId() {
+    public @NonNull Long getTextureId() {
       return textureId;
     }
 
-    public void setTextureId(@Nullable Long setterArg) {
+    public void setTextureId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+      }
       this.textureId = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private TextureMessage() {}
 
     public static class Builder {
       private @Nullable Long textureId;
 
-      public @NonNull Builder setTextureId(@Nullable Long setterArg) {
+      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
         this.textureId = setterArg;
         return this;
       }
@@ -69,37 +76,46 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class LoopingMessage {
-    private @Nullable Long textureId;
+    private @NonNull Long textureId;
 
-    public @Nullable Long getTextureId() {
+    public @NonNull Long getTextureId() {
       return textureId;
     }
 
-    public void setTextureId(@Nullable Long setterArg) {
+    public void setTextureId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+      }
       this.textureId = setterArg;
     }
 
-    private @Nullable Boolean isLooping;
+    private @NonNull Boolean isLooping;
 
-    public @Nullable Boolean getIsLooping() {
+    public @NonNull Boolean getIsLooping() {
       return isLooping;
     }
 
-    public void setIsLooping(@Nullable Boolean setterArg) {
+    public void setIsLooping(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isLooping\" is null.");
+      }
       this.isLooping = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private LoopingMessage() {}
 
     public static class Builder {
       private @Nullable Long textureId;
 
-      public @NonNull Builder setTextureId(@Nullable Long setterArg) {
+      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
         this.textureId = setterArg;
         return this;
       }
 
       private @Nullable Boolean isLooping;
 
-      public @NonNull Builder setIsLooping(@Nullable Boolean setterArg) {
+      public @NonNull Builder setIsLooping(@NonNull Boolean setterArg) {
         this.isLooping = setterArg;
         return this;
       }
@@ -135,37 +151,46 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class VolumeMessage {
-    private @Nullable Long textureId;
+    private @NonNull Long textureId;
 
-    public @Nullable Long getTextureId() {
+    public @NonNull Long getTextureId() {
       return textureId;
     }
 
-    public void setTextureId(@Nullable Long setterArg) {
+    public void setTextureId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+      }
       this.textureId = setterArg;
     }
 
-    private @Nullable Double volume;
+    private @NonNull Double volume;
 
-    public @Nullable Double getVolume() {
+    public @NonNull Double getVolume() {
       return volume;
     }
 
-    public void setVolume(@Nullable Double setterArg) {
+    public void setVolume(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"volume\" is null.");
+      }
       this.volume = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private VolumeMessage() {}
 
     public static class Builder {
       private @Nullable Long textureId;
 
-      public @NonNull Builder setTextureId(@Nullable Long setterArg) {
+      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
         this.textureId = setterArg;
         return this;
       }
 
       private @Nullable Double volume;
 
-      public @NonNull Builder setVolume(@Nullable Double setterArg) {
+      public @NonNull Builder setVolume(@NonNull Double setterArg) {
         this.volume = setterArg;
         return this;
       }
@@ -201,37 +226,46 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PlaybackSpeedMessage {
-    private @Nullable Long textureId;
+    private @NonNull Long textureId;
 
-    public @Nullable Long getTextureId() {
+    public @NonNull Long getTextureId() {
       return textureId;
     }
 
-    public void setTextureId(@Nullable Long setterArg) {
+    public void setTextureId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+      }
       this.textureId = setterArg;
     }
 
-    private @Nullable Double speed;
+    private @NonNull Double speed;
 
-    public @Nullable Double getSpeed() {
+    public @NonNull Double getSpeed() {
       return speed;
     }
 
-    public void setSpeed(@Nullable Double setterArg) {
+    public void setSpeed(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"speed\" is null.");
+      }
       this.speed = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private PlaybackSpeedMessage() {}
 
     public static class Builder {
       private @Nullable Long textureId;
 
-      public @NonNull Builder setTextureId(@Nullable Long setterArg) {
+      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
         this.textureId = setterArg;
         return this;
       }
 
       private @Nullable Double speed;
 
-      public @NonNull Builder setSpeed(@Nullable Double setterArg) {
+      public @NonNull Builder setSpeed(@NonNull Double setterArg) {
         this.speed = setterArg;
         return this;
       }
@@ -267,37 +301,46 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PositionMessage {
-    private @Nullable Long textureId;
+    private @NonNull Long textureId;
 
-    public @Nullable Long getTextureId() {
+    public @NonNull Long getTextureId() {
       return textureId;
     }
 
-    public void setTextureId(@Nullable Long setterArg) {
+    public void setTextureId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"textureId\" is null.");
+      }
       this.textureId = setterArg;
     }
 
-    private @Nullable Long position;
+    private @NonNull Long position;
 
-    public @Nullable Long getPosition() {
+    public @NonNull Long getPosition() {
       return position;
     }
 
-    public void setPosition(@Nullable Long setterArg) {
+    public void setPosition(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"position\" is null.");
+      }
       this.position = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private PositionMessage() {}
 
     public static class Builder {
       private @Nullable Long textureId;
 
-      public @NonNull Builder setTextureId(@Nullable Long setterArg) {
+      public @NonNull Builder setTextureId(@NonNull Long setterArg) {
         this.textureId = setterArg;
         return this;
       }
 
       private @Nullable Long position;
 
-      public @NonNull Builder setPosition(@Nullable Long setterArg) {
+      public @NonNull Builder setPosition(@NonNull Long setterArg) {
         this.position = setterArg;
         return this;
       }
@@ -462,20 +505,26 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class MixWithOthersMessage {
-    private @Nullable Boolean mixWithOthers;
+    private @NonNull Boolean mixWithOthers;
 
-    public @Nullable Boolean getMixWithOthers() {
+    public @NonNull Boolean getMixWithOthers() {
       return mixWithOthers;
     }
 
-    public void setMixWithOthers(@Nullable Boolean setterArg) {
+    public void setMixWithOthers(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"mixWithOthers\" is null.");
+      }
       this.mixWithOthers = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private MixWithOthersMessage() {}
 
     public static class Builder {
       private @Nullable Boolean mixWithOthers;
 
-      public @NonNull Builder setMixWithOthers(@Nullable Boolean setterArg) {
+      public @NonNull Builder setMixWithOthers(@NonNull Boolean setterArg) {
         this.mixWithOthers = setterArg;
         return this;
       }
