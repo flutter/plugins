@@ -2,11 +2,11 @@ name: url_launcher_web
 description: Web platform implementation of url_launcher
 repository: https://github.com/flutter/plugins/tree/main/packages/url_launcher/url_launcher_web
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+url_launcher%22
-version: 2.0.7
+version: 2.0.8
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0"
+  flutter: ">=2.10.0"
 
 flutter:
   plugin:
