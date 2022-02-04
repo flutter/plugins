@@ -29,3 +29,4 @@ dev_dependencies:
   mockito: ^5.0.0
   pedantic: ^1.11.0
   plugin_platform_interface: ^2.1.2
+  
