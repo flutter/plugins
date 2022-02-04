@@ -105,7 +105,7 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   Future<Duration> getPosition(int textureId) async {
     final PositionMessage response =
         await _api.position(TextureMessage(textureId: textureId));
-    return Duration(milliseconds: response.position!);
+    return Duration(milliseconds: response.position);
   }
 
   @override

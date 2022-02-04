@@ -13,10 +13,10 @@ import 'package:flutter/services.dart';
 
 class TextureMessage {
   TextureMessage({
-    this.textureId,
+    required this.textureId,
   });
 
-  int? textureId;
+  int textureId;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -27,19 +27,19 @@ class TextureMessage {
   static TextureMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return TextureMessage(
-      textureId: pigeonMap['textureId'] as int?,
+      textureId: pigeonMap['textureId']! as int,
     );
   }
 }
 
 class LoopingMessage {
   LoopingMessage({
-    this.textureId,
-    this.isLooping,
+    required this.textureId,
+    required this.isLooping,
   });
 
-  int? textureId;
-  bool? isLooping;
+  int textureId;
+  bool isLooping;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -51,20 +51,20 @@ class LoopingMessage {
   static LoopingMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return LoopingMessage(
-      textureId: pigeonMap['textureId'] as int?,
-      isLooping: pigeonMap['isLooping'] as bool?,
+      textureId: pigeonMap['textureId']! as int,
+      isLooping: pigeonMap['isLooping']! as bool,
     );
   }
 }
 
 class VolumeMessage {
   VolumeMessage({
-    this.textureId,
-    this.volume,
+    required this.textureId,
+    required this.volume,
   });
 
-  int? textureId;
-  double? volume;
+  int textureId;
+  double volume;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -76,20 +76,20 @@ class VolumeMessage {
   static VolumeMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return VolumeMessage(
-      textureId: pigeonMap['textureId'] as int?,
-      volume: pigeonMap['volume'] as double?,
+      textureId: pigeonMap['textureId']! as int,
+      volume: pigeonMap['volume']! as double,
     );
   }
 }
 
 class PlaybackSpeedMessage {
   PlaybackSpeedMessage({
-    this.textureId,
-    this.speed,
+    required this.textureId,
+    required this.speed,
   });
 
-  int? textureId;
-  double? speed;
+  int textureId;
+  double speed;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -101,20 +101,20 @@ class PlaybackSpeedMessage {
   static PlaybackSpeedMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return PlaybackSpeedMessage(
-      textureId: pigeonMap['textureId'] as int?,
-      speed: pigeonMap['speed'] as double?,
+      textureId: pigeonMap['textureId']! as int,
+      speed: pigeonMap['speed']! as double,
     );
   }
 }
 
 class PositionMessage {
   PositionMessage({
-    this.textureId,
-    this.position,
+    required this.textureId,
+    required this.position,
   });
 
-  int? textureId;
-  int? position;
+  int textureId;
+  int position;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -126,8 +126,8 @@ class PositionMessage {
   static PositionMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return PositionMessage(
-      textureId: pigeonMap['textureId'] as int?,
-      position: pigeonMap['position'] as int?,
+      textureId: pigeonMap['textureId']! as int,
+      position: pigeonMap['position']! as int,
     );
   }
 }
@@ -172,10 +172,10 @@ class CreateMessage {
 
 class MixWithOthersMessage {
   MixWithOthersMessage({
-    this.mixWithOthers,
+    required this.mixWithOthers,
   });
 
-  bool? mixWithOthers;
+  bool mixWithOthers;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -186,7 +186,7 @@ class MixWithOthersMessage {
   static MixWithOthersMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return MixWithOthersMessage(
-      mixWithOthers: pigeonMap['mixWithOthers'] as bool?,
+      mixWithOthers: pigeonMap['mixWithOthers']! as bool,
     );
   }
 }

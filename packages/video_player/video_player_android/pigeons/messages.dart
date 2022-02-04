@@ -14,27 +14,32 @@ import 'package:pigeon/pigeon.dart';
   copyrightHeader: 'pigeons/copyright.txt',
 ))
 class TextureMessage {
-  int? textureId;
+  TextureMessage(this.textureId);
+  int textureId;
 }
 
 class LoopingMessage {
-  int? textureId;
-  bool? isLooping;
+  LoopingMessage(this.textureId, this.isLooping);
+  int textureId;
+  bool isLooping;
 }
 
 class VolumeMessage {
-  int? textureId;
-  double? volume;
+  VolumeMessage(this.textureId, this.volume);
+  int textureId;
+  double volume;
 }
 
 class PlaybackSpeedMessage {
-  int? textureId;
-  double? speed;
+  PlaybackSpeedMessage(this.textureId, this.speed);
+  int textureId;
+  double speed;
 }
 
 class PositionMessage {
-  int? textureId;
-  int? position;
+  PositionMessage(this.textureId, this.position);
+  int textureId;
+  int position;
 }
 
 class CreateMessage {
@@ -46,7 +51,8 @@ class CreateMessage {
 }
 
 class MixWithOthersMessage {
-  bool? mixWithOthers;
+  MixWithOthersMessage(this.mixWithOthers);
+  bool mixWithOthers;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')

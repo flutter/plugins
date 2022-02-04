@@ -26,7 +26,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   TextureMessage create(CreateMessage arg) {
     log.add('create');
     createMessage = arg;
-    return TextureMessage()..textureId = 3;
+    return TextureMessage(textureId: 3);
   }
 
   @override
@@ -62,7 +62,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
-    return PositionMessage()..position = 234;
+    return PositionMessage(textureId: arg.textureId, position: 234);
   }
 
   @override
