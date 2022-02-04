@@ -5,8 +5,6 @@
 #import "FLTSharedPreferencesPlugin.h"
 #import "messages.g.h"
 
-static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences_ios";
-
 static NSMutableDictionary *getAllPrefs() {
   NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
   NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain];

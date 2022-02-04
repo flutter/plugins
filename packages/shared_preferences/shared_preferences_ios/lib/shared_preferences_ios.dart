@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'messages.g.dart';
 
@@ -52,10 +53,11 @@ class SharedPreferencesIos extends SharedPreferencesStorePlatform {
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
     final _Setter? setter = _setters[valueType];
-    if (setter != null) {
-      return setter(key, value);
-    } else {
-      return false;
+    if (setter == null) {
+      throw PlatformException(
+          code: 'InvalidOperation',
+          message: '"$valueType" is not a supported type.');
     }
+    return setter(key, value);
   }
 }

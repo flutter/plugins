@@ -6,11 +6,12 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/messages.g.dart',
+  dartTestOut: 'test/messages.g.dart',
   objcHeaderOut: 'ios/Classes/messages.g.h',
   objcSourceOut: 'ios/Classes/messages.g.m',
   copyrightHeader: 'pigeons/copyright_header.txt',
 ))
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestSharedPreferencesApi')
 abstract class SharedPreferencesApi {
   bool remove(String key);
   bool setBool(String key, bool value);
