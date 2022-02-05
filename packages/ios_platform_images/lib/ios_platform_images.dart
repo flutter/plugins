@@ -136,6 +136,56 @@ class IosPlatformImages {
     return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
 
+  /// Loads an image from the system.  The equivalent would be:
+  /// `[UIImage systemImageNamed:name]`.
+  ///
+  /// Throws an exception if the image can't be found.
+  ///
+  /// See [https://developer.apple.com/documentation/uikit/uiimage/configuring_and_displaying_symbol_images_in_your_ui?language=objc]
+  static ImageProvider loadSystemImage(
+    String name,
+    List<Color> colors,
+    double pointSize,
+    int weightIndex,
+    int scaleIndex,
+  ) {
+    List<double> colorsRGBA = colors
+        .expand((Color color) => [
+              color.red.toDouble() / 255,
+              color.green.toDouble() / 255,
+              color.blue.toDouble() / 255,
+              color.alpha.toDouble() / 255,
+            ])
+        .toList();
+
+    Future<Map?> loadInfo = _channel.invokeMapMethod(
+      'loadSystemImage',
+      [
+        name,
+        pointSize,
+        weightIndex,
+        scaleIndex,
+        colorsRGBA,
+      ],
+    );
+    Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
+    Completer<double> scaleCompleter = Completer<double>();
+    loadInfo.then((map) {
+      if (map == null) {
+        scaleCompleter.completeError(
+          Exception("System image couldn't be found: $name"),
+        );
+        bytesCompleter.completeError(
+          Exception("System image couldn't be found: $name"),
+        );
+        return;
+      }
+      scaleCompleter.complete(map["scale"]);
+      bytesCompleter.complete(map["data"]);
+    });
+    return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
+  }
+
   /// Resolves an URL for a resource.  The equivalent would be:
   /// `[[NSBundle mainBundle] URLForResource:name withExtension:ext]`.
   ///
