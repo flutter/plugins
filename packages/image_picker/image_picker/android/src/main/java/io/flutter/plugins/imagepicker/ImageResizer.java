@@ -12,8 +12,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 class ImageResizer {
+  /** Extensions that the ImageResizer cannot resize. */
+  private static final Set<String> nonResizeableExtensions =
+      new HashSet<>(Arrays.asList("gif", "svg", "apng"));
+
   private final File externalFilesDirectory;
   private final ExifDataCopier exifDataCopier;
 
@@ -33,19 +40,20 @@ class ImageResizer {
       @Nullable Double maxWidth,
       @Nullable Double maxHeight,
       @Nullable Integer imageQuality) {
-    Bitmap bmp = decodeFile(imagePath);
-    if (bmp == null) {
-      return null;
-    }
-    // Android can't rescale animated GIF files
-    boolean canScale = !imagePath.toLowerCase().endsWith(".gif");
-    if (!canScale) {
-      return imagePath;
-    }
     boolean shouldScale =
         maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
     if (!shouldScale) {
       return imagePath;
+    }
+    // This class cannot resize certain extensions, so skip those.
+    String extension = imagePath.substring(imagePath.lastIndexOf(".") + 1).toLowerCase();
+    boolean canScale = !nonResizeableExtensions.contains(extension);
+    if (!canScale) {
+      return imagePath;
+    }
+    Bitmap bmp = decodeFile(imagePath);
+    if (bmp == null) {
+      return null;
     }
     try {
       String[] pathParts = imagePath.split("/");
