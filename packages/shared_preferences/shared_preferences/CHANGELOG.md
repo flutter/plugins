@@ -1,3 +1,7 @@
+## 2.0.13
+
+* Updates documentation on README.md.
+
 ## 2.0.12
 
 * Removes dependency on `meta`.

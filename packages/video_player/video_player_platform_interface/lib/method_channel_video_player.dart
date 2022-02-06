@@ -12,6 +12,10 @@ import 'messages.dart';
 import 'video_player_platform_interface.dart';
 
 /// An implementation of [VideoPlayerPlatform] that uses method channels.
+///
+/// This is the default implementation, for compatibility with existing
+/// third-party implementations. It is not used by other implementations in
+/// this repository.
 class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   VideoPlayerApi _api = VideoPlayerApi();
 
