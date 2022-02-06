@@ -46,6 +46,18 @@ This means that app will only be available for users that run Android SDK 20 or 
                android:value="YOUR KEY HERE"/>
 ```
 
+#### Hybrid Composition
+
+To use [Hybrid Composition](https://flutter.dev/docs/development/platform-integration/platform-views)
+to render the `GoogleMap` widget on Android, set `AndroidGoogleMapsFlutter.useAndroidViewSurface` to
+true.
+
+```dart
+if (defaultTargetPlatform == TargetPlatform.android) {
+  AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+}
+```
+
 ### iOS
 
 This plugin requires iOS 9.0 or higher. To set up, specify your API key in the application delegate `ios/Runner/AppDelegate.m`:

@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:7.0.2'
     }
 }
 
@@ -27,9 +27,10 @@ project.getTasks().withType(JavaCompile){
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
+        targetSdkVersion 31
         minSdkVersion 21
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,7 +61,7 @@ android {
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.1.0'
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-inline:3.12.4'
+    testImplementation 'org.mockito:mockito-inline:4.0.0'
     testImplementation 'androidx.test:core:1.3.0'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.robolectric:robolectric:4.5'
 }

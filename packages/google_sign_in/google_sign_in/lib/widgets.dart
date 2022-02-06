@@ -106,10 +106,22 @@ class GoogleUserCircleAvatar extends StatelessWidget {
             FadeInImage.memoryNetwork(
               // This creates a transparent placeholder image, so that
               // [placeholder] shows through.
-              placeholder: Uint8List((size.round() * size.round())),
+              placeholder: _transparentImage,
               image: sizedPhotoUrl,
             )
           ]),
         ));
   }
 }
+
+/// This is an transparent 1x1 gif image.
+///
+/// Those bytes come from `resources/transparentImage.gif`.
+final Uint8List _transparentImage = Uint8List.fromList(
+  [
+    0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, //
+    0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x21, 0xf9, 0x04, 0x01, 0x00, //
+    0x00, 0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, //
+    0x00, 0x02, 0x01, 0x44, 0x00, 0x3B
+  ],
+);

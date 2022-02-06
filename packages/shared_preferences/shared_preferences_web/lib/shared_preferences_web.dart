@@ -23,16 +23,14 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
     // IMPORTANT: Do not use html.window.localStorage.clear() as that will
     //            remove _all_ local data, not just the keys prefixed with
     //            "flutter."
-    for (String key in _storedFlutterKeys) {
-      html.window.localStorage.remove(key);
-    }
+    _storedFlutterKeys.forEach(html.window.localStorage.remove);
     return true;
   }
 
   @override
   Future<Map<String, Object>> getAll() async {
-    final Map<String, Object> allData = {};
-    for (String key in _storedFlutterKeys) {
+    final Map<String, Object> allData = <String, Object>{};
+    for (final String key in _storedFlutterKeys) {
       allData[key] = _decodeValue(html.window.localStorage[key]!);
     }
     return allData;
@@ -64,7 +62,7 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
 
   Iterable<String> get _storedFlutterKeys {
     return html.window.localStorage.keys
-        .where((key) => key.startsWith('flutter.'));
+        .where((String key) => key.startsWith('flutter.'));
   }
 
   String _encodeValue(Object? value) {
@@ -72,7 +70,7 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
   }
 
   Object _decodeValue(String encodedValue) {
-    final Object decodedValue = json.decode(encodedValue);
+    final Object? decodedValue = json.decode(encodedValue);
 
     if (decodedValue is List) {
       // JSON does not preserve generics. The encode/decode roundtrip is
@@ -81,6 +79,6 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
       return decodedValue.cast<String>();
     }
 
-    return decodedValue;
+    return decodedValue!;
   }
 }

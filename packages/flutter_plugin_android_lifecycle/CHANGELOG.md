@@ -1,6 +1,11 @@
-## NEXT
+## 2.0.5
+
+* Updates compileSdkVersion to 31.
+
+## 2.0.4
 
 * Updated Android lint settings.
+* Remove placeholder Dart file.
 
 ## 2.0.3
 

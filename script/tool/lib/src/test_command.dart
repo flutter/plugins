@@ -24,7 +24,7 @@ class TestCommand extends PackageLoopingCommand {
       defaultsTo: '',
       help:
           'Runs Dart unit tests in Dart VM with the given experiments enabled. '
-          'See https://github.com/dart-lang/sdk/blob/master/docs/process/experimental-flags.md '
+          'See https://github.com/dart-lang/sdk/blob/main/docs/process/experimental-flags.md '
           'for details.',
     );
   }

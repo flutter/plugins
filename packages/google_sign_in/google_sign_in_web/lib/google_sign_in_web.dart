@@ -5,11 +5,11 @@
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:js/js.dart';
-import 'package:meta/meta.dart';
 
 import 'src/generated/gapiauth2.dart' as auth2;
 import 'src/load_gapi.dart' as gapi;
