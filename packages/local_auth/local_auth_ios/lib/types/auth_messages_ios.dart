@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth_platform_interface/types/auth_messages.dart';
 
 /// Class wrapping all authentication messages needed on iOS.
 /// Provides default values for all messages.
+@immutable
 class IOSAuthMessages extends AuthMessages {
   /// Constructs a new instance.
   const IOSAuthMessages({
@@ -44,6 +46,20 @@ class IOSAuthMessages extends AuthMessages {
       'okButton': cancelButton ?? iOSOkButton,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IOSAuthMessages &&
+          runtimeType == other.runtimeType &&
+          lockOut == other.lockOut &&
+          goToSettingsButton == other.goToSettingsButton &&
+          goToSettingsDescription == other.goToSettingsDescription &&
+          cancelButton == other.cancelButton;
+
+  @override
+  int get hashCode =>
+      lockOut.hashCode ^ goToSettingsButton.hashCode ^ goToSettingsDescription.hashCode ^ cancelButton.hashCode;
 }
 
 // Strings for local_authentication plugin. Currently supports English.
