@@ -4,7 +4,7 @@
 
 /// Options wrapper for [LocalAuthPlatform.authenticate] parameters.
 class AuthenticationOptions {
-  /// Construct a new instance.
+  /// Constructs a new instance.
   const AuthenticationOptions({
     this.useErrorDialogs = true,
     this.stickyAuth = false,
@@ -12,12 +12,12 @@ class AuthenticationOptions {
     this.biometricOnly = false,
   });
 
-  /// Whether the system will attempt to handle user fixable issues encountered
-  /// while authenticating. For instance, if fingerprint reader exists on the
-  /// phone but there's no fingerprint registered, the plugin will attempt to
+  /// Whether the system will attempt to handle user-fixable issues encountered
+  /// while authenticating. For instance, if a fingerprint reader exists on the
+  /// device but there's no fingerprint registered, the plugin might attempt to
   /// take the user to settings to add one. Anything that is not user fixable,
-  /// such as no biometric sensor on device, will be returned
-  /// as a [PlatformException].
+  /// such as no biometric sensor on device, will still result in
+  /// a [PlatformException].
   final bool useErrorDialogs;
 
   /// Used when the application goes into background for any reason while the
@@ -31,10 +31,10 @@ class AuthenticationOptions {
 
   /// Whether platform specific precautions are enabled. For instance, on face
   /// unlock, Android opens a confirmation dialog after the face is recognized
-  /// to make sure the user meant to unlock their phone.
+  /// to make sure the user meant to unlock their device.
   final bool sensitiveTransaction;
 
   /// Prevent authentications from using non-biometric local authentication
-  /// such as pin, passcode, and passcode.
+  /// such as pin, passcode, or pattern.
   final bool biometricOnly;
 }

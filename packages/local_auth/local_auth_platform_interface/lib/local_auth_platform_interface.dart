@@ -38,8 +38,7 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// Authenticates the user with biometrics available on the device while also
   /// allowing the user to use device authentication - pin, pattern, passcode.
   ///
-  /// Returns a [Future] holding true, if the user successfully authenticated,
-  /// false otherwise.
+  /// Returns true if the user successfully authenticated, false otherwise.
   ///
   /// [localizedReason] is the message to show to user while prompting them
   /// for authentication. This is typically along the lines of: 'Please scan
@@ -50,7 +49,7 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   ///
   /// Provide [options] for configuring further authentication related options.
   ///
-  /// Throws an [PlatformException] if there were technical problems with local
+  /// Throws a [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
@@ -62,12 +61,19 @@ abstract class LocalAuthPlatform extends PlatformInterface {
     throw UnimplementedError('authenticate() has not been implemented.');
   }
 
+  /// Returns true if the device is capable of checking biometrics.
+  Future<bool> canCheckBiometrics() async {
+    throw UnimplementedError('canCheckBiometrics() has not been implemented.');
+  }
+
   /// Returns a list of enrolled biometrics.
   ///
-  /// Returns a [Future] List<BiometricType> with the following possibilities:
+  /// Possible values include:
   /// - BiometricType.face
   /// - BiometricType.fingerprint
   /// - BiometricType.iris (not yet implemented)
+  /// - BiometricType.strong
+  /// - BiometricType.weak
   Future<List<BiometricType>> getAvailableBiometrics() async {
     throw UnimplementedError(
         'getAvailableBiometrics() has not been implemented.');
@@ -75,16 +81,15 @@ abstract class LocalAuthPlatform extends PlatformInterface {
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
-  ///
-  /// Returns a [Future] bool true or false:
   Future<bool> isDeviceSupported() async {
     throw UnimplementedError('isDeviceSupported() has not been implemented.');
   }
 
-  /// Returns true if auth was cancelled successfully.
-  /// Returns false if there was some error or no auth in progress.
+  /// Cancels any authentication currently in progress.
   ///
-  /// Returns [Future] bool true or false:
+  /// Returns true if auth was cancelled successfully.
+  /// Returns false if there was no authentication in progress,
+  /// or an error occurred.
   Future<bool> stopAuthentication() async {
     throw UnimplementedError('stopAuthentication() has not been implemented.');
   }
