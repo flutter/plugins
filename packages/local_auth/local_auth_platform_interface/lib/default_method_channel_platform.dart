@@ -4,6 +4,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 import 'package:local_auth_platform_interface/types/auth_options.dart';
 import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
@@ -20,7 +21,7 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
   @override
   Future<bool> authenticate({
     required String localizedReason,
-    required Map<String, String> authStrings,
+    required Iterable<AuthMessages> authMessages,
     AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
     assert(localizedReason.isNotEmpty);
@@ -31,7 +32,9 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
       'sensitiveTransaction': options.sensitiveTransaction,
       'biometricOnly': options.biometricOnly,
     };
-    args.addAll(authStrings);
+    for (final AuthMessages messages in authMessages) {
+      args.addAll(messages.args);
+    }
     return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
   }
 

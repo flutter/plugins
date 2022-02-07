@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:local_auth_platform_interface/default_method_channel_platform.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 import 'package:local_auth_platform_interface/types/auth_options.dart';
 import 'package:local_auth_platform_interface/types/biometric_type.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -44,7 +45,7 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// for authentication. This is typically along the lines of: 'Please scan
   /// your finger to access MyApp.'. This must not be empty.
   ///
-  /// Provide [authStrings] if you want to
+  /// Provide [authMessages] if you want to
   /// customize messages in the dialogs.
   ///
   /// Provide [options] for configuring further authentication related options.
@@ -55,7 +56,7 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// simulator.
   Future<bool> authenticate({
     required String localizedReason,
-    required Map<String, String> authStrings,
+    required Iterable<AuthMessages> authMessages,
     AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
     throw UnimplementedError('authenticate() has not been implemented.');
