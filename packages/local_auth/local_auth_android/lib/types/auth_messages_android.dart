@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth_platform_interface/types/auth_messages.dart';
 
 /// Android side authentication messages.
 ///
 /// Provides default values for all messages.
+@immutable
 class AndroidAuthMessages extends AuthMessages {
   /// Constructs a new instance.
   const AndroidAuthMessages({
@@ -77,16 +79,43 @@ class AndroidAuthMessages extends AuthMessages {
       'biometricRequired':
           biometricRequiredTitle ?? androidBiometricRequiredTitle,
       'cancelButton': cancelButton ?? androidCancelButton,
-      'deviceCredentialsRequired': deviceCredentialsRequiredTitle ??
-          androidDeviceCredentialsRequiredTitle,
-      'deviceCredentialsSetupDescription': deviceCredentialsSetupDescription ??
-          androidDeviceCredentialsSetupDescription,
+      'deviceCredentialsRequired': deviceCredentialsRequiredTitle ?? androidDeviceCredentialsRequiredTitle,
+      'deviceCredentialsSetupDescription':
+          deviceCredentialsSetupDescription ?? androidDeviceCredentialsSetupDescription,
       'goToSetting': goToSettingsButton ?? goToSettings,
-      'goToSettingDescription':
-          goToSettingsDescription ?? androidGoToSettingsDescription,
+      'goToSettingDescription': goToSettingsDescription ?? androidGoToSettingsDescription,
       'signInTitle': signInTitle ?? androidSignInTitle,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AndroidAuthMessages &&
+          runtimeType == other.runtimeType &&
+          biometricHint == other.biometricHint &&
+          biometricNotRecognized == other.biometricNotRecognized &&
+          biometricRequiredTitle == other.biometricRequiredTitle &&
+          biometricSuccess == other.biometricSuccess &&
+          cancelButton == other.cancelButton &&
+          deviceCredentialsRequiredTitle == other.deviceCredentialsRequiredTitle &&
+          deviceCredentialsSetupDescription == other.deviceCredentialsSetupDescription &&
+          goToSettingsButton == other.goToSettingsButton &&
+          goToSettingsDescription == other.goToSettingsDescription &&
+          signInTitle == other.signInTitle;
+
+  @override
+  int get hashCode =>
+      biometricHint.hashCode ^
+      biometricNotRecognized.hashCode ^
+      biometricRequiredTitle.hashCode ^
+      biometricSuccess.hashCode ^
+      cancelButton.hashCode ^
+      deviceCredentialsRequiredTitle.hashCode ^
+      deviceCredentialsSetupDescription.hashCode ^
+      goToSettingsButton.hashCode ^
+      goToSettingsDescription.hashCode ^
+      signInTitle.hashCode;
 }
 
 // Strings for local_authentication plugin. Currently supports English.
