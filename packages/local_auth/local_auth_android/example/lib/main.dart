@@ -9,7 +9,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_android/types/auth_strings_android.dart';
 
 void main() {
   runApp(MyApp());
@@ -81,7 +80,7 @@ class _MyAppState extends State<MyApp> {
       });
       authenticated = await auth.authenticate(
         localizedReason: 'Let OS determine authentication method',
-        authStrings: const AndroidAuthMessages().args,
+        authMessages: <AuthMessages>[const AndroidAuthMessages()],
         options: const AuthenticationOptions(
           useErrorDialogs: true,
           stickyAuth: true,
@@ -116,7 +115,7 @@ class _MyAppState extends State<MyApp> {
       authenticated = await auth.authenticate(
         localizedReason:
             'Scan your fingerprint (or face or whatever) to authenticate',
-        authStrings: const AndroidAuthMessages().args,
+        authMessages: <AuthMessages>[const AndroidAuthMessages()],
         options: const AuthenticationOptions(
           useErrorDialogs: true,
           stickyAuth: true,

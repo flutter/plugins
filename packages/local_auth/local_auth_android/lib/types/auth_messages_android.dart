@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:intl/intl.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 
 /// Android side authentication messages.
 ///
 /// Provides default values for all messages.
-class AndroidAuthMessages {
+class AndroidAuthMessages extends AuthMessages {
   /// Constructs a new instance.
   const AndroidAuthMessages({
     this.biometricHint,
@@ -66,7 +67,7 @@ class AndroidAuthMessages {
   /// Android. Maximum 60 characters.
   final String? signInTitle;
 
-  /// Gets the messaged stored in this class instance as a string map.
+  @override
   Map<String, String> get args {
     return <String, String>{
       'biometricHint': biometricHint ?? androidBiometricHint,

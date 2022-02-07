@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_android/types/auth_strings_android.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +32,7 @@ void main() {
     group('With device auth fail over', () {
       test('authenticate with no args on Android.', () async {
         await localAuthentication.authenticate(
-          authStrings: const AndroidAuthMessages().args,
+          authMessages: <AuthMessages>[const AndroidAuthMessages()],
           localizedReason: 'Needs secure',
           options: const AuthenticationOptions(biometricOnly: true),
         );
@@ -53,7 +53,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: const AndroidAuthMessages().args,
+          authMessages: <AuthMessages>[const AndroidAuthMessages()],
           localizedReason: 'Insecure',
           options: const AuthenticationOptions(
             sensitiveTransaction: false,
@@ -80,7 +80,7 @@ void main() {
     group('With biometrics only', () {
       test('authenticate with no args on Android.', () async {
         await localAuthentication.authenticate(
-          authStrings: const AndroidAuthMessages().args,
+          authMessages: <AuthMessages>[const AndroidAuthMessages()],
           localizedReason: 'Needs secure',
         );
         expect(
@@ -100,7 +100,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: const AndroidAuthMessages().args,
+          authMessages: <AuthMessages>[const AndroidAuthMessages()],
           localizedReason: 'Insecure',
           options: const AuthenticationOptions(
             sensitiveTransaction: false,
