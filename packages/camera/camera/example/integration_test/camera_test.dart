@@ -292,30 +292,4 @@ void main() {
     },
     skip: !Platform.isIOS,
   );
-
-  testWidgets(
-    'Image streaming persistence test on iOS',
-    (WidgetTester tester) async {
-      final List<CameraDescription> cameras = await availableCameras();
-      if (cameras.isEmpty) {
-        return;
-      }
-
-      final CameraController controller = CameraController(
-        cameras[0],
-        ResolutionPreset.max,
-        enableAudio: false,
-      );
-
-      await controller.initialize();
-
-      await controller.startImageStream((CameraImage image) {});
-
-      await Future.delayed(Duration(seconds: 5));
-
-      await controller.stopImageStream();
-      await controller.dispose();
-    },
-    skip: !Platform.isIOS,
-  );
 }
