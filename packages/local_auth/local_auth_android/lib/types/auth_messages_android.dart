@@ -79,11 +79,13 @@ class AndroidAuthMessages extends AuthMessages {
       'biometricRequired':
           biometricRequiredTitle ?? androidBiometricRequiredTitle,
       'cancelButton': cancelButton ?? androidCancelButton,
-      'deviceCredentialsRequired': deviceCredentialsRequiredTitle ?? androidDeviceCredentialsRequiredTitle,
-      'deviceCredentialsSetupDescription':
-          deviceCredentialsSetupDescription ?? androidDeviceCredentialsSetupDescription,
+      'deviceCredentialsRequired': deviceCredentialsRequiredTitle ??
+          androidDeviceCredentialsRequiredTitle,
+      'deviceCredentialsSetupDescription': deviceCredentialsSetupDescription ??
+          androidDeviceCredentialsSetupDescription,
       'goToSetting': goToSettingsButton ?? goToSettings,
-      'goToSettingDescription': goToSettingsDescription ?? androidGoToSettingsDescription,
+      'goToSettingDescription':
+          goToSettingsDescription ?? androidGoToSettingsDescription,
       'signInTitle': signInTitle ?? androidSignInTitle,
     };
   }
@@ -98,8 +100,10 @@ class AndroidAuthMessages extends AuthMessages {
           biometricRequiredTitle == other.biometricRequiredTitle &&
           biometricSuccess == other.biometricSuccess &&
           cancelButton == other.cancelButton &&
-          deviceCredentialsRequiredTitle == other.deviceCredentialsRequiredTitle &&
-          deviceCredentialsSetupDescription == other.deviceCredentialsSetupDescription &&
+          deviceCredentialsRequiredTitle ==
+              other.deviceCredentialsRequiredTitle &&
+          deviceCredentialsSetupDescription ==
+              other.deviceCredentialsSetupDescription &&
           goToSettingsButton == other.goToSettingsButton &&
           goToSettingsDescription == other.goToSettingsDescription &&
           signInTitle == other.signInTitle;
