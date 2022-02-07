@@ -44,6 +44,11 @@ class LocalAuthAndroid extends LocalAuthPlatform {
   }
 
   @override
+  Future<bool> canCheckBiometrics() async {
+    return (await getAvailableBiometrics()).isNotEmpty;
+  }
+
+  @override
   Future<List<BiometricType>> getAvailableBiometrics() async {
     final List<String> result = (await _channel.invokeListMethod<String>(
           'getAvailableBiometrics',
