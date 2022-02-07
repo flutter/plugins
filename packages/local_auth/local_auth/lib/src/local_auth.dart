@@ -13,9 +13,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:local_auth/src/types/error_codes.dart';
-import 'package:local_auth_android/types/auth_strings_android.dart';
-import 'package:local_auth_ios/types/auth_strings_ios.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 import 'package:local_auth_platform_interface/types/biometric_type.dart';
 import 'package:platform/platform.dart';
 
@@ -29,8 +30,9 @@ void setMockPathProviderPlatform(Platform platform) {
 /// A Flutter plugin for authenticating the user identity locally.
 class LocalAuthentication {
   /// The `authenticateWithBiometrics` method has been deprecated.
-  /// Use `authenticate` with `biometricOnly: true` instead
-  @Deprecated('Use `authenticate` with `biometricOnly: true` instead')
+  /// Use `requestAuthentication` with `biometricOnly: true` on the
+  /// `options` parameter instead.
+  @Deprecated('Use `requestAuthentication` with `biometricOnly: true` on the `options` parameter instead')
   Future<bool> authenticateWithBiometrics({
     required String localizedReason,
     bool useErrorDialogs = true,
@@ -52,8 +54,7 @@ class LocalAuthentication {
   /// Authenticates the user with biometrics available on the device while also
   /// allowing the user to use device authentication - pin, pattern, passcode.
   ///
-  /// Returns a [Future] holding true, if the user successfully authenticated,
-  /// false otherwise.
+  /// Returns true, if the user successfully authenticated, false otherwise.
   ///
   /// [localizedReason] is the message to show to user while prompting them
   /// for authentication. This is typically along the lines of: 'Please scan
@@ -89,6 +90,7 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
+  @Deprecated('Use `requestAuthentication` instead.')
   Future<bool> authenticate({
     required String localizedReason,
     bool useErrorDialogs = true,
@@ -100,13 +102,43 @@ class LocalAuthentication {
   }) {
     return LocalAuthPlatform.instance.authenticate(
       localizedReason: localizedReason,
-      useErrorDialogs: useErrorDialogs,
-      stickyAuth: stickyAuth,
-      authStrings: <String, String>{}
-        ..addAll(androidAuthStrings.args)
-        ..addAll(iOSAuthStrings.args),
-      sensitiveTransaction: sensitiveTransaction,
-      biometricOnly: biometricOnly,
+      authMessages: <AuthMessages>[iOSAuthStrings, androidAuthStrings],
+      options: AuthenticationOptions(
+        useErrorDialogs: useErrorDialogs,
+        stickyAuth: stickyAuth,
+        sensitiveTransaction: sensitiveTransaction,
+        biometricOnly: biometricOnly,
+      ),
+    );
+  }
+
+  /// Authenticates the user with biometrics available on the device while also
+  /// allowing the user to use device authentication - pin, pattern, passcode.
+  ///
+  /// Returns true if the user successfully authenticated, false otherwise.
+  ///
+  /// [localizedReason] is the message to show to user while prompting them
+  /// for authentication. This is typically along the lines of: 'Please scan
+  /// your finger to access MyApp.'. This must not be empty.
+  ///
+  /// Provide [authMessages] if you want to
+  /// customize messages in the dialogs.
+  ///
+  /// Provide [options] for configuring further authentication related options.
+  ///
+  /// Throws a [PlatformException] if there were technical problems with local
+  /// authentication (e.g. lack of relevant hardware). This might throw
+  /// [PlatformException] with error code [otherOperatingSystem] on the iOS
+  /// simulator.
+  Future<bool> requestAuthentication({
+    required String localizedReason,
+    Iterable<AuthMessages> authMessages = const <AuthMessages>[IOSAuthMessages(), AndroidAuthMessages()],
+    AuthenticationOptions options = const AuthenticationOptions()
+  }) {
+    return LocalAuthPlatform.instance.authenticate(
+      localizedReason: localizedReason,
+      authMessages: authMessages,
+      options: options,
     );
   }
 

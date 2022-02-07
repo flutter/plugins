@@ -78,10 +78,13 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticate(
-          localizedReason: 'Let OS determine authentication method',
+      authenticated = await auth.requestAuthentication(
+        localizedReason: 'Let OS determine authentication method',
+        options: const AuthenticationOptions(
           useErrorDialogs: true,
-          stickyAuth: true);
+          stickyAuth: true,
+        ),
+      );
       setState(() {
         _isAuthenticating = false;
       });
@@ -108,12 +111,14 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticate(
-          localizedReason:
-              'Scan your fingerprint (or face or whatever) to authenticate',
+      authenticated = await auth.requestAuthentication(
+        localizedReason: 'Scan your fingerprint (or face or whatever) to authenticate',
+        options: const AuthenticationOptions(
           useErrorDialogs: true,
           stickyAuth: true,
-          biometricOnly: true);
+          biometricOnly: true,
+        ),
+      );
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';

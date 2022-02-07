@@ -6,9 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth/src/local_auth.dart';
-import 'package:local_auth_android/types/auth_strings_android.dart';
-import 'package:local_auth_ios/types/auth_strings_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -27,45 +26,35 @@ void main() {
   test('authenticateWithBiometrics calls platform implementation', () {
     when(mockLocalAuthPlatform.authenticate(
       localizedReason: anyNamed('localizedReason'),
-      authStrings: anyNamed('authStrings'),
-      useErrorDialogs: anyNamed('useErrorDialogs'),
-      stickyAuth: anyNamed('stickyAuth'),
-      sensitiveTransaction: anyNamed('sensitiveTransaction'),
-      biometricOnly: anyNamed('biometricOnly'),
+      authMessages: anyNamed('authMessages'),
+      options: anyNamed('options'),
     )).thenAnswer((_) async => true);
     localAuthentication.authenticateWithBiometrics(
         localizedReason: 'Test Reason');
     verify(mockLocalAuthPlatform.authenticate(
       localizedReason: 'Test Reason',
-      authStrings: <String, String>{}
-        ..addAll(const AndroidAuthMessages().args)
-        ..addAll(const IOSAuthMessages().args),
-      useErrorDialogs: true,
-      stickyAuth: false,
-      sensitiveTransaction: true,
-      biometricOnly: true,
+      authMessages: <AuthMessages>[
+        const IOSAuthMessages(),
+        const AndroidAuthMessages(),
+      ],
+      options: const AuthenticationOptions(biometricOnly: true),
     )).called(1);
   });
 
   test('authenticate calls platform implementation', () {
     when(mockLocalAuthPlatform.authenticate(
       localizedReason: anyNamed('localizedReason'),
-      authStrings: anyNamed('authStrings'),
-      useErrorDialogs: anyNamed('useErrorDialogs'),
-      stickyAuth: anyNamed('stickyAuth'),
-      sensitiveTransaction: anyNamed('sensitiveTransaction'),
-      biometricOnly: anyNamed('biometricOnly'),
+      authMessages: anyNamed('authMessages'),
+      options: anyNamed('options'),
     )).thenAnswer((_) async => true);
     localAuthentication.authenticate(localizedReason: 'Test Reason');
     verify(mockLocalAuthPlatform.authenticate(
       localizedReason: 'Test Reason',
-      authStrings: <String, String>{}
-        ..addAll(const AndroidAuthMessages().args)
-        ..addAll(const IOSAuthMessages().args),
-      useErrorDialogs: true,
-      stickyAuth: false,
-      sensitiveTransaction: true,
-      biometricOnly: false,
+      authMessages: <AuthMessages>[
+        const IOSAuthMessages(),
+        const AndroidAuthMessages(),
+      ],
+      options: const AuthenticationOptions(),
     )).called(1);
   });
 
@@ -119,21 +108,16 @@ class MockLocalAuthPlatform extends Mock
   }
 
   @override
-  Future<bool> authenticate(
-          {String? localizedReason,
-          bool? useErrorDialogs = true,
-          bool? stickyAuth = false,
-          Map<String, String>? authStrings,
-          bool? sensitiveTransaction = true,
-          bool? biometricOnly = false}) =>
+  Future<bool> authenticate({
+    String? localizedReason,
+    Iterable<AuthMessages>? authMessages = const <AuthMessages>[IOSAuthMessages(), AndroidAuthMessages()],
+    AuthenticationOptions? options = const AuthenticationOptions(),
+  }) =>
       super.noSuchMethod(
           Invocation.method(#authenticate, <Object>[], <Symbol, Object?>{
             #localizedReason: localizedReason,
-            #useErrorDialogs: useErrorDialogs,
-            #stickyAuth: stickyAuth,
-            #authStrings: authStrings,
-            #sensitiveTransaction: sensitiveTransaction,
-            #biometricOnly: biometricOnly
+            #authMessages: authMessages,
+            #options: options,
           }),
           returnValue: Future<bool>.value(false)) as Future<bool>;
 
