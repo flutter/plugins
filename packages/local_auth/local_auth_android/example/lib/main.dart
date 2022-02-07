@@ -9,7 +9,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_android/types/auth_strings_android.dart';
 
 void main() {
   runApp(MyApp());
@@ -80,10 +79,13 @@ class _MyAppState extends State<MyApp> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-          localizedReason: 'Let OS determine authentication method',
-          authStrings: const AndroidAuthMessages().args,
+        localizedReason: 'Let OS determine authentication method',
+        authMessages: <AuthMessages>[const AndroidAuthMessages()],
+        options: const AuthenticationOptions(
           useErrorDialogs: true,
-          stickyAuth: true);
+          stickyAuth: true,
+        ),
+      );
       setState(() {
         _isAuthenticating = false;
       });
@@ -111,12 +113,15 @@ class _MyAppState extends State<MyApp> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-          localizedReason:
-              'Scan your fingerprint (or face or whatever) to authenticate',
-          authStrings: const AndroidAuthMessages().args,
+        localizedReason:
+            'Scan your fingerprint (or face or whatever) to authenticate',
+        authMessages: <AuthMessages>[const AndroidAuthMessages()],
+        options: const AuthenticationOptions(
           useErrorDialogs: true,
           stickyAuth: true,
-          biometricOnly: true);
+          biometricOnly: true,
+        ),
+      );
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';

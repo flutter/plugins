@@ -4,8 +4,13 @@
 
 import 'package:flutter/services.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
+import 'package:local_auth_platform_interface/types/auth_options.dart';
 import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
+export 'package:local_auth_android/types/auth_messages_android.dart';
+export 'package:local_auth_platform_interface/types/auth_messages.dart';
+export 'package:local_auth_platform_interface/types/auth_options.dart';
 export 'package:local_auth_platform_interface/types/biometric_type.dart';
 
 const MethodChannel _channel =
@@ -21,21 +26,20 @@ class LocalAuthAndroid extends LocalAuthPlatform {
   @override
   Future<bool> authenticate({
     required String localizedReason,
-    bool useErrorDialogs = true,
-    bool stickyAuth = false,
-    required Map<String, String> authStrings,
-    bool sensitiveTransaction = true,
-    bool biometricOnly = false,
+    required Iterable<AuthMessages> authMessages,
+    AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
     assert(localizedReason.isNotEmpty);
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
-      'useErrorDialogs': useErrorDialogs,
-      'stickyAuth': stickyAuth,
-      'sensitiveTransaction': sensitiveTransaction,
-      'biometricOnly': biometricOnly,
+      'useErrorDialogs': options.useErrorDialogs,
+      'stickyAuth': options.stickyAuth,
+      'sensitiveTransaction': options.sensitiveTransaction,
+      'biometricOnly': options.biometricOnly,
     };
-    args.addAll(authStrings);
+    for (final AuthMessages messages in authMessages) {
+      args.addAll(messages.args);
+    }
     return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
   }
 
