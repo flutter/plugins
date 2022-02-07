@@ -4,7 +4,6 @@
 
 /// Abstract class for storing platform specific strings.
 abstract class AuthMessages {
-
   /// Constructs an instance of [AuthMessages].
   const AuthMessages();
 
