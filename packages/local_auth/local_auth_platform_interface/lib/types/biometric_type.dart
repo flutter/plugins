@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 /// Various types of biometric authentication.
+/// Some platforms report specific biometric types, while others report only
+/// classifications like strong and weak.
 enum BiometricType {
   /// Face authentication.
   face,
@@ -13,13 +15,13 @@ enum BiometricType {
   /// Iris authentication.
   iris,
 
-  /// Any biometric (e.g. fingerprint, iris, or face) on the device that meets
-  /// or exceeds the requirements for Class 3 (formerly Strong), as defined
-  /// by the Android CDD. Android only.
+  /// Any biometric (e.g. fingerprint, iris, or face) on the device that the
+  /// platform API considers to be strong. For example, on Android this
+  /// corresponds to Class 3.
   strong,
 
-  /// Any biometric (e.g. fingerprint, iris, or face) on the device that meets
-  /// or exceeds the requirements for Class 2 (formerly Weak), as defined
-  /// by the Android CDD. Android only.
+  /// Any biometric (e.g. fingerprint, iris, or face) on the device that the
+  /// platform API considers to be strong. For example, on Android this
+  /// corresponds to Class 2.
   weak,
 }

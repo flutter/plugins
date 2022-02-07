@@ -11,6 +11,11 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
 /// The default interface implementation acting as a placeholder for
 /// the native implementation to be set.
+///
+/// This implementation is not used by any of the implementations in this
+/// repository, and exists only for backward compatibility with any
+/// clients that were relying on internal details of the method channel
+/// in the pre-federated plugin.
 class DefaultLocalAuthPlatform extends LocalAuthPlatform {
   @override
   Future<bool> authenticate({
@@ -53,6 +58,11 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
       }
     }
     return biometrics;
+  }
+
+  @override
+  Future<bool> canCheckBiometrics() async {
+    return (await getAvailableBiometrics()).isNotEmpty;
   }
 
   @override
