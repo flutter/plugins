@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'package:intl/intl.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 
-/// iOS side authentication messages.
-///
+/// Class wrapping all authentication messages needed on iOS.
 /// Provides default values for all messages.
-class IOSAuthMessages {
+class IOSAuthMessages extends AuthMessages {
   /// Constructs a new instance.
   const IOSAuthMessages({
     this.lockOut,
@@ -34,13 +34,13 @@ class IOSAuthMessages {
   /// Maximum 30 characters.
   final String? cancelButton;
 
-  /// Gets the messaged stored in this class instance as a string map.
+  @override
   Map<String, String> get args {
     return <String, String>{
       'lockOut': lockOut ?? iOSLockOut,
       'goToSetting': goToSettingsButton ?? goToSettings,
       'goToSettingDescriptionIOS':
-          goToSettingsDescription ?? iOSGoToSettingsDescription,
+      goToSettingsDescription ?? iOSGoToSettingsDescription,
       'okButton': cancelButton ?? iOSOkButton,
     };
   }
@@ -61,8 +61,7 @@ String get goToSettings => Intl.message('Go to settings',
 String get iOSLockOut => Intl.message(
     'Biometric authentication is disabled. Please lock and unlock your screen to '
     'enable it.',
-    desc:
-        'Message advising the user to re-enable biometrics on their device. It '
+    desc: 'Message advising the user to re-enable biometrics on their device. It '
         'shows in a dialog on the iOS.');
 
 /// Message advising the user to go to the settings and configure Biometrics
@@ -70,8 +69,7 @@ String get iOSLockOut => Intl.message(
 String get iOSGoToSettingsDescription => Intl.message(
     'Biometric authentication is not set up on your device. Please either enable '
     'Touch ID or Face ID on your phone.',
-    desc:
-        'Message advising the user to go to the settings and configure Biometrics '
+    desc: 'Message advising the user to go to the settings and configure Biometrics '
         'for their device. It shows in a dialog on iOS.');
 
 /// Message shown on a button that the user can click to leave the current

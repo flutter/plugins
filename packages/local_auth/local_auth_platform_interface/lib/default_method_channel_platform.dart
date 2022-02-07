@@ -33,7 +33,7 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
       'biometricOnly': options.biometricOnly,
     };
     for (final AuthMessages messages in authMessages) {
-      args.addAll(messages.messageMap);
+      args.addAll(messages.args);
     }
     return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
   }
