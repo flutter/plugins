@@ -69,7 +69,7 @@
   }
 
   dispatch_async(self.captureSessionQueue, ^{
-    // `FLTCAM::setDeviceOrientation` must be called on capture session queue.
+    // `FLTCam::setDeviceOrientation` must be called on capture session queue.
     [self.camera setDeviceOrientation:orientation];
     // `CameraPlugin::sendDeviceOrientation` can be called on any queue.
     [self sendDeviceOrientation:orientation];
