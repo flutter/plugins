@@ -58,6 +58,23 @@ void main() {
     )).called(1);
   });
 
+  test('requestAuthentication calls platform implementation', () {
+    when(mockLocalAuthPlatform.authenticate(
+      localizedReason: anyNamed('localizedReason'),
+      authMessages: anyNamed('authMessages'),
+      options: anyNamed('options'),
+    )).thenAnswer((_) async => true);
+    localAuthentication.requestAuthentication(localizedReason: 'Test Reason');
+    verify(mockLocalAuthPlatform.authenticate(
+      localizedReason: 'Test Reason',
+      authMessages: <AuthMessages>[
+        const IOSAuthMessages(),
+        const AndroidAuthMessages(),
+      ],
+      options: const AuthenticationOptions(),
+    )).called(1);
+  });
+
   test('isDeviceSupported calls platform implementation', () {
     when(mockLocalAuthPlatform.isDeviceSupported())
         .thenAnswer((_) async => true);
@@ -110,7 +127,10 @@ class MockLocalAuthPlatform extends Mock
   @override
   Future<bool> authenticate({
     String? localizedReason,
-    Iterable<AuthMessages>? authMessages = const <AuthMessages>[IOSAuthMessages(), AndroidAuthMessages()],
+    Iterable<AuthMessages>? authMessages = const <AuthMessages>[
+      IOSAuthMessages(),
+      AndroidAuthMessages()
+    ],
     AuthenticationOptions? options = const AuthenticationOptions(),
   }) =>
       super.noSuchMethod(

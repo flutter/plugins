@@ -112,7 +112,8 @@ class _MyAppState extends State<MyApp> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.requestAuthentication(
-        localizedReason: 'Scan your fingerprint (or face or whatever) to authenticate',
+        localizedReason:
+            'Scan your fingerprint (or face or whatever) to authenticate',
         options: const AuthenticationOptions(
           useErrorDialogs: true,
           stickyAuth: true,

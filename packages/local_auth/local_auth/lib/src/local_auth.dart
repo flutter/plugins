@@ -32,7 +32,8 @@ class LocalAuthentication {
   /// The `authenticateWithBiometrics` method has been deprecated.
   /// Use `requestAuthentication` with `biometricOnly: true` on the
   /// `options` parameter instead.
-  @Deprecated('Use `requestAuthentication` with `biometricOnly: true` on the `options` parameter instead')
+  @Deprecated(
+      'Use `requestAuthentication` with `biometricOnly: true` on the `options` parameter instead')
   Future<bool> authenticateWithBiometrics({
     required String localizedReason,
     bool useErrorDialogs = true,
@@ -41,14 +42,15 @@ class LocalAuthentication {
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
     bool sensitiveTransaction = true,
   }) =>
-      authenticate(
+      requestAuthentication(
         localizedReason: localizedReason,
-        useErrorDialogs: useErrorDialogs,
-        stickyAuth: stickyAuth,
-        androidAuthStrings: androidAuthStrings,
-        iOSAuthStrings: iOSAuthStrings,
-        sensitiveTransaction: sensitiveTransaction,
-        biometricOnly: true,
+        authMessages: <AuthMessages>[iOSAuthStrings, androidAuthStrings],
+        options: AuthenticationOptions(
+          useErrorDialogs: useErrorDialogs,
+          stickyAuth: stickyAuth,
+          sensitiveTransaction: sensitiveTransaction,
+          biometricOnly: true,
+        ),
       );
 
   /// Authenticates the user with biometrics available on the device while also
@@ -100,7 +102,7 @@ class LocalAuthentication {
     bool sensitiveTransaction = true,
     bool biometricOnly = false,
   }) {
-    return LocalAuthPlatform.instance.authenticate(
+    return requestAuthentication(
       localizedReason: localizedReason,
       authMessages: <AuthMessages>[iOSAuthStrings, androidAuthStrings],
       options: AuthenticationOptions(
@@ -130,11 +132,13 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
-  Future<bool> requestAuthentication({
-    required String localizedReason,
-    Iterable<AuthMessages> authMessages = const <AuthMessages>[IOSAuthMessages(), AndroidAuthMessages()],
-    AuthenticationOptions options = const AuthenticationOptions()
-  }) {
+  Future<bool> requestAuthentication(
+      {required String localizedReason,
+      Iterable<AuthMessages> authMessages = const <AuthMessages>[
+        IOSAuthMessages(),
+        AndroidAuthMessages()
+      ],
+      AuthenticationOptions options = const AuthenticationOptions()}) {
     return LocalAuthPlatform.instance.authenticate(
       localizedReason: localizedReason,
       authMessages: authMessages,

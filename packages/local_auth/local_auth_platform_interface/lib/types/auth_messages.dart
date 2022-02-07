@@ -9,6 +9,4 @@ abstract class AuthMessages {
 
   /// Returns all platform specific messages as a map.
   Map<String, String> get args;
-
-
 }
