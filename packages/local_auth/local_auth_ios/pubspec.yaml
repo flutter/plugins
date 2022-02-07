@@ -8,6 +8,7 @@ version: 1.0.0
 
 flutter:
   plugin:
+    implements: local_auth
     platforms:
       ios:
         pluginClass: FLTLocalAuthPlugin
