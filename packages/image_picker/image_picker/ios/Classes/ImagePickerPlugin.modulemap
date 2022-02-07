@@ -6,5 +6,9 @@ framework module image_picker {
 
   explicit module Test {
     header "FLTImagePickerPlugin_Test.h"
+    header "FLTImagePickerImageUtil.h"
+    header "FLTImagePickerMetaDataUtil.h"
+    header "FLTImagePickerPhotoAssetUtil.h"
+    header "FLTPHPickerSaveImageToPathOperation.h"
   }
 }
