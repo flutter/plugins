@@ -13,13 +13,11 @@
 @property FlutterEventSink eventSink;
 @end
 
-@interface FLTCam : NSObject <FlutterTexture,
-                              AVCaptureVideoDataOutputSampleBufferDelegate,
-                              AVCaptureAudioDataOutputSampleBufferDelegate>
-@property(assign, nonatomic) int streamingPendingFrames;
+@interface FLTCam (Private)
 @property(assign, nonatomic) int maxStreamingPendingFrames;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
+@property(retain, nonatomic) FLTCam *camera;
 - (void)captureOutput:(AVCaptureOutput *)output
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            fromConnection:(AVCaptureConnection *)connection;

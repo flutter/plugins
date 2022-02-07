@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic) FLTFlashMode flashMode;
 // Format used for video and image streaming.
 @property(assign, nonatomic) FourCharCode videoFormat;
+@property(assign, nonatomic) int streamingPendingFrames;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
