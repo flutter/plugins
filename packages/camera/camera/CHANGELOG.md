@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes a crash in iOS when streaming on low-performance devices.
+
 ## 0.9.4+10
 
 * iOS performance improvement by moving file writing from the main queue to a background IO queue. 
