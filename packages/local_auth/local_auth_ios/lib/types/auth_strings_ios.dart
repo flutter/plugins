@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:intl/intl.dart';
-import 'package:local_auth_platform_interface/types/auth_strings.dart';
 
 /// iOS side authentication messages.
 ///
@@ -49,6 +48,13 @@ class IOSAuthMessages {
 
 // Strings for local_authentication plugin. Currently supports English.
 // Intl.message must be string literals.
+
+/// Message shown on a button that the user can click to go to settings pages
+/// from the current dialog. Maximum 30 characters.
+String get goToSettings => Intl.message('Go to settings',
+    desc: 'Message shown on a button that the user can click to go to '
+        'settings pages from the current dialog. It is used on both Android '
+        'and iOS sides. Maximum 30 characters.');
 
 /// Message advising the user to re-enable biometrics on their device.
 /// It shows in a dialog on iOS.
