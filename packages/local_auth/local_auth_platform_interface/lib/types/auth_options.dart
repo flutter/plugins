@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
+
 /// Options wrapper for [LocalAuthPlatform.authenticate] parameters.
+@immutable
 class AuthenticationOptions {
   /// Constructs a new instance.
   const AuthenticationOptions({
@@ -37,4 +40,21 @@ class AuthenticationOptions {
   /// Prevent authentications from using non-biometric local authentication
   /// such as pin, passcode, or pattern.
   final bool biometricOnly;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AuthenticationOptions &&
+          runtimeType == other.runtimeType &&
+          useErrorDialogs == other.useErrorDialogs &&
+          stickyAuth == other.stickyAuth &&
+          sensitiveTransaction == other.sensitiveTransaction &&
+          biometricOnly == other.biometricOnly;
+
+  @override
+  int get hashCode =>
+      useErrorDialogs.hashCode ^
+      stickyAuth.hashCode ^
+      sensitiveTransaction.hashCode ^
+      biometricOnly.hashCode;
 }
