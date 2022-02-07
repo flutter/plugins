@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_platform_interface/default_method_channel_platform.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 import 'package:local_auth_platform_interface/types/auth_options.dart';
 import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
@@ -77,7 +78,7 @@ void main() {
     group('authenticate with device auth fail over', () {
       test('authenticate with no args.', () async {
         await localAuthentication.authenticate(
-          authStrings: <String, String>{},
+          authMessages: <AuthMessages>[],
           localizedReason: 'Needs secure',
           options: const AuthenticationOptions(biometricOnly: true),
         );
@@ -100,7 +101,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: <String, String>{},
+          authMessages: <AuthMessages>[],
           localizedReason: 'Insecure',
           options: const AuthenticationOptions(
             sensitiveTransaction: false,
@@ -129,7 +130,7 @@ void main() {
     group('authenticate with biometrics only', () {
       test('authenticate with no args.', () async {
         await localAuthentication.authenticate(
-          authStrings: <String, String>{},
+          authMessages: <AuthMessages>[],
           localizedReason: 'Needs secure',
         );
         expect(
@@ -151,7 +152,7 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
-          authStrings: <String, String>{},
+          authMessages: <AuthMessages>[],
           localizedReason: 'Insecure',
           options: const AuthenticationOptions(
             sensitiveTransaction: false,
