@@ -1,3 +1,7 @@
+## 0.8.4+7
+
+* Refactors unit test to expose private interface via a separate test header instead of the inline declaration.
+
 ## 0.8.4+6
 
 * Fixes minor type issues in iOS implementation.

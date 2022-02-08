@@ -5,6 +5,7 @@
 #import "ImagePickerTestImages.h"
 
 @import image_picker;
+@import image_picker.Test;
 @import XCTest;
 #import <OCMock/OCMock.h>
 
@@ -19,12 +20,6 @@
   return mockPresented;
 }
 
-@end
-
-@interface FLTImagePickerPlugin (Test)
-@property(copy, nonatomic) FlutterResult result;
-- (void)handleSavedPathList:(NSMutableArray *)pathList;
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 @end
 
 @interface ImagePickerPluginTests : XCTestCase
