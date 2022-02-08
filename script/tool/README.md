@@ -51,8 +51,13 @@ following shows a number of common commands being run for a specific plugin.
 All examples assume running from source; see above for running the
 published version instead.
 
-Note that the `plugins` argument, despite the name, applies to any package.
-(It will likely be renamed `packages` in the future.)
+Most commands take a `--packages` argument to control which package(s) the
+command is targetting. An package name can be any of:
+- The name of a package (e.g., `path_provider_android`).
+- The name of a federated plugin (e.g., `path_provider`), in which case all
+  packages that make up that plugin will be targetted.
+- A combination federated_plugin_name/package_name (e.g.,
+  `path_provider/path_provider` for the app-facing package).
 
 ### Format Code
 
@@ -79,9 +84,12 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages plugin_name
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --packages plugin_name
-dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --apk --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --android --packages plugin_name
 ```
+
+Replace `--apk`/`--android` with the platform you want to test against
+(omit it to get a list of valid options).
 
 ### Run Native Tests
 

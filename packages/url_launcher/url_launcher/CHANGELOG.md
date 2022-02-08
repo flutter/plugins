@@ -1,3 +1,15 @@
+## 6.0.18
+
+* Removes dependency on `meta`.
+
+## 6.0.17
+
+* Updates code for new analysis options.
+
+## 6.0.16
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 6.0.15
 
 * Updates README:

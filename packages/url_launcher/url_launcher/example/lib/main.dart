@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'URL Launcher'),
+      home: const MyHomePage(title: 'URL Launcher'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -213,11 +213,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 uri: Uri.parse(
                     'https://pub.dev/documentation/url_launcher/latest/link/link-library.html'),
                 target: LinkTarget.blank,
-                builder: (ctx, openLink) {
+                builder: (BuildContext ctx, FollowLink? openLink) {
                   return TextButton.icon(
                     onPressed: openLink,
-                    label: Text('Link Widget documentation'),
-                    icon: Icon(Icons.read_more),
+                    label: const Text('Link Widget documentation'),
+                    icon: const Icon(Icons.read_more),
                   );
                 },
               ),

@@ -1,3 +1,13 @@
+## 2.0.4
+
+* Switches to an in-package method channel implementation.
+
+## 2.0.3
+
+* Updates code for new analysis options.
+* Fix minor memory leak in Linux url_launcher tests.
+* Fixes canLaunch detection for URIs addressing on local or network file systems
+
 ## 2.0.2
 
 * Replaced reference to `shared_preferences` plugin with the `url_launcher` in the README.

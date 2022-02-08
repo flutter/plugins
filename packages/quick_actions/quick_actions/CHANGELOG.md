@@ -1,3 +1,9 @@
+## 0.6.0+9
+
+* Updates Android compileSdkVersion to 31.
+* Updates code for analyzer changes.
+* Removes dependency on `meta`.
+
 ## 0.6.0+8
 
 * Updates example app Android compileSdkVersion to 31.

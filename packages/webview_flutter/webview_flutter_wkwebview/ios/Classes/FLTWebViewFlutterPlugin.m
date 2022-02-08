@@ -8,11 +8,12 @@
 
 @implementation FLTWebViewFlutterPlugin
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FLTWebViewFactory* webviewFactory =
-      [[FLTWebViewFactory alloc] initWithMessenger:registrar.messenger];
-  [registrar registerViewFactory:webviewFactory withId:@"plugins.flutter.io/webview"];
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   [FLTCookieManager registerWithRegistrar:registrar];
+  FLTWebViewFactory *webviewFactory =
+      [[FLTWebViewFactory alloc] initWithMessenger:registrar.messenger
+                                     cookieManager:[FLTCookieManager instance]];
+  [registrar registerViewFactory:webviewFactory withId:@"plugins.flutter.io/webview"];
 }
 
 @end
