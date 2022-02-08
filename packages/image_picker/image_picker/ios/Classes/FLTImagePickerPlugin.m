@@ -33,8 +33,6 @@ id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
 
 @property(assign, nonatomic) int maxImagesAllowed;
 
-@property(copy, nonatomic) NSDictionary *arguments;
-
 @property(strong, nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
 
 @end
@@ -45,6 +43,7 @@ static const int SOURCE_GALLERY = 1;
 typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPickerClassType };
 
 @implementation FLTImagePickerPlugin {
+  NSDictionary *_arguments;
   UIImagePickerController *_imagePickerControllerOverride;
   UIImagePickerController *_imagePickerController;
 }
@@ -163,10 +162,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 
   self.result = result;
-  self.arguments = call.arguments;
+  _arguments = call.arguments;
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    int imageSource = [[self.arguments objectForKey:@"source"] intValue];
+    int imageSource = [[call.arguments objectForKey:@"source"] intValue];
 
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
@@ -195,9 +194,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
-    int imageSource = [[self.arguments objectForKey:@"source"] intValue];
-    if ([[self.arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
-      NSTimeInterval max = [[self.arguments objectForKey:@"maxDuration"] doubleValue];
+    int imageSource = [[call.arguments objectForKey:@"source"] intValue];
+    if ([[call.arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
+      NSTimeInterval max = [[call.arguments objectForKey:@"maxDuration"] doubleValue];
       _imagePickerController.videoMaximumDuration = max;
     }
 
