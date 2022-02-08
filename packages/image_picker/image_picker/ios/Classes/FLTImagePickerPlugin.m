@@ -131,12 +131,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [self checkPhotoAuthorizationForAccessLevel];
 }
 
-- (void)pickImageWithUIImagePicker {
-  int imageSource = [[_arguments objectForKey:@"source"] intValue];
-
-  [self launchUIImagePickerWithSource:imageSource];
-}
-
 - (void)launchUIImagePickerWithSource:(int)imageSource {
   [self initImagePickerController];
   _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
@@ -180,10 +174,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         [self pickImageWithPHPicker:1];
       } else {
         // UIImagePicker is used
-        [self pickImageWithUIImagePicker];
+        [self launchUIImagePickerWithSource:imageSource];
       }
     } else {
-      [self pickImageWithUIImagePicker];
+      [self launchUIImagePickerWithSource:imageSource];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
