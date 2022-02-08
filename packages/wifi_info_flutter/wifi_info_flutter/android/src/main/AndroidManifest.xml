@@ -1,4 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.wifi_info_flutter">
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-</manifest>

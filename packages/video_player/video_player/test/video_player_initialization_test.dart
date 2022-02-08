@@ -4,6 +4,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 import 'video_player_test.dart' show FakeVideoPlayerPlatform;
 
@@ -13,6 +14,7 @@ void main() {
   test('plugin initialized', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
     FakeVideoPlayerPlatform fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
+    VideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
 
     final VideoPlayerController controller = VideoPlayerController.network(
       'https://127.0.0.1',

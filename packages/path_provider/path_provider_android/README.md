@@ -1,6 +1,6 @@
 # path\_provider\_android
 
-The Android implementation of [`path_provider`].
+The Android implementation of [`path_provider`][1].
 
 ## Usage
 

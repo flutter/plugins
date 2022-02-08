@@ -16,6 +16,15 @@
 #import "FLTImagePickerPhotoAssetUtil.h"
 #import "FLTPHPickerSaveImageToPathOperation.h"
 
+/**
+ * Returns the value for the given key in 'dict', or nil if the value is
+ * NSNull.
+ */
+id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
+  id value = dict[key];
+  return value == [NSNull null] ? nil : value;
+}
+
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
                                     UIImagePickerControllerDelegate,
                                     PHPickerViewControllerDelegate,
@@ -397,9 +406,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   dispatch_queue_t backgroundQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
   dispatch_async(backgroundQueue, ^{
-    NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-    NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
-    NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+    NSNumber *maxWidth = GetNullableValueForKey(self->_arguments, @"maxWidth");
+    NSNumber *maxHeight = GetNullableValueForKey(self->_arguments, @"maxHeight");
+    NSNumber *imageQuality = GetNullableValueForKey(self->_arguments, @"imageQuality");
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
     NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
@@ -480,14 +489,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
-    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-    NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+    NSNumber *maxWidth = GetNullableValueForKey(_arguments, @"maxWidth");
+    NSNumber *maxHeight = GetNullableValueForKey(_arguments, @"maxHeight");
+    NSNumber *imageQuality = GetNullableValueForKey(_arguments, @"imageQuality");
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
 
-    if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+    if (maxWidth != nil || maxHeight != nil) {
       image = [FLTImagePickerImageUtil scaledImage:image
                                           maxWidth:maxWidth
                                          maxHeight:maxHeight

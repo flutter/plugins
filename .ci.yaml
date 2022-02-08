@@ -7,7 +7,6 @@
 #  * https://github.com/flutter/cocoon/blob/main/CI_YAML.md
 enabled_branches:
   - main
-  - master
 
 platform_properties:
   linux:
@@ -42,6 +41,8 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
+      channel: master
+      version_file: flutter_master.version
       dependencies: >
         [
           {"dependency": "vs_build"}
@@ -67,6 +68,8 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: build_all_plugins.yaml
+      channel: master
+      version_file: flutter_master.version
       dependencies: >
         [
           {"dependency": "vs_build"}
@@ -92,6 +95,8 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: uwp_build_and_platform_tests.yaml
+      channel: master
+      version_file: flutter_master.version
       dependencies: >
         [
           {"dependency": "vs_build"}
@@ -104,6 +109,8 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: plugin_tools_tests.yaml
+      channel: master
+      version_file: flutter_master.version
     scheduler: luci
 
   - name: Linux ci_yaml plugins roller

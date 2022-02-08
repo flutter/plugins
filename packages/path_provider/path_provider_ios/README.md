@@ -1,6 +1,6 @@
 # path\_provider\_ios
 
-The iOS implementation of [`path_provider`].
+The iOS implementation of [`path_provider`][1].
 
 ## Usage
 

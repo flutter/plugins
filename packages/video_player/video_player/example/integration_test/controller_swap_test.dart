@@ -17,11 +17,15 @@ void main() {
   testWidgets(
     'can substitute one controller by another without crashing',
     (WidgetTester tester) async {
-      VideoPlayerController controller = VideoPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      // Use WebM for web to allow CI to use Chromium.
+      final String videoAssetKey =
+          kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
+
+      VideoPlayerController controller = VideoPlayerController.asset(
+        videoAssetKey,
       );
-      VideoPlayerController another = VideoPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      VideoPlayerController another = VideoPlayerController.asset(
+        videoAssetKey,
       );
       await controller.initialize();
       await another.initialize();
