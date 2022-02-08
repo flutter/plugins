@@ -33,7 +33,7 @@ dependencies:
   url_launcher_linux: ^2.0.0
   url_launcher_macos: ^2.0.0
   url_launcher_platform_interface: ^2.0.3
-  url_launcher_web: ^2.0.0
+  url_launcher_web: '>=2.0.0 <2.0.7'  # 2.0.7 requires Flutter 2.10.0+ but it is not specified
   url_launcher_windows: ^2.0.0
 
 dev_dependencies:
