@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds the Pigeon definitions used to create the method channel implementation.
+
 ## 5.0.1
 
 * Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.

@@ -6,7 +6,7 @@
 @import XCTest;
 
 @interface GoogleSignInUITests : XCTestCase
-@property(nonatomic, strong) XCUIApplication* app;
+@property(nonatomic, strong) XCUIApplication *app;
 @end
 
 @implementation GoogleSignInUITests
@@ -19,9 +19,9 @@
 }
 
 - (void)testSignInPopUp {
-  XCUIApplication* app = self.app;
+  XCUIApplication *app = self.app;
 
-  XCUIElement* signInButton = app.buttons[@"SIGN IN"];
+  XCUIElement *signInButton = app.buttons[@"SIGN IN"];
   if (![signInButton waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find Sign In button");
@@ -34,9 +34,9 @@
 - (void)allowSignInPermissions {
   // The "Sign In" system permissions pop up isn't caught by
   // addUIInterruptionMonitorWithDescription.
-  XCUIApplication* springboard =
+  XCUIApplication *springboard =
       [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
-  XCUIElement* permissionAlert = springboard.alerts.firstMatch;
+  XCUIElement *permissionAlert = springboard.alerts.firstMatch;
   if ([permissionAlert waitForExistenceWithTimeout:5.0]) {
     [permissionAlert.buttons[@"Continue"] tap];
   } else {

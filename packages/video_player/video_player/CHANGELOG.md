@@ -1,3 +1,24 @@
+## 2.2.18
+
+* Moves Android and iOS implementations to federated packages.
+* Update audio URL in iOS tests.
+
+## 2.2.17
+
+* Avoid blocking the main thread loading video count on iOS.
+
+## 2.2.16
+
+* Introduces `setCaptionOffset` to offset the caption display based on a Duration.
+
+## 2.2.15
+
+* Updates README discussion of permissions.
+
+## 2.2.14
+
+* Removes KVO observer on AVPlayerItem on iOS.
+
 ## 2.2.13
 
 * Fixes persisting of hasError even after successful initialize.
