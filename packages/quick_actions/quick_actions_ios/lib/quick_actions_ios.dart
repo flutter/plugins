@@ -11,7 +11,7 @@ export 'package:quick_actions_platform_interface/types/types.dart';
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/quick_actions_ios');
 
-/// An implementation of [QuickActionsPlatform] that for iOS.
+/// An implementation of [QuickActionsPlatform] for iOS.
 class QuickActionsIos extends QuickActionsPlatform {
   /// Registers this class as the default instance of [QuickActionsPlatform].
   static void registerWith() {

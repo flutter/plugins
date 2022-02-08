@@ -1,6 +1,6 @@
 # quick\_actions\_ios
 
-The Android implementation of [`quick_actions`][1].
+The iOS implementation of [`quick_actions`][1].
 
 ## Usage
 
