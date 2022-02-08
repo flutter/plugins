@@ -4,7 +4,7 @@
 
 #import "FLTQuickActionsPlugin.h"
 
-static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
+static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
@@ -15,7 +15,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
+      [FlutterMethodChannel methodChannelWithName:kChannelName
                                   binaryMessenger:[registrar messenger]];
   FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
   instance.channel = channel;

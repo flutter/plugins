@@ -5,6 +5,10 @@ repository: https://github.com/flutter/plugins/tree/main/packages/quick_actions/
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+quick_actions%22
 version: 0.6.0+9
 
+# Temporarily disable publishing to allow moving Android and iOS
+# implementations.
+publish_to: none
+
 environment:
   sdk: ">=2.14.0 <3.0.0"
   flutter: ">=2.5.0"
@@ -16,11 +20,14 @@ flutter:
         package: io.flutter.plugins.quickactions
         pluginClass: QuickActionsPlugin
       ios:
-        pluginClass: FLTQuickActionsPlugin
+        default_package: quick_actions_ios
 
 dependencies:
   flutter:
     sdk: flutter
+  # Temporary path dependencies to allow moving Android and iOS implementations.
+  quick_actions_ios:
+    path: ../quick_actions_ios
   quick_actions_platform_interface: ^1.0.0
 
 dev_dependencies:
