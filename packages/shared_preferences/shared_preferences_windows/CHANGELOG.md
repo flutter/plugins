@@ -1,6 +1,7 @@
-## 2.0.5
+## 2.1.0
 
 * Updated to make use of `dartPluginClass` only.
+* Deprecated `SharedPreferencesWindows.instance` in favor of `SharedPreferencesStorePlatform.instance`.
 
 ## 2.0.4
 
