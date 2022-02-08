@@ -9,14 +9,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart' as web_kit;
-import 'package:webview_flutter_wkwebview/src/webview_cupertino_widget.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
-import 'webview_cupertino_widget_test.mocks.dart';
+import 'web_kit_webview_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
-  web_kit.WebView,
-  web_kit.WebViewConfiguration,
+  WKWebView,
+  WKWebViewConfiguration,
   JavascriptChannelRegistry,
   WebViewPlatformCallbacksHandler,
   WebViewProxy,
@@ -24,17 +24,17 @@ import 'webview_cupertino_widget_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebViewCupertinoWidget', () {
-    late MockWebView mockWebView;
+  group('$WebKitWebViewWidget', () {
+    late MockWKWebView mockWebView;
     late MockWebViewProxy mockWebViewProxy;
-    late MockWebViewConfiguration mockWebViewConfiguration;
+    late MockWKWebViewConfiguration mockWebViewConfiguration;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
 
     setUp(() {
-      mockWebView = MockWebView();
-      mockWebViewConfiguration = MockWebViewConfiguration();
+      mockWebView = MockWKWebView();
+      mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockWebViewProxy = MockWebViewProxy();
 
       when(mockWebViewProxy.createWebView(any)).thenReturn(mockWebView);
@@ -51,7 +51,7 @@ void main() {
       bool hasProgressTracking = false,
       bool useHybridComposition = false,
     }) async {
-      await tester.pumpWidget(WebViewCupertinoWidget(
+      await tester.pumpWidget(WebKitWebViewWidget(
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
@@ -63,14 +63,14 @@ void main() {
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
         configuration: mockWebViewConfiguration,
-        onBuildWidget: (WebViewCupertinoPlatformController controller) {
+        onBuildWidget: (WebKitWebViewPlatformController controller) {
           return Container();
         },
       ));
       await tester.pumpAndSettle();
     }
 
-    testWidgets('build $WebViewCupertinoWidget', (WidgetTester tester) async {
+    testWidgets('build $WebKitWebViewWidget', (WidgetTester tester) async {
       await buildWidget(tester);
     });
 
@@ -90,8 +90,8 @@ void main() {
 
         verify(
             mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-                <web_kit.AudiovisualMediaType>{
-          web_kit.AudiovisualMediaType.all,
+                <WKAudiovisualMediaType>{
+          WKAudiovisualMediaType.all,
         });
       });
 
@@ -109,8 +109,8 @@ void main() {
 
         verify(
             mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-                <web_kit.AudiovisualMediaType>{
-          web_kit.AudiovisualMediaType.none,
+                <WKAudiovisualMediaType>{
+          WKAudiovisualMediaType.none,
         });
       });
 

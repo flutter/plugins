@@ -8,12 +8,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'web_kit/web_kit.dart' as web_kit;
+import 'web_kit/web_kit.dart';
 
-/// A [Widget] that displays a [web_kit.WebView].
-class WebViewCupertinoWidget extends StatefulWidget {
-  /// Constructs a [WebViewCupertinoWidget].
-  const WebViewCupertinoWidget({
+/// A [Widget] that displays a [WKWebView].
+class WebKitWebViewWidget extends StatefulWidget {
+  /// Constructs a [WebKitWebViewWidget].
+  const WebKitWebViewWidget({
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
@@ -25,7 +25,7 @@ class WebViewCupertinoWidget extends StatefulWidget {
   /// The initial parameters used to setup the WebView.
   final CreationParams creationParams;
 
-  /// The handler of callbacks made made by [web_kit.NavigationDelegate].
+  /// The handler of callbacks made made by [NavigationDelegate].
   final WebViewPlatformCallbacksHandler callbacksHandler;
 
   /// Manager of named JavaScript channels and forwarding incoming messages on the correct channel.
@@ -34,28 +34,28 @@ class WebViewCupertinoWidget extends StatefulWidget {
   /// A collection of properties that you use to initialize a web view.
   ///
   /// If null, a default configuration is used.
-  final web_kit.WebViewConfiguration? configuration;
+  final WKWebViewConfiguration? configuration;
 
-  /// The handler for constructing [web_kit.WebView]s and calling static methods.
+  /// The handler for constructing [WKWebView]s and calling static methods.
   ///
   /// This should only be changed for testing purposes.
   final WebViewProxy webViewProxy;
 
-  /// A callback to build a widget once [web_kit.WebView] has been initialized.
-  final Widget Function(WebViewCupertinoPlatformController controller)
+  /// A callback to build a widget once [WKWebView] has been initialized.
+  final Widget Function(WebKitWebViewPlatformController controller)
       onBuildWidget;
 
   @override
-  State<StatefulWidget> createState() => _WebViewCupertinoWidgetState();
+  State<StatefulWidget> createState() => _WebKitWebViewWidgetState();
 }
 
-class _WebViewCupertinoWidgetState extends State<WebViewCupertinoWidget> {
-  late final WebViewCupertinoPlatformController controller;
+class _WebKitWebViewWidgetState extends State<WebKitWebViewWidget> {
+  late final WebKitWebViewPlatformController controller;
 
   @override
   void initState() {
     super.initState();
-    controller = WebViewCupertinoPlatformController(
+    controller = WebKitWebViewPlatformController(
       creationParams: widget.creationParams,
       callbacksHandler: widget.callbacksHandler,
       javascriptChannelRegistry: widget.javascriptChannelRegistry,
@@ -71,18 +71,18 @@ class _WebViewCupertinoWidgetState extends State<WebViewCupertinoWidget> {
 }
 
 /// An implementation of [WebViewPlatformController] with the WebKit api.
-class WebViewCupertinoPlatformController extends WebViewPlatformController {
-  /// Construct a [WebViewCupertinoPlatformController].
-  WebViewCupertinoPlatformController({
+class WebKitWebViewPlatformController extends WebViewPlatformController {
+  /// Construct a [WebKitWebViewPlatformController].
+  WebKitWebViewPlatformController({
     required CreationParams creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
-    web_kit.WebViewConfiguration? configuration,
+    WKWebViewConfiguration? configuration,
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
-      configuration: configuration ?? web_kit.WebViewConfiguration(),
+      configuration: configuration ?? WKWebViewConfiguration(),
     ).then((_) => _initializationCompleter.complete());
   }
 
@@ -94,17 +94,17 @@ class WebViewCupertinoPlatformController extends WebViewPlatformController {
   /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
-  /// Handles constructing a [web_kit.WebView].
+  /// Handles constructing a [WKWebView].
   ///
   /// This should only be changed when used for testing.
   final WebViewProxy webViewProxy;
 
   /// Represents the WebView maintained by platform code.
-  late final web_kit.WebView webView;
+  late final WKWebView webView;
 
   Future<void> _setCreationParams(
     CreationParams params, {
-    required web_kit.WebViewConfiguration configuration,
+    required WKWebViewConfiguration configuration,
   }) async {
     _setWebViewConfiguration(
       configuration,
@@ -116,7 +116,7 @@ class WebViewCupertinoPlatformController extends WebViewPlatformController {
   }
 
   void _setWebViewConfiguration(
-    web_kit.WebViewConfiguration configuration, {
+    WKWebViewConfiguration configuration, {
     required bool? allowsInlineMediaPlayback,
     required AutoMediaPlaybackPolicy autoMediaPlaybackPolicy,
   }) {
@@ -135,14 +135,14 @@ class WebViewCupertinoPlatformController extends WebViewPlatformController {
     }
 
     configuration.mediaTypesRequiringUserActionForPlayback =
-        <web_kit.AudiovisualMediaType>{
-      if (requiresUserAction) web_kit.AudiovisualMediaType.all,
-      if (!requiresUserAction) web_kit.AudiovisualMediaType.none
+        <WKAudiovisualMediaType>{
+      if (requiresUserAction) WKAudiovisualMediaType.all,
+      if (!requiresUserAction) WKAudiovisualMediaType.none,
     };
   }
 }
 
-/// Handles constructing [web_kit.WebView]s and calling static methods.
+/// Handles constructing [WKWebView]s and calling static methods.
 ///
 /// This should only be used for testing purposes.
 @visibleForTesting
@@ -150,8 +150,8 @@ class WebViewProxy {
   /// Creates a [WebViewProxy].
   const WebViewProxy();
 
-  /// Constructs a [web_kit.WebView].
-  web_kit.WebView createWebView(web_kit.WebViewConfiguration configuration) {
-    return web_kit.WebView(configuration);
+  /// Constructs a [WKWebView].
+  WKWebView createWebView(WKWebViewConfiguration configuration) {
+    return WKWebView(configuration);
   }
 }
