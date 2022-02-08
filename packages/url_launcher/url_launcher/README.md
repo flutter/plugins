@@ -102,7 +102,7 @@ Commonly used schemes include:
 |:---|:---|:---|
 | `https:<URL>` | `https://flutter.dev` | Open URL in the default browser |
 | `mailto:<email address>?subject=<subject>&body=<body>` | `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
-| `tel:<phone number>` | `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
+| `tel:<phone number>` | `tel:+1-555-010-999` | Make a phone call to <phone number> using the default phone app |
 | `sms:<phone number>` | `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 | `file:<path>` | `file:/home` | Opens file or folder using default app association, supported on desktop platforms |
 
@@ -187,4 +187,4 @@ if (await File(uri.toFilePath()).exists()) {
 ### macOS file access configuration
 
 If you need to access files outside of your application's sandbox, you will need to have the necessary 
-[entitlements](https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox)
+[entitlements](https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox).
