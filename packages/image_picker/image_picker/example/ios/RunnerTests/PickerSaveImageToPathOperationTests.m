@@ -55,7 +55,7 @@
 }
 
 /**
-  * Create a mock picker result using NSItemProvider.
+  * Creates a mock picker result using NSItemProvider.
   *
   * @param itemProvider an item provider that will be used as picker result
   * @param identifier local identifier of the asset
@@ -71,7 +71,7 @@
 }
 
 /**
-  * Validate a saving process of FLTPHPickerSaveImageToPathOperation.
+  * Validates a saving process of FLTPHPickerSaveImageToPathOperation.
   *
   * FLTPHPickerSaveImageToPathOperation is responsible for saving a picked image to the disk for
   * later use. It is expected that the saving is always successful.

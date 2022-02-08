@@ -109,8 +109,8 @@ typedef void (^GetSavedPath)(NSString *);
   }
 }
 
-/*
- * This method processes the image and save it to the file.
+/**
+ * Processes the image.
  */
 - (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
   PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
