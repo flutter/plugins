@@ -1,6 +1,8 @@
-## NEXT
+## 2.0.3
 
-* Added unit tests.
+* Switches to an in-package method channel implementation.
+* Adds unit tests.
+* Updates code for new analysis options.
 
 ## 2.0.2
 

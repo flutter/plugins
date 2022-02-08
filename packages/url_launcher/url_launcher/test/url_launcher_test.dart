@@ -5,11 +5,11 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show PlatformException;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'package:flutter/services.dart' show PlatformException;
 
 import 'mock_url_launcher_platform.dart';
 
@@ -239,7 +239,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())!
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
@@ -268,7 +268,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())!
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);

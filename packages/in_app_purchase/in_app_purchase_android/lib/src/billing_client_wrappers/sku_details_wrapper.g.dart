@@ -26,26 +26,6 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) => SkuDetailsWrapper(
       originalPriceAmountMicros: json['originalPriceAmountMicros'] as int? ?? 0,
     );
 
-Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
-    <String, dynamic>{
-      'description': instance.description,
-      'freeTrialPeriod': instance.freeTrialPeriod,
-      'introductoryPrice': instance.introductoryPrice,
-      'introductoryPriceAmountMicros': instance.introductoryPriceAmountMicros,
-      'introductoryPriceCycles': instance.introductoryPriceCycles,
-      'introductoryPricePeriod': instance.introductoryPricePeriod,
-      'price': instance.price,
-      'priceAmountMicros': instance.priceAmountMicros,
-      'priceCurrencyCode': instance.priceCurrencyCode,
-      'priceCurrencySymbol': instance.priceCurrencySymbol,
-      'sku': instance.sku,
-      'subscriptionPeriod': instance.subscriptionPeriod,
-      'title': instance.title,
-      'type': const SkuTypeConverter().toJson(instance.type),
-      'originalPrice': instance.originalPrice,
-      'originalPriceAmountMicros': instance.originalPriceAmountMicros,
-    };
-
 SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) =>
     SkuDetailsResponseWrapper(
       billingResult:
@@ -59,24 +39,9 @@ SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) =>
           [],
     );
 
-Map<String, dynamic> _$SkuDetailsResponseWrapperToJson(
-        SkuDetailsResponseWrapper instance) =>
-    <String, dynamic>{
-      'billingResult': instance.billingResult,
-      'skuDetailsList': instance.skuDetailsList,
-    };
-
 BillingResultWrapper _$BillingResultWrapperFromJson(Map json) =>
     BillingResultWrapper(
       responseCode: const BillingResponseConverter()
           .fromJson(json['responseCode'] as int?),
       debugMessage: json['debugMessage'] as String?,
     );
-
-Map<String, dynamic> _$BillingResultWrapperToJson(
-        BillingResultWrapper instance) =>
-    <String, dynamic>{
-      'responseCode':
-          const BillingResponseConverter().toJson(instance.responseCode),
-      'debugMessage': instance.debugMessage,
-    };

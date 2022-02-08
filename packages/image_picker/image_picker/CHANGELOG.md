@@ -1,6 +1,24 @@
-## 0.8.4+4
+## 0.8.4+8
 
 * iOS: allows picking images with WebP format.
+
+## 0.8.4+7
+
+* Refactors unit test to expose private interface via a separate test header instead of the inline declaration.
+
+## 0.8.4+6
+
+* Fixes minor type issues in iOS implementation.
+
+## 0.8.4+5
+
+* Improves the documentation on handling MainActivity being killed by the Android OS.
+* Updates Android compileSdkVersion to 31.
+* Fix iOS RunnerUITests search paths.
+
+## 0.8.4+4
+
+* Fix typos in README.md.
 
 ## 0.8.4+3
 

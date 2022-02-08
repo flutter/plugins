@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
-import 'package:in_app_purchase_android/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase_android/src/channel.dart';
 
 import '../stub_in_app_purchase_platform.dart';
-import 'sku_details_wrapper_test.dart';
 import 'purchase_wrapper_test.dart';
+import 'sku_details_wrapper_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +22,6 @@ void main() {
 
   setUp(() {
     billingClient = BillingClient((PurchasesResultWrapper _) {});
-    billingClient.enablePendingPurchases();
     stubPlatform.reset();
   });
 
@@ -91,10 +89,7 @@ void main() {
       );
       await billingClient.startConnection(onBillingServiceDisconnected: () {});
       final MethodCall call = stubPlatform.previousCallMatching(methodName);
-      expect(
-          call.arguments,
-          equals(
-              <dynamic, dynamic>{'handle': 0, 'enablePendingPurchases': true}));
+      expect(call.arguments, equals(<dynamic, dynamic>{'handle': 0}));
     });
 
     test('handles method channel returning null', () async {

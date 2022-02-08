@@ -1,3 +1,12 @@
+## 2.0.4
+
+* Switches to an in-package method channel implementation.
+
+## 2.0.3
+
+* Updates code for new analysis options.
+* Updates unit tests.
+
 ## 2.0.2
 
 * Replaced reference to `shared_preferences` plugin with the `url_launcher` in the README.
