@@ -30,11 +30,8 @@ void main() {
 
     late SharedPreferencesWindows preferences;
 
-    setUpAll(() async {
+    setUp(() async {
       preferences = SharedPreferencesWindows();
-    });
-
-    tearDown(() {
       preferences.clear();
     });
 
@@ -48,16 +45,14 @@ void main() {
     });
 
     testWidgets('writing', (WidgetTester _) async {
-      await Future.wait(<Future<bool>>[
-        preferences.setValue(
-            'String', 'String', kTestValues2['flutter.String']!),
-        preferences.setValue('Bool', 'bool', kTestValues2['flutter.bool']!),
-        preferences.setValue('Int', 'int', kTestValues2['flutter.int']!),
-        preferences.setValue(
-            'Double', 'double', kTestValues2['flutter.double']!),
-        preferences.setValue(
-            'StringList', 'List', kTestValues2['flutter.List']!)
-      ]);
+      await preferences.setValue(
+          'String', 'String', kTestValues2['flutter.String']!);
+      await preferences.setValue('Bool', 'bool', kTestValues2['flutter.bool']!);
+      await preferences.setValue('Int', 'int', kTestValues2['flutter.int']!);
+      await preferences.setValue(
+          'Double', 'double', kTestValues2['flutter.double']!);
+      await preferences.setValue(
+          'StringList', 'List', kTestValues2['flutter.List']!);
       final Map<String, Object> values = await preferences.getAll();
       expect(values['String'], kTestValues2['flutter.String']);
       expect(values['bool'], kTestValues2['flutter.bool']);
