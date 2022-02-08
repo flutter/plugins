@@ -17,8 +17,6 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.flutter.plugins.quickactions
-        pluginClass: QuickActionsPlugin
         default_package: quick_actions_android
       ios:
         pluginClass: FLTQuickActionsPlugin

@@ -13,19 +13,22 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$QuickActionsAndroid', () {
-    final QuickActionsAndroid quickActions = QuickActionsAndroid();
-
-    final List<MethodCall> log = <MethodCall>[];
+    late List<MethodCall> log;
 
     setUp(() {
+      log = <MethodCall>[];
+    });
+
+    QuickActionsAndroid buildQuickActionsPlugin() {
+      final QuickActionsAndroid quickActions = QuickActionsAndroid();
       quickActions.channel
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         return '';
       });
 
-      log.clear();
-    });
+      return quickActions;
+    }
 
     test('registerWith() registers correct instance', () {
       QuickActionsAndroid.registerWith();
@@ -34,6 +37,7 @@ void main() {
 
     group('#initialize', () {
       test('passes getLaunchAction on launch method', () {
+        final QuickActionsAndroid quickActions = buildQuickActionsPlugin();
         quickActions.initialize((String type) {});
 
         expect(
@@ -45,6 +49,7 @@ void main() {
       });
 
       test('initialize', () async {
+        final QuickActionsAndroid quickActions = buildQuickActionsPlugin();
         final Completer<bool> quickActionsHandler = Completer<bool>();
         await quickActions
             .initialize((_) => quickActionsHandler.complete(true));
@@ -62,6 +67,7 @@ void main() {
 
     group('#setShortCutItems', () {
       test('passes shortcutItem through channel', () {
+        final QuickActionsAndroid quickActions = buildQuickActionsPlugin();
         quickActions.initialize((String type) {});
         quickActions.setShortcutItems(<ShortcutItem>[
           const ShortcutItem(
@@ -87,6 +93,7 @@ void main() {
         const String type = 'type';
         const String localizedTitle = 'localizedTitle';
         const String icon = 'icon';
+        final QuickActionsAndroid quickActions = buildQuickActionsPlugin();
         await quickActions.setShortcutItems(
           const <ShortcutItem>[
             ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon)
@@ -113,6 +120,7 @@ void main() {
 
     group('#clearShortCutItems', () {
       test('send clearShortcutItems through channel', () {
+        final QuickActionsAndroid quickActions = buildQuickActionsPlugin();
         quickActions.initialize((String type) {});
         quickActions.clearShortcutItems();
 
@@ -126,6 +134,7 @@ void main() {
       });
 
       test('clearShortcutItems', () {
+        final QuickActionsAndroid quickActions = buildQuickActionsPlugin();
         quickActions.clearShortcutItems();
         expect(
           log,

@@ -8,7 +8,3 @@
 
 # This is a permament entry, as it should never be a direct app dependency.
 - plugin_platform_interface
-# TODO(mvanbeusekom): Remove the exclusion of the quick_actions_android and 
-#                     once the native implementation is removed from the 
-#                     quick_actions package.
-- quick_actions_android
