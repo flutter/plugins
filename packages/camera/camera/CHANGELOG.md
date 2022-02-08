@@ -1,5 +1,6 @@
 ## 0.9.4+12
 
+* Updates iOS camera's photo capture delegate reference on a background queue to prevent potential race conditions, and some related internal code cleanup.
 * Skips unnecessary AppDelegate setup for unit tests on iOS.
 * Internal code cleanup for stricter analysis options.
 
