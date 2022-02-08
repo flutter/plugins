@@ -27,7 +27,7 @@ Directories support by platform:
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | Temporary | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | Application Support | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| Application Library | ❌️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| Application Library | ❌️ | ✔️ | ❌️ | ✔️ | ❌️ |
 | Application Documents | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | External Storage | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | External Cache Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
