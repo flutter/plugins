@@ -20,7 +20,6 @@ flutter:
         package: io.flutter.plugins.quickactions
         pluginClass: QuickActionsPlugin
       ios:
-        pluginClass: FLTQuickActionsPlugin
         default_package: quick_actions_ios
 
 dependencies:
