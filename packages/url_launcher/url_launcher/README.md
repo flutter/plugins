@@ -96,15 +96,15 @@ takes a string argument containing a URL. This URL
 can be formatted using a number of different URL schemes. The supported
 URL schemes depend on the underlying platform and installed apps.
 
-Common schemes supported:
+Commonly used schemes include:
 
-| Scheme | Action |
-|:---|:---|
-| `http:<URL>` , `https:<URL>`, e.g `http://flutter.dev` | Open URL in the default browser |
-| `mailto:<email address>?subject=<subject>&body=<body>`, e.g `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
-| `tel:<phone number>`, e.g `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
-| `sms:<phone number>`, e.g `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
-| `file:/<path>`, e.g `file:/home` | Opens file or folder using default app association, supported on desktop platforms |
+| Scheme | Example | Action |
+|:---|:---|:---|
+| `https:<URL>` | `https://flutter.dev` | Open URL in the default browser |
+| `mailto:<email address>?subject=<subject>&body=<body>` | `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
+| `tel:<phone number>` | `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
+| `sms:<phone number>` | `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
+| `file:<path>` | `file:/home` | Opens file or folder using default app association, supported on desktop platforms |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html)
 and [Android](https://developer.android.com/guide/components/intents-common.html)
@@ -170,14 +170,14 @@ else is redirected to the app handler.
 ## File scheme handling
 `file:` scheme can be used on desktop platforms: `macOS`, `Linux` and `Windows`.
 
-We recommend checking first whether the directory and/or file exists before calling the `launch`.
+We recommend checking first whether the directory or file exists before calling `launch`.
 
 Example:
 ```dart
 var filePath = '/path/to/file';
-final Uri uri = Uri.file(filePath, windows: Platform.isWindows);
+final Uri uri = Uri.file(filePath);
 
-if (await File(uri.toFilePath(windows: Platform.isWindows)).exists()) {
+if (await File(uri.toFilePath()).exists()) {
     if (!await launch(uri.toString())) {
       throw 'Could not launch $uri';
     }
@@ -186,19 +186,5 @@ if (await File(uri.toFilePath(windows: Platform.isWindows)).exists()) {
 
 ### macOS file access configuration
 
-Upon first app launch, the operating system creates a special directory for use by your app
-(and only by your app) called a container. Your app has unrestricted read/write access to the
-container and its subdirectories. To access file system locations outside of its container use
-entitlements. See
-[the Apple documentation](https://developer.apple.com/documentation/security/app_sandbox)
-for more information.
-
-.entitlements file content example:
-```xml
-<dict>
-    <key>com.apple.security.app-sandbox</key>
-    <true/>
-    <key>com.apple.security.files.user-selected.read-only</key>
-    <true/>
-</dict>
-```
+If you need to access files outside of your application's sandbox, you will need to have the necessary 
+[entitlements](https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox)
