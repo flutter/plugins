@@ -22,8 +22,6 @@ void main() {
       return null;
     });
 
-    final UrlLauncherWindows launcher = UrlLauncherWindows();
-
     test('registers instance', () {
       UrlLauncherWindows.registerWith();
       expect(UrlLauncherPlatform.instance, isA<UrlLauncherWindows>());
@@ -34,6 +32,7 @@ void main() {
     });
 
     test('canLaunch', () async {
+      final UrlLauncherWindows launcher = UrlLauncherWindows();
       await launcher.canLaunch('http://example.com/');
       expect(
         log,
@@ -46,12 +45,14 @@ void main() {
     });
 
     test('canLaunch should return false if platform returns null', () async {
+      final UrlLauncherWindows launcher = UrlLauncherWindows();
       final bool canLaunch = await launcher.canLaunch('http://example.com/');
 
       expect(canLaunch, false);
     });
 
     test('launch', () async {
+      final UrlLauncherWindows launcher = UrlLauncherWindows();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
@@ -76,6 +77,7 @@ void main() {
     });
 
     test('launch with headers', () async {
+      final UrlLauncherWindows launcher = UrlLauncherWindows();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
@@ -100,6 +102,7 @@ void main() {
     });
 
     test('launch universal links only', () async {
+      final UrlLauncherWindows launcher = UrlLauncherWindows();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: false,
@@ -124,6 +127,7 @@ void main() {
     });
 
     test('launch should return false if platform returns null', () async {
+      final UrlLauncherWindows launcher = UrlLauncherWindows();
       final bool launched = await launcher.launch(
         'http://example.com/',
         useSafariVC: true,

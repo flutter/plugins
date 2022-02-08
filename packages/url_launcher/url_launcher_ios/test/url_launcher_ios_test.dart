@@ -22,8 +22,6 @@ void main() {
       return null;
     });
 
-    final UrlLauncherIOS launcher = UrlLauncherIOS();
-
     tearDown(() {
       log.clear();
     });
@@ -34,6 +32,7 @@ void main() {
     });
 
     test('canLaunch', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.canLaunch('http://example.com/');
       expect(
         log,
@@ -46,12 +45,14 @@ void main() {
     });
 
     test('canLaunch should return false if platform returns null', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       final bool canLaunch = await launcher.canLaunch('http://example.com/');
 
       expect(canLaunch, false);
     });
 
     test('launch', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
@@ -77,6 +78,7 @@ void main() {
     });
 
     test('launch with headers', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
@@ -102,6 +104,7 @@ void main() {
     });
 
     test('launch force SafariVC', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
@@ -127,6 +130,7 @@ void main() {
     });
 
     test('launch universal links only', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: false,
@@ -152,6 +156,7 @@ void main() {
     });
 
     test('launch force SafariVC to false', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.launch(
         'http://example.com/',
         useSafariVC: false,
@@ -177,6 +182,7 @@ void main() {
     });
 
     test('launch should return false if platform returns null', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       final bool launched = await launcher.launch(
         'http://example.com/',
         useSafariVC: true,
@@ -191,6 +197,7 @@ void main() {
     });
 
     test('closeWebView default behavior', () async {
+      final UrlLauncherIOS launcher = UrlLauncherIOS();
       await launcher.closeWebView();
       expect(
         log,
