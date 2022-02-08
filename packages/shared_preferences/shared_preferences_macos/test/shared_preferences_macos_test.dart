@@ -23,7 +23,8 @@ void main() {
       'flutter.Double': 3.14159,
       'flutter.StringList': <String>['foo', 'bar'],
     };
-
+    // Create a dummy in-memory implementation to back the mocked method channel
+    // API to simplify validation of the expected calls.
     late InMemorySharedPreferencesStore testData;
 
     final List<MethodCall> log = <MethodCall>[];
@@ -54,12 +55,7 @@ void main() {
         }
         fail('Unexpected method call: ${methodCall.method}');
       });
-      store = SharedPreferencesMacOS();
       log.clear();
-    });
-
-    tearDown(() async {
-      await testData.clear();
     });
 
     test('registers instance', () {
@@ -69,12 +65,14 @@ void main() {
     });
 
     test('getAll', () async {
+      store = SharedPreferencesMacOS();
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await store.getAll(), kTestValues);
       expect(log.single.method, 'getAll');
     });
 
     test('remove', () async {
+      store = SharedPreferencesMacOS();
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await store.remove('flutter.String'), true);
       expect(await store.remove('flutter.Bool'), true);
@@ -91,6 +89,7 @@ void main() {
     });
 
     test('setValue', () async {
+      store = SharedPreferencesMacOS();
       expect(await testData.getAll(), isEmpty);
       for (final String key in kTestValues.keys) {
         final Object value = kTestValues[key]!;
@@ -107,6 +106,7 @@ void main() {
     });
 
     test('clear', () async {
+      store = SharedPreferencesMacOS();
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await testData.getAll(), isNotEmpty);
       expect(await store.clear(), true);

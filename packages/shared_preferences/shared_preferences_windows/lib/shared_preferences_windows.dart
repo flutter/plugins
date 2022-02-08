@@ -16,6 +16,11 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 ///
 /// This class implements the `package:shared_preferences` functionality for Windows.
 class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
+  /// Deprecated instance of [SharedPreferencesWindows].
+  /// Use [SharedPreferencesStorePlatform.instance] instead.
+  @Deprecated('Use `SharedPreferencesStorePlatform.instance` instead.')
+  static SharedPreferencesWindows instance = SharedPreferencesWindows();
+
   /// Registers the Windows implementation.
   static void registerWith() {
     SharedPreferencesStorePlatform.instance = SharedPreferencesWindows();

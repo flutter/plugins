@@ -23,7 +23,8 @@ void main() {
       'flutter.Double': 3.14159,
       'flutter.StringList': <String>['foo', 'bar'],
     };
-
+    // Create a dummy in-memory implementation to back the mocked method channel
+    // API to simplify validation of the expected calls.
     late InMemorySharedPreferencesStore testData;
 
     final List<MethodCall> log = <MethodCall>[];
@@ -38,7 +39,7 @@ void main() {
           return await testData.getAll();
         }
         if (methodCall.method == 'remove') {
-          final String key = (methodCall.arguments['key'] as String?)!;
+          final String key = methodCall.arguments['key']! as String;
           return await testData.remove(key);
         }
         if (methodCall.method == 'clear') {
@@ -48,18 +49,13 @@ void main() {
         final Match? match = setterRegExp.matchAsPrefix(methodCall.method);
         if (match?.groupCount == 1) {
           final String valueType = match!.group(1)!;
-          final String key = (methodCall.arguments['key'] as String?)!;
-          final Object value = (methodCall.arguments['value'] as Object?)!;
+          final String key = methodCall.arguments['key'] as String;
+          final Object value = methodCall.arguments['value'] as Object;
           return await testData.setValue(valueType, key, value);
         }
         fail('Unexpected method call: ${methodCall.method}');
       });
-      store = SharedPreferencesAndroid();
       log.clear();
-    });
-
-    tearDown(() async {
-      await testData.clear();
     });
 
     test('registered instance', () {
@@ -69,12 +65,14 @@ void main() {
     });
 
     test('getAll', () async {
+      store = SharedPreferencesAndroid();
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await store.getAll(), kTestValues);
       expect(log.single.method, 'getAll');
     });
 
     test('remove', () async {
+      store = SharedPreferencesAndroid();
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await store.remove('flutter.String'), true);
       expect(await store.remove('flutter.Bool'), true);
@@ -91,6 +89,7 @@ void main() {
     });
 
     test('setValue', () async {
+      store = SharedPreferencesAndroid();
       expect(await testData.getAll(), isEmpty);
       for (final String key in kTestValues.keys) {
         final Object value = kTestValues[key]!;
@@ -107,6 +106,7 @@ void main() {
     });
 
     test('clear', () async {
+      store = SharedPreferencesAndroid();
       testData = InMemorySharedPreferencesStore.withData(kTestValues);
       expect(await testData.getAll(), isNotEmpty);
       expect(await store.clear(), true);

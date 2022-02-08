@@ -16,6 +16,11 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 ///
 /// This class implements the `package:shared_preferences` functionality for Linux.
 class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
+  /// Deprecated instance of [SharedPreferencesLinux].
+  /// Use [SharedPreferencesStorePlatform.instance] instead.
+  @Deprecated('Use `SharedPreferencesStorePlatform.instance` instead.')
+  static SharedPreferencesLinux instance = SharedPreferencesLinux();
+
   /// Registers the Linux implementation.
   static void registerWith() {
     SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
