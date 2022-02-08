@@ -5,6 +5,7 @@
 #import "ImagePickerTestImages.h"
 
 @import image_picker;
+@import image_picker.Test;
 @import XCTest;
 
 @interface PhotoAssetUtilTests : XCTestCase
@@ -101,11 +102,10 @@
 
   size_t numberOfFrames = CGImageSourceGetCount(imageSource);
 
-  NSNumber *nilSize = (NSNumber *)[NSNull null];
   NSString *savedPathGIF = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:dataGIF
                                                                                   image:imageGIF
-                                                                               maxWidth:nilSize
-                                                                              maxHeight:nilSize
+                                                                               maxWidth:nil
+                                                                              maxHeight:nil
                                                                            imageQuality:nil];
   XCTAssertNotNil(savedPathGIF);
   XCTAssertEqualObjects([savedPathGIF substringFromIndex:savedPathGIF.length - 4], @".gif");

@@ -22,9 +22,6 @@
 
 @end
 
-// Set a long timeout to avoid flake due to slow CI.
-static const NSTimeInterval kTimeout = 30.0;
-
 @interface ImagePickerPluginTests : XCTestCase
 @property(readonly, nonatomic) id mockUIImagePicker;
 @property(readonly, nonatomic) id mockAVCaptureDevice;

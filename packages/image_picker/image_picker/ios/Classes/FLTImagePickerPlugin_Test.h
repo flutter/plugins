@@ -47,4 +47,5 @@
  * Should be used for testing purposes only.
  */
 - (void)setImagePickerControllerOverride:(UIImagePickerController *)imagePickerController;
+
 @end
