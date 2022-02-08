@@ -31,7 +31,7 @@ class WebKitWebViewWidget extends StatefulWidget {
   /// Manager of named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
-  /// A collection of properties that you use to initialize a web view.
+  /// A collection of properties used to initialize a web view.
   ///
   /// If null, a default configuration is used.
   final WKWebViewConfiguration? configuration;
