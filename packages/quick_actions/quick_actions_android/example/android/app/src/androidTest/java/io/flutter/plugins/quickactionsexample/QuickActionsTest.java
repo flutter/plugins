@@ -5,6 +5,7 @@
 package io.flutter.plugins.quickactionsexample;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import androidx.test.core.app.ActivityScenario;
 import io.flutter.plugins.quickactions.QuickActionsPlugin;
@@ -13,11 +14,15 @@ import org.junit.Test;
 public class QuickActionsTest {
   @Test
   public void imagePickerPluginIsAdded() {
+    fail();
+    /*
     final ActivityScenario<QuickActionsTestActivity> scenario =
         ActivityScenario.launch(QuickActionsTestActivity.class);
     scenario.onActivity(
         activity -> {
           assertTrue(activity.engine.getPlugins().has(QuickActionsPlugin.class));
         });
+    */
   }
+  
 }
