@@ -104,7 +104,7 @@ Commonly used schemes include:
 | `mailto:<email address>?subject=<subject>&body=<body>` | `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
 | `tel:<phone number>` | `tel:+1-555-010-999` | Make a phone call to <phone number> using the default phone app |
 | `sms:<phone number>` | `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
-| `file:<path>` | `file:/home` | Opens file or folder using default app association, supported on desktop platforms |
+| `file:<path>` | `file:/home` | Open file or folder using default app association, supported on desktop platforms |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html)
 and [Android](https://developer.android.com/guide/components/intents-common.html)
@@ -178,9 +178,9 @@ var filePath = '/path/to/file';
 final Uri uri = Uri.file(filePath);
 
 if (await File(uri.toFilePath()).exists()) {
-    if (!await launch(uri.toString())) {
-      throw 'Could not launch $uri';
-    }
+  if (!await launch(uri.toString())) {
+    throw 'Could not launch $uri';
+  }
 }
 ```
 
