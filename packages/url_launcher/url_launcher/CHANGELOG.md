@@ -1,3 +1,7 @@
+## 6.0.19
+
+* Fixes a typo in `default_package` registration for macOS and Linux.
+
 ## 6.0.18
 
 * Removes dependency on `meta`.
