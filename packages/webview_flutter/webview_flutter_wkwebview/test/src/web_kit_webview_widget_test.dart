@@ -45,8 +45,8 @@ void main() {
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
-      when(mockWebViewConfiguration.userContentController).thenAnswer(
-        (_) => Future<WKUserContentController>.value(mockUserContentController),
+      when(mockWebViewConfiguration.userContentController).thenReturn(
+        mockUserContentController,
       );
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
@@ -125,7 +125,7 @@ void main() {
       });
 
       testWidgets('javascriptChannelNames', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler(any)).thenReturn(
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -177,7 +177,7 @@ void main() {
 
     group('$WebKitWebViewPlatformController', () {
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler(any)).thenReturn(
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -218,7 +218,7 @@ void main() {
       });
 
       testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler(any)).thenReturn(
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -257,7 +257,7 @@ void main() {
 
     group('$JavascriptChannelRegistry', () {
       testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler(any)).thenReturn(
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
         );
 

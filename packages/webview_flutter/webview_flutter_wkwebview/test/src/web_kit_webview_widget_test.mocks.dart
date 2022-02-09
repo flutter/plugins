@@ -79,17 +79,16 @@ class MockWKWebViewConfiguration extends _i1.Mock
   }
 
   @override
-  set userContentController(
-          _i3.FutureOr<_i2.WKUserContentController>? userContentController) =>
-      super.noSuchMethod(
-          Invocation.setter(#userContentController, userContentController),
-          returnValueForMissingStub: null);
-  @override
-  _i3.Future<_i2.WKUserContentController> get userContentController =>
+  _i2.WKUserContentController get userContentController =>
       (super.noSuchMethod(Invocation.getter(#userContentController),
-              returnValue: Future<_i2.WKUserContentController>.value(
-                  _FakeWKUserContentController_1()))
-          as _i3.Future<_i2.WKUserContentController>);
+              returnValue: _FakeWKUserContentController_1())
+          as _i2.WKUserContentController);
+  @override
+  set userContentController(
+          _i2.WKUserContentController? _userContentController) =>
+      super.noSuchMethod(
+          Invocation.setter(#userContentController, _userContentController),
+          returnValueForMissingStub: null);
   @override
   set allowsInlineMediaPlayback(bool? allow) =>
       super.noSuchMethod(Invocation.setter(#allowsInlineMediaPlayback, allow),
@@ -213,10 +212,8 @@ class MockWebViewWidgetProxy extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#createWebView, [configuration]),
           returnValue: _FakeWKWebView_2()) as _i2.WKWebView);
   @override
-  _i2.WKScriptMessageHandler createScriptMessageHandler(
-          _i4.JavascriptChannelRegistry? registry) =>
-      (super.noSuchMethod(
-              Invocation.method(#createScriptMessageHandler, [registry]),
+  _i2.WKScriptMessageHandler createScriptMessageHandler() =>
+      (super.noSuchMethod(Invocation.method(#createScriptMessageHandler, []),
               returnValue: _FakeWKScriptMessageHandler_3())
           as _i2.WKScriptMessageHandler);
 }

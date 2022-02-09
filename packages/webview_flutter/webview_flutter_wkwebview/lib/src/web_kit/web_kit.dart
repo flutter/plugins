@@ -111,6 +111,16 @@ class WKScriptMessageHandler {
 ///
 /// Wraps [WKUserContentController](https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc).
 class WKUserContentController {
+  /// Constructs a [WKUserContentController].
+  WKUserContentController();
+
+  // A WKUserContentController that is owned by configuration.
+  WKUserContentController._fromWebViewConfiguretion(
+    // TODO(bparrishMines): Remove ignore once constructor is implemented.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebViewConfiguration configuration,
+  );
+
   /// Installs a message handler that you can call from your JavaScript code.
   ///
   /// This name of the parameter must be unique within the user content
@@ -164,24 +174,18 @@ class WKUserContentController {
 /// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc)
 class WKWebViewConfiguration {
   /// Constructs a [WKWebViewConfiguration].
-  WKWebViewConfiguration();
+  WKWebViewConfiguration({required this.userContentController});
 
   // A WKWebViewConfiguration that is owned by webView.
   // TODO(bparrishMines): Remove ignore once constructor is implemented.
   // ignore: avoid_unused_constructor_parameters
-  WKWebViewConfiguration._fromWebView(WKWebView webView);
-
-  /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
-  set userContentController(
-    FutureOr<WKUserContentController> userContentController,
-  ) {
-    throw UnimplementedError();
+  WKWebViewConfiguration._fromWebView(WKWebView webView) {
+    userContentController =
+        WKUserContentController._fromWebViewConfiguretion(this);
   }
 
   /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
-  Future<WKUserContentController> get userContentController {
-    throw UnimplementedError();
-  }
+  late final WKUserContentController userContentController;
 
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   set allowsInlineMediaPlayback(bool allow) {

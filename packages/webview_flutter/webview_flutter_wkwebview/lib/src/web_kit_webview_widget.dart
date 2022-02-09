@@ -82,7 +82,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
-      configuration: configuration ?? WKWebViewConfiguration(),
+      configuration: configuration ??
+          WKWebViewConfiguration(
+            userContentController: WKUserContentController(),
+          ),
     );
   }
 
@@ -146,12 +149,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) async {
-    if (javascriptChannelNames.isEmpty) {
-      return;
-    }
-
-    final WKUserContentController userContentController =
-        await webView.configuration.userContentController;
     await Future.wait<void>(
       javascriptChannelNames.where(
         (String channelName) {
@@ -160,7 +157,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       ).map<Future<void>>(
         (String channelName) {
           final WKScriptMessageHandler handler =
-              webViewProxy.createScriptMessageHandler(javascriptChannelRegistry)
+              webViewProxy.createScriptMessageHandler()
                 ..setDidReceiveScriptMessage(
                   (
                     WKUserContentController userContentController,
@@ -181,8 +178,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             WKUserScriptInjectionTime.atDocumentStart,
             isMainFrameOnly: false,
           );
-          userContentController.addUserScript(wrapperScript);
-          return userContentController.addScriptMessageHandler(
+          webView.configuration.userContentController
+              .addUserScript(wrapperScript);
+          return webView.configuration.userContentController
+              .addScriptMessageHandler(
             handler,
             channelName,
           );
@@ -199,15 +198,13 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       return;
     }
 
-    final WKUserContentController userContentController =
-        await webView.configuration.userContentController;
-
     // WKWebView does not support removing a single user script, so this removes
     // all user scripts and all message handlers. And re-register channels that
     // shouldn't be removed. Note that this workaround could interfere with
     // exposing support for custom scripts from applications.
-    userContentController.removeAllUserScripts();
-    userContentController.removeAllScriptMessageHandlers();
+    webView.configuration.userContentController.removeAllUserScripts();
+    webView.configuration.userContentController
+        .removeAllScriptMessageHandlers();
 
     javascriptChannelNames.forEach(_scriptMessageHandlers.remove);
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
@@ -231,9 +228,7 @@ class WebViewWidgetProxy {
   }
 
   /// Constructs a [WKScriptMessageHandler].
-  WKScriptMessageHandler createScriptMessageHandler(
-    JavascriptChannelRegistry registry,
-  ) {
+  WKScriptMessageHandler createScriptMessageHandler() {
     return WKScriptMessageHandler();
   }
 }
