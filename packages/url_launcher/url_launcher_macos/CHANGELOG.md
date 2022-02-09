@@ -1,6 +1,13 @@
+## 3.0.0
+
+* Changes the major version since, due to a typo in `default_package` in
+  existing versions of `url_launcher`, requiring Dart registration in this
+  package is in practice a breaking change.
+  * Does not include any API changes; clients can allow both 2.x or 3.x.
+
 ## 2.0.4
 
-* Switches to an in-package method channel implementation.
+* **\[Retracted\]** Switches to an in-package method channel implementation.
 
 ## 2.0.3
 
