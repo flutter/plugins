@@ -198,6 +198,7 @@ task:
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[de02374f8d2d14d50792c6b521af2dfb86cbb522efed104f905002e4332546104d387d2bb8710956b729b4bd6533bba0]
+        EMULATOR_IMAGE: "system-images;android-30;default;armeabi-v7a"
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -242,15 +243,12 @@ task:
         #- else
         #-   echo "This user does not have permission to run Firebase Test Lab tests."
         #- fi
+      download_image_script:
+        - sdkmanager "$EMULATOR_IMAGE"
       create_device_script:
-        echo no | avdmanager create avd --force
-            -n test
-            -k "system-images;android-30;default;armeabi-v7a"
+        - echo no | avdmanager create avd --force -n test -k "$EMULATOR_IMAGE"
       start_emulator_background_script:
-        $ANDROID_HOME/emulator/emulator
-            -avd test
-            -no-audio
-            -no-window
+        - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window
       wait_for_emulator_script:
         - adb wait-for-device
         - adb shell input keyevent 82
