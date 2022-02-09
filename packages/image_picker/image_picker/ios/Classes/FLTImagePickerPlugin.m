@@ -39,7 +39,8 @@ id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
 
 @property(strong, nonatomic) UIImagePickerController *imagePickerController;
 
-@property(strong, nonatomic) NSMutableArray<UIImagePickerController *> *imagePickerControllerOverrides;
+@property(strong, nonatomic)
+    NSMutableArray<UIImagePickerController *> *imagePickerControllerOverrides;
 
 @end
 
@@ -73,15 +74,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if ([self.imagePickerControllerOverrides count] > 0) {
     UIImagePickerController *controller = [self.imagePickerControllerOverrides firstObject];
     [self.imagePickerControllerOverrides removeObjectAtIndex:0];
-    self.imagePickerController = controller;
     return controller;
   }
-  
-  self.imagePickerController = [[UIImagePickerController alloc] init];
-  return self.imagePickerController;
+
+  return [[UIImagePickerController alloc] init];
 }
 
-- (void)setImagePickerControllerOverride:(NSArray<UIImagePickerController *> *)imagePickerControllers {
+- (void)setImagePickerControllerOverrides:
+    (NSArray<UIImagePickerController *> *)imagePickerControllers {
   _imagePickerControllerOverrides = [imagePickerControllers mutableCopy];
 }
 
@@ -143,10 +143,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   switch (imageSource) {
     case SOURCE_CAMERA:
-      [self checkCameraAuthorization];
+      [self checkCameraAuthorizationWithImagePickerController:imagePickerController];
       break;
     case SOURCE_GALLERY:
-      [self checkPhotoAuthorization];
+      [self checkPhotoAuthorizationWithImagePickerController:imagePickerController];
       break;
     default:
       self.result([FlutterError errorWithCode:@"invalid_source"
@@ -205,10 +205,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     switch (imageSource) {
       case SOURCE_CAMERA:
-        [self checkCameraAuthorization];
+        [self checkCameraAuthorizationWithImagePickerController:imagePickerController];
         break;
       case SOURCE_GALLERY:
-        [self checkPhotoAuthorization];
+        [self checkPhotoAuthorizationWithImagePickerController:imagePickerController];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -221,9 +221,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)showCamera {
+- (void)showCameraWithImagePickerController:(UIImagePickerController *)imagePickerController {
   @synchronized(self) {
-    if (_imagePickerController.beingPresented) {
+    if (imagePickerController.beingPresented) {
       return;
     }
   }
@@ -231,9 +231,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
       [UIImagePickerController isCameraDeviceAvailable:device]) {
-    _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    _imagePickerController.cameraDevice = device;
-    [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
+    imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    imagePickerController.cameraDevice = device;
+    [[self viewControllerWithWindow:nil] presentViewController:imagePickerController
                                                       animated:YES
                                                     completion:nil];
   } else {
@@ -257,24 +257,26 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)checkCameraAuthorization {
+- (void)checkCameraAuthorizationWithImagePickerController:
+    (UIImagePickerController *)imagePickerController {
   AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
 
   switch (status) {
     case AVAuthorizationStatusAuthorized:
-      [self showCamera];
+      [self showCameraWithImagePickerController:imagePickerController];
       break;
     case AVAuthorizationStatusNotDetermined: {
-      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
-                               completionHandler:^(BOOL granted) {
-                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                   if (granted) {
-                                     [self showCamera];
-                                   } else {
-                                     [self errorNoCameraAccess:AVAuthorizationStatusDenied];
-                                   }
-                                 });
-                               }];
+      [AVCaptureDevice
+          requestAccessForMediaType:AVMediaTypeVideo
+                  completionHandler:^(BOOL granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                      if (granted) {
+                        [self showCameraWithImagePickerController:imagePickerController];
+                      } else {
+                        [self errorNoCameraAccess:AVAuthorizationStatusDenied];
+                      }
+                    });
+                  }];
       break;
     }
     case AVAuthorizationStatusDenied:
@@ -285,14 +287,15 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)checkPhotoAuthorization {
+- (void)checkPhotoAuthorizationWithImagePickerController:
+    (UIImagePickerController *)imagePickerController {
   PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{
           if (status == PHAuthorizationStatusAuthorized) {
-            [self showPhotoLibrary:UIImagePickerClassType];
+            [self showPhotoLibraryWithImagePicker:imagePickerController];
           } else {
             [self errorNoPhotoAccess:status];
           }
@@ -301,7 +304,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     }
     case PHAuthorizationStatusAuthorized:
-      [self showPhotoLibrary:UIImagePickerClassType];
+      [self showPhotoLibraryWithImagePicker:imagePickerController];
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
@@ -320,9 +323,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                      handler:^(PHAuthorizationStatus status) {
                                        dispatch_async(dispatch_get_main_queue(), ^{
                                          if (status == PHAuthorizationStatusAuthorized) {
-                                           [self showPhotoLibrary:PHPickerClassType];
+                                           [self
+                                               showPhotoLibraryWithPHPicker:self->
+                                                                            _pickerViewController];
                                          } else if (status == PHAuthorizationStatusLimited) {
-                                           [self showPhotoLibrary:PHPickerClassType];
+                                           [self
+                                               showPhotoLibraryWithPHPicker:self->
+                                                                            _pickerViewController];
                                          } else {
                                            [self errorNoPhotoAccess:status];
                                          }
@@ -332,7 +339,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     }
     case PHAuthorizationStatusAuthorized:
     case PHAuthorizationStatusLimited:
-      [self showPhotoLibrary:PHPickerClassType];
+      [self showPhotoLibraryWithPHPicker:_pickerViewController];
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
@@ -374,21 +381,18 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)showPhotoLibrary:(ImagePickerClassType)imagePickerClassType {
-  // No need to check if SourceType is available. It always is.
-  switch (imagePickerClassType) {
-    case PHPickerClassType:
-      [[self viewControllerWithWindow:nil] presentViewController:_pickerViewController
-                                                        animated:YES
-                                                      completion:nil];
-      break;
-    case UIImagePickerClassType:
-      _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-      [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
-                                                        animated:YES
-                                                      completion:nil];
-      break;
-  }
+- (void)showPhotoLibraryWithPHPicker:(PHPickerViewController *)pickerViewController
+    API_AVAILABLE(ios(14)) {
+  [[self viewControllerWithWindow:nil] presentViewController:pickerViewController
+                                                    animated:YES
+                                                  completion:nil];
+}
+
+- (void)showPhotoLibraryWithImagePicker:(UIImagePickerController *)imagePickerController {
+  imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+  [[self viewControllerWithWindow:nil] presentViewController:imagePickerController
+                                                    animated:YES
+                                                  completion:nil];
 }
 
 - (NSNumber *)getDesiredImageQuality:(NSNumber *)imageQuality {
