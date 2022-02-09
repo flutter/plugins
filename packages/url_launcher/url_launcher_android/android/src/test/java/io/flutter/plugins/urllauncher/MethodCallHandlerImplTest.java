@@ -27,7 +27,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class MethodCallHandlerImplTest {
-  private static final String CHANNEL_NAME = "plugins.flutter.io/url_launcher";
+  private static final String CHANNEL_NAME = "plugins.flutter.io/url_launcher_android";
   private UrlLauncher urlLauncher;
   private MethodCallHandlerImpl methodCallHandler;
 

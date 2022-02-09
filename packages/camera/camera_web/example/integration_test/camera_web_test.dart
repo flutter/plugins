@@ -374,6 +374,37 @@ void main() {
         );
       });
 
+      testWidgets(
+          'releases the video stream '
+          'of a video input device', (tester) async {
+        final videoDevice = FakeMediaDeviceInfo(
+          '1',
+          'Camera 1',
+          MediaDeviceKind.videoInput,
+        );
+
+        final videoStream =
+            FakeMediaStream([MockMediaStreamTrack(), MockMediaStreamTrack()]);
+
+        when(mediaDevices.enumerateDevices).thenAnswer(
+          (_) => Future.value([videoDevice]),
+        );
+
+        when(
+          () => cameraService.getMediaStreamForOptions(
+            CameraOptions(
+              video: VideoConstraints(deviceId: videoDevice.deviceId),
+            ),
+          ),
+        ).thenAnswer((_) => Future.value(videoStream));
+
+        final _ = await CameraPlatform.instance.availableCameras();
+
+        for (var videoTrack in videoStream.getVideoTracks()) {
+          verify(videoTrack.stop).called(1);
+        }
+      });
+
       group('throws CameraException', () {
         testWidgets(
             'with notSupported error '

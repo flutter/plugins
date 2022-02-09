@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Switches to an in-package method channel implementation.
+
 ## 2.0.3
 
 * Updates code for new analysis options.
