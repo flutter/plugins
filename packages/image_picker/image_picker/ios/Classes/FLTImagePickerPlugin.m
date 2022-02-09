@@ -33,7 +33,13 @@ id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
 
 @property(assign, nonatomic) int maxImagesAllowed;
 
+@property(copy, nonatomic) NSDictionary *arguments;
+
 @property(strong, nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
+
+@property(strong, nonatomic) UIImagePickerController *imagePickerController;
+
+@property(strong, nonatomic) NSMutableArray<UIImagePickerController *> *imagePickerControllerOverrides;
 
 @end
 
@@ -42,11 +48,7 @@ static const int SOURCE_GALLERY = 1;
 
 typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPickerClassType };
 
-@implementation FLTImagePickerPlugin {
-  NSDictionary *_arguments;
-  UIImagePickerController *_imagePickerControllerOverride;
-  UIImagePickerController *_imagePickerController;
-}
+@implementation FLTImagePickerPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -57,29 +59,30 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Initializes the _imagePickerController member with a new instance of the
- * UIImagePickerController class.
+ * Creates a new UIImagePickerController.
  *
  * A new instance of the UIImagePickerController is created every time the
- * initImagePickerController method is called. For testing purposes this can
- * be overriden using the setImagePickerControllerOverride method, in which
- * case the set instance of the UIImagePickerController is used to initialize
- * the _imagePickerController member.
+ * createUIImagePickerController method is called. For testing purposes dummy
+ * instances can be injected using the setImagePickerControllerOverrides
+ * method. Each call to createImagePickerController will remove the current first
+ * element from the supplied array untill none are left. Calling
+ * createImagePickerController after that will return new instance of the
+ * UIImagePickerController
  */
-- (void)initImagePickerController {
-  if (_imagePickerControllerOverride) {
-    _imagePickerController = _imagePickerControllerOverride;
-  } else {
-    _imagePickerController = [[UIImagePickerController alloc] init];
+- (UIImagePickerController *)createImagePickerController {
+  if ([self.imagePickerControllerOverrides count] > 0) {
+    UIImagePickerController *controller = [self.imagePickerControllerOverrides firstObject];
+    [self.imagePickerControllerOverrides removeObjectAtIndex:0];
+    self.imagePickerController = controller;
+    return controller;
   }
+  
+  self.imagePickerController = [[UIImagePickerController alloc] init];
+  return self.imagePickerController;
 }
 
-- (UIImagePickerController *)getImagePickerController {
-  return _imagePickerController;
-}
-
-- (void)setImagePickerControllerOverride:(UIImagePickerController *)imagePickerController {
-  _imagePickerControllerOverride = imagePickerController;
+- (void)setImagePickerControllerOverride:(NSArray<UIImagePickerController *> *)imagePickerControllers {
+  _imagePickerControllerOverrides = [imagePickerControllers mutableCopy];
 }
 
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window {
@@ -110,7 +113,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * @param arguments that should be used to get cameraDevice value.
  */
 - (UIImagePickerControllerCameraDevice)getCameraDeviceFromArguments:(NSDictionary *)arguments {
-  NSInteger cameraDevice = [[arguments objectForKey:@"cameraDevice"] intValue];
+  NSInteger cameraDevice = [arguments[@"cameraDevice"] intValue];
   return (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
                              : UIImagePickerControllerCameraDeviceRear;
 }
@@ -131,10 +134,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)launchUIImagePickerWithSource:(int)imageSource {
-  [self initImagePickerController];
-  _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-  _imagePickerController.delegate = self;
-  _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
+  UIImagePickerController *imagePickerController = [self createImagePickerController];
+  imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+  imagePickerController.delegate = self;
+  imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
   self.maxImagesAllowed = 1;
 
@@ -165,7 +168,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _arguments = call.arguments;
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    int imageSource = [[call.arguments objectForKey:@"source"] intValue];
+    int imageSource = [call.arguments[@"source"] intValue];
 
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
@@ -185,19 +188,19 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self launchUIImagePickerWithSource:SOURCE_GALLERY];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
-    [self initImagePickerController];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    _imagePickerController.delegate = self;
-    _imagePickerController.mediaTypes = @[
+    UIImagePickerController *imagePickerController = [self createImagePickerController];
+    imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    imagePickerController.delegate = self;
+    imagePickerController.mediaTypes = @[
       (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
       (NSString *)kUTTypeMPEG4
     ];
-    _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+    imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
-    int imageSource = [[call.arguments objectForKey:@"source"] intValue];
-    if ([[call.arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
-      NSTimeInterval max = [[call.arguments objectForKey:@"maxDuration"] doubleValue];
-      _imagePickerController.videoMaximumDuration = max;
+    int imageSource = [call.arguments[@"source"] intValue];
+    if ([call.arguments[@"maxDuration"] isKindOfClass:[NSNumber class]]) {
+      NSTimeInterval max = [call.arguments[@"maxDuration"] doubleValue];
+      imagePickerController.videoMaximumDuration = max;
     }
 
     switch (imageSource) {
@@ -465,7 +468,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+  NSURL *videoURL = info[UIImagePickerControllerMediaURL];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
@@ -500,9 +503,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     self.result = nil;
     _arguments = nil;
   } else {
-    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    UIImage *image = info[UIImagePickerControllerEditedImage];
     if (image == nil) {
-      image = [info objectForKey:UIImagePickerControllerOriginalImage];
+      image = info[UIImagePickerControllerOriginalImage];
     }
     NSNumber *maxWidth = GetNullableValueForKey(_arguments, @"maxWidth");
     NSNumber *maxHeight = GetNullableValueForKey(_arguments, @"maxHeight");

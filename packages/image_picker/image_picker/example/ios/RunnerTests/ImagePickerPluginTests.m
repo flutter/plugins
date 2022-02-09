@@ -156,7 +156,7 @@
       .andReturn(PHAuthorizationStatusAuthorized);
 
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  [plugin setImagePickerControllerOverride:_mockUIImagePicker];
+  [plugin setImagePickerControllerOverrides:@[_mockUIImagePicker]];
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImage"
                                                               arguments:@{
                                                                 @"maxWidth" : @(100),

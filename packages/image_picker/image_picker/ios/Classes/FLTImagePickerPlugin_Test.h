@@ -41,11 +41,13 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
 /**
- * Sets the UIImagePickerController instance that should be used by the
- * image_picker plugin.
- *
+ * Sets UIImagePickerController instances that will be used when a new
+ * controller would normally be created. Each call to
+ * createImagePickerController will remove the current first element from
+ * the array.
+ * 
  * Should be used for testing purposes only.
  */
-- (void)setImagePickerControllerOverride:(UIImagePickerController *)imagePickerController;
+- (void)setImagePickerControllerOverrides:(NSArray<UIImagePickerController *> *)imagePickerControllers;
 
 @end
