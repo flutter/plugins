@@ -244,6 +244,7 @@ task:
         #-   echo "This user does not have permission to run Firebase Test Lab tests."
         #- fi
       download_image_script:
+        - sdkmanager --list
         - sdkmanager "$EMULATOR_IMAGE"
       create_device_script:
         - echo no | avdmanager create avd --force -n test -k "$EMULATOR_IMAGE"
