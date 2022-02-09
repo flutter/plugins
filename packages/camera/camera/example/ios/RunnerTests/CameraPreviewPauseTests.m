@@ -3,20 +3,11 @@
 // found in the LICENSE file.
 
 @import camera;
+@import camera.Test;
 @import XCTest;
 @import AVFoundation;
 #import <OCMock/OCMock.h>
 #import "MockFLTThreadSafeFlutterResult.h"
-
-@interface FLTCam : NSObject <FlutterTexture,
-                              AVCaptureVideoDataOutputSampleBufferDelegate,
-                              AVCaptureAudioDataOutputSampleBufferDelegate>
-@property(assign, nonatomic) BOOL isPreviewPaused;
-
-- (void)pausePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
-
-- (void)resumePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
-@end
 
 @interface CameraPreviewPauseTests : XCTestCase
 @end

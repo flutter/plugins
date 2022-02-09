@@ -304,6 +304,15 @@ void main() {
         ));
       });
 
+      testWidgets('loadFile should setAllowFileAccess to true',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadFile('file:///path/to/file.html');
+
+        verify(mockWebSettings.setAllowFileAccess(true));
+      });
+
       testWidgets('loadFlutterAsset', (WidgetTester tester) async {
         await buildWidget(tester);
         const String assetKey = 'test_assets/index.html';
@@ -481,6 +490,32 @@ void main() {
             body,
           ));
         });
+      });
+
+      testWidgets('no update to userAgentString when there is no change',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        reset(mockWebSettings);
+
+        await testController.updateSettings(WebSettings(
+          userAgent: const WebSetting<String>.absent(),
+        ));
+
+        verifyNever(mockWebSettings.setUserAgentString(any));
+      });
+
+      testWidgets('update null userAgentString with empty string',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        reset(mockWebSettings);
+
+        await testController.updateSettings(WebSettings(
+          userAgent: const WebSetting<String?>.of(null),
+        ));
+
+        verify(mockWebSettings.setUserAgentString(''));
       });
 
       testWidgets('currentUrl', (WidgetTester tester) async {

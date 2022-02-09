@@ -546,6 +546,16 @@ class WebSettings {
   Future<void> setBuiltInZoomControls(bool enabled) {
     return api.setBuiltInZoomControlsFromInstance(this, enabled);
   }
+
+  /// Enables or disables file access within WebView.
+  ///
+  /// This enables or disables file system access only. Assets and resources are
+  /// still accessible using file:///android_asset and file:///android_res. The
+  /// default value is true for apps targeting Build.VERSION_CODES.Q and below,
+  /// and false when targeting Build.VERSION_CODES.R and above.
+  Future<void> setAllowFileAccess(bool enabled) {
+    return api.setAllowFileAccessFromInstance(this, enabled);
+  }
 }
 
 /// Exposes a channel to receive calls from javaScript.

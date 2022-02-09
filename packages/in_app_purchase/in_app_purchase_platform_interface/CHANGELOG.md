@@ -1,3 +1,7 @@
+## 1.3.1
+
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
+
 ## 1.3.0
 
 * Added new `PurchaseStatus` named `canceled` to distinguish between an error and user cancellation. 
