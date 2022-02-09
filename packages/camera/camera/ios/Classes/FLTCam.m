@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "FLTCam.h"
+#import "FLTCam_Test.h"
+#import "FLTSavePhotoDelegate.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
@@ -40,71 +42,6 @@
 }
 @end
 
-@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
-@property(readonly, nonatomic) NSString *path;
-@property(readonly, nonatomic) FLTThreadSafeFlutterResult *result;
-@end
-
-@implementation FLTSavePhotoDelegate {
-  /// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
-  FLTSavePhotoDelegate *selfReference;
-}
-
-- initWithPath:(NSString *)path result:(FLTThreadSafeFlutterResult *)result {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  _path = path;
-  selfReference = self;
-  _result = result;
-  return self;
-}
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
-                previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
-                        resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
-                         bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
-                                   error:(NSError *)error API_AVAILABLE(ios(10)) {
-  selfReference = nil;
-  if (error) {
-    [_result sendError:error];
-    return;
-  }
-
-  NSData *data = [AVCapturePhotoOutput
-      JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
-                            previewPhotoSampleBuffer:previewPhotoSampleBuffer];
-
-  // TODO(sigurdm): Consider writing file asynchronously.
-  bool success = [data writeToFile:_path atomically:YES];
-
-  if (!success) {
-    [_result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
-    return;
-  }
-  [_result sendSuccessWithData:_path];
-}
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhoto:(AVCapturePhoto *)photo
-                       error:(NSError *)error API_AVAILABLE(ios(11.0)) {
-  selfReference = nil;
-  if (error) {
-    [_result sendError:error];
-    return;
-  }
-
-  NSData *photoData = [photo fileDataRepresentation];
-
-  bool success = [photoData writeToFile:_path atomically:YES];
-  if (!success) {
-    [_result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
-    return;
-  }
-  [_result sendSuccessWithData:_path];
-}
-@end
-
 @interface FLTCam () <AVCaptureVideoDataOutputSampleBufferDelegate,
                       AVCaptureAudioDataOutputSampleBufferDelegate>
 
@@ -114,7 +51,6 @@
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
-@property(readonly, nonatomic) AVCaptureVideoDataOutput *captureVideoOutput;
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
 @property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
 @property(readonly, nonatomic) CGSize captureSize;
@@ -138,8 +74,11 @@
 @property(assign, nonatomic) CMTime audioTimeOffset;
 @property(nonatomic) CMMotionManager *motionManager;
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
-// All FLTCam's state access and capture session related operations should be on run on this queue.
+/// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
+/// The queue on which captured photos (not videos) are wrote to disk.
+/// Videos are wrote to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
+@property(strong, nonatomic) dispatch_queue_t photoIOQueue;
 @property(assign, nonatomic) UIDeviceOrientation deviceOrientation;
 @end
 
@@ -162,6 +101,7 @@ NSString *const errorMethod = @"error";
   }
   _enableAudio = enableAudio;
   _captureSessionQueue = captureSessionQueue;
+  _photoIOQueue = dispatch_queue_create("io.flutter.camera.photoIOQueue", NULL);
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
@@ -184,7 +124,7 @@ NSString *const errorMethod = @"error";
   _captureVideoOutput.videoSettings =
       @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
-  [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+  [_captureVideoOutput setSampleBufferDelegate:self queue:captureSessionQueue];
 
   AVCaptureConnection *connection =
       [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
@@ -280,9 +220,11 @@ NSString *const errorMethod = @"error";
     return;
   }
 
-  [_capturePhotoOutput capturePhotoWithSettings:settings
-                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                                    result:result]];
+  [_capturePhotoOutput
+      capturePhotoWithSettings:settings
+                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                   result:result
+                                                                  ioQueue:self.photoIOQueue]];
 }
 
 - (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:
