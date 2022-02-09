@@ -19,7 +19,7 @@ flutter:
       android:
         default_package: quick_actions_android
       ios:
-        pluginClass: FLTQuickActionsPlugin
+        default_package: quick_actions_ios
 
 dependencies:
   flutter:
@@ -27,6 +27,8 @@ dependencies:
   # Temporary path dependencies to allow moving Android and iOS implementations.
   quick_actions_android:
     path: ../quick_actions_android
+  quick_actions_ios:
+    path: ../quick_actions_ios
   quick_actions_platform_interface: ^1.0.0
 
 dev_dependencies:

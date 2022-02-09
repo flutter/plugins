@@ -2,7 +2,7 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 Pod::Spec.new do |s|
-  s.name             = 'quick_actions'
+  s.name             = 'quick_actions_ios'
   s.version          = '0.0.1'
   s.summary          = 'Flutter Quick Actions'
   s.description      = <<-DESC
