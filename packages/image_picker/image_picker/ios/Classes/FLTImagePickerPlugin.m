@@ -31,14 +31,28 @@ id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
                                     PHPickerViewControllerDelegate,
                                     UIAdaptivePresentationControllerDelegate>
 
+/**
+ * Gets or sets the maximum amount of images that are allowed to be picked.
+ */
 @property(assign, nonatomic) int maxImagesAllowed;
 
+/**
+ * Gets or sets the arguments that are passed in from the Flutter method call.
+ */
 @property(copy, nonatomic) NSDictionary *arguments;
 
+/**
+ * Gets or sets the PHPickerViewController instance used to pick multiple
+ * images.
+ */
 @property(strong, nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
 
-@property(strong, nonatomic) UIImagePickerController *imagePickerController;
-
+/**
+ * Gets or sets UIImagePickerController instances that will be used when a new
+ * controller would normally be created. Each call to
+ * createImagePickerController will remove the current first element from
+ * the array.
+ */
 @property(strong, nonatomic)
     NSMutableArray<UIImagePickerController *> *imagePickerControllerOverrides;
 
@@ -59,17 +73,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-/**
- * Creates a new UIImagePickerController.
- *
- * A new instance of the UIImagePickerController is created every time the
- * createUIImagePickerController method is called. For testing purposes dummy
- * instances can be injected using the setImagePickerControllerOverrides
- * method. Each call to createImagePickerController will remove the current first
- * element from the supplied array untill none are left. Calling
- * createImagePickerController after that will return new instance of the
- * UIImagePickerController
- */
 - (UIImagePickerController *)createImagePickerController {
   if ([self.imagePickerControllerOverrides count] > 0) {
     UIImagePickerController *controller = [self.imagePickerControllerOverrides firstObject];
@@ -473,7 +476,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  [picker dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
   // to prevent below code to be unwantly executed multiple times and cause a
@@ -546,7 +549,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  [picker dismissViewControllerAnimated:YES completion:nil];
   if (!self.result) {
     return;
   }

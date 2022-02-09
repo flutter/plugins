@@ -1,7 +1,5 @@
 ## 0.8.4+8
 
-* Ensures the `result` callback and method call `arguments` send to iOS are 
-taken into consideration when picking multiple images on pre-iOS 14 devices;
 * Configures the `UIImagePicker` to default to gallery instead of camera when
 picking multiple images on pre-iOS 14 devices.
 
