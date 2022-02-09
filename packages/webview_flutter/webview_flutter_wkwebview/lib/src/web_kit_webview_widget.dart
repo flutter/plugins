@@ -19,7 +19,7 @@ class WebKitWebViewWidget extends StatefulWidget {
     required this.javascriptChannelRegistry,
     required this.onBuildWidget,
     this.configuration,
-    @visibleForTesting this.webViewProxy = const WebViewProxy(),
+    @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
   });
 
   /// The initial parameters used to setup the WebView.
@@ -39,7 +39,7 @@ class WebKitWebViewWidget extends StatefulWidget {
   /// The handler for constructing [WKWebView]s and calling static methods.
   ///
   /// This should only be changed for testing purposes.
-  final WebViewProxy webViewProxy;
+  final WebViewWidgetProxy webViewProxy;
 
   /// A callback to build a widget once [WKWebView] has been initialized.
   final Widget Function(WebKitWebViewPlatformController controller)
@@ -78,15 +78,16 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     WKWebViewConfiguration? configuration,
-    @visibleForTesting this.webViewProxy = const WebViewProxy(),
+    @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
       configuration: configuration ?? WKWebViewConfiguration(),
-    ).then((_) => _initializationCompleter.complete());
+    );
   }
 
-  final Completer<void> _initializationCompleter = Completer<void>();
+  final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
+      <String, WKScriptMessageHandler>{};
 
   /// Handles callbacks that are made by navigation.
   final WebViewPlatformCallbacksHandler callbacksHandler;
@@ -97,15 +98,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   /// Handles constructing a [WKWebView].
   ///
   /// This should only be changed when used for testing.
-  final WebViewProxy webViewProxy;
+  final WebViewWidgetProxy webViewProxy;
 
   /// Represents the WebView maintained by platform code.
   late final WKWebView webView;
 
-  Future<void> _setCreationParams(
+  void _setCreationParams(
     CreationParams params, {
     required WKWebViewConfiguration configuration,
-  }) async {
+  }) {
     _setWebViewConfiguration(
       configuration,
       allowsInlineMediaPlayback: params.webSettings?.allowsInlineMediaPlayback,
@@ -113,6 +114,8 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     );
 
     webView = webViewProxy.createWebView(configuration);
+
+    addJavascriptChannels(params.javascriptChannelNames);
   }
 
   void _setWebViewConfiguration(
@@ -140,18 +143,97 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       if (!requiresUserAction) WKAudiovisualMediaType.none,
     };
   }
+
+  @override
+  Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) async {
+    if (javascriptChannelNames.isEmpty) {
+      return;
+    }
+
+    final WKUserContentController userContentController =
+        await webView.configuration.userContentController;
+    await Future.wait<void>(
+      javascriptChannelNames.where(
+        (String channelName) {
+          return !_scriptMessageHandlers.containsKey(channelName);
+        },
+      ).map<Future<void>>(
+        (String channelName) {
+          final WKScriptMessageHandler handler =
+              webViewProxy.createScriptMessageHandler(javascriptChannelRegistry)
+                ..setDidReceiveScriptMessage(
+                  (
+                    WKUserContentController userContentController,
+                    WKScriptMessage message,
+                  ) {
+                    javascriptChannelRegistry.onJavascriptChannelMessage(
+                      message.name,
+                      message.body!.toString(),
+                    );
+                  },
+                );
+          _scriptMessageHandlers[channelName] = handler;
+
+          final String wrapperSource =
+              'window.$channelName = webkit.messageHandlers.$channelName;';
+          final WKUserScript wrapperScript = WKUserScript(
+            wrapperSource,
+            WKUserScriptInjectionTime.atDocumentStart,
+            isMainFrameOnly: false,
+          );
+          userContentController.addUserScript(wrapperScript);
+          return userContentController.addScriptMessageHandler(
+            handler,
+            channelName,
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Future<void> removeJavascriptChannels(
+    Set<String> javascriptChannelNames,
+  ) async {
+    if (javascriptChannelNames.isEmpty) {
+      return;
+    }
+
+    final WKUserContentController userContentController =
+        await webView.configuration.userContentController;
+
+    // WKWebView does not support removing a single user script, so this removes
+    // all user scripts and all message handlers. And re-register channels that
+    // shouldn't be removed. Note that this workaround could interfere with
+    // exposing support for custom scripts from applications.
+    userContentController.removeAllUserScripts();
+    userContentController.removeAllScriptMessageHandlers();
+
+    javascriptChannelNames.forEach(_scriptMessageHandlers.remove);
+    final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
+    _scriptMessageHandlers.clear();
+
+    return addJavascriptChannels(remainingNames);
+  }
 }
 
-/// Handles constructing [WKWebView]s and calling static methods.
+/// Handles constructing objects and calling static methods.
 ///
 /// This should only be used for testing purposes.
 @visibleForTesting
-class WebViewProxy {
-  /// Creates a [WebViewProxy].
-  const WebViewProxy();
+class WebViewWidgetProxy {
+  /// Constructs a [WebViewWidgetProxy].
+  const WebViewWidgetProxy();
 
   /// Constructs a [WKWebView].
   WKWebView createWebView(WKWebViewConfiguration configuration) {
     return WKWebView(configuration);
+  }
+
+  /// Constructs a [WKScriptMessageHandler].
+  WKScriptMessageHandler createScriptMessageHandler(
+    JavascriptChannelRegistry registry,
+  ) {
+    return WKScriptMessageHandler();
   }
 }
