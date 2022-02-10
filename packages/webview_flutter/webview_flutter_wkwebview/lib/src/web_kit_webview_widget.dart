@@ -106,7 +106,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   /// Represents the WebView maintained by platform code.
   late final WKWebView webView;
 
-  void _setCreationParams(
+  Future<void> _setCreationParams(
     CreationParams params, {
     required WKWebViewConfiguration configuration,
   }) {
@@ -118,7 +118,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     webView = webViewProxy.createWebView(configuration);
 
-    addJavascriptChannels(params.javascriptChannelNames);
+    return addJavascriptChannels(params.javascriptChannelNames);
   }
 
   void _setWebViewConfiguration(
