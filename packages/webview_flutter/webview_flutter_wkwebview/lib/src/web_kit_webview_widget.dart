@@ -199,7 +199,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     }
 
     // WKWebView does not support removing a single user script, so this removes
-    // all user scripts and all message handlers. And re-register channels that
+    // all user scripts and all message handlers and re-registers channels that
     // shouldn't be removed. Note that this workaround could interfere with
     // exposing support for custom scripts from applications.
     webView.configuration.userContentController.removeAllUserScripts();

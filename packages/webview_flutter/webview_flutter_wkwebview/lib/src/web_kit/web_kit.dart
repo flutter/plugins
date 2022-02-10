@@ -67,7 +67,7 @@ class WKUserScript {
 ///
 /// Wraps [WKScriptMessage](https://developer.apple.com/documentation/webkit/wkscriptmessage?language=objc).
 class WKScriptMessage {
-  /// Constructs a [ScriptMessage].
+  /// Constructs a [WKScriptMessage].
   WKScriptMessage({required this.name, this.body});
 
   /// The name of the message handler to which the message is sent.
@@ -75,7 +75,7 @@ class WKScriptMessage {
 
   /// The body of the message.
   ///
-  /// Allowed types are [num], [String], [List], [Map], [DateTime], and `null`.
+  /// Allowed types are [num], [String], [List], [Map], and `null`.
   final Object? body;
 }
 
