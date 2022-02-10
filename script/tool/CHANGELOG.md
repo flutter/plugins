@@ -17,6 +17,7 @@
   for flake issues.
 - Adds support for `CHROME_EXECUTABLE` in `drive-examples` to match similar
   `flutter` behavior.
+- Validates `default_package` entries in plugins.
 
 ## 0.7.3
 
