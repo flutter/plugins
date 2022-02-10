@@ -1,7 +1,7 @@
 ## 2.0.9
 
 * Updates documentation on README.md.
-* Updates example application
+* Updates example application.
 
 ## 2.0.8
 
