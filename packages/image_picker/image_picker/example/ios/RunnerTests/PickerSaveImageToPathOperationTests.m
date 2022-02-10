@@ -4,9 +4,10 @@
 
 #import <OCMock/OCMock.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
-#import <XCTest/XCTest.h>
 
 @import image_picker;
+@import image_picker.Test;
+@import XCTest;
 
 @interface PickerSaveImageToPathOperationTests : XCTestCase
 
