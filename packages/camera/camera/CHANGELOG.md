@@ -1,3 +1,7 @@
+## NEXT
+
+* Skips unnecessary AppDelegate setup for unit tests on iOS.
+  
 ## 0.9.4+11
 
 * Manages iOS camera's orientation-related states on a background queue to prevent potential race conditions. 

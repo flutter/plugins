@@ -1,6 +1,12 @@
+## 6.0.20
+
+* Fixes a typo in `default_package` registration for Windows, macOS, and Linux.
+
 ## 6.0.19
 
-* Fixes a typo in `default_package` registration for macOS and Linux.
+* Updates README:
+  * Adds description for `file` scheme usage.
+  * Updates `Uri` class link to SDK documentation.
 
 ## 6.0.18
 
