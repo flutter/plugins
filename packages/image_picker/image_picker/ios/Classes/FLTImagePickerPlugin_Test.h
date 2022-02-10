@@ -40,4 +40,15 @@
  */
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 
+/**
+ * Sets UIImagePickerController instances that will be used when a new
+ * controller would normally be created. Each call to
+ * createImagePickerController will remove the current first element from
+ * the array.
+ *
+ * Should be used for testing purposes only.
+ */
+- (void)setImagePickerControllerOverrides:
+    (NSArray<UIImagePickerController *> *)imagePickerControllers;
+
 @end
