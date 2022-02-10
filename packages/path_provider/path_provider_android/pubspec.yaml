@@ -29,6 +29,5 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  pedantic: ^1.10.0
   plugin_platform_interface: ^2.0.0
   test: ^1.16.0
