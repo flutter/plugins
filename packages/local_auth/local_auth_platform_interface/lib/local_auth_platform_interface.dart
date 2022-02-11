@@ -63,7 +63,9 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   }
 
   /// Returns true if the device is capable of checking biometrics.
-  Future<bool> canCheckBiometrics() async {
+  ///
+  /// This will return true even if there are no biometrics currently enrolled.
+  Future<bool> deviceSupportsBiometrics() async {
     throw UnimplementedError('canCheckBiometrics() has not been implemented.');
   }
 
@@ -75,7 +77,7 @@ abstract class LocalAuthPlatform extends PlatformInterface {
   /// - BiometricType.iris (not yet implemented)
   /// - BiometricType.strong
   /// - BiometricType.weak
-  Future<List<BiometricType>> getAvailableBiometrics() async {
+  Future<List<BiometricType>> getEnrolledBiometrics() async {
     throw UnimplementedError(
         'getAvailableBiometrics() has not been implemented.');
   }
