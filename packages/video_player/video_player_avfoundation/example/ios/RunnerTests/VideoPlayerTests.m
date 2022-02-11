@@ -103,6 +103,22 @@
   XCTAssertEqualWithAccuracy([audioInitialization[@"duration"] intValue], 5400, 200);
 }
 
+- (void)testHLSControls {
+  NSObject<FlutterPluginRegistry> *registry =
+      (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
+  NSObject<FlutterPluginRegistrar> *registrar = [registry registrarForPlugin:@"TestHLSControls"];
+
+  FLTVideoPlayerPlugin *videoPlayerPlugin =
+      (FLTVideoPlayerPlugin *)[[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
+
+  NSDictionary<NSString *, id> *videoInitialization =
+      [self testPlugin:videoPlayerPlugin
+                   uri:@"https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8"];
+  XCTAssertEqualObjects(videoInitialization[@"height"], @720);
+  XCTAssertEqualObjects(videoInitialization[@"width"], @1280);
+  XCTAssertEqualWithAccuracy([videoInitialization[@"duration"] intValue], 4000, 200);
+}
+
 - (NSDictionary<NSString *, id> *)testPlugin:(FLTVideoPlayerPlugin *)videoPlayerPlugin
                                          uri:(NSString *)uri {
   FlutterError *error;
