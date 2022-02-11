@@ -14,7 +14,7 @@ void main() {
   group('$CameraImage tests', () {
     test('$CameraImage can be created', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 35,
         'height': 1,
         'width': 4,
@@ -40,7 +40,7 @@ void main() {
     test('$CameraImage has ImageFormatGroup.yuv420 for iOS', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 875704438,
         'height': 1,
         'width': 4,
@@ -63,7 +63,7 @@ void main() {
     test('$CameraImage has ImageFormatGroup.yuv420 for Android', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
 
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 35,
         'height': 1,
         'width': 4,
@@ -86,7 +86,7 @@ void main() {
     test('$CameraImage has ImageFormatGroup.bgra8888 for iOS', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 1111970369,
         'height': 1,
         'width': 4,
@@ -106,7 +106,7 @@ void main() {
       expect(cameraImage.format.group, ImageFormatGroup.bgra8888);
     });
     test('$CameraImage has ImageFormatGroup.unknown', () {
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': null,
         'height': 1,
         'width': 4,

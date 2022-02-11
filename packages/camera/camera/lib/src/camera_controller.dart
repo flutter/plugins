@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:quiver/core.dart';
 
-final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
 /// Signature for a callback receiving the a camera image.
 ///
@@ -277,10 +277,10 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      Completer<CameraInitializedEvent> _initializeCompleter = Completer();
+      final Completer<CameraInitializedEvent> _initializeCompleter = Completer();
 
       _deviceOrientationSubscription =
-          CameraPlatform.instance.onDeviceOrientationChanged().listen((event) {
+          CameraPlatform.instance.onDeviceOrientationChanged().listen((DeviceOrientationChangedEvent event) {
         value = value.copyWith(
           deviceOrientation: event.orientation,
         );
@@ -295,7 +295,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       unawaited(CameraPlatform.instance
           .onCameraInitialized(_cameraId)
           .first
-          .then((event) {
+          .then((CameraInitializedEvent event) {
         _initializeCompleter.complete(event);
       }));
 
@@ -312,13 +312,13 @@ class CameraController extends ValueNotifier<CameraValue> {
                   event.previewHeight,
                 )),
         exposureMode: await _initializeCompleter.future
-            .then((event) => event.exposureMode),
+            .then((CameraInitializedEvent event) => event.exposureMode),
         focusMode:
-            await _initializeCompleter.future.then((event) => event.focusMode),
+            await _initializeCompleter.future.then((CameraInitializedEvent event) => event.focusMode),
         exposurePointSupported: await _initializeCompleter.future
-            .then((event) => event.exposurePointSupported),
+            .then((CameraInitializedEvent event) => event.exposurePointSupported),
         focusPointSupported: await _initializeCompleter.future
-            .then((event) => event.focusPointSupported),
+            .then((CameraInitializedEvent event) => event.focusPointSupported),
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -351,7 +351,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       await CameraPlatform.instance.pausePreview(_cameraId);
       value = value.copyWith(
           isPreviewPaused: true,
-          previewPauseOrientation: Optional.of(this.value.deviceOrientation));
+          previewPauseOrientation: Optional.of(value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -365,7 +365,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       await CameraPlatform.instance.resumePreview(_cameraId);
       value = value.copyWith(
-          isPreviewPaused: false, previewPauseOrientation: Optional.absent());
+          isPreviewPaused: false, previewPauseOrientation: const Optional.absent());
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -375,7 +375,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture fails.
   Future<XFile> takePicture() async {
-    _throwIfNotInitialized("takePicture");
+    _throwIfNotInitialized('takePicture');
     if (value.isTakingPicture) {
       throw CameraException(
         'Previous capture has not returned yet.',
@@ -384,7 +384,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(isTakingPicture: true);
-      XFile file = await CameraPlatform.instance.takePicture(_cameraId);
+      final XFile file = await CameraPlatform.instance.takePicture(_cameraId);
       value = value.copyWith(isTakingPicture: false);
       return file;
     } on PlatformException catch (e) {
@@ -413,7 +413,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
-    _throwIfNotInitialized("startImageStream");
+    _throwIfNotInitialized('startImageStream');
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -453,7 +453,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> stopImageStream() async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
-    _throwIfNotInitialized("stopImageStream");
+    _throwIfNotInitialized('stopImageStream');
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -483,7 +483,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
   Future<void> startVideoRecording() async {
-    _throwIfNotInitialized("startVideoRecording");
+    _throwIfNotInitialized('startVideoRecording');
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -513,7 +513,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture failed.
   Future<XFile> stopVideoRecording() async {
-    _throwIfNotInitialized("stopVideoRecording");
+    _throwIfNotInitialized('stopVideoRecording');
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -521,10 +521,10 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
+      final XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
       value = value.copyWith(
         isRecordingVideo: false,
-        recordingOrientation: Optional.absent(),
+        recordingOrientation: const Optional.absent(),
       );
       return file;
     } on PlatformException catch (e) {
@@ -536,7 +536,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// This feature is only available on iOS and Android sdk 24+.
   Future<void> pauseVideoRecording() async {
-    _throwIfNotInitialized("pauseVideoRecording");
+    _throwIfNotInitialized('pauseVideoRecording');
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -555,7 +555,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// This feature is only available on iOS and Android sdk 24+.
   Future<void> resumeVideoRecording() async {
-    _throwIfNotInitialized("resumeVideoRecording");
+    _throwIfNotInitialized('resumeVideoRecording');
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -572,7 +572,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Returns a widget showing a live camera preview.
   Widget buildPreview() {
-    _throwIfNotInitialized("buildPreview");
+    _throwIfNotInitialized('buildPreview');
     try {
       return CameraPlatform.instance.buildPreview(_cameraId);
     } on PlatformException catch (e) {
@@ -582,7 +582,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the maximum supported zoom level for the selected camera.
   Future<double> getMaxZoomLevel() {
-    _throwIfNotInitialized("getMaxZoomLevel");
+    _throwIfNotInitialized('getMaxZoomLevel');
     try {
       return CameraPlatform.instance.getMaxZoomLevel(_cameraId);
     } on PlatformException catch (e) {
@@ -592,7 +592,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the minimum supported zoom level for the selected camera.
   Future<double> getMinZoomLevel() {
-    _throwIfNotInitialized("getMinZoomLevel");
+    _throwIfNotInitialized('getMinZoomLevel');
     try {
       return CameraPlatform.instance.getMinZoomLevel(_cameraId);
     } on PlatformException catch (e) {
@@ -606,7 +606,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
   /// when an illegal zoom level is suplied.
   Future<void> setZoomLevel(double zoom) {
-    _throwIfNotInitialized("setZoomLevel");
+    _throwIfNotInitialized('setZoomLevel');
     try {
       return CameraPlatform.instance.setZoomLevel(_cameraId, zoom);
     } on PlatformException catch (e) {
@@ -662,7 +662,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the minimum supported exposure offset for the selected camera in EV units.
   Future<double> getMinExposureOffset() async {
-    _throwIfNotInitialized("getMinExposureOffset");
+    _throwIfNotInitialized('getMinExposureOffset');
     try {
       return CameraPlatform.instance.getMinExposureOffset(_cameraId);
     } on PlatformException catch (e) {
@@ -672,7 +672,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the maximum supported exposure offset for the selected camera in EV units.
   Future<double> getMaxExposureOffset() async {
-    _throwIfNotInitialized("getMaxExposureOffset");
+    _throwIfNotInitialized('getMaxExposureOffset');
     try {
       return CameraPlatform.instance.getMaxExposureOffset(_cameraId);
     } on PlatformException catch (e) {
@@ -684,7 +684,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Returns 0 when the camera supports using a free value without stepping.
   Future<double> getExposureOffsetStepSize() async {
-    _throwIfNotInitialized("getExposureOffsetStepSize");
+    _throwIfNotInitialized('getExposureOffsetStepSize');
     try {
       return CameraPlatform.instance.getExposureOffsetStepSize(_cameraId);
     } on PlatformException catch (e) {
@@ -704,21 +704,21 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Returns the (rounded) offset value that was set.
   Future<double> setExposureOffset(double offset) async {
-    _throwIfNotInitialized("setExposureOffset");
+    _throwIfNotInitialized('setExposureOffset');
     // Check if offset is in range
-    List<double> range =
+    final List<double> range =
         await Future.wait([getMinExposureOffset(), getMaxExposureOffset()]);
     if (offset < range[0] || offset > range[1]) {
       throw CameraException(
-        "exposureOffsetOutOfBounds",
-        "The provided exposure offset was outside the supported range for this device.",
+        'exposureOffsetOutOfBounds',
+        'The provided exposure offset was outside the supported range for this device.',
       );
     }
 
     // Round to the closest step if needed
-    double stepSize = await getExposureOffsetStepSize();
+    final double stepSize = await getExposureOffsetStepSize();
     if (stepSize > 0) {
-      double inv = 1.0 / stepSize;
+      final double inv = 1.0 / stepSize;
       double roundedOffset = (offset * inv).roundToDouble() / inv;
       if (roundedOffset > range[1]) {
         roundedOffset = (offset * inv).floorToDouble() / inv;
@@ -764,7 +764,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> unlockCaptureOrientation() async {
     try {
       await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
-      value = value.copyWith(lockedCaptureOrientation: Optional.absent());
+      value = value.copyWith(lockedCaptureOrientation: const Optional.absent());
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
