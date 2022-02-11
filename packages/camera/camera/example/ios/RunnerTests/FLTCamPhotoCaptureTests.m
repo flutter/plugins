@@ -39,7 +39,7 @@
         // Completion runs on IO queue.
         dispatch_queue_t ioQueue = dispatch_queue_create("io_queue", NULL);
         dispatch_async(ioQueue, ^{
-          delegate.completionHandler(error, nil);
+          delegate.completionHandler(nil, error);
         });
       });
   cam.capturePhotoOutput = mockOutput;
@@ -77,7 +77,7 @@
         // Completion runs on IO queue.
         dispatch_queue_t ioQueue = dispatch_queue_create("io_queue", NULL);
         dispatch_async(ioQueue, ^{
-          delegate.completionHandler(nil, filePath);
+          delegate.completionHandler(filePath, nil);
         });
       });
   cam.capturePhotoOutput = mockOutput;

@@ -8,7 +8,7 @@
 @interface FLTSavePhotoDelegate ()
 /// The file path for the captured photo.
 @property(readonly, nonatomic) NSString *path;
-/// The queue on which captured photos are wrote to disk.
+/// The queue on which captured photos are written to disk.
 @property(readonly, nonatomic) dispatch_queue_t ioQueue;
 @end
 
@@ -28,16 +28,16 @@
 - (void)handlePhotoCaptureResultWithError:(NSError *)error
                         photoDataProvider:(NSData * (^)(void))photoDataProvider {
   if (error) {
-    self.completionHandler(error, nil);
+    self.completionHandler(nil, error);
     return;
   }
   dispatch_async(self.ioQueue, ^{
     NSData *data = photoDataProvider();
     NSError *ioError;
     if ([data writeToFile:self.path options:NSDataWritingAtomic error:&ioError]) {
-      self.completionHandler(nil, self.path);
+      self.completionHandler(self.path, nil);
     } else {
-      self.completionHandler(ioError, nil);
+      self.completionHandler(nil, ioError);
     }
   });
 }

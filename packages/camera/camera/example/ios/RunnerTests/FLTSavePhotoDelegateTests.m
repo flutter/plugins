@@ -23,7 +23,7 @@
   FLTSavePhotoDelegate *delegate = [[FLTSavePhotoDelegate alloc]
            initWithPath:@"test"
                 ioQueue:ioQueue
-      completionHandler:^(NSError *_Nullable error, NSString *_Nullable path) {
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
         XCTAssertEqualObjects(captureError, error);
         XCTAssertNil(path);
         [completionExpectation fulfill];
@@ -47,7 +47,7 @@
   FLTSavePhotoDelegate *delegate = [[FLTSavePhotoDelegate alloc]
            initWithPath:@"test"
                 ioQueue:ioQueue
-      completionHandler:^(NSError *_Nullable error, NSString *_Nullable path) {
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
         XCTAssertEqualObjects(ioError, error);
         XCTAssertNil(path);
         [completionExpectation fulfill];
@@ -76,7 +76,7 @@
   FLTSavePhotoDelegate *delegate = [[FLTSavePhotoDelegate alloc]
            initWithPath:filePath
                 ioQueue:ioQueue
-      completionHandler:^(NSError *_Nullable error, NSString *_Nullable path) {
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
         XCTAssertNil(error);
         XCTAssertEqualObjects(filePath, path);
         [completionExpectation fulfill];
@@ -122,7 +122,7 @@
   FLTSavePhotoDelegate *delegate = [[FLTSavePhotoDelegate alloc]
            initWithPath:filePath
                 ioQueue:ioQueue
-      completionHandler:^(NSError *_Nullable error, NSString *_Nullable path) {
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
         [completionExpectation fulfill];
       }];
 

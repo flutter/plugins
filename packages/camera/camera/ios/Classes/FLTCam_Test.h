@@ -19,9 +19,7 @@
 /// FLTSavePhotoDelegate that handles the result of each photo capture operation. Note that photo
 /// capture operations may overlap, so we have to keep track of multiple delegates in progress,
 /// instead of just a single delegate reference.
-/// Exposed setter for unit tests. Do not use `copy` becauase we need to replace it with a mock
-/// object to verify that the reference values are accessed on the right dispatch queue.
-@property(strong, nonatomic)
+@property(readonly, nonatomic)
     NSMutableDictionary<NSNumber *, FLTSavePhotoDelegate *> *inProgressSavePhotoDelegates;
 
 @end

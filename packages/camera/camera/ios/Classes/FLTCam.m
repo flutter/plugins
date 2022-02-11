@@ -75,8 +75,8 @@
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 /// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
-/// The queue on which captured photos (not videos) are wrote to disk.
-/// Videos are wrote to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
+/// The queue on which captured photos (not videos) are written to disk.
+/// Videos are written to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
 @property(strong, nonatomic) dispatch_queue_t photoIOQueue;
 @property(assign, nonatomic) UIDeviceOrientation deviceOrientation;
 @end
@@ -223,10 +223,11 @@ NSString *const errorMethod = @"error";
   FLTSavePhotoDelegate *savePhotoDelegate = [[FLTSavePhotoDelegate alloc]
            initWithPath:path
                 ioQueue:self.photoIOQueue
-      completionHandler:^(NSError *_Nullable error, NSString *_Nullable path) {
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
         dispatch_async(self.captureSessionQueue, ^{
           // Dispatch back to capture session queue to delete reference.
           // Retain cycle is broken after the dictionary entry is cleared.
+          // Retain cycle is to keep the original behavior with our previous `selfReference` approach in the FLTSavePhotoDelegate, where delegate is released only after capture completion.
           self.inProgressSavePhotoDelegates[@(settings.uniqueID)] = nil;
         });
 
