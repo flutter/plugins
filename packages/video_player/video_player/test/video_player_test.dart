@@ -69,6 +69,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoPlayerOptions? get videoPlayerOptions => null;
+
+  @override
+  void setCaptionOffset(Duration delay) {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -279,6 +282,19 @@ void main() {
         await controller.initialize();
 
         expect(fakeVideoPlayerPlatform.dataSources[0].uri, 'file://a.avi');
+      });
+
+      test('successful initialize on controller with error clears error',
+          () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        fakeVideoPlayerPlatform.forceInitError = true;
+        await controller.initialize().catchError((dynamic e) {});
+        expect(controller.value.hasError, equals(true));
+        fakeVideoPlayerPlatform.forceInitError = false;
+        await controller.initialize();
+        expect(controller.value.hasError, equals(false));
       });
     });
 
@@ -544,11 +560,92 @@ void main() {
         await controller.seekTo(const Duration(milliseconds: 300));
         expect(controller.value.caption.text, 'two');
 
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, 'two');
+
         await controller.seekTo(const Duration(milliseconds: 500));
         expect(controller.value.caption.text, '');
 
         await controller.seekTo(const Duration(milliseconds: 300));
         expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, 'two');
+      });
+
+      test('works when seeking with captionOffset positive', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          closedCaptionFile: _loadClosedCaption(),
+        );
+
+        await controller.initialize();
+        controller.setCaptionOffset(Duration(milliseconds: 100));
+        expect(controller.value.position, const Duration());
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 100));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 101));
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 250));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, '');
+      });
+
+      test('works when seeking with captionOffset negative', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          closedCaptionFile: _loadClosedCaption(),
+        );
+
+        await controller.initialize();
+        controller.setCaptionOffset(Duration(milliseconds: -100));
+        expect(controller.value.position, const Duration());
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 100));
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 200));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 250));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 400));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 600));
+        expect(controller.value.caption.text, '');
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'one');
       });
     });
 
@@ -642,6 +739,7 @@ void main() {
       expect(uninitialized.duration, equals(Duration.zero));
       expect(uninitialized.position, equals(Duration.zero));
       expect(uninitialized.caption, equals(Caption.none));
+      expect(uninitialized.captionOffset, equals(Duration.zero));
       expect(uninitialized.buffered, isEmpty);
       expect(uninitialized.isPlaying, isFalse);
       expect(uninitialized.isLooping, isFalse);
@@ -662,6 +760,7 @@ void main() {
       expect(error.duration, equals(Duration.zero));
       expect(error.position, equals(Duration.zero));
       expect(error.caption, equals(Caption.none));
+      expect(error.captionOffset, equals(Duration.zero));
       expect(error.buffered, isEmpty);
       expect(error.isPlaying, isFalse);
       expect(error.isLooping, isFalse);
@@ -681,6 +780,7 @@ void main() {
       const Duration position = Duration(seconds: 1);
       const Caption caption = Caption(
           text: 'foo', number: 0, start: Duration.zero, end: Duration.zero);
+      const Duration captionOffset = Duration(milliseconds: 250);
       final List<DurationRange> buffered = <DurationRange>[
         DurationRange(const Duration(seconds: 0), const Duration(seconds: 4))
       ];
@@ -696,6 +796,7 @@ void main() {
         size: size,
         position: position,
         caption: caption,
+        captionOffset: captionOffset,
         buffered: buffered,
         isInitialized: isInitialized,
         isPlaying: isPlaying,
@@ -711,6 +812,7 @@ void main() {
           'size: Size(400.0, 300.0), '
           'position: 0:00:01.000000, '
           'caption: Caption(number: 0, start: 0:00:00.000000, end: 0:00:00.000000, text: foo), '
+          'captionOffset: 0:00:00.250000, '
           'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
           'isInitialized: true, '
           'isPlaying: true, '
@@ -721,11 +823,33 @@ void main() {
           'errorDescription: null)');
     });
 
-    test('copyWith()', () {
-      final VideoPlayerValue original = VideoPlayerValue.uninitialized();
-      final VideoPlayerValue exactCopy = original.copyWith();
+    group('copyWith()', () {
+      test('exact copy', () {
+        final VideoPlayerValue original = VideoPlayerValue.uninitialized();
+        final VideoPlayerValue exactCopy = original.copyWith();
 
-      expect(exactCopy.toString(), original.toString());
+        expect(exactCopy.toString(), original.toString());
+      });
+      test('errorDescription is not persisted when copy with null', () {
+        final VideoPlayerValue original = VideoPlayerValue.erroneous('error');
+        final VideoPlayerValue copy = original.copyWith(errorDescription: null);
+
+        expect(copy.errorDescription, null);
+      });
+      test('errorDescription is changed when copy with another error', () {
+        final VideoPlayerValue original = VideoPlayerValue.erroneous('error');
+        final VideoPlayerValue copy =
+            original.copyWith(errorDescription: 'new error');
+
+        expect(copy.errorDescription, 'new error');
+      });
+      test('errorDescription is changed when copy with error', () {
+        final VideoPlayerValue original = VideoPlayerValue.uninitialized();
+        final VideoPlayerValue copy =
+            original.copyWith(errorDescription: 'new error');
+
+        expect(copy.errorDescription, 'new error');
+      });
     });
 
     group('aspectRatio', () {
