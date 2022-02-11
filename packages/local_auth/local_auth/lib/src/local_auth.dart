@@ -161,8 +161,8 @@ class LocalAuthentication {
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canCheckBiometrics async =>
-      (await getAvailableBiometrics()).isNotEmpty;
+  Future<bool> get canCheckBiometrics =>
+      LocalAuthPlatform.instance.deviceSupportsBiometrics();
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
@@ -178,5 +178,5 @@ class LocalAuthentication {
   /// - BiometricType.fingerprint
   /// - BiometricType.iris (not yet implemented)
   Future<List<BiometricType>> getAvailableBiometrics() =>
-      LocalAuthPlatform.instance.getAvailableBiometrics();
+      LocalAuthPlatform.instance.getEnrolledBiometrics();
 }
