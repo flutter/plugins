@@ -40,7 +40,7 @@
       NSURL *url = [[NSBundle mainBundle] URLForResource:name withExtension:extension];
       result(url.absoluteString);
       return;
-    } else if ([@"loadSystemImage" isEqualToString:call.method]) {
+    } else if ([@"loadSystemImage" isEqualToString:call.method] && @available(iOS 13, *)) {
       NSString *name = call.arguments[0];
       NSNumber *pointSizeWithDouble = call.arguments[1];
       double pointSize = [pointSizeWithDouble doubleValue];

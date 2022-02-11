@@ -141,6 +141,8 @@ class IosPlatformImages {
   ///
   /// Throws an exception if the image can't be found.
   ///
+  /// **This method requires at least iOS 13.0**
+  ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/configuring_and_displaying_symbol_images_in_your_ui?language=objc]
   static ImageProvider loadSystemImage(
     String name,
