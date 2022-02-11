@@ -210,7 +210,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
     _scriptMessageHandlers.clear();
 
-    return addJavascriptChannels(remainingNames);
+    await addJavascriptChannels(remainingNames);
   }
 }
 
