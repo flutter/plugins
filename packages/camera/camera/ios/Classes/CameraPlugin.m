@@ -40,7 +40,7 @@
   _messenger = messenger;
   _captureSessionQueue = dispatch_queue_create("io.flutter.camera.captureSessionQueue", NULL);
   [QueueHelper setSpecific:FLTCaptureSessionQueueSpecific forQueue:_captureSessionQueue];
-  
+
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
   return self;

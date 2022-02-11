@@ -36,18 +36,21 @@
 }
 
 - (void)testSetAndCheckQueueSpecific {
-  XCTestExpectation *expectation = [self expectationWithDescription:@"Complete test"];
-  const char *specific = "specific";
   dispatch_queue_t queue = dispatch_queue_create("test", NULL);
-  [QueueHelper setSpecific: specific forQueue:queue];
-  
-  XCTAssertFalse([QueueHelper isCurrentlyOnQueueWithSpecific:specific], @"Must not be on the test queue before dispatched to it.");
-  dispatch_async(queue, ^{
-    XCTAssert([QueueHelper isCurrentlyOnQueueWithSpecific:specific], @"Must be on the test queue after dispatched to it.");
-    [expectation fulfill];
+  const char *specific = "specific";
+  [QueueHelper setSpecific:specific forQueue:queue];
+
+  XCTAssertFalse([QueueHelper isCurrentlyOnQueueWithSpecific:specific],
+                 @"Must not be on the test queue before dispatching to it.");
+
+  // Note: sync call
+  dispatch_sync(queue, ^{
+    XCTAssert([QueueHelper isCurrentlyOnQueueWithSpecific:specific],
+              @"Must be on the test queue after dispatching to it.");
   });
-  
-  [self waitForExpectationsWithTimeout:1 handler:nil];
+
+  XCTAssertFalse([QueueHelper isCurrentlyOnQueueWithSpecific:specific],
+                 @"Must not be on the test queue outside of dispatch_sync block.");
 }
 
 @end
