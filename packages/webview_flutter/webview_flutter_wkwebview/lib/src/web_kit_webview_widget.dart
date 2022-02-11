@@ -87,6 +87,16 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             userContentController: WKUserContentController(),
           ),
     );
+
+    webView.uiDelegate = uiDelegate;
+    uiDelegate.setOnCreateWebView((
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    ) {
+      if (!navigationAction.targetFrame.isMainFrame) {
+        webView.loadRequest(navigationAction.request);
+      }
+    });
   }
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
@@ -105,6 +115,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   /// Represents the WebView maintained by platform code.
   late final WKWebView webView;
+
+  /// Used to integrate custom user interface elements into web view interactions.
+  @visibleForTesting
+  late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate();
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -230,5 +244,10 @@ class WebViewWidgetProxy {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler createScriptMessageHandler() {
     return WKScriptMessageHandler();
+  }
+
+  /// Constructs a [WKUIDelegate].
+  WKUIDelegate createUIDelgate() {
+    return WKUIDelegate();
   }
 }
