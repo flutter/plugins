@@ -151,8 +151,8 @@ class IosPlatformImages {
     int weightIndex,
     int scaleIndex,
   ) {
-    List<double> colorsRGBA = colors
-        .expand((Color color) => [
+    final List<double> colorsRGBA = colors
+        .expand((Color color) => <double>[
               color.red.toDouble() / 255,
               color.green.toDouble() / 255,
               color.blue.toDouble() / 255,
@@ -160,9 +160,10 @@ class IosPlatformImages {
             ])
         .toList();
 
-    Future<Map?> loadInfo = _channel.invokeMapMethod(
+    final Future<Map<String, dynamic>?> loadInfo =
+        _channel.invokeMapMethod<String, dynamic>(
       'loadSystemImage',
-      [
+      <dynamic>[
         name,
         pointSize,
         weightIndex,
@@ -170,9 +171,9 @@ class IosPlatformImages {
         colorsRGBA,
       ],
     );
-    Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
-    Completer<double> scaleCompleter = Completer<double>();
-    loadInfo.then((map) {
+    final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
+    final Completer<double> scaleCompleter = Completer<double>();
+    loadInfo.then((Map<String, dynamic>? map) {
       if (map == null) {
         scaleCompleter.completeError(
           Exception("System image couldn't be found: $name"),
@@ -182,8 +183,8 @@ class IosPlatformImages {
         );
         return;
       }
-      scaleCompleter.complete(map["scale"]);
-      bytesCompleter.complete(map["data"]);
+      scaleCompleter.complete(map['scale']! as double);
+      bytesCompleter.complete(map['data']! as Uint8List);
     });
     return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
   }
