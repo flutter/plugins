@@ -1,3 +1,7 @@
+## 6.0.20
+
+* Fixes a typo in `default_package` registration for Windows, macOS, and Linux.
+
 ## 6.0.19
 
 * Updates README:

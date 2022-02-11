@@ -3,7 +3,7 @@ description: Flutter plugin for launching a URL. Supports
   web, phone, SMS, and email schemes.
 repository: https://github.com/flutter/plugins/tree/main/packages/url_launcher/url_launcher
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+url_launcher%22
-version: 6.0.19
+version: 6.0.20
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -17,24 +17,26 @@ flutter:
       ios:
         default_package: url_launcher_ios
       linux:
-        default_package: url_laucher_linux
+        default_package: url_launcher_linux
       macos:
-        default_package: url_laucher_macos
+        default_package: url_launcher_macos
       web:
         default_package: url_launcher_web
       windows:
-        default_package: url_laucher_windows
+        default_package: url_launcher_windows
 
 dependencies:
   flutter:
     sdk: flutter
   url_launcher_android: ^6.0.13
   url_launcher_ios: ^6.0.13
-  url_launcher_linux: ^2.0.0
-  url_launcher_macos: ^2.0.0
+  # Allow either the pure-native or Dart/native hybrid versions of the desktop
+  # implementations, as both are compatible.
+  url_launcher_linux: ">=2.0.0 <4.0.0"
+  url_launcher_macos: ">=2.0.0 <4.0.0"
   url_launcher_platform_interface: ^2.0.3
   url_launcher_web: ^2.0.0
-  url_launcher_windows: ^2.0.0
+  url_launcher_windows: ">=2.0.0 <4.0.0"
 
 dev_dependencies:
   flutter_test:
