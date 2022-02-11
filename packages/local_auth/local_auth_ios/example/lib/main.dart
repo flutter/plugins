@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkBiometrics() async {
     late bool canCheckBiometrics;
     try {
-      canCheckBiometrics = (await auth.getAvailableBiometrics()).isNotEmpty;
+      canCheckBiometrics = (await auth.getEnrolledBiometrics()).isNotEmpty;
     } on PlatformException catch (e) {
       canCheckBiometrics = false;
       print(e);
@@ -54,10 +54,10 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<void> _getAvailableBiometrics() async {
+  Future<void> _getEnrolledBiometrics() async {
     late List<BiometricType> availableBiometrics;
     try {
-      availableBiometrics = await auth.getAvailableBiometrics();
+      availableBiometrics = await auth.getEnrolledBiometrics();
     } on PlatformException catch (e) {
       availableBiometrics = <BiometricType>[];
       print(e);
@@ -178,7 +178,7 @@ class _MyAppState extends State<MyApp> {
                 Text('Available biometrics: $_availableBiometrics\n'),
                 ElevatedButton(
                   child: const Text('Get available biometrics'),
-                  onPressed: _getAvailableBiometrics,
+                  onPressed: _getEnrolledBiometrics,
                 ),
                 const Divider(height: 100),
                 Text('Current State: $_authorized\n'),
