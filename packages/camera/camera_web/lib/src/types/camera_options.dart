@@ -99,7 +99,7 @@ class VideoConstraints {
 
   /// Converts the current instance to a Map.
   Object toJson() {
-    final json = <String, dynamic>{};
+    final Map<String, dynamic> json = <String, dynamic>{};
 
     if (width != null) json['width'] = width!.toJson();
     if (height != null) json['height'] = height!.toJson();
@@ -221,7 +221,7 @@ class VideoSizeConstraint {
 
   /// Converts the current instance to a Map.
   Object toJson() {
-    final json = <String, dynamic>{};
+    final Map<String, dynamic> json = <String, dynamic>{};
 
     if (ideal != null) json['ideal'] = ideal;
     if (minimum != null) json['min'] = minimum;

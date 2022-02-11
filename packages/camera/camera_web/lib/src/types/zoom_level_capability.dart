@@ -19,7 +19,7 @@ class ZoomLevelCapability {
 
   /// The zoom level constraint name.
   /// See: https://w3c.github.io/mediacapture-image/#dom-mediatracksupportedconstraints-zoom
-  static const constraintName = "zoom";
+  static const String constraintName = 'zoom';
 
   /// The minimum zoom level.
   final double minimum;
