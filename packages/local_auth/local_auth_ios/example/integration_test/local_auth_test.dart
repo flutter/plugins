@@ -12,7 +12,7 @@ void main() {
 
   testWidgets('canCheckBiometrics', (WidgetTester tester) async {
     expect(
-      LocalAuthIOS().getAvailableBiometrics(),
+      LocalAuthIOS().getEnrolledBiometrics(),
       completion(isList),
     );
   });

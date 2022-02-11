@@ -35,8 +35,8 @@
     } else {
       [self authenticate:call.arguments withFlutterResult:result];
     }
-  } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
-    [self getAvailableBiometrics:result];
+  } else if ([@"getEnrolledBiometrics" isEqualToString:call.method]) {
+    [self getEnrolledBiometrics:result];
   } else if ([@"isDeviceSupported" isEqualToString:call.method]) {
     result(@YES);
   } else {
@@ -93,7 +93,7 @@
                                                                                    completion:nil];
 }
 
-- (void)getAvailableBiometrics:(FlutterResult)result {
+- (void)getEnrolledBiometrics:(FlutterResult)result {
   LAContext *context = self.createAuthContext;
   NSError *authError = nil;
   NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
