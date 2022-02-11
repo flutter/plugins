@@ -97,7 +97,7 @@ class FakeController extends ValueNotifier<CameraValue>
   Future<void> setZoomLevel(double zoom) async {}
 
   @override
-  Future<void> startImageStream(onAvailable) async {}
+  Future<void> startImageStream(onLatestImageAvailable onAvailable) async {}
 
   @override
   Future<void> startVideoRecording() async {}
@@ -136,9 +136,10 @@ void main() {
         isRecordingVideo: true,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation:
-            const Optional.fromNullable(DeviceOrientation.landscapeRight),
-        recordingOrientation:
-            const Optional.fromNullable(DeviceOrientation.landscapeLeft),
+            const Optional<DeviceOrientation>.fromNullable(
+                DeviceOrientation.landscapeRight),
+        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
+            DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),
       );
 
@@ -169,9 +170,10 @@ void main() {
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation:
-            const Optional.fromNullable(DeviceOrientation.landscapeRight),
-        recordingOrientation:
-            const Optional.fromNullable(DeviceOrientation.landscapeLeft),
+            const Optional<DeviceOrientation>.fromNullable(
+                DeviceOrientation.landscapeRight),
+        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
+            DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),
       );
 
@@ -202,8 +204,8 @@ void main() {
         isInitialized: true,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: null,
-        recordingOrientation:
-            const Optional.fromNullable(DeviceOrientation.landscapeLeft),
+        recordingOrientation: const Optional<DeviceOrientation>.fromNullable(
+            DeviceOrientation.landscapeLeft),
         previewSize: const Size(480, 640),
       );
 

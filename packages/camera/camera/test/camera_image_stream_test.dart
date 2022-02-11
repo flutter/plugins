@@ -89,10 +89,10 @@ void main() {
   test('startImageStream() calls CameraPlatform', () async {
     final MethodChannelMock cameraChannelMock = MethodChannelMock(
         channelName: 'plugins.flutter.io/camera',
-        methods: {'startImageStream': {}});
+        methods: <String, dynamic>{'startImageStream': <String, dynamic>{}});
     final MethodChannelMock streamChannelMock = MethodChannelMock(
         channelName: 'plugins.flutter.io/camera/imageStream',
-        methods: {'listen': {}});
+        methods: <String, dynamic>{'listen': <String, dynamic>{}});
 
     final CameraController cameraController = CameraController(
         const CameraDescription(
@@ -180,10 +180,16 @@ void main() {
   test('stopImageStream() intended behaviour', () async {
     final MethodChannelMock cameraChannelMock = MethodChannelMock(
         channelName: 'plugins.flutter.io/camera',
-        methods: {'startImageStream': {}, 'stopImageStream': {}});
+        methods: <String, dynamic>{
+          'startImageStream': <String, dynamic>{},
+          'stopImageStream': <String, dynamic>{}
+        });
     final MethodChannelMock streamChannelMock = MethodChannelMock(
         channelName: 'plugins.flutter.io/camera/imageStream',
-        methods: {'listen': {}, 'cancel': {}});
+        methods: <String, dynamic>{
+          'listen': <String, dynamic>{},
+          'cancel': <String, dynamic>{}
+        });
 
     final CameraController cameraController = CameraController(
         const CameraDescription(

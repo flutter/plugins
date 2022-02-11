@@ -224,7 +224,9 @@ void main() {
       bool _isDetecting = false;
 
       await controller.startImageStream((CameraImage image) {
-        if (_isDetecting) return;
+        if (_isDetecting) {
+          return;
+        }
 
         _isDetecting = true;
 
@@ -256,7 +258,7 @@ void main() {
 
     await controller.startImageStream((CameraImage image) {
       if (!_completer.isCompleted) {
-        Future(() async {
+        Future<void>(() async {
           await controller.stopImageStream();
           await controller.dispose();
         }).then((Object? value) {

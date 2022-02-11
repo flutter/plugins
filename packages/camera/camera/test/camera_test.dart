@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-List<CameraDescription> get mockAvailableCameras => [
+List<CameraDescription> get mockAvailableCameras => <CameraDescription>[
       const CameraDescription(
           name: 'camBack',
           lensDirection: CameraLensDirection.back,
@@ -28,7 +28,8 @@ List<CameraDescription> get mockAvailableCameras => [
 
 int get mockInitializeCamera => 13;
 
-CameraInitializedEvent get mockOnCameraInitializedEvent => const CameraInitializedEvent(
+CameraInitializedEvent get mockOnCameraInitializedEvent =>
+    const CameraInitializedEvent(
       13,
       75,
       75,
@@ -41,13 +42,14 @@ CameraInitializedEvent get mockOnCameraInitializedEvent => const CameraInitializ
 DeviceOrientationChangedEvent get mockOnDeviceOrientationChangedEvent =>
     const DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
-void get mockOnCameraClosingEvent => null;
+CameraClosingEvent get mockOnCameraClosingEvent => const CameraClosingEvent(13);
 
-CameraErrorEvent get mockOnCameraErrorEvent => const CameraErrorEvent(13, 'closing');
+CameraErrorEvent get mockOnCameraErrorEvent =>
+    const CameraErrorEvent(13, 'closing');
 
 XFile mockTakePicture = XFile('foo/bar.png');
 
-void get mockVideoRecordingXFile => null;
+XFile mockVideoRecordingXFile = XFile('foo/bar.mpeg');
 
 bool mockPlatformException = false;
 
@@ -434,7 +436,8 @@ void main() {
       expect(
           cameraController.getMaxZoomLevel,
           throwsA(isA<CameraException>()
-              .having((CameraException error) => error.code, 'code', 'TEST_ERROR')
+              .having(
+                  (CameraException error) => error.code, 'code', 'TEST_ERROR')
               .having(
                 (CameraException error) => error.description,
                 'description',
@@ -452,7 +455,7 @@ void main() {
 
       await cameraController.initialize();
       when(CameraPlatform.instance.getMaxZoomLevel(mockInitializeCamera))
-          .thenAnswer((_) => Future.value(42.0));
+          .thenAnswer((_) => Future<double>.value(42.0));
 
       final double maxZoomLevel = await cameraController.getMaxZoomLevel();
       expect(maxZoomLevel, 42.0);
@@ -534,7 +537,8 @@ void main() {
       expect(
           cameraController.getMinZoomLevel,
           throwsA(isA<CameraException>()
-              .having((CameraException error) => error.code, 'code', 'TEST_ERROR')
+              .having(
+                  (CameraException error) => error.code, 'code', 'TEST_ERROR')
               .having(
                 (CameraException error) => error.description,
                 'description',
@@ -552,7 +556,7 @@ void main() {
 
       await cameraController.initialize();
       when(CameraPlatform.instance.getMinZoomLevel(mockInitializeCamera))
-          .thenAnswer((_) => Future.value(42.0));
+          .thenAnswer((_) => Future<double>.value(42.0));
 
       final double maxZoomLevel = await cameraController.getMinZoomLevel();
       expect(maxZoomLevel, 42.0);
@@ -633,7 +637,8 @@ void main() {
       expect(
           () => cameraController.setZoomLevel(42),
           throwsA(isA<CameraException>()
-              .having((CameraException error) => error.code, 'code', 'TEST_ERROR')
+              .having(
+                  (CameraException error) => error.code, 'code', 'TEST_ERROR')
               .having(
                 (CameraException error) => error.description,
                 'description',
@@ -806,7 +811,7 @@ void main() {
 
       when(CameraPlatform.instance
               .getMinExposureOffset(cameraController.cameraId))
-          .thenAnswer((_) => Future.value(0.0));
+          .thenAnswer((_) => Future<double>.value(0.0));
 
       await cameraController.getMinExposureOffset();
 
@@ -854,7 +859,7 @@ void main() {
 
       when(CameraPlatform.instance
               .getMaxExposureOffset(cameraController.cameraId))
-          .thenAnswer((_) => Future.value(1.0));
+          .thenAnswer((_) => Future<double>.value(1.0));
 
       await cameraController.getMaxExposureOffset();
 
@@ -902,7 +907,7 @@ void main() {
 
       when(CameraPlatform.instance
               .getExposureOffsetStepSize(cameraController.cameraId))
-          .thenAnswer((_) => Future.value(0.0));
+          .thenAnswer((_) => Future<double>.value(0.0));
 
       await cameraController.getExposureOffsetStepSize();
 
@@ -1381,20 +1386,20 @@ class MockCameraPlatform extends Mock
   }) async =>
       super.noSuchMethod(Invocation.method(
         #initializeCamera,
-        [cameraId],
-        {
+        <Object?>[cameraId],
+        <Symbol, dynamic>{
           #imageFormatGroup: imageFormatGroup,
         },
       ));
 
   @override
   Future<void> dispose(int? cameraId) async {
-    return super.noSuchMethod(Invocation.method(#dispose, [cameraId]));
+    return super.noSuchMethod(Invocation.method(#dispose, <Object?>[cameraId]));
   }
 
   @override
   Future<List<CameraDescription>> availableCameras() =>
-      Future.value(mockAvailableCameras);
+      Future<List<CameraDescription>>.value(mockAvailableCameras);
 
   @override
   Future<int> createCamera(
@@ -1404,28 +1409,29 @@ class MockCameraPlatform extends Mock
   }) =>
       mockPlatformException
           ? throw PlatformException(code: 'foo', message: 'bar')
-          : Future.value(mockInitializeCamera);
+          : Future<int>.value(mockInitializeCamera);
 
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) =>
-      Stream.value(mockOnCameraInitializedEvent);
+      Stream<CameraInitializedEvent>.value(mockOnCameraInitializedEvent);
 
   @override
   Stream<CameraClosingEvent> onCameraClosing(int cameraId) =>
-      Stream.value(mockOnCameraClosingEvent);
+      Stream<CameraClosingEvent>.value(mockOnCameraClosingEvent);
 
   @override
   Stream<CameraErrorEvent> onCameraError(int cameraId) =>
-      Stream.value(mockOnCameraErrorEvent);
+      Stream<CameraErrorEvent>.value(mockOnCameraErrorEvent);
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() =>
-      Stream.value(mockOnDeviceOrientationChangedEvent);
+      Stream<DeviceOrientationChangedEvent>.value(
+          mockOnDeviceOrientationChangedEvent);
 
   @override
   Future<XFile> takePicture(int cameraId) => mockPlatformException
       ? throw PlatformException(code: 'foo', message: 'bar')
-      : Future.value(mockTakePicture);
+      : Future<XFile>.value(mockTakePicture);
 
   @override
   Future<void> prepareForVideoRecording() async =>
@@ -1434,82 +1440,86 @@ class MockCameraPlatform extends Mock
   @override
   Future<XFile> startVideoRecording(int cameraId,
           {Duration? maxVideoDuration}) =>
-      Future.value(mockVideoRecordingXFile);
+      Future<XFile>.value(mockVideoRecordingXFile);
 
   @override
   Future<void> lockCaptureOrientation(
           int? cameraId, DeviceOrientation? orientation) async =>
-      super.noSuchMethod(
-          Invocation.method(#lockCaptureOrientation, [cameraId, orientation]));
+      super.noSuchMethod(Invocation.method(
+          #lockCaptureOrientation, <Object?>[cameraId, orientation]));
 
   @override
-  Future<void> unlockCaptureOrientation(int? cameraId) async => super
-      .noSuchMethod(Invocation.method(#unlockCaptureOrientation, [cameraId]));
+  Future<void> unlockCaptureOrientation(int? cameraId) async =>
+      super.noSuchMethod(
+          Invocation.method(#unlockCaptureOrientation, <Object?>[cameraId]));
 
   @override
   Future<void> pausePreview(int? cameraId) async =>
-      super.noSuchMethod(Invocation.method(#pausePreview, [cameraId]));
+      super.noSuchMethod(Invocation.method(#pausePreview, <Object?>[cameraId]));
 
   @override
-  Future<void> resumePreview(int? cameraId) async =>
-      super.noSuchMethod(Invocation.method(#resumePreview, [cameraId]));
+  Future<void> resumePreview(int? cameraId) async => super
+      .noSuchMethod(Invocation.method(#resumePreview, <Object?>[cameraId]));
 
   @override
   Future<double> getMaxZoomLevel(int? cameraId) async => super.noSuchMethod(
-        Invocation.method(#getMaxZoomLevel, [cameraId]),
+        Invocation.method(#getMaxZoomLevel, <Object?>[cameraId]),
         returnValue: 1.0,
-      );
+      ) as Future<double>;
 
   @override
   Future<double> getMinZoomLevel(int? cameraId) async => super.noSuchMethod(
-        Invocation.method(#getMinZoomLevel, [cameraId]),
+        Invocation.method(#getMinZoomLevel, <Object?>[cameraId]),
         returnValue: 0.0,
-      );
+      ) as Future<double>;
 
   @override
   Future<void> setZoomLevel(int? cameraId, double? zoom) async =>
-      super.noSuchMethod(Invocation.method(#setZoomLevel, [cameraId, zoom]));
+      super.noSuchMethod(
+          Invocation.method(#setZoomLevel, <Object?>[cameraId, zoom]));
 
   @override
   Future<void> setFlashMode(int? cameraId, FlashMode? mode) async =>
-      super.noSuchMethod(Invocation.method(#setFlashMode, [cameraId, mode]));
+      super.noSuchMethod(
+          Invocation.method(#setFlashMode, <Object?>[cameraId, mode]));
 
   @override
   Future<void> setExposureMode(int? cameraId, ExposureMode? mode) async =>
-      super.noSuchMethod(Invocation.method(#setExposureMode, [cameraId, mode]));
+      super.noSuchMethod(
+          Invocation.method(#setExposureMode, <Object?>[cameraId, mode]));
 
   @override
   Future<void> setExposurePoint(int? cameraId, Point<double>? point) async =>
       super.noSuchMethod(
-          Invocation.method(#setExposurePoint, [cameraId, point]));
+          Invocation.method(#setExposurePoint, <Object?>[cameraId, point]));
 
   @override
   Future<double> getMinExposureOffset(int? cameraId) async =>
       super.noSuchMethod(
-        Invocation.method(#getMinExposureOffset, [cameraId]),
+        Invocation.method(#getMinExposureOffset, <Object?>[cameraId]),
         returnValue: 0.0,
-      );
+      ) as Future<double>;
 
   @override
   Future<double> getMaxExposureOffset(int? cameraId) async =>
       super.noSuchMethod(
-        Invocation.method(#getMaxExposureOffset, [cameraId]),
+        Invocation.method(#getMaxExposureOffset, <Object?>[cameraId]),
         returnValue: 1.0,
-      );
+      ) as Future<double>;
 
   @override
   Future<double> getExposureOffsetStepSize(int? cameraId) async =>
       super.noSuchMethod(
-        Invocation.method(#getExposureOffsetStepSize, [cameraId]),
+        Invocation.method(#getExposureOffsetStepSize, <Object?>[cameraId]),
         returnValue: 1.0,
-      );
+      ) as Future<double>;
 
   @override
   Future<double> setExposureOffset(int? cameraId, double? offset) async =>
       super.noSuchMethod(
-        Invocation.method(#setExposureOffset, [cameraId, offset]),
+        Invocation.method(#setExposureOffset, <Object?>[cameraId, offset]),
         returnValue: 1.0,
-      );
+      ) as Future<double>;
 }
 
 class MockCameraDescription extends CameraDescription {
