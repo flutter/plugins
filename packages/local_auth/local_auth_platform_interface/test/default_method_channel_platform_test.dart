@@ -36,7 +36,7 @@ void main() {
     });
     localAuthentication = DefaultLocalAuthPlatform();
     log.clear();
-    await localAuthentication.getAvailableBiometrics();
+    await localAuthentication.getEnrolledBiometrics();
     expect(
       log,
       <Matcher>[
