@@ -22,7 +22,6 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  pedantic: ^1.11.1
   stream_transform: ^2.0.0
 
 dev_dependencies:
