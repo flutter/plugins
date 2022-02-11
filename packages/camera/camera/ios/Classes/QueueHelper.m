@@ -16,8 +16,10 @@ const char *FLTCaptureSessionQueueSpecific = "capture_session_queue";
   }
 }
 
-+ (void)setSpecific:(const char *)specific forQueue:(dispatch_queue_t)queue {
++ (dispatch_queue_t)createQueueWithLabel:(const char *)label specific:(const char *)specific {
+  dispatch_queue_t queue = dispatch_queue_create(label, NULL);
   dispatch_queue_set_specific(queue, specific, (void *)specific, NULL);
+  return queue;
 }
 
 + (BOOL)isCurrentlyOnQueueWithSpecific:(const char *)specific {

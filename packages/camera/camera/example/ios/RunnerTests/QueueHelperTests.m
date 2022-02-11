@@ -35,11 +35,18 @@
   [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
-- (void)testSetAndCheckQueueSpecific {
-  dispatch_queue_t queue = dispatch_queue_create("test", NULL);
+- (void)testCreateQueue {
+  const char *label = "label";
   const char *specific = "specific";
-  [QueueHelper setSpecific:specific forQueue:queue];
+  dispatch_queue_t queue = [QueueHelper createQueueWithLabel:label specific:specific];
+  XCTAssert(0 == strcmp(label, dispatch_queue_get_label(queue)), "Must set the correct label.");
+  XCTAssert(0 == strcmp(specific, dispatch_queue_get_specific(queue, specific)),
+            "Must set the correct specific.");
+}
 
+- (void)testIsCurrentlyOnQueueWithSpecific {
+  const char *specific = "specific";
+  dispatch_queue_t queue = [QueueHelper createQueueWithLabel:"test" specific:specific];
   XCTAssertFalse([QueueHelper isCurrentlyOnQueueWithSpecific:specific],
                  @"Must not be on the test queue before dispatching to it.");
 

@@ -19,8 +19,9 @@
       [self expectationWithDescription:
                 @"Must send error to result if save photo delegate completes with error."];
 
-  dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
-  [QueueHelper setSpecific:FLTCaptureSessionQueueSpecific forQueue:captureSessionQueue];
+  dispatch_queue_t captureSessionQueue =
+      [QueueHelper createQueueWithLabel:"capture_session_queue"
+                               specific:FLTCaptureSessionQueueSpecific];
   FLTCam *cam = [self createFLTCamWithCaptureSessionQueue:captureSessionQueue];
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   id mockSettings = OCMClassMock([AVCapturePhotoSettings class]);
@@ -57,8 +58,9 @@
       [self expectationWithDescription:
                 @"Must send file path to result if save photo delegate completes with file path."];
 
-  dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
-  [QueueHelper setSpecific:FLTCaptureSessionQueueSpecific forQueue:captureSessionQueue];
+  dispatch_queue_t captureSessionQueue =
+      [QueueHelper createQueueWithLabel:"capture_session_queue"
+                               specific:FLTCaptureSessionQueueSpecific];
   FLTCam *cam = [self createFLTCamWithCaptureSessionQueue:captureSessionQueue];
 
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
