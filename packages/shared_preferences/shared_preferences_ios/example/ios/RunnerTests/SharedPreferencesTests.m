@@ -11,7 +11,7 @@
 @implementation SharedPreferencesTests
 
 - (void)testPlugin {
-  FLTSharedPreferencesPlugin* plugin = [[FLTSharedPreferencesPlugin alloc] init];
+  FLTSharedPreferencesPlugin *plugin = [[FLTSharedPreferencesPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 

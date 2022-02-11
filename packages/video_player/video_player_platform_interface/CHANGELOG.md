@@ -1,6 +1,9 @@
-## 5.1.0
+## NEXT
 
 * Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
+## NEXT
+
+* Adds the Pigeon definitions used to create the method channel implementation.
 
 ## 5.0.1
 

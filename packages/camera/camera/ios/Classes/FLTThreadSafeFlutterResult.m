@@ -4,6 +4,7 @@
 
 #import "FLTThreadSafeFlutterResult.h"
 #import <Foundation/Foundation.h>
+#import "QueueHelper.h"
 
 @implementation FLTThreadSafeFlutterResult {
 }
@@ -25,16 +26,16 @@
   [self send:data];
 }
 
-- (void)sendError:(NSError*)error {
+- (void)sendError:(NSError *)error {
   [self sendErrorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
                   message:error.localizedDescription
                   details:error.domain];
 }
 
-- (void)sendErrorWithCode:(NSString*)code
-                  message:(NSString* _Nullable)message
+- (void)sendErrorWithCode:(NSString *)code
+                  message:(NSString *_Nullable)message
                   details:(id _Nullable)details {
-  FlutterError* flutterError = [FlutterError errorWithCode:code message:message details:details];
+  FlutterError *flutterError = [FlutterError errorWithCode:code message:message details:details];
   [self send:flutterError];
 }
 
@@ -46,13 +47,9 @@
  * Sends result to flutterResult on the main thread.
  */
 - (void)send:(id _Nullable)result {
-  if (!NSThread.isMainThread) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      self->_flutterResult(result);
-    });
-  } else {
-    _flutterResult(result);
-  }
+  [QueueHelper ensureToRunOnMainQueue:^{
+    self.flutterResult(result);
+  }];
 }
 
 @end
