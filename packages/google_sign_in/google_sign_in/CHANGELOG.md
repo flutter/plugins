@@ -1,4 +1,4 @@
-## 5.2.3+1
+## 5.2.4
 
 * Add doc for iOS auth with SERVER_CLIENT_ID
 
