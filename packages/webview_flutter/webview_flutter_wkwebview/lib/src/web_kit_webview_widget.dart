@@ -109,7 +109,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   Future<void> _setCreationParams(
     CreationParams params, {
     required WKWebViewConfiguration configuration,
-  }) {
+  }) async {
     _setWebViewConfiguration(
       configuration,
       allowsInlineMediaPlayback: params.webSettings?.allowsInlineMediaPlayback,
@@ -118,7 +118,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     webView = webViewProxy.createWebView(configuration);
 
-    return addJavascriptChannels(params.javascriptChannelNames);
+    await addJavascriptChannels(params.javascriptChannelNames);
   }
 
   void _setWebViewConfiguration(
