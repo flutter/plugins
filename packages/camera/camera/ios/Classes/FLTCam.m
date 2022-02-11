@@ -5,6 +5,7 @@
 #import "FLTCam.h"
 #import "FLTCam_Test.h"
 #import "FLTSavePhotoDelegate.h"
+#import "QueueHelper.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
@@ -201,6 +202,7 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)captureToFile:(FLTThreadSafeFlutterResult *)result API_AVAILABLE(ios(10)) {
+  
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   if (_resolutionPreset == FLTResolutionPresetMax) {
     [settings setHighResolutionPhotoEnabled:YES];
@@ -239,7 +241,7 @@ NSString *const errorMethod = @"error";
         }
       }];
 
-  // Already on capture session queue.
+  NSAssert([QueueHelper isCurrentlyOnQueueWithSpecific:FLTCaptureSessionQueueSpecific], @"save photo delegate references must be updated on the capture session queue");
   self.inProgressSavePhotoDelegates[@(settings.uniqueID)] = savePhotoDelegate;
   [self.capturePhotoOutput capturePhotoWithSettings:settings delegate:savePhotoDelegate];
 }

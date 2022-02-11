@@ -13,6 +13,7 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
+#import "QueueHelper.h"
 
 @interface CameraPlugin ()
 @property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
@@ -38,6 +39,8 @@
   _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
   _captureSessionQueue = dispatch_queue_create("io.flutter.camera.captureSessionQueue", NULL);
+  [QueueHelper setSpecific:FLTCaptureSessionQueueSpecific forQueue:_captureSessionQueue];
+  
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
   return self;
