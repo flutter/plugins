@@ -15,29 +15,39 @@ import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 import 'web_kit_webview_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
+  WKUserContentController,
   JavascriptChannelRegistry,
   WebViewPlatformCallbacksHandler,
-  WebViewProxy,
+  WebViewWidgetProxy,
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$WebKitWebViewWidget', () {
     late MockWKWebView mockWebView;
-    late MockWebViewProxy mockWebViewProxy;
+    late MockWebViewWidgetProxy mockWebViewWidgetProxy;
+    late MockWKUserContentController mockUserContentController;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
 
+    late WebKitWebViewPlatformController testController;
+
     setUp(() {
       mockWebView = MockWKWebView();
       mockWebViewConfiguration = MockWKWebViewConfiguration();
-      mockWebViewProxy = MockWebViewProxy();
+      mockUserContentController = MockWKUserContentController();
+      mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
-      when(mockWebViewProxy.createWebView(any)).thenReturn(mockWebView);
+      when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
+      when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
+      when(mockWebViewConfiguration.userContentController).thenReturn(
+        mockUserContentController,
+      );
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
@@ -49,7 +59,6 @@ void main() {
       CreationParams? creationParams,
       bool hasNavigationDelegate = false,
       bool hasProgressTracking = false,
-      bool useHybridComposition = false,
     }) async {
       await tester.pumpWidget(WebKitWebViewWidget(
         creationParams: creationParams ??
@@ -61,9 +70,10 @@ void main() {
             )),
         callbacksHandler: mockCallbacksHandler,
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
-        webViewProxy: mockWebViewProxy,
+        webViewProxy: mockWebViewWidgetProxy,
         configuration: mockWebViewConfiguration,
         onBuildWidget: (WebKitWebViewPlatformController controller) {
+          testController = controller;
           return Container();
         },
       ));
@@ -114,6 +124,40 @@ void main() {
         });
       });
 
+      testWidgets('javascriptChannelNames', (WidgetTester tester) async {
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+          MockWKScriptMessageHandler(),
+        );
+
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            javascriptChannelNames: <String>{'a', 'b'},
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        final List<dynamic> javaScriptChannels = verify(
+          mockUserContentController.addScriptMessageHandler(
+            captureAny,
+            captureAny,
+          ),
+        ).captured;
+        expect(
+          javaScriptChannels[0],
+          isA<WKScriptMessageHandler>(),
+        );
+        expect(javaScriptChannels[1], 'a');
+        expect(
+          javaScriptChannels[2],
+          isA<WKScriptMessageHandler>(),
+        );
+        expect(javaScriptChannels[3], 'b');
+      });
+
       group('$WebSettings', () {
         testWidgets('allowsInlineMediaPlayback', (WidgetTester tester) async {
           await buildWidget(
@@ -128,6 +172,120 @@ void main() {
 
           verify(mockWebViewConfiguration.allowsInlineMediaPlayback = true);
         });
+      });
+    });
+
+    group('$WebKitWebViewPlatformController', () {
+      testWidgets('addJavascriptChannels', (WidgetTester tester) async {
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+          MockWKScriptMessageHandler(),
+        );
+
+        await buildWidget(tester);
+
+        await testController.addJavascriptChannels(<String>{'c', 'd'});
+        final List<dynamic> javaScriptChannels = verify(
+          mockUserContentController.addScriptMessageHandler(
+              captureAny, captureAny),
+        ).captured;
+        expect(
+          javaScriptChannels[0],
+          isA<WKScriptMessageHandler>(),
+        );
+        expect(javaScriptChannels[1], 'c');
+        expect(
+          javaScriptChannels[2],
+          isA<WKScriptMessageHandler>(),
+        );
+        expect(javaScriptChannels[3], 'd');
+
+        final List<WKUserScript> userScripts =
+            verify(mockUserContentController.addUserScript(captureAny))
+                .captured
+                .cast<WKUserScript>();
+        expect(userScripts[0].source, 'window.c = webkit.messageHandlers.c;');
+        expect(
+          userScripts[0].injectionTime,
+          WKUserScriptInjectionTime.atDocumentStart,
+        );
+        expect(userScripts[0].isMainFrameOnly, false);
+        expect(userScripts[1].source, 'window.d = webkit.messageHandlers.d;');
+        expect(
+          userScripts[1].injectionTime,
+          WKUserScriptInjectionTime.atDocumentStart,
+        );
+        expect(userScripts[0].isMainFrameOnly, false);
+      });
+
+      testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+          MockWKScriptMessageHandler(),
+        );
+
+        await buildWidget(tester);
+
+        await testController.addJavascriptChannels(<String>{'c', 'd'});
+        reset(mockUserContentController);
+
+        await testController.removeJavascriptChannels(<String>{'c'});
+
+        verify(mockUserContentController.removeAllScriptMessageHandlers());
+        verify(mockUserContentController.removeAllUserScripts());
+
+        final List<dynamic> javaScriptChannels = verify(
+          mockUserContentController.addScriptMessageHandler(
+              captureAny, captureAny),
+        ).captured;
+        expect(
+          javaScriptChannels[0],
+          isA<WKScriptMessageHandler>(),
+        );
+        expect(javaScriptChannels[1], 'd');
+
+        final List<WKUserScript> userScripts =
+            verify(mockUserContentController.addUserScript(captureAny))
+                .captured
+                .cast<WKUserScript>();
+        expect(userScripts[0].source, 'window.d = webkit.messageHandlers.d;');
+        expect(
+          userScripts[0].injectionTime,
+          WKUserScriptInjectionTime.atDocumentStart,
+        );
+        expect(userScripts[0].isMainFrameOnly, false);
+      });
+    });
+
+    group('$JavascriptChannelRegistry', () {
+      testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+          MockWKScriptMessageHandler(),
+        );
+
+        await buildWidget(tester);
+        await testController.addJavascriptChannels(<String>{'hello'});
+
+        final MockWKScriptMessageHandler messageHandler = verify(
+                mockUserContentController.addScriptMessageHandler(
+                    captureAny, 'hello'))
+            .captured
+            .single as MockWKScriptMessageHandler;
+
+        final dynamic didReceiveScriptMessage =
+            verify(messageHandler.setDidReceiveScriptMessage(captureAny))
+                .captured
+                .single as void Function(
+          WKUserContentController userContentController,
+          WKScriptMessage message,
+        );
+
+        didReceiveScriptMessage(
+          mockUserContentController,
+          WKScriptMessage(name: 'hello', body: 'A message.'),
+        );
+        verify(mockJavascriptChannelRegistry.onJavascriptChannelMessage(
+          'hello',
+          'A message.',
+        ));
       });
     });
   });
