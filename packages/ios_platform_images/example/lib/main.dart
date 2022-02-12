@@ -40,16 +40,32 @@ class _MyAppState extends State<MyApp> {
           // 'flutter' is a resource in Assets.xcassets, 'face.smiling' is an SFSymbol provided with iOS.
           child: Column(
             children: <Widget>[
-              const Text('This is an icon from the iOS bundle'),
+              const Text('This is an icon from the iOS asset bundle'),
               Image(
                 image: IosPlatformImages.load('flutter'),
                 semanticLabel: 'Flutter logo',
               ),
-              const Text('This is an icon from the iOS system'),
+              const Text('These are icons from the iOS system'),
+              Image(
+                image: IosPlatformImages.loadSystemImage('face.smiling', 100,
+                    colors: <Color>[iconColor]),
+                semanticLabel: 'Smiling face',
+              ),
               Image(
                 image: IosPlatformImages.loadSystemImage(
-                    'face.smiling', <Color>[iconColor], 100, 1, 1),
-                semanticLabel: 'Smiling face',
+                  'hare.fill',
+                  100,
+                  colors: <Color>[theme.colorScheme.secondary],
+                ),
+                semanticLabel: 'Sprinting hare',
+              ),
+              Image(
+                image: IosPlatformImages.loadSystemImage(
+                  'ladybug.fill',
+                  100,
+                  preferMulticolor: true,
+                ),
+                semanticLabel: 'Ladybug',
               ),
             ],
           ),

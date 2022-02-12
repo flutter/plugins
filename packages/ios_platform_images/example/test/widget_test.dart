@@ -19,7 +19,7 @@ void main() {
         (Widget widget) =>
             widget is Image && (!Platform.isIOS || widget.image != null),
       ),
-      findsNWidgets(2),
+      findsNWidgets(4),
     );
   });
 }

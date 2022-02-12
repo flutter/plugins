@@ -21,12 +21,14 @@ void main() {
   );
 
   testWidgets(
-    'load ios system image',
+    'load ios system images',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
 
       expect(find.bySemanticsLabel('Smiling face'), findsOneWidget);
+      expect(find.bySemanticsLabel('Sprinting hare'), findsOneWidget);
+      expect(find.bySemanticsLabel('Ladybug'), findsOneWidget);
     },
   );
 }

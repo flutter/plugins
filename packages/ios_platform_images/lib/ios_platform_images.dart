@@ -141,16 +141,19 @@ class IosPlatformImages {
   ///
   /// Throws an exception if the image can't be found.
   ///
+  /// TODO add docs explaining color behavior
+  ///
   /// **This method requires at least iOS 13.0**
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/configuring_and_displaying_symbol_images_in_your_ui?language=objc]
   static ImageProvider loadSystemImage(
     String name,
-    List<Color> colors,
-    double pointSize,
-    int weightIndex,
-    int scaleIndex,
-  ) {
+    double pointSize, {
+    List<Color> colors = const <Color>[],
+    bool preferMulticolor = false,
+    int weightIndex = 1,
+    int scaleIndex = 1,
+  }) {
     final List<double> colorsRGBA = colors
         .expand((Color color) => <double>[
               color.red.toDouble() / 255,
@@ -169,6 +172,7 @@ class IosPlatformImages {
         weightIndex,
         scaleIndex,
         colorsRGBA,
+        preferMulticolor,
       ],
     );
     final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
