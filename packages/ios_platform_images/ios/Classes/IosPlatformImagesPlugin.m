@@ -58,7 +58,7 @@
         for (int i = 0; i < [rgbaValuesList count]; i += 4) {
           UIColor *primaryColor = [UIColor colorWithRed:[rgbaValuesList[i] doubleValue]
                                                   green:[rgbaValuesList[i + 1] doubleValue]
-                                                  blue:[rgbaValuesList[i + 2] doubleValue]
+                                                   blue:[rgbaValuesList[i + 2] doubleValue]
                                                   alpha:[rgbaValuesList[i + 3] doubleValue]];
           [colorArray addObject:primaryColor];
         }
@@ -116,11 +116,10 @@
         UIImageSymbolConfiguration *pointSizeConfig =
             [UIImageSymbolConfiguration configurationWithPointSize:pointSize
                                                             weight:weight
-                                                            scale:scale];
-
+                                                             scale:scale];
 
         UIImage *finalImage;
-        
+
         if (@available(iOS 15, *)) {
           NSNumber *preferMulticolor = call.arguments[5];
           UIImageSymbolConfiguration *colors;
@@ -131,11 +130,12 @@
             colors = [UIImageSymbolConfiguration configurationWithPaletteColors:colorArray];
           }
 
-          UIImageSymbolConfiguration *final = [pointSizeConfig configurationByApplyingConfiguration:colors];
+          UIImageSymbolConfiguration *final =
+              [pointSizeConfig configurationByApplyingConfiguration:colors];
           finalImage = [UIImage systemImageNamed:name withConfiguration:final];
         } else {
           UIImage *image = [UIImage systemImageNamed:name withConfiguration:pointSizeConfig];
-          finalImage = [image imageWithTintColor: colorArray[0]];
+          finalImage = [image imageWithTintColor:colorArray[0]];
         }
 
         NSData *data = UIImagePNGRepresentation(finalImage);
