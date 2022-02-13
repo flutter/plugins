@@ -13,7 +13,6 @@
 # https://github.com/flutter/flutter/issues/76229
 - camera/camera
 - camera/camera_web
-- google_maps_flutter/google_maps_flutter
 - google_maps_flutter/google_maps_flutter_platform_interface
 - google_maps_flutter/google_maps_flutter_web
 - google_sign_in/google_sign_in

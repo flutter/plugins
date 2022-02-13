@@ -12,8 +12,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
+const LatLng center = LatLng(32.080664, 34.9563837);
+
 class ScrollingMapPage extends GoogleMapExampleAppPage {
-  ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
+  const ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +25,6 @@ class ScrollingMapPage extends GoogleMapExampleAppPage {
 
 class ScrollingMapBody extends StatelessWidget {
   const ScrollingMapBody();
-
-  final LatLng center = const LatLng(32.080664, 34.9563837);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class ScrollingMapBody extends StatelessWidget {
                     width: 300.0,
                     height: 300.0,
                     child: GoogleMap(
-                      initialCameraPosition: CameraPosition(
+                      initialCameraPosition: const CameraPosition(
                         target: center,
                         zoom: 11.0,
                       ),
@@ -77,13 +77,13 @@ class ScrollingMapBody extends StatelessWidget {
                     width: 300.0,
                     height: 300.0,
                     child: GoogleMap(
-                      initialCameraPosition: CameraPosition(
+                      initialCameraPosition: const CameraPosition(
                         target: center,
                         zoom: 11.0,
                       ),
                       markers: <Marker>{
                         Marker(
-                          markerId: MarkerId("test_marker_id"),
+                          markerId: const MarkerId('test_marker_id'),
                           position: LatLng(
                             center.latitude,
                             center.longitude,
