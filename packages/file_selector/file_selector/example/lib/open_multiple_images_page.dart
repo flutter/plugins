@@ -19,10 +19,14 @@ class OpenMultipleImagesPage extends StatelessWidget {
       label: 'PNGs',
       extensions: <String>['png'],
     );
-    final List<XFile> files = await openFiles(acceptedTypeGroups: <XTypeGroup>[
-      jpgsTypeGroup,
-      pngTypeGroup,
-    ]);
+    final List<XFile> files = await openFiles(
+      acceptedTypeGroups: <XTypeGroup>[
+        jpgsTypeGroup,
+        pngTypeGroup,
+      ],
+      initialDirectory: '/',
+      confirmButtonText: 'select image files',
+    );
     if (files.isEmpty) {
       // Operation was canceled by the user.
       return;

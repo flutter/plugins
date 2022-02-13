@@ -12,17 +12,20 @@ class SaveTextPage extends StatelessWidget {
   final TextEditingController _contentController = TextEditingController();
 
   Future<void> _saveFile() async {
-    final String? path = await getSavePath();
-    if (path == null) {
-      // Operation was canceled by the user.
-      return;
-    }
     final String text = _contentController.text;
     final String fileName = _nameController.text;
     final Uint8List fileData = Uint8List.fromList(text.codeUnits);
     const String fileMimeType = 'text/plain';
-    final XFile textFile =
-        XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
+    final XFile textFile = XFile.fromData(fileData, mimeType: fileMimeType);
+    final String? path = await getSavePath(
+      initialDirectory: '/',
+      suggestedName: fileName,
+    );
+    if (path == null) {
+      // Operation was canceled by the user.
+      return;
+    }
+
     await textFile.saveTo(path);
   }
 
