@@ -1,4 +1,4 @@
-## 0.8.4
+## 0.8.3+1
 * Improve API docs and examples
 
 ## 0.8.3
