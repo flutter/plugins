@@ -1,3 +1,6 @@
+## 0.8.4
+* Improve API docs and examples
+
 ## 0.8.3
 
 * Adds an endorsed Windows implementation.
