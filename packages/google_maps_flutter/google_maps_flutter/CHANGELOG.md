@@ -1,4 +1,4 @@
-## 2.1.2
+## NEXT
 
 * Removes dependencies from `pubspec.yaml` that are only needed in `example/pubspec.yaml`
 * Updates Android compileSdkVersion to 31.
