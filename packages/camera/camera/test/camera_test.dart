@@ -1464,13 +1464,13 @@ class MockCameraPlatform extends Mock
   @override
   Future<double> getMaxZoomLevel(int? cameraId) async => super.noSuchMethod(
         Invocation.method(#getMaxZoomLevel, <Object?>[cameraId]),
-        returnValue: 1.0,
+        returnValue: Future<double>.value(1.0),
       ) as Future<double>;
 
   @override
   Future<double> getMinZoomLevel(int? cameraId) async => super.noSuchMethod(
         Invocation.method(#getMinZoomLevel, <Object?>[cameraId]),
-        returnValue: 0.0,
+        returnValue: Future<double>.value(0.0),
       ) as Future<double>;
 
   @override
@@ -1497,28 +1497,28 @@ class MockCameraPlatform extends Mock
   Future<double> getMinExposureOffset(int? cameraId) async =>
       super.noSuchMethod(
         Invocation.method(#getMinExposureOffset, <Object?>[cameraId]),
-        returnValue: 0.0,
+        returnValue: Future<double>.value(0.0),
       ) as Future<double>;
 
   @override
   Future<double> getMaxExposureOffset(int? cameraId) async =>
       super.noSuchMethod(
         Invocation.method(#getMaxExposureOffset, <Object?>[cameraId]),
-        returnValue: 1.0,
+        returnValue: Future<double>.value(1.0),
       ) as Future<double>;
 
   @override
   Future<double> getExposureOffsetStepSize(int? cameraId) async =>
       super.noSuchMethod(
         Invocation.method(#getExposureOffsetStepSize, <Object?>[cameraId]),
-        returnValue: 1.0,
+        returnValue: Future<double>.value(1.0),
       ) as Future<double>;
 
   @override
   Future<double> setExposureOffset(int? cameraId, double? offset) async =>
       super.noSuchMethod(
         Invocation.method(#setExposureOffset, <Object?>[cameraId, offset]),
-        returnValue: 1.0,
+        returnValue: Future<double>.value(1.0),
       ) as Future<double>;
 }
 
