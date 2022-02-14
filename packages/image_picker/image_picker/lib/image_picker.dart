@@ -191,7 +191,7 @@ class ImagePicker {
   /// the front or rear camera should be opened, this function is not guaranteed
   /// to work on an Android device.
   ///
-  /// Use `requestFullMetadata` (defaults to `true`) to control how much additional information the plugin tries to get on iOS.
+  /// Use `requestFullMetadata` (defaults to `true`) to control how much additional information the plugin tries to get.
   /// If `requestFullMetadata` is set to `true`, the plugin tries to get the full image metadata which may require
   /// extra permission requests on some platforms, such as `Photo Library Usage` permission on iOS .
   ///

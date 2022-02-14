@@ -142,13 +142,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                     details:nil]);
     self.result = nil;
   }
-  BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
-
+  
   if ([@"pickImage" isEqualToString:call.method]) {
     self.result = result;
     _arguments = call.arguments;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
-
+    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+      
     if (usePHAsset && imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
@@ -182,6 +182,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
     if ([[_arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
       NSTimeInterval max = [[_arguments objectForKey:@"maxDuration"] doubleValue];
       _imagePickerController.videoMaximumDuration = max;
