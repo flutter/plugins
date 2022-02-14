@@ -1,3 +1,15 @@
+## NEXT
+
+* Skips unnecessary AppDelegate setup for unit tests on iOS.
+  
+## 0.9.4+11
+
+* Manages iOS camera's orientation-related states on a background queue to prevent potential race conditions. 
+
+## 0.9.4+10
+
+* iOS performance improvement by moving file writing from the main queue to a background IO queue. 
+
 ## 0.9.4+9
 
 * iOS performance improvement by moving sample buffer handling from the main queue to a background session queue. 

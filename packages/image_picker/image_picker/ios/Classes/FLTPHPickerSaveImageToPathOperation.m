@@ -91,7 +91,7 @@ typedef void (^GetSavedPath)(NSString *);
             PHAsset *originalAsset =
                 [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
 
-            if (self.maxWidth != (id)[NSNull null] || self.maxHeight != (id)[NSNull null]) {
+            if (self.maxWidth != nil || self.maxHeight != nil) {
               localImage = [FLTImagePickerImageUtil scaledImage:localImage
                                                        maxWidth:self.maxWidth
                                                       maxHeight:self.maxHeight

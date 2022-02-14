@@ -17,7 +17,6 @@
 @interface CameraPlugin ()
 @property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
-@property(readonly, nonatomic) FLTCam *camera;
 @property(readonly, nonatomic) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 @end
 
@@ -69,11 +68,12 @@
     return;
   }
 
-  if (_camera) {
-    [_camera setDeviceOrientation:orientation];
-  }
-
-  [self sendDeviceOrientation:orientation];
+  dispatch_async(self.captureSessionQueue, ^{
+    // `FLTCam::setDeviceOrientation` must be called on capture session queue.
+    [self.camera setDeviceOrientation:orientation];
+    // `CameraPlugin::sendDeviceOrientation` can be called on any queue.
+    [self sendDeviceOrientation:orientation];
+  });
 }
 
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {

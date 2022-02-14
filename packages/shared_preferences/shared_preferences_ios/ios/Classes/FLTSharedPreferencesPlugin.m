@@ -4,7 +4,7 @@
 
 #import "FLTSharedPreferencesPlugin.h"
 
-static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
+static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences_ios";
 
 @implementation FLTSharedPreferencesPlugin
 

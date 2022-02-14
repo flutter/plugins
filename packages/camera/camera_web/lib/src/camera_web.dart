@@ -163,6 +163,9 @@ class CameraPlugin extends CameraPlatform {
           cameras.add(camera);
 
           camerasMetadata[camera] = cameraMetadata;
+
+          // Release the camera stream of the current video input device.
+          videoTracks.forEach((videoTrack) => videoTrack.stop());
         } else {
           // Ignore as no video tracks exist in the current video input device.
           continue;
