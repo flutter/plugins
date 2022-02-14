@@ -137,7 +137,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if (usePHAsset) {
     [self checkPhotoAuthorizationForAccessLevel];
   } else {
-    [self showPhotoLibrary:PHPickerClassType];
+    [self showPhotoLibraryWithPHPicker:_pickerViewController];
   }
 }
 
@@ -158,7 +158,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       if (usePHAsset) {
         [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       } else {
-        [self showPhotoLibrary:UIImagePickerClassType];
+        [self showPhotoLibraryWithImagePicker:imagePickerController];
       }
       break;
     default:
@@ -179,12 +179,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   self.result = result;
   _arguments = call.arguments;
-
+  BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+    
   if ([@"pickImage" isEqualToString:call.method]) {
     int imageSource = [call.arguments[@"source"] intValue];
-    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
-
-    if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
+    if (usePHAsset && imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
         [self pickImageWithPHPicker:1];
@@ -212,7 +211,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
     int imageSource = [call.arguments[@"source"] intValue];
-    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
     if ([call.arguments[@"maxDuration"] isKindOfClass:[NSNumber class]]) {
       NSTimeInterval max = [call.arguments[@"maxDuration"] doubleValue];
       imagePickerController.videoMaximumDuration = max;
@@ -226,7 +224,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         if (usePHAsset) {
           [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
         } else {
-          [self showPhotoLibrary:UIImagePickerClassType];
+          [self showPhotoLibraryWithImagePicker:imagePickerController];
         }
         break;
       default:
