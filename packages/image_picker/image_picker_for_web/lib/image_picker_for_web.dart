@@ -18,14 +18,6 @@ const String _kAcceptVideoMimeType = 'video/3gpp,video/x-m4v,video/mp4,video/*';
 ///
 /// This class implements the `package:image_picker` functionality for the web.
 class ImagePickerPlugin extends ImagePickerPlatform {
-  final ImagePickerPluginTestOverrides? _overrides;
-
-  bool get _hasOverrides => _overrides != null;
-
-  late html.Element _target;
-
-  late ImageResizer _imageResizer;
-
   /// A constructor that allows tests to override the function that creates file inputs.
   ImagePickerPlugin({
     @visibleForTesting ImagePickerPluginTestOverrides? overrides,
@@ -34,6 +26,14 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     _imageResizer = imageResizer ?? ImageResizer();
     _target = _ensureInitialized(_kImagePickerInputsDomId);
   }
+
+  final ImagePickerPluginTestOverrides? _overrides;
+
+  bool get _hasOverrides => _overrides != null;
+
+  late html.Element _target;
+
+  late ImageResizer _imageResizer;
 
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith(Registrar registrar) {
@@ -60,7 +60,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-    final String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
     return pickFile(accept: _kAcceptImageMimeType, capture: capture);
   }
 
@@ -82,7 +83,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) {
-    final String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
     return pickFile(accept: _kAcceptVideoMimeType, capture: capture);
   }
 
@@ -122,7 +124,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    final String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
     final List<XFile> files = await getFiles(
       accept: _kAcceptImageMimeType,
       capture: capture,
@@ -153,7 +156,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) async {
-    final String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
     final List<XFile> files = await getFiles(
       accept: _kAcceptVideoMimeType,
       capture: capture,

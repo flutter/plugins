@@ -24,13 +24,15 @@ void main() {
   late XFile pngFile;
   setUp(() {
     imageResizer = ImageResizer();
-    final html.File pngHtmlFile = _base64ToFile(pngFileBase64Contents, 'pngImage.png');
+    final html.File pngHtmlFile =
+        _base64ToFile(pngFileBase64Contents, 'pngImage.png');
     pngFile = XFile(html.Url.createObjectUrl(pngHtmlFile),
         name: pngHtmlFile.name, mimeType: pngHtmlFile.type);
   });
 
   testWidgets('image is loaded correctly ', (WidgetTester tester) async {
-    final html.ImageElement imageElement = await imageResizer.loadImage(pngFile.path);
+    final html.ImageElement imageElement =
+        await imageResizer.loadImage(pngFile.path);
     expect(imageElement.width!, 10);
     expect(imageElement.height!, 10);
   });
@@ -38,8 +40,10 @@ void main() {
   testWidgets(
       "canvas is loaded with image's width and height when max width and max height are null",
       (WidgetTester widgetTester) async {
-    final html.ImageElement imageElement = await imageResizer.loadImage(pngFile.path);
-    final html.CanvasElement canvas = imageResizer.resizeImageElement(imageElement, null, null);
+    final html.ImageElement imageElement =
+        await imageResizer.loadImage(pngFile.path);
+    final html.CanvasElement canvas =
+        imageResizer.resizeImageElement(imageElement, null, null);
     expect(canvas.width, imageElement.width);
     expect(canvas.height, imageElement.height);
   });
@@ -47,16 +51,20 @@ void main() {
   testWidgets(
       'canvas size is scaled when max width and max height are not null',
       (WidgetTester widgetTester) async {
-    final html.ImageElement imageElement = await imageResizer.loadImage(pngFile.path);
-    final html.CanvasElement canvas = imageResizer.resizeImageElement(imageElement, 8, 8);
+    final html.ImageElement imageElement =
+        await imageResizer.loadImage(pngFile.path);
+    final html.CanvasElement canvas =
+        imageResizer.resizeImageElement(imageElement, 8, 8);
     expect(canvas.width, 8);
     expect(canvas.height, 8);
   });
 
   testWidgets('resized image is returned after converting canvas to file',
       (WidgetTester widgetTester) async {
-    final html.ImageElement imageElement = await imageResizer.loadImage(pngFile.path);
-    final html.CanvasElement canvas = imageResizer.resizeImageElement(imageElement, null, null);
+    final html.ImageElement imageElement =
+        await imageResizer.loadImage(pngFile.path);
+    final html.CanvasElement canvas =
+        imageResizer.resizeImageElement(imageElement, null, null);
     final XFile resizedImage =
         await imageResizer.writeCanvasToFile(pngFile, canvas, null);
     expect(resizedImage.name, 'scaled_${pngFile.name}');
@@ -117,12 +125,13 @@ Future<Size> _getImageSize(XFile file) async {
 html.File _base64ToFile(String data, String fileName) {
   final List<String> arr = data.split(',');
   final String bstr = html.window.atob(arr[1]);
-  var n = bstr.length, u8arr = Uint8List(n);
+  int n = bstr.length;
+  final Uint8List u8arr = Uint8List(n);
 
   while (n >= 1) {
     u8arr[n - 1] = bstr.codeUnitAt(n - 1);
     n--;
   }
 
-  return html.File([u8arr], fileName);
+  return html.File(<Uint8List>[u8arr], fileName);
 }
