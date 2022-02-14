@@ -11,172 +11,110 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/messages.g.dart';
+import 'package:shared_preferences_ios/messages.g.dart';
 
-class _TestSharedPreferencesApiCodec extends StandardMessageCodec {
-  const _TestSharedPreferencesApiCodec();
+class _TestUserDefaultsApiCodec extends StandardMessageCodec {
+  const _TestUserDefaultsApiCodec();
 }
 
-abstract class TestSharedPreferencesApi {
-  static const MessageCodec<Object?> codec = _TestSharedPreferencesApiCodec();
+abstract class TestUserDefaultsApi {
+  static const MessageCodec<Object?> codec = _TestUserDefaultsApiCodec();
 
-  bool remove(String key);
-  bool setBool(String key, bool value);
-  bool setDouble(String key, double value);
-  bool setInt(String key, int value);
-  bool setString(String key, String value);
-  bool setStringList(String key, List<String?> value);
-  bool clear();
+  void remove(String key);
+  void setBool(String key, bool value);
+  void setDouble(String key, double value);
+  void setValue(String key, Object value);
   Map<String?, Object?> getAll();
-  static void setup(TestSharedPreferencesApi? api,
+  static void setup(TestUserDefaultsApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.remove', codec,
+          'dev.flutter.pigeon.UserDefaultsApi.remove', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.remove was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.remove was null, expected non-null String.');
-          final bool output = api.remove(arg_key!);
-          return <Object?, Object?>{'result': output};
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.remove was null, expected non-null String.');
+          api.remove(arg_key!);
+          return <Object?, Object?>{};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.setBool', codec,
+          'dev.flutter.pigeon.UserDefaultsApi.setBool', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null, expected non-null String.');
           final bool? arg_value = (args[1] as bool?);
           assert(arg_value != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setBool was null, expected non-null bool.');
-          final bool output = api.setBool(arg_key!, arg_value!);
-          return <Object?, Object?>{'result': output};
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setBool was null, expected non-null bool.');
+          api.setBool(arg_key!, arg_value!);
+          return <Object?, Object?>{};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.setDouble', codec,
+          'dev.flutter.pigeon.UserDefaultsApi.setDouble', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null, expected non-null String.');
           final double? arg_value = (args[1] as double?);
           assert(arg_value != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setDouble was null, expected non-null double.');
-          final bool output = api.setDouble(arg_key!, arg_value!);
-          return <Object?, Object?>{'result': output};
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setDouble was null, expected non-null double.');
+          api.setDouble(arg_key!, arg_value!);
+          return <Object?, Object?>{};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.setInt', codec,
+          'dev.flutter.pigeon.UserDefaultsApi.setValue', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null.');
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_key = (args[0] as String?);
           assert(arg_key != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null, expected non-null String.');
-          final int? arg_value = (args[1] as int?);
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null, expected non-null String.');
+          final Object? arg_value = (args[1] as Object?);
           assert(arg_value != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setInt was null, expected non-null int.');
-          final bool output = api.setInt(arg_key!, arg_value!);
-          return <Object?, Object?>{'result': output};
+              'Argument for dev.flutter.pigeon.UserDefaultsApi.setValue was null, expected non-null Object.');
+          api.setValue(arg_key!, arg_value!);
+          return <Object?, Object?>{};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.setString', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_key = (args[0] as String?);
-          assert(arg_key != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null, expected non-null String.');
-          final String? arg_value = (args[1] as String?);
-          assert(arg_value != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setString was null, expected non-null String.');
-          final bool output = api.setString(arg_key!, arg_value!);
-          return <Object?, Object?>{'result': output};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.setStringList', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_key = (args[0] as String?);
-          assert(arg_key != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null, expected non-null String.');
-          final List<String?>? arg_value =
-              (args[1] as List<Object?>?)?.cast<String?>();
-          assert(arg_value != null,
-              'Argument for dev.flutter.pigeon.SharedPreferencesApi.setStringList was null, expected non-null List<String?>.');
-          final bool output = api.setStringList(arg_key!, arg_value!);
-          return <Object?, Object?>{'result': output};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.clear', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          // ignore message
-          final bool output = api.clear();
-          return <Object?, Object?>{'result': output};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.SharedPreferencesApi.getAll', codec,
+          'dev.flutter.pigeon.UserDefaultsApi.getAll', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);

@@ -25,55 +25,54 @@ static NSDictionary<NSString *, id> *wrapResult(id result, FlutterError *error) 
   };
 }
 
-@interface SharedPreferencesApiCodecReader : FlutterStandardReader
+@interface UserDefaultsApiCodecReader : FlutterStandardReader
 @end
-@implementation SharedPreferencesApiCodecReader
-@end
-
-@interface SharedPreferencesApiCodecWriter : FlutterStandardWriter
-@end
-@implementation SharedPreferencesApiCodecWriter
+@implementation UserDefaultsApiCodecReader
 @end
 
-@interface SharedPreferencesApiCodecReaderWriter : FlutterStandardReaderWriter
+@interface UserDefaultsApiCodecWriter : FlutterStandardWriter
 @end
-@implementation SharedPreferencesApiCodecReaderWriter
+@implementation UserDefaultsApiCodecWriter
+@end
+
+@interface UserDefaultsApiCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation UserDefaultsApiCodecReaderWriter
 - (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[SharedPreferencesApiCodecWriter alloc] initWithData:data];
+  return [[UserDefaultsApiCodecWriter alloc] initWithData:data];
 }
 - (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[SharedPreferencesApiCodecReader alloc] initWithData:data];
+  return [[UserDefaultsApiCodecReader alloc] initWithData:data];
 }
 @end
 
-NSObject<FlutterMessageCodec> *SharedPreferencesApiGetCodec() {
+NSObject<FlutterMessageCodec> *UserDefaultsApiGetCodec() {
   static dispatch_once_t s_pred = 0;
   static FlutterStandardMessageCodec *s_sharedObject = nil;
   dispatch_once(&s_pred, ^{
-    SharedPreferencesApiCodecReaderWriter *readerWriter =
-        [[SharedPreferencesApiCodecReaderWriter alloc] init];
+    UserDefaultsApiCodecReaderWriter *readerWriter =
+        [[UserDefaultsApiCodecReaderWriter alloc] init];
     s_sharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
   });
   return s_sharedObject;
 }
 
-void SharedPreferencesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
-                               NSObject<SharedPreferencesApi> *api) {
+void UserDefaultsApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                          NSObject<UserDefaultsApi> *api) {
   {
     FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.remove"
+        messageChannelWithName:@"dev.flutter.pigeon.UserDefaultsApi.remove"
                binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
+                         codec:UserDefaultsApiGetCodec()];
     if (api) {
       NSCAssert([api respondsToSelector:@selector(removeKey:error:)],
-                @"SharedPreferencesApi api (%@) doesn't respond to @selector(removeKey:error:)",
-                api);
+                @"UserDefaultsApi api (%@) doesn't respond to @selector(removeKey:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_key = args[0];
         FlutterError *error;
-        NSNumber *output = [api removeKey:arg_key error:&error];
-        callback(wrapResult(output, error));
+        [api removeKey:arg_key error:&error];
+        callback(wrapResult(nil, error));
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -81,21 +80,20 @@ void SharedPreferencesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
   }
   {
     FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.setBool"
+        messageChannelWithName:@"dev.flutter.pigeon.UserDefaultsApi.setBool"
                binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
+                         codec:UserDefaultsApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(setBoolKey:value:error:)],
-          @"SharedPreferencesApi api (%@) doesn't respond to @selector(setBoolKey:value:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(setBoolKey:value:error:)],
+                @"UserDefaultsApi api (%@) doesn't respond to @selector(setBoolKey:value:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_key = args[0];
         NSNumber *arg_value = args[1];
         FlutterError *error;
-        NSNumber *output = [api setBoolKey:arg_key value:arg_value error:&error];
-        callback(wrapResult(output, error));
+        [api setBoolKey:arg_key value:arg_value error:&error];
+        callback(wrapResult(nil, error));
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -103,21 +101,20 @@ void SharedPreferencesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
   }
   {
     FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.setDouble"
+        messageChannelWithName:@"dev.flutter.pigeon.UserDefaultsApi.setDouble"
                binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
+                         codec:UserDefaultsApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(setDoubleKey:value:error:)],
-          @"SharedPreferencesApi api (%@) doesn't respond to @selector(setDoubleKey:value:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(setDoubleKey:value:error:)],
+                @"UserDefaultsApi api (%@) doesn't respond to @selector(setDoubleKey:value:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_key = args[0];
         NSNumber *arg_value = args[1];
         FlutterError *error;
-        NSNumber *output = [api setDoubleKey:arg_key value:arg_value error:&error];
-        callback(wrapResult(output, error));
+        [api setDoubleKey:arg_key value:arg_value error:&error];
+        callback(wrapResult(nil, error));
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -125,65 +122,20 @@ void SharedPreferencesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
   }
   {
     FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.setInt"
+        messageChannelWithName:@"dev.flutter.pigeon.UserDefaultsApi.setValue"
                binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
+                         codec:UserDefaultsApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(setIntKey:value:error:)],
-          @"SharedPreferencesApi api (%@) doesn't respond to @selector(setIntKey:value:error:)",
-          api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        NSString *arg_key = args[0];
-        NSNumber *arg_value = args[1];
-        FlutterError *error;
-        NSNumber *output = [api setIntKey:arg_key value:arg_value error:&error];
-        callback(wrapResult(output, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.setString"
-               binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
-    if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(setStringKey:value:error:)],
-          @"SharedPreferencesApi api (%@) doesn't respond to @selector(setStringKey:value:error:)",
-          api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        NSString *arg_key = args[0];
-        NSString *arg_value = args[1];
-        FlutterError *error;
-        NSNumber *output = [api setStringKey:arg_key value:arg_value error:&error];
-        callback(wrapResult(output, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.setStringList"
-               binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(setStringListKey:value:error:)],
-                @"SharedPreferencesApi api (%@) doesn't respond to "
-                @"@selector(setStringListKey:value:error:)",
+      NSCAssert([api respondsToSelector:@selector(setValueKey:value:error:)],
+                @"UserDefaultsApi api (%@) doesn't respond to @selector(setValueKey:value:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_key = args[0];
-        NSArray<NSString *> *arg_value = args[1];
+        id arg_value = args[1];
         FlutterError *error;
-        NSNumber *output = [api setStringListKey:arg_key value:arg_value error:&error];
-        callback(wrapResult(output, error));
+        [api setValueKey:arg_key value:arg_value error:&error];
+        callback(wrapResult(nil, error));
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -191,31 +143,12 @@ void SharedPreferencesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
   }
   {
     FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.clear"
+        messageChannelWithName:@"dev.flutter.pigeon.UserDefaultsApi.getAll"
                binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(clearWithError:)],
-                @"SharedPreferencesApi api (%@) doesn't respond to @selector(clearWithError:)",
-                api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        NSNumber *output = [api clearWithError:&error];
-        callback(wrapResult(output, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.SharedPreferencesApi.getAll"
-               binaryMessenger:binaryMessenger
-                         codec:SharedPreferencesApiGetCodec()];
+                         codec:UserDefaultsApiGetCodec()];
     if (api) {
       NSCAssert([api respondsToSelector:@selector(getAllWithError:)],
-                @"SharedPreferencesApi api (%@) doesn't respond to @selector(getAllWithError:)",
-                api);
+                @"UserDefaultsApi api (%@) doesn't respond to @selector(getAllWithError:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
         NSDictionary<NSString *, id> *output = [api getAllWithError:&error];

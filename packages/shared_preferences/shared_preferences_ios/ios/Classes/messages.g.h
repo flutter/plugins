@@ -11,31 +11,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// The codec used by SharedPreferencesApi.
-NSObject<FlutterMessageCodec> *SharedPreferencesApiGetCodec(void);
+/// The codec used by UserDefaultsApi.
+NSObject<FlutterMessageCodec> *UserDefaultsApiGetCodec(void);
 
-@protocol SharedPreferencesApi
-- (nullable NSNumber *)removeKey:(NSString *)key error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)setBoolKey:(NSString *)key
-                            value:(NSNumber *)value
-                            error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)setDoubleKey:(NSString *)key
-                              value:(NSNumber *)value
-                              error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)setIntKey:(NSString *)key
-                           value:(NSNumber *)value
-                           error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)setStringKey:(NSString *)key
-                              value:(NSString *)value
-                              error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)setStringListKey:(NSString *)key
-                                  value:(NSArray<NSString *> *)value
-                                  error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)clearWithError:(FlutterError *_Nullable *_Nonnull)error;
+@protocol UserDefaultsApi
+- (void)removeKey:(NSString *)key error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setBoolKey:(NSString *)key
+             value:(NSNumber *)value
+             error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setDoubleKey:(NSString *)key
+               value:(NSNumber *)value
+               error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setValueKey:(NSString *)key value:(id)value error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable NSDictionary<NSString *, id> *)getAllWithError:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
-extern void SharedPreferencesApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
-                                      NSObject<SharedPreferencesApi> *_Nullable api);
+extern void UserDefaultsApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                                 NSObject<UserDefaultsApi> *_Nullable api);
 
 NS_ASSUME_NONNULL_END

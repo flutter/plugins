@@ -11,14 +11,11 @@ import 'package:pigeon/pigeon.dart';
   objcSourceOut: 'ios/Classes/messages.g.m',
   copyrightHeader: 'pigeons/copyright_header.txt',
 ))
-@HostApi(dartHostTestHandler: 'TestSharedPreferencesApi')
-abstract class SharedPreferencesApi {
-  bool remove(String key);
-  bool setBool(String key, bool value);
-  bool setDouble(String key, double value);
-  bool setInt(String key, int value);
-  bool setString(String key, String value);
-  bool setStringList(String key, List<String> value);
-  bool clear();
+@HostApi(dartHostTestHandler: 'TestUserDefaultsApi')
+abstract class UserDefaultsApi {
+  void remove(String key);
+  void setBool(String key, bool value);
+  void setDouble(String key, double value);
+  void setValue(String key, Object value);
   Map<String?, Object?> getAll();
 }

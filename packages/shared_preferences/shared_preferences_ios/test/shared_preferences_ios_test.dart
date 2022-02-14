@@ -9,14 +9,8 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 
 import 'messages.g.dart';
 
-class _MockSharedPreferencesApi implements TestSharedPreferencesApi {
+class _MockSharedPreferencesApi implements TestUserDefaultsApi {
   final Map<String, Object> items = <String, Object>{};
-
-  @override
-  bool clear() {
-    items.clear();
-    return true;
-  }
 
   @override
   Map<String?, Object?> getAll() {
@@ -24,39 +18,23 @@ class _MockSharedPreferencesApi implements TestSharedPreferencesApi {
   }
 
   @override
-  bool remove(String key) {
+  void remove(String key) {
     items.remove(key);
-    return true;
   }
 
   @override
-  bool setBool(String key, bool value) {
+  void setBool(String key, bool value) {
     items[key] = value;
-    return true;
   }
 
   @override
-  bool setDouble(String key, double value) {
+  void setDouble(String key, double value) {
     items[key] = value;
-    return true;
   }
 
   @override
-  bool setInt(String key, int value) {
+  void setValue(String key, Object value) {
     items[key] = value;
-    return true;
-  }
-
-  @override
-  bool setString(String key, String value) {
-    items[key] = value;
-    return true;
-  }
-
-  @override
-  bool setStringList(String key, List<String?> value) {
-    items[key] = value;
-    return true;
   }
 }
 
@@ -67,7 +45,7 @@ void main() {
 
   setUp(() {
     api = _MockSharedPreferencesApi();
-    TestSharedPreferencesApi.setup(api);
+    TestUserDefaultsApi.setup(api);
     plugin = SharedPreferencesIos();
   });
 

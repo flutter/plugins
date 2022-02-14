@@ -6,11 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'messages.g.dart';
 
-typedef _Setter = Future<bool> Function(String key, Object value);
+typedef _Setter = Future<void> Function(String key, Object value);
 
 /// iOS implementation of shared_preferences.
 class SharedPreferencesIos extends SharedPreferencesStorePlatform {
-  final SharedPreferencesApi _api = SharedPreferencesApi();
+  final UserDefaultsApi _api = UserDefaultsApi();
   late final Map<String, _Setter> _setters = <String, _Setter>{
     'Bool': (String key, Object value) {
       return _api.setBool(key, value as bool);
@@ -19,13 +19,13 @@ class SharedPreferencesIos extends SharedPreferencesStorePlatform {
       return _api.setDouble(key, value as double);
     },
     'Int': (String key, Object value) {
-      return _api.setInt(key, value as int);
+      return _api.setValue(key, value as int);
     },
     'String': (String key, Object value) {
-      return _api.setString(key, value as String);
+      return _api.setValue(key, value as String);
     },
     'StringList': (String key, Object value) {
-      return _api.setStringList(key, value as List<String?>);
+      return _api.setValue(key, value as List<String?>);
     },
   };
 
@@ -35,19 +35,27 @@ class SharedPreferencesIos extends SharedPreferencesStorePlatform {
   }
 
   @override
-  Future<bool> clear() {
-    return _api.clear();
+  Future<bool> clear() async {
+    final Map<String, Object> all = await getAll();
+    for (final String key in all.keys) {
+      await _api.remove(key);
+    }
+    return true;
   }
 
   @override
   Future<Map<String, Object>> getAll() async {
-    final Map<String?, Object?> result = await _api.getAll();
-    return result.cast<String, Object>();
+    final Map<String, Object> result =
+        (await _api.getAll()).cast<String, Object>();
+    result
+        .removeWhere((String key, Object value) => key.startsWith('flutter.'));
+    return result;
   }
 
   @override
-  Future<bool> remove(String key) {
-    return _api.remove(key);
+  Future<bool> remove(String key) async {
+    await _api.remove(key);
+    return true;
   }
 
   @override
@@ -58,6 +66,7 @@ class SharedPreferencesIos extends SharedPreferencesStorePlatform {
           code: 'InvalidOperation',
           message: '"$valueType" is not a supported type.');
     }
-    return setter(key, value);
+    await setter(key, value);
+    return true;
   }
 }

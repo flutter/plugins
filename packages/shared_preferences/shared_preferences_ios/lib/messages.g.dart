@@ -11,24 +11,24 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 
-class _SharedPreferencesApiCodec extends StandardMessageCodec {
-  const _SharedPreferencesApiCodec();
+class _UserDefaultsApiCodec extends StandardMessageCodec {
+  const _UserDefaultsApiCodec();
 }
 
-class SharedPreferencesApi {
-  /// Constructor for [SharedPreferencesApi].  The [binaryMessenger] named argument is
+class UserDefaultsApi {
+  /// Constructor for [UserDefaultsApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  SharedPreferencesApi({BinaryMessenger? binaryMessenger})
+  UserDefaultsApi({BinaryMessenger? binaryMessenger})
       : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = _SharedPreferencesApiCodec();
+  static const MessageCodec<Object?> codec = _UserDefaultsApiCodec();
 
-  Future<bool> remove(String arg_key) async {
+  Future<void> remove(String arg_key) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.remove', codec,
+        'dev.flutter.pigeon.UserDefaultsApi.remove', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_key]) as Map<Object?, Object?>?;
@@ -47,13 +47,13 @@ class SharedPreferencesApi {
         details: error['details'],
       );
     } else {
-      return (replyMap['result'] as bool?)!;
+      return;
     }
   }
 
-  Future<bool> setBool(String arg_key, bool arg_value) async {
+  Future<void> setBool(String arg_key, bool arg_value) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.setBool', codec,
+        'dev.flutter.pigeon.UserDefaultsApi.setBool', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap = await channel
         .send(<Object>[arg_key, arg_value]) as Map<Object?, Object?>?;
@@ -72,13 +72,13 @@ class SharedPreferencesApi {
         details: error['details'],
       );
     } else {
-      return (replyMap['result'] as bool?)!;
+      return;
     }
   }
 
-  Future<bool> setDouble(String arg_key, double arg_value) async {
+  Future<void> setDouble(String arg_key, double arg_value) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.setDouble', codec,
+        'dev.flutter.pigeon.UserDefaultsApi.setDouble', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap = await channel
         .send(<Object>[arg_key, arg_value]) as Map<Object?, Object?>?;
@@ -97,13 +97,13 @@ class SharedPreferencesApi {
         details: error['details'],
       );
     } else {
-      return (replyMap['result'] as bool?)!;
+      return;
     }
   }
 
-  Future<bool> setInt(String arg_key, int arg_value) async {
+  Future<void> setValue(String arg_key, Object arg_value) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.setInt', codec,
+        'dev.flutter.pigeon.UserDefaultsApi.setValue', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap = await channel
         .send(<Object>[arg_key, arg_value]) as Map<Object?, Object?>?;
@@ -122,88 +122,13 @@ class SharedPreferencesApi {
         details: error['details'],
       );
     } else {
-      return (replyMap['result'] as bool?)!;
-    }
-  }
-
-  Future<bool> setString(String arg_key, String arg_value) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.setString', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap = await channel
-        .send(<Object>[arg_key, arg_value]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return (replyMap['result'] as bool?)!;
-    }
-  }
-
-  Future<bool> setStringList(String arg_key, List<String?> arg_value) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.setStringList', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap = await channel
-        .send(<Object>[arg_key, arg_value]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return (replyMap['result'] as bool?)!;
-    }
-  }
-
-  Future<bool> clear() async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.clear', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(null) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return (replyMap['result'] as bool?)!;
+      return;
     }
   }
 
   Future<Map<String?, Object?>> getAll() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.SharedPreferencesApi.getAll', codec,
+        'dev.flutter.pigeon.UserDefaultsApi.getAll', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
