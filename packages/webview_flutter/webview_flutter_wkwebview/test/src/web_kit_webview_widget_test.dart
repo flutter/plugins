@@ -91,12 +91,10 @@ void main() {
 
     testWidgets('WKUIDelegate.onCreateWebView loadRequest',
         (WidgetTester tester) async {
-      final MockWKUIDelegate mockUIDelgate = MockWKUIDelegate();
-      when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelgate);
       await buildWidget(tester);
 
       final dynamic onCreateWebView =
-          verify(mockUIDelgate.setOnCreateWebView(captureAny)).captured.single
+          verify(mockUIDelegate.setOnCreateWebView(captureAny)).captured.single
               as void Function(WKWebViewConfiguration, WKNavigationAction);
 
       final NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
