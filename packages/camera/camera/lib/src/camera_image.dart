@@ -105,7 +105,7 @@ class CameraImage {
         sensorSensitivity = data['sensorSensitivity'] as double?,
         planes = List<Plane>.unmodifiable((data['planes'] as List<dynamic>)
             .map<Plane>((dynamic planeData) =>
-                Plane._fromPlatformData(planeData as Map<String, dynamic>)));
+                Plane._fromPlatformData(planeData as Map<dynamic, dynamic>)));
 
   /// Format of the image provided.
   ///
