@@ -23,8 +23,10 @@ class ImageResizer {
     }
     try {
       final html.ImageElement imageElement = await loadImage(file.path);
-      final html.CanvasElement canvas = resizeImageElement(imageElement, maxWidth, maxHeight);
-      final XFile resizedImage = await writeCanvasToFile(file, canvas, imageQuality);
+      final html.CanvasElement canvas =
+          resizeImageElement(imageElement, maxWidth, maxHeight);
+      final XFile resizedImage =
+          await writeCanvasToFile(file, canvas, imageQuality);
       html.Url.revokeObjectUrl(file.path);
       return resizedImage;
     } catch (e) {
@@ -34,7 +36,8 @@ class ImageResizer {
 
   /// function that loads the blobUrl into an imageElement
   Future<html.ImageElement> loadImage(String blobUrl) {
-    final Completer<html.ImageElement> imageLoadCompleter = Completer<html.ImageElement>();
+    final Completer<html.ImageElement> imageLoadCompleter =
+        Completer<html.ImageElement>();
     final html.ImageElement imageElement = html.ImageElement();
     imageElement.src = blobUrl;
 
@@ -72,7 +75,8 @@ class ImageResizer {
   /// [imageQuality] is only supported for jpeg and webp images.
   Future<XFile> writeCanvasToFile(
       XFile originalFile, html.CanvasElement canvas, int? imageQuality) async {
-    final double calculatedImageQuality = (min(imageQuality ?? 100, 100)) / 100.0;
+    final double calculatedImageQuality =
+        (min(imageQuality ?? 100, 100)) / 100.0;
     final html.Blob blob =
         await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
     return XFile(html.Url.createObjectUrlFromBlob(blob),
