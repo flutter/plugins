@@ -155,7 +155,8 @@ void main() {
           );
         });
 
-        testWidgets('with source not supported error code', (WidgetTester tester) async {
+        testWidgets('with source not supported error code',
+            (WidgetTester tester) async {
           expect(
             CameraErrorCode.fromMediaError(
               FakeMediaError(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED),
