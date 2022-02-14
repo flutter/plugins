@@ -234,7 +234,8 @@ class CameraService {
       // A list of facing mode capabilities as
       // the camera may support multiple facing modes.
       final List<String> facingModeCapabilities = List<String>.from(
-          videoTrackCapabilities[_facingModeKey] as List<String>? ??
+          (videoTrackCapabilities[_facingModeKey] as List<dynamic>?)
+                  ?.cast<String>() ??
               <String>[]);
 
       if (facingModeCapabilities.isNotEmpty) {
