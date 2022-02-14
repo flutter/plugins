@@ -11,13 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MockRegistrar : NSObject<FlutterPluginRegistrar>
+@interface MockRegistrar : NSObject <FlutterPluginRegistrar>
 @end
 
-@interface MockBinaryMessenger : NSObject<FlutterBinaryMessenger>
+@interface MockBinaryMessenger : NSObject <FlutterBinaryMessenger>
 @end
 
-@interface MockTextureRegistry : NSObject<FlutterTextureRegistry>
+@interface MockTextureRegistry : NSObject <FlutterTextureRegistry>
 @end
 
 NS_ASSUME_NONNULL_END
