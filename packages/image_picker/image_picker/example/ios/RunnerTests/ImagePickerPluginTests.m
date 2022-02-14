@@ -180,6 +180,26 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
+- (void)testPickImageWithoutFullMetadata {
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                                              arguments:@{
+                                                                @"source" : @(1),
+                                                                @"requestFullMetadata" : @(false),
+                                                              }];
+
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+
+  OCMVerify(times(1),
+            [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
+}
+
+
 #pragma mark - Test camera devices, no op on simulators
 
 - (void)testPluginPickImageDeviceCancelClickMultipleTimes {
