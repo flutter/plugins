@@ -1,0 +1,19 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import <Flutter/Flutter.h>
+#import <GoogleMaps/GoogleMaps.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface FLTGoogleMapController (Test)
+
+- (instancetype)initWithMapView:(GMSMapView *)mapView
+                 viewIdentifier:(int64_t)viewId
+                      arguments:(id _Nullable)args
+                      registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+
+@end
+
+NS_ASSUME_NONNULL_END

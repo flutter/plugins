@@ -5,7 +5,9 @@
 @import google_maps_flutter;
 @import XCTest;
 
-#import "FlutterMock.h"
+#import <OCMock/OCMock.h>
+#import "GoogleMapController-Test.h"
+#import "MockGMSMapView.h"
 
 @interface GoogleMapsTests : XCTestCase
 @end
@@ -17,26 +19,24 @@
   XCTAssertNotNil(plugin);
 }
 
-- (void)testObserveCamera {
-  XCTestExpectation *viewExpectation = [self expectationWithDescription:@"View loaded"];
+- (void)testFrameObserver {
+  id registrar = OCMProtocolMock(@protocol(FlutterPluginRegistrar));
+  CGRect frame = CGRectMake(0, 0, 100, 100);
+  MockGMSMapView *mapView = [[MockGMSMapView alloc]
+      initWithFrame:frame
+             camera:[[GMSCameraPosition alloc] initWithLatitude:0 longitude:0 zoom:0]];
+  FLTGoogleMapController *controller = [[FLTGoogleMapController alloc] initWithMapView:mapView
+                                                                        viewIdentifier:0
+                                                                             arguments:nil
+                                                                             registrar:registrar];
 
-  dispatch_async(dispatch_queue_create("", 0), ^{
-    [self waitForExpectations:@[ viewExpectation ] timeout:1];
-  });
-
-  MockRegistrar *object = [[MockRegistrar alloc] init];
-  FLTGoogleMapController *controller =
-      [[FLTGoogleMapController alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
-                                     viewIdentifier:0
-                                          arguments:@{}
-                                          registrar:object];
-
-  for (NSInteger i = 0; i < 10000; ++i) {
+  for (NSInteger i = 0; i < 10; ++i) {
     [controller view];
   }
-  [[controller view] setValue:[NSValue valueWithCGRect:CGRectMake(0, 0, 0, 0)] forKey:@"frame"];
+  XCTAssertEqual(mapView.frameObserverCount, 1);
 
-  [viewExpectation fulfill];
+  mapView.frame = frame;
+  XCTAssertEqual(mapView.frameObserverCount, 0);
 }
 
 @end

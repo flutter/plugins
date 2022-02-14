@@ -62,11 +62,19 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  GMSCameraPosition *camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
+  GMSMapView *mapView = [GMSMapView mapWithFrame:frame camera:camera];
+  return [self initWithMapView:mapView viewIdentifier:viewId arguments:args registrar:registrar];
+}
+
+- (instancetype)initWithMapView:(GMSMapView *_Nonnull)mapView
+                 viewIdentifier:(int64_t)viewId
+                      arguments:(id _Nullable)args
+                      registrar:(NSObject<FlutterPluginRegistrar> *_Nonnull)registrar {
   if (self = [super init]) {
+    _mapView = mapView;
     _viewId = viewId;
 
-    GMSCameraPosition *camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
-    _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _mapView.accessibilityElementsHidden = NO;
     _trackCameraPosition = NO;
     InterpretMapOptions(args[@"options"], self);
