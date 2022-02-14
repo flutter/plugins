@@ -51,8 +51,12 @@
   [videoPlayerPlugin initialize:&error];
   XCTAssertNil(error);
 
-  FLTCreateMessage *create = [[FLTCreateMessage alloc] init];
-  create.uri = @"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4";
+  FLTCreateMessage *create = [FLTCreateMessage
+      makeWithAsset:nil
+                uri:@"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"
+        packageName:nil
+         formatHint:nil
+        httpHeaders:@{}];
   FLTTextureMessage *textureMessage = [videoPlayerPlugin create:create error:&error];
   XCTAssertNil(error);
   XCTAssertNotNil(textureMessage);
@@ -123,8 +127,11 @@
   [videoPlayerPlugin initialize:&error];
   XCTAssertNil(error);
 
-  FLTCreateMessage *create = [[FLTCreateMessage alloc] init];
-  create.uri = uri;
+  FLTCreateMessage *create = [FLTCreateMessage makeWithAsset:nil
+                                                         uri:uri
+                                                 packageName:nil
+                                                  formatHint:nil
+                                                 httpHeaders:@{}];
   FLTTextureMessage *textureMessage = [videoPlayerPlugin create:create error:&error];
 
   NSNumber *textureId = textureMessage.textureId;
