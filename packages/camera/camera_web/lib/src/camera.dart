@@ -82,7 +82,8 @@ class Camera {
 
   /// The stream controller for the [onEnded] stream.
   @visibleForTesting
-  final StreamController<html.MediaStreamTrack> onEndedController = StreamController<html.MediaStreamTrack>.broadcast();
+  final StreamController<html.MediaStreamTrack> onEndedController =
+      StreamController<html.MediaStreamTrack>.broadcast();
 
   StreamSubscription<html.Event>? _onEndedSubscription;
 
@@ -124,7 +125,7 @@ class Camera {
       html.MediaRecorder.isTypeSupported;
 
   /// The list of consecutive video data files recorded with [mediaRecorder].
-  final List<html.Blob> _videoData = [];
+  final List<html.Blob> _videoData = <html.Blob>[];
 
   /// Completes when the video recording is stopped/finished.
   Completer<XFile>? _videoAvailableCompleter;
@@ -238,7 +239,8 @@ class Camera {
 
     final int videoWidth = videoElement.videoWidth;
     final int videoHeight = videoElement.videoHeight;
-    final html.CanvasElement canvas = html.CanvasElement(width: videoWidth, height: videoHeight);
+    final html.CanvasElement canvas =
+        html.CanvasElement(width: videoWidth, height: videoHeight);
     final bool isBackCamera = getLensDirection() == CameraLensDirection.back;
 
     // Flip the picture horizontally if it is not taken from a back camera.
@@ -265,17 +267,19 @@ class Camera {
   /// Returns [Size.zero] if the camera is missing a video track or
   /// the video track does not include the width or height setting.
   Size getVideoSize() {
-    final List<html.MediaStreamTrack> videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
+    final List<html.MediaStreamTrack> videoTracks =
+        videoElement.srcObject?.getVideoTracks() ?? <html.MediaStreamTrack>[];
 
     if (videoTracks.isEmpty) {
       return Size.zero;
     }
 
     final html.MediaStreamTrack defaultVideoTrack = videoTracks.first;
-    final Map defaultVideoTrackSettings = defaultVideoTrack.getSettings();
+    final Map<dynamic, dynamic> defaultVideoTrackSettings =
+        defaultVideoTrack.getSettings();
 
-    final width = defaultVideoTrackSettings['width'];
-    final height = defaultVideoTrackSettings['height'];
+    final double? width = defaultVideoTrackSettings['width'] as double?;
+    final double? height = defaultVideoTrackSettings['height'] as double?;
 
     if (width != null && height != null) {
       return Size(width, height);
@@ -297,8 +301,10 @@ class Camera {
   /// or the camera has not been initialized or started.
   void setFlashMode(FlashMode mode) {
     final html.MediaDevices? mediaDevices = window?.navigator.mediaDevices;
-    final Map? supportedConstraints = mediaDevices?.getSupportedConstraints();
-    final torchModeSupported = supportedConstraints?[_torchModeKey] ?? false;
+    final Map<dynamic, dynamic>? supportedConstraints =
+        mediaDevices?.getSupportedConstraints();
+    final bool torchModeSupported =
+        supportedConstraints?[_torchModeKey] as bool? ?? false;
 
     if (!torchModeSupported) {
       throw CameraWebException(
@@ -320,18 +326,19 @@ class Camera {
   /// Throws a [CameraWebException] if the torch mode is not supported
   /// or the camera has not been initialized or started.
   void _setTorchMode({required bool enabled}) {
-    final List<html.MediaStreamTrack> videoTracks = stream?.getVideoTracks() ?? [];
+    final List<html.MediaStreamTrack> videoTracks =
+        stream?.getVideoTracks() ?? <html.MediaStreamTrack>[];
 
     if (videoTracks.isNotEmpty) {
       final html.MediaStreamTrack defaultVideoTrack = videoTracks.first;
 
       final bool canEnableTorchMode =
-          defaultVideoTrack.getCapabilities()[_torchModeKey] ?? false;
+          defaultVideoTrack.getCapabilities()[_torchModeKey] as bool? ?? false;
 
       if (canEnableTorchMode) {
-        defaultVideoTrack.applyConstraints({
-          'advanced': [
-            {
+        defaultVideoTrack.applyConstraints(<String, Object>{
+          'advanced': <Object>[
+            <String, Object>{
               _torchModeKey: enabled,
             }
           ]
@@ -383,9 +390,9 @@ class Camera {
       );
     }
 
-    zoomLevelCapability.videoTrack.applyConstraints({
-      'advanced': [
-        {
+    zoomLevelCapability.videoTrack.applyConstraints(<String, Object>{
+      'advanced': <Object>[
+        <String, Object>{
           ZoomLevelCapability.constraintName: zoom,
         }
       ]
@@ -397,16 +404,19 @@ class Camera {
   /// Returns null if the camera is missing a video track or
   /// the video track does not include the facing mode setting.
   CameraLensDirection? getLensDirection() {
-    final List<html.MediaStreamTrack> videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
+    final List<html.MediaStreamTrack> videoTracks =
+        videoElement.srcObject?.getVideoTracks() ?? <html.MediaStreamTrack>[];
 
     if (videoTracks.isEmpty) {
       return null;
     }
 
     final html.MediaStreamTrack defaultVideoTrack = videoTracks.first;
-    final Map defaultVideoTrackSettings = defaultVideoTrack.getSettings();
+    final Map<dynamic, dynamic> defaultVideoTrackSettings =
+        defaultVideoTrack.getSettings();
 
-    final facingMode = defaultVideoTrackSettings['facingMode'];
+    final String? facingMode =
+        defaultVideoTrackSettings['facingMode'] as String?;
 
     if (facingMode != null) {
       return _cameraService.mapFacingModeToLensDirection(facingMode);
@@ -432,7 +442,8 @@ class Camera {
       );
     }
 
-    mediaRecorder ??= html.MediaRecorder(videoElement.srcObject!, {
+    mediaRecorder ??=
+        html.MediaRecorder(videoElement.srcObject!, <String, Object>{
       'mimeType': _videoMimeType,
     });
 
@@ -594,7 +605,7 @@ class Camera {
   /// Throws a [CameraWebException] if the browser does not support
   /// any of the available video mime types.
   String get _videoMimeType {
-    const List<String> types = [
+    const List<String> types = <String>[
       'video/mp4',
       'video/webm',
     ];

@@ -20,7 +20,7 @@ void main() {
 
       expect(
         cameraOptions.toJson(),
-        equals({
+        equals(<String, Object>{
           'audio': cameraOptions.audio.toJson(),
           'video': cameraOptions.video.toJson(),
         }),
@@ -33,8 +33,10 @@ void main() {
           audio: const AudioConstraints(enabled: false),
           video: VideoConstraints(
             facingMode: FacingModeConstraint(CameraType.environment),
-            width: const VideoSizeConstraint(minimum: 10, ideal: 15, maximum: 20),
-            height: const VideoSizeConstraint(minimum: 15, ideal: 20, maximum: 25),
+            width:
+                const VideoSizeConstraint(minimum: 10, ideal: 15, maximum: 20),
+            height:
+                const VideoSizeConstraint(minimum: 15, ideal: 20, maximum: 25),
             deviceId: 'deviceId',
           ),
         ),
@@ -43,8 +45,10 @@ void main() {
             audio: const AudioConstraints(enabled: false),
             video: VideoConstraints(
               facingMode: FacingModeConstraint(CameraType.environment),
-              width: const VideoSizeConstraint(minimum: 10, ideal: 15, maximum: 20),
-              height: const VideoSizeConstraint(minimum: 15, ideal: 20, maximum: 25),
+              width: const VideoSizeConstraint(
+                  minimum: 10, ideal: 15, maximum: 20),
+              height: const VideoSizeConstraint(
+                  minimum: 15, ideal: 20, maximum: 25),
               deviceId: 'deviceId',
             ),
           ),
@@ -80,11 +84,11 @@ void main() {
 
       expect(
         videoConstraints.toJson(),
-        equals({
+        equals(<String, Object>{
           'facingMode': videoConstraints.facingMode!.toJson(),
           'width': videoConstraints.width!.toJson(),
           'height': videoConstraints.height!.toJson(),
-          'deviceId': {
+          'deviceId': <String, Object>{
             'exact': 'deviceId',
           }
         }),
@@ -95,15 +99,19 @@ void main() {
       expect(
         VideoConstraints(
           facingMode: FacingModeConstraint.exact(CameraType.environment),
-          width: const VideoSizeConstraint(minimum: 90, ideal: 100, maximum: 100),
-          height: const VideoSizeConstraint(minimum: 40, ideal: 50, maximum: 50),
+          width:
+              const VideoSizeConstraint(minimum: 90, ideal: 100, maximum: 100),
+          height:
+              const VideoSizeConstraint(minimum: 40, ideal: 50, maximum: 50),
           deviceId: 'deviceId',
         ),
         equals(
           VideoConstraints(
             facingMode: FacingModeConstraint.exact(CameraType.environment),
-            width: const VideoSizeConstraint(minimum: 90, ideal: 100, maximum: 100),
-            height: const VideoSizeConstraint(minimum: 40, ideal: 50, maximum: 50),
+            width: const VideoSizeConstraint(
+                minimum: 90, ideal: 100, maximum: 100),
+            height:
+                const VideoSizeConstraint(minimum: 40, ideal: 50, maximum: 50),
             deviceId: 'deviceId',
           ),
         ),
@@ -118,7 +126,7 @@ void main() {
           'for environment camera type', (WidgetTester tester) async {
         expect(
           FacingModeConstraint(CameraType.environment).toJson(),
-          equals({'ideal': 'environment'}),
+          equals(<String, Object>{'ideal': 'environment'}),
         );
       });
 
@@ -127,7 +135,7 @@ void main() {
           'for user camera type', (WidgetTester tester) async {
         expect(
           FacingModeConstraint(CameraType.user).toJson(),
-          equals({'ideal': 'user'}),
+          equals(<String, Object>{'ideal': 'user'}),
         );
       });
 
@@ -145,7 +153,7 @@ void main() {
           'for environment camera type', (WidgetTester tester) async {
         expect(
           FacingModeConstraint.exact(CameraType.environment).toJson(),
-          equals({'exact': 'environment'}),
+          equals(<String, Object>{'exact': 'environment'}),
         );
       });
 
@@ -154,7 +162,7 @@ void main() {
           'for user camera type', (WidgetTester tester) async {
         expect(
           FacingModeConstraint.exact(CameraType.user).toJson(),
-          equals({'exact': 'user'}),
+          equals(<String, Object>{'exact': 'user'}),
         );
       });
 
@@ -175,7 +183,7 @@ void main() {
           ideal: 400,
           maximum: 400,
         ).toJson(),
-        equals({
+        equals(<String, Object>{
           'min': 200,
           'ideal': 400,
           'max': 400,

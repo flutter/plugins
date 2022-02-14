@@ -5,13 +5,16 @@
 import 'dart:html' as html;
 import 'dart:ui' show hashValues;
 
+import 'package:flutter/foundation.dart';
+
 /// The possible range of values for the zoom level configurable
 /// on the camera video track.
+@immutable
 class ZoomLevelCapability {
   /// Creates a new instance of [ZoomLevelCapability] with the given
   /// zoom level range of [minimum] to [maximum] configurable
   /// on the [videoTrack].
-  ZoomLevelCapability({
+  const ZoomLevelCapability({
     required this.minimum,
     required this.maximum,
     required this.videoTrack,
@@ -32,7 +35,9 @@ class ZoomLevelCapability {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is ZoomLevelCapability &&
         other.minimum == minimum &&
