@@ -419,15 +419,21 @@ public class Messages {
       this.formatHint = setterArg;
     }
 
-    private @Nullable Map<String, String> httpHeaders;
+    private @NonNull Map<String, String> httpHeaders;
 
-    public @Nullable Map<String, String> getHttpHeaders() {
+    public @NonNull Map<String, String> getHttpHeaders() {
       return httpHeaders;
     }
 
-    public void setHttpHeaders(@Nullable Map<String, String> setterArg) {
+    public void setHttpHeaders(@NonNull Map<String, String> setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"httpHeaders\" is null.");
+      }
       this.httpHeaders = setterArg;
     }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private CreateMessage() {}
 
     public static class Builder {
       private @Nullable String asset;
@@ -460,7 +466,7 @@ public class Messages {
 
       private @Nullable Map<String, String> httpHeaders;
 
-      public @NonNull Builder setHttpHeaders(@Nullable Map<String, String> setterArg) {
+      public @NonNull Builder setHttpHeaders(@NonNull Map<String, String> setterArg) {
         this.httpHeaders = setterArg;
         return this;
       }

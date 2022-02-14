@@ -44,11 +44,12 @@ class PositionMessage {
 }
 
 class CreateMessage {
+  CreateMessage({required this.httpHeaders});
   String? asset;
   String? uri;
   String? packageName;
   String? formatHint;
-  Map<String?, String?>? httpHeaders;
+  Map<String?, String?> httpHeaders;
 }
 
 class MixWithOthersMessage {

@@ -172,7 +172,7 @@ static id GetNullableObject(NSDictionary *dict, id key) {
                           uri:(nullable NSString *)uri
                   packageName:(nullable NSString *)packageName
                    formatHint:(nullable NSString *)formatHint
-                  httpHeaders:(nullable NSDictionary<NSString *, NSString *> *)httpHeaders {
+                  httpHeaders:(NSDictionary<NSString *, NSString *> *)httpHeaders {
   FLTCreateMessage *pigeonResult = [[FLTCreateMessage alloc] init];
   pigeonResult.asset = asset;
   pigeonResult.uri = uri;
@@ -188,6 +188,7 @@ static id GetNullableObject(NSDictionary *dict, id key) {
   pigeonResult.packageName = GetNullableObject(dict, @"packageName");
   pigeonResult.formatHint = GetNullableObject(dict, @"formatHint");
   pigeonResult.httpHeaders = GetNullableObject(dict, @"httpHeaders");
+  NSAssert(pigeonResult.httpHeaders != nil, @"");
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
