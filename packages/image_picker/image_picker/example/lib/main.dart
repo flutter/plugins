@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<XFile>? _imageFileList;
 
   set _imageFile(XFile? value) {
-    _imageFileList = value == null ? null : [value];
+    _imageFileList = value == null ? null : <XFile>[value];
   }
 
   dynamic _pickImageError;
@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _onImageButtonPressed(ImageSource source,
+  Future<void> _onImageButtonPressed(ImageSource source,
       {BuildContext? context, bool isMultiImage = false}) async {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
@@ -365,21 +365,23 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 TextField(
                   controller: maxWidthController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      const InputDecoration(hintText: 'Enter maxWidth if desired'),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                      hintText: 'Enter maxWidth if desired'),
                 ),
                 TextField(
                   controller: maxHeightController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      const InputDecoration(hintText: 'Enter maxHeight if desired'),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                      hintText: 'Enter maxHeight if desired'),
                 ),
                 TextField(
                   controller: qualityController,
                   keyboardType: TextInputType.number,
-                  decoration:
-                      const InputDecoration(hintText: 'Enter quality if desired'),
+                  decoration: const InputDecoration(
+                      hintText: 'Enter quality if desired'),
                 ),
               ],
             ),

@@ -321,7 +321,7 @@ void main() {
             return <String, dynamic>{
               'type': 'image',
               'path': '/example/path1',
-              'pathList': ['/example/path0', '/example/path1'],
+              'pathList': <dynamic>['/example/path0', '/example/path1'],
             };
           });
 
@@ -372,7 +372,7 @@ void main() {
       setUp(() {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
-          return [];
+          return <dynamic>[];
         });
         log.clear();
       });
