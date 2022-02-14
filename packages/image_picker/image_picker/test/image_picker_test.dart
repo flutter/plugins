@@ -18,7 +18,7 @@ void main() {
 
     final List<MethodCall> log = <MethodCall>[];
 
-    final picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
 
     test('ImagePicker platform instance overrides the actual platform used',
         () {
