@@ -12,7 +12,7 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FLTSharedPreferencesPlugin *plugin = [[FLTSharedPreferencesPlugin alloc] init];
-  SharedPreferencesApiSetup(registrar.messenger, plugin);
+  UserDefaultsApiSetup(registrar.messenger, plugin);
 }
 
 - (nullable NSDictionary<NSString *, id> *)getAllWithError:

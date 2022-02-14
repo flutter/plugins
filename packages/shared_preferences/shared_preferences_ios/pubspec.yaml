@@ -15,7 +15,6 @@ flutter:
       ios:
         dartPluginClass: SharedPreferencesIos
         pluginClass: FLTSharedPreferencesPlugin
-        dartPluginClass: SharedPreferencesIOS
 
 dependencies:
   flutter:
