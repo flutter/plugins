@@ -929,10 +929,12 @@ class MockIFrameElement extends _i1.Mock implements _i2.IFrameElement {
   void setPointerCapture(int? pointerId) =>
       super.noSuchMethod(Invocation.method(#setPointerCapture, [pointerId]),
           returnValueForMissingStub: null);
-  @override
+  // TODO(ditman): Undo this manual change when the return type change to
+  // Future<void> has propagated to stable.
+  /*@override
   void requestFullscreen() =>
       super.noSuchMethod(Invocation.method(#requestFullscreen, []),
-          returnValueForMissingStub: null);
+          returnValueForMissingStub: null);*/
   @override
   void after(Object? nodes) =>
       super.noSuchMethod(Invocation.method(#after, [nodes]),
