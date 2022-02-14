@@ -12,7 +12,7 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 
 const String expectedStringContents = 'Hello, world!';
 final List<int> bytes = utf8.encode(expectedStringContents);
-final html.File textFile = html.File([bytes], 'hello.txt');
+final html.File textFile = html.File(<List<int>>[bytes], 'hello.txt');
 final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {

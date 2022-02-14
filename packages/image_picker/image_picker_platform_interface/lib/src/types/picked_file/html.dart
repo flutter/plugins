@@ -13,10 +13,6 @@ import './base.dart';
 ///
 /// It wraps the bytes of a selected file.
 class PickedFile extends PickedFileBase {
-  @override
-  final String path;
-  final Uint8List? _initBytes;
-
   /// Construct a PickedFile object from its ObjectUrl.
   ///
   /// Optionally, this can be initialized with `bytes`
@@ -25,9 +21,13 @@ class PickedFile extends PickedFileBase {
       : _initBytes = bytes,
         super(path);
 
+  @override
+  final String path;
+  final Uint8List? _initBytes;
+
   Future<Uint8List> get _bytes async {
     if (_initBytes != null) {
-      return Future.value(UnmodifiableUint8ListView(_initBytes!));
+      return Future<Uint8List>.value(UnmodifiableUint8ListView(_initBytes!));
     }
     return http.readBytes(Uri.parse(path));
   }
@@ -39,7 +39,7 @@ class PickedFile extends PickedFileBase {
 
   @override
   Future<Uint8List> readAsBytes() async {
-    return Future.value(await _bytes);
+    return Future<Uint8List>.value(await _bytes);
   }
 
   @override

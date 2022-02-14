@@ -10,12 +10,12 @@ import './base.dart';
 
 /// A PickedFile backed by a dart:io File.
 class PickedFile extends PickedFileBase {
-  final File _file;
-
   /// Construct a PickedFile object backed by a dart:io File.
   PickedFile(String path)
       : _file = File(path),
         super(path);
+
+  final File _file;
 
   @override
   String get path {

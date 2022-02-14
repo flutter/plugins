@@ -46,9 +46,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
     );
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
-    return paths.map((path) => PickedFile(path)).toList();
+    return paths.map((dynamic path) => PickedFile(path as String)).toList();
   }
 
   Future<List<dynamic>?> _getMultiImagePath({
@@ -151,7 +153,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     assert(result.containsKey('path') != result.containsKey('errorCode'));
 
-    final String? type = result['type'];
+    final String? type = result['type'] as String?;
     assert(type == kTypeImage || type == kTypeVideo);
 
     RetrieveType? retrieveType;
@@ -164,10 +166,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     PlatformException? exception;
     if (result.containsKey('errorCode')) {
       exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
+          code: result['errorCode']! as String,
+          message: result['errorMessage'] as String?);
     }
 
-    final String? path = result['path'];
+    final String? path = result['path'] as String?;
 
     return LostData(
       file: path != null ? PickedFile(path) : null,
@@ -205,9 +208,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
     );
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
-    return paths.map((path) => XFile(path)).toList();
+    return paths.map((dynamic path) => XFile(path as String)).toList();
   }
 
   @override
@@ -237,7 +242,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     assert(result.containsKey('path') != result.containsKey('errorCode'));
 
-    final String? type = result['type'];
+    final String? type = result['type'] as String?;
     assert(type == kTypeImage || type == kTypeVideo);
 
     RetrieveType? retrieveType;
@@ -250,14 +255,16 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     PlatformException? exception;
     if (result.containsKey('errorCode')) {
       exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
+          code: result['errorCode']! as String,
+          message: result['errorMessage'] as String?);
     }
 
-    final String? path = result['path'];
+    final String? path = result['path'] as String?;
 
-    final pathList = result['pathList'];
+    final List<String>? pathList =
+        (result['pathList'] as List<dynamic>?)?.cast<String>();
     if (pathList != null) {
-      pickedFileList = [];
+      pickedFileList = <XFile>[];
       for (final String path in pathList) {
         pickedFileList.add(XFile(path));
       }
