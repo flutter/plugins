@@ -199,7 +199,6 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
-
 #pragma mark - Test camera devices, no op on simulators
 
 - (void)testPluginPickImageDeviceCancelClickMultipleTimes {

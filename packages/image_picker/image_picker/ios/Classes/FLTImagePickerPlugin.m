@@ -180,7 +180,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   self.result = result;
   _arguments = call.arguments;
   BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
-    
+
   if ([@"pickImage" isEqualToString:call.method]) {
     int imageSource = [call.arguments[@"source"] intValue];
     if (usePHAsset && imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
