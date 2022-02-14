@@ -236,9 +236,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns a list of selected files.
   List<html.File>? _handleOnChangeEvent(html.Event event) {
-    final html.FileUploadInputElement input =
-        event.target as html.FileUploadInputElement;
-    return _getFilesFromInput(input);
+    final html.FileUploadInputElement? input =
+        event.target as html.FileUploadInputElement?;
+    return input == null ? null : _getFilesFromInput(input);
   }
 
   /// Monitors an <input type="file"> and returns the selected file.
