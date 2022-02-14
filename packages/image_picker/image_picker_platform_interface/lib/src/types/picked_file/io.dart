@@ -36,6 +36,6 @@ class PickedFile extends PickedFileBase {
   Stream<Uint8List> openRead([int? start, int? end]) {
     return _file
         .openRead(start ?? 0, end)
-        .map((chunk) => Uint8List.fromList(chunk));
+        .map((List<int> chunk) => Uint8List.fromList(chunk));
   }
 }

@@ -12,7 +12,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$MethodChannelImagePicker', () {
-    MethodChannelImagePicker picker = MethodChannelImagePicker();
+    final MethodChannelImagePicker picker = MethodChannelImagePicker();
 
     final List<MethodCall> log = <MethodCall>[];
     dynamic returnValue = '';

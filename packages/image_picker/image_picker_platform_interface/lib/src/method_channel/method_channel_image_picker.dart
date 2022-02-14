@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-final MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
 
 /// An implementation of [ImagePickerPlatform] that uses method channels.
 class MethodChannelImagePicker extends ImagePickerPlatform {
@@ -25,7 +25,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String? path = await _getImagePath(
+    final String? path = await _getImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -184,7 +184,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String? path = await _getImagePath(
+    final String? path = await _getImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -228,7 +228,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   Future<LostDataResponse> getLostData() async {
     List<XFile>? pickedFileList;
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
 
     if (result == null) {
@@ -258,7 +258,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     final pathList = result['pathList'];
     if (pathList != null) {
       pickedFileList = [];
-      for (String path in pathList) {
+      for (final String path in pathList) {
         pickedFileList.add(XFile(path));
       }
     }
