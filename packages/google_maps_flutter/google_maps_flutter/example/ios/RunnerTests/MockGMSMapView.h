@@ -4,12 +4,8 @@
 
 @import GoogleMaps;
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface MockGMSMapView : GMSMapView
 
-@property(nonatomic, assign) NSInteger frameObserverCount;
+@property(nonatomic, assign, readonly) NSInteger frameObserverCount;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -4,6 +4,12 @@
 
 #import "MockGMSMapView.h"
 
+@interface MockGMSMapView ()
+
+@property(nonatomic, assign) NSInteger frameObserverCount;
+
+@end
+
 @implementation MockGMSMapView
 
 - (void)addObserver:(NSObject *)observer
