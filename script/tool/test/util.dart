@@ -229,24 +229,24 @@ String _pluginPlatformSection(
       '      $platform:',
     ];
     switch (platform) {
-      case kPlatformAndroid:
+      case platformAndroid:
         lines.add('        package: io.flutter.plugins.fake');
         continue nativeByDefault;
       nativeByDefault:
-      case kPlatformIos:
-      case kPlatformLinux:
-      case kPlatformMacos:
-      case kPlatformWindows:
+      case platformIOS:
+      case platformLinux:
+      case platformMacOS:
+      case platformWindows:
         if (support.hasNativeCode) {
           final String className =
-              platform == kPlatformIos ? 'FLTFakePlugin' : 'FakePlugin';
+              platform == platformIOS ? 'FLTFakePlugin' : 'FakePlugin';
           lines.add('        pluginClass: $className');
         }
         if (support.hasDartCode) {
           lines.add('        dartPluginClass: FakeDartPlugin');
         }
         break;
-      case kPlatformWeb:
+      case platformWeb:
         lines.addAll(<String>[
           '        pluginClass: FakePlugin',
           '        fileName: ${packageName}_web.dart',
