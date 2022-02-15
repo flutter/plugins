@@ -56,43 +56,45 @@ void main() {
   });
 
   test('remove', () async {
-    api.items['hi'] = 'world';
-    expect(await plugin.remove('hi'), isTrue);
-    expect(api.items.containsKey('hi'), isFalse);
+    api.items['flutter.hi'] = 'world';
+    expect(await plugin.remove('flutter.hi'), isTrue);
+    expect(api.items.containsKey('flutter.hi'), isFalse);
   });
 
   test('clear', () async {
-    api.items['hi'] = 'world';
+    api.items['flutter.hi'] = 'world';
     expect(await plugin.clear(), isTrue);
-    expect(api.items.containsKey('hi'), isFalse);
+    expect(api.items.containsKey('flutter.hi'), isFalse);
   });
 
   test('getAll', () async {
-    api.items['hi'] = 'world';
-    api.items['bye'] = 'dust';
+    api.items['flutter.hi'] = 'world';
+    api.items['flutter.bye'] = 'dust';
     final Map<String?, Object?> all = await plugin.getAll();
     expect(all.length, 2);
-    expect(all['hi'], api.items['hi']);
-    expect(all['bye'], api.items['bye']);
+    expect(all['flutter.hi'], api.items['flutter.hi']);
+    expect(all['flutter.bye'], api.items['flutter.bye']);
   });
 
   test('setValue', () async {
-    expect(await plugin.setValue('Bool', 'Bool', true), isTrue);
-    expect(api.items['Bool'], true);
-    expect(await plugin.setValue('Double', 'Double', 1.5), isTrue);
-    expect(api.items['Double'], 1.5);
-    expect(await plugin.setValue('Int', 'Int', 12), isTrue);
-    expect(api.items['Int'], 12);
-    expect(await plugin.setValue('String', 'String', 'hi'), isTrue);
-    expect(api.items['String'], 'hi');
-    expect(await plugin.setValue('StringList', 'StringList', <String>['hi']),
+    expect(await plugin.setValue('Bool', 'flutter.Bool', true), isTrue);
+    expect(api.items['flutter.Bool'], true);
+    expect(await plugin.setValue('Double', 'flutter.Double', 1.5), isTrue);
+    expect(api.items['flutter.Double'], 1.5);
+    expect(await plugin.setValue('Int', 'flutter.Int', 12), isTrue);
+    expect(api.items['flutter.Int'], 12);
+    expect(await plugin.setValue('String', 'flutter.String', 'hi'), isTrue);
+    expect(api.items['flutter.String'], 'hi');
+    expect(
+        await plugin
+            .setValue('StringList', 'flutter.StringList', <String>['hi']),
         isTrue);
-    expect(api.items['StringList'], <String>['hi']);
+    expect(api.items['flutter.StringList'], <String>['hi']);
   });
 
   test('setValueMap', () {
     expect(() async {
-      await plugin.setValue('Map', 'key', <String, String>{});
+      await plugin.setValue('flutter.Map', 'key', <String, String>{});
     }, throwsA(isA<PlatformException>()));
   });
 }

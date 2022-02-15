@@ -18,7 +18,8 @@
 - (nullable NSDictionary<NSString *, id> *)getAllWithError:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-  return [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain];
+  NSDictionary *result = [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain];
+  return (result) ? result : @{};
 }
 
 - (void)removeKey:(nonnull NSString *)key

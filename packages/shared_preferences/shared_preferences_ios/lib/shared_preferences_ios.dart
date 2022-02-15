@@ -48,7 +48,7 @@ class SharedPreferencesIos extends SharedPreferencesStorePlatform {
     final Map<String, Object> result =
         (await _api.getAll()).cast<String, Object>();
     result
-        .removeWhere((String key, Object value) => key.startsWith('flutter.'));
+        .removeWhere((String key, Object value) => !key.startsWith('flutter.'));
     return result;
   }
 
