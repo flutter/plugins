@@ -18,4 +18,5 @@ abstract class UserDefaultsApi {
   void setDouble(String key, double value);
   void setValue(String key, Object value);
   Map<String?, Object?> getAll();
+  void clear();
 }

@@ -25,6 +25,7 @@ abstract class TestUserDefaultsApi {
   void setDouble(String key, double value);
   void setValue(String key, Object value);
   Map<String?, Object?> getAll();
+  void clear();
   static void setup(TestUserDefaultsApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -123,6 +124,20 @@ abstract class TestUserDefaultsApi {
           // ignore message
           final Map<String?, Object?> output = api.getAll();
           return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.UserDefaultsApi.clear', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          api.clear();
+          return <Object?, Object?>{};
         });
       }
     }

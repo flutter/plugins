@@ -36,23 +36,28 @@ class _MockSharedPreferencesApi implements TestUserDefaultsApi {
   void setValue(String key, Object value) {
     items[key] = value;
   }
+
+  @override
+  void clear() {
+    items.clear();
+  }
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   _MockSharedPreferencesApi api = _MockSharedPreferencesApi();
-  SharedPreferencesIos plugin = SharedPreferencesIos();
+  SharedPreferencesIOS plugin = SharedPreferencesIOS();
 
   setUp(() {
     api = _MockSharedPreferencesApi();
     TestUserDefaultsApi.setup(api);
-    plugin = SharedPreferencesIos();
+    plugin = SharedPreferencesIOS();
   });
 
   test('registerWith', () {
-    SharedPreferencesIos.registerWith();
+    SharedPreferencesIOS.registerWith();
     expect(
-        SharedPreferencesStorePlatform.instance, isA<SharedPreferencesIos>());
+        SharedPreferencesStorePlatform.instance, isA<SharedPreferencesIOS>());
   });
 
   test('remove', () async {

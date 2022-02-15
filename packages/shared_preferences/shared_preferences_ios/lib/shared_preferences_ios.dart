@@ -9,7 +9,7 @@ import 'messages.g.dart';
 typedef _Setter = Future<void> Function(String key, Object value);
 
 /// iOS implementation of shared_preferences.
-class SharedPreferencesIos extends SharedPreferencesStorePlatform {
+class SharedPreferencesIOS extends SharedPreferencesStorePlatform {
   final UserDefaultsApi _api = UserDefaultsApi();
   late final Map<String, _Setter> _setters = <String, _Setter>{
     'Bool': (String key, Object value) {
@@ -31,25 +31,19 @@ class SharedPreferencesIos extends SharedPreferencesStorePlatform {
 
   /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {
-    SharedPreferencesStorePlatform.instance = SharedPreferencesIos();
+    SharedPreferencesStorePlatform.instance = SharedPreferencesIOS();
   }
 
   @override
   Future<bool> clear() async {
-    final Map<String, Object> all = await getAll();
-    for (final String key in all.keys) {
-      await _api.remove(key);
-    }
+    await _api.clear();
     return true;
   }
 
   @override
   Future<Map<String, Object>> getAll() async {
-    final Map<String, Object> result =
-        (await _api.getAll()).cast<String, Object>();
-    result
-        .removeWhere((String key, Object value) => !key.startsWith('flutter.'));
-    return result;
+    final Map<String?, Object?> result = await _api.getAll();
+    return result.cast<String, Object>();
   }
 
   @override

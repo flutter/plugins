@@ -24,6 +24,7 @@ NSObject<FlutterMessageCodec> *UserDefaultsApiGetCodec(void);
                error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setValueKey:(NSString *)key value:(id)value error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable NSDictionary<NSString *, id> *)getAllWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)clearWithError:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void UserDefaultsApiSetup(id<FlutterBinaryMessenger> binaryMessenger,

@@ -5,6 +5,20 @@
 #import "FLTSharedPreferencesPlugin.h"
 #import "messages.g.h"
 
+static NSMutableDictionary *getAllPrefs() {
+  NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+  NSDictionary *prefs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain];
+  NSMutableDictionary *filteredPrefs = [NSMutableDictionary dictionary];
+  if (prefs != nil) {
+    for (NSString *candidateKey in prefs) {
+      if ([candidateKey hasPrefix:@"flutter."]) {
+        [filteredPrefs setObject:prefs[candidateKey] forKey:candidateKey];
+      }
+    }
+  }
+  return filteredPrefs;
+}
+
 @interface FLTSharedPreferencesPlugin () <UserDefaultsApi>
 @end
 
@@ -17,9 +31,14 @@
 
 - (nullable NSDictionary<NSString *, id> *)getAllWithError:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-  NSDictionary *result = [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain];
-  return (result) ? result : @{};
+  return getAllPrefs();
+}
+
+- (void)clearWithError:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  for (NSString *key in getAllPrefs()) {
+    [defaults removeObjectForKey:key];
+  }
 }
 
 - (void)removeKey:(nonnull NSString *)key

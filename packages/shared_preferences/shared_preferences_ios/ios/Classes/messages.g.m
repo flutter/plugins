@@ -158,4 +158,21 @@ void UserDefaultsApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.UserDefaultsApi.clear"
+               binaryMessenger:binaryMessenger
+                         codec:UserDefaultsApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(clearWithError:)],
+                @"UserDefaultsApi api (%@) doesn't respond to @selector(clearWithError:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        [api clearWithError:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }

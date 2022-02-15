@@ -13,7 +13,7 @@ flutter:
     implements: shared_preferences
     platforms:
       ios:
-        dartPluginClass: SharedPreferencesIos
+        dartPluginClass: SharedPreferencesIOS
         pluginClass: FLTSharedPreferencesPlugin
 
 dependencies:
