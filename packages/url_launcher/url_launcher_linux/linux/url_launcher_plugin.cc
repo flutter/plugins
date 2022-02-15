@@ -12,7 +12,7 @@
 #include "url_launcher_plugin_private.h"
 
 // See url_launcher_channel.dart for documentation.
-const char kChannelName[] = "plugins.flutter.io/url_launcher";
+const char kChannelName[] = "plugins.flutter.io/url_launcher_linux";
 const char kBadArgumentsError[] = "Bad Arguments";
 const char kLaunchError[] = "Launch Error";
 const char kCanLaunchMethod[] = "canLaunch";
