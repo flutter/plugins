@@ -31,6 +31,7 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -258,6 +259,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     try {
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+        return;
+      }
+      if(!canAuthenticateWithBiometrics()){
+        result.success(Collections.emptyList());
         return;
       }
       ArrayList<String> biometrics = getAvailableBiometrics();
