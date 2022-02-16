@@ -95,7 +95,7 @@ void main() {
         ).thenReturn(null);
 
         when(mediaDevices.enumerateDevices).thenAnswer(
-          (_) async => <List<dynamic>>[],
+          (_) async => <dynamic>[],
         );
       });
 
