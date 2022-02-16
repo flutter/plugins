@@ -10,7 +10,7 @@
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/gapi
 
-// ignore_for_file: public_member_api_docs, unused_element
+// ignore_for_file: public_member_api_docs, unused_element, sort_constructors_first, prefer_generic_function_type_aliases
 
 @JS()
 library gapi;
@@ -18,7 +18,7 @@ library gapi;
 import 'package:js/js.dart';
 
 // Module gapi
-typedef LoadCallback = void Function(
+typedef void LoadCallback(
     [dynamic args1,
     dynamic args2,
     dynamic args3,

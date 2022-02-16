@@ -30,7 +30,7 @@ Future<void> injectJSLibraries(
       ..async = true
       ..defer = true
       ..src = library;
-    // TODO add a timeout race to fail this future
+    // TODO(ditman): add a timeout race to fail this future
     loading.add(script.onLoad.first);
     tags.add(script);
   }

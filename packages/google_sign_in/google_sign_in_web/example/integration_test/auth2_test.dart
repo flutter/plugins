@@ -55,7 +55,7 @@ void main() {
         );
         fail('plugin.init should have thrown an exception!');
       } catch (e) {
-        final String code = js_util.getProperty(e, 'code') as String;
+        final String code = js_util.getProperty<String>(e, 'code');
         expect(code, 'idpiframe_initialization_failed');
       }
     });
@@ -99,7 +99,7 @@ void main() {
     });
     testWidgets('requestScopes', (WidgetTester tester) async {
       await _discardInit();
-      await expectLater(plugin.requestScopes(['newScope']),
+      await expectLater(plugin.requestScopes(<String>['newScope']),
           throwsA(isA<PlatformException>()));
     });
   });
@@ -157,7 +157,8 @@ void main() {
       });
 
       testWidgets('requestScopes', (WidgetTester tester) async {
-        final bool scopeGranted = await plugin.requestScopes(['newScope']);
+        final bool scopeGranted =
+            await plugin.requestScopes(<String>['newScope']);
 
         expect(scopeGranted, isTrue);
       });
@@ -188,7 +189,7 @@ void main() {
         await plugin.signIn();
         fail('plugin.signIn() should have thrown an exception!');
       } catch (e) {
-        final String code = js_util.getProperty(e, 'code') as String;
+        final String code = js_util.getProperty<String>(e, 'code');
         expect(code, 'popup_closed_by_user');
       }
     });
