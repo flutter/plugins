@@ -122,9 +122,9 @@ void main() {
           'token': 'abc',
         }),
         () {
-          googleSignIn.requestScopes(['newScope', 'anotherScope']);
+          googleSignIn.requestScopes(<String>['newScope', 'anotherScope']);
         }: isMethodCall('requestScopes', arguments: <String, dynamic>{
-          'scopes': ['newScope', 'anotherScope'],
+          'scopes': <String>['newScope', 'anotherScope'],
         }),
         googleSignIn.signOut: isMethodCall('signOut', arguments: null),
         googleSignIn.disconnect: isMethodCall('disconnect', arguments: null),
