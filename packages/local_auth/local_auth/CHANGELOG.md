@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Updated `getAvailableBiometrics` behavior on Android. Now it returns an empty list has the biometric hardware but doesn't have any biometric enrolled.
+
 ## 1.1.11
 
 * Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
