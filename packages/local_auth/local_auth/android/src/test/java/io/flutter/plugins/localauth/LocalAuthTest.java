@@ -9,10 +9,8 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
@@ -22,11 +20,9 @@ import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import org.junit.Test;
-
 import java.util.Collections;
 
 public class LocalAuthTest {
-
   @Test
   public void isDeviceSupportedReturnsFalse() {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
