@@ -17,9 +17,9 @@ import 'common/xcode.dart';
 const String _unitTestFlag = 'unit';
 const String _integrationTestFlag = 'integration';
 
-const String _iosDestinationFlag = 'ios-destination';
+const String _iOSDestinationFlag = 'ios-destination';
 
-const int _exitNoIosSimulators = 3;
+const int _exitNoIOSSimulators = 3;
 
 /// The command to run native tests for plugins:
 /// - iOS and macOS: XCTests (XCUnitTest and XCUITest)
@@ -34,17 +34,17 @@ class NativeTestCommand extends PackageLoopingCommand {
   })  : _xcode = Xcode(processRunner: processRunner, log: true),
         super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
-      _iosDestinationFlag,
+      _iOSDestinationFlag,
       help: 'Specify the destination when running iOS tests.\n'
           'This is passed to the `-destination` argument in the xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT '
           'for details on how to specify the destination.',
     );
-    argParser.addFlag(kPlatformAndroid, help: 'Runs Android tests');
-    argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
-    argParser.addFlag(kPlatformLinux, help: 'Runs Linux tests');
-    argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
-    argParser.addFlag(kPlatformWindows, help: 'Runs Windows tests');
+    argParser.addFlag(platformAndroid, help: 'Runs Android tests');
+    argParser.addFlag(platformIOS, help: 'Runs iOS tests');
+    argParser.addFlag(platformLinux, help: 'Runs Linux tests');
+    argParser.addFlag(platformMacOS, help: 'Runs macOS tests');
+    argParser.addFlag(platformWindows, help: 'Runs Windows tests');
 
     // By default, both unit tests and integration tests are run, but provide
     // flags to disable one or the other.
@@ -55,7 +55,7 @@ class NativeTestCommand extends PackageLoopingCommand {
   }
 
   // The device destination flags for iOS tests.
-  List<String> _iosDestinationFlags = <String>[];
+  List<String> _iOSDestinationFlags = <String>[];
 
   final Xcode _xcode;
 
@@ -84,11 +84,11 @@ this command.
   @override
   Future<void> initializeRun() async {
     _platforms = <String, _PlatformDetails>{
-      kPlatformAndroid: _PlatformDetails('Android', _testAndroid),
-      kPlatformIos: _PlatformDetails('iOS', _testIos),
-      kPlatformLinux: _PlatformDetails('Linux', _testLinux),
-      kPlatformMacos: _PlatformDetails('macOS', _testMacOS),
-      kPlatformWindows: _PlatformDetails('Windows', _testWindows),
+      platformAndroid: _PlatformDetails('Android', _testAndroid),
+      platformIOS: _PlatformDetails('iOS', _testIOS),
+      platformLinux: _PlatformDetails('Linux', _testLinux),
+      platformMacOS: _PlatformDetails('macOS', _testMacOS),
+      platformWindows: _PlatformDetails('Windows', _testWindows),
     };
     _requestedPlatforms = _platforms.keys
         .where((String platform) => getBoolArg(platform))
@@ -105,29 +105,29 @@ this command.
       throw ToolExit(exitInvalidArguments);
     }
 
-    if (getBoolArg(kPlatformWindows) && getBoolArg(_integrationTestFlag)) {
+    if (getBoolArg(platformWindows) && getBoolArg(_integrationTestFlag)) {
       logWarning('This command currently only supports unit tests for Windows. '
           'See https://github.com/flutter/flutter/issues/70233.');
     }
 
-    if (getBoolArg(kPlatformLinux) && getBoolArg(_integrationTestFlag)) {
+    if (getBoolArg(platformLinux) && getBoolArg(_integrationTestFlag)) {
       logWarning('This command currently only supports unit tests for Linux. '
           'See https://github.com/flutter/flutter/issues/70235.');
     }
 
     // iOS-specific run-level state.
     if (_requestedPlatforms.contains('ios')) {
-      String destination = getStringArg(_iosDestinationFlag);
+      String destination = getStringArg(_iOSDestinationFlag);
       if (destination.isEmpty) {
         final String? simulatorId =
             await _xcode.findBestAvailableIphoneSimulator();
         if (simulatorId == null) {
           printError('Cannot find any available iOS simulators.');
-          throw ToolExit(_exitNoIosSimulators);
+          throw ToolExit(_exitNoIOSSimulators);
         }
         destination = 'id=$simulatorId';
       }
-      _iosDestinationFlags = <String>[
+      _iOSDestinationFlags = <String>[
         '-destination',
         destination,
       ];
@@ -333,9 +333,9 @@ this command.
     return _PlatformResult(RunState.succeeded);
   }
 
-  Future<_PlatformResult> _testIos(RepositoryPackage plugin, _TestMode mode) {
+  Future<_PlatformResult> _testIOS(RepositoryPackage plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'iOS', mode,
-        extraFlags: _iosDestinationFlags);
+        extraFlags: _iOSDestinationFlags);
   }
 
   Future<_PlatformResult> _testMacOS(RepositoryPackage plugin, _TestMode mode) {

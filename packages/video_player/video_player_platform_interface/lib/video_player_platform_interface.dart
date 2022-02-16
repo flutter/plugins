@@ -346,7 +346,14 @@ class VideoPlayerOptions {
   // in all of the other video player packages, fix this, and then update
   // the other packages to use const.
   // ignore: prefer_const_constructors_in_immutables
-  VideoPlayerOptions({this.mixWithOthers = false});
+  VideoPlayerOptions({
+    this.mixWithOthers = false,
+    this.allowBackgroundPlayback = false,
+  });
+
+  /// Set this to true to keep playing video in background, when app goes in background.
+  /// The default value is false.
+  final bool allowBackgroundPlayback;
 
   /// Set this to true to mix the video players audio with other audio sources.
   /// The default value is false

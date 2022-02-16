@@ -1,3 +1,7 @@
+## 0.8.4+9
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.8.4+8
 
 * Configures the `UIImagePicker` to default to gallery instead of camera when

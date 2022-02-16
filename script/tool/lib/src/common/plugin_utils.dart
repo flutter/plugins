@@ -39,12 +39,12 @@ bool pluginSupportsPlatform(
   PlatformSupport? requiredMode,
   String? variant,
 }) {
-  assert(platform == kPlatformIos ||
-      platform == kPlatformAndroid ||
-      platform == kPlatformWeb ||
-      platform == kPlatformMacos ||
-      platform == kPlatformWindows ||
-      platform == kPlatformLinux);
+  assert(platform == platformIOS ||
+      platform == platformAndroid ||
+      platform == platformWeb ||
+      platform == platformMacOS ||
+      platform == platformWindows ||
+      platform == platformLinux);
 
   final YamlMap? platformEntry =
       _readPlatformPubspecSectionForPlugin(platform, plugin);
@@ -73,7 +73,7 @@ bool pluginSupportsPlatform(
       // Platforms with variants have a default variant when unspecified for
       // backward compatibility. Must match the flutter tool logic.
       const Map<String, String> defaultVariants = <String, String>{
-        kPlatformWindows: platformVariantWin32,
+        platformWindows: platformVariantWin32,
       };
       if (variant != defaultVariants[platform]) {
         return false;
@@ -87,7 +87,7 @@ bool pluginSupportsPlatform(
 /// Returns true if [plugin] includes native code for [platform], as opposed to
 /// being implemented entirely in Dart.
 bool pluginHasNativeCodeForPlatform(String platform, RepositoryPackage plugin) {
-  if (platform == kPlatformWeb) {
+  if (platform == platformWeb) {
     // Web plugins are always Dart-only.
     return false;
   }

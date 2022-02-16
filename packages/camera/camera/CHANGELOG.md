@@ -1,19 +1,20 @@
-## NEXT
+## 0.9.4+12
 
 * Skips unnecessary AppDelegate setup for unit tests on iOS.
-  
+* Internal code cleanup for stricter analysis options.
+
 ## 0.9.4+11
 
-* Manages iOS camera's orientation-related states on a background queue to prevent potential race conditions. 
+* Manages iOS camera's orientation-related states on a background queue to prevent potential race conditions.
 
 ## 0.9.4+10
 
-* iOS performance improvement by moving file writing from the main queue to a background IO queue. 
+* iOS performance improvement by moving file writing from the main queue to a background IO queue.
 
 ## 0.9.4+9
 
-* iOS performance improvement by moving sample buffer handling from the main queue to a background session queue. 
-* Minor iOS internal code cleanup related to camera class and its delegate. 
+* iOS performance improvement by moving sample buffer handling from the main queue to a background session queue.
+* Minor iOS internal code cleanup related to camera class and its delegate.
 * Minor iOS internal code cleanup related to resolution preset, video format, focus mode, exposure mode and device orientation.
 * Minor iOS internal code cleanup related to flash mode.
 
@@ -23,12 +24,12 @@
 
 ## 0.9.4+7
 
-* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.  
+* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.
 * Minor iOS internal code cleanup related to dispatch queue.
 
 ## 0.9.4+6
 
-* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
+* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread.
 
 ## 0.9.4+5
 
