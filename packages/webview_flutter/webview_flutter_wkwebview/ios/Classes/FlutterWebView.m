@@ -76,6 +76,16 @@
   FLTWKProgressionDelegate *_progressionDelegate;
 }
 
+
++ (WKProcessPool *)commonPool {
+    static WKProcessPool *sWKProcessPool;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sWKProcessPool = [[WKProcessPool alloc] init];
+    });
+    return sWKProcessPool;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
@@ -102,6 +112,7 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
+    configuration.processPool = [FLTWebViewController commonPool];
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
 
     // Background color
