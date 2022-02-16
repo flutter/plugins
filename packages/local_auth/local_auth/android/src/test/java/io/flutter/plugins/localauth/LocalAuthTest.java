@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.util.Collections;
 
 public class LocalAuthTest {
+
   @Test
   public void isDeviceSupportedReturnsFalse() {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
