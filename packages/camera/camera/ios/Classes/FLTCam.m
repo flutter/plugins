@@ -241,7 +241,7 @@ NSString *const errorMethod = @"error";
         }
       }];
 
-  NSAssert([QueueHelper isCurrentlyOnQueueWithSpecific:FLTCaptureSessionQueueSpecific],
+  NSAssert(dispatch_get_specific(FLTCaptureSessionQueueSpecific),
            @"save photo delegate references must be updated on the capture session queue");
   self.inProgressSavePhotoDelegates[@(settings.uniqueID)] = savePhotoDelegate;
   [self.capturePhotoOutput capturePhotoWithSettings:settings delegate:savePhotoDelegate];

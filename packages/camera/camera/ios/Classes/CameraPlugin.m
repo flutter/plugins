@@ -38,8 +38,9 @@
   NSAssert(self, @"super init cannot be nil");
   _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
-  _captureSessionQueue = [QueueHelper createQueueWithLabel:"io.flutter.camera.captureSessionQueue"
-                                                  specific:FLTCaptureSessionQueueSpecific];
+  _captureSessionQueue = dispatch_queue_create(io.flutter.camera.captureSessionQueue, NULL);
+  dispatch_queue_set_specific(_captureSessionQueue, FLTCaptureSessionQueueSpecific,
+                              (void *)FLTCaptureSessionQueueSpecific, NULL);
 
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
