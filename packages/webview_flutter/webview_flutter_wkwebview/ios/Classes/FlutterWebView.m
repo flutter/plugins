@@ -78,12 +78,12 @@
 
 
 + (WKProcessPool *)commonPool {
-    static WKProcessPool *sWKProcessPool;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sWKProcessPool = [[WKProcessPool alloc] init];
-    });
-    return sWKProcessPool;
+  static WKProcessPool *sWKProcessPool;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sWKProcessPool = [[WKProcessPool alloc] init];
+  });
+  return sWKProcessPool;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
