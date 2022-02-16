@@ -11,9 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.app.KeyguardManager;
 import android.content.Context;
-import androidx.biometric.BiometricManager;
 
 
 import androidx.lifecycle.Lifecycle;
