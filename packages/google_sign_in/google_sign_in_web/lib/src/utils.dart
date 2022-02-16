@@ -25,7 +25,7 @@ Future<void> injectJSLibraries(
 
   final html.Element targetElement = target ?? html.querySelector('head')!;
 
-  libraries.forEach((String library) {
+  for (final String library in libraries) {
     final html.ScriptElement script = html.ScriptElement()
       ..async = true
       ..defer = true
@@ -33,7 +33,7 @@ Future<void> injectJSLibraries(
     // TODO add a timeout race to fail this future
     loading.add(script.onLoad.first);
     tags.add(script);
-  });
+  }
 
   targetElement.children.addAll(tags);
   return Future.wait(loading);

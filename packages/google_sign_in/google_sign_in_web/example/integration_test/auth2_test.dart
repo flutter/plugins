@@ -15,10 +15,10 @@ import 'src/test_utils.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  GoogleSignInTokenData expectedTokenData =
+  final GoogleSignInTokenData expectedTokenData =
       GoogleSignInTokenData(idToken: '70k3n', accessToken: 'access_70k3n');
 
-  GoogleSignInUserData expectedUserData = GoogleSignInUserData(
+  final GoogleSignInUserData expectedUserData = GoogleSignInUserData(
     displayName: 'Foo Bar',
     email: 'foo@example.com',
     id: '123',
@@ -137,26 +137,26 @@ void main() {
       });
 
       testWidgets('signInSilently', (WidgetTester tester) async {
-        GoogleSignInUserData actualUser = (await plugin.signInSilently())!;
+        final GoogleSignInUserData actualUser = (await plugin.signInSilently())!;
 
         expect(actualUser, expectedUserData);
       });
 
       testWidgets('signIn', (WidgetTester tester) async {
-        GoogleSignInUserData actualUser = (await plugin.signIn())!;
+        final GoogleSignInUserData actualUser = (await plugin.signIn())!;
 
         expect(actualUser, expectedUserData);
       });
 
       testWidgets('getTokens', (WidgetTester tester) async {
-        GoogleSignInTokenData actualToken =
+        final GoogleSignInTokenData actualToken =
             await plugin.getTokens(email: expectedUserData.email);
 
         expect(actualToken, expectedTokenData);
       });
 
       testWidgets('requestScopes', (WidgetTester tester) async {
-        bool scopeGranted = await plugin.requestScopes(['newScope']);
+        final bool scopeGranted = await plugin.requestScopes(['newScope']);
 
         expect(scopeGranted, isTrue);
       });

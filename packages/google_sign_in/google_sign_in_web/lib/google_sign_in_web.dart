@@ -94,7 +94,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       client_id: appClientId!,
     ));
 
-    Completer<void> isAuthInitialized = Completer<void>();
+    final Completer<void> isAuthInitialized = Completer<void>();
     _isAuthInitialized = isAuthInitialized.future;
     _isInitCalled = true;
 
@@ -124,7 +124,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     await initialized;
 
     return gapiUserToPluginUserData(
-        await auth2.getAuthInstance()?.currentUser?.get());
+        auth2.getAuthInstance()?.currentUser?.get());
   }
 
   @override
@@ -197,13 +197,13 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<bool> requestScopes(List<String> scopes) async {
     await initialized;
 
-    final currentUser = auth2.getAuthInstance()?.currentUser?.get();
+    final auth2.GoogleUser? currentUser = auth2.getAuthInstance()?.currentUser?.get();
 
     if (currentUser == null) return false;
 
-    final grantedScopes = currentUser.getGrantedScopes() ?? '';
-    final missingScopes =
-        scopes.where((scope) => !grantedScopes.contains(scope));
+    final String grantedScopes = currentUser.getGrantedScopes() ?? '';
+    final Iterable<String> missingScopes =
+        scopes.where((String scope) => !grantedScopes.contains(scope));
 
     if (missingScopes.isEmpty) return true;
 
