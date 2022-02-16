@@ -11,7 +11,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
+import androidx.biometric.BiometricManager;
+
+
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
@@ -21,6 +25,8 @@ import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import org.junit.Test;
+
+import java.util.Collections;
 
 public class LocalAuthTest {
   @Test
@@ -60,5 +66,33 @@ public class LocalAuthTest {
 
     plugin.onDetachedFromActivity();
     assertNull(plugin.getActivity());
+  }
+
+  @Test
+  public void getAvailableBiometrics_CanCheckBiometricsReturnsFalse() {
+    final Activity mockActivity = mock(Activity.class);
+    final Lifecycle mockLifecycle = mock(Lifecycle.class);
+    final FlutterEngine mockFlutterEngine = mock(FlutterEngine.class);
+    final DartExecutor mockDartExecutor = mock(DartExecutor.class);
+    final Context mockContext = mock(Context.class);
+
+    final ActivityPluginBinding mockActivityBinding = mock(ActivityPluginBinding.class);
+    final HiddenLifecycleReference mockLifecycleReference = mock(HiddenLifecycleReference.class);
+    final FlutterPluginBinding mockPluginBinding = mock(FlutterPluginBinding.class);
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    when(mockActivity.getBaseContext()).thenReturn(mockContext);
+    when(mockActivity.getApplicationContext()).thenReturn(mockContext);
+    when(mockActivityBinding.getActivity()).thenReturn(mockActivity);
+    when(mockActivityBinding.getLifecycle()).thenReturn(mockLifecycleReference);
+    when(mockLifecycleReference.getLifecycle()).thenReturn(mockLifecycle);
+    when(mockPluginBinding.getFlutterEngine()).thenReturn(mockFlutterEngine);
+    when(mockFlutterEngine.getDartExecutor()).thenReturn(mockDartExecutor);
+
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    plugin.onAttachedToEngine(mockPluginBinding);
+    plugin.onAttachedToActivity(mockActivityBinding);
+    plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
+    verify(mockResult).success(Collections.emptyList());
   }
 }
