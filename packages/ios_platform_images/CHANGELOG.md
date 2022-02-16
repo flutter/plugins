@@ -1,3 +1,11 @@
+## 0.2.0+4
+
+* Internal code cleanup for stricter analysis options.
+
+## 0.2.0+3
+
+* Internal fix for unused field formal parameter.
+
 ## 0.2.0+2
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.

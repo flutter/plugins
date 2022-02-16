@@ -1,3 +1,11 @@
+## 2.0.7
+
+* Internal code cleanup for stricter analysis options.
+
+## 2.0.6
+
+* Removes dependency on `meta`.
+
 ## 2.0.5
 
 * Adds compatibility with `video_player_platform_interface` 5.0, which does not

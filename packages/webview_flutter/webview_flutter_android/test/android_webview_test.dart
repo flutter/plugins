@@ -32,7 +32,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
-    group('$WebView', () {
+    group('WebView', () {
       late MockTestWebViewHostApi mockPlatformHostApi;
 
       late InstanceManager instanceManager;
@@ -55,9 +55,14 @@ void main() {
         verify(mockPlatformHostApi.create(webViewInstanceId, false));
       });
 
-      test('setWebContentsDebuggingEnabled', () {
+      test('setWebContentsDebuggingEnabled true', () {
         WebView.setWebContentsDebuggingEnabled(true);
         verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+      });
+
+      test('setWebContentsDebuggingEnabled false', () {
+        WebView.setWebContentsDebuggingEnabled(false);
+        verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(false));
       });
 
       test('loadData', () {
@@ -314,7 +319,7 @@ void main() {
       });
     });
 
-    group('$WebSettings', () {
+    group('WebSettings', () {
       late MockTestWebSettingsHostApi mockPlatformHostApi;
 
       late InstanceManager instanceManager;
@@ -440,7 +445,7 @@ void main() {
       });
     });
 
-    group('$JavaScriptChannel', () {
+    group('JavaScriptChannel', () {
       late JavaScriptChannelFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -468,7 +473,7 @@ void main() {
       });
     });
 
-    group('$WebViewClient', () {
+    group('WebViewClient', () {
       late WebViewClientFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -583,7 +588,7 @@ void main() {
       });
     });
 
-    group('$DownloadListener', () {
+    group('DownloadListener', () {
       late DownloadListenerFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -621,7 +626,7 @@ void main() {
       });
     });
 
-    group('$WebChromeClient', () {
+    group('WebChromeClient', () {
       late WebChromeClientFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;

@@ -1,3 +1,12 @@
+## 5.1.0
+
+* Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
+
+## 5.0.2
+
+* Adds the Pigeon definitions used to create the method channel implementation.
+* Internal code cleanup for stricter analysis options.
+
 ## 5.0.1
 
 * Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.

@@ -4,6 +4,8 @@
 
 import 'dart:ui' show hashValues;
 
+import 'package:flutter/foundation.dart';
+
 /// Options used to create a camera with the given
 /// [audio] and [video] media constraints.
 ///
@@ -12,6 +14,7 @@ import 'dart:ui' show hashValues;
 /// with audio and video tracks containing the requested types of media.
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints
+@immutable
 class CameraOptions {
   /// Creates a new instance of [CameraOptions]
   /// with the given [audio] and [video] constraints.
@@ -29,7 +32,7 @@ class CameraOptions {
 
   /// Converts the current instance to a Map.
   Map<String, dynamic> toJson() {
-    return {
+    return <String, Object>{
       'audio': audio.toJson(),
       'video': video.toJson(),
     };
@@ -37,7 +40,9 @@ class CameraOptions {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is CameraOptions &&
         other.audio == audio &&
@@ -51,6 +56,7 @@ class CameraOptions {
 /// Indicates whether the audio track is requested.
 ///
 /// By default, the audio track is not requested.
+@immutable
 class AudioConstraints {
   /// Creates a new instance of [AudioConstraints]
   /// with the given [enabled] constraint.
@@ -64,7 +70,9 @@ class AudioConstraints {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is AudioConstraints && other.enabled == enabled;
   }
@@ -75,6 +83,7 @@ class AudioConstraints {
 
 /// Defines constraints that the video track must have
 /// to be considered acceptable.
+@immutable
 class VideoConstraints {
   /// Creates a new instance of [VideoConstraints]
   /// with the given constraints.
@@ -99,19 +108,29 @@ class VideoConstraints {
 
   /// Converts the current instance to a Map.
   Object toJson() {
-    final json = <String, dynamic>{};
+    final Map<String, dynamic> json = <String, dynamic>{};
 
-    if (width != null) json['width'] = width!.toJson();
-    if (height != null) json['height'] = height!.toJson();
-    if (facingMode != null) json['facingMode'] = facingMode!.toJson();
-    if (deviceId != null) json['deviceId'] = {'exact': deviceId!};
+    if (width != null) {
+      json['width'] = width!.toJson();
+    }
+    if (height != null) {
+      json['height'] = height!.toJson();
+    }
+    if (facingMode != null) {
+      json['facingMode'] = facingMode!.toJson();
+    }
+    if (deviceId != null) {
+      json['deviceId'] = <String, Object>{'exact': deviceId!};
+    }
 
     return json;
   }
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is VideoConstraints &&
         other.facingMode == facingMode &&
@@ -146,15 +165,16 @@ class CameraType {
 }
 
 /// Indicates the direction in which the desired camera should be pointing.
+@immutable
 class FacingModeConstraint {
-  /// Creates a new instance of [FacingModeConstraint]
-  /// with the given [ideal] and [exact] constraints.
-  const FacingModeConstraint._({this.ideal, this.exact});
-
   /// Creates a new instance of [FacingModeConstraint]
   /// with [ideal] constraint set to [type].
   factory FacingModeConstraint(CameraType type) =>
       FacingModeConstraint._(ideal: type);
+
+  /// Creates a new instance of [FacingModeConstraint]
+  /// with the given [ideal] and [exact] constraints.
+  const FacingModeConstraint._({this.ideal, this.exact});
 
   /// Creates a new instance of [FacingModeConstraint]
   /// with [exact] constraint set to [type].
@@ -174,8 +194,8 @@ class FacingModeConstraint {
   final CameraType? exact;
 
   /// Converts the current instance to a Map.
-  Object? toJson() {
-    return {
+  Object toJson() {
+    return <String, Object>{
       if (ideal != null) 'ideal': ideal.toString(),
       if (exact != null) 'exact': exact.toString(),
     };
@@ -183,7 +203,9 @@ class FacingModeConstraint {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is FacingModeConstraint &&
         other.ideal == ideal &&
@@ -200,6 +222,7 @@ class FacingModeConstraint {
 /// The obtained video track will have a size between [minimum] and [maximum]
 /// with ideally a size of [ideal]. The size is determined by
 /// the capabilities of the hardware and the other specified constraints.
+@immutable
 class VideoSizeConstraint {
   /// Creates a new instance of [VideoSizeConstraint] with the given
   /// [minimum], [ideal] and [maximum] constraints.
@@ -221,18 +244,26 @@ class VideoSizeConstraint {
 
   /// Converts the current instance to a Map.
   Object toJson() {
-    final json = <String, dynamic>{};
+    final Map<String, dynamic> json = <String, dynamic>{};
 
-    if (ideal != null) json['ideal'] = ideal;
-    if (minimum != null) json['min'] = minimum;
-    if (maximum != null) json['max'] = maximum;
+    if (ideal != null) {
+      json['ideal'] = ideal;
+    }
+    if (minimum != null) {
+      json['min'] = minimum;
+    }
+    if (maximum != null) {
+      json['max'] = maximum;
+    }
 
     return json;
   }
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is VideoSizeConstraint &&
         other.minimum == minimum &&

@@ -84,9 +84,12 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages plugin_name
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --packages plugin_name
-dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --apk --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --android --packages plugin_name
 ```
+
+Replace `--apk`/`--android` with the platform you want to test against
+(omit it to get a list of valid options).
 
 ### Run Native Tests
 

@@ -1,3 +1,17 @@
+## NEXT
+
+* Adds additional tests for `PlatformInterface` and `MockPlatformInterfaceMixin`.
+
+## 2.1.2
+
+* Updates README to demonstrate `verify` rather than `verifyToken`, and to note
+  that the test mixin applies to fakes as well as mocks.
+* Adds an additional test for `verifyToken`.
+
+## 2.1.1
+
+* Fixes `verify` to work with fake objects, not just mocks.
+
 ## 2.1.0
 
 * Introduce `verify`, which prevents use of `const Object()` as instance token.

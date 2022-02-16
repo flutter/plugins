@@ -60,10 +60,7 @@ abstract class PlatformInterface {
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
   static void verify(PlatformInterface instance, Object token) {
-    if (identical(instance._instanceToken, const Object())) {
-      throw AssertionError('`const Object()` cannot be used as the token.');
-    }
-    _verify(instance, token);
+    _verify(instance, token, preventConstObject: true);
   }
 
   /// Performs the same checks as `verify` but without throwing an
@@ -71,10 +68,14 @@ abstract class PlatformInterface {
   ///
   /// This method will be deprecated in a future release.
   static void verifyToken(PlatformInterface instance, Object token) {
-    _verify(instance, token);
+    _verify(instance, token, preventConstObject: false);
   }
 
-  static void _verify(PlatformInterface instance, Object token) {
+  static void _verify(
+    PlatformInterface instance,
+    Object token, {
+    required bool preventConstObject,
+  }) {
     if (instance is MockPlatformInterfaceMixin) {
       bool assertionsEnabled = false;
       assert(() {
@@ -87,6 +88,10 @@ abstract class PlatformInterface {
       }
       return;
     }
+    if (preventConstObject &&
+        identical(instance._instanceToken, const Object())) {
+      throw AssertionError('`const Object()` cannot be used as the token.');
+    }
     if (!identical(token, instance._instanceToken)) {
       throw AssertionError(
           'Platform interfaces must not be implemented with `implements`');
@@ -94,7 +99,8 @@ abstract class PlatformInterface {
   }
 }
 
-/// A [PlatformInterface] mixin that can be combined with mockito's `Mock`.
+/// A [PlatformInterface] mixin that can be combined with fake or mock objects,
+/// such as test's `Fake` or mockito's `Mock`.
 ///
 /// It passes the [PlatformInterface.verify] check even though it isn't
 /// using `extends`.

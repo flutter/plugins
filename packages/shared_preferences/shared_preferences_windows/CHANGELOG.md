@@ -1,3 +1,11 @@
+## 2.1.0
+
+* Deprecated `SharedPreferencesWindows.instance` in favor of `SharedPreferencesStorePlatform.instance`.
+
+## 2.0.4
+
+* Removes dependency on `meta`.
+
 ## 2.0.3
 
 * Removed obsolete `pluginClass: none` from pubpsec.

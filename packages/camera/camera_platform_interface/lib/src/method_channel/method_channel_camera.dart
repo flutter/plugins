@@ -14,7 +14,6 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
@@ -126,6 +125,16 @@ class MethodChannelCamera extends CameraPlatform {
       <String, dynamic>{
         'cameraId': cameraId,
         'imageFormatGroup': imageFormatGroup.name(),
+      },
+    ).catchError(
+      (Object error, StackTrace stackTrace) {
+        if (error is! PlatformException) {
+          throw error;
+        }
+        _completer.completeError(
+          CameraException(error.code, error.message),
+          stackTrace,
+        );
       },
     );
 
