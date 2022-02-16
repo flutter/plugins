@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 
-
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
