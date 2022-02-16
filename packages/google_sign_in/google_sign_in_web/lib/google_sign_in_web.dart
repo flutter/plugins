@@ -197,7 +197,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<bool> requestScopes(List<String> scopes) async {
     await initialized;
 
-    final auth2.GoogleUser? currentUser = auth2.getAuthInstance()?.currentUser?.get();
+    final auth2.GoogleUser? currentUser =
+        auth2.getAuthInstance()?.currentUser?.get();
 
     if (currentUser == null) return false;
 

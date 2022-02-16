@@ -137,7 +137,8 @@ void main() {
       });
 
       testWidgets('signInSilently', (WidgetTester tester) async {
-        final GoogleSignInUserData actualUser = (await plugin.signInSilently())!;
+        final GoogleSignInUserData actualUser =
+            (await plugin.signInSilently())!;
 
         expect(actualUser, expectedUserData);
       });
