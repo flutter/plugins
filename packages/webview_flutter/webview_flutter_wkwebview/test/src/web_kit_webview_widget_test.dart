@@ -89,18 +89,18 @@ void main() {
       await buildWidget(tester);
     });
 
-    testWidgets('WKUIDelegate.onCreateWebView loadRequest',
+    testWidgets('Requests to open a new window loads request in same window',
         (WidgetTester tester) async {
       await buildWidget(tester);
 
       final dynamic onCreateWebView =
-          verify(mockUIDelegate.setOnCreateWebView(captureAny)).captured.single
+          verify(mockUIDelegate.onCreateWebView = captureAny).captured.single
               as void Function(WKWebViewConfiguration, WKNavigationAction);
 
-      final NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
+      const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
       onCreateWebView(
         mockWebViewConfiguration,
-        WKNavigationAction(
+        const WKNavigationAction(
           request: request,
           targetFrame: WKFrameInfo(isMainFrame: false),
         ),
@@ -296,7 +296,7 @@ void main() {
             .single as MockWKScriptMessageHandler;
 
         final dynamic didReceiveScriptMessage =
-            verify(messageHandler.setDidReceiveScriptMessage(captureAny))
+            verify(messageHandler.didReceiveScriptMessage = captureAny)
                 .captured
                 .single as void Function(
           WKUserContentController userContentController,
@@ -305,7 +305,7 @@ void main() {
 
         didReceiveScriptMessage(
           mockUserContentController,
-          WKScriptMessage(name: 'hello', body: 'A message.'),
+          const WKScriptMessage(name: 'hello', body: 'A message.'),
         );
         verify(mockJavascriptChannelRegistry.onJavascriptChannelMessage(
           'hello',

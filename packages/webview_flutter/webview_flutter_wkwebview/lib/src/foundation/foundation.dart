@@ -4,12 +4,15 @@
 
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
+
 /// A URL load request that is independent of protocol or URL scheme.
 ///
 /// Wraps [NSUrlRequest](https://developer.apple.com/documentation/foundation/nsurlrequest?language=objc).
+@immutable
 class NSUrlRequest {
   /// Constructs an [NSUrlRequest].
-  NSUrlRequest({
+  const NSUrlRequest({
     required this.url,
     this.httpMethod,
     this.httpBody,

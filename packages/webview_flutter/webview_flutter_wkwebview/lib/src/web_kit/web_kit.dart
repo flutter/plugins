@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
+
 import '../foundation/foundation.dart';
 
 /// Times at which to inject script content into a webpage.
@@ -47,9 +49,10 @@ enum WKAudiovisualMediaType {
 /// An object that contains information about an action that causes navigation to occur.
 ///
 /// Wraps [WKNavigationAction](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
+@immutable
 class WKNavigationAction {
   /// Constructs a [WKNavigationAction].
-  WKNavigationAction({required this.request, required this.targetFrame});
+  const WKNavigationAction({required this.request, required this.targetFrame});
 
   /// The URL request object associated with the navigation action.
   final NSUrlRequest request;
@@ -64,9 +67,10 @@ class WKNavigationAction {
 /// uniquely identify a frame across multiple delegate method calls.
 ///
 /// Wraps [WKFrameInfo](https://developer.apple.com/documentation/webkit/wkframeinfo?language=objc).
+@immutable
 class WKFrameInfo {
   /// Construct a [WKFrameInfo].
-  WKFrameInfo({required this.isMainFrame});
+  const WKFrameInfo({required this.isMainFrame});
 
   /// Indicates whether the frame is the web site's main frame or a subframe.
   final bool isMainFrame;
@@ -75,9 +79,10 @@ class WKFrameInfo {
 /// A script that the web view injects into a webpage.
 ///
 /// Wraps [WKUserScript](https://developer.apple.com/documentation/webkit/wkuserscript?language=objc).
+@immutable
 class WKUserScript {
   /// Constructs a [UserScript].
-  WKUserScript(
+  const WKUserScript(
     this.source,
     this.injectionTime, {
     required this.isMainFrameOnly,
@@ -96,9 +101,10 @@ class WKUserScript {
 /// An object that encapsulates a message sent by JavaScript code from a webpage.
 ///
 /// Wraps [WKScriptMessage](https://developer.apple.com/documentation/webkit/wkscriptmessage?language=objc).
+@immutable
 class WKScriptMessage {
   /// Constructs a [WKScriptMessage].
-  WKScriptMessage({required this.name, this.body});
+  const WKScriptMessage({required this.name, this.body});
 
   /// The name of the message handler to which the message is sent.
   final String name;
@@ -118,7 +124,7 @@ class WKScriptMessageHandler {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
-  Future<void> setDidReceiveScriptMessage(
+  set didReceiveScriptMessage(
     void Function(
       WKUserContentController userContentController,
       WKScriptMessage message,
@@ -237,7 +243,7 @@ class WKWebViewConfiguration {
 /// Wraps [WKUIDelegate](https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc).
 class WKUIDelegate {
   /// Indicates a new [WebView] was requested to be created with [configuration].
-  void setOnCreateWebView(
+  set onCreateWebView(
     void Function(
       WKWebViewConfiguration configuration,
       WKNavigationAction navigationAction,

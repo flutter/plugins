@@ -89,14 +89,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     );
 
     webView.uiDelegate = uiDelegate;
-    uiDelegate.setOnCreateWebView((
+    uiDelegate.onCreateWebView = (
       WKWebViewConfiguration configuration,
       WKNavigationAction navigationAction,
     ) {
       if (!navigationAction.targetFrame.isMainFrame) {
         webView.loadRequest(navigationAction.request);
       }
-    });
+    };
   }
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
@@ -172,17 +172,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         (String channelName) {
           final WKScriptMessageHandler handler =
               webViewProxy.createScriptMessageHandler()
-                ..setDidReceiveScriptMessage(
-                  (
-                    WKUserContentController userContentController,
-                    WKScriptMessage message,
-                  ) {
-                    javascriptChannelRegistry.onJavascriptChannelMessage(
-                      message.name,
-                      message.body!.toString(),
-                    );
-                  },
-                );
+                ..didReceiveScriptMessage = (
+                  WKUserContentController userContentController,
+                  WKScriptMessage message,
+                ) {
+                  javascriptChannelRegistry.onJavascriptChannelMessage(
+                    message.name,
+                    message.body!.toString(),
+                  );
+                };
           _scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
