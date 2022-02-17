@@ -1,3 +1,7 @@
+## 0.9.4+14
+
+* Restores compatibility with Flutter 2.5 and 2.8.
+
 ## 0.9.4+13
 
 * Updates iOS camera's photo capture delegate reference on a background queue to prevent potential race conditions, and some related internal code cleanup.
