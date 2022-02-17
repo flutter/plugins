@@ -18,9 +18,12 @@ class _TestGoogleIdentity extends GoogleIdentity {
     this.photoUrl,
   });
 
+  @override
   final String id;
+  @override
   final String email;
 
+  @override
   final String? photoUrl;
 
   @override
@@ -97,7 +100,7 @@ void main() {
       id: 'userId',
       photoUrl: 'photoUrl',
     );
-    tester.binding.window.physicalSizeTestValue = Size(100, 100);
+    tester.binding.window.physicalSizeTestValue = const Size(100, 100);
 
     await HttpOverrides.runZoned(
       () async {

@@ -99,9 +99,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response.idToken == null) {
-      response.idToken = _idToken;
-    }
+    response.idToken ??= _idToken;
 
     return GoogleSignInAuthentication._(response);
   }
@@ -113,10 +111,10 @@ class GoogleSignInAccount implements GoogleIdentity {
   Future<Map<String, String>> get authHeaders async {
     final String? token = (await authentication).accessToken;
     return <String, String>{
-      "Authorization": "Bearer $token",
+      'Authorization': 'Bearer $token',
       // TODO(kevmoo): Use the correct value once it's available from authentication
       // See https://github.com/flutter/flutter/issues/80905
-      "X-Goog-AuthUser": "0",
+      'X-Goog-AuthUser': '0',
     };
   }
 
@@ -228,7 +226,7 @@ class GoogleSignIn {
   /// Client ID being used to connect to google sign-in. Only supported on web.
   final String? clientId;
 
-  StreamController<GoogleSignInAccount?> _currentUserController =
+  final StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.

@@ -7,9 +7,9 @@
 import 'dart:async';
 import 'dart:convert' show json;
 
-import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   // Optional clientId
@@ -54,7 +54,7 @@ class SignInDemoState extends State<SignInDemo> {
 
   Future<void> _handleGetContact(GoogleSignInAccount user) async {
     setState(() {
-      _contactText = "Loading contact info...";
+      _contactText = 'Loading contact info...';
     });
     final http.Response response = await http.get(
       Uri.parse('https://people.googleapis.com/v1/people/me/connections'
@@ -63,8 +63,8 @@ class SignInDemoState extends State<SignInDemo> {
     );
     if (response.statusCode != 200) {
       setState(() {
-        _contactText = "People API gave a ${response.statusCode} "
-            "response. Check logs for details.";
+        _contactText = 'People API gave a ${response.statusCode} '
+            'response. Check logs for details.';
       });
       print('People API ${response.statusCode} response: ${response.body}');
       return;
@@ -73,9 +73,9 @@ class SignInDemoState extends State<SignInDemo> {
     final String? namedContact = _pickFirstNamedContact(data);
     setState(() {
       if (namedContact != null) {
-        _contactText = "I see you know $namedContact!";
+        _contactText = 'I see you know $namedContact!';
       } else {
-        _contactText = "No contacts to display.";
+        _contactText = 'No contacts to display.';
       }
     });
   }
@@ -109,7 +109,7 @@ class SignInDemoState extends State<SignInDemo> {
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   Widget _buildBody() {
-    GoogleSignInAccount? user = _currentUser;
+    final GoogleSignInAccount? user = _currentUser;
     if (user != null) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -121,7 +121,7 @@ class SignInDemoState extends State<SignInDemo> {
             title: Text(user.displayName ?? ''),
             subtitle: Text(user.email),
           ),
-          const Text("Signed in successfully."),
+          const Text('Signed in successfully.'),
           Text(_contactText),
           ElevatedButton(
             child: const Text('SIGN OUT'),
@@ -137,7 +137,7 @@ class SignInDemoState extends State<SignInDemo> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          const Text("You are not currently signed in."),
+          const Text('You are not currently signed in.'),
           ElevatedButton(
             child: const Text('SIGN IN'),
             onPressed: _handleSignIn,
