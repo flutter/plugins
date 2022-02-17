@@ -16,7 +16,7 @@ Enables Google Sign-In in Flutter apps.
   s.public_header_files = 'Classes/**/*.h'
   s.module_map = 'Classes/FLTGoogleSignInPlugin.modulemap'
   s.dependency 'Flutter'
-  s.dependency 'GoogleSignIn', '~> 5.0'
+  s.dependency 'GoogleSignIn', '~> 6.1.0'
   s.static_framework = true
 
   s.platform = :ios, '9.0'
