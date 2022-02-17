@@ -34,8 +34,7 @@ class Win32Window {
   // consistent size to will treat the width height passed in to this function
   // as logical pixels and scale to appropriate for the default monitor. Returns
   // true if the window was created successfully.
-  bool CreateAndShow(const std::wstring& title,
-                     const Point& origin,
+  bool CreateAndShow(const std::wstring& title, const Point& origin,
                      const Size& size);
 
   // Release OS resources associated with window.
@@ -58,8 +57,7 @@ class Win32Window {
   // Processes and route salient window messages for mouse handling,
   // size change and DPI. Delegates handling of these to member overloads that
   // inheriting classes can handle.
-  virtual LRESULT MessageHandler(HWND window,
-                                 UINT const message,
+  virtual LRESULT MessageHandler(HWND window, UINT const message,
                                  WPARAM const wparam,
                                  LPARAM const lparam) noexcept;
 
@@ -78,8 +76,7 @@ class Win32Window {
   // non-client DPI scaling so that the non-client area automatically
   // responsponds to changes in DPI. All other messages are handled by
   // MessageHandler.
-  static LRESULT CALLBACK WndProc(HWND const window,
-                                  UINT const message,
+  static LRESULT CALLBACK WndProc(HWND const window, UINT const message,
                                   WPARAM const wparam,
                                   LPARAM const lparam) noexcept;
 

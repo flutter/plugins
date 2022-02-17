@@ -1,4 +1,4 @@
-# image\_picker\_for\_windows
+# image\_picker\_windows
 
 A Windows implementation of [`image_picker`][1].
 
@@ -13,11 +13,11 @@ The argument `maxDuration` is not supported on Windows.
 ### Import the package
 
 This package is not yet [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin), which means you need to add 
-not only the `image_picker`, as well as the `image_picker_for_windows`.
+not only the `image_picker`, as well as the `image_picker_windows`.
 
 ### Use the plugin
 
-You should be able to use `package:image_picker` _almost_ as normal.
+You should be able to use `package:image_picker` _almost_ as normal, since this package is not fully featured yet.
 
 If you want to use the path directly, your code would need look like this:
 

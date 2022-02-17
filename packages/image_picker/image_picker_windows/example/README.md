@@ -1,6 +1,6 @@
-# image_picker_for_windows_example
+# image_picker_windows_example
 
-Demonstrates how to use the image_picker_for_windows plugin.
+Demonstrates how to use the image_picker_windows plugin.
 
 ## Getting Started
 
