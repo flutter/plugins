@@ -2,6 +2,10 @@
 
 * Fixes an integration test race condition.
 
+## 2.7.2
+
+* IOS Webview instances share the same local storage.
+
 ## 2.7.1
 
 * Fixes header import for cookie manager to be relative only.
