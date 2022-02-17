@@ -4,16 +4,17 @@
 
 import 'dart:async';
 import 'dart:html';
-import 'src/shims/dart_ui.dart' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
+import 'src/shims/dart_ui.dart' as ui;
+
 // An error code value to error name Map.
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
-const Map<int, String> _kErrorValueToErrorName = {
+const Map<int, String> _kErrorValueToErrorName = <int, String>{
   1: 'MEDIA_ERR_ABORTED',
   2: 'MEDIA_ERR_NETWORK',
   3: 'MEDIA_ERR_DECODE',
@@ -22,7 +23,7 @@ const Map<int, String> _kErrorValueToErrorName = {
 
 // An error code value to description Map.
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
-const Map<int, String> _kErrorValueToErrorDescription = {
+const Map<int, String> _kErrorValueToErrorDescription = <int, String>{
   1: 'The user canceled the fetching of the video.',
   2: 'A network error occurred while fetching the video, despite having previously been available.',
   3: 'An error occurred while trying to decode the video, despite having previously been determined to be usable.',
@@ -43,7 +44,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     VideoPlayerPlatform.instance = VideoPlayerPlugin();
   }
 
-  Map<int, _VideoPlayer> _videoPlayers = <int, _VideoPlayer>{};
+  final Map<int, _VideoPlayer> _videoPlayers = <int, _VideoPlayer>{};
 
   int _textureCounter = 1;
 
@@ -56,12 +57,13 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   Future<void> dispose(int textureId) async {
     _videoPlayers[textureId]!.dispose();
     _videoPlayers.remove(textureId);
-    return null;
+    return;
   }
 
   void _disposeAllPlayers() {
-    _videoPlayers.values
-        .forEach((_VideoPlayer videoPlayer) => videoPlayer.dispose());
+    for (final _VideoPlayer videoPlayer in _videoPlayers.values) {
+      videoPlayer.dispose();
+    }
     _videoPlayers.clear();
   }
 
@@ -86,10 +88,10 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         uri = assetUrl;
         break;
       case DataSourceType.file:
-        return Future.error(UnimplementedError(
+        return Future<int>.error(UnimplementedError(
             'web implementation of video_player cannot play local files'));
       case DataSourceType.contentUri:
-        return Future.error(UnimplementedError(
+        return Future<int>.error(UnimplementedError(
             'web implementation of video_player cannot play content uri'));
     }
 
@@ -225,7 +227,7 @@ class _VideoPlayer {
       // The Event itself (_) doesn't contain info about the actual error.
       // We need to look at the HTMLMediaElement.error.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
-      MediaError error = videoElement.error!;
+      final MediaError error = videoElement.error!;
       eventController.addError(PlatformException(
         code: _kErrorValueToErrorName[error.code]!,
         message: error.message != '' ? error.message : _kDefaultErrorMessage,
@@ -247,18 +249,18 @@ class _VideoPlayer {
   }
 
   Future<void> play() {
-    return videoElement.play().catchError((e) {
+    return videoElement.play().catchError((Object e) {
       // play() attempts to begin playback of the media. It returns
       // a Promise which can get rejected in case of failure to begin
       // playback for any reason, such as permission issues.
       // The rejection handler is called with a DomException.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play
-      DomException exception = e;
+      final DomException exception = e as DomException;
       eventController.addError(PlatformException(
         code: exception.name,
         message: exception.message,
       ));
-    }, test: (e) => e is DomException);
+    }, test: (Object e) => e is DomException);
   }
 
   void pause() {
@@ -270,7 +272,7 @@ class _VideoPlayer {
   }
 
   void setVolume(double value) {
-    // TODO: Do we need to expose a "muted" API? https://github.com/flutter/flutter/issues/60721
+    // TODO(ditman): Do we need to expose a "muted" API? https://github.com/flutter/flutter/issues/60721
     if (value > 0.0) {
       videoElement.muted = false;
     } else {

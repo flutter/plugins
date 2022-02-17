@@ -4,6 +4,8 @@
 
 #import "FLTCam.h"
 #import "FLTCam_Test.h"
+#import "FLTSavePhotoDelegate.h"
+#import "QueueHelper.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
@@ -41,71 +43,6 @@
 }
 @end
 
-@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
-@property(readonly, nonatomic) NSString *path;
-@property(readonly, nonatomic) FLTThreadSafeFlutterResult *result;
-@end
-
-@implementation FLTSavePhotoDelegate {
-  /// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
-  FLTSavePhotoDelegate *selfReference;
-}
-
-- initWithPath:(NSString *)path result:(FLTThreadSafeFlutterResult *)result {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  _path = path;
-  selfReference = self;
-  _result = result;
-  return self;
-}
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
-                previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
-                        resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
-                         bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
-                                   error:(NSError *)error API_AVAILABLE(ios(10)) {
-  selfReference = nil;
-  if (error) {
-    [_result sendError:error];
-    return;
-  }
-
-  NSData *data = [AVCapturePhotoOutput
-      JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
-                            previewPhotoSampleBuffer:previewPhotoSampleBuffer];
-
-  // TODO(sigurdm): Consider writing file asynchronously.
-  bool success = [data writeToFile:_path atomically:YES];
-
-  if (!success) {
-    [_result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
-    return;
-  }
-  [_result sendSuccessWithData:_path];
-}
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-    didFinishProcessingPhoto:(AVCapturePhoto *)photo
-                       error:(NSError *)error API_AVAILABLE(ios(11.0)) {
-  selfReference = nil;
-  if (error) {
-    [_result sendError:error];
-    return;
-  }
-
-  NSData *photoData = [photo fileDataRepresentation];
-
-  bool success = [photoData writeToFile:_path atomically:YES];
-  if (!success) {
-    [_result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
-    return;
-  }
-  [_result sendSuccessWithData:_path];
-}
-@end
-
 @interface FLTCam () <AVCaptureVideoDataOutputSampleBufferDelegate,
                       AVCaptureAudioDataOutputSampleBufferDelegate>
 
@@ -114,7 +51,6 @@
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
-@property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
 @property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
 @property(readonly, nonatomic) CGSize captureSize;
@@ -138,8 +74,11 @@
 @property(assign, nonatomic) CMTime audioTimeOffset;
 @property(nonatomic) CMMotionManager *motionManager;
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
-// All FLTCam's state access and capture session related operations should be on run on this queue.
+/// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
+/// The queue on which captured photos (not videos) are written to disk.
+/// Videos are written to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
+@property(strong, nonatomic) dispatch_queue_t photoIOQueue;
 @property(assign, nonatomic) UIDeviceOrientation deviceOrientation;
 @end
 
@@ -162,6 +101,7 @@ NSString *const errorMethod = @"error";
   }
   _enableAudio = enableAudio;
   _captureSessionQueue = captureSessionQueue;
+  _photoIOQueue = dispatch_queue_create("io.flutter.camera.photoIOQueue", NULL);
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
@@ -170,6 +110,7 @@ NSString *const errorMethod = @"error";
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
   _videoFormat = kCVPixelFormatType_32BGRA;
+  _inProgressSavePhotoDelegates = [NSMutableDictionary dictionary];
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -280,9 +221,30 @@ NSString *const errorMethod = @"error";
     return;
   }
 
-  [_capturePhotoOutput capturePhotoWithSettings:settings
-                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                                    result:result]];
+  FLTSavePhotoDelegate *savePhotoDelegate = [[FLTSavePhotoDelegate alloc]
+           initWithPath:path
+                ioQueue:self.photoIOQueue
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
+        dispatch_async(self.captureSessionQueue, ^{
+          // Dispatch back to capture session queue to delete reference.
+          // Retain cycle is broken after the dictionary entry is cleared.
+          // This is to keep the behavior with the previous `selfReference` approach in the
+          // FLTSavePhotoDelegate, where delegate is released only after capture completion.
+          [self.inProgressSavePhotoDelegates removeObjectForKey:@(settings.uniqueID)];
+        });
+
+        if (error) {
+          [result sendError:error];
+        } else {
+          NSAssert(path, @"Path must not be nil if no error.");
+          [result sendSuccessWithData:path];
+        }
+      }];
+
+  NSAssert(dispatch_get_specific(FLTCaptureSessionQueueSpecific),
+           @"save photo delegate references must be updated on the capture session queue");
+  self.inProgressSavePhotoDelegates[@(settings.uniqueID)] = savePhotoDelegate;
+  [self.capturePhotoOutput capturePhotoWithSettings:settings delegate:savePhotoDelegate];
 }
 
 - (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:

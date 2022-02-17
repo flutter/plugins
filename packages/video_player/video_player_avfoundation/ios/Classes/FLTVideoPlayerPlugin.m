@@ -5,7 +5,7 @@
 #import "FLTVideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
-#import "messages.h"
+#import "messages.g.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -43,7 +43,7 @@
 @property(nonatomic, readonly) BOOL isInitialized;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
-                httpHeaders:(NSDictionary<NSString *, NSString *> *)headers;
+                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
 @end
 
 static void *timeRangeContext = &timeRangeContext;
@@ -57,7 +57,7 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
   NSString *path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:nil];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:@{}];
 }
 
 - (void)addObservers:(AVPlayerItem *)item {
@@ -177,9 +177,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
-                httpHeaders:(NSDictionary<NSString *, NSString *> *)headers {
+                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers {
   NSDictionary<NSString *, id> *options = nil;
-  if (headers != nil && [headers count] != 0) {
+  if ([headers count] != 0) {
     options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
   }
   AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
@@ -354,9 +354,13 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     }
 
     BOOL hasVideoTracks = [asset tracksWithMediaType:AVMediaTypeVideo].count != 0;
+    BOOL hasNoTracks = asset.tracks.count == 0;
 
-    // The player has not yet initialized when it contains video tracks.
-    if (hasVideoTracks && height == CGSizeZero.height && width == CGSizeZero.width) {
+    // The player has not yet initialized when it has no size, unless it is an audio-only track.
+    // HLS m3u8 video files never load any tracks, and are also not yet initialized until they have
+    // a size.
+    if ((hasVideoTracks || hasNoTracks) && height == CGSizeZero.height &&
+        width == CGSizeZero.width) {
       return;
     }
     // The player may be initialized but still needs to determine the duration.
@@ -540,8 +544,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
   self.playersByTextureId[@(textureId)] = player;
-  FLTTextureMessage *result = [[FLTTextureMessage alloc] init];
-  result.textureId = @(textureId);
+  FLTTextureMessage *result = [FLTTextureMessage makeWithTextureId:@(textureId)];
   return result;
 }
 
@@ -624,8 +627,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (FLTPositionMessage *)position:(FLTTextureMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  FLTPositionMessage *result = [[FLTPositionMessage alloc] init];
-  result.position = @([player position]);
+  FLTPositionMessage *result = [FLTPositionMessage makeWithTextureId:input.textureId
+                                                            position:@([player position])];
   return result;
 }
 
