@@ -12,7 +12,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$MethodChannelImagePicker', () {
-    MethodChannelImagePicker picker = MethodChannelImagePicker();
+    final MethodChannelImagePicker picker = MethodChannelImagePicker();
 
     final List<MethodCall> log = <MethodCall>[];
     dynamic returnValue = '';
@@ -223,7 +223,7 @@ void main() {
 
     group('#pickMultiImage', () {
       test('calls the method correctly', () async {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         await picker.pickMultiImage();
 
         expect(
@@ -239,7 +239,7 @@ void main() {
       });
 
       test('passes the width and height arguments correctly', () async {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         await picker.pickMultiImage();
         await picker.pickMultiImage(
           maxWidth: 10.0,
@@ -308,7 +308,7 @@ void main() {
       });
 
       test('does not accept a negative width or height argument', () {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.pickMultiImage(maxWidth: -1.0),
           throwsArgumentError,
@@ -321,7 +321,7 @@ void main() {
       });
 
       test('does not accept a invalid imageQuality argument', () {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.pickMultiImage(imageQuality: -1),
           throwsArgumentError,
@@ -691,7 +691,7 @@ void main() {
 
     group('#getMultiImage', () {
       test('calls the method correctly', () async {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         await picker.getMultiImage();
 
         expect(
@@ -707,7 +707,7 @@ void main() {
       });
 
       test('passes the width and height arguments correctly', () async {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         await picker.getMultiImage();
         await picker.getMultiImage(
           maxWidth: 10.0,
@@ -776,7 +776,7 @@ void main() {
       });
 
       test('does not accept a negative width or height argument', () {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.getMultiImage(maxWidth: -1.0),
           throwsArgumentError,
@@ -789,7 +789,7 @@ void main() {
       });
 
       test('does not accept a invalid imageQuality argument', () {
-        returnValue = ['0', '1'];
+        returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.getMultiImage(imageQuality: -1),
           throwsArgumentError,
@@ -934,7 +934,7 @@ void main() {
           return <String, dynamic>{
             'type': 'image',
             'path': '/example/path1',
-            'pathList': ['/example/path0', '/example/path1'],
+            'pathList': <dynamic>['/example/path0', '/example/path1'],
           };
         });
         final LostDataResponse response = await picker.getLostData();

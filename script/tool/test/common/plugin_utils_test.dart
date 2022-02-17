@@ -25,109 +25,109 @@ void main() {
       final RepositoryPackage plugin =
           RepositoryPackage(createFakePlugin('plugin', packagesDir));
 
-      expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformIos, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformLinux, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformMacos, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformWeb, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformWindows, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformAndroid, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformIOS, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformLinux, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformMacOS, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformWeb, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformWindows, plugin), isFalse);
     });
 
     test('all platforms', () async {
       final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
           'plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
-            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
-            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
-            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+            platformAndroid: const PlatformDetails(PlatformSupport.inline),
+            platformIOS: const PlatformDetails(PlatformSupport.inline),
+            platformLinux: const PlatformDetails(PlatformSupport.inline),
+            platformMacOS: const PlatformDetails(PlatformSupport.inline),
+            platformWeb: const PlatformDetails(PlatformSupport.inline),
+            platformWindows: const PlatformDetails(PlatformSupport.inline),
           }));
 
-      expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformIos, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformLinux, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformMacos, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformWeb, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformWindows, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformAndroid, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformIOS, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformLinux, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformMacOS, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformWeb, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformWindows, plugin), isTrue);
     });
 
     test('some platforms', () async {
       final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
           'plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
-            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+            platformAndroid: const PlatformDetails(PlatformSupport.inline),
+            platformLinux: const PlatformDetails(PlatformSupport.inline),
+            platformWeb: const PlatformDetails(PlatformSupport.inline),
           }));
 
-      expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformIos, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformLinux, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformMacos, plugin), isFalse);
-      expect(pluginSupportsPlatform(kPlatformWeb, plugin), isTrue);
-      expect(pluginSupportsPlatform(kPlatformWindows, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformAndroid, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformIOS, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformLinux, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformMacOS, plugin), isFalse);
+      expect(pluginSupportsPlatform(platformWeb, plugin), isTrue);
+      expect(pluginSupportsPlatform(platformWindows, plugin), isFalse);
     });
 
     test('inline plugins are only detected as inline', () async {
       final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
           'plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
-            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
-            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
-            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+            platformAndroid: const PlatformDetails(PlatformSupport.inline),
+            platformIOS: const PlatformDetails(PlatformSupport.inline),
+            platformLinux: const PlatformDetails(PlatformSupport.inline),
+            platformMacOS: const PlatformDetails(PlatformSupport.inline),
+            platformWeb: const PlatformDetails(PlatformSupport.inline),
+            platformWindows: const PlatformDetails(PlatformSupport.inline),
           }));
 
       expect(
-          pluginSupportsPlatform(kPlatformAndroid, plugin,
+          pluginSupportsPlatform(platformAndroid, plugin,
               requiredMode: PlatformSupport.inline),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformAndroid, plugin,
+          pluginSupportsPlatform(platformAndroid, plugin,
               requiredMode: PlatformSupport.federated),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformIos, plugin,
+          pluginSupportsPlatform(platformIOS, plugin,
               requiredMode: PlatformSupport.inline),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformIos, plugin,
+          pluginSupportsPlatform(platformIOS, plugin,
               requiredMode: PlatformSupport.federated),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformLinux, plugin,
+          pluginSupportsPlatform(platformLinux, plugin,
               requiredMode: PlatformSupport.inline),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformLinux, plugin,
+          pluginSupportsPlatform(platformLinux, plugin,
               requiredMode: PlatformSupport.federated),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformMacos, plugin,
+          pluginSupportsPlatform(platformMacOS, plugin,
               requiredMode: PlatformSupport.inline),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformMacos, plugin,
+          pluginSupportsPlatform(platformMacOS, plugin,
               requiredMode: PlatformSupport.federated),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformWeb, plugin,
+          pluginSupportsPlatform(platformWeb, plugin,
               requiredMode: PlatformSupport.inline),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWeb, plugin,
+          pluginSupportsPlatform(platformWeb, plugin,
               requiredMode: PlatformSupport.federated),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               requiredMode: PlatformSupport.inline),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               requiredMode: PlatformSupport.federated),
           isFalse);
     });
@@ -136,60 +136,60 @@ void main() {
       final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
           'plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.federated),
-            kPlatformIos: const PlatformDetails(PlatformSupport.federated),
-            kPlatformLinux: const PlatformDetails(PlatformSupport.federated),
-            kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
-            kPlatformWeb: const PlatformDetails(PlatformSupport.federated),
-            kPlatformWindows: const PlatformDetails(PlatformSupport.federated),
+            platformAndroid: const PlatformDetails(PlatformSupport.federated),
+            platformIOS: const PlatformDetails(PlatformSupport.federated),
+            platformLinux: const PlatformDetails(PlatformSupport.federated),
+            platformMacOS: const PlatformDetails(PlatformSupport.federated),
+            platformWeb: const PlatformDetails(PlatformSupport.federated),
+            platformWindows: const PlatformDetails(PlatformSupport.federated),
           }));
 
       expect(
-          pluginSupportsPlatform(kPlatformAndroid, plugin,
+          pluginSupportsPlatform(platformAndroid, plugin,
               requiredMode: PlatformSupport.federated),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformAndroid, plugin,
+          pluginSupportsPlatform(platformAndroid, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformIos, plugin,
+          pluginSupportsPlatform(platformIOS, plugin,
               requiredMode: PlatformSupport.federated),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformIos, plugin,
+          pluginSupportsPlatform(platformIOS, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformLinux, plugin,
+          pluginSupportsPlatform(platformLinux, plugin,
               requiredMode: PlatformSupport.federated),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformLinux, plugin,
+          pluginSupportsPlatform(platformLinux, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformMacos, plugin,
+          pluginSupportsPlatform(platformMacOS, plugin,
               requiredMode: PlatformSupport.federated),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformMacos, plugin,
+          pluginSupportsPlatform(platformMacOS, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformWeb, plugin,
+          pluginSupportsPlatform(platformWeb, plugin,
               requiredMode: PlatformSupport.federated),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWeb, plugin,
+          pluginSupportsPlatform(platformWeb, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               requiredMode: PlatformSupport.federated),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
     });
@@ -199,16 +199,16 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          platformWindows: const PlatformDetails(PlatformSupport.inline),
         },
       ));
 
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWin32),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWinUwp),
           isFalse);
     });
@@ -217,18 +217,18 @@ void main() {
       final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
           'plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformWindows: const PlatformDetails(
+            platformWindows: const PlatformDetails(
               PlatformSupport.federated,
               variants: <String>[platformVariantWin32, platformVariantWinUwp],
             ),
           }));
 
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWin32),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWinUwp),
           isTrue);
     });
@@ -237,18 +237,18 @@ void main() {
       final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
           'plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformWindows: const PlatformDetails(
+            platformWindows: const PlatformDetails(
               PlatformSupport.federated,
               variants: <String>[platformVariantWin32],
             ),
           }));
 
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWin32),
           isTrue);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWinUwp),
           isFalse);
     });
@@ -258,17 +258,17 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+          platformWindows: const PlatformDetails(PlatformSupport.federated,
               variants: <String>[platformVariantWinUwp]),
         },
       ));
 
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWin32),
           isFalse);
       expect(
-          pluginSupportsPlatform(kPlatformWindows, plugin,
+          pluginSupportsPlatform(platformWindows, plugin,
               variant: platformVariantWinUwp),
           isTrue);
     });
@@ -280,11 +280,11 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       ));
 
-      expect(pluginHasNativeCodeForPlatform(kPlatformWeb, plugin), isFalse);
+      expect(pluginHasNativeCodeForPlatform(platformWeb, plugin), isFalse);
     });
 
     test('returns false for a native-only plugin', () async {
@@ -292,15 +292,15 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          platformLinux: const PlatformDetails(PlatformSupport.inline),
+          platformMacOS: const PlatformDetails(PlatformSupport.inline),
+          platformWindows: const PlatformDetails(PlatformSupport.inline),
         },
       ));
 
-      expect(pluginHasNativeCodeForPlatform(kPlatformLinux, plugin), isTrue);
-      expect(pluginHasNativeCodeForPlatform(kPlatformMacos, plugin), isTrue);
-      expect(pluginHasNativeCodeForPlatform(kPlatformWindows, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(platformLinux, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(platformMacOS, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(platformWindows, plugin), isTrue);
     });
 
     test('returns true for a native+Dart plugin', () async {
@@ -308,18 +308,18 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline,
+          platformLinux: const PlatformDetails(PlatformSupport.inline,
               hasNativeCode: true, hasDartCode: true),
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline,
+          platformMacOS: const PlatformDetails(PlatformSupport.inline,
               hasNativeCode: true, hasDartCode: true),
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+          platformWindows: const PlatformDetails(PlatformSupport.inline,
               hasNativeCode: true, hasDartCode: true),
         },
       ));
 
-      expect(pluginHasNativeCodeForPlatform(kPlatformLinux, plugin), isTrue);
-      expect(pluginHasNativeCodeForPlatform(kPlatformMacos, plugin), isTrue);
-      expect(pluginHasNativeCodeForPlatform(kPlatformWindows, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(platformLinux, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(platformMacOS, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(platformWindows, plugin), isTrue);
     });
 
     test('returns false for a Dart-only plugin', () async {
@@ -327,18 +327,18 @@ void main() {
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline,
+          platformLinux: const PlatformDetails(PlatformSupport.inline,
               hasNativeCode: false, hasDartCode: true),
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline,
+          platformMacOS: const PlatformDetails(PlatformSupport.inline,
               hasNativeCode: false, hasDartCode: true),
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+          platformWindows: const PlatformDetails(PlatformSupport.inline,
               hasNativeCode: false, hasDartCode: true),
         },
       ));
 
-      expect(pluginHasNativeCodeForPlatform(kPlatformLinux, plugin), isFalse);
-      expect(pluginHasNativeCodeForPlatform(kPlatformMacos, plugin), isFalse);
-      expect(pluginHasNativeCodeForPlatform(kPlatformWindows, plugin), isFalse);
+      expect(pluginHasNativeCodeForPlatform(platformLinux, plugin), isFalse);
+      expect(pluginHasNativeCodeForPlatform(platformMacOS, plugin), isFalse);
+      expect(pluginHasNativeCodeForPlatform(platformWindows, plugin), isFalse);
     });
   });
 }
