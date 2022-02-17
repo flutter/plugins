@@ -97,9 +97,9 @@ void main() {
     expect(api.items['flutter.StringList'], <String>['hi']);
   });
 
-  test('setValueMap', () {
+  test('setValue with unsupported type', () {
     expect(() async {
-      await plugin.setValue('flutter.Map', 'key', <String, String>{});
+      await plugin.setValue('Map', 'flutter.key', <String, String>{});
     }, throwsA(isA<PlatformException>()));
   });
 }

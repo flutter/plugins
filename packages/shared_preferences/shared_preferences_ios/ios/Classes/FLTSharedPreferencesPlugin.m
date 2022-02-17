@@ -29,6 +29,7 @@ static NSMutableDictionary *getAllPrefs() {
   UserDefaultsApiSetup(registrar.messenger, plugin);
 }
 
+// Must not return nil unless "error" is set.
 - (nullable NSDictionary<NSString *, id> *)getAllWithError:
     (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   return getAllPrefs();
