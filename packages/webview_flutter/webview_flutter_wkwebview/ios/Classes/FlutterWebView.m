@@ -76,7 +76,6 @@
   FLTWKProgressionDelegate *_progressionDelegate;
 }
 
-
 + (WKProcessPool *)commonPool {
   static WKProcessPool *sWKProcessPool;
   static dispatch_once_t onceToken;
