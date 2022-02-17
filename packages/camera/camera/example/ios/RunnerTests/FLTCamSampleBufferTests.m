@@ -8,11 +8,11 @@
 @import XCTest;
 #import <OCMock/OCMock.h>
 
-@interface SampleBufferQueueTests : XCTestCase
+@interface FLTCamSampleBufferTests : XCTestCase
 
 @end
 
-@implementation SampleBufferQueueTests
+@implementation FLTCamSampleBufferTests
 
 - (void)testSampleBufferCallbackQueueMustBeCaptureSessionQueue {
   id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
