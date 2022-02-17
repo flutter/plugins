@@ -5,43 +5,48 @@
 import 'dart:async';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:file_selector_windows/file_selector_windows.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+
+const List<String> _imageFormats = <String>[
+  'jpg',
+  'jpeg',
+  'png',
+  'bmp',
+  'webp',
+  'gif',
+  'tif',
+  'tiff',
+  'apng'
+];
+const List<String> _videoFormats = <String>[
+  'mov',
+  'wmv',
+  'mkv',
+  'mp4',
+  'webm',
+  'avi',
+  'mpeg',
+  'mpg'
+];
 
 /// The Windows implementation of [ImagePickerPlatform].
 ///
-/// This class implements the `package:image_picker` functionality for Windows.
+/// This class implements the `package:image_picker` functionality for
+/// Windows.
 class ImagePickerWindows extends ImagePickerPlatform {
   /// Constructs a ImagePickerWindows.
   ImagePickerWindows();
 
-  final List<String> _imageFormats = <String>[
-    'jpg',
-    'jpeg',
-    'png',
-    'bmp',
-    'webp',
-    'gif',
-    'tif',
-    'tiff',
-    'apng'
-  ];
-  final List<String> _videoFormats = <String>[
-    'mov',
-    'wmv',
-    'mkv',
-    'mp4',
-    'webm',
-    'avi',
-    'mpeg',
-    'mpg'
-  ];
-
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith() {
     ImagePickerPlatform.instance = ImagePickerWindows();
+    FileSelectorWindows.registerWith();
   }
 
-  // Note that the `maxWidth`, `maxHeight` and `imageQuality` arguments are not supported on the Windows. If any of these arguments is supplied, it'll be silently ignored by the Windows version of the plugin.
+  // Note that the `maxWidth`, `maxHeight` and `imageQuality` arguments are
+  // not supported on the Windows. If any of these arguments is supplied,
+  // it'll be silently ignored by the Windows version of the plugin.
   @override
   Future<PickedFile?> pickImage({
     required ImageSource source,
@@ -62,7 +67,10 @@ class ImagePickerWindows extends ImagePickerPlatform {
     return null;
   }
 
-  // Note that the `source`, `preferredCameraDevice`, and `maxDuration` arguments are not supported on Windows. If any of these arguments is supplied, it'll be silently ignored by the Windows version of the plugin.
+  // Note that the `source`, `preferredCameraDevice`, and `maxDuration`
+  // arguments are not supported on Windows. If any of these arguments is
+  // supplied, it'll be silently ignored by the Windows version of the
+  // plugin.
   @override
   Future<PickedFile?> pickVideo({
     required ImageSource source,
@@ -79,7 +87,10 @@ class ImagePickerWindows extends ImagePickerPlatform {
     return null;
   }
 
-  // Note that the `source`, `maxWidth`, `maxHeight`, `imageQuality`, and `preferredCameraDevice` arguments are not supported on Windows. If any of these arguments is supplied, it'll be silently ignored by the Windows version of the plugin.
+  // Note that the `source`, `maxWidth`, `maxHeight`, `imageQuality`, and
+  // `preferredCameraDevice` arguments are not supported on Windows. If
+  // any of these arguments is supplied, it'll be silently ignored by the
+  // Windows version of the plugin.
   @override
   Future<XFile?> getImage({
     required ImageSource source,
@@ -95,7 +106,10 @@ class ImagePickerWindows extends ImagePickerPlatform {
     return file;
   }
 
-  // Note that the `source`, `preferredCameraDevice`, and `maxDuration` arguments are not supported on Windows. If any of these arguments is supplied, it'll be silently ignored by the Windows version of the plugin.
+  // Note that the `source`, `preferredCameraDevice`, and `maxDuration`
+  // arguments are not supported on Windows. If any of these arguments
+  // is supplied, it'll be silently ignored by the Windows version of
+  // the plugin.
   @override
   Future<XFile?> getVideo({
     required ImageSource source,
@@ -109,7 +123,9 @@ class ImagePickerWindows extends ImagePickerPlatform {
     return file;
   }
 
-  // Note that the `maxWidth`, `maxHeight`, and `imageQuality` arguments are not supported on Windows. If any of these arguments is supplied, it'll be silently ignored by the Windows version of the plugin.
+  // Note that the `maxWidth`, `maxHeight`, and `imageQuality` arguments are
+  // not supported on Windows. If any of these arguments is supplied, it'll
+  // be silently ignored by the Windows version of the plugin.
   @override
   Future<List<XFile>> getMultiImage({
     double? maxWidth,

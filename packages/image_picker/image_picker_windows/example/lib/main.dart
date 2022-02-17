@@ -10,7 +10,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:image_picker_windows/image_picker_windows.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
@@ -50,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   VideoPlayerController? _toBeDisposed;
   String? _retrieveDataError;
 
-  final ImagePickerPlatform _picker = ImagePickerWindows();
+  final ImagePickerPlatform _picker = ImagePickerPlatform.instance;
   final TextEditingController maxWidthController = TextEditingController();
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
