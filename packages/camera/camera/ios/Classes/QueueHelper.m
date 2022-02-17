@@ -4,7 +4,10 @@
 
 #import "QueueHelper.h"
 
+const char *FLTCaptureSessionQueueSpecific = "capture_session_queue";
+
 @implementation QueueHelper
+
 + (void)ensureToRunOnMainQueue:(void (^)(void))block {
   if (!NSThread.isMainThread) {
     dispatch_async(dispatch_get_main_queue(), block);
@@ -12,4 +15,5 @@
     block();
   }
 }
+
 @end

@@ -1,4 +1,4 @@
-## NEXT
+## 0.8.0
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
 - Adds a `make-deps-path-based` command to convert inter-repo package
@@ -18,6 +18,7 @@
 - Adds support for `CHROME_EXECUTABLE` in `drive-examples` to match similar
   `flutter` behavior.
 - Validates `default_package` entries in plugins.
+- Removes `allow-warnings` from the `podspecs` command.
 
 ## 0.7.3
 

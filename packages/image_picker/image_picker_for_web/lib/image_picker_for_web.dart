@@ -10,22 +10,14 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:image_picker_for_web/src/image_resizer.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-final String _kImagePickerInputsDomId = '__image_picker_web-file-input';
-final String _kAcceptImageMimeType = 'image/*';
-final String _kAcceptVideoMimeType = 'video/3gpp,video/x-m4v,video/mp4,video/*';
+const String _kImagePickerInputsDomId = '__image_picker_web-file-input';
+const String _kAcceptImageMimeType = 'image/*';
+const String _kAcceptVideoMimeType = 'video/3gpp,video/x-m4v,video/mp4,video/*';
 
 /// The web implementation of [ImagePickerPlatform].
 ///
 /// This class implements the `package:image_picker` functionality for the web.
 class ImagePickerPlugin extends ImagePickerPlatform {
-  final ImagePickerPluginTestOverrides? _overrides;
-
-  bool get _hasOverrides => _overrides != null;
-
-  late html.Element _target;
-
-  late ImageResizer _imageResizer;
-
   /// A constructor that allows tests to override the function that creates file inputs.
   ImagePickerPlugin({
     @visibleForTesting ImagePickerPluginTestOverrides? overrides,
@@ -34,6 +26,14 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     _imageResizer = imageResizer ?? ImageResizer();
     _target = _ensureInitialized(_kImagePickerInputsDomId);
   }
+
+  final ImagePickerPluginTestOverrides? _overrides;
+
+  bool get _hasOverrides => _overrides != null;
+
+  late html.Element _target;
+
+  late ImageResizer _imageResizer;
 
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith(Registrar registrar) {
@@ -60,7 +60,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
     return pickFile(accept: _kAcceptImageMimeType, capture: capture);
   }
 
@@ -82,7 +83,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) {
-    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
     return pickFile(accept: _kAcceptVideoMimeType, capture: capture);
   }
 
@@ -96,7 +98,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     String? accept,
     String? capture,
   }) {
-    html.FileUploadInputElement input =
+    final html.FileUploadInputElement input =
         createInputElement(accept, capture) as html.FileUploadInputElement;
     _injectAndActivate(input);
     return _getSelectedFile(input);
@@ -122,8 +124,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
-    List<XFile> files = await getFiles(
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
+    final List<XFile> files = await getFiles(
       accept: _kAcceptImageMimeType,
       capture: capture,
     );
@@ -153,8 +156,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) async {
-    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
-    List<XFile> files = await getFiles(
+    final String? capture =
+        computeCaptureAttribute(source, preferredCameraDevice);
+    final List<XFile> files = await getFiles(
       accept: _kAcceptVideoMimeType,
       capture: capture,
     );
@@ -173,7 +177,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       multiple: true,
     );
     final Iterable<Future<XFile>> resized = images.map(
-      (image) => _imageResizer.resizeImageIfNeeded(
+      (XFile image) => _imageResizer.resizeImageIfNeeded(
         image,
         maxWidth,
         maxHeight,
@@ -199,7 +203,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     String? capture,
     bool multiple = false,
   }) {
-    html.FileUploadInputElement input = createInputElement(
+    final html.FileUploadInputElement input = createInputElement(
       accept,
       capture,
       multiple: multiple,
@@ -232,24 +236,24 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns a list of selected files.
   List<html.File>? _handleOnChangeEvent(html.Event event) {
-    final html.FileUploadInputElement input =
-        event.target as html.FileUploadInputElement;
-    return _getFilesFromInput(input);
+    final html.FileUploadInputElement? input =
+        event.target as html.FileUploadInputElement?;
+    return input == null ? null : _getFilesFromInput(input);
   }
 
   /// Monitors an <input type="file"> and returns the selected file.
   Future<PickedFile> _getSelectedFile(html.FileUploadInputElement input) {
     final Completer<PickedFile> _completer = Completer<PickedFile>();
     // Observe the input until we can return something
-    input.onChange.first.then((event) {
-      final files = _handleOnChangeEvent(event);
+    input.onChange.first.then((html.Event event) {
+      final List<html.File>? files = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && files != null) {
         _completer.complete(PickedFile(
           html.Url.createObjectUrl(files.first),
         ));
       }
     });
-    input.onError.first.then((event) {
+    input.onError.first.then((html.Event event) {
       if (!_completer.isCompleted) {
         _completer.completeError(event);
       }
@@ -264,10 +268,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
     final Completer<List<XFile>> _completer = Completer<List<XFile>>();
     // Observe the input until we can return something
-    input.onChange.first.then((event) {
-      final files = _handleOnChangeEvent(event);
+    input.onChange.first.then((html.Event event) {
+      final List<html.File>? files = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && files != null) {
-        _completer.complete(files.map((file) {
+        _completer.complete(files.map((html.File file) {
           return XFile(
             html.Url.createObjectUrl(file),
             name: file.name,
@@ -280,7 +284,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
         }).toList());
       }
     });
-    input.onError.first.then((event) {
+    input.onError.first.then((html.Event event) {
       if (!_completer.isCompleted) {
         _completer.completeError(event);
       }
@@ -293,7 +297,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   /// Initializes a DOM container where we can host input elements.
   html.Element _ensureInitialized(String id) {
-    var target = html.querySelector('#${id}');
+    html.Element? target = html.querySelector('#$id');
     if (target == null) {
       final html.Element targetElement =
           html.Element.tag('flt-image-picker-inputs')..id = id;
@@ -316,7 +320,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       return _overrides!.createInputElement(accept, capture);
     }
 
-    html.Element element = html.FileUploadInputElement()
+    final html.Element element = html.FileUploadInputElement()
       ..accept = accept
       ..multiple = multiple;
 

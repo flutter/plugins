@@ -1,3 +1,7 @@
+## 0.2.1+3
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.2.1+2
 
 * Fixes cameraNotReadable error that prevented access to the camera on some Android devices when initializing a camera.

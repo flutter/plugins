@@ -16,7 +16,7 @@ bool imageResizeNeeded(double? maxWidth, double? maxHeight, int? imageQuality) {
 
 /// a function that checks if image quality is between 0 to 100
 bool isImageQualityValid(int imageQuality) {
-  return (imageQuality >= 0 && imageQuality <= 100);
+  return imageQuality >= 0 && imageQuality <= 100;
 }
 
 /// a function that calculates the size of the downScaled image.
@@ -26,8 +26,9 @@ bool isImageQualityValid(int imageQuality) {
 /// maxHeight is the maximum height of the scaled image
 Size calculateSizeOfDownScaledImage(
     Size imageSize, double? maxWidth, double? maxHeight) {
-  double widthFactor = maxWidth != null ? imageSize.width / maxWidth : 1;
-  double heightFactor = maxHeight != null ? imageSize.height / maxHeight : 1;
-  double resizeFactor = max(widthFactor, heightFactor);
-  return (resizeFactor > 1 ? imageSize ~/ resizeFactor : imageSize);
+  final double widthFactor = maxWidth != null ? imageSize.width / maxWidth : 1;
+  final double heightFactor =
+      maxHeight != null ? imageSize.height / maxHeight : 1;
+  final double resizeFactor = max(widthFactor, heightFactor);
+  return resizeFactor > 1 ? imageSize ~/ resizeFactor : imageSize;
 }
