@@ -11,9 +11,13 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
+import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/webview_android_widget.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'android_webview.pigeon.dart';
+import 'android_webview_test.mocks.dart' show MockTestWebViewHostApi;
 import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
@@ -31,7 +35,7 @@ import 'webview_android_widget_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebViewAndroidWidget', () {
+  group('WebViewAndroidWidget', () {
     late MockFlutterAssetManager mockFlutterAssetManager;
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
@@ -93,7 +97,7 @@ void main() {
       webChromeClient = testController.webChromeClient;
     }
 
-    testWidgets('$WebViewAndroidWidget', (WidgetTester tester) async {
+    testWidgets('WebViewAndroidWidget', (WidgetTester tester) async {
       await buildWidget(tester);
 
       verify(mockWebSettings.setDomStorageEnabled(true));
@@ -119,7 +123,7 @@ void main() {
       },
     );
 
-    group('$CreationParams', () {
+    group('CreationParams', () {
       testWidgets('initialUrl', (WidgetTester tester) async {
         await buildWidget(
           tester,
@@ -201,7 +205,7 @@ void main() {
         expect(javaScriptChannels[1].channelName, 'b');
       });
 
-      group('$WebSettings', () {
+      group('WebSettings', () {
         testWidgets('javascriptMode', (WidgetTester tester) async {
           await buildWidget(
             tester,
@@ -232,7 +236,7 @@ void main() {
           expect(testController.webViewClient.shouldOverrideUrlLoading, isTrue);
         });
 
-        testWidgets('debuggingEnabled', (WidgetTester tester) async {
+        testWidgets('debuggingEnabled true', (WidgetTester tester) async {
           await buildWidget(
             tester,
             creationParams: CreationParams(
@@ -245,6 +249,21 @@ void main() {
           );
 
           verify(mockWebViewProxy.setWebContentsDebuggingEnabled(true));
+        });
+
+        testWidgets('debuggingEnabled false', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                debuggingEnabled: false,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockWebViewProxy.setWebContentsDebuggingEnabled(false));
         });
 
         testWidgets('userAgent', (WidgetTester tester) async {
@@ -278,7 +297,7 @@ void main() {
       });
     });
 
-    group('$WebViewPlatformController', () {
+    group('WebViewPlatformController', () {
       testWidgets('loadFile without "file://" prefix',
           (WidgetTester tester) async {
         await buildWidget(tester);
@@ -667,7 +686,7 @@ void main() {
       });
     });
 
-    group('$WebViewPlatformCallbacksHandler', () {
+    group('WebViewPlatformCallbacksHandler', () {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
         webViewClient.onPageStarted(mockWebView, 'https://google.com');
@@ -773,7 +792,7 @@ void main() {
         verify(mockWebView.loadUrl('https://google.com', <String, String>{}));
       });
 
-      group('$JavascriptChannelRegistry', () {
+      group('JavascriptChannelRegistry', () {
         testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
           await buildWidget(tester);
 
@@ -790,6 +809,34 @@ void main() {
           ));
         });
       });
+    });
+  });
+
+  group('WebViewProxy', () {
+    late MockTestWebViewHostApi mockPlatformHostApi;
+    late InstanceManager instanceManager;
+
+    setUp(() {
+      // WebViewProxy calls static methods that can't be mocked, so the mocks
+      // have to be set up at the next layer down, by mocking the implementation
+      // of WebView itstelf.
+      mockPlatformHostApi = MockTestWebViewHostApi();
+      TestWebViewHostApi.setup(mockPlatformHostApi);
+      instanceManager = InstanceManager();
+      android_webview.WebView.api =
+          WebViewHostApiImpl(instanceManager: instanceManager);
+    });
+
+    test('setWebContentsDebuggingEnabled true', () {
+      const WebViewProxy webViewProxy = WebViewProxy();
+      webViewProxy.setWebContentsDebuggingEnabled(true);
+      verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+    });
+
+    test('setWebContentsDebuggingEnabled false', () {
+      const WebViewProxy webViewProxy = WebViewProxy();
+      webViewProxy.setWebContentsDebuggingEnabled(false);
+      verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(false));
     });
   });
 }

@@ -4,20 +4,19 @@ repository: https://github.com/flutter/plugins/tree/main/packages/image_picker/i
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+image_picker%22
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
-version: 2.4.3
+version: 2.4.4
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
   flutter: ">=2.0.0"
 
 dependencies:
+  cross_file: ^0.3.1+1
   flutter:
     sdk: flutter
   http: ^0.13.0
   plugin_platform_interface: ^2.1.0
-  cross_file: ^0.3.1+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.10.0
