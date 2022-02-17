@@ -5,113 +5,101 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
-import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
+
+import 'messages.g.dart';
+
+class _MockSharedPreferencesApi implements TestUserDefaultsApi {
+  final Map<String, Object> items = <String, Object>{};
+
+  @override
+  Map<String?, Object?> getAll() {
+    return items;
+  }
+
+  @override
+  void remove(String key) {
+    items.remove(key);
+  }
+
+  @override
+  void setBool(String key, bool value) {
+    items[key] = value;
+  }
+
+  @override
+  void setDouble(String key, double value) {
+    items[key] = value;
+  }
+
+  @override
+  void setValue(String key, Object value) {
+    items[key] = value;
+  }
+
+  @override
+  void clear() {
+    items.clear();
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  _MockSharedPreferencesApi api = _MockSharedPreferencesApi();
+  SharedPreferencesIOS plugin = SharedPreferencesIOS();
 
-  group(MethodChannelSharedPreferencesStore, () {
-    const MethodChannel channel = MethodChannel(
-      'plugins.flutter.io/shared_preferences_ios',
-    );
+  setUp(() {
+    api = _MockSharedPreferencesApi();
+    TestUserDefaultsApi.setup(api);
+    plugin = SharedPreferencesIOS();
+  });
 
-    const Map<String, Object> kTestValues = <String, Object>{
-      'flutter.String': 'hello world',
-      'flutter.Bool': true,
-      'flutter.Int': 42,
-      'flutter.Double': 3.14159,
-      'flutter.StringList': <String>['foo', 'bar'],
-    };
-    // Create a dummy in-memory implementation to back the mocked method channel
-    // API to simplify validation of the expected calls.
-    late InMemorySharedPreferencesStore testData;
+  test('registerWith', () {
+    SharedPreferencesIOS.registerWith();
+    expect(
+        SharedPreferencesStorePlatform.instance, isA<SharedPreferencesIOS>());
+  });
 
-    final List<MethodCall> log = <MethodCall>[];
-    late SharedPreferencesStorePlatform store;
+  test('remove', () async {
+    api.items['flutter.hi'] = 'world';
+    expect(await plugin.remove('flutter.hi'), isTrue);
+    expect(api.items.containsKey('flutter.hi'), isFalse);
+  });
 
-    setUp(() async {
-      testData = InMemorySharedPreferencesStore.empty();
+  test('clear', () async {
+    api.items['flutter.hi'] = 'world';
+    expect(await plugin.clear(), isTrue);
+    expect(api.items.containsKey('flutter.hi'), isFalse);
+  });
 
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        log.add(methodCall);
-        if (methodCall.method == 'getAll') {
-          return await testData.getAll();
-        }
-        if (methodCall.method == 'remove') {
-          final String key = methodCall.arguments['key'] as String;
-          return await testData.remove(key);
-        }
-        if (methodCall.method == 'clear') {
-          return await testData.clear();
-        }
-        final RegExp setterRegExp = RegExp(r'set(.*)');
-        final Match? match = setterRegExp.matchAsPrefix(methodCall.method);
-        if (match?.groupCount == 1) {
-          final String valueType = match!.group(1)!;
-          final String key = methodCall.arguments['key'] as String;
-          final Object value = methodCall.arguments['value'] as Object;
-          return await testData.setValue(valueType, key, value);
-        }
-        fail('Unexpected method call: ${methodCall.method}');
-      });
-      log.clear();
-    });
+  test('getAll', () async {
+    api.items['flutter.hi'] = 'world';
+    api.items['flutter.bye'] = 'dust';
+    final Map<String?, Object?> all = await plugin.getAll();
+    expect(all.length, 2);
+    expect(all['flutter.hi'], api.items['flutter.hi']);
+    expect(all['flutter.bye'], api.items['flutter.bye']);
+  });
 
-    test('registered instance', () {
-      SharedPreferencesIOS.registerWith();
-      expect(
-          SharedPreferencesStorePlatform.instance, isA<SharedPreferencesIOS>());
-    });
+  test('setValue', () async {
+    expect(await plugin.setValue('Bool', 'flutter.Bool', true), isTrue);
+    expect(api.items['flutter.Bool'], true);
+    expect(await plugin.setValue('Double', 'flutter.Double', 1.5), isTrue);
+    expect(api.items['flutter.Double'], 1.5);
+    expect(await plugin.setValue('Int', 'flutter.Int', 12), isTrue);
+    expect(api.items['flutter.Int'], 12);
+    expect(await plugin.setValue('String', 'flutter.String', 'hi'), isTrue);
+    expect(api.items['flutter.String'], 'hi');
+    expect(
+        await plugin
+            .setValue('StringList', 'flutter.StringList', <String>['hi']),
+        isTrue);
+    expect(api.items['flutter.StringList'], <String>['hi']);
+  });
 
-    test('getAll', () async {
-      store = SharedPreferencesIOS();
-      testData = InMemorySharedPreferencesStore.withData(kTestValues);
-      expect(await store.getAll(), kTestValues);
-      expect(log.single.method, 'getAll');
-    });
-
-    test('remove', () async {
-      store = SharedPreferencesIOS();
-      testData = InMemorySharedPreferencesStore.withData(kTestValues);
-      expect(await store.remove('flutter.String'), true);
-      expect(await store.remove('flutter.Bool'), true);
-      expect(await store.remove('flutter.Int'), true);
-      expect(await store.remove('flutter.Double'), true);
-      expect(await testData.getAll(), <String, dynamic>{
-        'flutter.StringList': <String>['foo', 'bar'],
-      });
-
-      expect(log, hasLength(4));
-      for (final MethodCall call in log) {
-        expect(call.method, 'remove');
-      }
-    });
-
-    test('setValue', () async {
-      store = SharedPreferencesIOS();
-      expect(await testData.getAll(), isEmpty);
-      for (final String key in kTestValues.keys) {
-        final Object value = kTestValues[key]!;
-        expect(await store.setValue(key.split('.').last, key, value), true);
-      }
-      expect(await testData.getAll(), kTestValues);
-
-      expect(log, hasLength(5));
-      expect(log[0].method, 'setString');
-      expect(log[1].method, 'setBool');
-      expect(log[2].method, 'setInt');
-      expect(log[3].method, 'setDouble');
-      expect(log[4].method, 'setStringList');
-    });
-
-    test('clear', () async {
-      store = SharedPreferencesIOS();
-      testData = InMemorySharedPreferencesStore.withData(kTestValues);
-      expect(await testData.getAll(), isNotEmpty);
-      expect(await store.clear(), true);
-      expect(await testData.getAll(), isEmpty);
-      expect(log.single.method, 'clear');
-    });
+  test('setValue with unsupported type', () {
+    expect(() async {
+      await plugin.setValue('Map', 'flutter.key', <String, String>{});
+    }, throwsA(isA<PlatformException>()));
   });
 }
