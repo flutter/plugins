@@ -364,7 +364,8 @@ void main() {
 
     test('requestScopes returns true once new scope is granted', () async {
       await googleSignIn.signIn();
-      final bool result = await googleSignIn.requestScopes(['testScope']);
+      final bool result =
+          await googleSignIn.requestScopes(<String>['testScope']);
 
       expect(result, isTrue);
       expect(
@@ -373,7 +374,7 @@ void main() {
           _isSignInMethodCall(),
           isMethodCall('signIn', arguments: null),
           isMethodCall('requestScopes', arguments: <String, dynamic>{
-            'scopes': ['testScope'],
+            'scopes': <String>['testScope'],
           }),
         ],
       );

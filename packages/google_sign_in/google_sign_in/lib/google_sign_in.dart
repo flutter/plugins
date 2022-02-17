@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:ui' show hashValues;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
@@ -39,6 +40,7 @@ class GoogleSignInAuthentication {
 /// [GoogleSignInUserData].
 ///
 /// [id] is guaranteed to be non-null.
+@immutable
 class GoogleSignInAccount implements GoogleIdentity {
   GoogleSignInAccount._(this._googleSignIn, GoogleSignInUserData data)
       : displayName = data.displayName,
@@ -129,8 +131,12 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   @override
   bool operator ==(dynamic other) {
-    if (identical(this, other)) return true;
-    if (other is! GoogleSignInAccount) return false;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! GoogleSignInAccount) {
+      return false;
+    }
     final GoogleSignInAccount otherAccount = other;
     return displayName == otherAccount.displayName &&
         email == otherAccount.email &&
@@ -275,7 +281,7 @@ class GoogleSignIn {
     final Completer<void> completer = Completer<void>();
     future.whenComplete(completer.complete).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
-      // TODO: Should we log errors here, if debug or similar?
+      // TODO(ditman): Should we log errors here, if debug or similar?
     });
     return completer.future;
   }

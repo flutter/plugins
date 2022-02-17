@@ -69,7 +69,8 @@ class SignInDemoState extends State<SignInDemo> {
       print('People API ${response.statusCode} response: ${response.body}');
       return;
     }
-    final Map<String, dynamic> data = json.decode(response.body);
+    final Map<String, dynamic> data =
+        json.decode(response.body) as Map<String, dynamic>;
     final String? namedContact = _pickFirstNamedContact(data);
     setState(() {
       if (namedContact != null) {
@@ -81,18 +82,18 @@ class SignInDemoState extends State<SignInDemo> {
   }
 
   String? _pickFirstNamedContact(Map<String, dynamic> data) {
-    final List<dynamic>? connections = data['connections'];
+    final List<dynamic>? connections = data['connections'] as List<dynamic>?;
     final Map<String, dynamic>? contact = connections?.firstWhere(
       (dynamic contact) => contact['names'] != null,
       orElse: () => null,
-    );
+    ) as Map<String, dynamic>?;
     if (contact != null) {
       final Map<String, dynamic>? name = contact['names'].firstWhere(
         (dynamic name) => name['displayName'] != null,
         orElse: () => null,
-      );
+      ) as Map<String, dynamic>?;
       if (name != null) {
-        return name['displayName'];
+        return name['displayName'] as String?;
       }
     }
     return null;
