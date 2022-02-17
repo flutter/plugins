@@ -4,13 +4,13 @@
 
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
-final dummyPayment = SKPaymentWrapper(
+const SKPaymentWrapper dummyPayment = SKPaymentWrapper(
     productIdentifier: 'prod-id',
     applicationUsername: 'app-user-name',
     requestData: 'fake-data-utf8',
     quantity: 2,
     simulatesAskToBuyInSandbox: true);
-final SKError dummyError =
+const SKError dummyError =
     SKError(code: 111, domain: 'dummy-domain', userInfo: {'key': 'value'});
 
 final SKPaymentTransactionWrapper dummyOriginalTransaction =
@@ -125,7 +125,7 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
 
 Map<String, dynamic> buildProductResponseMap(
     SkProductResponseWrapper response) {
-  List productsMap = response.products
+  final List productsMap = response.products
       .map((SKProductWrapper product) => buildProductMap(product))
       .toList();
   return {
@@ -144,7 +144,7 @@ Map<String, dynamic> buildErrorMap(SKError error) {
 
 Map<String, dynamic> buildTransactionMap(
     SKPaymentTransactionWrapper transaction) {
-  Map<String, dynamic> map = <String, dynamic>{
+  final Map<String, dynamic> map = <String, dynamic>{
     'transactionState': SKPaymentTransactionStateWrapper.values
         .indexOf(SKPaymentTransactionStateWrapper.purchased),
     'payment': transaction.payment.toMap(),

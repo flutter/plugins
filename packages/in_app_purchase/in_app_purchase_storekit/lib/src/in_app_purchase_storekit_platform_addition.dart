@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 import '../store_kit_wrappers.dart';
 
@@ -23,7 +23,7 @@ class InAppPurchaseStoreKitPlatformAddition
   Future<PurchaseVerificationData?> refreshPurchaseVerificationData() async {
     await SKRequestMaker().startRefreshReceiptRequest();
     try {
-      String receipt = await SKReceiptManager.retrieveReceiptData();
+      final String receipt = await SKReceiptManager.retrieveReceiptData();
       return PurchaseVerificationData(
           localVerificationData: receipt,
           serverVerificationData: receipt,

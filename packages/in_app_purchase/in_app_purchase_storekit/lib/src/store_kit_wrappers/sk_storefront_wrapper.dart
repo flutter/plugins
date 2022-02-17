@@ -52,8 +52,8 @@ class SKStorefrontWrapper {
 
   @override
   int get hashCode => hashValues(
-        this.countryCode,
-        this.identifier,
+        countryCode,
+        identifier,
       );
 
   @override

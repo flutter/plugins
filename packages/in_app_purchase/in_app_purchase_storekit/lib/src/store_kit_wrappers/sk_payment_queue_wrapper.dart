@@ -150,7 +150,7 @@ class SKPaymentQueueWrapper {
   /// finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
   Future<void> finishTransaction(
       SKPaymentTransactionWrapper transaction) async {
-    Map<String, String?> requestMap = transaction.toFinishMap();
+    final Map<String, String?> requestMap = transaction.toFinishMap();
     await channel.invokeMethod<void>(
       '-[InAppPurchasePlugin finishTransaction:result:]',
       requestMap,
@@ -235,7 +235,7 @@ class SKPaymentQueueWrapper {
         }
       case 'restoreCompletedTransactionsFailed':
         {
-          SKError error =
+          final SKError error =
               SKError.fromJson(Map<String, dynamic>.from(call.arguments));
           return Future<void>(() {
             observer.restoreCompletedTransactionsFailed(error: error);
@@ -249,9 +249,9 @@ class SKPaymentQueueWrapper {
         }
       case 'shouldAddStorePayment':
         {
-          SKPaymentWrapper payment =
+          final SKPaymentWrapper payment =
               SKPaymentWrapper.fromJson(call.arguments['payment']);
-          SKProductWrapper product =
+          final SKProductWrapper product =
               SKProductWrapper.fromJson(call.arguments['product']);
           return Future<void>(() {
             if (observer.shouldAddStorePayment(
@@ -354,7 +354,7 @@ class SKError {
     final SKError typedOther = other as SKError;
     return typedOther.code == code &&
         typedOther.domain == domain &&
-        DeepCollectionEquality.unordered()
+        const DeepCollectionEquality.unordered()
             .equals(typedOther.userInfo, userInfo);
   }
 

@@ -4,8 +4,8 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 import 'fakes/fake_storekit_platform.dart';
 
@@ -30,7 +30,7 @@ void main() {
 
   group('refresh receipt data', () {
     test('should refresh receipt data', () async {
-      PurchaseVerificationData? receiptData =
+      final PurchaseVerificationData? receiptData =
           await InAppPurchaseStoreKitPlatformAddition()
               .refreshPurchaseVerificationData();
       expect(receiptData, isNotNull);

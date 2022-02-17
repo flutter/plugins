@@ -36,13 +36,16 @@ class AppStorePurchaseDetails extends PurchaseDetails {
   late PurchaseStatus _status;
 
   /// The status that this [PurchaseDetails] is currently on.
+  @override
   PurchaseStatus get status => _status;
+  @override
   set status(PurchaseStatus status) {
     _pendingCompletePurchase = status != PurchaseStatus.pending;
     _status = status;
   }
 
   bool _pendingCompletePurchase = false;
+  @override
   bool get pendingCompletePurchase => _pendingCompletePurchase;
 
   /// Generate a [AppStorePurchaseDetails] object based on an iOS
@@ -55,7 +58,7 @@ class AppStorePurchaseDetails extends PurchaseDetails {
       productID: transaction.payment.productIdentifier,
       purchaseID: transaction.transactionIdentifier,
       skPaymentTransaction: transaction,
-      status: SKTransactionStatusConverter()
+      status: const SKTransactionStatusConverter()
           .toPurchaseStatus(transaction.transactionState, transaction.error),
       transactionDate: transaction.transactionTimeStamp != null
           ? (transaction.transactionTimeStamp! * 1000).toInt().toString()

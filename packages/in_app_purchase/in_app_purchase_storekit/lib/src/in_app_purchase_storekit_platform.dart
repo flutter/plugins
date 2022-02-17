@@ -6,8 +6,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase_storekit/src/in_app_purchase_storekit_platform_addition.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:in_app_purchase_storekit/src/in_app_purchase_storekit_platform_addition.dart';
 
 import '../in_app_purchase_storekit.dart';
 import '../store_kit_wrappers.dart';
@@ -33,6 +33,7 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
   @visibleForTesting
   InAppPurchaseStoreKitPlatform();
 
+  @override
   Stream<List<PurchaseDetails>> get purchaseStream =>
       _observer.purchaseUpdatedController.stream;
 
@@ -55,7 +56,7 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
 
     // Create a purchaseUpdatedController and notify the native side when to
     // start of stop sending updates.
-    StreamController<List<PurchaseDetails>> updateController =
+    final StreamController<List<PurchaseDetails>> updateController =
         StreamController.broadcast(
       onListen: () => _skPaymentQueueWrapper.startObservingTransactionQueue(),
       onCancel: () => _skPaymentQueueWrapper.stopObservingTransactionQueue(),
@@ -138,7 +139,7 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
     if (productDetails.isEmpty) {
       invalidIdentifiers = identifiers.toList();
     }
-    ProductDetailsResponse productDetailsResponse = ProductDetailsResponse(
+    final ProductDetailsResponse productDetailsResponse = ProductDetailsResponse(
       productDetails: productDetails,
       notFoundIDs: invalidIdentifiers,
       error: exception == null
@@ -183,18 +184,19 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _restoreCompleter = null;
   }
 
+  @override
   void updatedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) async {
     if (_transactionRestoreState ==
             _TransactionRestoreState.waitingForTransactions &&
-        transactions.any((transaction) =>
+        transactions.any((SKPaymentTransactionWrapper transaction) =>
             transaction.transactionState ==
             SKPaymentTransactionStateWrapper.restored)) {
       _transactionRestoreState = _TransactionRestoreState.receivedTransaction;
     }
 
-    String receiptData = await getReceiptData();
-    List<PurchaseDetails> purchases = transactions
+    final String receiptData = await getReceiptData();
+    final List<PurchaseDetails> purchases = transactions
         .map((SKPaymentTransactionWrapper transaction) =>
             AppStorePurchaseDetails.fromSKTransaction(transaction, receiptData))
         .toList();
@@ -202,15 +204,18 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     purchaseUpdatedController.add(purchases);
   }
 
+  @override
   void removedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) {}
 
   /// Triggered when there is an error while restoring transactions.
+  @override
   void restoreCompletedTransactionsFailed({required SKError error}) {
     _restoreCompleter!.completeError(error);
     _transactionRestoreState = _TransactionRestoreState.notRunning;
   }
 
+  @override
   void paymentQueueRestoreCompletedTransactionsFinished() {
     _restoreCompleter!.complete();
 
@@ -225,6 +230,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     _transactionRestoreState = _TransactionRestoreState.notRunning;
   }
 
+  @override
   bool shouldAddStorePayment(
       {required SKPaymentWrapper payment, required SKProductWrapper product}) {
     // In this unified API, we always return true to keep it consistent with the behavior on Google Play.

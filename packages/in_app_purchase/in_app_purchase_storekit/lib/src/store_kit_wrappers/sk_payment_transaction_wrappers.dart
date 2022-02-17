@@ -187,19 +187,19 @@ class SKPaymentTransactionWrapper {
 
   @override
   int get hashCode => hashValues(
-      this.payment,
-      this.transactionState,
-      this.originalTransaction,
-      this.transactionTimeStamp,
-      this.transactionIdentifier,
-      this.error);
+      payment,
+      transactionState,
+      originalTransaction,
+      transactionTimeStamp,
+      transactionIdentifier,
+      error);
 
   @override
   String toString() => _$SKPaymentTransactionWrapperToJson(this).toString();
 
   /// The payload that is used to finish this transaction.
   Map<String, String?> toFinishMap() => <String, String?>{
-        "transactionIdentifier": this.transactionIdentifier,
-        "productIdentifier": this.payment.productIdentifier,
+        'transactionIdentifier': transactionIdentifier,
+        'productIdentifier': payment.productIdentifier,
       };
 }

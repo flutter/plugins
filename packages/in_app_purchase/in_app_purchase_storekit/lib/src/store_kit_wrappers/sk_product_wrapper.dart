@@ -54,13 +54,13 @@ class SkProductResponseWrapper {
     }
     final SkProductResponseWrapper typedOther =
         other as SkProductResponseWrapper;
-    return DeepCollectionEquality().equals(typedOther.products, products) &&
-        DeepCollectionEquality().equals(
+    return const DeepCollectionEquality().equals(typedOther.products, products) &&
+        const DeepCollectionEquality().equals(
             typedOther.invalidProductIdentifiers, invalidProductIdentifiers);
   }
 
   @override
-  int get hashCode => hashValues(this.products, this.invalidProductIdentifiers);
+  int get hashCode => hashValues(products, invalidProductIdentifiers);
 }
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
@@ -134,7 +134,7 @@ class SKProductSubscriptionPeriodWrapper {
   }
 
   @override
-  int get hashCode => hashValues(this.numberOfUnits, this.unit);
+  int get hashCode => hashValues(numberOfUnits, unit);
 }
 
 /// Dart wrapper around StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
@@ -221,8 +221,8 @@ class SKProductDiscountWrapper {
   }
 
   @override
-  int get hashCode => hashValues(this.price, this.priceLocale,
-      this.numberOfPeriods, this.paymentMode, this.subscriptionPeriod);
+  int get hashCode => hashValues(price, priceLocale,
+      numberOfPeriods, paymentMode, subscriptionPeriod);
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
@@ -323,20 +323,20 @@ class SKProductWrapper {
         typedOther.price == price &&
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.introductoryPrice == introductoryPrice &&
-        DeepCollectionEquality().equals(typedOther.discounts, discounts);
+        const DeepCollectionEquality().equals(typedOther.discounts, discounts);
   }
 
   @override
   int get hashCode => hashValues(
-      this.productIdentifier,
-      this.localizedTitle,
-      this.localizedDescription,
-      this.priceLocale,
-      this.subscriptionGroupIdentifier,
-      this.price,
-      this.subscriptionPeriod,
-      this.introductoryPrice,
-      this.discounts);
+      productIdentifier,
+      localizedTitle,
+      localizedDescription,
+      priceLocale,
+      subscriptionGroupIdentifier,
+      price,
+      subscriptionPeriod,
+      introductoryPrice,
+      discounts);
 }
 
 /// Object that indicates the locale of the price
@@ -391,5 +391,5 @@ class SKPriceLocaleWrapper {
   }
 
   @override
-  int get hashCode => hashValues(this.currencySymbol, this.currencyCode);
+  int get hashCode => hashValues(currencySymbol, currencyCode);
 }

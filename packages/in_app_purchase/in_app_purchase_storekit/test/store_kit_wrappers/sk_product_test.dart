@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:in_app_purchase_storekit/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase_storekit/src/types/app_store_product_details.dart';
 import 'package:in_app_purchase_storekit/src/types/app_store_purchase_details.dart';
-import 'package:in_app_purchase_storekit/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:test/test.dart';
 
@@ -127,25 +127,25 @@ void main() {
 
   group('Payment queue related object tests', () {
     test('Should construct correct SKPaymentWrapper from json', () {
-      SKPaymentWrapper payment =
+      final SKPaymentWrapper payment =
           SKPaymentWrapper.fromJson(dummyPayment.toMap());
       expect(payment, equals(dummyPayment));
     });
 
     test('Should construct correct SKError from json', () {
-      SKError error = SKError.fromJson(buildErrorMap(dummyError));
+      final SKError error = SKError.fromJson(buildErrorMap(dummyError));
       expect(error, equals(dummyError));
     });
 
     test('Should construct correct SKTransactionWrapper from json', () {
-      SKPaymentTransactionWrapper transaction =
+      final SKPaymentTransactionWrapper transaction =
           SKPaymentTransactionWrapper.fromJson(
               buildTransactionMap(dummyTransaction));
       expect(transaction, equals(dummyTransaction));
     });
 
     test('toPurchaseDetails() should return correct PurchaseDetail object', () {
-      AppStorePurchaseDetails details =
+      final AppStorePurchaseDetails details =
           AppStorePurchaseDetails.fromSKTransaction(
               dummyTransaction, 'receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
@@ -183,7 +183,7 @@ void main() {
     });
 
     test('Should generate correct map of the payment object', () {
-      Map map = dummyPayment.toMap();
+      final Map map = dummyPayment.toMap();
       expect(map['productIdentifier'], dummyPayment.productIdentifier);
       expect(map['applicationUsername'], dummyPayment.applicationUsername);
 

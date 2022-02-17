@@ -28,7 +28,7 @@ void main() {
 
   group('sk_request_maker', () {
     test('get products method channel', () async {
-      SkProductResponseWrapper productResponseWrapper =
+      final SkProductResponseWrapper productResponseWrapper =
           await SKRequestMaker().startProductRequest(['xxx']);
       expect(
         productResponseWrapper.products,
@@ -72,25 +72,25 @@ void main() {
     });
 
     test('refreshed receipt', () async {
-      int receiptCountBefore = fakeStoreKitPlatform.refreshReceipt;
+      final int receiptCountBefore = fakeStoreKitPlatform.refreshReceipt;
       await SKRequestMaker().startRefreshReceiptRequest(
-          receiptProperties: <String, dynamic>{"isExpired": true});
+          receiptProperties: <String, dynamic>{'isExpired': true});
       expect(fakeStoreKitPlatform.refreshReceipt, receiptCountBefore + 1);
       expect(fakeStoreKitPlatform.refreshReceiptParam,
-          <String, dynamic>{"isExpired": true});
+          <String, dynamic>{'isExpired': true});
     });
 
     test('should get null receipt if any exceptions are raised', () async {
       fakeStoreKitPlatform.getReceiptFailTest = true;
       expect(() async => SKReceiptManager.retrieveReceiptData(),
-          throwsA(TypeMatcher<PlatformException>()));
+          throwsA(const TypeMatcher<PlatformException>()));
     });
   });
 
   group('sk_receipt_manager', () {
     test('should get receipt (faking it by returning a `receipt data` string)',
         () async {
-      String receiptData = await SKReceiptManager.retrieveReceiptData();
+      final String receiptData = await SKReceiptManager.retrieveReceiptData();
       expect(receiptData, 'receipt data');
     });
   });
@@ -118,8 +118,8 @@ void main() {
     });
 
     test('should add payment to the payment queue', () async {
-      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer =
+      final SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      final TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.addPayment(dummyPayment);
@@ -127,8 +127,8 @@ void main() {
     });
 
     test('should finish transaction', () async {
-      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer =
+      final SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      final TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.finishTransaction(dummyTransaction);
@@ -137,8 +137,8 @@ void main() {
     });
 
     test('should restore transaction', () async {
-      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer =
+      final SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      final TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.restoreTransactions(applicationUserName: 'aUserID');
@@ -234,7 +234,7 @@ class FakeStoreKitPlatform {
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         if (getReceiptFailTest) {
-          throw ("some arbitrary error");
+          throw 'some arbitrary error';
         }
         return Future<String>.value('receipt data');
       // payment queue
@@ -282,16 +282,21 @@ class FakeStoreKitPlatform {
 class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {}
 
 class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
+  @override
   void updatedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) {}
 
+  @override
   void removedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) {}
 
+  @override
   void restoreCompletedTransactionsFailed({required SKError error}) {}
 
+  @override
   void paymentQueueRestoreCompletedTransactionsFinished() {}
 
+  @override
   bool shouldAddStorePayment(
       {required SKPaymentWrapper payment, required SKProductWrapper product}) {
     return true;
