@@ -1,5 +1,6 @@
 ## NEXT
 
+* Internal code cleanup for stricter analysis options.
 * Removes dependencies from `pubspec.yaml` that are only needed in `example/pubspec.yaml`
 * Updates Android compileSdkVersion to 31.
 
