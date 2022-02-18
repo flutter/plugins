@@ -6,15 +6,15 @@ environment:
   flutter: ">=2.2.0"
 
 dependencies:
-  video_player_web:
-    path: ../
   flutter:
     sdk: flutter
+  video_player_web:
+    path: ../
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_driver:
+    sdk: flutter
+  flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
