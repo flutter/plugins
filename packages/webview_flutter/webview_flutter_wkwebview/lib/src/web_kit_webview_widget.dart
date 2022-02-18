@@ -166,6 +166,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await addJavascriptChannels(params.javascriptChannelNames);
 
     webView.navigationDelegate = navigationDelegate;
+
+    if (params.webSettings != null) {
+      updateSettings(params.webSettings!);
+    }
   }
 
   void _setWebViewConfiguration(
