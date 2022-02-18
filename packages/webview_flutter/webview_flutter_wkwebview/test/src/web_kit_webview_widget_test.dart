@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
@@ -18,6 +19,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
+  WKUIDelegate,
   WKUserContentController,
   JavascriptChannelRegistry,
   WebViewPlatformCallbacksHandler,
@@ -31,6 +33,7 @@ void main() {
     late MockWebViewWidgetProxy mockWebViewWidgetProxy;
     late MockWKUserContentController mockUserContentController;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
+    late MockWKUIDelegate mockUIDelegate;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
@@ -41,9 +44,11 @@ void main() {
       mockWebView = MockWKWebView();
       mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockUserContentController = MockWKUserContentController();
+      mockUIDelegate = MockWKUIDelegate();
       mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
+      when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
@@ -82,6 +87,26 @@ void main() {
 
     testWidgets('build $WebKitWebViewWidget', (WidgetTester tester) async {
       await buildWidget(tester);
+    });
+
+    testWidgets('Requests to open a new window loads request in same window',
+        (WidgetTester tester) async {
+      await buildWidget(tester);
+
+      final dynamic onCreateWebView =
+          verify(mockUIDelegate.onCreateWebView = captureAny).captured.single
+              as void Function(WKWebViewConfiguration, WKNavigationAction);
+
+      const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
+      onCreateWebView(
+        mockWebViewConfiguration,
+        const WKNavigationAction(
+          request: request,
+          targetFrame: WKFrameInfo(isMainFrame: false),
+        ),
+      );
+
+      verify(mockWebView.loadRequest(request));
     });
 
     group('$CreationParams', () {
@@ -271,7 +296,7 @@ void main() {
             .single as MockWKScriptMessageHandler;
 
         final dynamic didReceiveScriptMessage =
-            verify(messageHandler.setDidReceiveScriptMessage(captureAny))
+            verify(messageHandler.didReceiveScriptMessage = captureAny)
                 .captured
                 .single as void Function(
           WKUserContentController userContentController,
@@ -280,7 +305,7 @@ void main() {
 
         didReceiveScriptMessage(
           mockUserContentController,
-          WKScriptMessage(name: 'hello', body: 'A message.'),
+          const WKScriptMessage(name: 'hello', body: 'A message.'),
         );
         verify(mockJavascriptChannelRegistry.onJavascriptChannelMessage(
           'hello',

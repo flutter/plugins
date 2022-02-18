@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
+
+import '../foundation/foundation.dart';
+
 /// Times at which to inject script content into a webpage.
 ///
 /// Wraps [WKUserScriptInjectionTime](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime?language=objc).
@@ -42,12 +46,43 @@ enum WKAudiovisualMediaType {
   all,
 }
 
+/// An object that contains information about an action that causes navigation to occur.
+///
+/// Wraps [WKNavigationAction](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
+@immutable
+class WKNavigationAction {
+  /// Constructs a [WKNavigationAction].
+  const WKNavigationAction({required this.request, required this.targetFrame});
+
+  /// The URL request object associated with the navigation action.
+  final NSUrlRequest request;
+
+  /// The frame in which to display the new content.
+  final WKFrameInfo targetFrame;
+}
+
+/// An object that contains information about a frame on a webpage.
+///
+/// An instance of this class is a transient, data-only object; it does not
+/// uniquely identify a frame across multiple delegate method calls.
+///
+/// Wraps [WKFrameInfo](https://developer.apple.com/documentation/webkit/wkframeinfo?language=objc).
+@immutable
+class WKFrameInfo {
+  /// Construct a [WKFrameInfo].
+  const WKFrameInfo({required this.isMainFrame});
+
+  /// Indicates whether the frame is the web site's main frame or a subframe.
+  final bool isMainFrame;
+}
+
 /// A script that the web view injects into a webpage.
 ///
 /// Wraps [WKUserScript](https://developer.apple.com/documentation/webkit/wkuserscript?language=objc).
+@immutable
 class WKUserScript {
   /// Constructs a [UserScript].
-  WKUserScript(
+  const WKUserScript(
     this.source,
     this.injectionTime, {
     required this.isMainFrameOnly,
@@ -66,9 +101,10 @@ class WKUserScript {
 /// An object that encapsulates a message sent by JavaScript code from a webpage.
 ///
 /// Wraps [WKScriptMessage](https://developer.apple.com/documentation/webkit/wkscriptmessage?language=objc).
+@immutable
 class WKScriptMessage {
   /// Constructs a [WKScriptMessage].
-  WKScriptMessage({required this.name, this.body});
+  const WKScriptMessage({required this.name, this.body});
 
   /// The name of the message handler to which the message is sent.
   final String name;
@@ -88,7 +124,7 @@ class WKScriptMessageHandler {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
-  Future<void> setDidReceiveScriptMessage(
+  set didReceiveScriptMessage(
     void Function(
       WKUserContentController userContentController,
       WKScriptMessage message,
@@ -169,7 +205,7 @@ class WKUserContentController {
 
 /// A collection of properties that you use to initialize a web view.
 ///
-/// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc)
+/// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc).
 class WKWebViewConfiguration {
   /// Constructs a [WKWebViewConfiguration].
   WKWebViewConfiguration({required this.userContentController});
@@ -198,6 +234,22 @@ class WKWebViewConfiguration {
     Set<WKAudiovisualMediaType> types,
   ) {
     assert(types.isNotEmpty);
+    throw UnimplementedError();
+  }
+}
+
+/// The methods for presenting native user interface elements on behalf of a webpage.
+///
+/// Wraps [WKUIDelegate](https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc).
+class WKUIDelegate {
+  /// Indicates a new [WebView] was requested to be created with [configuration].
+  set onCreateWebView(
+    void Function(
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    )
+        onCreateeWebView,
+  ) {
     throw UnimplementedError();
   }
 }
@@ -232,4 +284,17 @@ class WKWebView {
   /// property contains a default configuration object.
   late final WKWebViewConfiguration configuration =
       WKWebViewConfiguration._fromWebView(this);
+
+  /// Used to integrate custom user interface elements into web view interactions.
+  set uiDelegate(WKUIDelegate delegate) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the web content referenced by the specified URL request object and navigates to it.
+  ///
+  /// Use this method to load a page from a local or network-based URL. For
+  /// example, you might use it to navigate to a network-based webpage.
+  Future<void> loadRequest(NSUrlRequest request) {
+    throw UnimplementedError();
+  }
 }
