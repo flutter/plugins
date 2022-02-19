@@ -14,7 +14,6 @@
 - google_maps_flutter/google_maps_flutter
 - google_maps_flutter/google_maps_flutter_platform_interface
 - google_maps_flutter/google_maps_flutter_web
-- google_sign_in/google_sign_in
 - in_app_purchase/in_app_purchase
 - in_app_purchase/in_app_purchase_android
 - in_app_purchase/in_app_purchase_storekit
