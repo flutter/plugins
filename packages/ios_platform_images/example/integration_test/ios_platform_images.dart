@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -29,6 +31,15 @@ void main() {
       expect(find.bySemanticsLabel('Smiling face'), findsOneWidget);
       expect(find.bySemanticsLabel('Sprinting hare'), findsOneWidget);
       expect(find.bySemanticsLabel('Ladybug'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'ios system image error case',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(app.IOSImageExampleError());
+
+      expect(find.bySemanticsLabel('Nonexistant Symbol'), findsNothing);
     },
   );
 }
