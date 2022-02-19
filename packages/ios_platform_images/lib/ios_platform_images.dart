@@ -191,10 +191,10 @@ class IosPlatformImages {
     loadInfo.then((Map<String, dynamic>? map) {
       if (map == null) {
         scaleCompleter.completeError(
-          Exception("System image couldn't be found: $name"),
+          ArgumentError("System image couldn't be found: $name"),
         );
         bytesCompleter.completeError(
-          Exception("System image couldn't be found: $name"),
+          ArgumentError("System image couldn't be found: $name"),
         );
         return;
       }
