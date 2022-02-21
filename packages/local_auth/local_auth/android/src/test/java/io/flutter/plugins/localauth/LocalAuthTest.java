@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.content.Context;
 import androidx.lifecycle.Lifecycle;
@@ -19,8 +20,8 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import org.junit.Test;
 import java.util.Collections;
+import org.junit.Test;
 
 public class LocalAuthTest {
   @Test
