@@ -1,6 +1,6 @@
 ## 2.0.9
 
-- Fixed invalid routes when opening a `Link` in a new tab
+- Fixes invalid routes when opening a `Link` in a new tab
 
 ## 2.0.8
 
