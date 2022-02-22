@@ -281,12 +281,134 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     }
     case AVAuthorizationStatusDenied:
+	  [self camDenied];
+	  break;
     case AVAuthorizationStatusRestricted:
+	  [self camRestricted];
+	  break;
     default:
       [self errorNoCameraAccess:status];
       break;
   }
 }
+
+- (void)camDenied {
+    NSLog(@"%@", @"Denied camera access");
+
+    NSString *alertText;
+    NSString *alertButton;
+
+    BOOL canOpenSettings = (&UIApplicationOpenSettingsURLString != NULL);
+    if (canOpenSettings)
+    {
+        alertText = @"It looks like your privacy settings are preventing us from accessing your camera. You can fix this by doing the following:\n\n1. Touch the Go button below to open the Settings app.\n\n2. Turn the Camera on.\n\n3. Open this app and try again.";
+
+        alertButton = @"Go";
+    }
+    else
+    {
+        alertText = @"It looks like your privacy settings are preventing us from accessing your camera. You can fix this by doing the following:\n\n1. Close this app.\n\n2. Open the Settings app.\n\n3. Scroll to the bottom and select this app in the list.\n\n4. Turn the Camera on.\n\n5. Open this app and try again.";
+
+        alertButton = @"OK";
+    }
+
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:@"Error"
+                          message:alertText
+                          delegate:self
+                          cancelButtonTitle:alertButton
+                          otherButtonTitles:nil];
+    alert.tag = 3491832;
+    [alert show];
+}
+
+- (void) camRestricted {
+
+    NSLog(@"%@", @"Restricted camera access");
+
+    NSString *alertText;
+    NSString *alertButton;
+
+    alertText = @"You've been restricted from using the camera on this device. Without camera access this feature won't work. Please contact the device owner so they can give you access.";
+
+    alertButton = @"OK";
+
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:@"Error"
+                          message:alertText
+                          delegate:self
+                          cancelButtonTitle:alertButton
+                          otherButtonTitles:nil];
+    alert.tag = 3491833;
+    [alert show];
+}
+
+- (void)photoLibraryDenied {
+    NSLog(@"%@", @"Denied photo library access");
+
+    NSString *alertText;
+    NSString *alertButton;
+
+    BOOL canOpenSettings = (&UIApplicationOpenSettingsURLString != NULL);
+    if (canOpenSettings)
+    {
+        alertText = @"It looks like your privacy settings are preventing us from accessing your photos. You can fix this by doing the following:\n\n1. Touch the Go button below to open the Settings app.\n\n2. Turn the Photos on.\n\n3. Open this app and try again.";
+
+        alertButton = @"Go";
+    }
+    else
+    {
+        alertText = @"It looks like your privacy settings are preventing us from accessing your photos. You can fix this by doing the following:\n\n1. Close this app.\n\n2. Open the Settings app.\n\n3. Scroll to the bottom and select this app in the list.\n\n4. Turn the Photos on.\n\n5. Open this app and try again.";
+
+        alertButton = @"OK";
+    }
+
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:@"Error"
+                          message:alertText
+                          delegate:self
+                          cancelButtonTitle:alertButton
+                          otherButtonTitles:nil];
+    alert.tag = 3491834;
+    [alert show];
+}
+
+- (void) photoLibraryRestricted {
+
+    NSLog(@"%@", @"Restricted photo library access");
+
+    NSString *alertText;
+    NSString *alertButton;
+
+    alertText = @"You've been restricted from using the Photos on this device. Without Photos access this feature won't work. Please contact the device owner so they can give you access.";
+
+    alertButton = @"OK";
+
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:@"Error"
+                          message:alertText
+                          delegate:self
+                          cancelButtonTitle:alertButton
+                          otherButtonTitles:nil];
+    alert.tag = 3491835;
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 3491832)
+    {
+        BOOL canOpenSettings = (&UIApplicationOpenSettingsURLString != NULL);
+        if (canOpenSettings)
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    }else if (alertView.tag == 3491834)
+    {
+        BOOL canOpenSettings = (&UIApplicationOpenSettingsURLString != NULL);
+        if (canOpenSettings)
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    }
+}
+
 
 - (void)checkPhotoAuthorizationWithImagePicker:(UIImagePickerController *)imagePickerController {
   PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
@@ -307,7 +429,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self showPhotoLibraryWithImagePicker:imagePickerController];
       break;
     case PHAuthorizationStatusDenied:
+	  [self photoLibraryDenied];
+	  break;
     case PHAuthorizationStatusRestricted:
+	  [self photoLibraryRestricted];
+	  break;
     default:
       [self errorNoPhotoAccess:status];
       break;
@@ -342,7 +468,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self showPhotoLibraryWithPHPicker:_pickerViewController];
       break;
     case PHAuthorizationStatusDenied:
+      [self photoLibraryDenied];
+	  break;
     case PHAuthorizationStatusRestricted:
+	  [self photoLibraryRestricted];
+	  break;
     default:
       [self errorNoPhotoAccess:status];
       break;
