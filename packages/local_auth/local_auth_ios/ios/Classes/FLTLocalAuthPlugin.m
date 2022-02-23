@@ -20,7 +20,7 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth_ios"
                                   binaryMessenger:[registrar messenger]];
   FLTLocalAuthPlugin *instance = [[FLTLocalAuthPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
