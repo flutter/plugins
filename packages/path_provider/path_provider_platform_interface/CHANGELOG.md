@@ -1,3 +1,7 @@
+## 2.0.4
+
+* bumped `platform` version due to issue #99012. The packageRoot member was missing.
+
 ## 2.0.3
 
 * Removes dependency on `meta`.
