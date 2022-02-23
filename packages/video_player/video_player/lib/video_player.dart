@@ -752,7 +752,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
     var playerWidget = _videoPlayerPlatform.buildView(_textureId);
     var rotationInDegrees = widget.controller.value.rotationCorrection;
 
-    return rotation == 0
+    return rotationInDegrees == 0
         ? playerWidget
         : Transform.rotate(
             angle: rotationInDegrees * (math.pi / 180),
