@@ -2,43 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
+import 'package:pigeon/pigeon.dart';
 
-import 'package:pigeon/pigeon_lib.dart';
-
+@ConfigurePigeon(PigeonOptions(
+  dartOut: 'lib/src/messages.g.dart',
+  dartTestOut: 'test/test_api.dart',
+  javaOut: 'android/src/main/java/io/flutter/plugins/videoplayer/Messages.java',
+  javaOptions: JavaOptions(
+    package: 'io.flutter.plugins.videoplayer',
+  ),
+  copyrightHeader: 'pigeons/copyright.txt',
+))
 class TextureMessage {
+  TextureMessage(this.textureId);
   int textureId;
 }
 
 class LoopingMessage {
+  LoopingMessage(this.textureId, this.isLooping);
   int textureId;
   bool isLooping;
 }
 
 class VolumeMessage {
+  VolumeMessage(this.textureId, this.volume);
   int textureId;
   double volume;
 }
 
 class PlaybackSpeedMessage {
+  PlaybackSpeedMessage(this.textureId, this.speed);
   int textureId;
   double speed;
 }
 
 class PositionMessage {
+  PositionMessage(this.textureId, this.position);
   int textureId;
   int position;
 }
 
 class CreateMessage {
-  String asset;
-  String uri;
-  String packageName;
-  String formatHint;
-  Map<String, String> httpHeaders;
+  CreateMessage({required this.httpHeaders});
+  String? asset;
+  String? uri;
+  String? packageName;
+  String? formatHint;
+  Map<String?, String?> httpHeaders;
 }
 
 class MixWithOthersMessage {
+  MixWithOthersMessage(this.mixWithOthers);
   bool mixWithOthers;
 }
 
@@ -55,15 +69,4 @@ abstract class VideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-}
-
-void configurePigeon(PigeonOptions opts) {
-  opts.dartOut = 'lib/src/messages.dart';
-  opts.dartTestOut = 'test/test_api.dart';
-  opts.objcHeaderOut = 'ios/Classes/messages.h';
-  opts.objcSourceOut = 'ios/Classes/messages.m';
-  opts.objcOptions.prefix = 'FLT';
-  opts.javaOut =
-      'android/src/main/java/io/flutter/plugins/videoplayer/Messages.java';
-  opts.javaOptions.package = 'io.flutter.plugins.videoplayer';
 }

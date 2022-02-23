@@ -47,11 +47,6 @@ void main() {
       store.log.clear();
     });
 
-    tearDown(() async {
-      await preferences.clear();
-      await store.clear();
-    });
-
     test('reading', () async {
       expect(preferences.get('String'), testString);
       expect(preferences.get('bool'), testBool);

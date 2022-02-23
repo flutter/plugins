@@ -40,14 +40,28 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': true,
-                }..addAll(const AndroidAuthMessages().args)),
+            isMethodCall(
+              'authenticate',
+              arguments: <String, dynamic>{
+                'localizedReason': 'Needs secure',
+                'useErrorDialogs': true,
+                'stickyAuth': false,
+                'sensitiveTransaction': true,
+                'biometricOnly': true,
+                'biometricHint': androidBiometricHint,
+                'biometricNotRecognized': androidBiometricNotRecognized,
+                'biometricSuccess': androidBiometricSuccess,
+                'biometricRequired': androidBiometricRequiredTitle,
+                'cancelButton': androidCancelButton,
+                'deviceCredentialsRequired':
+                    androidDeviceCredentialsRequiredTitle,
+                'deviceCredentialsSetupDescription':
+                    androidDeviceCredentialsSetupDescription,
+                'goToSetting': goToSettings,
+                'goToSettingDescription': androidGoToSettingsDescription,
+                'signInTitle': androidSignInTitle,
+              },
+            ),
           ],
         );
       });
@@ -61,14 +75,45 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': true,
-                }..addAll(const IOSAuthMessages().args)),
+            isMethodCall('authenticate', arguments: <String, dynamic>{
+              'localizedReason': 'Needs secure',
+              'useErrorDialogs': true,
+              'stickyAuth': false,
+              'sensitiveTransaction': true,
+              'biometricOnly': true,
+              'lockOut': iOSLockOut,
+              'goToSetting': goToSettings,
+              'goToSettingDescriptionIOS': iOSGoToSettingsDescription,
+              'okButton': iOSOkButton,
+            }),
+          ],
+        );
+      });
+
+      test('authenticate with `localizedFallbackTitle` on iOS.', () async {
+        const IOSAuthMessages iosAuthMessages =
+            IOSAuthMessages(localizedFallbackTitle: 'Enter PIN');
+        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+        await localAuthentication.authenticate(
+          localizedReason: 'Needs secure',
+          biometricOnly: true,
+          iOSAuthStrings: iosAuthMessages,
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate', arguments: <String, dynamic>{
+              'localizedReason': 'Needs secure',
+              'useErrorDialogs': true,
+              'stickyAuth': false,
+              'sensitiveTransaction': true,
+              'biometricOnly': true,
+              'lockOut': iOSLockOut,
+              'goToSetting': goToSettings,
+              'goToSettingDescriptionIOS': iOSGoToSettingsDescription,
+              'okButton': iOSOkButton,
+              'localizedFallbackTitle': 'Enter PIN',
+            }),
           ],
         );
       });
@@ -95,14 +140,25 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Insecure',
-                  'useErrorDialogs': false,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': false,
-                  'biometricOnly': true,
-                }..addAll(const AndroidAuthMessages().args)),
+            isMethodCall('authenticate', arguments: <String, dynamic>{
+              'localizedReason': 'Insecure',
+              'useErrorDialogs': false,
+              'stickyAuth': false,
+              'sensitiveTransaction': false,
+              'biometricOnly': true,
+              'biometricHint': androidBiometricHint,
+              'biometricNotRecognized': androidBiometricNotRecognized,
+              'biometricSuccess': androidBiometricSuccess,
+              'biometricRequired': androidBiometricRequiredTitle,
+              'cancelButton': androidCancelButton,
+              'deviceCredentialsRequired':
+                  androidDeviceCredentialsRequiredTitle,
+              'deviceCredentialsSetupDescription':
+                  androidDeviceCredentialsSetupDescription,
+              'goToSetting': goToSettings,
+              'goToSettingDescription': androidGoToSettingsDescription,
+              'signInTitle': androidSignInTitle,
+            }),
           ],
         );
       });
@@ -117,14 +173,25 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': false,
-                }..addAll(const AndroidAuthMessages().args)),
+            isMethodCall('authenticate', arguments: <String, dynamic>{
+              'localizedReason': 'Needs secure',
+              'useErrorDialogs': true,
+              'stickyAuth': false,
+              'sensitiveTransaction': true,
+              'biometricOnly': false,
+              'biometricHint': androidBiometricHint,
+              'biometricNotRecognized': androidBiometricNotRecognized,
+              'biometricSuccess': androidBiometricSuccess,
+              'biometricRequired': androidBiometricRequiredTitle,
+              'cancelButton': androidCancelButton,
+              'deviceCredentialsRequired':
+                  androidDeviceCredentialsRequiredTitle,
+              'deviceCredentialsSetupDescription':
+                  androidDeviceCredentialsSetupDescription,
+              'goToSetting': goToSettings,
+              'goToSettingDescription': androidGoToSettingsDescription,
+              'signInTitle': androidSignInTitle,
+            }),
           ],
         );
       });
@@ -137,14 +204,17 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Needs secure',
-                  'useErrorDialogs': true,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': true,
-                  'biometricOnly': false,
-                }..addAll(const IOSAuthMessages().args)),
+            isMethodCall('authenticate', arguments: <String, dynamic>{
+              'localizedReason': 'Needs secure',
+              'useErrorDialogs': true,
+              'stickyAuth': false,
+              'sensitiveTransaction': true,
+              'biometricOnly': false,
+              'lockOut': iOSLockOut,
+              'goToSetting': goToSettings,
+              'goToSettingDescriptionIOS': iOSGoToSettingsDescription,
+              'okButton': iOSOkButton,
+            }),
           ],
         );
       });
@@ -159,14 +229,25 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticate',
-                arguments: <String, dynamic>{
-                  'localizedReason': 'Insecure',
-                  'useErrorDialogs': false,
-                  'stickyAuth': false,
-                  'sensitiveTransaction': false,
-                  'biometricOnly': false,
-                }..addAll(const AndroidAuthMessages().args)),
+            isMethodCall('authenticate', arguments: <String, dynamic>{
+              'localizedReason': 'Insecure',
+              'useErrorDialogs': false,
+              'stickyAuth': false,
+              'sensitiveTransaction': false,
+              'biometricOnly': false,
+              'biometricHint': androidBiometricHint,
+              'biometricNotRecognized': androidBiometricNotRecognized,
+              'biometricSuccess': androidBiometricSuccess,
+              'biometricRequired': androidBiometricRequiredTitle,
+              'cancelButton': androidCancelButton,
+              'deviceCredentialsRequired':
+                  androidDeviceCredentialsRequiredTitle,
+              'deviceCredentialsSetupDescription':
+                  androidDeviceCredentialsSetupDescription,
+              'goToSetting': goToSettings,
+              'goToSettingDescription': androidGoToSettingsDescription,
+              'signInTitle': androidSignInTitle,
+            }),
           ],
         );
       });
