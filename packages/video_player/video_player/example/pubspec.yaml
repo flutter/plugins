@@ -17,11 +17,6 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
-dependency_overrides:
-  video_player_platform_interface:
-    path:
-      ../../video_player_platform_interface
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
