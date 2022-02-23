@@ -1,6 +1,7 @@
 ## 3.0.0
 
-* **BREAKING CHANGE** Updates the dependency on `in_app_purchase_storekit` to `0.3.0+1` which ensures the `restorePurchases` method emits an empty list of purchases. 
+* **BREAKING CHANGE** Updates `restorePurchases` to emit an empty list of purchases on StoreKit when there are no purchases to restore (same as Android).
+  * This change was listed in the CHANGELOG for 2.0.0, but the change was accidentally not included in 2.0.0.
 
 ## 2.0.1
 
@@ -10,7 +11,7 @@
 
 * **BREAKING CHANGES**:
   * Adds a new `PurchaseStatus` named `canceled`. This means developers can distinguish between an error and user cancellation.
-  * Updates `restorePurchases` to emit an empty list of purchases on StoreKit when there are no purchases to restore (same as Android).
+  * ~~Updates `restorePurchases` to emit an empty list of purchases on StoreKit when there are no purchases to restore (same as Android).~~
   * Renames `in_app_purchase_ios` to `in_app_purchase_storekit`.
   * Renames `InAppPurchaseIosPlatform` to `InAppPurchaseStoreKitPlatform`.
   * Renames `InAppPurchaseIosPlatformAddition` to
