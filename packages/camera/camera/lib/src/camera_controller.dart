@@ -29,6 +29,10 @@ Future<List<CameraDescription>> availableCameras() async {
   return CameraPlatform.instance.availableCameras();
 }
 
+// TODO(stuartmorgan): Remove this once the package requires 2.10, where the
+// dart:async `unawaited` accepts a nullable future.
+void _unawaited(Future<void>? future) {}
+
 /// The state of a [CameraController].
 class CameraValue {
   /// Creates a new camera controller state.
@@ -296,7 +300,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         enableAudio: enableAudio,
       );
 
-      unawaited(CameraPlatform.instance
+      _unawaited(CameraPlatform.instance
           .onCameraInitialized(_cameraId)
           .first
           .then((CameraInitializedEvent event) {
@@ -810,7 +814,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_isDisposed) {
       return;
     }
-    unawaited(_deviceOrientationSubscription?.cancel());
+    _unawaited(_deviceOrientationSubscription?.cancel());
     _isDisposed = true;
     super.dispose();
     if (_initCalled != null) {
