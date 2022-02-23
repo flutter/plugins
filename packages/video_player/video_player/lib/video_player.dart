@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class VideoPlayerValue {
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
     this.errorDescription,
+    this.rotationCorrection = 0.0,
   });
 
   /// Returns an instance for a video that hasn't been loaded.
@@ -113,6 +115,10 @@ class VideoPlayerValue {
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
+  /// The angle in degrees to rotate the video
+  /// so that it is displayed correctly.
+  final double rotationCorrection;
+
   /// Indicates whether or not the video is in an error state. If this is true
   /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
@@ -135,7 +141,7 @@ class VideoPlayerValue {
   }
 
   /// Returns a new instance that has the same values as this current instance,
-  /// except for any overrides passed in as arguments to [copyWidth].
+  /// except for any overrides passed in as arguments to [copyWith].
   VideoPlayerValue copyWith({
     Duration? duration,
     Size? size,
@@ -149,6 +155,7 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? volume,
     double? playbackSpeed,
+    double? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
   }) {
     return VideoPlayerValue(
@@ -164,6 +171,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
+      rotationCorrection: rotationCorrection ?? this.rotationCorrection,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
           : this.errorDescription,
@@ -185,6 +193,7 @@ class VideoPlayerValue {
         'isBuffering: $isBuffering, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
+        'rotationCorrection: $rotationCorrection, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -363,6 +372,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
+            rotationCorrection: event.rotationCorrection,
             isInitialized: event.duration != null,
             errorDescription: null,
           );
@@ -735,7 +745,19 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == VideoPlayerController.kUninitializedTextureId
         ? Container()
-        : _videoPlayerPlatform.buildView(_textureId);
+        : videoPlayerWidgetWithCorrectRotation();
+  }
+
+  Widget videoPlayerWidgetWithCorrectRotation() {
+    var playerWidget = _videoPlayerPlatform.buildView(_textureId);
+    var rotationInDegrees = widget.controller.value.rotationCorrection;
+
+    return rotation == 0
+        ? playerWidget
+        : Transform.rotate(
+            angle: rotationInDegrees * (math.pi / 180),
+            child: playerWidget,
+          );
   }
 }
 
