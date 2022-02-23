@@ -156,8 +156,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     }
     videoPlayers.put(handle.id(), player);
 
-    TextureMessage result = new TextureMessage();
-    result.setTextureId(handle.id());
+    TextureMessage result = new TextureMessage.Builder().setTextureId(handle.id()).build();
     return result;
   }
 
@@ -189,8 +188,11 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
   public PositionMessage position(TextureMessage arg) {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
-    PositionMessage result = new PositionMessage();
-    result.setPosition(player.getPosition());
+    PositionMessage result =
+        new PositionMessage.Builder()
+            .setPosition(player.getPosition())
+            .setTextureId(arg.getTextureId())
+            .build();
     player.sendBufferingUpdate();
     return result;
   }

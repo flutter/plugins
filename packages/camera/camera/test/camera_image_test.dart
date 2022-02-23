@@ -14,16 +14,17 @@ void main() {
   group('$CameraImage tests', () {
     test('$CameraImage can be created', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage =
+          CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 35,
         'height': 1,
         'width': 4,
         'lensAperture': 1.8,
         'sensorExposureTime': 9991324,
         'sensorSensitivity': 92.0,
-        'planes': [
-          {
-            'bytes': Uint8List.fromList([1, 2, 3, 4]),
+        'planes': <dynamic>[
+          <dynamic, dynamic>{
+            'bytes': Uint8List.fromList(<int>[1, 2, 3, 4]),
             'bytesPerPixel': 1,
             'bytesPerRow': 4,
             'height': 1,
@@ -40,16 +41,17 @@ void main() {
     test('$CameraImage has ImageFormatGroup.yuv420 for iOS', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage =
+          CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 875704438,
         'height': 1,
         'width': 4,
         'lensAperture': 1.8,
         'sensorExposureTime': 9991324,
         'sensorSensitivity': 92.0,
-        'planes': [
-          {
-            'bytes': Uint8List.fromList([1, 2, 3, 4]),
+        'planes': <dynamic>[
+          <dynamic, dynamic>{
+            'bytes': Uint8List.fromList(<int>[1, 2, 3, 4]),
             'bytesPerPixel': 1,
             'bytesPerRow': 4,
             'height': 1,
@@ -63,16 +65,17 @@ void main() {
     test('$CameraImage has ImageFormatGroup.yuv420 for Android', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
 
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage =
+          CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 35,
         'height': 1,
         'width': 4,
         'lensAperture': 1.8,
         'sensorExposureTime': 9991324,
         'sensorSensitivity': 92.0,
-        'planes': [
-          {
-            'bytes': Uint8List.fromList([1, 2, 3, 4]),
+        'planes': <dynamic>[
+          <dynamic, dynamic>{
+            'bytes': Uint8List.fromList(<int>[1, 2, 3, 4]),
             'bytesPerPixel': 1,
             'bytesPerRow': 4,
             'height': 1,
@@ -86,16 +89,17 @@ void main() {
     test('$CameraImage has ImageFormatGroup.bgra8888 for iOS', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage =
+          CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': 1111970369,
         'height': 1,
         'width': 4,
         'lensAperture': 1.8,
         'sensorExposureTime': 9991324,
         'sensorSensitivity': 92.0,
-        'planes': [
-          {
-            'bytes': Uint8List.fromList([1, 2, 3, 4]),
+        'planes': <dynamic>[
+          <dynamic, dynamic>{
+            'bytes': Uint8List.fromList(<int>[1, 2, 3, 4]),
             'bytesPerPixel': 1,
             'bytesPerRow': 4,
             'height': 1,
@@ -106,16 +110,17 @@ void main() {
       expect(cameraImage.format.group, ImageFormatGroup.bgra8888);
     });
     test('$CameraImage has ImageFormatGroup.unknown', () {
-      CameraImage cameraImage = CameraImage.fromPlatformData(<dynamic, dynamic>{
+      final CameraImage cameraImage =
+          CameraImage.fromPlatformData(<dynamic, dynamic>{
         'format': null,
         'height': 1,
         'width': 4,
         'lensAperture': 1.8,
         'sensorExposureTime': 9991324,
         'sensorSensitivity': 92.0,
-        'planes': [
-          {
-            'bytes': Uint8List.fromList([1, 2, 3, 4]),
+        'planes': <dynamic>[
+          <dynamic, dynamic>{
+            'bytes': Uint8List.fromList(<int>[1, 2, 3, 4]),
             'bytesPerPixel': 1,
             'bytesPerRow': 4,
             'height': 1,
