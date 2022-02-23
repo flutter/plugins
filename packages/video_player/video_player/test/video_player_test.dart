@@ -943,7 +943,10 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyPlayingWhenAppLifecyclePaused(controller, isObserving: !allowBackgroundPlayback);
+        verifyPlayingWhenAppLifecyclePaused(
+          controller,
+          isObserving: !allowBackgroundPlayback,
+        );
       });
     });
   });
