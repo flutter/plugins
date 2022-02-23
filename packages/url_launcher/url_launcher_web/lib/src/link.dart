@@ -11,8 +11,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-// used to access the current [UrlStrategy]
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart' show urlStrategy;
 import 'package:url_launcher_platform_interface/link.dart';
 
 /// The unique identifier for the view type to be used for link platform views.
