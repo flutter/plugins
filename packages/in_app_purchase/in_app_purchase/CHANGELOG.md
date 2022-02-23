@@ -1,3 +1,7 @@
+## 3.0.0
+
+* **BREAKING CHANGE** Updates the dependency on `in_app_purchase_storekit` to `0.3.0+1` which ensures the `restorePurchases` method emits an empty list of purchases. 
+
 ## 2.0.1
 
 * Removes the instructions on initializing the plugin since this functionality is deprecated.
