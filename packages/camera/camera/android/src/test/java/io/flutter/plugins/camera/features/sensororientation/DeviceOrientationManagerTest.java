@@ -50,6 +50,7 @@ public class DeviceOrientationManagerTest {
         DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 0);
   }
 
+  // TODO: This test is probably broken
   @Test
   public void getVideoOrientation_whenNaturalScreenOrientationEqualsPortraitUp() {
     int degreesPortraitUp =
@@ -67,6 +68,7 @@ public class DeviceOrientationManagerTest {
     assertEquals(270, degreesLandscapeRight);
   }
 
+  // TODO: This test is probably broken
   @Test
   public void getVideoOrientation_whenNaturalScreenOrientationEqualsLandscapeLeft() {
     DeviceOrientationManager orientationManager =
