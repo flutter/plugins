@@ -98,7 +98,7 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 }
 
 void main() {
-  void verifyAppLifeCycle(
+  void verifyPlayingWhenAppLifecyclePaused(
     VideoPlayerController controller, {
     required bool isObserving,
   }) {
@@ -214,7 +214,7 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyAppLifeCycle(controller, isObserving: true);
+        verifyPlayingWhenAppLifecyclePaused(controller, isObserving: true);
       });
 
       test('asset', () async {
@@ -943,7 +943,7 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyAppLifeCycle(controller, isObserving: !allowBackgroundPlayback);
+        verifyPlayingWhenAppLifecyclePaused(controller, isObserving: !allowBackgroundPlayback);
       });
     });
   });
