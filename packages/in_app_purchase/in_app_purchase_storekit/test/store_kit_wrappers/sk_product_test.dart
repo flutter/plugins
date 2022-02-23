@@ -25,7 +25,8 @@ void main() {
         'SKProductSubscriptionPeriodWrapper should have properties to be default values if map is empty',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
+          SKProductSubscriptionPeriodWrapper.fromJson(
+              const <String, dynamic>{});
       expect(wrapper.numberOfUnits, 0);
       expect(wrapper.unit, SKSubscriptionPeriodUnit.day);
     });
@@ -42,7 +43,7 @@ void main() {
         'SKProductDiscountWrapper should have properties to be default if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
+          SKProductDiscountWrapper.fromJson(const <String, dynamic>{});
       expect(wrapper.price, '');
       expect(
           wrapper.priceLocale,
@@ -70,7 +71,7 @@ void main() {
         'SKProductWrapper should have properties to be default if map is empty',
         () {
       final SKProductWrapper wrapper =
-          SKProductWrapper.fromJson(<String, dynamic>{});
+          SKProductWrapper.fromJson(const <String, dynamic>{});
       expect(wrapper.productIdentifier, '');
       expect(wrapper.localizedTitle, '');
       expect(wrapper.localizedDescription, '');
@@ -183,7 +184,7 @@ void main() {
     });
 
     test('Should generate correct map of the payment object', () {
-      final Map map = dummyPayment.toMap();
+      final Map<String, Object?> map = dummyPayment.toMap();
       expect(map['productIdentifier'], dummyPayment.productIdentifier);
       expect(map['applicationUsername'], dummyPayment.applicationUsername);
 

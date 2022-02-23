@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  in_app_purchase_platform_interface: ^1.0.0
   in_app_purchase_storekit:
     # When depending on this package from a real application you should use:
     #   in_app_purchase_storekit: ^x.y.z
@@ -17,8 +18,6 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   shared_preferences: ^2.0.0
-
-  in_app_purchase_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_driver:

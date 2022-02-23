@@ -29,25 +29,6 @@ class AppStorePurchaseDetails extends PurchaseDetails {
     this.status = status;
   }
 
-  /// Points back to the [SKPaymentTransactionWrapper] which was used to
-  /// generate this [AppStorePurchaseDetails] object.
-  final SKPaymentTransactionWrapper skPaymentTransaction;
-
-  late PurchaseStatus _status;
-
-  /// The status that this [PurchaseDetails] is currently on.
-  @override
-  PurchaseStatus get status => _status;
-  @override
-  set status(PurchaseStatus status) {
-    _pendingCompletePurchase = status != PurchaseStatus.pending;
-    _status = status;
-  }
-
-  bool _pendingCompletePurchase = false;
-  @override
-  bool get pendingCompletePurchase => _pendingCompletePurchase;
-
   /// Generate a [AppStorePurchaseDetails] object based on an iOS
   /// [SKPaymentTransactionWrapper] object.
   factory AppStorePurchaseDetails.fromSKTransaction(
@@ -81,4 +62,23 @@ class AppStorePurchaseDetails extends PurchaseDetails {
 
     return purchaseDetails;
   }
+
+  /// Points back to the [SKPaymentTransactionWrapper] which was used to
+  /// generate this [AppStorePurchaseDetails] object.
+  final SKPaymentTransactionWrapper skPaymentTransaction;
+
+  late PurchaseStatus _status;
+
+  /// The status that this [PurchaseDetails] is currently on.
+  @override
+  PurchaseStatus get status => _status;
+  @override
+  set status(PurchaseStatus status) {
+    _pendingCompletePurchase = status != PurchaseStatus.pending;
+    _status = status;
+  }
+
+  bool _pendingCompletePurchase = false;
+  @override
+  bool get pendingCompletePurchase => _pendingCompletePurchase;
 }

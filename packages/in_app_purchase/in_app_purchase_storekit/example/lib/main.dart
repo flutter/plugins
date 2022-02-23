@@ -44,13 +44,13 @@ class _MyAppState extends State<_MyApp> {
   final InAppPurchaseStoreKitPlatform _iapStoreKitPlatform =
       InAppPurchasePlatform.instance as InAppPurchaseStoreKitPlatform;
   final InAppPurchaseStoreKitPlatformAddition _iapStoreKitPlatformAddition =
-      InAppPurchasePlatformAddition.instance
+      InAppPurchasePlatformAddition.instance!
           as InAppPurchaseStoreKitPlatformAddition;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
-  List<String> _notFoundIds = [];
-  List<ProductDetails> _products = [];
-  List<PurchaseDetails> _purchases = [];
-  List<String> _consumables = [];
+  List<String> _notFoundIds = <String>[];
+  List<ProductDetails> _products = <ProductDetails>[];
+  List<PurchaseDetails> _purchases = <PurchaseDetails>[];
+  List<String> _consumables = <String>[];
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
@@ -60,11 +60,12 @@ class _MyAppState extends State<_MyApp> {
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         _iapStoreKitPlatform.purchaseStream;
-    _subscription = purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
+    _subscription =
+        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
       _subscription.cancel();
-    }, onError: (error) {
+    }, onError: (Object error) {
       // handle error here.
     });
 
@@ -80,10 +81,10 @@ class _MyAppState extends State<_MyApp> {
     if (!isAvailable) {
       setState(() {
         _isAvailable = isAvailable;
-        _products = [];
-        _purchases = [];
-        _notFoundIds = [];
-        _consumables = [];
+        _products = <ProductDetails>[];
+        _purchases = <PurchaseDetails>[];
+        _notFoundIds = <String>[];
+        _consumables = <String>[];
         _purchasePending = false;
         _loading = false;
       });
@@ -97,9 +98,9 @@ class _MyAppState extends State<_MyApp> {
         _queryProductError = productDetailResponse.error!.message;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
-        _purchases = [];
+        _purchases = <PurchaseDetails>[];
         _notFoundIds = productDetailResponse.notFoundIDs;
-        _consumables = [];
+        _consumables = <String>[];
         _purchasePending = false;
         _loading = false;
       });
@@ -111,9 +112,9 @@ class _MyAppState extends State<_MyApp> {
         _queryProductError = null;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
-        _purchases = [];
+        _purchases = <PurchaseDetails>[];
         _notFoundIds = productDetailResponse.notFoundIDs;
-        _consumables = [];
+        _consumables = <String>[];
         _purchasePending = false;
         _loading = false;
       });
@@ -139,11 +140,11 @@ class _MyAppState extends State<_MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> stack = [];
+    final List<Widget> stack = <Widget>[];
     if (_queryProductError == null) {
       stack.add(
         ListView(
-          children: [
+          children: <Widget>[
             _buildConnectionCheckTile(),
             _buildProductList(),
             _buildConsumableBox(),
@@ -159,7 +160,7 @@ class _MyAppState extends State<_MyApp> {
     if (_purchasePending) {
       stack.add(
         Stack(
-          children: const [
+          children: const <Widget>[
             Opacity(
               opacity: 0.3,
               child: ModalBarrier(dismissible: false, color: Colors.grey),
@@ -197,7 +198,7 @@ class _MyAppState extends State<_MyApp> {
     final List<Widget> children = <Widget>[storeHeader];
 
     if (!_isAvailable) {
-      children.addAll([
+      children.addAll(<Widget>[
         const Divider(),
         ListTile(
           title: Text('Not connected',
@@ -234,7 +235,8 @@ class _MyAppState extends State<_MyApp> {
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
     // We recommend that you use your own server to verify the purchase data.
     final Map<String, PurchaseDetails> purchases =
-        Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
+        Map<String, PurchaseDetails>.fromEntries(
+            _purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
         _iapStoreKitPlatform.completePurchase(purchase);
       }
@@ -281,8 +283,8 @@ class _MyAppState extends State<_MyApp> {
     ));
 
     return Card(
-        child:
-            Column(children: <Widget>[productHeader, const Divider()] + productList));
+        child: Column(
+            children: <Widget>[productHeader, const Divider()] + productList));
   }
 
   Card _buildConsumableBox() {
@@ -333,7 +335,7 @@ class _MyAppState extends State<_MyApp> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [
+        children: <Widget>[
           TextButton(
             child: const Text('Restore purchases'),
             style: TextButton.styleFrom(
@@ -361,7 +363,7 @@ class _MyAppState extends State<_MyApp> {
     });
   }
 
-  void deliverProduct(PurchaseDetails purchaseDetails) async {
+  Future<void> deliverProduct(PurchaseDetails purchaseDetails) async {
     // IMPORTANT!! Always verify purchase details before delivering the product.
     if (purchaseDetails.productID == _kConsumableId) {
       await ConsumableStore.save(purchaseDetails.purchaseID!);
@@ -395,26 +397,29 @@ class _MyAppState extends State<_MyApp> {
   }
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
-    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) async {
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        showPendingUI();
-      } else {
-        if (purchaseDetails.status == PurchaseStatus.error) {
-          handleError(purchaseDetails.error!);
-        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-            purchaseDetails.status == PurchaseStatus.restored) {
-          final bool valid = await _verifyPurchase(purchaseDetails);
-          if (valid) {
-            deliverProduct(purchaseDetails);
-          } else {
-            _handleInvalidPurchase(purchaseDetails);
-            return;
-          }
-        }
+    purchaseDetailsList.forEach(_handleReportedPurchaseState);
+  }
 
-        if (purchaseDetails.pendingCompletePurchase) {
-          await _iapStoreKitPlatform.completePurchase(purchaseDetails);
+  Future<void> _handleReportedPurchaseState(
+      PurchaseDetails purchaseDetails) async {
+    if (purchaseDetails.status == PurchaseStatus.pending) {
+      showPendingUI();
+    } else {
+      if (purchaseDetails.status == PurchaseStatus.error) {
+        handleError(purchaseDetails.error!);
+      } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+          purchaseDetails.status == PurchaseStatus.restored) {
+        final bool valid = await _verifyPurchase(purchaseDetails);
+        if (valid) {
+          await deliverProduct(purchaseDetails);
+        } else {
+          _handleInvalidPurchase(purchaseDetails);
+          return;
         }
+      }
+
+      if (purchaseDetails.pendingCompletePurchase) {
+        await _iapStoreKitPlatform.completePurchase(purchaseDetails);
       }
     }
   }

@@ -22,9 +22,8 @@ void main() {
   group('present code redemption sheet', () {
     test('null', () async {
       expect(
-          await InAppPurchaseStoreKitPlatformAddition()
-              .presentCodeRedemptionSheet(),
-          null);
+          InAppPurchaseStoreKitPlatformAddition().presentCodeRedemptionSheet(),
+          completes);
     });
   });
 

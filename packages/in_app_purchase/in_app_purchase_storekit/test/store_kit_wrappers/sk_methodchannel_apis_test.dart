@@ -29,14 +29,14 @@ void main() {
   group('sk_request_maker', () {
     test('get products method channel', () async {
       final SkProductResponseWrapper productResponseWrapper =
-          await SKRequestMaker().startProductRequest(['xxx']);
+          await SKRequestMaker().startProductRequest(<String>['xxx']);
       expect(
         productResponseWrapper.products,
         isNotEmpty,
       );
       expect(
         productResponseWrapper.products.first.priceLocale.currencySymbol,
-        '\$',
+        r'$',
       );
 
       expect(
@@ -58,7 +58,7 @@ void main() {
 
       expect(
         fakeStoreKitPlatform.startProductRequestParam,
-        ['xxx'],
+        <String>['xxx'],
       );
     });
 
@@ -188,7 +188,7 @@ class FakeStoreKitPlatform {
     channel.setMockMethodCallHandler(onMethodCall);
   }
   // get product request
-  List<dynamic> startProductRequestParam = [];
+  List<dynamic> startProductRequestParam = <dynamic>[];
   bool getProductRequestFailTest = false;
   bool testReturnNull = false;
 
@@ -200,8 +200,8 @@ class FakeStoreKitPlatform {
   late Map<String, dynamic> refreshReceiptParam;
 
   // payment queue
-  List<SKPaymentWrapper> payments = [];
-  List<Map<String, String>> transactionsFinished = [];
+  List<SKPaymentWrapper> payments = <SKPaymentWrapper>[];
+  List<Map<String, String>> transactionsFinished = <Map<String, String>>[];
   String applicationNameHasTransactionRestored = '';
 
   // present Code Redemption
@@ -220,7 +220,7 @@ class FakeStoreKitPlatform {
     switch (call.method) {
       // request makers
       case '-[InAppPurchasePlugin startProductRequest:result:]':
-        startProductRequestParam = call.arguments;
+        startProductRequestParam = call.arguments as List<dynamic>;
         if (getProductRequestFailTest) {
           return Future<dynamic>.value(null);
         }
@@ -228,8 +228,8 @@ class FakeStoreKitPlatform {
             buildProductResponseMap(dummyProductResponseWrapper));
       case '-[InAppPurchasePlugin refreshReceipt:result:]':
         refreshReceipt++;
-        refreshReceiptParam =
-            Map.castFrom<dynamic, dynamic, String, dynamic>(call.arguments);
+        refreshReceiptParam = Map.castFrom<dynamic, dynamic, String, dynamic>(
+            call.arguments as Map<dynamic, dynamic>);
         return Future<void>.sync(() {});
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
@@ -245,16 +245,17 @@ class FakeStoreKitPlatform {
         return Future<bool>.value(true);
       case '-[SKPaymentQueue transactions]':
         return Future<List<dynamic>>.value(
-            [buildTransactionMap(dummyTransaction)]);
+            <dynamic>[buildTransactionMap(dummyTransaction)]);
       case '-[InAppPurchasePlugin addPayment:result:]':
-        payments.add(SKPaymentWrapper.fromJson(
-            Map<String, dynamic>.from(call.arguments)));
+        payments.add(SKPaymentWrapper.fromJson(Map<String, dynamic>.from(
+            call.arguments as Map<dynamic, dynamic>)));
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin finishTransaction:result:]':
-        transactionsFinished.add(Map<String, String>.from(call.arguments));
+        transactionsFinished.add(
+            Map<String, String>.from(call.arguments as Map<dynamic, dynamic>));
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
-        applicationNameHasTransactionRestored = call.arguments;
+        applicationNameHasTransactionRestored = call.arguments as String;
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]':
         presentCodeRedemption = true;
@@ -275,7 +276,7 @@ class FakeStoreKitPlatform {
         showPriceConsentIfNeeded = true;
         return Future<void>.sync(() {});
     }
-    return Future.error('method not mocked');
+    return Future<dynamic>.error('method not mocked');
   }
 }
 

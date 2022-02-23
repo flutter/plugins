@@ -13,7 +13,7 @@ class InAppPurchaseStoreKitPlatformAddition
   /// Present Code Redemption Sheet.
   ///
   /// Available on devices running iOS 14 and iPadOS 14 and later.
-  Future presentCodeRedemptionSheet() {
+  Future<void> presentCodeRedemptionSheet() {
     return SKPaymentQueueWrapper().presentCodeRedemptionSheet();
   }
 
@@ -46,7 +46,7 @@ class InAppPurchaseStoreKitPlatformAddition
   ///
   /// When set to `null` the payment queue delegate will be removed and the
   /// default behaviour will apply (see [documentation](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc)).
-  Future setDelegate(SKPaymentQueueDelegateWrapper? delegate) =>
+  Future<void> setDelegate(SKPaymentQueueDelegateWrapper? delegate) =>
       SKPaymentQueueWrapper().setDelegate(delegate);
 
   /// Shows the price consent sheet if the user has not yet responded to a
@@ -57,6 +57,6 @@ class InAppPurchaseStoreKitPlatformAddition
   /// `SKPaymentQueueDelegateWrapper.shouldShowPriceConsent()` method was called.
   ///
   /// See documentation of StoreKit's [`-[SKPaymentQueue showPriceConsentIfNeeded]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3521327-showpriceconsentifneeded?language=objc).
-  Future showPriceConsentIfNeeded() =>
+  Future<void> showPriceConsentIfNeeded() =>
       SKPaymentQueueWrapper().showPriceConsentIfNeeded();
 }

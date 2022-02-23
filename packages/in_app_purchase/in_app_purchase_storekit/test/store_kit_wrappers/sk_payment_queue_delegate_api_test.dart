@@ -36,7 +36,7 @@ void main() {
       },
     };
 
-    final result = await queue.handlePaymentQueueDelegateCallbacks(
+    final Object? result = await queue.handlePaymentQueueDelegateCallbacks(
       MethodCall('shouldContinueTransaction', arguments),
     );
 
@@ -56,9 +56,9 @@ void main() {
     final TestPaymentQueueDelegate testDelegate = TestPaymentQueueDelegate();
     await queue.setDelegate(testDelegate);
 
-    final result = await queue.handlePaymentQueueDelegateCallbacks(
+    final bool result = (await queue.handlePaymentQueueDelegateCallbacks(
       const MethodCall('shouldShowPriceConsent'),
-    );
+    ))! as bool;
 
     expect(result, false);
     expect(
@@ -77,7 +77,7 @@ void main() {
         TestTransactionObserverWrapper();
     queue.setTransactionObserver(testObserver);
 
-    final Map arguments = <dynamic, dynamic>{
+    final Map<dynamic, dynamic> arguments = <dynamic, dynamic>{
       'code': 100,
       'domain': 'domain',
       'userInfo': <String, dynamic>{'error': 'underlying_error'},
@@ -163,6 +163,6 @@ class FakeStoreKitPlatform {
         isPaymentQueueDelegateRegistered = false;
         return Future<void>.sync(() {});
     }
-    return Future.error('method not mocked');
+    return Future<dynamic>.error('method not mocked');
   }
 }

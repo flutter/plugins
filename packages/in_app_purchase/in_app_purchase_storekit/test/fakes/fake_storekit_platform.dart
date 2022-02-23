@@ -33,10 +33,10 @@ class FakeStoreKitPlatform {
   bool queueIsActive = false;
 
   void reset() {
-    transactions = [];
+    transactions = <SKPaymentTransactionWrapper>[];
     receiptData = 'dummy base64data';
-    validProductIDs = {'123', '456'};
-    validProducts = {};
+    validProductIDs = <String>{'123', '456'};
+    validProducts = <String, SKProductWrapper>{};
     for (final String validID in validProductIDs) {
       final Map<String, dynamic> productWrapperMap =
           buildProductMap(dummyProductWrapper);
@@ -47,7 +47,7 @@ class FakeStoreKitPlatform {
       validProducts[validID] = SKProductWrapper.fromJson(productWrapperMap);
     }
 
-    finishedTransactions = [];
+    finishedTransactions = <SKPaymentTransactionWrapper>[];
     testRestoredTransactionsNull = false;
     testTransactionFail = false;
     testTransactionCancel = -1;
@@ -87,7 +87,7 @@ class FakeStoreKitPlatform {
         error: const SKError(
             code: 0,
             domain: 'ios_domain',
-            userInfo: {'message': 'an error message'}),
+            userInfo: <String, Object>{'message': 'an error message'}),
         originalTransaction: null);
   }
 
@@ -101,7 +101,7 @@ class FakeStoreKitPlatform {
         error: SKError(
             code: errorCode,
             domain: 'ios_domain',
-            userInfo: const {'message': 'an error message'}),
+            userInfo: const <String, Object>{'message': 'an error message'}),
         originalTransaction: null);
   }
 
@@ -125,9 +125,9 @@ class FakeStoreKitPlatform {
           throw queryProductException!;
         }
         final List<String> productIDS =
-            List.castFrom<dynamic, String>(call.arguments);
-        final List<String> invalidFound = [];
-        final List<SKProductWrapper> products = [];
+            List.castFrom<dynamic, String>(call.arguments as List<dynamic>);
+        final List<String> invalidFound = <String>[];
+        final List<SKProductWrapper> products = <SKProductWrapper>[];
         for (final String productID in productIDS) {
           if (!validProductIDs.contains(productID)) {
             invalidFound.add(productID);
@@ -158,7 +158,7 @@ class FakeStoreKitPlatform {
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         if (receiptData != null) {
-          return Future<void>.value(receiptData);
+          return Future<String>.value(receiptData);
         } else {
           throw PlatformException(code: 'no_receipt_data');
         }
@@ -166,33 +166,34 @@ class FakeStoreKitPlatform {
         receiptData = 'refreshed receipt data';
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin addPayment:result:]':
-        final String id = call.arguments['productIdentifier'];
-        final SKPaymentTransactionWrapper transaction = createPendingTransaction(id);
-        InAppPurchaseStoreKitPlatform.observer
-            .updatedTransactions(transactions: [transaction]);
+        final String id = call.arguments['productIdentifier'] as String;
+        final SKPaymentTransactionWrapper transaction =
+            createPendingTransaction(id);
+        InAppPurchaseStoreKitPlatform.observer.updatedTransactions(
+            transactions: <SKPaymentTransactionWrapper>[transaction]);
         sleep(const Duration(milliseconds: 30));
         if (testTransactionFail) {
           final SKPaymentTransactionWrapper transactionFailed =
               createFailedTransaction(id);
-          InAppPurchaseStoreKitPlatform.observer
-              .updatedTransactions(transactions: [transactionFailed]);
+          InAppPurchaseStoreKitPlatform.observer.updatedTransactions(
+              transactions: <SKPaymentTransactionWrapper>[transactionFailed]);
         } else if (testTransactionCancel > 0) {
           final SKPaymentTransactionWrapper transactionCanceled =
               createCanceledTransaction(id, testTransactionCancel);
-          InAppPurchaseStoreKitPlatform.observer
-              .updatedTransactions(transactions: [transactionCanceled]);
+          InAppPurchaseStoreKitPlatform.observer.updatedTransactions(
+              transactions: <SKPaymentTransactionWrapper>[transactionCanceled]);
         } else {
           final SKPaymentTransactionWrapper transactionFinished =
               createPurchasedTransaction(
                   id, transaction.transactionIdentifier ?? '');
-          InAppPurchaseStoreKitPlatform.observer
-              .updatedTransactions(transactions: [transactionFinished]);
+          InAppPurchaseStoreKitPlatform.observer.updatedTransactions(
+              transactions: <SKPaymentTransactionWrapper>[transactionFinished]);
         }
         break;
       case '-[InAppPurchasePlugin finishTransaction:result:]':
         finishedTransactions.add(createPurchasedTransaction(
-            call.arguments['productIdentifier'],
-            call.arguments['transactionIdentifier']));
+            call.arguments['productIdentifier'] as String,
+            call.arguments['transactionIdentifier'] as String));
         break;
       case '-[SKPaymentQueue startObservingTransactionQueue]':
         queueIsActive = true;
