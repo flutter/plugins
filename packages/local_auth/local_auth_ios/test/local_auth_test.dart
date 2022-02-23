@@ -24,7 +24,7 @@ void main() {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
         switch (methodCall.method) {
-          case 'getEnrolledBiometrics':
+          case 'getAvailableBiometrics':
             return Future<List<String>>.value(
                 <String>['face', 'fingerprint', 'iris', 'undefined']);
           default:
@@ -41,7 +41,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('getEnrolledBiometrics', arguments: null),
+          isMethodCall('getAvailableBiometrics', arguments: null),
         ],
       );
       expect(result, true);
@@ -54,7 +54,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('getEnrolledBiometrics', arguments: null),
+          isMethodCall('getAvailableBiometrics', arguments: null),
         ],
       );
       expect(result, <BiometricType>[
