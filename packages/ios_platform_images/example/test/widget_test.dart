@@ -14,11 +14,10 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp());
 
-    // Verify that platform version is retrieved.
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
-            widget is Image && (Platform.isIOS ? widget.image != null : true),
+            widget is Image && (!Platform.isIOS || widget.image != null),
       ),
       findsOneWidget,
     );

@@ -5,6 +5,7 @@
 #import "ImagePickerTestImages.h"
 
 @import image_picker;
+@import image_picker.Test;
 @import XCTest;
 
 @interface ImageUtilTests : XCTestCase

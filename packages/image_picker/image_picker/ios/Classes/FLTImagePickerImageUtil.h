@@ -18,9 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTImagePickerImageUtil : NSObject
 
+// Resizes the given image to fit within maxWidth (if non-nil) and maxHeight (if non-nil)
 + (UIImage *)scaledImage:(UIImage *)image
-                maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight
+                maxWidth:(nullable NSNumber *)maxWidth
+               maxHeight:(nullable NSNumber *)maxHeight
      isMetadataAvailable:(BOOL)isMetadataAvailable;
 
 // Resize all gif animation frames.

@@ -1,3 +1,7 @@
+## 6.0.15
+
+* Switches to an in-package method channel implementation.
+
 ## 6.0.14
 
 * Updates code for new analysis options.

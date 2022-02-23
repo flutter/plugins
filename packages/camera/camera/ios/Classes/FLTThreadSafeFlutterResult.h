@@ -36,13 +36,13 @@
  * Sends an NSError as result on the main thread.
  * @param error Error that will be send as FlutterError.
  */
-- (void)sendError:(nonnull NSError*)error;
+- (void)sendError:(nonnull NSError *)error;
 
 /**
  * Sends a FlutterError as result on the main thread.
  */
-- (void)sendErrorWithCode:(nonnull NSString*)code
-                  message:(nullable NSString*)message
+- (void)sendErrorWithCode:(nonnull NSString *)code
+                  message:(nullable NSString *)message
                   details:(nullable id)details;
 
 /**

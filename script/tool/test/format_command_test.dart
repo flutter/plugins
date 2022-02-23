@@ -301,7 +301,7 @@ void main() {
               'clang-format',
               <String>[
                 '-i',
-                '--style=Google',
+                '--style=file',
                 ..._getPackagesDirRelativePaths(pluginDir, files)
               ],
               packagesDir.path),
@@ -357,7 +357,7 @@ void main() {
               '/path/to/clang-format',
               <String>[
                 '-i',
-                '--style=Google',
+                '--style=file',
                 ..._getPackagesDirRelativePaths(pluginDir, files)
               ],
               packagesDir.path),
@@ -425,7 +425,7 @@ void main() {
               'clang-format',
               <String>[
                 '-i',
-                '--style=Google',
+                '--style=file',
                 ..._getPackagesDirRelativePaths(pluginDir, clangFiles)
               ],
               packagesDir.path),

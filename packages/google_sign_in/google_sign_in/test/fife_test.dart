@@ -15,17 +15,17 @@ void main() {
       const String expected = '$base/s20-c/photo.jpg';
 
       test('with directives, sets size', () {
-        final String url = '$base/s64-c/photo.jpg';
+        const String url = '$base/s64-c/photo.jpg';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
 
       test('no directives, sets size and crop', () {
-        final String url = '$base/photo.jpg';
+        const String url = '$base/photo.jpg';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
 
       test('no crop, sets size and crop', () {
-        final String url = '$base/s64/photo.jpg';
+        const String url = '$base/s64/photo.jpg';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
     });
@@ -36,29 +36,29 @@ void main() {
       const String expected = '$base=c-s20';
 
       test('with directives, sets size', () {
-        final String url = '$base=s120-c';
+        const String url = '$base=s120-c';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
 
       test('no directives, sets size and crop', () {
-        final String url = base;
+        const String url = base;
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
 
       test('no directives, but with an equals sign, sets size and crop', () {
-        final String url = '$base=';
+        const String url = '$base=';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
 
       test('no crop, adds crop', () {
-        final String url = '$base=s120';
+        const String url = '$base=s120';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
 
       test('many directives, sets size and crop, preserves other directives',
           () {
-        final String url = '$base=s120-c-fSoften=1,50,0';
-        final String expected = '$base=c-fSoften=1,50,0-s20';
+        const String url = '$base=s120-c-fSoften=1,50,0';
+        const String expected = '$base=c-fSoften=1,50,0-s20';
         expect(addSizeDirectiveToUrl(url, size), expected);
       });
     });

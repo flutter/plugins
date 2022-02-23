@@ -4,9 +4,9 @@
 
 import 'dart:typed_data';
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:camera_platform_interface/camera_platform_interface.dart';
 
 /// A single color plane of image data.
 ///
@@ -14,11 +14,11 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 /// format of the Image.
 class Plane {
   Plane._fromPlatformData(Map<dynamic, dynamic> data)
-      : bytes = data['bytes'],
-        bytesPerPixel = data['bytesPerPixel'],
-        bytesPerRow = data['bytesPerRow'],
-        height = data['height'],
-        width = data['width'];
+      : bytes = data['bytes'] as Uint8List,
+        bytesPerPixel = data['bytesPerPixel'] as int?,
+        bytesPerRow = data['bytesPerRow'] as int,
+        height = data['height'] as int?,
+        width = data['width'] as int?;
 
   /// Bytes representing this plane.
   final Uint8List bytes;
@@ -98,13 +98,14 @@ class CameraImage {
   /// CameraImage Constructor
   CameraImage.fromPlatformData(Map<dynamic, dynamic> data)
       : format = ImageFormat._fromPlatformData(data['format']),
-        height = data['height'],
-        width = data['width'],
-        lensAperture = data['lensAperture'],
-        sensorExposureTime = data['sensorExposureTime'],
-        sensorSensitivity = data['sensorSensitivity'],
-        planes = List<Plane>.unmodifiable(data['planes']
-            .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
+        height = data['height'] as int,
+        width = data['width'] as int,
+        lensAperture = data['lensAperture'] as double?,
+        sensorExposureTime = data['sensorExposureTime'] as int?,
+        sensorSensitivity = data['sensorSensitivity'] as double?,
+        planes = List<Plane>.unmodifiable((data['planes'] as List<dynamic>)
+            .map<Plane>((dynamic planeData) =>
+                Plane._fromPlatformData(planeData as Map<dynamic, dynamic>)));
 
   /// Format of the image provided.
   ///
