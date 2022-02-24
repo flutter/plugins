@@ -51,7 +51,7 @@ double _getCssOpacity(Color color) {
 // myLocationEnabled needs to be built through dart:html navigator.geolocation
 //   See: https://api.dart.dev/stable/2.8.4/dart-html/Geolocation-class.html
 // trafficEnabled is handled when creating the GMap object, since it needs to be added as a layer.
-// trackCameraPosition is just a boolan value that indicates if the map has an onCameraMove handler.
+// trackCameraPosition is just a boolean value that indicates if the map has an onCameraMove handler.
 // indoorViewEnabled seems to not have an equivalent in web
 // buildingsEnabled seems to not have an equivalent in web
 // padding seems to behave differently in web than mobile. You can't move UI elements in web.
@@ -81,11 +81,18 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, dynamic> rawOptions) {
     options.styles = rawOptions['styles'];
   }
 
-  if (rawOptions['scrollGesturesEnabled'] == false ||
+  if (rawOptions['gestureHandling'] != null) {
+    options.gestureHandling = rawOptions['gestureHandling'];
+  } else if (rawOptions['scrollGesturesEnabled'] == false ||
       rawOptions['zoomGesturesEnabled'] == false) {
-    options.gestureHandling = 'none';
+    options.gestureHandling = GestureHandling.none.name;
   } else {
-    options.gestureHandling = 'auto';
+    options.gestureHandling = GestureHandling.auto.name;
+  }
+
+  if (rawOptions['tiltControlsEnabled'] == false) {
+    options.rotateControl = false;
+    options.tilt = 0;
   }
 
   // These don't have any rawOptions entry, but they seem to be off in the native maps.

@@ -284,7 +284,7 @@ class GoogleMap extends StatefulWidget {
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
   /// This setting controls how the API handles gestures on the map. Web only.
-  /// 
+  ///
   /// See [GestureHandling] for more details.
   final GestureHandling? gestureHandling;
 
@@ -532,7 +532,8 @@ class _GoogleMapState extends State<GoogleMap> {
 /// Configuration options for the GoogleMaps user interface.
 class _GoogleMapOptions {
   _GoogleMapOptions.fromWidget(GoogleMap map)
-      : compassEnabled = map.compassEnabled,
+      : gestureHandling = map.gestureHandling,
+        compassEnabled = map.compassEnabled,
         mapToolbarEnabled = map.mapToolbarEnabled,
         cameraTargetBounds = map.cameraTargetBounds,
         mapType = map.mapType,
@@ -540,6 +541,7 @@ class _GoogleMapOptions {
         rotateGesturesEnabled = map.rotateGesturesEnabled,
         scrollGesturesEnabled = map.scrollGesturesEnabled,
         tiltGesturesEnabled = map.tiltGesturesEnabled,
+        tiltControlsEnabled = map.tiltControlsEnabled,
         trackCameraPosition = map.onCameraMove != null,
         zoomControlsEnabled = map.zoomControlsEnabled,
         zoomGesturesEnabled = map.zoomGesturesEnabled,
@@ -551,6 +553,8 @@ class _GoogleMapOptions {
         trafficEnabled = map.trafficEnabled,
         buildingsEnabled = map.buildingsEnabled,
         assert(!map.liteModeEnabled || Platform.isAndroid);
+
+  final GestureHandling? gestureHandling;
 
   final bool compassEnabled;
 
@@ -567,6 +571,8 @@ class _GoogleMapOptions {
   final bool scrollGesturesEnabled;
 
   final bool tiltGesturesEnabled;
+
+  final bool tiltControlsEnabled;
 
   final bool trackCameraPosition;
 
@@ -590,6 +596,7 @@ class _GoogleMapOptions {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'gestureHandling': gestureHandling?.name,
       'compassEnabled': compassEnabled,
       'mapToolbarEnabled': mapToolbarEnabled,
       'cameraTargetBounds': cameraTargetBounds.toJson(),
@@ -598,6 +605,7 @@ class _GoogleMapOptions {
       'rotateGesturesEnabled': rotateGesturesEnabled,
       'scrollGesturesEnabled': scrollGesturesEnabled,
       'tiltGesturesEnabled': tiltGesturesEnabled,
+      'tiltControlsEnabled': tiltControlsEnabled,
       'zoomControlsEnabled': zoomControlsEnabled,
       'zoomGesturesEnabled': zoomGesturesEnabled,
       'liteModeEnabled': liteModeEnabled,
