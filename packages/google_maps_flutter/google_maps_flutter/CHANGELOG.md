@@ -1,7 +1,8 @@
-## NEXT
+## 2.2.0
 
 * Removes dependencies from `pubspec.yaml` that are only needed in `example/pubspec.yaml`
 * Updates Android compileSdkVersion to 31.
+* Added options for gesture handling and tilt controls
 
 ## 2.1.1
 

@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Added options for gesture handling and tilt controls
+
 ## 0.3.2+1
 
 * Removes dependency on `meta`.

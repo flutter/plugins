@@ -9,6 +9,7 @@ export 'camera.dart';
 export 'cap.dart';
 export 'circle_updates.dart';
 export 'circle.dart';
+export 'gesture_handling.dart';
 export 'joint_type.dart';
 export 'location.dart';
 export 'maps_object_updates.dart';

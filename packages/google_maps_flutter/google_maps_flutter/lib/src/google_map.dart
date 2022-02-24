@@ -86,6 +86,7 @@ class GoogleMap extends StatefulWidget {
     required this.initialCameraPosition,
     this.onMapCreated,
     this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
+    this.gestureHandling,
     this.compassEnabled = true,
     this.mapToolbarEnabled = true,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
@@ -97,6 +98,7 @@ class GoogleMap extends StatefulWidget {
     this.zoomGesturesEnabled = true,
     this.liteModeEnabled = false,
     this.tiltGesturesEnabled = true,
+    this.tiltControlsEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
     this.layoutDirection,
@@ -172,6 +174,11 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
+
+  /// True if the map should show tilt controls. Web only.
+  ///
+  /// This interrupts map dragging if the [GoogleMap] is rebuilt while dragging.
+  final bool tiltControlsEnabled;
 
   /// Padding to be set on map. See https://developers.google.com/maps/documentation/android-sdk/map#map_padding for more details.
   final EdgeInsets padding;
@@ -275,6 +282,11 @@ class GoogleMap extends StatefulWidget {
   /// When this set is empty, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  /// This setting controls how the API handles gestures on the map. Web only.
+  /// 
+  /// See [GestureHandling] for more details.
+  final GestureHandling? gestureHandling;
 
   /// Creates a [State] for this [GoogleMap].
   @override
