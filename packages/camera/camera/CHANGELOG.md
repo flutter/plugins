@@ -1,3 +1,6 @@
+* ## 0.9.4+15
+* Fix camera capture on Android 12 devices (Pixel 6) by removing unnecessary calls to abort captures after capture is finished.
+
 ## 0.9.4+14
 
 * Restores compatibility with Flutter 2.5 and 2.8.

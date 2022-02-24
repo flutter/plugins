@@ -583,8 +583,6 @@ class Camera
         };
 
     try {
-      captureSession.stopRepeating();
-      captureSession.abortCaptures();
       Log.i(TAG, "sending capture request");
       captureSession.capture(stillBuilder.build(), captureCallback, backgroundHandler);
     } catch (CameraAccessException e) {
