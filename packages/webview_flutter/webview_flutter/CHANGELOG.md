@@ -2,6 +2,7 @@
 
 * Removes a duplicate Android-specific integration test.
 * Fixes an integration test race condition.
+* Fix comments (accidentially mixed // with ///).
 
 ## 3.0.0
 
