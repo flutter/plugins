@@ -290,9 +290,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   static WebResourceError _toWebResourceError(NSError error) {
-    final WebResourceErrorType errorType;
+    WebResourceErrorType? errorType;
 
     switch (error.code) {
+      case WKErrorCode.unknown:
+        errorType = WebResourceErrorType.unknown;
+        break;
       case WKErrorCode.webContentProcessTerminated:
         errorType = WebResourceErrorType.webContentProcessTerminated;
         break;
@@ -305,8 +308,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       case WKErrorCode.javaScriptResultTypeIsUnsupported:
         errorType = WebResourceErrorType.javaScriptResultTypeIsUnsupported;
         break;
-      default:
-        errorType = WebResourceErrorType.unknown;
     }
 
     return WebResourceError(
