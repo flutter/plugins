@@ -289,27 +289,31 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     }
   }
 
-  static WebResourceErrorType _toErrorType(int errorCode) {
-    switch (errorCode) {
-      case WKErrorCode.webContentProcessTerminated:
-        return WebResourceErrorType.webContentProcessTerminated;
-      case WKErrorCode.webViewInvalidated:
-        return WebResourceErrorType.webViewInvalidated;
-      case WKErrorCode.javaScriptExceptionOccurred:
-        return WebResourceErrorType.javaScriptExceptionOccurred;
-      case WKErrorCode.javaScriptResultTypeIsUnsupported:
-        return WebResourceErrorType.javaScriptResultTypeIsUnsupported;
-      default:
-        return WebResourceErrorType.unknown;
-    }
-  }
-
   static WebResourceError _toWebResourceError(NSError error) {
+    final WebResourceErrorType errorType;
+
+    switch (error.code) {
+      case WKErrorCode.webContentProcessTerminated:
+        errorType = WebResourceErrorType.webContentProcessTerminated;
+        break;
+      case WKErrorCode.webViewInvalidated:
+        errorType = WebResourceErrorType.webViewInvalidated;
+        break;
+      case WKErrorCode.javaScriptExceptionOccurred:
+        errorType = WebResourceErrorType.javaScriptExceptionOccurred;
+        break;
+      case WKErrorCode.javaScriptResultTypeIsUnsupported:
+        errorType = WebResourceErrorType.javaScriptResultTypeIsUnsupported;
+        break;
+      default:
+        errorType = WebResourceErrorType.unknown;
+    }
+
     return WebResourceError(
       errorCode: error.code,
       domain: error.domain,
       description: error.localizedDescription,
-      errorType: _toErrorType(error.code),
+      errorType: errorType,
     );
   }
 }
