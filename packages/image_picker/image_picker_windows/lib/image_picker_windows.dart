@@ -38,10 +38,11 @@ class ImagePickerWindows extends ImagePickerPlatform {
   /// Constructs a ImagePickerWindows.
   ImagePickerWindows();
 
+  static FileSelectorWindows get _fileSelectorInstance => FileSelectorWindows();
+
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith() {
     ImagePickerPlatform.instance = ImagePickerWindows();
-    FileSelectorWindows.registerWith();
   }
 
   // Note that the `maxWidth`, `maxHeight` and `imageQuality` arguments are
@@ -101,7 +102,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
   }) async {
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: _imageFormats);
-    final XFile? file = await FileSelectorPlatform.instance
+    final XFile? file = await _fileSelectorInstance
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return file;
   }
@@ -118,7 +119,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
   }) async {
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'videos', extensions: _videoFormats);
-    final XFile? file = await FileSelectorPlatform.instance
+    final XFile? file = await _fileSelectorInstance
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return file;
   }
@@ -134,7 +135,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
   }) async {
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: _imageFormats);
-    final List<XFile> files = await FileSelectorPlatform.instance
+    final List<XFile> files = await _fileSelectorInstance
         .openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return files;
   }
