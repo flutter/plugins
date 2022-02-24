@@ -359,6 +359,7 @@ void main() {
           controller = _createController(options: {
             'mapType': 2,
             'zoomControlsEnabled': true,
+            'tiltControlsEnabled': false,
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -373,6 +374,8 @@ void main() {
           expect(capturedOptions!.gestureHandling, 'auto',
               reason:
                   'by default the map handles zoom/pan gestures internally');
+          expect(capturedOptions!.rotateControl, false);
+          expect(capturedOptions!.tilt, 0);
         });
 
         testWidgets('disables gestureHandling with scrollGesturesEnabled false',
@@ -391,6 +394,22 @@ void main() {
           expect(capturedOptions!.gestureHandling, 'none',
               reason:
                   'disabling scroll gestures disables all gesture handling');
+        });
+
+        testWidgets('translates gestureHandling option',
+            (WidgetTester tester) async {
+          controller = _createController(options: {
+            'gestureHandling': GestureHandling.greedy.name,
+          });
+          controller.debugSetOverrides(createMap: (_, options) {
+            capturedOptions = options;
+            return map;
+          });
+
+          controller.init();
+
+          expect(capturedOptions, isNotNull);
+          expect(capturedOptions!.gestureHandling, 'greedy');
         });
 
         testWidgets('disables gestureHandling with zoomGesturesEnabled false',
