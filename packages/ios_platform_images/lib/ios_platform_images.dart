@@ -164,7 +164,7 @@ class IosPlatformImages {
     double pointSize, {
     List<Color> colors = const <Color>[],
     bool preferMulticolor = false,
-    int weightIndex = 1,
+    ui.FontWeight weight = FontWeight.normal,
     int scaleIndex = 1,
   }) {
     final List<double> colorsRGBA = colors
@@ -182,7 +182,7 @@ class IosPlatformImages {
       <dynamic>[
         name,
         pointSize,
-        weightIndex,
+        weight.index,
         scaleIndex,
         colorsRGBA,
         preferMulticolor,
