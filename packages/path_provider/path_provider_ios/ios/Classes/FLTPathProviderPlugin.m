@@ -20,7 +20,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/path_provider"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/path_provider_ios"
                                   binaryMessenger:registrar.messenger];
   [channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
     if ([@"getTemporaryDirectory" isEqualToString:call.method]) {
