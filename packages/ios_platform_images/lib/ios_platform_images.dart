@@ -144,7 +144,7 @@ class IosPlatformImages {
   /// [colors] takes a list of colors to be applied to the corresponding layer
   /// of the icon, assuming that layer exists. An icon can have up to 3 layers,
   /// if a layer color is not specified it will take the color of the most recent
-  /// valid index.
+  /// valid index. Defaults to an empty list (black).
   ///
   /// For more information see [https://developer.apple.com/documentation/uikit/uiimagesymbolconfiguration/3810054-configurationwithpalettecolors?language=objc]
   ///
@@ -152,6 +152,8 @@ class IosPlatformImages {
   /// multicolor varient of the symbol. Depending on the symbol, these colors
   /// *may not be mutable*. To find out, use the SF Symbols app found at
   /// [https://developer.apple.com/sf-symbols/]
+  /// Also note that regardless of mutability, the symbols default colors are
+  /// affected by the devices theme preference.
   ///
   /// Multi-layer and multi-color symbols only work on iOS 15.0 and above.
   /// **This method requires at least iOS 13.0**
