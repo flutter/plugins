@@ -1,6 +1,6 @@
 ## 2.2.0
 
-* Added options for gesture handling and tilt controls on web
+* Added gesture handling options for web
 
 ## 2.1.5
 
