@@ -39,7 +39,7 @@ class NSUrlRequest {
 /// Wraps [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
 @immutable
 class NSError {
-  /// Constructs a [NSError].
+  /// Constructs an [NSError].
   const NSError({
     required this.code,
     required this.domain,

@@ -63,10 +63,9 @@ enum WKNavigationActionPolicy {
 
 /// Possible error values that WebKit APIs can return.
 ///
-/// See https://developer.apple.com/documentation/webkit/wkerrorcode
-@immutable
+/// See https://developer.apple.com/documentation/webkit/wkerrorcode.
 class WKErrorCode {
-  const WKErrorCode._();
+  WKErrorCode._();
 
   /// Indicates an unknown issue occurred.
   ///
@@ -400,8 +399,7 @@ class WKWebView {
   ///
   /// Provide a delegate object when you want to manage or restrict navigation
   /// in your web content, track the progress of navigation requests, and handle
-  /// authentication challenges for any new content. The object you specify must
-  /// extend the [WKNavigationDelegate] class.
+  /// authentication challenges for any new content.
   set navigationDelegate(WKNavigationDelegate? delegate) {
     throw UnimplementedError();
   }
