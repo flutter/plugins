@@ -8,6 +8,12 @@
 
 int main(int argc, char *argv[]) {
   @autoreleasepool {
-    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+    // The setup logic in `AppDelegate::didFinishLaunchingWithOptions:` eventually sends camera
+    // operations on the background queue, which would run concurrently with the test cases during
+    // unit tests, making the debugging process confusing. This setup is actually not necessary for
+    // the unit tests, so here we want to skip the AppDelegate when running unit tests.
+    BOOL isTesting = NSClassFromString(@"XCTestCase") != nil;
+    return UIApplicationMain(argc, argv, nil,
+                             isTesting ? nil : NSStringFromClass([AppDelegate class]));
   }
 }

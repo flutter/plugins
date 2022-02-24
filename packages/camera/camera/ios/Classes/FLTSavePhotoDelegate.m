@@ -3,37 +3,41 @@
 // found in the LICENSE file.
 
 #import "FLTSavePhotoDelegate.h"
+#import "FLTSavePhotoDelegate_Test.h"
+
+@interface FLTSavePhotoDelegate ()
+/// The file path for the captured photo.
+@property(readonly, nonatomic) NSString *path;
+/// The queue on which captured photos are written to disk.
+@property(readonly, nonatomic) dispatch_queue_t ioQueue;
+@end
 
 @implementation FLTSavePhotoDelegate
 
 - (instancetype)initWithPath:(NSString *)path
-                      result:(FLTThreadSafeFlutterResult *)result
-                     ioQueue:(dispatch_queue_t)ioQueue {
+                     ioQueue:(dispatch_queue_t)ioQueue
+           completionHandler:(FLTSavePhotoDelegateCompletionHandler)completionHandler {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _path = path;
-  _selfReference = self;
-  _result = result;
   _ioQueue = ioQueue;
+  _completionHandler = completionHandler;
   return self;
 }
 
 - (void)handlePhotoCaptureResultWithError:(NSError *)error
                         photoDataProvider:(NSData * (^)(void))photoDataProvider {
-  self.selfReference = nil;
   if (error) {
-    [self.result sendError:error];
+    self.completionHandler(nil, error);
     return;
   }
   dispatch_async(self.ioQueue, ^{
     NSData *data = photoDataProvider();
     NSError *ioError;
     if ([data writeToFile:self.path options:NSDataWritingAtomic error:&ioError]) {
-      [self.result sendSuccessWithData:self.path];
+      self.completionHandler(self.path, nil);
     } else {
-      [self.result sendErrorWithCode:@"IOError"
-                             message:@"Unable to write file"
-                             details:ioError.localizedDescription];
+      self.completionHandler(nil, ioError);
     }
   });
 }
