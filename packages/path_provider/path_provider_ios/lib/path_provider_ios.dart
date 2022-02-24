@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -19,33 +21,40 @@ class PathProviderIOS extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getTemporaryPath() {
+  Future<String?> getTemporaryPath() async {
     return methodChannel.invokeMethod<String>('getTemporaryDirectory');
   }
 
   @override
-  Future<String?> getApplicationSupportPath() {
-    return methodChannel.invokeMethod<String>('getApplicationSupportDirectory');
+  Future<String?> getApplicationSupportPath() async {
+    final String? path = await methodChannel
+        .invokeMethod<String>('getApplicationSupportDirectory');
+    if (path != null) {
+      // Ensure the directory exists before returning it, for consistency with
+      // other platforms.
+      await Directory(path).create(recursive: true);
+    }
+    return path;
   }
 
   @override
-  Future<String?> getLibraryPath() {
+  Future<String?> getLibraryPath() async {
     return methodChannel.invokeMethod<String>('getLibraryDirectory');
   }
 
   @override
-  Future<String?> getApplicationDocumentsPath() {
+  Future<String?> getApplicationDocumentsPath() async {
     return methodChannel
         .invokeMethod<String>('getApplicationDocumentsDirectory');
   }
 
   @override
-  Future<String?> getExternalStoragePath() {
+  Future<String?> getExternalStoragePath() async {
     throw UnsupportedError('getExternalStoragePath is not supported on iOS');
   }
 
   @override
-  Future<List<String>?> getExternalCachePaths() {
+  Future<List<String>?> getExternalCachePaths() async {
     throw UnsupportedError('getExternalCachePaths is not supported on iOS');
   }
 
@@ -57,7 +66,7 @@ class PathProviderIOS extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getDownloadsPath() {
+  Future<String?> getDownloadsPath() async {
     throw UnsupportedError('getDownloadsPath is not supported on iOS');
   }
 }
