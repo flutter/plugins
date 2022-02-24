@@ -53,9 +53,13 @@ class _MyAppState extends State<MyApp> {
               ),
               Image(
                 image: IosPlatformImages.loadSystemImage(
-                  'hare.fill',
+                  'hammer.circle.fill',
                   100,
-                  colors: <Color>[theme.colorScheme.secondary],
+                  scaleIndex: 1,
+                  colors: <Color>[
+                    theme.colorScheme.primary,
+                    theme.colorScheme.primary.withAlpha(100),
+                  ],
                 ),
                 semanticLabel: 'Sprinting hare',
               ),
