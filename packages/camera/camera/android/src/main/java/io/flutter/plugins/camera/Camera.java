@@ -82,7 +82,7 @@ interface ErrorCallback {
 /** A mockable wrapper for CameraDevice calls. */
 interface CameraDeviceWrapper {
   @NonNull
-  CaptureRequest.Builder createCaptureRequest(int var1) throws CameraAccessException;
+  CaptureRequest.Builder createCaptureRequest(int templateType) throws CameraAccessException;
 
   @TargetApi(VERSION_CODES.P)
   void createCaptureSession(SessionConfiguration config) throws CameraAccessException;
