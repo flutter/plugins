@@ -135,7 +135,7 @@
           finalImage = [UIImage systemImageNamed:name withConfiguration:final];
         } else {
           UIImage *image = [UIImage systemImageNamed:name withConfiguration:pointSizeConfig];
-          finalImage = [image imageWithTintColor:colorArray[0]];
+          finalImage = [image imageWithTintColor:colorArray.count>0 ? colorArray[0] : nil];
         }
 
         NSData *data = UIImagePNGRepresentation(finalImage);
