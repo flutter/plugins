@@ -25,7 +25,7 @@ class UnknownMapObjectIdError extends Error {
   final String objectType;
 
   /// The unknown maps object ID.
-  final MapsObjectId<dynamic> objectId;
+  final MapsObjectId<Object> objectId;
 
   /// The context where the error occurred.
   final String? context;
@@ -326,11 +326,11 @@ class _GoogleMapState extends State<GoogleMap> {
 
   @override
   void dispose() {
-    disposeController();
+    _disposeController();
     super.dispose();
   }
 
-  Future<void> disposeController() async {
+  Future<void> _disposeController() async {
     final GoogleMapController controller = await _controller.future;
     controller.dispose();
   }

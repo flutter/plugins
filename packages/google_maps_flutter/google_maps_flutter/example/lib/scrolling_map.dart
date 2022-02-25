@@ -12,7 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-const LatLng center = LatLng(32.080664, 34.9563837);
+const LatLng _center = LatLng(32.080664, 34.9563837);
 
 class ScrollingMapPage extends GoogleMapExampleAppPage {
   const ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
@@ -45,7 +45,7 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       initialCameraPosition: const CameraPosition(
-                        target: center,
+                        target: _center,
                         zoom: 11.0,
                       ),
                       gestureRecognizers: //
@@ -78,15 +78,15 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       initialCameraPosition: const CameraPosition(
-                        target: center,
+                        target: _center,
                         zoom: 11.0,
                       ),
                       markers: <Marker>{
                         Marker(
                           markerId: const MarkerId('test_marker_id'),
                           position: LatLng(
-                            center.latitude,
-                            center.longitude,
+                            _center.latitude,
+                            _center.longitude,
                           ),
                           infoWindow: const InfoWindow(
                             title: 'An interesting location',

@@ -124,7 +124,7 @@ void main() {
     );
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
-    _points.add(const LatLng(1.0, 1.0));
+    p1.points.add(const LatLng(1.0, 1.0));
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
