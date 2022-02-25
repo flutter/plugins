@@ -1,3 +1,7 @@
+## 2.0.14
+
+* Remove null check assert of a non-null value
+
 ## 2.0.13
 
 * Updates documentation on README.md.
