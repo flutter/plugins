@@ -69,7 +69,7 @@ void main() {
         },
       );
 
-      final BillingResultWrapper billingResult = BillingResultWrapper(
+      const BillingResultWrapper billingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       expect(
           await billingClient.startConnection(
@@ -101,7 +101,7 @@ void main() {
       expect(
           await billingClient.startConnection(
               onBillingServiceDisconnected: () {}),
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
     });
@@ -134,7 +134,7 @@ void main() {
           .querySkuDetails(
               skuType: SkuType.inapp, skusList: <String>['invalid']);
 
-      final BillingResultWrapper billingResult = BillingResultWrapper(
+      const BillingResultWrapper billingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       expect(response.billingResult, equals(billingResult));
       expect(response.skuDetailsList, isEmpty);
@@ -155,7 +155,7 @@ void main() {
           .querySkuDetails(
               skuType: SkuType.inapp, skusList: <String>['invalid']);
 
-      final BillingResultWrapper billingResult = BillingResultWrapper(
+      const BillingResultWrapper billingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       expect(response.billingResult, equals(billingResult));
       expect(response.skuDetailsList, contains(dummySkuDetails));
@@ -168,7 +168,7 @@ void main() {
           .querySkuDetails(
               skuType: SkuType.inapp, skusList: <String>['invalid']);
 
-      final BillingResultWrapper billingResult = BillingResultWrapper(
+      const BillingResultWrapper billingResult = BillingResultWrapper(
           responseCode: BillingResponse.error,
           debugMessage: kInvalidBillingResultErrorMessage);
       expect(response.billingResult, equals(billingResult));
@@ -183,13 +183,13 @@ void main() {
     test('serializes and deserializes data', () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
         name: launchMethodName,
         value: buildBillingResultMap(expectedBillingResult),
       );
-      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
       const String accountId = 'hashedAccountId';
       const String profileId = 'hashedProfileId';
 
@@ -199,8 +199,9 @@ void main() {
               accountId: accountId,
               obfuscatedProfileId: profileId),
           equals(expectedBillingResult));
-      final Map<dynamic, dynamic> arguments =
-          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      final Map<dynamic, dynamic> arguments = stubPlatform
+          .previousCallMatching(launchMethodName)
+          .arguments as Map<dynamic, dynamic>;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['obfuscatedProfileId'], equals(profileId));
@@ -211,13 +212,13 @@ void main() {
         () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
         name: launchMethodName,
         value: buildBillingResultMap(expectedBillingResult),
       );
-      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
       const String accountId = 'hashedAccountId';
       const String profileId = 'hashedProfileId';
 
@@ -245,13 +246,13 @@ void main() {
         () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
         name: launchMethodName,
         value: buildBillingResultMap(expectedBillingResult),
       );
-      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
       const String accountId = 'hashedAccountId';
       const String profileId = 'hashedProfileId';
 
@@ -263,8 +264,9 @@ void main() {
               oldSku: dummyOldPurchase.sku,
               purchaseToken: dummyOldPurchase.purchaseToken),
           equals(expectedBillingResult));
-      final Map<dynamic, dynamic> arguments =
-          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      final Map<dynamic, dynamic> arguments = stubPlatform
+          .previousCallMatching(launchMethodName)
+          .arguments as Map<dynamic, dynamic>;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
@@ -278,16 +280,17 @@ void main() {
         () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
         name: launchMethodName,
         value: buildBillingResultMap(expectedBillingResult),
       );
-      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
       const String accountId = 'hashedAccountId';
       const String profileId = 'hashedProfileId';
-      const ProrationMode prorationMode = ProrationMode.immediateAndChargeProratedPrice;
+      const ProrationMode prorationMode =
+          ProrationMode.immediateAndChargeProratedPrice;
 
       expect(
           await billingClient.launchBillingFlow(
@@ -298,8 +301,9 @@ void main() {
               prorationMode: prorationMode,
               purchaseToken: dummyOldPurchase.purchaseToken),
           equals(expectedBillingResult));
-      final Map<dynamic, dynamic> arguments =
-          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      final Map<dynamic, dynamic> arguments = stubPlatform
+          .previousCallMatching(launchMethodName)
+          .arguments as Map<dynamic, dynamic>;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
@@ -313,18 +317,19 @@ void main() {
     test('handles null accountId', () async {
       const String debugMessage = 'dummy message';
       const BillingResponse responseCode = BillingResponse.ok;
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
         name: launchMethodName,
         value: buildBillingResultMap(expectedBillingResult),
       );
-      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
 
       expect(await billingClient.launchBillingFlow(sku: skuDetails.sku),
           equals(expectedBillingResult));
-      final Map<dynamic, dynamic> arguments =
-          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      final Map<dynamic, dynamic> arguments = stubPlatform
+          .previousCallMatching(launchMethodName)
+          .arguments as Map<dynamic, dynamic>;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], isNull);
     });
@@ -334,10 +339,10 @@ void main() {
         name: launchMethodName,
         value: null,
       );
-      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      const SkuDetailsWrapper skuDetails = dummySkuDetails;
       expect(
           await billingClient.launchBillingFlow(sku: skuDetails.sku),
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
     });
@@ -353,7 +358,7 @@ void main() {
         dummyPurchase
       ];
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform
           .addResponse(name: queryPurchasesMethodName, value: <String, dynamic>{
@@ -375,13 +380,13 @@ void main() {
     test('handles empty purchases', () async {
       const BillingResponse expectedCode = BillingResponse.userCanceled;
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform
           .addResponse(name: queryPurchasesMethodName, value: <String, dynamic>{
         'billingResult': buildBillingResultMap(expectedBillingResult),
         'responseCode': const BillingResponseConverter().toJson(expectedCode),
-        'purchasesList': [],
+        'purchasesList': <dynamic>[],
       });
 
       final PurchasesResultWrapper response =
@@ -402,7 +407,7 @@ void main() {
 
       expect(
           response.billingResult,
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
       expect(response.responseCode, BillingResponse.error);
@@ -421,7 +426,7 @@ void main() {
         dummyPurchaseHistoryRecord,
       ];
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
           name: queryPurchaseHistoryMethodName,
@@ -442,12 +447,14 @@ void main() {
     test('handles empty purchases', () async {
       const BillingResponse expectedCode = BillingResponse.userCanceled;
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
-      stubPlatform.addResponse(name: queryPurchaseHistoryMethodName, value: {
-        'billingResult': buildBillingResultMap(expectedBillingResult),
-        'purchaseHistoryRecordList': [],
-      });
+      stubPlatform.addResponse(
+          name: queryPurchaseHistoryMethodName,
+          value: <dynamic, dynamic>{
+            'billingResult': buildBillingResultMap(expectedBillingResult),
+            'purchaseHistoryRecordList': <dynamic>[],
+          });
 
       final PurchasesHistoryResult response =
           await billingClient.queryPurchaseHistory(SkuType.inapp);
@@ -466,7 +473,7 @@ void main() {
 
       expect(
           response.billingResult,
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
       expect(response.purchaseHistoryRecordList, isEmpty);
@@ -479,7 +486,7 @@ void main() {
     test('consume purchase async success', () async {
       const BillingResponse expectedCode = BillingResponse.ok;
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
           name: consumeMethodName,
@@ -501,7 +508,7 @@ void main() {
 
       expect(
           billingResult,
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
     });
@@ -513,7 +520,7 @@ void main() {
     test('acknowledge purchase success', () async {
       const BillingResponse expectedCode = BillingResponse.ok;
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
           name: acknowledgeMethodName,
@@ -534,7 +541,7 @@ void main() {
 
       expect(
           billingResult,
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
     });
@@ -548,7 +555,8 @@ void main() {
       stubPlatform.addResponse(
         name: isFeatureSupportedMethodName,
         value: false,
-        additionalStepBeforeReturn: (value) => arguments = value,
+        additionalStepBeforeReturn: (dynamic value) =>
+            arguments = value as Map<dynamic, dynamic>,
       );
       final bool isSupported = await billingClient
           .isFeatureSupported(BillingClientFeature.subscriptions);
@@ -561,7 +569,8 @@ void main() {
       stubPlatform.addResponse(
         name: isFeatureSupportedMethodName,
         value: true,
-        additionalStepBeforeReturn: (value) => arguments = value,
+        additionalStepBeforeReturn: (dynamic value) =>
+            arguments = value as Map<dynamic, dynamic>,
       );
       final bool isSupported = await billingClient
           .isFeatureSupported(BillingClientFeature.subscriptions);
@@ -574,7 +583,8 @@ void main() {
     const String launchPriceChangeConfirmationFlowMethodName =
         'BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)';
 
-    final BillingResultWrapper expectedBillingResultPriceChangeConfirmation = BillingResultWrapper(
+    const BillingResultWrapper expectedBillingResultPriceChangeConfirmation =
+        BillingResultWrapper(
       responseCode: BillingResponse.ok,
       debugMessage: 'dummy message',
     );

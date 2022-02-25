@@ -38,7 +38,8 @@ const String _kOnBillingServiceDisconnected =
 ///
 /// Wraps a
 /// [`PurchasesUpdatedListener`](https://developer.android.com/reference/com/android/billingclient/api/PurchasesUpdatedListener.html).
-typedef PurchasesUpdatedListener = void Function(PurchasesResultWrapper purchasesResult);
+typedef PurchasesUpdatedListener = void Function(
+    PurchasesResultWrapper purchasesResult);
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -56,7 +57,9 @@ class BillingClient {
   /// Creates a billing client.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     channel.setMethodCallHandler(callHandler);
-    _callbacks[kOnPurchasesUpdated] = [onPurchasesUpdated];
+    _callbacks[kOnPurchasesUpdated] = <PurchasesUpdatedListener>[
+      onPurchasesUpdated
+    ];
   }
 
   // Occasionally methods in the native layer require a Dart callback to be
@@ -102,7 +105,7 @@ class BillingClient {
       {required OnBillingServiceDisconnected
           onBillingServiceDisconnected}) async {
     final List<Function> disconnectCallbacks =
-        _callbacks[_kOnBillingServiceDisconnected] ??= [];
+        _callbacks[_kOnBillingServiceDisconnected] ??= <Function>[];
     disconnectCallbacks.add(onBillingServiceDisconnected);
     return BillingResultWrapper.fromJson((await channel
             .invokeMapMethod<String, dynamic>(
@@ -337,10 +340,10 @@ class BillingClient {
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated]!.first as PurchasesUpdatedListener;
         listener(PurchasesResultWrapper.fromJson(
-            call.arguments.cast<String, dynamic>()));
+            (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
-        final int handle = call.arguments['handle'];
+        final int handle = call.arguments['handle'] as int;
         await _callbacks[_kOnBillingServiceDisconnected]![handle]();
         break;
     }

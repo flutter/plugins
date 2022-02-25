@@ -44,10 +44,10 @@ class _MyAppState extends State<_MyApp> {
   final InAppPurchasePlatform _inAppPurchasePlatform =
       InAppPurchasePlatform.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
-  List<String> _notFoundIds = [];
-  List<ProductDetails> _products = [];
-  List<PurchaseDetails> _purchases = [];
-  List<String> _consumables = [];
+  List<String> _notFoundIds = <String>[];
+  List<ProductDetails> _products = <ProductDetails>[];
+  List<PurchaseDetails> _purchases = <PurchaseDetails>[];
+  List<String> _consumables = <String>[];
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
@@ -57,11 +57,12 @@ class _MyAppState extends State<_MyApp> {
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         _inAppPurchasePlatform.purchaseStream;
-    _subscription = purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
+    _subscription =
+        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
       _subscription.cancel();
-    }, onError: (error) {
+    }, onError: (Object error) {
       // handle error here.
     });
     initStoreInfo();
@@ -73,10 +74,10 @@ class _MyAppState extends State<_MyApp> {
     if (!isAvailable) {
       setState(() {
         _isAvailable = isAvailable;
-        _products = [];
-        _purchases = [];
-        _notFoundIds = [];
-        _consumables = [];
+        _products = <ProductDetails>[];
+        _purchases = <PurchaseDetails>[];
+        _notFoundIds = <String>[];
+        _consumables = <String>[];
         _purchasePending = false;
         _loading = false;
       });
@@ -90,9 +91,9 @@ class _MyAppState extends State<_MyApp> {
         _queryProductError = productDetailResponse.error!.message;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
-        _purchases = [];
+        _purchases = <PurchaseDetails>[];
         _notFoundIds = productDetailResponse.notFoundIDs;
-        _consumables = [];
+        _consumables = <String>[];
         _purchasePending = false;
         _loading = false;
       });
@@ -104,9 +105,9 @@ class _MyAppState extends State<_MyApp> {
         _queryProductError = null;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
-        _purchases = [];
+        _purchases = <PurchaseDetails>[];
         _notFoundIds = productDetailResponse.notFoundIDs;
-        _consumables = [];
+        _consumables = <String>[];
         _purchasePending = false;
         _loading = false;
       });
@@ -134,11 +135,11 @@ class _MyAppState extends State<_MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> stack = [];
+    final List<Widget> stack = <Widget>[];
     if (_queryProductError == null) {
       stack.add(
         ListView(
-          children: [
+          children: <Widget>[
             _buildConnectionCheckTile(),
             _buildProductList(),
             _buildConsumableBox(),
@@ -154,7 +155,7 @@ class _MyAppState extends State<_MyApp> {
     if (_purchasePending) {
       stack.add(
         Stack(
-          children: const [
+          children: const <Widget>[
             Opacity(
               opacity: 0.3,
               child: ModalBarrier(dismissible: false, color: Colors.grey),
@@ -192,7 +193,7 @@ class _MyAppState extends State<_MyApp> {
     final List<Widget> children = <Widget>[storeHeader];
 
     if (!_isAvailable) {
-      children.addAll([
+      children.addAll(<Widget>[
         const Divider(),
         ListTile(
           title: Text('Not connected',
@@ -229,7 +230,8 @@ class _MyAppState extends State<_MyApp> {
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
     // We recommend that you use your own server to verify the purchase data.
     final Map<String, PurchaseDetails> purchases =
-        Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
+        Map<String, PurchaseDetails>.fromEntries(
+            _purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
         _inAppPurchasePlatform.completePurchase(purchase);
       }
@@ -249,7 +251,7 @@ class _MyAppState extends State<_MyApp> {
                 ? IconButton(
                     onPressed: () {
                       final InAppPurchaseAndroidPlatformAddition addition =
-                          InAppPurchasePlatformAddition.instance
+                          InAppPurchasePlatformAddition.instance!
                               as InAppPurchaseAndroidPlatformAddition;
                       final SkuDetailsWrapper skuDetails =
                           (productDetails as GooglePlayProductDetails)
@@ -272,9 +274,10 @@ class _MyAppState extends State<_MyApp> {
                       // verify the latest status of you your subscription by using server side receipt validation
                       // and update the UI accordingly. The subscription purchase status shown
                       // inside the app may not be accurate.
-                      final GooglePlayPurchaseDetails? oldSubscription = _getOldSubscription(
-                          productDetails as GooglePlayProductDetails,
-                          purchases);
+                      final GooglePlayPurchaseDetails? oldSubscription =
+                          _getOldSubscription(
+                              productDetails as GooglePlayProductDetails,
+                              purchases);
                       final GooglePlayPurchaseParam purchaseParam =
                           GooglePlayPurchaseParam(
                               productDetails: productDetails,
@@ -299,8 +302,8 @@ class _MyAppState extends State<_MyApp> {
     ));
 
     return Card(
-        child:
-            Column(children: <Widget>[productHeader, const Divider()] + productList));
+        child: Column(
+            children: <Widget>[productHeader, const Divider()] + productList));
   }
 
   Card _buildConsumableBox() {
@@ -388,8 +391,9 @@ class _MyAppState extends State<_MyApp> {
     // handle invalid purchase here if  _verifyPurchase` failed.
   }
 
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
-    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) async {
+  Future<void> _listenToPurchaseUpdated(
+      List<PurchaseDetails> purchaseDetailsList) async {
+    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.pending) {
         showPendingUI();
       } else {
@@ -408,7 +412,7 @@ class _MyAppState extends State<_MyApp> {
 
         if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
           final InAppPurchaseAndroidPlatformAddition addition =
-              InAppPurchasePlatformAddition.instance
+              InAppPurchasePlatformAddition.instance!
                   as InAppPurchaseAndroidPlatformAddition;
 
           await addition.consumePurchase(purchaseDetails);
@@ -435,21 +439,21 @@ class _MyAppState extends State<_MyApp> {
     if (productDetails.id == _kSilverSubscriptionId &&
         purchases[_kGoldSubscriptionId] != null) {
       oldSubscription =
-          purchases[_kGoldSubscriptionId] as GooglePlayPurchaseDetails;
+          purchases[_kGoldSubscriptionId]! as GooglePlayPurchaseDetails;
     } else if (productDetails.id == _kGoldSubscriptionId &&
         purchases[_kSilverSubscriptionId] != null) {
       oldSubscription =
-          purchases[_kSilverSubscriptionId] as GooglePlayPurchaseDetails;
+          purchases[_kSilverSubscriptionId]! as GooglePlayPurchaseDetails;
     }
     return oldSubscription;
   }
 }
 
 class _FeatureCard extends StatelessWidget {
-
   _FeatureCard({Key? key}) : super(key: key);
+
   final InAppPurchaseAndroidPlatformAddition addition =
-      InAppPurchasePlatformAddition.instance
+      InAppPurchasePlatformAddition.instance!
           as InAppPurchaseAndroidPlatformAddition;
 
   @override

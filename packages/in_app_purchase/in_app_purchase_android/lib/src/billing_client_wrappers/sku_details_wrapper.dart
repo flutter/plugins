@@ -26,10 +26,11 @@ const String kInvalidBillingResultErrorMessage =
 /// Contains the details of an available product in Google Play Billing.
 @JsonSerializable()
 @SkuTypeConverter()
+@immutable
 class SkuDetailsWrapper {
   /// Creates a [SkuDetailsWrapper] with the given purchase details.
   @visibleForTesting
-  SkuDetailsWrapper({
+  const SkuDetailsWrapper({
     required this.description,
     required this.freeTrialPeriod,
     required this.introductoryPrice,
@@ -182,10 +183,11 @@ class SkuDetailsWrapper {
 ///
 /// Returned by [BillingClient.querySkuDetails].
 @JsonSerializable()
+@immutable
 class SkuDetailsResponseWrapper {
   /// Creates a [SkuDetailsResponseWrapper] with the given purchase details.
   @visibleForTesting
-  SkuDetailsResponseWrapper(
+  const SkuDetailsResponseWrapper(
       {required this.billingResult, required this.skuDetailsList});
 
   /// Constructs an instance of this from a key value map of data.
@@ -220,9 +222,10 @@ class SkuDetailsResponseWrapper {
 /// Params containing the response code and the debug message from the Play Billing API response.
 @JsonSerializable()
 @BillingResponseConverter()
+@immutable
 class BillingResultWrapper {
   /// Constructs the object with [responseCode] and [debugMessage].
-  BillingResultWrapper({required this.responseCode, this.debugMessage});
+  const BillingResultWrapper({required this.responseCode, this.debugMessage});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -230,7 +233,7 @@ class BillingResultWrapper {
   /// types of all of the members on this class.
   factory BillingResultWrapper.fromJson(Map<String, dynamic>? map) {
     if (map == null || map.isEmpty) {
-      return BillingResultWrapper(
+      return const BillingResultWrapper(
           responseCode: BillingResponse.error,
           debugMessage: kInvalidBillingResultErrorMessage);
     }

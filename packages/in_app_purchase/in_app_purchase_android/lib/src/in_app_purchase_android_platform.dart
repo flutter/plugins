@@ -40,7 +40,8 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
         InAppPurchaseAndroidPlatformAddition(billingClient);
 
     _readyFuture = _connect();
-    _purchaseUpdatedController = StreamController.broadcast();
+    _purchaseUpdatedController =
+        StreamController<List<PurchaseDetails>>.broadcast();
   }
 
   /// Registers this class as the default instance of [InAppPurchasePlatform].
@@ -78,7 +79,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     List<SkuDetailsResponseWrapper> responses;
     PlatformException? exception;
     try {
-      responses = await Future.wait([
+      responses = await Future.wait(<Future<SkuDetailsResponseWrapper>>[
         billingClient.querySkuDetails(
             skuType: SkuType.inapp, skusList: identifiers.toList()),
         billingClient.querySkuDetails(
@@ -86,17 +87,17 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       ]);
     } on PlatformException catch (e) {
       exception = e;
-      responses = [
+      responses = <SkuDetailsResponseWrapper>[
         // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
             billingResult: BillingResultWrapper(
                 responseCode: BillingResponse.error, debugMessage: e.code),
-            skuDetailsList: []),
+            skuDetailsList: const <SkuDetailsWrapper>[]),
         // ignore: invalid_use_of_visible_for_testing_member
         SkuDetailsResponseWrapper(
             billingResult: BillingResultWrapper(
                 responseCode: BillingResponse.error, debugMessage: e.code),
-            skuDetailsList: [])
+            skuDetailsList: const <SkuDetailsWrapper>[])
       ];
     }
     final List<ProductDetails> productDetailsList =
@@ -109,7 +110,8 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     final Set<String> successIDS = productDetailsList
         .map((ProductDetails productDetails) => productDetails.id)
         .toSet();
-    final List<String> notFoundIDS = identifiers.difference(successIDS).toList();
+    final List<String> notFoundIDS =
+        identifiers.difference(successIDS).toList();
     return ProductDetailsResponse(
         productDetails: productDetailsList,
         notFoundIDs: notFoundIDS,
@@ -162,7 +164,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
         purchase as GooglePlayPurchaseDetails;
 
     if (googlePurchase.billingClientPurchase.isAcknowledged) {
-      return BillingResultWrapper(responseCode: BillingResponse.ok);
+      return const BillingResultWrapper(responseCode: BillingResponse.ok);
     }
 
     if (googlePurchase.verificationData == null) {
@@ -180,12 +182,12 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   }) async {
     List<PurchasesResultWrapper> responses;
 
-    responses = await Future.wait([
+    responses = await Future.wait(<Future<PurchasesResultWrapper>>[
       billingClient.queryPurchases(SkuType.inapp),
       billingClient.queryPurchases(SkuType.subs)
     ]);
 
-    final Set errorCodeSet = responses
+    final Set<String> errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
         .map((PurchasesResultWrapper response) =>
@@ -229,7 +231,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     }
 
     final BillingResultWrapper billingResult =
-        await (InAppPurchasePlatformAddition.instance
+        await (InAppPurchasePlatformAddition.instance!
                 as InAppPurchaseAndroidPlatformAddition)
             .consumePurchase(purchaseDetails);
     final BillingResponse consumedResponse = billingResult.responseCode;
@@ -276,7 +278,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       } else if (resultWrapper.responseCode == BillingResponse.ok) {
         status = PurchaseStatus.purchased;
       }
-      return [
+      return <PurchaseDetails>[
         PurchaseDetails(
             purchaseID: '',
             productID: '',
