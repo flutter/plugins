@@ -31,7 +31,6 @@ void main() {
     test('registered instance', () {
       ImagePickerWindows.registerWith();
       expect(ImagePickerPlatform.instance, isA<ImagePickerWindows>());
-      expect(FileSelectorPlatform.instance, isA<FileSelectorWindows>());
     });
 
     group('images', () {
