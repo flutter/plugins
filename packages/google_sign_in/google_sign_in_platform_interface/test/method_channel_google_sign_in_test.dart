@@ -9,10 +9,10 @@ import 'package:google_sign_in_platform_interface/src/types.dart';
 import 'package:google_sign_in_platform_interface/src/utils.dart';
 
 const Map<String, String> kUserData = <String, String>{
-  "email": "john.doe@gmail.com",
-  "id": "8162538176523816253123",
-  "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
-  "displayName": "John Doe",
+  'email': 'john.doe@gmail.com',
+  'id': '8162538176523816253123',
+  'photoUrl': 'https://lh5.googleusercontent.com/photo.jpg',
+  'displayName': 'John Doe',
   'idToken': '123',
   'serverAuthCode': '789',
 };
@@ -35,7 +35,7 @@ const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
 };
 
 final GoogleSignInUserData? kUser = getUserDataFromMap(kUserData);
-final GoogleSignInTokenData? kToken =
+final GoogleSignInTokenData kToken =
     getTokenDataFromMap(kTokenData as Map<String, dynamic>);
 
 void main() {
@@ -122,16 +122,18 @@ void main() {
           'token': 'abc',
         }),
         () {
-          googleSignIn.requestScopes(['newScope', 'anotherScope']);
+          googleSignIn.requestScopes(<String>['newScope', 'anotherScope']);
         }: isMethodCall('requestScopes', arguments: <String, dynamic>{
-          'scopes': ['newScope', 'anotherScope'],
+          'scopes': <String>['newScope', 'anotherScope'],
         }),
         googleSignIn.signOut: isMethodCall('signOut', arguments: null),
         googleSignIn.disconnect: isMethodCall('disconnect', arguments: null),
         googleSignIn.isSignedIn: isMethodCall('isSignedIn', arguments: null),
       };
 
-      tests.keys.forEach((Function f) => f());
+      for (final Function f in tests.keys) {
+        f();
+      }
 
       expect(log, tests.values);
     });

@@ -1,7 +1,20 @@
+## 0.9.4+15
+
+* Fixes a bug resulting in a `CameraAccessException` that prevents image
+  capture on some Android devices.
+
+## 0.9.4+14
+
+* Restores compatibility with Flutter 2.5 and 2.8.
+
+## 0.9.4+13
+
+* Updates iOS camera's photo capture delegate reference on a background queue to prevent potential race conditions, and some related internal code cleanup.
+
 ## 0.9.4+12
 
-* Fixes bug resulting in a `CameraAccessException` that prevents image capture on some devices.
 * Skips unnecessary AppDelegate setup for unit tests on iOS.
+* Internal code cleanup for stricter analysis options.
 
 ## 0.9.4+11
 
