@@ -120,7 +120,7 @@ void main() {
 
   group('PurchasesResultWrapper', () {
     test('parsed from map', () {
-      final BillingResponse responseCode = BillingResponse.ok;
+      const BillingResponse responseCode = BillingResponse.ok;
       final List<PurchaseWrapper> purchases = <PurchaseWrapper>[
         dummyPurchase,
         dummyPurchase
@@ -135,7 +135,7 @@ void main() {
       final PurchasesResultWrapper parsed =
           PurchasesResultWrapper.fromJson(<String, dynamic>{
         'billingResult': buildBillingResultMap(billingResult),
-        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'responseCode': const BillingResponseConverter().toJson(responseCode),
         'purchasesList': <Map<String, dynamic>>[
           buildPurchaseMap(dummyPurchase),
           buildPurchaseMap(dummyPurchase)
@@ -161,7 +161,7 @@ void main() {
 
   group('PurchasesHistoryResult', () {
     test('parsed from map', () {
-      final BillingResponse responseCode = BillingResponse.ok;
+      const BillingResponse responseCode = BillingResponse.ok;
       final List<PurchaseHistoryRecordWrapper> purchaseHistoryRecordList =
           <PurchaseHistoryRecordWrapper>[
         dummyPurchaseHistoryRecord,
@@ -210,7 +210,7 @@ Map<String, dynamic> buildPurchaseMap(PurchaseWrapper original) {
     'isAutoRenewing': original.isAutoRenewing,
     'originalJson': original.originalJson,
     'developerPayload': original.developerPayload,
-    'purchaseState': PurchaseStateConverter().toJson(original.purchaseState),
+    'purchaseState': const PurchaseStateConverter().toJson(original.purchaseState),
     'isAcknowledged': original.isAcknowledged,
     'obfuscatedAccountId': original.obfuscatedAccountId,
     'obfuscatedProfileId': original.obfuscatedProfileId,
@@ -231,7 +231,7 @@ Map<String, dynamic> buildPurchaseHistoryRecordMap(
 
 Map<String, dynamic> buildBillingResultMap(BillingResultWrapper original) {
   return <String, dynamic>{
-    'responseCode': BillingResponseConverter().toJson(original.responseCode),
+    'responseCode': const BillingResponseConverter().toJson(original.responseCode),
     'debugMessage': original.debugMessage,
   };
 }

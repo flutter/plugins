@@ -64,7 +64,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   late final BillingClient billingClient;
 
   late Future<void> _readyFuture;
-  static Set<String> _productIdsToConsume = Set<String>();
+  static final Set<String> _productIdsToConsume = <String>{};
 
   @override
   Future<bool> isAvailable() async {
@@ -99,17 +99,17 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
             skuDetailsList: [])
       ];
     }
-    List<ProductDetails> productDetailsList =
+    final List<ProductDetails> productDetailsList =
         responses.expand((SkuDetailsResponseWrapper response) {
       return response.skuDetailsList;
     }).map((SkuDetailsWrapper skuDetailWrapper) {
       return GooglePlayProductDetails.fromSkuDetails(skuDetailWrapper);
     }).toList();
 
-    Set<String> successIDS = productDetailsList
+    final Set<String> successIDS = productDetailsList
         .map((ProductDetails productDetails) => productDetails.id)
         .toSet();
-    List<String> notFoundIDS = identifiers.difference(successIDS).toList();
+    final List<String> notFoundIDS = identifiers.difference(successIDS).toList();
     return ProductDetailsResponse(
         productDetails: productDetailsList,
         notFoundIDs: notFoundIDS,
@@ -130,7 +130,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       changeSubscriptionParam = purchaseParam.changeSubscriptionParam;
     }
 
-    BillingResultWrapper billingResultWrapper =
+    final BillingResultWrapper billingResultWrapper =
         await billingClient.launchBillingFlow(
             sku: purchaseParam.productDetails.id,
             accountId: purchaseParam.applicationUserName,
@@ -158,7 +158,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       'On Android, the `purchase` should always be of type `GooglePlayPurchaseDetails`.',
     );
 
-    GooglePlayPurchaseDetails googlePurchase =
+    final GooglePlayPurchaseDetails googlePurchase =
         purchase as GooglePlayPurchaseDetails;
 
     if (googlePurchase.billingClientPurchase.isAcknowledged) {
@@ -185,17 +185,17 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
       billingClient.queryPurchases(SkuType.subs)
     ]);
 
-    Set errorCodeSet = responses
+    final Set errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
         .map((PurchasesResultWrapper response) =>
             response.responseCode.toString())
         .toSet();
 
-    String errorMessage =
+    final String errorMessage =
         errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : '';
 
-    List<PurchaseDetails> pastPurchases =
+    final List<PurchaseDetails> pastPurchases =
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {

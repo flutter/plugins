@@ -30,7 +30,7 @@ void main() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
 
     const String debugMessage = 'dummy message';
-    final BillingResponse responseCode = BillingResponse.ok;
+    const BillingResponse responseCode = BillingResponse.ok;
     final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
         responseCode: responseCode, debugMessage: debugMessage);
     stubPlatform.addResponse(
@@ -45,7 +45,7 @@ void main() {
     const String consumeMethodName =
         'BillingClient#consumeAsync(String, ConsumeResponseListener)';
     test('consume purchase async success', () async {
-      final BillingResponse expectedCode = BillingResponse.ok;
+      const BillingResponse expectedCode = BillingResponse.ok;
       const String debugMessage = 'dummy message';
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
@@ -66,14 +66,14 @@ void main() {
       const String queryMethodName = 'BillingClient#queryPurchases(String)';
       test('handles error', () async {
         const String debugMessage = 'dummy message';
-        final BillingResponse responseCode = BillingResponse.developerError;
+        const BillingResponse responseCode = BillingResponse.developerError;
         final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
             responseCode: responseCode, debugMessage: debugMessage);
 
         stubPlatform
             .addResponse(name: queryMethodName, value: <dynamic, dynamic>{
           'billingResult': buildBillingResultMap(expectedBillingResult),
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'purchasesList': <Map<String, dynamic>>[]
         });
         final QueryPurchaseDetailsResponse response =
@@ -87,14 +87,14 @@ void main() {
 
       test('returns SkuDetailsResponseWrapper', () async {
         const String debugMessage = 'dummy message';
-        final BillingResponse responseCode = BillingResponse.ok;
+        const BillingResponse responseCode = BillingResponse.ok;
         final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
             responseCode: responseCode, debugMessage: debugMessage);
 
         stubPlatform
             .addResponse(name: queryMethodName, value: <String, dynamic>{
           'billingResult': buildBillingResultMap(expectedBillingResult),
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'purchasesList': <Map<String, dynamic>>[
             buildPurchaseMap(dummyPurchase),
           ]
@@ -111,13 +111,13 @@ void main() {
       test('should store platform exception in the response', () async {
         const String debugMessage = 'dummy message';
 
-        final BillingResponse responseCode = BillingResponse.developerError;
+        const BillingResponse responseCode = BillingResponse.developerError;
         final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
             responseCode: responseCode, debugMessage: debugMessage);
         stubPlatform.addResponse(
             name: queryMethodName,
             value: <dynamic, dynamic>{
-              'responseCode': BillingResponseConverter().toJson(responseCode),
+              'responseCode': const BillingResponseConverter().toJson(responseCode),
               'billingResult': buildBillingResultMap(expectedBillingResult),
               'purchasesList': <Map<String, dynamic>>[]
             },
@@ -172,9 +172,9 @@ void main() {
   group('launchPriceChangeConfirmationFlow', () {
     const String launchPriceChangeConfirmationFlowMethodName =
         'BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)';
-    const dummySku = 'sku';
+    const String dummySku = 'sku';
 
-    final expectedBillingResultPriceChangeConfirmation = BillingResultWrapper(
+    final BillingResultWrapper expectedBillingResultPriceChangeConfirmation = BillingResultWrapper(
       responseCode: BillingResponse.ok,
       debugMessage: 'dummy message',
     );

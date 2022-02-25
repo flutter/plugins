@@ -38,13 +38,13 @@ void main() {
 
   group('SkuDetailsResponseWrapper', () {
     test('parsed from map', () {
-      final BillingResponse responseCode = BillingResponse.ok;
+      const BillingResponse responseCode = BillingResponse.ok;
       const String debugMessage = 'dummy message';
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[
         dummySkuDetails,
         dummySkuDetails
       ];
-      BillingResultWrapper result = BillingResultWrapper(
+      final BillingResultWrapper result = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
           billingResult: result, skuDetailsList: skusDetails);
@@ -52,7 +52,7 @@ void main() {
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
         'billingResult': <String, dynamic>{
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'debugMessage': debugMessage,
         },
         'skuDetailsList': <Map<String, dynamic>>[
@@ -78,10 +78,10 @@ void main() {
     });
 
     test('handles empty list of skuDetails', () {
-      final BillingResponse responseCode = BillingResponse.error;
+      const BillingResponse responseCode = BillingResponse.error;
       const String debugMessage = 'dummy message';
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[];
-      BillingResultWrapper billingResult = BillingResultWrapper(
+      final BillingResultWrapper billingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
           billingResult: billingResult, skuDetailsList: skusDetails);
@@ -89,7 +89,7 @@ void main() {
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
         'billingResult': <String, dynamic>{
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'debugMessage': debugMessage,
         },
         'skuDetailsList': <Map<String, dynamic>>[]

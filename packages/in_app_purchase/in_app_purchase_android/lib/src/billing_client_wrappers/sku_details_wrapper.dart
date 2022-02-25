@@ -18,7 +18,7 @@ part 'sku_details_wrapper.g.dart';
 ///
 /// This usually indicates a series underlining code issue in the plugin.
 @visibleForTesting
-const kInvalidBillingResultErrorMessage =
+const String kInvalidBillingResultErrorMessage =
     'Invalid billing result map from method channel.';
 
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
@@ -50,8 +50,6 @@ class SkuDetailsWrapper {
     required this.originalPriceAmountMicros,
   }) : _introductoryPriceMicros = introductoryPriceMicros;
 
-  final String _introductoryPriceMicros;
-
   /// Constructs an instance of this from a key value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
@@ -59,6 +57,8 @@ class SkuDetailsWrapper {
   @visibleForTesting
   factory SkuDetailsWrapper.fromJson(Map<String, dynamic> map) =>
       _$SkuDetailsWrapperFromJson(map);
+
+  final String _introductoryPriceMicros;
 
   /// Textual description of the product.
   @JsonKey(defaultValue: '')

@@ -100,17 +100,17 @@ class InAppPurchaseAndroidPlatformAddition
       ];
     }
 
-    Set errorCodeSet = responses
+    final Set errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
         .map((PurchasesResultWrapper response) =>
             response.responseCode.toString())
         .toSet();
 
-    String errorMessage =
+    final String errorMessage =
         errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : '';
 
-    List<GooglePlayPurchaseDetails> pastPurchases =
+    final List<GooglePlayPurchaseDetails> pastPurchases =
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {
