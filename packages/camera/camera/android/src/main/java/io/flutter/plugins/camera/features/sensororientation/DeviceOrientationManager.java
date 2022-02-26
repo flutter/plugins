@@ -179,10 +179,10 @@ public class DeviceOrientationManager {
         angle = 180;
         break;
       case LANDSCAPE_LEFT:
-        angle = 90;
+        angle = 270;
         break;
       case LANDSCAPE_RIGHT:
-        angle = 270;
+        angle = 90;
         break;
     }
 
