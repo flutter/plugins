@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes an issue with the orientation of video's recorded in landscape on Android.
+
 ## 0.9.4+14
 
 * Restores compatibility with Flutter 2.5 and 2.8.
