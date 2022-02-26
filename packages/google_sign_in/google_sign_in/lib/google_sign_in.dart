@@ -225,7 +225,7 @@ class GoogleSignIn {
   /// Domain to restrict sign-in to.
   final String? hostedDomain;
 
-  /// Client ID being used to connect to google sign-in. Only supported on web.
+  /// Client ID being used to connect to google sign-in.
   final String? clientId;
 
   StreamController<GoogleSignInAccount?> _currentUserController =
