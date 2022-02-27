@@ -1,4 +1,4 @@
-## NEXT
+## 0.9.4+15
 
 * Fixes an issue with the orientation of video's recorded in landscape on Android.
 
