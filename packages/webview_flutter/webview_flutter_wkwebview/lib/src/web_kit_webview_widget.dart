@@ -125,15 +125,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WKNavigationDelegate navigationDelegate =
       webViewProxy.createNavigationDelegate()
-        ..didStartProvisionalNavigation = (WKWebView webView) {
-          webView.url.then<void>(
-            (String? url) => callbacksHandler.onPageStarted(url ?? ''),
-          );
+        ..didStartProvisionalNavigation = (WKWebView webView, String? url) {
+          callbacksHandler.onPageStarted(url ?? '');
         }
-        ..didFinishNavigation = (WKWebView webView) {
-          webView.url.then<void>(
-            (String? url) => callbacksHandler.onPageFinished(url ?? ''),
-          );
+        ..didFinishNavigation = (WKWebView webView, String? url) {
+          callbacksHandler.onPageFinished(url ?? '');
         }
         ..didFailNavigation = (WKWebView webView, NSError error) {
           callbacksHandler.onWebResourceError(_toWebResourceError(error));
@@ -278,11 +274,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
           isForMainFrame: action.targetFrame.isMainFrame,
         );
 
-        if (allow) {
-          return WKNavigationActionPolicy.allow;
-        } else {
-          return WKNavigationActionPolicy.cancel;
-        }
+        return allow
+            ? WKNavigationActionPolicy.allow
+            : WKNavigationActionPolicy.cancel;
       };
     } else {
       navigationDelegate.decidePolicyForNavigationAction = null;

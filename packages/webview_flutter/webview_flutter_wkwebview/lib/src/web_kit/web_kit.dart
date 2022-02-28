@@ -308,25 +308,25 @@ class WKUIDelegate {
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
 class WKNavigationDelegate {
-  /// Tells the delegate that navigation from the main frame has started.
+  /// Called when navigation from the main frame has started.
   set didStartProvisionalNavigation(
-    void Function(WKWebView webView)? didStartProvisionalNavigation,
+    void Function(
+      WKWebView webView,
+      String? url,
+    )?
+        didStartProvisionalNavigation,
   ) {
     throw UnimplementedError();
   }
 
-  /// Tells the delegate that navigation is complete.
+  /// Called when navigation is complete.
   set didFinishNavigation(
-    void Function(WKWebView webView)? didFinishNavigation,
+    void Function(WKWebView webView, String? url)? didFinishNavigation,
   ) {
     throw UnimplementedError();
   }
 
-  /// Asks the delegate for permission to navigate to new content.
-  ///
-  /// Use this method to allow or deny a navigation request that originated with
-  /// the specified action. The web view calls this method after the interaction
-  /// occurs but before it attempts to load any content.
+  /// Called when permission is needed to navigate to new content.
   set decidePolicyForNavigationAction(
       Future<WKNavigationActionPolicy> Function(
     WKWebView webView,
@@ -336,14 +336,14 @@ class WKNavigationDelegate {
     throw UnimplementedError();
   }
 
-  /// Tells the delegate that an error occurred during navigation.
+  /// Called when an error occurred during navigation.
   set didFailNavigation(
     void Function(WKWebView webView, NSError error)? didFailNavigation,
   ) {
     throw UnimplementedError();
   }
 
-  /// Tells the delegate that an error occurred during the early navigation process.
+  /// Called when an error occurred during the early navigation process.
   set didFailProvisionalNavigation(
     void Function(WKWebView webView, NSError error)?
         didFailProvisionalNavigation,
@@ -351,7 +351,7 @@ class WKNavigationDelegate {
     throw UnimplementedError();
   }
 
-  /// Tells the delegate that the web view’s content process was terminated.
+  /// Called when the web view’s content process was terminated.
   set webViewWebContentProcessDidTerminate(
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   ) {
@@ -396,19 +396,11 @@ class WKWebView {
   }
 
   /// The object you use to manage navigation behavior for the web view.
-  ///
-  /// Provide a delegate object when you want to manage or restrict navigation
-  /// in your web content, track the progress of navigation requests, and handle
-  /// authentication challenges for any new content.
   set navigationDelegate(WKNavigationDelegate? delegate) {
     throw UnimplementedError();
   }
 
   /// The URL for the current webpage.
-  ///
-  /// This field contains the URL for the webpage that the web view currently
-  /// displays. Use this URL in places where you reflect the webpage address in
-  /// your app’s user interface.
   Future<String?> get url {
     throw UnimplementedError();
   }
