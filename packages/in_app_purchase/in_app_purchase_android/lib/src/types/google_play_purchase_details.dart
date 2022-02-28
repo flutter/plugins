@@ -39,7 +39,8 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
           source: kIAPSource),
       transactionDate: purchase.purchaseTime.toString(),
       billingClientPurchase: purchase,
-      status: const PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState),
+      status: const PurchaseStateConverter()
+          .toPurchaseStatus(purchase.purchaseState),
     );
 
     if (purchaseDetails.status == PurchaseStatus.error) {

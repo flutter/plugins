@@ -9,7 +9,8 @@ typedef AdditionalSteps = void Function(dynamic args);
 
 class StubInAppPurchasePlatform {
   final Map<String, dynamic> _expectedCalls = <String, dynamic>{};
-  final Map<String, AdditionalSteps?> _additionalSteps = <String, AdditionalSteps?>{};
+  final Map<String, AdditionalSteps?> _additionalSteps =
+      <String, AdditionalSteps?>{};
   void addResponse(
       {required String name,
       dynamic value,

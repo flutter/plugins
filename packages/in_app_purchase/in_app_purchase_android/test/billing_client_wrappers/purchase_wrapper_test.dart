@@ -210,7 +210,8 @@ Map<String, dynamic> buildPurchaseMap(PurchaseWrapper original) {
     'isAutoRenewing': original.isAutoRenewing,
     'originalJson': original.originalJson,
     'developerPayload': original.developerPayload,
-    'purchaseState': const PurchaseStateConverter().toJson(original.purchaseState),
+    'purchaseState':
+        const PurchaseStateConverter().toJson(original.purchaseState),
     'isAcknowledged': original.isAcknowledged,
     'obfuscatedAccountId': original.obfuscatedAccountId,
     'obfuscatedProfileId': original.obfuscatedProfileId,
@@ -231,7 +232,8 @@ Map<String, dynamic> buildPurchaseHistoryRecordMap(
 
 Map<String, dynamic> buildBillingResultMap(BillingResultWrapper original) {
   return <String, dynamic>{
-    'responseCode': const BillingResponseConverter().toJson(original.responseCode),
+    'responseCode':
+        const BillingResponseConverter().toJson(original.responseCode),
     'debugMessage': original.debugMessage,
   };
 }
