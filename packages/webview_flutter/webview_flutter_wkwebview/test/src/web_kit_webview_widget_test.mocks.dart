@@ -52,13 +52,15 @@ class MockWKNavigationDelegate extends _i1.Mock
 
   @override
   set didStartProvisionalNavigation(
-          void Function(_i2.WKWebView)? didStartProvisionalNavigation) =>
+          void Function(_i2.WKWebView, String?)?
+              didStartProvisionalNavigation) =>
       super.noSuchMethod(
           Invocation.setter(
               #didStartProvisionalNavigation, didStartProvisionalNavigation),
           returnValueForMissingStub: null);
   @override
-  set didFinishNavigation(void Function(_i2.WKWebView)? didFinishNavigation) =>
+  set didFinishNavigation(
+          void Function(_i2.WKWebView, String?)? didFinishNavigation) =>
       super.noSuchMethod(
           Invocation.setter(#didFinishNavigation, didFinishNavigation),
           returnValueForMissingStub: null);

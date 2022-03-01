@@ -289,32 +289,25 @@ void main() {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.url)
-            .thenAnswer((_) => Future<String>.value('https://google.com'));
-
         final dynamic didStartProvisionalNavigation = verify(
                 mockNavigationDelegate.didStartProvisionalNavigation =
                     captureAny)
             .captured
-            .single as void Function(WKWebView);
-        didStartProvisionalNavigation(mockWebView);
+            .single as void Function(WKWebView, String);
+        didStartProvisionalNavigation(mockWebView, 'https://google.com');
 
-        await untilCalled(mockWebView.url);
         verify(mockCallbacksHandler.onPageStarted('https://google.com'));
       });
 
       testWidgets('onPageFinished', (WidgetTester tester) async {
         await buildWidget(tester);
-        when(mockWebView.url)
-            .thenAnswer((_) => Future<String>.value('https://google.com'));
 
         final dynamic didFinishNavigation =
             verify(mockNavigationDelegate.didFinishNavigation = captureAny)
                 .captured
-                .single as void Function(WKWebView);
-        didFinishNavigation(mockWebView);
+                .single as void Function(WKWebView, String);
+        didFinishNavigation(mockWebView, 'https://google.com');
 
-        await untilCalled(mockWebView.url);
         verify(mockCallbacksHandler.onPageFinished('https://google.com'));
       });
 
