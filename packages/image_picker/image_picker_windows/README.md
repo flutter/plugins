@@ -3,10 +3,10 @@
 A Windows implementation of [`image_picker`][1].
 
 ### pickImage()
-The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported.
+The arguments `source`, `maxWidth`, `maxHeight`, `imageQuality`, and `preferredCameraDevice` are not supported on Windows.
 
 ### pickVideo()
-The argument `maxDuration` is not supported on Windows.
+The arguments `source`, `preferredCameraDevice`, and `maxDuration` are not supported on Windows.
 
 ## Usage
 
