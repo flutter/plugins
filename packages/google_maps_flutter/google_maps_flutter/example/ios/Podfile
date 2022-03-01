@@ -32,7 +32,7 @@ target 'Runner' do
   target 'RunnerTests' do
     inherit! :search_paths
 
-    pod 'OCMock'
+    pod 'OCMock', '~> 3.9.1'
   end
 end
 

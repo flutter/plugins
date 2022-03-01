@@ -4,7 +4,8 @@
 
 @import GoogleMaps;
 
-@interface MockGMSMapView : GMSMapView
+// Defines a map view used for testing key-value observing.
+@interface PartiallyMockedMapView : GMSMapView
 
 @property(nonatomic, assign, readonly) NSInteger frameObserverCount;
 

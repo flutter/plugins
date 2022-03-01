@@ -148,6 +148,7 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
       // zero.
       return;
     }
+    // We only observe the frame for initial setup.
     [_mapView removeObserver:self forKeyPath:@"frame"];
     [_mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   } else {

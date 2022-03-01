@@ -7,7 +7,7 @@
 @import XCTest;
 
 #import <OCMock/OCMock.h>
-#import "MockGMSMapView.h"
+#import "PartiallyMockedMapView.h"
 
 @interface GoogleMapsTests : XCTestCase
 @end
@@ -22,7 +22,7 @@
 - (void)testFrameObserver {
   id registrar = OCMProtocolMock(@protocol(FlutterPluginRegistrar));
   CGRect frame = CGRectMake(0, 0, 100, 100);
-  MockGMSMapView *mapView = [[MockGMSMapView alloc]
+  PartiallyMockedMapView *mapView = [[PartiallyMockedMapView alloc]
       initWithFrame:frame
              camera:[[GMSCameraPosition alloc] initWithLatitude:0 longitude:0 zoom:0]];
   FLTGoogleMapController *controller = [[FLTGoogleMapController alloc] initWithMapView:mapView

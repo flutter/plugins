@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "MockGMSMapView.h"
+#import "PartiallyMockedMapView.h"
 
-@interface MockGMSMapView ()
+@interface PartiallyMockedMapView ()
 
 @property(nonatomic, assign) NSInteger frameObserverCount;
 
 @end
 
-@implementation MockGMSMapView
+@implementation PartiallyMockedMapView
 
 - (void)addObserver:(NSObject *)observer
          forKeyPath:(NSString *)keyPath
