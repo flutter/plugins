@@ -55,7 +55,6 @@ class _MyAppState extends State<MyApp> {
                 image: IosPlatformImages.loadSystemImage(
                   'hammer.circle.fill',
                   100,
-                  scaleIndex: 1,
                   colors: <Color>[
                     theme.colorScheme.primary,
                     theme.colorScheme.primary.withAlpha(100),
