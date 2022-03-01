@@ -7,6 +7,7 @@
 // Defines a map view used for testing key-value observing.
 @interface PartiallyMockedMapView : GMSMapView
 
+/// Counts the number of times that `frame` KVO has been added
 @property(nonatomic, assign, readonly) NSInteger frameObserverCount;
 
 @end
