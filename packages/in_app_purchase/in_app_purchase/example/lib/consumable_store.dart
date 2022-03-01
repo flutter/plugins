@@ -36,15 +36,15 @@ class ConsumableStore {
   }
 
   static Future<void> _doSave(String id) async {
-    List<String> cached = await load();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String> cached = await load();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     cached.add(id);
     await prefs.setStringList(_kPrefKey, cached);
   }
 
   static Future<void> _doConsume(String id) async {
-    List<String> cached = await load();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String> cached = await load();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     cached.remove(id);
     await prefs.setStringList(_kPrefKey, cached);
   }
