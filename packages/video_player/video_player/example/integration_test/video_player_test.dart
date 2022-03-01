@@ -17,7 +17,7 @@ import 'package:video_player/video_player.dart';
 const Duration _playDuration = Duration(seconds: 1);
 
 // Use WebM for web to allow CI to use Chromium.
-final String _videoAssetKey =
+const String _videoAssetKey =
     kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
 
 // Returns the URL to load an asset from this example app as a network source.
@@ -48,13 +48,14 @@ void main() {
       expect(_controller.value.isPlaying, false);
       // The WebM version has a slightly different duration than the MP4.
       expect(_controller.value.duration,
-          Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
+          const Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
     });
 
     testWidgets(
       'live stream duration != 0',
       (WidgetTester tester) async {
-        VideoPlayerController networkController = VideoPlayerController.network(
+        final VideoPlayerController networkController =
+            VideoPlayerController.network(
           'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
         );
         await networkController.initialize();
@@ -65,7 +66,7 @@ void main() {
         expect(networkController.value.duration,
             (Duration duration) => duration != Duration.zero);
       },
-      skip: (kIsWeb),
+      skip: kIsWeb,
     );
 
     testWidgets(
@@ -124,7 +125,7 @@ void main() {
         // Mute to allow playing without DOM interaction on Web.
         // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
         await _controller.setVolume(0);
-        Duration tenMillisBeforeEnd =
+        final Duration tenMillisBeforeEnd =
             _controller.value.duration - const Duration(milliseconds: 10);
         await _controller.seekTo(tenMillisBeforeEnd);
         await _controller.play();
@@ -203,12 +204,12 @@ void main() {
   group('file-based videos', () {
     setUp(() async {
       // Load the data from the asset.
-      String tempDir = (await getTemporaryDirectory()).path;
-      ByteData bytes = await rootBundle.load(_videoAssetKey);
+      final String tempDir = (await getTemporaryDirectory()).path;
+      final ByteData bytes = await rootBundle.load(_videoAssetKey);
 
       // Write it to a file to use as a source.
       final String filename = _videoAssetKey.split('/').last;
-      File file = File('$tempDir/$filename');
+      final File file = File('$tempDir/$filename');
       await file.writeAsBytes(bytes.buffer.asInt8List());
 
       _controller = VideoPlayerController.file(file);
@@ -244,8 +245,8 @@ void main() {
         // Mute to allow playing without DOM interaction on Web.
         // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
         await _controller.setVolume(0);
-        final Completer<void> started = Completer();
-        final Completer<void> ended = Completer();
+        final Completer<void> started = Completer<void>();
+        final Completer<void> ended = Completer<void>();
         _controller.addListener(() {
           if (!started.isCompleted && _controller.value.isBuffering) {
             started.complete();
@@ -291,7 +292,7 @@ void main() {
       // The audio was made with 44100 Hz, 192 Kbps CBR, and 32 bits.
       expect(
         _controller.value.duration,
-        Duration(seconds: 5, milliseconds: kIsWeb ? 42 : 41),
+        const Duration(seconds: 5, milliseconds: kIsWeb ? 42 : 41),
       );
     });
 
