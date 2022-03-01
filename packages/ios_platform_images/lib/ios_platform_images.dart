@@ -141,22 +141,29 @@ class IosPlatformImages {
   ///
   /// Throws an exception if the image can't be found.
   ///
-  /// [colors] takes a list of colors to be applied to the corresponding layer
+  /// The [name] is the symbol name as defined by iOS. You can browse a list of
+  /// symbols in the SF Symbols app (see below).
+  ///
+  /// The [pointSize] is the size of the image in iOS font points.
+  ///
+  /// The [colors] variable is a list of colors to be applied to the corresponding layer
   /// of the icon, assuming that layer exists. An icon can have up to 3 layers,
   /// if a layer color is not specified it will take the color of the most recent
   /// valid index. Defaults to an empty list (black).
   ///
   /// For more information see [https://developer.apple.com/documentation/uikit/uiimagesymbolconfiguration/3810054-configurationwithpalettecolors?language=objc]
   ///
-  /// [preferMulticolor] overrides [colors] and asks iOS to provide its preset
-  /// multicolor varient of the symbol. Depending on the symbol, these colors
+  /// If true, [preferMulticolor] overrides [colors] and asks iOS to provide its
+  /// preset multicolor variant of the symbol. Depending on the symbol, these colors
   /// *may not be mutable*. To find out, use the SF Symbols app found at
-  /// [https://developer.apple.com/sf-symbols/]
+  /// [https://developer.apple.com/sf-symbols/].
   /// Also note that regardless of mutability, the symbols default colors are
   /// affected by the devices theme preference.
   ///
+  /// The [weight] is the weight or thickness of the icon. The default is [FontWeight.normal].
+  ///
   /// Multi-layer and multi-color symbols only work on iOS 15.0 and above.
-  /// **This method requires at least iOS 13.0**
+  /// **This method requires at least iOS 13.0.**
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/configuring_and_displaying_symbol_images_in_your_ui?language=objc]
   static ImageProvider loadSystemImage(
