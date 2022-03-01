@@ -165,7 +165,6 @@ class IosPlatformImages {
     List<Color> colors = const <Color>[],
     bool preferMulticolor = false,
     ui.FontWeight weight = FontWeight.normal,
-    int scaleIndex = 1,
   }) {
     final List<double> colorsRGBA = colors
         .expand((Color color) => <double>[
@@ -183,7 +182,6 @@ class IosPlatformImages {
         name,
         pointSize,
         weight.index,
-        scaleIndex,
         colorsRGBA,
         preferMulticolor,
       ],

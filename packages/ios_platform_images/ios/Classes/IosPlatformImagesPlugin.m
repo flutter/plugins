@@ -46,12 +46,11 @@
         NSNumber *pointSizeWithDouble = call.arguments[1];
         double pointSize = [pointSizeWithDouble doubleValue];
         NSNumber *weightIndex = call.arguments[2];
-        NSNumber *scaleIndex = call.arguments[3];
 
         // Up to 3 rgb values for primary, seconday and tertiary colors.
         // see
         // https://developer.apple.com/documentation/uikit/uiimagesymbolconfiguration/3810054-configurationwithpalettecolors
-        NSArray *rgbaValuesList = call.arguments[4];
+        NSArray *rgbaValuesList = call.arguments[3];
 
         NSMutableArray *colorArray = [[NSMutableArray alloc] init];
 
@@ -61,23 +60,6 @@
                                                    blue:[rgbaValuesList[i + 2] doubleValue]
                                                   alpha:[rgbaValuesList[i + 3] doubleValue]];
           [colorArray addObject:primaryColor];
-        }
-
-        UIImageSymbolScale scale = UIImageSymbolScaleDefault;
-
-        switch ([scaleIndex integerValue]) {
-          case 0:
-            scale = UIImageSymbolScaleSmall;
-            break;
-          case 1:
-            scale = UIImageSymbolScaleMedium;
-            break;
-          case 2:
-            scale = UIImageSymbolScaleLarge;
-            break;
-          default:
-            scale = UIImageSymbolScaleDefault;
-            break;
         }
 
         UIImageSymbolWeight weight = UIImageSymbolWeightRegular;
@@ -116,12 +98,12 @@
         UIImageSymbolConfiguration *pointSizeConfig =
             [UIImageSymbolConfiguration configurationWithPointSize:pointSize
                                                             weight:weight
-                                                             scale:scale];
+                                                             scale: UIImageSymbolScaleDefault];
 
         UIImage *finalImage;
 
         if (@available(iOS 15, *)) {
-          NSNumber *preferMulticolor = call.arguments[5];
+          NSNumber *preferMulticolor = call.arguments[4];
           UIImageSymbolConfiguration *colors;
 
           if ([preferMulticolor boolValue]) {
