@@ -173,6 +173,14 @@ class IosPlatformImages {
     bool preferMulticolor = false,
     ui.FontWeight weight = FontWeight.normal,
   }) {
+    if (preferMulticolor) {
+      if (colors != const <Color>[]) {
+        throw ArgumentError(
+          'preferMulticolor and colors cannot be used together.',
+        );
+      }
+    }
+
     final List<double> colorsRGBA = colors
         .expand((Color color) => <double>[
               color.red.toDouble() / 255,
