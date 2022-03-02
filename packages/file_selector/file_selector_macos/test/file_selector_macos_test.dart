@@ -28,7 +28,7 @@ void main() {
     expect(FileSelectorPlatform.instance, isA<FileSelectorMacOS>());
   });
 
-  group('#openFile', () {
+  group('openFile', () {
     test('passes the accepted type groups correctly', () async {
       final XTypeGroup group = XTypeGroup(
         label: 'text',
@@ -50,10 +50,11 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypeGroups': <Map<String, dynamic>>[
-              group.toJSON(),
-              groupTwo.toJSON()
-            ],
+            'acceptedTypes': <String, dynamic>{
+              'extensions': <String>['txt', 'jpg'],
+              'mimeTypes': <String>['text/plain', 'image/jpg'],
+              'UTIs': <String>['public.text', 'public.image'],
+            },
             'initialDirectory': null,
             'confirmButtonText': null,
             'multiple': false,
@@ -68,7 +69,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypeGroups': null,
+            'acceptedTypes': null,
             'initialDirectory': '/example/directory',
             'confirmButtonText': null,
             'multiple': false,
@@ -83,7 +84,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypeGroups': null,
+            'acceptedTypes': null,
             'initialDirectory': null,
             'confirmButtonText': 'Open File',
             'multiple': false,
@@ -92,7 +93,7 @@ void main() {
       );
     });
   });
-  group('#openFiles', () {
+  group('openFiles', () {
     test('passes the accepted type groups correctly', () async {
       final XTypeGroup group = XTypeGroup(
         label: 'text',
@@ -114,10 +115,11 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypeGroups': <Map<String, dynamic>>[
-              group.toJSON(),
-              groupTwo.toJSON()
-            ],
+            'acceptedTypes': <String, List<dynamic>>{
+              'extensions': <String>['txt', 'jpg'],
+              'mimeTypes': <String>['text/plain', 'image/jpg'],
+              'UTIs': <String>['public.text', 'public.image'],
+            },
             'initialDirectory': null,
             'confirmButtonText': null,
             'multiple': true,
@@ -132,7 +134,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypeGroups': null,
+            'acceptedTypes': null,
             'initialDirectory': '/example/directory',
             'confirmButtonText': null,
             'multiple': true,
@@ -147,7 +149,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypeGroups': null,
+            'acceptedTypes': null,
             'initialDirectory': null,
             'confirmButtonText': 'Open File',
             'multiple': true,
@@ -157,7 +159,7 @@ void main() {
     });
   });
 
-  group('#getSavePath', () {
+  group('getSavePath', () {
     test('passes the accepted type groups correctly', () async {
       final XTypeGroup group = XTypeGroup(
         label: 'text',
@@ -180,10 +182,11 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('getSavePath', arguments: <String, dynamic>{
-            'acceptedTypeGroups': <Map<String, dynamic>>[
-              group.toJSON(),
-              groupTwo.toJSON()
-            ],
+            'acceptedTypes': <String, List<dynamic>>{
+              'extensions': <String>['txt', 'jpg'],
+              'mimeTypes': <String>['text/plain', 'image/jpg'],
+              'UTIs': <String>['public.text', 'public.image'],
+            },
             'initialDirectory': null,
             'suggestedName': null,
             'confirmButtonText': null,
@@ -198,7 +201,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('getSavePath', arguments: <String, dynamic>{
-            'acceptedTypeGroups': null,
+            'acceptedTypes': null,
             'initialDirectory': '/example/directory',
             'suggestedName': null,
             'confirmButtonText': null,
@@ -213,7 +216,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('getSavePath', arguments: <String, dynamic>{
-            'acceptedTypeGroups': null,
+            'acceptedTypes': null,
             'initialDirectory': null,
             'suggestedName': null,
             'confirmButtonText': 'Open File',
@@ -221,7 +224,7 @@ void main() {
         ],
       );
     });
-    group('#getDirectoryPath', () {
+    group('getDirectoryPath', () {
       test('passes initialDirectory correctly', () async {
         await plugin.getDirectoryPath(initialDirectory: '/example/directory');
 
@@ -249,5 +252,37 @@ void main() {
         );
       });
     });
+  });
+
+  test('ignores all type groups if any of them is a wildcard', () async {
+    await plugin.getSavePath(acceptedTypeGroups: <XTypeGroup>[
+      XTypeGroup(
+        label: 'text',
+        extensions: <String>['txt'],
+        mimeTypes: <String>['text/plain'],
+        macUTIs: <String>['public.text'],
+      ),
+      XTypeGroup(
+        label: 'image',
+        extensions: <String>['jpg'],
+        mimeTypes: <String>['image/jpg'],
+        macUTIs: <String>['public.image'],
+      ),
+      XTypeGroup(
+        label: 'any',
+      ),
+    ]);
+
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('getSavePath', arguments: <String, dynamic>{
+          'acceptedTypes': null,
+          'initialDirectory': null,
+          'suggestedName': null,
+          'confirmButtonText': null,
+        }),
+      ],
+    );
   });
 }

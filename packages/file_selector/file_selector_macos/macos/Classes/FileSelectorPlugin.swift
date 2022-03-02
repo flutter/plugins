@@ -105,26 +105,18 @@ public class FileSelectorPlugin: NSObject, FlutterPlugin {
       panel.prompt = confirmButtonText
     }
 
-    let acceptedTypeGroups = getNonNullValue(
-      for: "acceptedTypeGroups",
+    let acceptedTypes = getNonNullValue(
+      for: "acceptedTypes",
       from: arguments
-    ) as! [[String: Any]]?
-    if let acceptedTypeGroups = acceptedTypeGroups {
-      // macOS doesn't support filter groups, so combine all allowed types into a flat list.
+    ) as! [String: Any]?
+    if let acceptedTypes = acceptedTypes {
       var allowedTypes: [String] = []
-      for filter in acceptedTypeGroups {
-        let extensions = getNonNullStringArrayValue(for: "extensions", from: filter)
-        let mimeTypes = getNonNullStringArrayValue(for: "mimeTypes", from: filter)
-        let macUTIs = getNonNullStringArrayValue(for: "macUTIs", from: filter)
-        // If any group allows everything, don't do any filtering.
-        if (extensions.count == 0 && mimeTypes.count == 0 && macUTIs.count == 0) {
-          allowedTypes.removeAll();
-          break;
-        }
-        allowedTypes.append(contentsOf: extensions)
-        allowedTypes.append(contentsOf: macUTIs)
-        // TODO: Add support for mimeTypes in macOS 11+.
-      }
+      let extensions = getNonNullStringArrayValue(for: "extensions", from: acceptedTypes)
+      let UTIs = getNonNullStringArrayValue(for: "UTIs", from: acceptedTypes)
+      allowedTypes.append(contentsOf: extensions)
+      allowedTypes.append(contentsOf: UTIs)
+      // TODO: Add support for mimeTypes in macOS 11+.
+
       if !allowedTypes.isEmpty {
         panel.allowedFileTypes = allowedTypes
       }

@@ -120,49 +120,6 @@ class exampleTests: XCTestCase {
     XCTAssertNotNil(panelController.openPanel)
   }
 
-  func testOpenWithWildcardFilter() throws {
-    let panelController = TestPanelController()
-    let plugin = FileSelectorPlugin(
-      viewProvider: TestViewProvider(),
-      panelController: panelController)
-
-    let returnPath = "/foo/bar"
-    panelController.openURLs = [URL(fileURLWithPath: returnPath)]
-
-    let called = XCTestExpectation()
-    let call = FlutterMethodCall(
-      methodName: "openFile",
-      arguments: [
-        "acceptedTypeGroups": [
-          // Test unused keys not present.
-          [
-            "extensions": ["txt", "json"],
-            "macUTIs": ["public.text"],
-          ],
-          // Test unused keys present with NSNull.
-          [
-            "extensions": NSNull(),
-            "macUTIs": ["public.image"],
-            "mimeTypes": NSNull(),
-          ],
-          // An empty filter group allows anything. Since macOS doesn't support filter groups,
-          // groups are unioned, so this should disable all filtering.
-          [:]
-        ]
-      ]
-    )
-    plugin.handle(call) { result in
-      XCTAssertEqual((result as! [String]?)![0], returnPath)
-      called.fulfill()
-    }
-
-    wait(for: [called], timeout: 0.5)
-    XCTAssertNotNil(panelController.openPanel)
-    if let panel = panelController.openPanel {
-      XCTAssertNil(panel.allowedFileTypes)
-    }
-  }
-
   func testOpenWithFilter() throws {
     let panelController = TestPanelController()
     let plugin = FileSelectorPlugin(
@@ -176,14 +133,9 @@ class exampleTests: XCTestCase {
     let call = FlutterMethodCall(
       methodName: "openFile",
       arguments: [
-        "acceptedTypeGroups": [
-          [
-            "extensions": ["txt", "json"],
-            "macUTIs": ["public.text"],
-          ],
-          [
-            "macUTIs": ["public.image"],
-          ],
+        "acceptedTypes": [
+          "extensions": ["txt", "json"],
+          "UTIs": ["public.text", "public.image"],
         ]
       ]
     )

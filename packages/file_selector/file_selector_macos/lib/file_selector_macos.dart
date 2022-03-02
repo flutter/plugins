@@ -30,9 +30,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     final List<String>? path = await _channel.invokeListMethod<String>(
       'openFile',
       <String, dynamic>{
-        'acceptedTypeGroups': acceptedTypeGroups
-            ?.map((XTypeGroup group) => group.toJSON())
-            .toList(),
+        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
         'multiple': false,
@@ -50,9 +48,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     final List<String>? pathList = await _channel.invokeListMethod<String>(
       'openFile',
       <String, dynamic>{
-        'acceptedTypeGroups': acceptedTypeGroups
-            ?.map((XTypeGroup group) => group.toJSON())
-            .toList(),
+        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
         'multiple': true,
@@ -71,9 +67,7 @@ class FileSelectorMacOS extends FileSelectorPlatform {
     return _channel.invokeMethod<String>(
       'getSavePath',
       <String, dynamic>{
-        'acceptedTypeGroups': acceptedTypeGroups
-            ?.map((XTypeGroup group) => group.toJSON())
-            .toList(),
+        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
         'initialDirectory': initialDirectory,
         'suggestedName': suggestedName,
         'confirmButtonText': confirmButtonText,
@@ -93,5 +87,35 @@ class FileSelectorMacOS extends FileSelectorPlatform {
         'confirmButtonText': confirmButtonText,
       },
     );
+  }
+
+  // Converts the type group list into a flat list of all allowed types, since
+  // macOS doesn't support filter groups.
+  Map<String, List<String>>? _allowedTypeListFromTypeGroups(
+      List<XTypeGroup>? typeGroups) {
+    const String extensionKey = 'extensions';
+    const String mimeTypeKey = 'mimeTypes';
+    const String utiKey = 'UTIs';
+    if (typeGroups == null || typeGroups.isEmpty) {
+      return null;
+    }
+    final Map<String, List<String>> allowedTypes = <String, List<String>>{
+      extensionKey: <String>[],
+      mimeTypeKey: <String>[],
+      utiKey: <String>[],
+    };
+    for (final XTypeGroup typeGroup in typeGroups) {
+      // If any group allows everything, no filtering should be done.
+      if ((typeGroup.extensions?.isEmpty ?? true) &&
+          (typeGroup.macUTIs?.isEmpty ?? true) &&
+          (typeGroup.mimeTypes?.isEmpty ?? true)) {
+        return null;
+      }
+      allowedTypes[extensionKey]!.addAll(typeGroup.extensions ?? <String>[]);
+      allowedTypes[mimeTypeKey]!.addAll(typeGroup.mimeTypes ?? <String>[]);
+      allowedTypes[utiKey]!.addAll(typeGroup.macUTIs ?? <String>[]);
+    }
+
+    return allowedTypes;
   }
 }
