@@ -52,7 +52,9 @@
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
-@property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
+/// Tracks the latest pixel buffer sent from AVFoundation's sample buffer delegate callback.
+/// Used to deliver the latest pixel buffer to the flutter engine via the `copyPixelBuffer` API.
+@property(readwrite, nonatomic) CVPixelBufferRef latestPixelBuffer;
 @property(readonly, nonatomic) CGSize captureSize;
 @property(strong, nonatomic) AVAssetWriter *videoWriter;
 @property(strong, nonatomic) AVAssetWriterInput *videoWriterInput;
@@ -76,6 +78,9 @@
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 /// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
+/// The queue on which `latestPixelBuffer` property is accessed.
+/// To avoid unnecessary contention, we should not reuse the captureSessionQueue. 
+@property(strong, nonatomic) dispatch_queue_t pixelBufferSynchronizationQueue;
 /// The queue on which captured photos (not videos) are written to disk.
 /// Videos are written to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
 @property(strong, nonatomic) dispatch_queue_t photoIOQueue;
@@ -101,6 +106,8 @@ NSString *const errorMethod = @"error";
   }
   _enableAudio = enableAudio;
   _captureSessionQueue = captureSessionQueue;
+  _pixelBufferSynchronizationQueue =
+      dispatch_queue_create("io.flutter.camera.pixelBufferSynchronizationQueue", NULL);
   _photoIOQueue = dispatch_queue_create("io.flutter.camera.photoIOQueue", NULL);
   _captureSession = [[AVCaptureSession alloc] init];
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
@@ -355,10 +362,15 @@ NSString *const errorMethod = @"error";
   if (output == _captureVideoOutput) {
     CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CFRetain(newBuffer);
-    CVPixelBufferRef old = _latestPixelBuffer;
-    while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
-      old = _latestPixelBuffer;
-    }
+
+    __block CVPixelBufferRef old = nil;
+    // Use `dispatch_sync` to avoid unnecessary context switch under common non-contest scenarios;
+    // Under rare contest scenarios, it will not block for too long since the critical section is
+    // quite lightweight.
+    dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
+      old = self.latestPixelBuffer;
+      self.latestPixelBuffer = newBuffer;
+    });
     if (old != nil) {
       CFRelease(old);
     }
@@ -575,11 +587,12 @@ NSString *const errorMethod = @"error";
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-  CVPixelBufferRef pixelBuffer = _latestPixelBuffer;
-  while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&_latestPixelBuffer)) {
-    pixelBuffer = _latestPixelBuffer;
-  }
-
+  __block CVPixelBufferRef pixelBuffer = nil;
+  // `copyPixelBuffer` API requires synchronous return, so we have to use `dispatch_sync`.
+  dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
+    pixelBuffer = self.latestPixelBuffer;
+    self.latestPixelBuffer = nil;
+  });
   return pixelBuffer;
 }
 
