@@ -289,7 +289,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   private boolean isDeviceSupported() {
-    if (BiometricManager.from(this.activity.getBaseContext()).canAuthenticate()!=BiometricManager.BIOMETRIC_SUCCESS) return false;
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
   }
 
