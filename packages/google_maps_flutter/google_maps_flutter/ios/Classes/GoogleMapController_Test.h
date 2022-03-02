@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Initialize a map controller with a concrete map view.
  *
  * @param mapView A map view that will be displayed by the controller
- * @param viewId A unique identifier for the controller (unused).
+ * @param viewId A unique identifier for the controller.
  * @param args Parameters for initialising the map view.
  * @param registrar The plugin registrar passed from Flutter.
  */
