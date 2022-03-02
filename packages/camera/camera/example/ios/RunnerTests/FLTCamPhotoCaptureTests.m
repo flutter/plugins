@@ -24,7 +24,7 @@
   dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
   dispatch_queue_set_specific(captureSessionQueue, FLTCaptureSessionQueueSpecific,
                               (void *)FLTCaptureSessionQueueSpecific, NULL);
-  FLTCam *cam = [CameraTestUtils createFLTCamWithCaptureSessionQueue:captureSessionQueue];
+  FLTCam *cam = FLTCreateFLTCamWithCaptureSessionQueue(captureSessionQueue);
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   id mockSettings = OCMClassMock([AVCapturePhotoSettings class]);
   OCMStub([mockSettings photoSettings]).andReturn(settings);
@@ -63,7 +63,7 @@
   dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
   dispatch_queue_set_specific(captureSessionQueue, FLTCaptureSessionQueueSpecific,
                               (void *)FLTCaptureSessionQueueSpecific, NULL);
-  FLTCam *cam = [CameraTestUtils createFLTCamWithCaptureSessionQueue:captureSessionQueue];
+  FLTCam *cam = FLTCreateFLTCamWithCaptureSessionQueue(captureSessionQueue);
 
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   id mockSettings = OCMClassMock([AVCapturePhotoSettings class]);

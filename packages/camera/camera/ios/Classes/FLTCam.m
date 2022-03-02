@@ -79,7 +79,7 @@
 /// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
 /// The queue on which `latestPixelBuffer` property is accessed.
-/// To avoid unnecessary contention, we should not reuse the captureSessionQueue. 
+/// To avoid unnecessary contention, do not access `latestPixelBuffer` on the `captureSessionQueue`.
 @property(strong, nonatomic) dispatch_queue_t pixelBufferSynchronizationQueue;
 /// The queue on which captured photos (not videos) are written to disk.
 /// Videos are written to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
@@ -363,16 +363,16 @@ NSString *const errorMethod = @"error";
     CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CFRetain(newBuffer);
 
-    __block CVPixelBufferRef old = nil;
+    __block CVPixelBufferRef previousPixelBuffer = nil;
     // Use `dispatch_sync` to avoid unnecessary context switch under common non-contest scenarios;
     // Under rare contest scenarios, it will not block for too long since the critical section is
     // quite lightweight.
     dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
-      old = self.latestPixelBuffer;
+      previousPixelBuffer = self.latestPixelBuffer;
       self.latestPixelBuffer = newBuffer;
     });
-    if (old != nil) {
-      CFRelease(old);
+    if (previousPixelBuffer) {
+      CFRelease(previousPixelBuffer);
     }
     if (_onFrameAvailable) {
       _onFrameAvailable();
@@ -432,7 +432,7 @@ NSString *const errorMethod = @"error";
 
         [planes addObject:planeBuffer];
       }
-      // Before accessing pixel data, we should lock the base address, and unlock it afterwards.
+      // Lock the base address before accessing pixel data, and unlock it afterwards.
       // Done accessing the `pixelBuffer` at this point.
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -588,7 +588,7 @@ NSString *const errorMethod = @"error";
 
 - (CVPixelBufferRef)copyPixelBuffer {
   __block CVPixelBufferRef pixelBuffer = nil;
-  // `copyPixelBuffer` API requires synchronous return, so we have to use `dispatch_sync`.
+  // Use `dispatch_sync` because `copyPixelBuffer` API requires synchronous return.
   dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
     pixelBuffer = self.latestPixelBuffer;
     self.latestPixelBuffer = nil;
