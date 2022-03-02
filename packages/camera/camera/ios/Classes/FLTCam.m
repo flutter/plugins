@@ -5,7 +5,7 @@
 #import "FLTCam.h"
 #import "FLTCam_Test.h"
 #import "FLTSavePhotoDelegate.h"
-#import "QueueHelper.h"
+#import "QueueUtils.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
