@@ -271,12 +271,12 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
     FingerprintManager fingerprintManager = (FingerprintManager) activity.getSystemService(Context.FINGERPRINT_SERVICE);
     PackageManager packageManager = activity.getPackageManager();
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= 16) {
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)&&fingerprintManager.hasEnrolledFingerprints()) {
         biometrics.add("fingerprint");
       }
     }
-    if (Build.VERSION.SDK_INT >= 29) {
+    if (Build.VERSION.SDK_INT >= 16) {
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
         biometrics.add("face");
       }
