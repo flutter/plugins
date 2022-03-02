@@ -1,3 +1,7 @@
+## 0.8.4+10
+
+* iOS: allows picking images with WebP format.
+
 ## 0.8.4+9
 
 * Internal code cleanup for stricter analysis options.

@@ -1,3 +1,7 @@
+## 2.2.19
+
+* Internal code cleanup for stricter analysis options.
+
 ## 2.2.18
 
 * Moves Android and iOS implementations to federated packages.
