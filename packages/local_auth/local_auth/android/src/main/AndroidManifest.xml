@@ -3,6 +3,6 @@
     <uses-sdk android:targetSdkVersion="16"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
   <application>
-    android:theme="@style/Theme.AppCompat.Light"
+    <activity android:name=".LocalAuthPlugin" android:theme="@style/Theme.AppCompat.Light" />
   </application>
 </manifest>
