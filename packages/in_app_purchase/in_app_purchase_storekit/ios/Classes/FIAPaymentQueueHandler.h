@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+#import "FIATransactionCache.h"
 
 @class SKPaymentTransaction;
 
@@ -28,7 +29,21 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
     restoreCompletedTransactionsFinished:
         (nullable RestoreCompletedTransactionsFinished)restoreCompletedTransactionsFinished
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
-                        updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
+                        updatedDownloads:(nullable UpdatedDownloads)updatedDownloads
+    DEPRECATED_MSG_ATTRIBUTE(
+        "Use the "
+        "'initWithQueue:transactionsUpdated:transactionsRemoved:restoreTransactionsFinished:"
+        "shouldAddStorePayment:updatedDownloads:transactionCache:' message instead.");
+
+- (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
+                     transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
+                      transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
+                restoreTransactionFailed:(nullable RestoreTransactionFailed)restoreTransactionFailed
+    restoreCompletedTransactionsFinished:
+        (nullable RestoreCompletedTransactionsFinished)restoreCompletedTransactionsFinished
+                   shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
+                        updatedDownloads:(nullable UpdatedDownloads)updatedDownloads
+                        transactionCache:(nonnull FIATransactionCache *)transactionCache;
 // Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
 - (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
 - (void)restoreTransactions:(nullable NSString *)applicationName;
