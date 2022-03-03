@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
 /// A [Widget] that displays a [WKWebView].
@@ -159,6 +162,112 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       if (requiresUserAction) WKAudiovisualMediaType.all,
       if (!requiresUserAction) WKAudiovisualMediaType.none,
     };
+  }
+
+  @override
+  Future<void> loadHtmlString(String html, {String? baseUrl}) {
+    return webView.loadHtmlString(html, baseUrl);
+  }
+
+  @override
+  Future<void> loadFile(String absoluteFilePath) async {
+    await webView.loadFileUrl(
+      absoluteFilePath,
+      path.dirname(absoluteFilePath),
+    );
+  }
+
+  @override
+  Future<void> loadFlutterAsset(String key) async {
+    assert(key.isNotEmpty);
+    return webView.loadFlutterAsset(key);
+  }
+
+  @override
+  Future<void> loadUrl(String url, Map<String, String>? headers) async {
+    final NSUrlRequest request = NSUrlRequest(
+      url: url,
+      allHttpHeaderFields: headers ?? <String, String>{},
+    );
+    return webView.loadRequest(request);
+  }
+
+  @override
+  Future<void> loadRequest(WebViewRequest request) async {
+    if (!request.uri.hasScheme) {
+      throw ArgumentError('WebViewRequest#uri is required to have a scheme.');
+    }
+
+    final NSUrlRequest urlRequest = NSUrlRequest(
+      url: request.uri.toString(),
+      allHttpHeaderFields: request.headers,
+      httpMethod: describeEnum(request.method),
+      httpBody: request.body,
+    );
+
+    return webView.loadRequest(urlRequest);
+  }
+
+  @override
+  Future<bool> canGoBack() => webView.canGoBack;
+
+  @override
+  Future<bool> canGoForward() => webView.canGoForward;
+
+  @override
+  Future<void> goBack() => webView.goBack();
+
+  @override
+  Future<void> goForward() => webView.goForward();
+
+  @override
+  Future<void> reload() => webView.reload();
+
+  @override
+  Future<String> evaluateJavascript(String javascript) async {
+    return runJavascriptReturningResult(javascript);
+  }
+
+  @override
+  Future<void> runJavascript(String javascript) async {
+    await webView.evaluateJavaScript(javascript);
+  }
+
+  @override
+  Future<String> runJavascriptReturningResult(String javascript) async {
+    return await webView.evaluateJavaScript(javascript) ?? '';
+  }
+
+  @override
+  Future<String?> getTitle() => webView.title;
+
+  @override
+  Future<void> scrollTo(int x, int y) async {
+    webView.scrollView.contentOffset = Point<double>(
+      x.toDouble(),
+      y.toDouble(),
+    );
+  }
+
+  @override
+  Future<void> scrollBy(int x, int y) async {
+    final Point<double> offset = await webView.scrollView.contentOffset;
+    webView.scrollView.contentOffset = Point<double>(
+      offset.x + x.toDouble(),
+      offset.y + y.toDouble(),
+    );
+  }
+
+  @override
+  Future<int> getScrollX() async {
+    final Point<double> offset = await webView.scrollView.contentOffset;
+    return offset.x.toInt();
+  }
+
+  @override
+  Future<int> getScrollY() async {
+    final Point<double> offset = await webView.scrollView.contentOffset;
+    return offset.y.toInt();
   }
 
   @override

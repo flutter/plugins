@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,12 +12,14 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
+import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
 import 'web_kit_webview_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  UIScrollView,
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
@@ -34,6 +38,7 @@ void main() {
     late MockWKUserContentController mockUserContentController;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
     late MockWKUIDelegate mockUIDelegate;
+    late MockUIScrollView mockScrollView;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
@@ -45,6 +50,7 @@ void main() {
       mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockUserContentController = MockWKUserContentController();
       mockUIDelegate = MockWKUIDelegate();
+      mockScrollView = MockUIScrollView();
       mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
@@ -53,6 +59,7 @@ void main() {
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
       );
+      when(mockWebView.scrollView).thenReturn(mockScrollView);
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
@@ -201,6 +208,253 @@ void main() {
     });
 
     group('$WebKitWebViewPlatformController', () {
+      testWidgets('loadFile', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadFile('/path/to/file.html');
+        verify(mockWebView.loadFileUrl('/path/to/file.html', '/path/to'));
+      });
+
+      testWidgets('loadFlutterAsset', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadFlutterAsset('test_assets/index.html');
+        verify(mockWebView.loadFlutterAsset('test_assets/index.html'));
+      });
+
+      testWidgets('loadHtmlString', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String htmlString = '<html><body>Test data.</body></html>';
+        await testController.loadHtmlString(htmlString, baseUrl: 'baseUrl');
+
+        verify(mockWebView.loadHtmlString(
+          '<html><body>Test data.</body></html>',
+          'baseUrl',
+        ));
+      });
+
+      testWidgets('loadUrl', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadUrl(
+          'https://www.google.com',
+          <String, String>{'a': 'header'},
+        );
+
+        final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
+            .captured
+            .single as NSUrlRequest;
+        expect(request.url, 'https://www.google.com');
+        expect(request.allHttpHeaderFields, <String, String>{'a': 'header'});
+      });
+
+      group('loadRequest', () {
+        testWidgets('Throws ArgumentError for empty scheme',
+            (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          expect(
+              () async => await testController.loadRequest(
+                    WebViewRequest(
+                      uri: Uri.parse('www.google.com'),
+                      method: WebViewRequestMethod.get,
+                    ),
+                  ),
+              throwsA(const TypeMatcher<ArgumentError>()));
+        });
+
+        testWidgets('GET without headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+          ));
+
+          final NSUrlRequest request =
+              verify(mockWebView.loadRequest(captureAny)).captured.single
+                  as NSUrlRequest;
+          expect(request.url, 'https://www.google.com');
+          expect(request.allHttpHeaderFields, <String, String>{});
+          expect(request.httpMethod, 'get');
+        });
+
+        testWidgets('GET with headers', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.get,
+            headers: <String, String>{'a': 'header'},
+          ));
+
+          final NSUrlRequest request =
+              verify(mockWebView.loadRequest(captureAny)).captured.single
+                  as NSUrlRequest;
+          expect(request.url, 'https://www.google.com');
+          expect(request.allHttpHeaderFields, <String, String>{'a': 'header'});
+          expect(request.httpMethod, 'get');
+        });
+
+        testWidgets('POST without body', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+            uri: Uri.parse('https://www.google.com'),
+            method: WebViewRequestMethod.post,
+          ));
+
+          final NSUrlRequest request =
+              verify(mockWebView.loadRequest(captureAny)).captured.single
+                  as NSUrlRequest;
+          expect(request.url, 'https://www.google.com');
+          expect(request.httpMethod, 'post');
+        });
+
+        testWidgets('POST with body', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await testController.loadRequest(WebViewRequest(
+              uri: Uri.parse('https://www.google.com'),
+              method: WebViewRequestMethod.post,
+              body: Uint8List.fromList('Test Body'.codeUnits)));
+
+          final NSUrlRequest request =
+              verify(mockWebView.loadRequest(captureAny)).captured.single
+                  as NSUrlRequest;
+          expect(request.url, 'https://www.google.com');
+          expect(request.httpMethod, 'post');
+          expect(
+            request.httpBody,
+            Uint8List.fromList('Test Body'.codeUnits),
+          );
+        });
+      });
+
+      testWidgets('canGoBack', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.canGoBack).thenAnswer(
+          (_) => Future<bool>.value(false),
+        );
+        expect(testController.canGoBack(), completion(false));
+      });
+
+      testWidgets('canGoForward', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.canGoForward).thenAnswer(
+          (_) => Future<bool>.value(true),
+        );
+        expect(testController.canGoForward(), completion(true));
+      });
+
+      testWidgets('goBack', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.goBack();
+        verify(mockWebView.goBack());
+      });
+
+      testWidgets('goForward', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.goForward();
+        verify(mockWebView.goForward());
+      });
+
+      testWidgets('reload', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.reload();
+        verify(mockWebView.reload());
+      });
+
+      testWidgets('evaluateJavascript', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<String>.value('returnString'),
+        );
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('returnString'),
+        );
+      });
+
+      testWidgets('runJavascriptReturningResult', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<String>.value('returnString'),
+        );
+        expect(
+          testController.runJavascriptReturningResult('runJavaScript'),
+          completion('returnString'),
+        );
+      });
+
+      testWidgets('runJavascript', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<String>.value('returnString'),
+        );
+        expect(
+          testController.runJavascript('runJavaScript'),
+          completes,
+        );
+      });
+
+      testWidgets('getTitle', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.title)
+            .thenAnswer((_) => Future<String>.value('Web Title'));
+        expect(testController.getTitle(), completion('Web Title'));
+      });
+
+      testWidgets('scrollTo', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.scrollTo(2, 4);
+        await untilCalled<dynamic>(mockScrollView.noSuchMethod(
+          Invocation.setter(#contentOffset, const Point<double>(2.0, 4.0)),
+          returnValueForMissingStub: null,
+        ));
+      });
+
+      testWidgets('scrollBy', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockScrollView.contentOffset).thenAnswer(
+            (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
+        await testController.scrollBy(2, 4);
+        await untilCalled<dynamic>(mockScrollView.noSuchMethod(
+          Invocation.setter(#contentOffset, const Point<double>(10.0, 20.0)),
+          returnValueForMissingStub: null,
+        ));
+      });
+
+      testWidgets('getScrollX', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockScrollView.contentOffset).thenAnswer(
+            (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
+        expect(testController.getScrollX(), completion(8.0));
+      });
+
+      testWidgets('getScrollY', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await buildWidget(tester);
+
+        when(mockScrollView.contentOffset).thenAnswer(
+            (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
+        expect(testController.getScrollY(), completion(16.0));
+      });
+
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
         when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
