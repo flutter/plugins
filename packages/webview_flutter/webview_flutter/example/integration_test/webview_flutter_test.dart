@@ -1057,7 +1057,7 @@ Future<void> main() async {
           textDirection: TextDirection.ltr,
           child: WebView(
             key: GlobalKey(),
-            initialUrl: blankPageEncoded,
+            initialUrl: primaryUrl,
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
