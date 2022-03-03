@@ -297,8 +297,11 @@
   ]
                     timeout:5];
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(times(1), [mockCache removeObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(times(1), [mockCache removeObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+  OCMVerify(times(1), [mockCache removeObjectsForKey:TransactionCacheKeyRemovedTransactions]);
 }
 
 - (void)testTransactionsShouldBeCachedWhenNotObserving {
@@ -333,7 +336,7 @@
                                     forKey:TransactionCacheKeyRemovedTransactions]);
 }
 
-- (void)testTransactionsShouldNotBeCachedWhenNotObserving {
+- (void)testTransactionsShouldNotBeCachedWhenObserving {
   XCTestExpectation *updateTransactionsExpectation =
       [self expectationWithDescription:
                 @"transactionsUpdated callback should be called with one transaction."];

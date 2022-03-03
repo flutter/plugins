@@ -112,16 +112,19 @@
       [self.transactionCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions];
   if (cachedObjects) {
     self.transactionsUpdated(cachedObjects);
+    [self.transactionCache removeObjectsForKey:TransactionCacheKeyUpdatedTransactions];
   }
 
   cachedObjects = [self.transactionCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads];
   if (cachedObjects) {
     self.updatedDownloads(cachedObjects);
+    [self.transactionCache removeObjectsForKey:TransactionCacheKeyUpdatedDownloads];
   }
 
   cachedObjects = [self.transactionCache getObjectsForKey:TransactionCacheKeyRemovedTransactions];
   if (cachedObjects) {
     self.transactionsRemoved(cachedObjects);
+    [self.transactionCache removeObjectsForKey:TransactionCacheKeyRemovedTransactions];
   }
 }
 

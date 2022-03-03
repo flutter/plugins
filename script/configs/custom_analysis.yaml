@@ -11,7 +11,5 @@
 
 # TODO(ecosystem): Remove everything from this list. See:
 # https://github.com/flutter/flutter/issues/76229
-- google_maps_flutter/google_maps_flutter
 - google_maps_flutter/google_maps_flutter_platform_interface
 - google_maps_flutter/google_maps_flutter_web
-- in_app_purchase/in_app_purchase
