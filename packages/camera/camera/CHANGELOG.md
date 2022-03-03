@@ -1,3 +1,7 @@
+## 0.9.4+15
+
+* Removes obsolete information from README, and adds OS support table.
+
 ## 0.9.4+14
 
 * Restores compatibility with Flutter 2.5 and 2.8.
