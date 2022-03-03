@@ -46,6 +46,51 @@ enum WKAudiovisualMediaType {
   all,
 }
 
+/// Types of data that websites store.
+///
+/// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
+enum WKWebsiteDataTypes {
+  /// Cookies.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypecookies?language=objc.
+  cookies,
+
+  /// In-memory caches.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypememorycache?language=objc.
+  memoryCache,
+
+  /// On-disk caches.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypediskcache?language=objc.
+  diskCache,
+
+  /// HTML offline web app caches.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypeofflinewebapplicationcache?language=objc.
+  offlineWebApplicationCache,
+
+  /// HTML local storage.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypelocalstorage?language=objc.
+  localStroage,
+
+  /// HTML session storage.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypesessionstorage?language=objc.
+  sessionStorage,
+
+  /// WebSQL databases.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypewebsqldatabases?language=objc.
+  sqlDatabases,
+
+  /// IndexedDB databases.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypeindexeddbdatabases?language=objc.
+  indexedDBDatabases,
+}
+
 /// An object that contains information about an action that causes navigation to occur.
 ///
 /// Wraps [WKNavigationAction](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
@@ -113,6 +158,25 @@ class WKScriptMessage {
   ///
   /// Allowed types are [num], [String], [List], [Map], and `null`.
   final Object? body;
+}
+
+/// Manages cookies, disk and memory caches, and other types of data for a web view.
+///
+/// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
+class WKWebsiteDataStore {
+  WKWebsiteDataStore._fromWebViewConfiguration(
+    // TODO(bparrishMines): Remove ignore once constructor is implemented.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebViewConfiguration configuration,
+  );
+
+  /// Removes website data that changed after the specified date.
+  Future<void> removeDataOfTypes(
+    Set<WKWebsiteDataTypes> dataTypes,
+    DateTime since,
+  ) {
+    throw UnimplementedError();
+  }
 }
 
 /// An interface for receiving messages from JavaScript code running in a webpage.
@@ -220,6 +284,18 @@ class WKWebViewConfiguration {
 
   /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
   late final WKUserContentController userContentController;
+
+  late WKWebsiteDataStore _websiteDataStore =
+      WKWebsiteDataStore._fromWebViewConfiguration(this);
+
+  /// Used to get and set the site’s cookies and to track the cached data objects.
+  WKWebsiteDataStore get webSiteDataStore => _websiteDataStore;
+
+  /// Used to get and set the site’s cookies and to track the cached data objects.
+  set webSiteDataStore(WKWebsiteDataStore websiteDataStore) {
+    _websiteDataStore = websiteDataStore;
+    throw UnimplementedError();
+  }
 
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   set allowsInlineMediaPlayback(bool allow) {

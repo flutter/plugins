@@ -162,6 +162,18 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
+  Future<void> clearCache() {
+    return webView.configuration.webSiteDataStore.removeDataOfTypes(
+      <WKWebsiteDataTypes>{
+        WKWebsiteDataTypes.memoryCache,
+        WKWebsiteDataTypes.diskCache,
+        WKWebsiteDataTypes.offlineWebApplicationCache,
+      },
+      DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) async {
     await Future.wait<void>(
       javascriptChannelNames.where(
