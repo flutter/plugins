@@ -25,21 +25,25 @@ class VersionInfoQuerier {
     if (versionInfo == null) {
       return null;
     }
-    const String kEnUsLanguageCode = '040904e4';
-    final Pointer<Utf16> keyPath =
-        TEXT('\\StringFileInfo\\$kEnUsLanguageCode\\$key');
-    final Pointer<Uint32> length = calloc<Uint32>();
-    final Pointer<Pointer<Utf16>> valueAddress = calloc<Pointer<Utf16>>();
-    try {
-      if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
-        return null;
+    const List<String> languageCodes = <String>[
+      '040904e4', // en-US, CP1252
+      '040904b0', // en-US, Unicode
+    ];
+    for (final String code in languageCodes) {
+      final Pointer<Utf16> keyPath = TEXT('\\StringFileInfo\\$code\\$key');
+      final Pointer<Uint32> length = calloc<Uint32>();
+      final Pointer<Pointer<Utf16>> valueAddress = calloc<Pointer<Utf16>>();
+      try {
+        if (VerQueryValue(versionInfo, keyPath, valueAddress, length) != 0) {
+          return valueAddress.value.toDartString();
+        }
+      } finally {
+        calloc.free(keyPath);
+        calloc.free(length);
+        calloc.free(valueAddress);
       }
-      return valueAddress.value.toDartString();
-    } finally {
-      calloc.free(keyPath);
-      calloc.free(length);
-      calloc.free(valueAddress);
     }
+    return null;
   }
 }
 
