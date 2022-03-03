@@ -1154,6 +1154,7 @@ Future<void> main() async {
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
+              print('### GOT NAVIGATION REQUEST ### ${request.url}');
               return (request.url.contains('secondary.txt'))
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
