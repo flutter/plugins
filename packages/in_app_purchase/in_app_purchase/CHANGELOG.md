@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Updated `in_app_purchase_platform_interface` dependency from `^1.0.0` to `^1.3.0`. This is when `PurchaseStatus.canceled` was introduced.
+
 ## 3.0.1
 
 * Internal code cleanup for stricter analysis options.
