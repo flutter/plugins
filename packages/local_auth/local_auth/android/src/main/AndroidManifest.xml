@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:theme="@style/Theme.AppCompat.Light"
   package="io.flutter.plugins.localauth">
     <uses-sdk android:targetSdkVersion="16"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
