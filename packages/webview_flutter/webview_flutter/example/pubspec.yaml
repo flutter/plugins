@@ -18,6 +18,14 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
+dependency_overrides:
+  webview_flutter_android:
+    path: ../../webview_flutter_android
+  webview_flutter_platform_interface:
+    path: ../../webview_flutter_platform_interface
+  webview_flutter_wkwebview:
+    path: ../../webview_flutter_wkwebview
+
 dev_dependencies:
   espresso: ^0.1.0+2
   flutter_driver:

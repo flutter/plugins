@@ -523,58 +523,6 @@ Future<void> main() async {
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
-
-    // allowsInlineMediaPlayback is a noop on Android, so it is skipped.
-    testWidgets(
-        'Video plays full screen when allowsInlineMediaPlayback is false',
-        (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      final Completer<void> pageLoaded = Completer<void>();
-      final Completer<void> videoPlaying = Completer<void>();
-
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            javascriptChannels: <JavascriptChannel>{
-              JavascriptChannel(
-                name: 'VideoTestTime',
-                onMessageReceived: (JavascriptMessage message) {
-                  final double currentTime = double.parse(message.message);
-                  // Let it play for at least 1 second to make sure the related video's properties are set.
-                  if (currentTime > 1 && !videoPlaying.isCompleted) {
-                    videoPlaying.complete(null);
-                  }
-                },
-              ),
-            },
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-            allowsInlineMediaPlayback: false,
-          ),
-        ),
-      );
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-
-      // Pump once to trigger the video play.
-      await tester.pump();
-
-      // Makes sure we get the correct event that indicates the video is actually playing.
-      await videoPlaying.future;
-
-      final String fullScreen =
-          await controller.runJavascriptReturningResult('isFullScreen();');
-      expect(fullScreen, _webviewBool(true));
-    }, skip: Platform.isAndroid);
   });
 
   group('Audio playback policy', () {
@@ -876,42 +824,6 @@ Future<void> main() async {
     }, skip: Platform.isAndroid && _skipDueToIssue86757);
   });
 
-  // Minimial end-to-end testing of the legacy Android implementation.
-  group('AndroidWebView (virtual display)', () {
-    setUpAll(() {
-      WebView.platform = AndroidWebView();
-    });
-
-    tearDownAll(() {
-      WebView.platform = null;
-    });
-
-    testWidgets('initialUrl', (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      final Completer<void> loadCompleter = Completer<void>();
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: primaryUrl,
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            onPageFinished: (String url) {
-              loadCompleter.complete();
-            },
-          ),
-        ),
-      );
-      final WebViewController controller = await controllerCompleter.future;
-      await loadCompleter.future;
-      final String? currentUrl = await controller.currentUrl();
-      expect(currentUrl, primaryUrl);
-    });
-  }, skip: !Platform.isAndroid || _skipDueToIssue86757);
-
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
@@ -1121,32 +1033,6 @@ Future<void> main() async {
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     });
-  });
-
-  testWidgets('launches with gestureNavigationEnabled on iOS',
-      (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: SizedBox(
-          width: 400,
-          height: 300,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: primaryUrl,
-            gestureNavigationEnabled: true,
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-          ),
-        ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, primaryUrl);
   });
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757

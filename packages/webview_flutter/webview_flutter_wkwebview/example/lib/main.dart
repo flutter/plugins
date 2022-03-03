@@ -12,11 +12,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-
-import 'navigation_decision.dart';
-import 'navigation_request.dart';
-import 'web_view.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
   runApp(const MaterialApp(home: _WebViewExample()));
@@ -180,9 +176,10 @@ enum _MenuOptions {
 }
 
 class _SampleMenu extends StatelessWidget {
-  const _SampleMenu(this.controller);
+  _SampleMenu(this.controller);
 
   final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
@@ -393,7 +390,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onSetCookie(
       WebViewController controller, BuildContext context) async {
-    await WebViewCookieManager.instance.setCookie(
+    await cookieManager.setCookie(
       const WebViewCookie(
           name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
     );

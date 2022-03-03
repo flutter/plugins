@@ -12,12 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:webview_flutter_android/webview_surface_android.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-
-import 'navigation_decision.dart';
-import 'navigation_request.dart';
-import 'web_view.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 void appMain() {
   enableFlutterDriverExtension();
@@ -195,9 +190,10 @@ enum _MenuOptions {
 }
 
 class _SampleMenu extends StatelessWidget {
-  const _SampleMenu(this.controller);
+  _SampleMenu(this.controller);
 
   final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
@@ -364,7 +360,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onClearCookies(
       WebViewController controller, BuildContext context) async {
-    final bool hadCookies = await WebViewCookieManager.instance.clearCookies();
+    final bool hadCookies = await cookieManager.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
       message = 'There are no cookies.';
@@ -377,7 +373,7 @@ class _SampleMenu extends StatelessWidget {
 
   Future<void> _onSetCookie(
       WebViewController controller, BuildContext context) async {
-    await WebViewCookieManager.instance.setCookie(
+    await cookieManager.setCookie(
       const WebViewCookie(
           name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
     );
