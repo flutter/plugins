@@ -6,7 +6,7 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 import 'package:flutter/material.dart';
 
 /// Screen that allows the user to select a directory using `getDirectoryPath`,
-///  then displays the selected directory in a dialog.
+/// then displays the selected directory in a dialog.
 class GetDirectoryPage extends StatelessWidget {
   Future<void> _getDirectoryPath(BuildContext context) async {
     const String confirmButtonText = 'Choose';

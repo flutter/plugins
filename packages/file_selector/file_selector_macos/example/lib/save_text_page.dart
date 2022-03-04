@@ -15,10 +15,10 @@ class SaveTextPage extends StatelessWidget {
   Future<void> _saveFile() async {
     final String fileName = _nameController.text;
     final String? path = await FileSelectorPlatform.instance.getSavePath(
-      // Operation was canceled by the user.
       suggestedName: fileName,
     );
     if (path == null) {
+      // Operation was canceled by the user.
       return;
     }
     final String text = _contentController.text;
