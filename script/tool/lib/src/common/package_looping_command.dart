@@ -11,7 +11,6 @@ import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:quiver/iterables.dart';
 
 import 'core.dart';
 import 'plugin_command.dart';
@@ -232,7 +231,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
     _currentPackageEntry = null;
 
     final String minFlutterVersionArg = getStringArg(_skipByFlutterVersionArg);
-    Version? minFlutterVersion = minFlutterVersionArg.isEmpty
+    final Version? minFlutterVersion = minFlutterVersionArg.isEmpty
         ? null
         : Version.parse(minFlutterVersionArg);
 
