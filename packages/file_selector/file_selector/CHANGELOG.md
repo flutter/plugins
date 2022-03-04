@@ -1,3 +1,7 @@
+## 0.8.4
+
+* Adds an endorsed macOS implementation.
+
 ## 0.8.3
 
 * Adds an endorsed Windows implementation.
