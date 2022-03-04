@@ -338,4 +338,4 @@ task:
       native_test_script:
         - ./script/tool_runner.sh native-test --macos
       drive_script:
-        - ./script/tool_runner.sh drive-examples --macos
+        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml
