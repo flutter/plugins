@@ -1,3 +1,7 @@
+## 2.1.6
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+
 ## 2.1.5
 
 Removes dependency on `meta`.

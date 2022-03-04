@@ -1,3 +1,7 @@
+## 0.2.2+3
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+
 ## 0.2.2+2
 
 * Internal code cleanup for stricter analysis options.
