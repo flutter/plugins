@@ -20,8 +20,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  quick_actions_android: 0.6.0+9
-  quick_actions_ios: 0.6.0+9
+  quick_actions_android: ^0.6.0+9
+  quick_actions_ios: ^0.6.0+9
   quick_actions_platform_interface: ^1.0.0
 
 dev_dependencies:
