@@ -13,6 +13,7 @@ import android.view.Surface;
 import androidx.annotation.NonNull;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -206,21 +207,15 @@ final class VideoPlayer {
             }
           }
 
-          //error: method does not override or implement a method from a supertype @Override
 
-          //Based on the release notes of version 2.15.0
-          //Make Player depend on the new PlaybackException class instead of ExoPlaybackException:
-          //Player.getPlayerError now returns a PlaybackException.
-          //Player.Listener.onPlayerError now receives a PlaybackException.
-          //Add a new listener method Player.Listener.onPlayerErrorChanged, which is equivalent to onPlayerError except that it is also called when the player error becomes null.
-
-          //@Override
-          public void onPlayerError(final ExoPlaybackException error) {
+          @Override
+          public void onPlayerError(final PlaybackException error) {
             setBuffering(false);
             if (eventSink != null) {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
+
 
         });
 
@@ -234,7 +229,7 @@ final class VideoPlayer {
     event.put("values", Collections.singletonList(range));
     eventSink.success(event);
   }
-  @SuppressWarnings("deprecation")
+
   private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
     exoPlayer.setAudioAttributes(
         new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
