@@ -102,12 +102,12 @@ void main() {
     VideoPlayerController controller, {
     required bool isObserving,
   }) {
-    final wasPlayingBeforePause = controller.value.isPlaying;
+    final bool wasPlayingBeforePause = controller.value.isPlaying;
     _ambiguate(WidgetsBinding.instance)!
         .handleAppLifecycleStateChanged(AppLifecycleState.paused);
     expect(
       controller.value.isPlaying,
-      isObserving ? false : wasPlayingBeforePause,
+      !isObserving && wasPlayingBeforePause,
     );
     _ambiguate(WidgetsBinding.instance)!
         .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
@@ -934,7 +934,7 @@ void main() {
       expect(controller.videoPlayerOptions!.mixWithOthers, true);
     });
 
-    [true, false].forEach((allowBackgroundPlayback) {
+    for (bool allowBackgroundPlayback in [true, false]) {
       test('allowBackgroundPlayback is $allowBackgroundPlayback', () async {
         final VideoPlayerController controller = VideoPlayerController.file(
           File(''),
