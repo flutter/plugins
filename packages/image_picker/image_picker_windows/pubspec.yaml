@@ -23,5 +23,7 @@ dependencies:
   image_picker_platform_interface: ^2.4.3
 
 dev_dependencies:
+  build_runner: ^2.1.5
   flutter_test:
     sdk: flutter
+  mockito: ^5.0.16

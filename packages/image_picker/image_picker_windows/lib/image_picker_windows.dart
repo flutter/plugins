@@ -6,29 +6,8 @@ import 'dart:async';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_windows/file_selector_windows.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-
-const List<String> _imageFormats = <String>[
-  'jpg',
-  'jpeg',
-  'png',
-  'bmp',
-  'webp',
-  'gif',
-  'tif',
-  'tiff',
-  'apng'
-];
-const List<String> _videoFormats = <String>[
-  'mov',
-  'wmv',
-  'mkv',
-  'mp4',
-  'webm',
-  'avi',
-  'mpeg',
-  'mpg'
-];
 
 /// The Windows implementation of [ImagePickerPlatform].
 ///
@@ -38,8 +17,36 @@ class ImagePickerWindows extends ImagePickerPlatform {
   /// Constructs a ImagePickerWindows.
   ImagePickerWindows();
 
-  static final FileSelectorWindows _fileSelectorInstance =
-      FileSelectorWindows();
+  /// List of image extensions used when picking images
+  @visibleForTesting
+  static const List<String> imageFormats = <String>[
+    'jpg',
+    'jpeg',
+    'png',
+    'bmp',
+    'webp',
+    'gif',
+    'tif',
+    'tiff',
+    'apng'
+  ];
+
+  /// List of video extensions used when picking videos
+  @visibleForTesting
+  static const List<String> videoFormats = <String>[
+    'mov',
+    'wmv',
+    'mkv',
+    'mp4',
+    'webm',
+    'avi',
+    'mpeg',
+    'mpg'
+  ];
+
+  /// The FileSelectorPlatform used by the ImagePickerWindows.
+  @visibleForTesting
+  static late FileSelectorPlatform fileSelectorInstance = FileSelectorWindows();
 
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith() {
@@ -110,8 +117,8 @@ class ImagePickerWindows extends ImagePickerPlatform {
           'ImageSource.gallery is currently the only supported source on Windows');
     }
     final XTypeGroup typeGroup =
-        XTypeGroup(label: 'images', extensions: _imageFormats);
-    final XFile? file = await _fileSelectorInstance
+        XTypeGroup(label: 'images', extensions: imageFormats);
+    final XFile? file = await fileSelectorInstance
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return file;
   }
@@ -132,8 +139,8 @@ class ImagePickerWindows extends ImagePickerPlatform {
           'ImageSource.gallery is currently the only supported source on Windows');
     }
     final XTypeGroup typeGroup =
-        XTypeGroup(label: 'videos', extensions: _videoFormats);
-    final XFile? file = await _fileSelectorInstance
+        XTypeGroup(label: 'videos', extensions: videoFormats);
+    final XFile? file = await fileSelectorInstance
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return file;
   }
@@ -148,8 +155,8 @@ class ImagePickerWindows extends ImagePickerPlatform {
     int? imageQuality,
   }) async {
     final XTypeGroup typeGroup =
-        XTypeGroup(label: 'images', extensions: _imageFormats);
-    final List<XFile> files = await _fileSelectorInstance
+        XTypeGroup(label: 'images', extensions: imageFormats);
+    final List<XFile> files = await fileSelectorInstance
         .openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return files;
   }
