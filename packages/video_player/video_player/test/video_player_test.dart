@@ -949,7 +949,7 @@ void main() {
           isObserving: !allowBackgroundPlayback,
         );
       });
-    });
+    }
   });
 
   test('VideoProgressColors', () {
