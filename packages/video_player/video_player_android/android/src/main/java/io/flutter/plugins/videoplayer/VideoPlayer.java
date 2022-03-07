@@ -22,6 +22,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -209,7 +210,13 @@ final class VideoPlayer {
           @Override
           public void onPlayerError(final ExoPlaybackException error) {
             setBuffering(false);
-            if (eventSink != null) {
+            if (isBehindLiveWindow(error) && exoPlayer != null) {
+              try {
+                exoPlayer.prepare();
+              } catch (Exception e) {
+                eventSink.error("VideoError", "Video player had error " + error, null);
+              }
+            } else if (eventSink != null) {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
@@ -287,6 +294,23 @@ final class VideoPlayer {
       eventSink.success(event);
     }
   }
+
+  static boolean isBehindLiveWindow(ExoPlaybackException e) {
+    if (e.type != ExoPlaybackException.TYPE_SOURCE) {
+      return false;
+    }
+
+    Throwable cause = e.getSourceException();
+    while (cause != null) {
+      if (cause instanceof BehindLiveWindowException) {
+        return true;
+      }
+      cause = cause.getCause();
+    }
+    return false;
+  }
+  
+
 
   void dispose() {
     if (isInitialized) {
