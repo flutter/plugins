@@ -103,13 +103,13 @@ void main() {
     required bool isObserving,
   }) {
     final wasPlayingBeforePause = controller.value.isPlaying;
-    WidgetsBinding.instance!
+    _ambiguate(WidgetsBinding.instance)!
         .handleAppLifecycleStateChanged(AppLifecycleState.paused);
     expect(
       controller.value.isPlaying,
       isObserving ? false : wasPlayingBeforePause,
     );
-    WidgetsBinding.instance!
+    _ambiguate(WidgetsBinding.instance)!
         .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     expect(controller.value.isPlaying, wasPlayingBeforePause);
   }
@@ -1054,3 +1054,9 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
     calls.add('setMixWithOthers');
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;
