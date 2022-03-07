@@ -934,7 +934,7 @@ void main() {
       expect(controller.videoPlayerOptions!.mixWithOthers, true);
     });
 
-    for (bool allowBackgroundPlayback in [true, false]) {
+    for (final bool allowBackgroundPlayback in <bool>[true, false]) {
       test('allowBackgroundPlayback is $allowBackgroundPlayback', () async {
         final VideoPlayerController controller = VideoPlayerController.file(
           File(''),
