@@ -107,7 +107,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
   }) async {
     if (source != ImageSource.gallery) {
       throw UnimplementedError(
-          'source is only implemented for `ImageSource.gallery` on Windows');
+          'ImageSource.gallery is currently the only supported source on Windows');
     }
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: _imageFormats);
@@ -129,7 +129,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
   }) async {
     if (source != ImageSource.gallery) {
       throw UnimplementedError(
-          'source is only implemented for `ImageSource.gallery` on Windows');
+          'ImageSource.gallery is currently the only supported source on Windows');
     }
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'videos', extensions: _videoFormats);
