@@ -12,14 +12,13 @@ import android.net.Uri;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.Listener;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -75,7 +74,6 @@ final class VideoPlayer {
     exoPlayer = new ExoPlayer.Builder(context).build();
 
     Uri uri = Uri.parse(dataSource);
-
     DataSource.Factory dataSourceFactory;
     if (isHTTP(uri)) {
       DefaultHttpDataSource.Factory httpDataSourceFactory =
@@ -108,6 +106,7 @@ final class VideoPlayer {
 
   private MediaSource buildMediaSource(
       Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
+
     int type;
     if (formatHint == null) {
       type = Util.inferContentType(uri.getLastPathSegment());
@@ -207,7 +206,6 @@ final class VideoPlayer {
             }
           }
 
-
           @Override
           public void onPlayerError(final PlaybackException error) {
             setBuffering(false);
@@ -215,10 +213,7 @@ final class VideoPlayer {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
-
-
         });
-
   }
 
   void sendBufferingUpdate() {
