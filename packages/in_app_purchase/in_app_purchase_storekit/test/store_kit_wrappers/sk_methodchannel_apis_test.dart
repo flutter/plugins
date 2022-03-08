@@ -28,15 +28,15 @@ void main() {
 
   group('sk_request_maker', () {
     test('get products method channel', () async {
-      SkProductResponseWrapper productResponseWrapper =
-          await SKRequestMaker().startProductRequest(['xxx']);
+      final SkProductResponseWrapper productResponseWrapper =
+          await SKRequestMaker().startProductRequest(<String>['xxx']);
       expect(
         productResponseWrapper.products,
         isNotEmpty,
       );
       expect(
         productResponseWrapper.products.first.priceLocale.currencySymbol,
-        '\$',
+        r'$',
       );
 
       expect(
@@ -58,7 +58,7 @@ void main() {
 
       expect(
         fakeStoreKitPlatform.startProductRequestParam,
-        ['xxx'],
+        <String>['xxx'],
       );
     });
 
@@ -72,25 +72,25 @@ void main() {
     });
 
     test('refreshed receipt', () async {
-      int receiptCountBefore = fakeStoreKitPlatform.refreshReceipt;
+      final int receiptCountBefore = fakeStoreKitPlatform.refreshReceipt;
       await SKRequestMaker().startRefreshReceiptRequest(
-          receiptProperties: <String, dynamic>{"isExpired": true});
+          receiptProperties: <String, dynamic>{'isExpired': true});
       expect(fakeStoreKitPlatform.refreshReceipt, receiptCountBefore + 1);
       expect(fakeStoreKitPlatform.refreshReceiptParam,
-          <String, dynamic>{"isExpired": true});
+          <String, dynamic>{'isExpired': true});
     });
 
     test('should get null receipt if any exceptions are raised', () async {
       fakeStoreKitPlatform.getReceiptFailTest = true;
       expect(() async => SKReceiptManager.retrieveReceiptData(),
-          throwsA(TypeMatcher<PlatformException>()));
+          throwsA(const TypeMatcher<PlatformException>()));
     });
   });
 
   group('sk_receipt_manager', () {
     test('should get receipt (faking it by returning a `receipt data` string)',
         () async {
-      String receiptData = await SKReceiptManager.retrieveReceiptData();
+      final String receiptData = await SKReceiptManager.retrieveReceiptData();
       expect(receiptData, 'receipt data');
     });
   });
@@ -118,8 +118,8 @@ void main() {
     });
 
     test('should add payment to the payment queue', () async {
-      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer =
+      final SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      final TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.addPayment(dummyPayment);
@@ -127,8 +127,8 @@ void main() {
     });
 
     test('should finish transaction', () async {
-      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer =
+      final SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      final TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.finishTransaction(dummyTransaction);
@@ -137,8 +137,8 @@ void main() {
     });
 
     test('should restore transaction', () async {
-      SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
-      TestPaymentTransactionObserver observer =
+      final SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+      final TestPaymentTransactionObserver observer =
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.restoreTransactions(applicationUserName: 'aUserID');
@@ -188,7 +188,7 @@ class FakeStoreKitPlatform {
     channel.setMockMethodCallHandler(onMethodCall);
   }
   // get product request
-  List<dynamic> startProductRequestParam = [];
+  List<dynamic> startProductRequestParam = <dynamic>[];
   bool getProductRequestFailTest = false;
   bool testReturnNull = false;
 
@@ -200,8 +200,8 @@ class FakeStoreKitPlatform {
   late Map<String, dynamic> refreshReceiptParam;
 
   // payment queue
-  List<SKPaymentWrapper> payments = [];
-  List<Map<String, String>> transactionsFinished = [];
+  List<SKPaymentWrapper> payments = <SKPaymentWrapper>[];
+  List<Map<String, String>> transactionsFinished = <Map<String, String>>[];
   String applicationNameHasTransactionRestored = '';
 
   // present Code Redemption
@@ -220,7 +220,7 @@ class FakeStoreKitPlatform {
     switch (call.method) {
       // request makers
       case '-[InAppPurchasePlugin startProductRequest:result:]':
-        startProductRequestParam = call.arguments;
+        startProductRequestParam = call.arguments as List<dynamic>;
         if (getProductRequestFailTest) {
           return Future<dynamic>.value(null);
         }
@@ -228,13 +228,13 @@ class FakeStoreKitPlatform {
             buildProductResponseMap(dummyProductResponseWrapper));
       case '-[InAppPurchasePlugin refreshReceipt:result:]':
         refreshReceipt++;
-        refreshReceiptParam =
-            Map.castFrom<dynamic, dynamic, String, dynamic>(call.arguments);
+        refreshReceiptParam = Map.castFrom<dynamic, dynamic, String, dynamic>(
+            call.arguments as Map<dynamic, dynamic>);
         return Future<void>.sync(() {});
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
         if (getReceiptFailTest) {
-          throw ("some arbitrary error");
+          throw 'some arbitrary error';
         }
         return Future<String>.value('receipt data');
       // payment queue
@@ -245,16 +245,17 @@ class FakeStoreKitPlatform {
         return Future<bool>.value(true);
       case '-[SKPaymentQueue transactions]':
         return Future<List<dynamic>>.value(
-            [buildTransactionMap(dummyTransaction)]);
+            <dynamic>[buildTransactionMap(dummyTransaction)]);
       case '-[InAppPurchasePlugin addPayment:result:]':
-        payments.add(SKPaymentWrapper.fromJson(
-            Map<String, dynamic>.from(call.arguments)));
+        payments.add(SKPaymentWrapper.fromJson(Map<String, dynamic>.from(
+            call.arguments as Map<dynamic, dynamic>)));
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin finishTransaction:result:]':
-        transactionsFinished.add(Map<String, String>.from(call.arguments));
+        transactionsFinished.add(
+            Map<String, String>.from(call.arguments as Map<dynamic, dynamic>));
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
-        applicationNameHasTransactionRestored = call.arguments;
+        applicationNameHasTransactionRestored = call.arguments as String;
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]':
         presentCodeRedemption = true;
@@ -275,23 +276,28 @@ class FakeStoreKitPlatform {
         showPriceConsentIfNeeded = true;
         return Future<void>.sync(() {});
     }
-    return Future.error('method not mocked');
+    return Future<dynamic>.error('method not mocked');
   }
 }
 
 class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {}
 
 class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
+  @override
   void updatedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) {}
 
+  @override
   void removedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) {}
 
+  @override
   void restoreCompletedTransactionsFailed({required SKError error}) {}
 
+  @override
   void paymentQueueRestoreCompletedTransactionsFinished() {}
 
+  @override
   bool shouldAddStorePayment(
       {required SKPaymentWrapper payment, required SKProductWrapper product}) {
     return true;

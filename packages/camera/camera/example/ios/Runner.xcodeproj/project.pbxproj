@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,7 +20,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		E01EE4A82799F3A5008C1950 /* QueueHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E01EE4A72799F3A5008C1950 /* QueueHelperTests.m */; };
+		E01EE4A82799F3A5008C1950 /* QueueUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E01EE4A72799F3A5008C1950 /* QueueUtilsTests.m */; };
 		E032F250279F5E94009E9028 /* CameraCaptureSessionQueueRaceConditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E032F24F279F5E94009E9028 /* CameraCaptureSessionQueueRaceConditionTests.m */; };
 		E04F108627A87CA600573D0C /* FLTSavePhotoDelegateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E04F108527A87CA600573D0C /* FLTSavePhotoDelegateTests.m */; };
 		E071CF7227B3061B006EF3BA /* FLTCamPhotoCaptureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E071CF7127B3061B006EF3BA /* FLTCamPhotoCaptureTests.m */; };
@@ -83,7 +83,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C5CC6CAD53AD388B2694F3A /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A24F9E418BA48BCC7409B117 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
-		E01EE4A72799F3A5008C1950 /* QueueHelperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QueueHelperTests.m; sourceTree = "<group>"; };
+		E01EE4A72799F3A5008C1950 /* QueueUtilsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QueueUtilsTests.m; sourceTree = "<group>"; };
 		E032F24F279F5E94009E9028 /* CameraCaptureSessionQueueRaceConditionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraCaptureSessionQueueRaceConditionTests.m; sourceTree = "<group>"; };
 		E04F108527A87CA600573D0C /* FLTSavePhotoDelegateTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLTSavePhotoDelegateTests.m; sourceTree = "<group>"; };
 		E071CF7127B3061B006EF3BA /* FLTCamPhotoCaptureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLTCamPhotoCaptureTests.m; sourceTree = "<group>"; };
@@ -131,7 +131,7 @@
 				E04F108527A87CA600573D0C /* FLTSavePhotoDelegateTests.m */,
 				E071CF7127B3061B006EF3BA /* FLTCamPhotoCaptureTests.m */,
 				E071CF7327B31DE4006EF3BA /* FLTCamSampleBufferTests.m */,
-				E01EE4A72799F3A5008C1950 /* QueueHelperTests.m */,
+				E01EE4A72799F3A5008C1950 /* QueueUtilsTests.m */,
 				E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */,
 				F6EE622E2710A6FC00905E4A /* MockFLTThreadSafeFlutterResult.m */,
 				F63F9EED27143B19002479BF /* MockFLTThreadSafeFlutterResult.h */,
@@ -413,7 +413,7 @@
 				E0C6E2022770F01A00EA6AA3 /* ThreadSafeEventChannelTests.m in Sources */,
 				E0C6E2012770F01A00EA6AA3 /* ThreadSafeTextureRegistryTests.m in Sources */,
 				E0C6E2002770F01A00EA6AA3 /* ThreadSafeMethodChannelTests.m in Sources */,
-				E01EE4A82799F3A5008C1950 /* QueueHelperTests.m in Sources */,
+				E01EE4A82799F3A5008C1950 /* QueueUtilsTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

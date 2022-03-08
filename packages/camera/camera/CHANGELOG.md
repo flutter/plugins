@@ -2,6 +2,7 @@
 
 * Fixes a bug resulting in a `CameraAccessException` that prevents image
   capture on some Android devices.
+* Minor iOS internal code cleanup related to queue helper functions.
 
 ## 0.9.4+14
 
