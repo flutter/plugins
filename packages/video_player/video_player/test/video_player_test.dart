@@ -98,20 +98,17 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 }
 
 void main() {
-  void verifyPlayingWhenAppLifecyclePaused(
+  void _verifyPlayStateRespondsToLifecycle(
     VideoPlayerController controller, {
-    required bool isObserving,
+    required bool shouldPlayInBackground,
   }) {
-    final bool wasPlayingBeforePause = controller.value.isPlaying;
+    expect(controller.value.isPlaying, true);
     _ambiguate(WidgetsBinding.instance)!
         .handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    expect(
-      controller.value.isPlaying,
-      !isObserving && wasPlayingBeforePause,
-    );
+    expect(controller.value.isPlaying, shouldPlayInBackground);
     _ambiguate(WidgetsBinding.instance)!
         .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    expect(controller.value.isPlaying, wasPlayingBeforePause);
+    expect(controller.value.isPlaying, true);
   }
 
   testWidgets('update texture', (WidgetTester tester) async {
@@ -216,7 +213,8 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyPlayingWhenAppLifecyclePaused(controller, isObserving: true);
+        verifyPlayingWhenAppLifecyclePaused(controller, 
+                                            shouldPlayInBackground: false);
       });
 
       test('asset', () async {
@@ -946,7 +944,7 @@ void main() {
         await controller.play();
         verifyPlayingWhenAppLifecyclePaused(
           controller,
-          isObserving: !allowBackgroundPlayback,
+          shouldPlayInBackground: allowBackgroundPlayback,
         );
       });
     }
