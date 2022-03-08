@@ -6,13 +6,12 @@
 #import <OCMock/OCMock.h>
 @import AVFoundation;
 
-FLTCam *FLTCreateFLTCamWithCaptureSessionQueue(dispatch_queue_t captureSessionQueue) {
+FLTCam *FLTCreateCamWithCaptureSessionQueue(dispatch_queue_t captureSessionQueue) {
   id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
   OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
       .andReturn(inputMock);
 
   id sessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([sessionMock alloc]).andReturn(sessionMock);
   OCMStub([sessionMock addInputWithNoConnections:[OCMArg any]]);  // no-op
   OCMStub([sessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
@@ -20,6 +19,7 @@ FLTCam *FLTCreateFLTCamWithCaptureSessionQueue(dispatch_queue_t captureSessionQu
                            resolutionPreset:@"medium"
                                 enableAudio:true
                                 orientation:UIDeviceOrientationPortrait
+                             captureSession:sessionMock
                         captureSessionQueue:captureSessionQueue
                                       error:nil];
 }

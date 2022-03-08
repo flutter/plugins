@@ -97,6 +97,23 @@ NSString *const errorMethod = @"error";
                        orientation:(UIDeviceOrientation)orientation
                captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error {
+  AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
+  return [self initWithCameraName:cameraName
+                 resolutionPreset:resolutionPreset
+                      enableAudio:enableAudio
+                      orientation:orientation
+                   captureSession:captureSession
+              captureSessionQueue:captureSessionQueue
+                            error:error];
+}
+
+- (instancetype)initWithCameraName:(NSString *)cameraName
+                  resolutionPreset:(NSString *)resolutionPreset
+                       enableAudio:(BOOL)enableAudio
+                       orientation:(UIDeviceOrientation)orientation
+                    captureSession:(AVCaptureSession *)captureSession
+               captureSessionQueue:(dispatch_queue_t)captureSessionQueue
+                             error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   @try {
@@ -109,7 +126,7 @@ NSString *const errorMethod = @"error";
   _pixelBufferSynchronizationQueue =
       dispatch_queue_create("io.flutter.camera.pixelBufferSynchronizationQueue", NULL);
   _photoIOQueue = dispatch_queue_create("io.flutter.camera.photoIOQueue", NULL);
-  _captureSession = [[AVCaptureSession alloc] init];
+  _captureSession = captureSession;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
   _exposureMode = FLTExposureModeAuto;

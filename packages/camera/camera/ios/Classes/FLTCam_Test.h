@@ -28,4 +28,14 @@
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            fromConnection:(AVCaptureConnection *)connection;
 
+/// Init function exposed for unit test.
+/// `captureSession` is injected to avoid mocking `alloc` function.
+- (instancetype)initWithCameraName:(NSString *)cameraName
+                  resolutionPreset:(NSString *)resolutionPreset
+                       enableAudio:(BOOL)enableAudio
+                       orientation:(UIDeviceOrientation)orientation
+                    captureSession:(AVCaptureSession *)captureSession
+               captureSessionQueue:(dispatch_queue_t)captureSessionQueue
+                             error:(NSError **)error;
+
 @end

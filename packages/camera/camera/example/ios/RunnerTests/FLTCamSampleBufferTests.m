@@ -18,13 +18,13 @@
 
 - (void)testSampleBufferCallbackQueueMustBeCaptureSessionQueue {
   dispatch_queue_t captureSessionQueue = dispatch_queue_create("testing", NULL);
-  FLTCam *cam = FLTCreateFLTCamWithCaptureSessionQueue(captureSessionQueue);
+  FLTCam *cam = FLTCreateCamWithCaptureSessionQueue(captureSessionQueue);
   XCTAssertEqual(captureSessionQueue, cam.captureVideoOutput.sampleBufferCallbackQueue,
                  @"Sample buffer callback queue must be the capture session queue.");
 }
 
 - (void)testCopyPixelBuffer {
-  FLTCam *cam = FLTCreateFLTCamWithCaptureSessionQueue(dispatch_queue_create("test", NULL));
+  FLTCam *cam = FLTCreateCamWithCaptureSessionQueue(dispatch_queue_create("test", NULL));
   CMSampleBufferRef capturedSampleBuffer = FLTCreateTestSampleBuffer();
   CVPixelBufferRef capturedPixelBuffer = CMSampleBufferGetImageBuffer(capturedSampleBuffer);
   // Mimic sample buffer callback when captured a new video sample
