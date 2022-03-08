@@ -1,3 +1,8 @@
+## 0.9.4+15
+
+* Uses dispatch queue for pixel buffer synchronization on iOS.
+* Minor iOS internal code cleanup related to queue helper functions.  
+
 ## 0.9.4+14
 
 * Restores compatibility with Flutter 2.5 and 2.8.
