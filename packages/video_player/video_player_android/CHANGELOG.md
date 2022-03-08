@@ -1,3 +1,6 @@
+## 2.3.1
+
+* Updates exoplayer to ^2.17.0.
 ## 2.3.0
 
 * Updates Pigeon to ^1.0.16.
