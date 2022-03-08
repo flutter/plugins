@@ -5,6 +5,7 @@
 #import "FLTCam.h"
 #import "FLTCam_Test.h"
 #import "FLTSavePhotoDelegate.h"
+#import "QueueUtils.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
@@ -50,7 +51,6 @@
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
-@property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
 @property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
 @property(readonly, nonatomic) CGSize captureSize;
@@ -77,8 +77,8 @@
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 /// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
-/// The queue on which captured photos (not videos) are wrote to disk.
-/// Videos are wrote to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
+/// The queue on which captured photos (not videos) are written to disk.
+/// Videos are written to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
 @property(strong, nonatomic) dispatch_queue_t photoIOQueue;
 @property(assign, nonatomic) UIDeviceOrientation deviceOrientation;
 @end
@@ -111,6 +111,7 @@ NSString *const errorMethod = @"error";
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
   _videoFormat = kCVPixelFormatType_32BGRA;
+  _inProgressSavePhotoDelegates = [NSMutableDictionary dictionary];
 
   // To prevent memory consumption, limit the number of frames pending processing.
   // After some testing, 4 was determined to be the best maximum value.
@@ -226,11 +227,30 @@ NSString *const errorMethod = @"error";
     return;
   }
 
-  [_capturePhotoOutput
-      capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                   result:result
-                                                                  ioQueue:self.photoIOQueue]];
+  FLTSavePhotoDelegate *savePhotoDelegate = [[FLTSavePhotoDelegate alloc]
+           initWithPath:path
+                ioQueue:self.photoIOQueue
+      completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
+        dispatch_async(self.captureSessionQueue, ^{
+          // Dispatch back to capture session queue to delete reference.
+          // Retain cycle is broken after the dictionary entry is cleared.
+          // This is to keep the behavior with the previous `selfReference` approach in the
+          // FLTSavePhotoDelegate, where delegate is released only after capture completion.
+          [self.inProgressSavePhotoDelegates removeObjectForKey:@(settings.uniqueID)];
+        });
+
+        if (error) {
+          [result sendError:error];
+        } else {
+          NSAssert(path, @"Path must not be nil if no error.");
+          [result sendSuccessWithData:path];
+        }
+      }];
+
+  NSAssert(dispatch_get_specific(FLTCaptureSessionQueueSpecific),
+           @"save photo delegate references must be updated on the capture session queue");
+  self.inProgressSavePhotoDelegates[@(settings.uniqueID)] = savePhotoDelegate;
+  [self.capturePhotoOutput capturePhotoWithSettings:settings delegate:savePhotoDelegate];
 }
 
 - (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:

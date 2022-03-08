@@ -1,3 +1,20 @@
+## 0.8.4+10
+
+* iOS: allows picking images with WebP format.
+
+## 0.8.4+9
+
+* Internal code cleanup for stricter analysis options.
+
+## 0.8.4+8
+
+* Configures the `UIImagePicker` to default to gallery instead of camera when
+picking multiple images on pre-iOS 14 devices.
+
+## 0.8.4+7
+
+* Refactors unit test to expose private interface via a separate test header instead of the inline declaration.
+
 ## 0.8.4+6
 
 * Fixes minor type issues in iOS implementation.

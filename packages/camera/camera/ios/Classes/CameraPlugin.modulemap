@@ -14,6 +14,6 @@ framework module camera {
     header "FLTThreadSafeFlutterResult.h"
     header "FLTThreadSafeMethodChannel.h"
     header "FLTThreadSafeTextureRegistry.h"
-    header "QueueHelper.h"
+    header "QueueUtils.h"
   }
 }

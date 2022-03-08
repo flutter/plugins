@@ -18,7 +18,7 @@ part 'sku_details_wrapper.g.dart';
 ///
 /// This usually indicates a series underlining code issue in the plugin.
 @visibleForTesting
-const kInvalidBillingResultErrorMessage =
+const String kInvalidBillingResultErrorMessage =
     'Invalid billing result map from method channel.';
 
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
@@ -26,10 +26,11 @@ const kInvalidBillingResultErrorMessage =
 /// Contains the details of an available product in Google Play Billing.
 @JsonSerializable()
 @SkuTypeConverter()
+@immutable
 class SkuDetailsWrapper {
   /// Creates a [SkuDetailsWrapper] with the given purchase details.
   @visibleForTesting
-  SkuDetailsWrapper({
+  const SkuDetailsWrapper({
     required this.description,
     required this.freeTrialPeriod,
     required this.introductoryPrice,
@@ -50,8 +51,6 @@ class SkuDetailsWrapper {
     required this.originalPriceAmountMicros,
   }) : _introductoryPriceMicros = introductoryPriceMicros;
 
-  final String _introductoryPriceMicros;
-
   /// Constructs an instance of this from a key value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
@@ -59,6 +58,8 @@ class SkuDetailsWrapper {
   @visibleForTesting
   factory SkuDetailsWrapper.fromJson(Map<String, dynamic> map) =>
       _$SkuDetailsWrapperFromJson(map);
+
+  final String _introductoryPriceMicros;
 
   /// Textual description of the product.
   @JsonKey(defaultValue: '')
@@ -182,10 +183,11 @@ class SkuDetailsWrapper {
 ///
 /// Returned by [BillingClient.querySkuDetails].
 @JsonSerializable()
+@immutable
 class SkuDetailsResponseWrapper {
   /// Creates a [SkuDetailsResponseWrapper] with the given purchase details.
   @visibleForTesting
-  SkuDetailsResponseWrapper(
+  const SkuDetailsResponseWrapper(
       {required this.billingResult, required this.skuDetailsList});
 
   /// Constructs an instance of this from a key value map of data.
@@ -220,9 +222,10 @@ class SkuDetailsResponseWrapper {
 /// Params containing the response code and the debug message from the Play Billing API response.
 @JsonSerializable()
 @BillingResponseConverter()
+@immutable
 class BillingResultWrapper {
   /// Constructs the object with [responseCode] and [debugMessage].
-  BillingResultWrapper({required this.responseCode, this.debugMessage});
+  const BillingResultWrapper({required this.responseCode, this.debugMessage});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -230,7 +233,7 @@ class BillingResultWrapper {
   /// types of all of the members on this class.
   factory BillingResultWrapper.fromJson(Map<String, dynamic>? map) {
     if (map == null || map.isEmpty) {
-      return BillingResultWrapper(
+      return const BillingResultWrapper(
           responseCode: BillingResponse.error,
           debugMessage: kInvalidBillingResultErrorMessage);
     }

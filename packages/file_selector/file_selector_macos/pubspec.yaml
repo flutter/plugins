@@ -1,0 +1,25 @@
+name: file_selector_macos
+description: macOS implementation of the file_selector plugin.
+repository: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_macos
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
+version: 0.8.2
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
+
+flutter:
+  plugin:
+    implements: file_selector
+    platforms:
+      macos:
+        dartPluginClass: FileSelectorMacOS
+        pluginClass: FileSelectorPlugin
+
+dependencies:
+  cross_file: ^0.3.1
+  file_selector_platform_interface: ^2.0.4
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter

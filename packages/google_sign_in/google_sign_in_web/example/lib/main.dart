@@ -17,6 +17,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return Text('Testing... Look at the console output for results!');
+    return const Text('Testing... Look at the console output for results!');
   }
 }

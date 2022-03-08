@@ -13,11 +13,11 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
+#import "QueueUtils.h"
 
 @interface CameraPlugin ()
 @property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
-@property(readonly, nonatomic) FLTCam *camera;
 @property(readonly, nonatomic) FLTThreadSafeMethodChannel *deviceEventMethodChannel;
 @end
 
@@ -39,6 +39,9 @@
   _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
   _captureSessionQueue = dispatch_queue_create("io.flutter.camera.captureSessionQueue", NULL);
+  dispatch_queue_set_specific(_captureSessionQueue, FLTCaptureSessionQueueSpecific,
+                              (void *)FLTCaptureSessionQueueSpecific, NULL);
+
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
   return self;
@@ -69,11 +72,12 @@
     return;
   }
 
-  if (_camera) {
-    [_camera setDeviceOrientation:orientation];
-  }
-
-  [self sendDeviceOrientation:orientation];
+  dispatch_async(self.captureSessionQueue, ^{
+    // `FLTCam::setDeviceOrientation` must be called on capture session queue.
+    [self.camera setDeviceOrientation:orientation];
+    // `CameraPlugin::sendDeviceOrientation` can be called on any queue.
+    [self sendDeviceOrientation:orientation];
+  });
 }
 
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
