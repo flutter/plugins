@@ -213,7 +213,7 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        _verifyPlayStateRespondsToLifecycle(controller, 
+        _verifyPlayStateRespondsToLifecycle(controller,
             shouldPlayInBackground: false);
       });
 
