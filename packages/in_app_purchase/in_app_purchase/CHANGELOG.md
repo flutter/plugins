@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Internal code cleanup for stricter analysis options.
+
 ## 3.0.0
 
 * **BREAKING CHANGE** Updates `restorePurchases` to emit an empty list of purchases on StoreKit when there are no purchases to restore (same as Android).
