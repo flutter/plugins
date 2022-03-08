@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FLTGoogleMapController (Test)
 
 /**
- * Initialize a map controller with a concrete map view.
+ * Initializes a map controller with a concrete map view.
  *
  * @param mapView A map view that will be displayed by the controller
  * @param viewId A unique identifier for the controller.
