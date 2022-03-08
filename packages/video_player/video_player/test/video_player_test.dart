@@ -932,22 +932,35 @@ void main() {
       expect(controller.videoPlayerOptions!.mixWithOthers, true);
     });
 
-    for (final bool allowBackgroundPlayback in <bool>[true, false]) {
-      test('allowBackgroundPlayback is $allowBackgroundPlayback', () async {
-        final VideoPlayerController controller = VideoPlayerController.file(
-          File(''),
-          videoPlayerOptions: VideoPlayerOptions(
-            allowBackgroundPlayback: allowBackgroundPlayback,
-          ),
-        );
-        await controller.initialize();
-        await controller.play();
-        _verifyPlayStateRespondsToLifecycle(
-          controller,
-          shouldPlayInBackground: allowBackgroundPlayback,
-        );
-      });
-    }
+    test('true allowBackgroundPlayback continues playback', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(
+          allowBackgroundPlayback: true,
+        ),
+      );
+      await controller.initialize();
+      await controller.play();
+      _verifyPlayStateRespondsToLifecycle(
+        controller,
+        shouldPlayInBackground: true,
+      );
+    });
+
+    test('false allowBackgroundPlayback pauses playback', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(
+          allowBackgroundPlayback: false,
+        ),
+      );
+      await controller.initialize();
+      await controller.play();
+      _verifyPlayStateRespondsToLifecycle(
+        controller,
+        shouldPlayInBackground: false,
+      );
+    });
   });
 
   test('VideoProgressColors', () {
