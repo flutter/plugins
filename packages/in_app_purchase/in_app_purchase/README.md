@@ -190,11 +190,15 @@ if (_isConsumable(productDetails)) {
 
 ### Completing a purchase
 
-The `InAppPurchase.purchaseStream` will send purchase updates after
-you initiate the purchase flow using `InAppPurchase.buyConsumable`
-or `InAppPurchase.buyNonConsumable`. After delivering the content to
-the user, call `InAppPurchase.completePurchase` to tell the App Store
-and Google Play that the purchase has been finished.
+The `InAppPurchase.purchaseStream` will send purchase updates after initiating
+the purchase flow using `InAppPurchase.buyConsumable` or 
+`InAppPurchase.buyNonConsumable`. After verifying the purchase receipt and the 
+delivering the content to the user it ids important to call 
+`InAppPurchase.completePurchase` to tell the App Store and Google Play that the
+purchase has been completed. Calling `InAppPurchase.completePurchase` will 
+inform the App Store and Google Play that the App verified and processed the 
+purchase and Apple and Google can proceed to finalize the transaction and bill
+the end users payment account.
 
 > **Warning:** Failure to call `InAppPurchase.completePurchase` and
 > get a successful response within 3 days of the purchase will result a refund.
