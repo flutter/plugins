@@ -97,12 +97,11 @@ NSString *const errorMethod = @"error";
                        orientation:(UIDeviceOrientation)orientation
                captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error {
-  AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
   return [self initWithCameraName:cameraName
                  resolutionPreset:resolutionPreset
                       enableAudio:enableAudio
                       orientation:orientation
-                   captureSession:captureSession
+                   captureSession:[[AVCaptureSession alloc] init]
               captureSessionQueue:captureSessionQueue
                             error:error];
 }

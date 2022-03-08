@@ -28,8 +28,8 @@
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            fromConnection:(AVCaptureConnection *)connection;
 
-/// Init function exposed for unit test.
-/// `captureSession` is injected to avoid mocking `alloc` function.
+/// Initializes a camera instance.
+/// Allows for injecting dependencies that are usually internal.
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio

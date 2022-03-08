@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Format used for video and image streaming.
 @property(assign, nonatomic) FourCharCode videoFormat;
 
-/// Init an `FLTCam` instance.
+/// Initializes an `FLTCam` instance.
 /// @param cameraName a name used to uniquely identify the camera.
 /// @param resolutionPreset the resolution preset
 /// @param enableAudio YES if audio should be enabled for video capturing; NO otherwise.
