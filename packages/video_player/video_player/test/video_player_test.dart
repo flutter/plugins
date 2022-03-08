@@ -213,8 +213,8 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyPlayingWhenAppLifecyclePaused(controller, 
-                                            shouldPlayInBackground: false);
+        _verifyPlayStateRespondsToLifecycle(controller, 
+            shouldPlayInBackground: false);
       });
 
       test('asset', () async {
@@ -942,7 +942,7 @@ void main() {
         );
         await controller.initialize();
         await controller.play();
-        verifyPlayingWhenAppLifecyclePaused(
+        _verifyPlayStateRespondsToLifecycle(
           controller,
           shouldPlayInBackground: allowBackgroundPlayback,
         );
