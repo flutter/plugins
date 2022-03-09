@@ -154,18 +154,6 @@ task:
       analyze_script:
         - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
         - echo "If this test fails, the minumum Flutter version should be updated"
-      pathified_analyze_script:
-        # Re-run analysis with path-based dependencies to ensure that publishing
-        # the changes won't break analysis of other packages in the respository
-        # that depend on it.
-        - ./script/tool_runner.sh make-deps-path-based --target-dependencies-with-non-breaking-updates
-        # This uses --run-on-dirty-packages rather than --packages-for-branch
-        # since only the packages changed by 'make-deps-path-based' need to be
-        # checked.
-        - dart $PLUGIN_TOOL analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
-        # Restore the tree to a clean state, to avoid accidental issues if
-        # other script steps are added to this task.
-        - git checkout .
     ### Web tasks ###
     - name: web-build_all_plugins
       env:
