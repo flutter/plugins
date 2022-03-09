@@ -1,4 +1,4 @@
-## NEXT
+## 0.8.4+11
 
 * Fixes Activity leak.
 
@@ -27,7 +27,7 @@ picking multiple images on pre-iOS 14 devices.
 
 * Improves the documentation on handling MainActivity being killed by the Android OS.
 * Updates Android compileSdkVersion to 31.
-* Fixes iOS RunnerUITests search paths.
+* Fix iOS RunnerUITests search paths.
 
 ## 0.8.4+4
 
