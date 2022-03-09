@@ -409,6 +409,9 @@ abstract class PluginCommand extends Command<void> {
   ///
   /// By default, packages excluded via --exclude will not be in the stream, but
   /// they can be included by passing false for [filterExcluded].
+  ///
+  /// Subpackages are guaranteed to be after the containing package in the
+  /// stream.
   Stream<PackageEnumerationEntry> getTargetPackagesAndSubpackages(
       {bool filterExcluded = true}) async* {
     await for (final PackageEnumerationEntry plugin

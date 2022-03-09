@@ -7,6 +7,7 @@ import 'dart:js_util';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_web/src/link.dart';
@@ -50,6 +51,25 @@ void main() {
 
       // Check that the same anchor has been updated.
       expect(anchor.getAttribute('href'), uri2.toString());
+      expect(anchor.getAttribute('target'), '_self');
+
+      final Uri uri3 = Uri.parse('/foobar');
+      await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebLinkDelegate(TestLinkInfo(
+          uri: uri3,
+          target: LinkTarget.self,
+          builder: (BuildContext context, FollowLink? followLink) {
+            return Container(width: 100, height: 100);
+          },
+        )),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check that internal route properly prepares using the default
+      // [UrlStrategy]
+      expect(anchor.getAttribute('href'),
+          urlStrategy?.prepareExternalUrl(uri3.toString()));
       expect(anchor.getAttribute('target'), '_self');
     });
 

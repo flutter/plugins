@@ -47,10 +47,10 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin1Dir.path),
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
@@ -82,10 +82,10 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin1Dir.path),
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));

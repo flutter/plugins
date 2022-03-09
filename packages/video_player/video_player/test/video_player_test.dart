@@ -29,7 +29,7 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   String get dataSource => '';
 
   @override
-  Map<String, String> get httpHeaders => {};
+  Map<String, String> get httpHeaders => <String, String>{};
 
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
@@ -81,13 +81,13 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
   @override
   List<Caption> get captions {
     return <Caption>[
-      Caption(
+      const Caption(
         text: 'one',
         number: 0,
         start: Duration(milliseconds: 100),
         end: Duration(milliseconds: 200),
       ),
-      Caption(
+      const Caption(
         text: 'two',
         number: 1,
         start: Duration(milliseconds: 300),
@@ -98,6 +98,19 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
 }
 
 void main() {
+  void _verifyPlayStateRespondsToLifecycle(
+    VideoPlayerController controller, {
+    required bool shouldPlayInBackground,
+  }) {
+    expect(controller.value.isPlaying, true);
+    _ambiguate(WidgetsBinding.instance)!
+        .handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    expect(controller.value.isPlaying, shouldPlayInBackground);
+    _ambiguate(WidgetsBinding.instance)!
+        .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    expect(controller.value.isPlaying, true);
+  }
+
   testWidgets('update texture', (WidgetTester tester) async {
     final FakeController controller = FakeController();
     await tester.pumpWidget(VideoPlayer(controller));
@@ -135,8 +148,9 @@ void main() {
 
   group('ClosedCaption widget', () {
     testWidgets('uses a default text style', (WidgetTester tester) async {
-      final String text = 'foo';
-      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: text)));
+      const String text = 'foo';
+      await tester
+          .pumpWidget(const MaterialApp(home: ClosedCaption(text: text)));
 
       final Text textWidget = tester.widget<Text>(find.text(text));
       expect(textWidget.style!.fontSize, 36.0);
@@ -144,9 +158,9 @@ void main() {
     });
 
     testWidgets('uses given text and style', (WidgetTester tester) async {
-      final String text = 'foo';
-      final TextStyle textStyle = TextStyle(fontSize: 14.725);
-      await tester.pumpWidget(MaterialApp(
+      const String text = 'foo';
+      const TextStyle textStyle = TextStyle(fontSize: 14.725);
+      await tester.pumpWidget(const MaterialApp(
         home: ClosedCaption(
           text: text,
           textStyle: textStyle,
@@ -159,19 +173,20 @@ void main() {
     });
 
     testWidgets('handles null text', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: null)));
+      await tester
+          .pumpWidget(const MaterialApp(home: ClosedCaption(text: null)));
       expect(find.byType(Text), findsNothing);
     });
 
     testWidgets('handles empty text', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: '')));
+      await tester.pumpWidget(const MaterialApp(home: ClosedCaption(text: '')));
       expect(find.byType(Text), findsNothing);
     });
 
     testWidgets('Passes text contrast ratio guidelines',
         (WidgetTester tester) async {
-      final String text = 'foo';
-      await tester.pumpWidget(MaterialApp(
+      const String text = 'foo';
+      await tester.pumpWidget(const MaterialApp(
         home: Scaffold(
           backgroundColor: Colors.white,
           body: ClosedCaption(text: text),
@@ -192,6 +207,16 @@ void main() {
     });
 
     group('initialize', () {
+      test('started app lifecycle observing', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        await controller.play();
+        _verifyPlayStateRespondsToLifecycle(controller,
+            shouldPlayInBackground: false);
+      });
+
       test('asset', () async {
         final VideoPlayerController controller = VideoPlayerController.asset(
           'a.avi',
@@ -218,7 +243,7 @@ void main() {
         );
         expect(
           fakeVideoPlayerPlatform.dataSources[0].httpHeaders,
-          {},
+          <String, String>{},
         );
       });
 
@@ -246,7 +271,7 @@ void main() {
       test('network with some headers', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
           'https://127.0.0.1',
-          httpHeaders: {'Authorization': 'Bearer token'},
+          httpHeaders: <String, String>{'Authorization': 'Bearer token'},
         );
         await controller.initialize();
 
@@ -260,7 +285,7 @@ void main() {
         );
         expect(
           fakeVideoPlayerPlatform.dataSources[0].httpHeaders,
-          {'Authorization': 'Bearer token'},
+          <String, String>{'Authorization': 'Bearer token'},
         );
       });
 
@@ -269,10 +294,10 @@ void main() {
           'http://testing.com/invalid_url',
         );
 
-        late dynamic error;
+        late Object error;
         fakeVideoPlayerPlatform.forceInitError = true;
-        await controller.initialize().catchError((dynamic e) => error = e);
-        final PlatformException platformEx = error;
+        await controller.initialize().catchError((Object e) => error = e);
+        final PlatformException platformEx = error as PlatformException;
         expect(platformEx.code, equals('VideoError'));
       });
 
@@ -493,7 +518,7 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
-        final progressWidget =
+        final VideoProgressIndicator progressWidget =
             VideoProgressIndicator(controller, allowScrubbing: true);
 
         await tester.pumpWidget(Directionality(
@@ -505,7 +530,7 @@ void main() {
         expect(controller.value.isPlaying, isTrue);
 
         final Rect progressRect = tester.getRect(find.byWidget(progressWidget));
-        await tester.dragFrom(progressRect.center, Offset(1.0, 0.0));
+        await tester.dragFrom(progressRect.center, const Offset(1.0, 0.0));
         await tester.pumpAndSettle();
 
         expect(controller.value.position, lessThan(controller.value.duration));
@@ -520,7 +545,7 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
-        final progressWidget =
+        final VideoProgressIndicator progressWidget =
             VideoProgressIndicator(controller, allowScrubbing: true);
 
         await tester.pumpWidget(Directionality(
@@ -580,7 +605,7 @@ void main() {
         );
 
         await controller.initialize();
-        controller.setCaptionOffset(Duration(milliseconds: 100));
+        controller.setCaptionOffset(const Duration(milliseconds: 100));
         expect(controller.value.position, const Duration());
         expect(controller.value.caption.text, '');
 
@@ -616,7 +641,7 @@ void main() {
         );
 
         await controller.initialize();
-        controller.setCaptionOffset(Duration(milliseconds: -100));
+        controller.setCaptionOffset(const Duration(milliseconds: -100));
         expect(controller.value.position, const Duration());
         expect(controller.value.caption.text, '');
 
@@ -688,12 +713,11 @@ void main() {
 
         const Duration bufferStart = Duration(seconds: 0);
         const Duration bufferEnd = Duration(milliseconds: 500);
-        fakeVideoEventStream
-          ..add(VideoEvent(
-              eventType: VideoEventType.bufferingUpdate,
-              buffered: <DurationRange>[
-                DurationRange(bufferStart, bufferEnd),
-              ]));
+        fakeVideoEventStream.add(VideoEvent(
+            eventType: VideoEventType.bufferingUpdate,
+            buffered: <DurationRange>[
+              DurationRange(bufferStart, bufferEnd),
+            ]));
         await tester.pumpAndSettle();
         expect(controller.value.isBuffering, isTrue);
         expect(controller.value.buffered.length, 1);
@@ -854,48 +878,88 @@ void main() {
 
     group('aspectRatio', () {
       test('640x480 -> 4:3', () {
-        final value = VideoPlayerValue(
+        final VideoPlayerValue value = VideoPlayerValue(
           isInitialized: true,
-          size: Size(640, 480),
-          duration: Duration(seconds: 1),
+          size: const Size(640, 480),
+          duration: const Duration(seconds: 1),
         );
         expect(value.aspectRatio, 4 / 3);
       });
 
       test('no size -> 1.0', () {
-        final value = VideoPlayerValue(
+        final VideoPlayerValue value = VideoPlayerValue(
           isInitialized: true,
-          duration: Duration(seconds: 1),
+          duration: const Duration(seconds: 1),
         );
         expect(value.aspectRatio, 1.0);
       });
 
       test('height = 0 -> 1.0', () {
-        final value = VideoPlayerValue(
+        final VideoPlayerValue value = VideoPlayerValue(
           isInitialized: true,
-          size: Size(640, 0),
-          duration: Duration(seconds: 1),
+          size: const Size(640, 0),
+          duration: const Duration(seconds: 1),
         );
         expect(value.aspectRatio, 1.0);
       });
 
       test('width = 0 -> 1.0', () {
-        final value = VideoPlayerValue(
+        final VideoPlayerValue value = VideoPlayerValue(
           isInitialized: true,
-          size: Size(0, 480),
-          duration: Duration(seconds: 1),
+          size: const Size(0, 480),
+          duration: const Duration(seconds: 1),
         );
         expect(value.aspectRatio, 1.0);
       });
 
       test('negative aspect ratio -> 1.0', () {
-        final value = VideoPlayerValue(
+        final VideoPlayerValue value = VideoPlayerValue(
           isInitialized: true,
-          size: Size(640, -480),
-          duration: Duration(seconds: 1),
+          size: const Size(640, -480),
+          duration: const Duration(seconds: 1),
         );
         expect(value.aspectRatio, 1.0);
       });
+    });
+  });
+
+  group('VideoPlayerOptions', () {
+    test('setMixWithOthers', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+          File(''),
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+      await controller.initialize();
+      expect(controller.videoPlayerOptions!.mixWithOthers, true);
+    });
+
+    test('true allowBackgroundPlayback continues playback', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(
+          allowBackgroundPlayback: true,
+        ),
+      );
+      await controller.initialize();
+      await controller.play();
+      _verifyPlayStateRespondsToLifecycle(
+        controller,
+        shouldPlayInBackground: true,
+      );
+    });
+
+    test('false allowBackgroundPlayback pauses playback', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(
+          allowBackgroundPlayback: false,
+        ),
+      );
+      await controller.initialize();
+      await controller.play();
+      _verifyPlayStateRespondsToLifecycle(
+        controller,
+        shouldPlayInBackground: false,
+      );
     });
   });
 
@@ -904,7 +968,7 @@ void main() {
     const Color bufferedColor = Color.fromRGBO(0, 255, 0, 0.5);
     const Color backgroundColor = Color.fromRGBO(255, 255, 0, 0.25);
 
-    final VideoProgressColors colors = VideoProgressColors(
+    const VideoProgressColors colors = VideoProgressColors(
         playedColor: playedColor,
         bufferedColor: bufferedColor,
         backgroundColor: backgroundColor);
@@ -912,14 +976,6 @@ void main() {
     expect(colors.playedColor, playedColor);
     expect(colors.bufferedColor, bufferedColor);
     expect(colors.backgroundColor, backgroundColor);
-  });
-
-  test('setMixWithOthers', () async {
-    final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
-    await controller.initialize();
-    expect(controller.videoPlayerOptions!.mixWithOthers, true);
   });
 }
 
@@ -936,7 +992,7 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<int?> create(DataSource dataSource) async {
     calls.add('create');
-    StreamController<VideoEvent> stream = StreamController<VideoEvent>();
+    final StreamController<VideoEvent> stream = StreamController<VideoEvent>();
     streams[nextTextureId] = stream;
     if (forceInitError) {
       stream.addError(PlatformException(
@@ -944,8 +1000,8 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
     } else {
       stream.add(VideoEvent(
           eventType: VideoEventType.initialized,
-          size: Size(100, 100),
-          duration: Duration(seconds: 1)));
+          size: const Size(100, 100),
+          duration: const Duration(seconds: 1)));
     }
     dataSources.add(dataSource);
     return nextTextureId++;
@@ -962,6 +1018,7 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
     initialized.complete(true);
   }
 
+  @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return streams[textureId]!.stream;
   }
@@ -1008,3 +1065,9 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
     calls.add('setMixWithOthers');
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;
