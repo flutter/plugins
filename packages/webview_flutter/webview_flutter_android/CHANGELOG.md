@@ -1,4 +1,4 @@
-## 2.8.4
+## NEXT
 
 * Fixes bug preventing `mockito` code generation for tests.
 
