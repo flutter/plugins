@@ -138,7 +138,7 @@ task:
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
-    # Does a sanity check that plugins at least compile on the N-1 and N-2
+    # Does a sanity check that plugins at least pass analysis on the N-1 and N-2
     # versions of Flutter stable if the plugin claims to support that version.
     # This is to minimize accidentally making changes that break old versions
     # (which we don't commit to supporting, but don't want to actively break)
