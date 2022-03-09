@@ -152,7 +152,7 @@ task:
           CHANNEL: "2.5.3"
           CHANNEL: "2.8.1"
       analyze_script:
-        - ./script/tool_runner.sh analyze --skip-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+        - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
         - echo "If this test fails, the minumum Flutter version should be updated"
       pathified_analyze_script:
         # Re-run analysis with path-based dependencies to ensure that publishing

@@ -86,7 +86,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   }
 
   static const String _skipByFlutterVersionArg =
-      'skip-not-supporting-flutter-version';
+      'skip-if-not-supporting-flutter-version';
 
   /// Packages that had at least one [logWarning] call.
   final Set<PackageEnumerationEntry> _packagesWithWarnings =

@@ -244,8 +244,9 @@ void main() {
 
       final TestPackageLoopingCommand command =
           createTestCommand(includeSubpackages: true, hasLongOutput: false);
-      final List<String> output = await runCommand(command,
-          arguments: <String>['--skip-not-supporting-flutter-version=2.5.0']);
+      final List<String> output = await runCommand(command, arguments: <String>[
+        '--skip-if-not-supporting-flutter-version=2.5.0'
+      ]);
 
       expect(
           command.checkedPackages,
