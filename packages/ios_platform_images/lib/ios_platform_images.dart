@@ -190,10 +190,10 @@ class IosPlatformImages {
             ])
         .toList();
 
-    final Future<Map<String, dynamic>?> loadInfo =
-        _channel.invokeMapMethod<String, dynamic>(
+    final Future<Map<String, Object?>?> loadInfo =
+        _channel.invokeMapMethod<String, Object?>(
       'loadSystemImage',
-      <dynamic>[
+      <Object?>[
         name,
         size,
         weight.index,
@@ -203,7 +203,7 @@ class IosPlatformImages {
     );
     final Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
     final Completer<double> scaleCompleter = Completer<double>();
-    loadInfo.then((Map<String, dynamic>? map) {
+    loadInfo.then((Map<String, Object?>? map) {
       if (map == null) {
         scaleCompleter.completeError(
           ArgumentError("System image couldn't be found: $name"),
