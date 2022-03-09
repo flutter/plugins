@@ -168,7 +168,7 @@ class IosPlatformImages {
   /// See [https://developer.apple.com/documentation/uikit/uiimage/configuring_and_displaying_symbol_images_in_your_ui?language=objc]
   static ImageProvider loadSystemImage(
     String name,
-    double pointSize, {
+    double size, {
     List<Color> colors = const <Color>[],
     bool preferMulticolor = false,
     ui.FontWeight weight = FontWeight.normal,
@@ -195,7 +195,7 @@ class IosPlatformImages {
       'loadSystemImage',
       <dynamic>[
         name,
-        pointSize,
+        size,
         weight.index,
         colorsRGBA,
         preferMulticolor,
