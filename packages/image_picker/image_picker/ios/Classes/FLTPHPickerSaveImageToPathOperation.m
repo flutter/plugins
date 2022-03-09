@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "FLTPHPickerSaveImageToPathOperation.h"
 
 API_AVAILABLE(ios(14))
@@ -82,50 +84,65 @@ typedef void (^GetSavedPath)(NSString *);
   }
   if (@available(iOS 14, *)) {
     [self setExecuting:YES];
+
+    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeWebP.identifier]) {
+      [self.result.itemProvider
+          loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier
+                                completionHandler:^(NSData *_Nullable data,
+                                                    NSError *_Nullable error) {
+                                  UIImage *image = [[UIImage alloc] initWithData:data];
+                                  [self processImage:image];
+                                }];
+      return;
+    }
+
     [self.result.itemProvider
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
-            __block UIImage *localImage = image;
-            PHAsset *originalAsset =
-                [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
-
-            if (self.maxWidth != nil || self.maxHeight != nil) {
-              localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                                       maxWidth:self.maxWidth
-                                                      maxHeight:self.maxHeight
-                                            isMetadataAvailable:originalAsset != nil];
-            }
-            __block NSString *savedPath;
-            if (!originalAsset) {
-              // Image picked without an original asset (e.g. User pick image without permission)
-              savedPath =
-                  [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                                  image:localImage
-                                                           imageQuality:self.desiredImageQuality];
-              [self completeOperationWithPath:savedPath];
-            } else {
-              [[PHImageManager defaultManager]
-                  requestImageDataForAsset:originalAsset
-                                   options:nil
-                             resultHandler:^(
-                                 NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                 UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                               // maxWidth and maxHeight are used only for GIF images.
-                               savedPath = [FLTImagePickerPhotoAssetUtil
-                                   saveImageWithOriginalImageData:imageData
-                                                            image:localImage
-                                                         maxWidth:self.maxWidth
-                                                        maxHeight:self.maxHeight
-                                                     imageQuality:self.desiredImageQuality];
-                               [self completeOperationWithPath:savedPath];
-                             }];
-            }
+            [self processImage:image];
           }
         }];
   } else {
     [self setFinished:YES];
+  }
+}
+
+/**
+ * Processes the image.
+ */
+- (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
+  PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
+
+  if (self.maxWidth != nil || self.maxHeight != nil) {
+    localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                             maxWidth:self.maxWidth
+                                            maxHeight:self.maxHeight
+                                  isMetadataAvailable:originalAsset != nil];
+  }
+  if (originalAsset) {
+    [[PHImageManager defaultManager]
+        requestImageDataForAsset:originalAsset
+                         options:nil
+                   resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                     // maxWidth and maxHeight are used only for GIF images.
+                     NSString *savedPath = [FLTImagePickerPhotoAssetUtil
+                         saveImageWithOriginalImageData:imageData
+                                                  image:localImage
+                                               maxWidth:self.maxWidth
+                                              maxHeight:self.maxHeight
+                                           imageQuality:self.desiredImageQuality];
+                     [self completeOperationWithPath:savedPath];
+                   }];
+  } else {
+    // Image picked without an original asset (e.g. User pick image without permission)
+    NSString *savedPath =
+        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                        image:localImage
+                                                 imageQuality:self.desiredImageQuality];
+    [self completeOperationWithPath:savedPath];
   }
 }
 
