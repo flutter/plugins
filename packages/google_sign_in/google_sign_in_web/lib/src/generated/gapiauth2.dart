@@ -12,7 +12,7 @@
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/gapi.auth2
 
-// ignore_for_file: public_member_api_docs, unused_element
+// ignore_for_file: public_member_api_docs, unused_element, non_constant_identifier_names, sort_constructors_first, always_specify_types
 
 @JS()
 library gapiauth2;

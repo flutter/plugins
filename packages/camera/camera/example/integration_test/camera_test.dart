@@ -9,9 +9,9 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:integration_test/integration_test.dart';
 
 void main() {
   late Directory testDir;
@@ -59,7 +59,7 @@ void main() {
         'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Picture
-    final file = await controller.takePicture();
+    final XFile file = await controller.takePicture();
 
     // Load picture
     final File fileImage = File(file.path);
@@ -78,9 +78,9 @@ void main() {
       if (cameras.isEmpty) {
         return;
       }
-      for (CameraDescription cameraDescription in cameras) {
+      for (final CameraDescription cameraDescription in cameras) {
         bool previousPresetExactlySupported = true;
-        for (MapEntry<ResolutionPreset, Size> preset
+        for (final MapEntry<ResolutionPreset, Size> preset
             in presetExpectedSizes.entries) {
           final CameraController controller =
               CameraController(cameraDescription, preset.key);
@@ -110,7 +110,7 @@ void main() {
     // Take Video
     await controller.startVideoRecording();
     sleep(const Duration(milliseconds: 300));
-    final file = await controller.stopVideoRecording();
+    final XFile file = await controller.stopVideoRecording();
 
     // Load video metadata
     final File videoFile = File(file.path);
@@ -132,9 +132,9 @@ void main() {
       if (cameras.isEmpty) {
         return;
       }
-      for (CameraDescription cameraDescription in cameras) {
+      for (final CameraDescription cameraDescription in cameras) {
         bool previousPresetExactlySupported = true;
-        for (MapEntry<ResolutionPreset, Size> preset
+        for (final MapEntry<ResolutionPreset, Size> preset
             in presetExpectedSizes.entries) {
           final CameraController controller =
               CameraController(cameraDescription, preset.key);
@@ -191,7 +191,7 @@ void main() {
 
     sleep(const Duration(milliseconds: 500));
 
-    final file = await controller.stopVideoRecording();
+    final XFile file = await controller.stopVideoRecording();
     final int recordingTime =
         DateTime.now().millisecondsSinceEpoch - recordingStart;
 
@@ -224,7 +224,9 @@ void main() {
       bool _isDetecting = false;
 
       await controller.startImageStream((CameraImage image) {
-        if (_isDetecting) return;
+        if (_isDetecting) {
+          return;
+        }
 
         _isDetecting = true;
 
@@ -252,14 +254,14 @@ void main() {
     );
 
     await controller.initialize();
-    final _completer = Completer<CameraImage>();
+    final Completer<CameraImage> _completer = Completer<CameraImage>();
 
     await controller.startImageStream((CameraImage image) {
       if (!_completer.isCompleted) {
-        Future(() async {
+        Future<void>(() async {
           await controller.stopImageStream();
           await controller.dispose();
-        }).then((value) {
+        }).then((Object? value) {
           _completer.complete(image);
         });
       }
@@ -275,7 +277,7 @@ void main() {
         return;
       }
 
-      var _image = await startStreaming(cameras, null);
+      CameraImage _image = await startStreaming(cameras, null);
       expect(_image, isNotNull);
       expect(_image.format.group, ImageFormatGroup.bgra8888);
       expect(_image.planes.length, 1);

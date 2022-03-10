@@ -4,7 +4,7 @@ publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
@@ -18,14 +18,13 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_driver:
+    sdk: flutter
+  flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
   path_provider: ^2.0.6
-  pedantic: ^1.10.0
   test: any
 
 flutter:

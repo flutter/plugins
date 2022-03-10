@@ -5,9 +5,9 @@
 import 'dart:convert';
 
 import 'package:html/dom.dart';
+import 'package:html/parser.dart' as html_parser;
 
 import 'closed_caption_file.dart';
-import 'package:html/parser.dart' as html_parser;
 
 /// Represents a [ClosedCaptionFile], parsed from the WebVTT file format.
 /// See: https://en.wikipedia.org/wiki/WebVTT
@@ -28,10 +28,10 @@ List<Caption> _parseCaptionsFromWebVTTString(String file) {
   final List<Caption> captions = <Caption>[];
 
   // Ignore metadata
-  Set<String> metadata = {'HEADER', 'NOTE', 'REGION', 'WEBVTT'};
+  final Set<String> metadata = <String>{'HEADER', 'NOTE', 'REGION', 'WEBVTT'};
 
   int captionNumber = 1;
-  for (List<String> captionLines in _readWebVTTFile(file)) {
+  for (final List<String> captionLines in _readWebVTTFile(file)) {
     // CaptionLines represent a complete caption.
     // E.g
     // [
@@ -39,14 +39,18 @@ List<Caption> _parseCaptionsFromWebVTTString(String file) {
     //  ['Introduction']
     // ]
     // If caption has just header or time, but no text, `captionLines.length` will be 1.
-    if (captionLines.length < 2) continue;
+    if (captionLines.length < 2) {
+      continue;
+    }
 
     // If caption has header equal metadata, ignore.
-    String metadaType = captionLines[0].split(' ')[0];
-    if (metadata.contains(metadaType)) continue;
+    final String metadaType = captionLines[0].split(' ')[0];
+    if (metadata.contains(metadaType)) {
+      continue;
+    }
 
     // Caption has header
-    bool hasHeader = captionLines.length > 2;
+    final bool hasHeader = captionLines.length > 2;
     if (hasHeader) {
       final int? tryParseCaptionNumber = int.tryParse(captionLines[0]);
       if (tryParseCaptionNumber != null) {
@@ -82,10 +86,10 @@ List<Caption> _parseCaptionsFromWebVTTString(String file) {
 }
 
 class _CaptionRange {
+  _CaptionRange(this.start, this.end);
+
   final Duration start;
   final Duration end;
-
-  _CaptionRange(this.start, this.end);
 
   // Assumes format from an VTT file.
   // For example:
@@ -161,7 +165,7 @@ Duration? _parseWebVTTTimestamp(String timestampString) {
     return null;
   }
 
-  List<String> milisecondsStyles = dotSections[1].split(" ");
+  final List<String> milisecondsStyles = dotSections[1].split(' ');
 
   // TODO(cyanglaz): Handle caption styles.
   // https://github.com/flutter/flutter/issues/90009.
@@ -172,7 +176,7 @@ Duration? _parseWebVTTTimestamp(String timestampString) {
   // ```
   // For a better readable code style, style parsing should happen before
   // calling this method. See: https://github.com/flutter/plugins/pull/2878/files#r713381134.
-  int milliseconds = int.parse(milisecondsStyles[0]);
+  final int milliseconds = int.parse(milisecondsStyles[0]);
 
   return Duration(
     hours: hours,

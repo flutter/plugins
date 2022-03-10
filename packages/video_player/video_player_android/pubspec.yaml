@@ -2,7 +2,7 @@ name: video_player_android
 description: Android implementation of the video_player plugin.
 repository: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player_android
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+video_player%22
-version: 2.2.17
+version: 2.3.0
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -25,4 +25,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pigeon: ^0.1.21
+  pigeon: ^1.0.16
