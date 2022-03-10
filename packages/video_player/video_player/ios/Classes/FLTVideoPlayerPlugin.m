@@ -624,16 +624,23 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
                    error:(FlutterError* _Nullable __autoreleasing*)error {
-  AVAudioSessionCategory sessionCategory = [input.ambient boolValue] ? AVAudioSessionCategoryAmbient : AVAudioSessionCategoryPlayback;
-  AVAudioSessionCategoryOptions categoryOptions = [input.mixWithOthers boolValue ] ? AVAudioSessionCategoryOptionMixWithOthers: 0x0;
+  AVAudioSessionCategory sessionCategory =
+      [input.ambient boolValue] ? AVAudioSessionCategoryAmbient : AVAudioSessionCategoryPlayback;
+  AVAudioSessionCategoryOptions categoryOptions = [input.mixWithOthers boolValue]
+                                                      ? AVAudioSessionCategoryOptionMixWithOthers
+                                                      : AVAudioSessionCategoryOptionDuckOthers;
 
   if (@available(iOS 12.0, *)) {
+    AVAudioSessionMode sessionMode =
+        [input.ambient boolValue] ? AVAudioSessionModeVoicePrompt : AVAudioSessionModeDefault;
     [[AVAudioSession sharedInstance] setCategory:sessionCategory
-                                            mode:AVAudioSessionModeVoicePrompt
+                                            mode:sessionMode
                                          options:categoryOptions
-                                             error:nil];
+                                           error:nil];
   } else {
-    [[AVAudioSession sharedInstance] setCategory:sessionCategory withOptions:categoryOptions error:nil];
+    [[AVAudioSession sharedInstance] setCategory:sessionCategory
+                                     withOptions:categoryOptions
+                                           error:nil];
   }
   return;
 }
