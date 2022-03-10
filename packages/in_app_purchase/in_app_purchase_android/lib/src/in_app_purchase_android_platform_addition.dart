@@ -74,16 +74,16 @@ class InAppPurchaseAndroidPlatformAddition
     List<PurchasesResultWrapper> responses;
     PlatformException? exception;
     try {
-      responses = await Future.wait([
+      responses = await Future.wait(<Future<PurchasesResultWrapper>>[
         _billingClient.queryPurchases(SkuType.inapp),
         _billingClient.queryPurchases(SkuType.subs)
       ]);
     } on PlatformException catch (e) {
       exception = e;
-      responses = [
+      responses = <PurchasesResultWrapper>[
         PurchasesResultWrapper(
           responseCode: BillingResponse.error,
-          purchasesList: [],
+          purchasesList: const <PurchaseWrapper>[],
           billingResult: BillingResultWrapper(
             responseCode: BillingResponse.error,
             debugMessage: e.details.toString(),
@@ -91,7 +91,7 @@ class InAppPurchaseAndroidPlatformAddition
         ),
         PurchasesResultWrapper(
           responseCode: BillingResponse.error,
-          purchasesList: [],
+          purchasesList: const <PurchaseWrapper>[],
           billingResult: BillingResultWrapper(
             responseCode: BillingResponse.error,
             debugMessage: e.details.toString(),
@@ -100,17 +100,17 @@ class InAppPurchaseAndroidPlatformAddition
       ];
     }
 
-    Set errorCodeSet = responses
+    final Set<String> errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
         .map((PurchasesResultWrapper response) =>
             response.responseCode.toString())
         .toSet();
 
-    String errorMessage =
+    final String errorMessage =
         errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : '';
 
-    List<GooglePlayPurchaseDetails> pastPurchases =
+    final List<GooglePlayPurchaseDetails> pastPurchases =
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {

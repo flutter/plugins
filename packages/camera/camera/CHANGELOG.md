@@ -1,6 +1,12 @@
+## 0.9.4+16
+
+* Fixes a bug resulting in a `CameraAccessException` that prevents image
+  capture on some Android devices.
+
 ## 0.9.4+15
 
-* Fixes an issue with the orientation of video's recorded in landscape on Android.
+* Uses dispatch queue for pixel buffer synchronization on iOS.
+* Minor iOS internal code cleanup related to queue helper functions.
 
 ## 0.9.4+14
 
