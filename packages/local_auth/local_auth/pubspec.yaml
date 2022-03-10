@@ -17,8 +17,6 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.flutter.plugins.localauth
-        pluginClass: LocalAuthPlugin
         default_package: local_auth_android
       ios:
         pluginClass: FLTLocalAuthPlugin
