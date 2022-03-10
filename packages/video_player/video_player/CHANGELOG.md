@@ -1,8 +1,8 @@
 ## 2.2.10
-* Support for iOS AVAudioSession Ambient mode which allows multiple
+* Adds support for iOS AVAudioSession Ambient mode which allows multiple
   audio sources to play simultaneously and prevent background music
   from stopping.
-* Uses '.setMixWithOthers(...)' on iOS to setup default AVAudioSession.
+* Uses `.setMixWithOthers(...)` on iOS to set up default AVAudioSession.
 
 ## 2.2.9
 
