@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.biometric.BiometricManager;
@@ -31,7 +32,6 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -54,6 +54,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private FingerprintManager fingerprintManager;
   private KeyguardManager keyguardManager;
   private Result lockRequestResult;
+  private int sdkInt = Build.VERSION.SDK_INT;
   private final PluginRegistry.ActivityResultListener resultListener =
       new PluginRegistry.ActivityResultListener() {
         @Override
@@ -184,7 +185,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
 
     // API 29 and above
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    if (sdkInt >= Build.VERSION_CODES.Q) {
       authHelper =
           new AuthenticationHelper(
               lifecycle, (FragmentActivity) activity, call, completionHandler, true);
@@ -193,7 +194,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
 
     // API 23 - 28 with fingerprint
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fingerprintManager != null) {
+    if (sdkInt >= Build.VERSION_CODES.M && fingerprintManager != null) {
       if (fingerprintManager.hasEnrolledFingerprints()) {
         authHelper =
             new AuthenticationHelper(
@@ -204,7 +205,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
 
     // API 23 or higher with device credentials
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+    if (sdkInt >= Build.VERSION_CODES.M
         && keyguardManager != null
         && keyguardManager.isDeviceSecure()) {
       String title = call.argument("signInTitle");
@@ -258,10 +259,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
-      if (!canAuthenticateWithBiometrics()) {
-        result.success(Collections.emptyList());
-        return;
-      }
       ArrayList<String> biometrics = getAvailableBiometrics();
       result.success(biometrics);
     } catch (Exception e) {
@@ -274,13 +271,19 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     if (activity == null || activity.isFinishing()) {
       return biometrics;
     }
+
+    if (!canAuthenticateWithBiometrics()) {
+      biometrics.add("undefined");
+      return biometrics;
+    }
+
     PackageManager packageManager = activity.getPackageManager();
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (sdkInt >= 23) {
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
         biometrics.add("fingerprint");
       }
     }
-    if (Build.VERSION.SDK_INT >= 29) {
+    if (sdkInt >= 29) {
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
         biometrics.add("face");
       }
@@ -294,7 +297,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   private boolean isDeviceSupported() {
     if (keyguardManager == null) return false;
-    return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
+    return (sdkInt >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
   }
 
   private boolean canAuthenticateWithBiometrics() {
@@ -326,7 +329,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     Context context = activity.getBaseContext();
     biometricManager = BiometricManager.from(activity);
     keyguardManager = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (sdkInt >= Build.VERSION_CODES.M) {
       fingerprintManager =
           (FingerprintManager) context.getSystemService(Context.FINGERPRINT_SERVICE);
     }
@@ -363,5 +366,15 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @VisibleForTesting
   final Activity getActivity() {
     return activity;
+  }
+
+  @VisibleForTesting
+  void overrideBiometricManager(BiometricManager biometricManager) {
+    this.biometricManager = biometricManager;
+  }
+
+  @VisibleForTesting
+  void overrideSdkInt(int sdkInt) {
+    this.sdkInt = sdkInt;
   }
 }

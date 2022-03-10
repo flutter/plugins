@@ -1,6 +1,7 @@
-## 1.2.0
+## 1.1.12
 
-* Updated `getAvailableBiometrics` behavior on Android. Now it returns an empty list when device has the biometric hardware but doesn't have any biometric enrolled.
+* Fix `getAvailableBiometrics` behavior on Android. Now it returns an empty list when device has the biometric hardware but doesn't have any biometric enrolled. For more information check [this](https://github.com/flutter/flutter/issues/45497#issuecomment-1007310214).
+* Updated Android tests.
 
 ## 1.1.11
 
