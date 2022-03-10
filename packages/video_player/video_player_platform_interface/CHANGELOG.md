@@ -1,13 +1,14 @@
 ## 5.0.1
+
 * Add ambient mode to `VideoPlayerOptions`
 
--## 5.0.0
--
--* **BREAKING CHANGES**:
--  * Updates to extending `PlatformInterface`. Removes `isMock`, in favor of the
--    now-standard `MockPlatformInterfaceMixin`.
--  * Removes test.dart from the public interface. Tests in other packages should
--    mock `VideoPlatformInterface` rather than the method channel.
+## 5.0.0
+
+* **BREAKING CHANGES**:
+  * Updates to extending `PlatformInterface`. Removes `isMock`, in favor of the
+    now-standard `MockPlatformInterfaceMixin`.
+  * Removes test.dart from the public interface. Tests in other packages should
+    mock `VideoPlatformInterface` rather than the method channel.
 
 ## 4.2.0
 
