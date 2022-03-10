@@ -10,6 +10,7 @@
 #import "GoogleMapMarkerController.h"
 #import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
+#import "JsonConversions.h"
 
 @interface FLTGoogleMapsPlugin : NSObject <FlutterPlugin>
 @end
