@@ -1,3 +1,7 @@
+## 0.9.4+17
+
+* Fix an issue with the orientation of video's recorded in landscape on Android. 
+
 ## 0.9.4+16
 
 * Fixes a bug resulting in a `CameraAccessException` that prevents image
