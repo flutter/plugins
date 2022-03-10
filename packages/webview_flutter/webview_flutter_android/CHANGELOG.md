@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes bug preventing `mockito` code generation for tests.
+
 ## 2.8.3
 
 * Fixes a bug causing `debuggingEnabled` to always be set to true.
