@@ -159,6 +159,9 @@ public class DeviceOrientationManager {
    *
    * <p>Returns one of 0, 90, 180 or 270.
    *
+   * <p>More details can be found in the official Android documentation:
+   * https://developer.android.com/training/camera2/camera-preview-large-screens#orientation_calculation
+   *
    * @param orientation The {@link PlatformChannel.DeviceOrientation} value that is to be converted
    *     into degrees.
    * @return The device's video orientation in degrees.
