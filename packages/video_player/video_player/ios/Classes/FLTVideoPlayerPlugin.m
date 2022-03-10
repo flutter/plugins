@@ -531,7 +531,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)initialize:(FlutterError* __autoreleasing*)error {
-  // setup of 'AVAudioSession' is handled by '.setMixWithOthers(...)'
+  // The 'AVAudioSession' configuration is handled by '.setMixWithOthers(...)'.
 
   for (NSNumber* textureId in _players) {
     [_registry unregisterTexture:[textureId unsignedIntegerValue]];
@@ -624,30 +624,18 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
                    error:(FlutterError* _Nullable __autoreleasing*)error {
-  if ([input.mixWithOthers boolValue]) {
-    if ([input.ambient boolValue]) {
-      if (@available(iOS 12.0, *)) {
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
-                                                mode:AVAudioSessionModeVoicePrompt
-                                             options:AVAudioSessionCategoryOptionMixWithOthers
-                                               error:nil];
-      } else {
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
-                                         withOptions:AVAudioSessionCategoryOptionMixWithOthers
-                                               error:nil];
-      }
-    } else {
-      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
-                                       withOptions:AVAudioSessionCategoryOptionMixWithOthers
+  AVAudioSessionCategory sessionCategory = [input.ambient boolValue] ? AVAudioSessionCategoryAmbient : AVAudioSessionCategoryPlayback;
+  AVAudioSessionCategoryOptions categoryOptions = [input.mixWithOthers boolValue ] ? AVAudioSessionCategoryOptionMixWithOthers: 0x0;
+
+  if (@available(iOS 12.0, *)) {
+    [[AVAudioSession sharedInstance] setCategory:sessionCategory
+                                            mode:AVAudioSessionModeVoicePrompt
+                                         options:categoryOptions
                                              error:nil];
-    }
   } else {
-    if ([input.ambient boolValue]) {
-      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
-      return;
-    }
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [[AVAudioSession sharedInstance] setCategory:sessionCategory withOptions:categoryOptions error:nil];
   }
+  return;
 }
 
 @end
