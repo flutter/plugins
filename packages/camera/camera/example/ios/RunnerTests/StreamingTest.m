@@ -10,49 +10,41 @@
 #import "MockFLTThreadSafeFlutterResult.h"
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+- (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue;
 @property FlutterEventSink eventSink;
 @end
 
-@interface FLTCam (Private)
-@property(assign, nonatomic) int maxStreamingPendingFrames;
-@property(assign, nonatomic) BOOL isStreamingImages;
-@property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
-@property(retain, nonatomic) FLTCam *camera;
-- (void)captureOutput:(AVCaptureOutput *)output
-    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-           fromConnection:(AVCaptureConnection *)connection;
-@end
-
-@interface CameraPlugin (Private)
-@property(retain, nonatomic) FLTCam *camera;
-@end
-
 @interface StreamingTests : XCTestCase
+@property(readonly, nonatomic) FLTCam *camera;
 @end
 
 @implementation StreamingTests
 
-- (void)testStreamingPendingFrames {
-  CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
+- (void)setUp {
+  // set up mocks
+  id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
+  OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
+      .andReturn(inputMock);
 
-  // Set up mocks for initWithCameraName method
-  id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
-  OCMStub([avCaptureDeviceInputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg anyObjectRef]])
-      .andReturn([AVCaptureInput alloc]);
-  id avCaptureSessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
-  OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
+  id sessionMock = OCMClassMock([AVCaptureSession class]);
+  OCMStub([sessionMock alloc]).andReturn(sessionMock);
+  OCMStub([sessionMock addInputWithNoConnections:[OCMArg any]]);
+  OCMStub([sessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
-  // Set up method calls
-  FlutterMethodCall *createCall = [FlutterMethodCall
-      methodCallWithMethodName:@"create"
-                     arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
-  FlutterMethodCall *startCall = [FlutterMethodCall methodCallWithMethodName:@"startImageStream"
-                                                                   arguments:nil];
-  FlutterMethodCall *receivedCall =
-      [FlutterMethodCall methodCallWithMethodName:@"receivedImageStreamData" arguments:nil];
+  // create a camera
+  dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
+  dispatch_queue_set_specific(captureSessionQueue, FLTCaptureSessionQueueSpecific,
+                              (void *)FLTCaptureSessionQueueSpecific, NULL);
+  _camera = [[FLTCam alloc] initWithCameraName:@"camera"
+                              resolutionPreset:@"medium"
+                                   enableAudio:true
+                                   orientation:UIDeviceOrientationPortrait
+                           captureSessionQueue:captureSessionQueue
+                                         error:nil];
+}
 
-  // Set up sampleBuffer
+// Set up a sampleBuffer
+- (CMSampleBufferRef)sampleBuffer {
   CVPixelBufferRef pixelBuffer;
   CVPixelBufferCreate(kCFAllocatorDefault, 100, 100, kCVPixelFormatType_32BGRA, nil, &pixelBuffer);
   CMVideoFormatDescriptionRef formatDescription;
@@ -62,34 +54,55 @@
   CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pixelBuffer, formatDescription,
                                            &kCMTimingInfoInvalid, &sampleBuffer);
 
-  // Start streaming
-  [camera handleMethodCallAsync:createCall result:nil];
-  [camera handleMethodCallAsync:startCall result:nil];
-  camera.camera.imageStreamHandler.eventSink = ^(id _Nullable event) {
-  };
+  return sampleBuffer;
+}
 
-  // Waiting for streaming to start
-  FLTCam *cam = [camera camera];
-  while (!cam.isStreamingImages) {
-    [NSThread sleepForTimeInterval:0.001];
+- (void)testExceedMaxStreamingPendingFramesCount {
+  XCTestExpectation *streamingExpectation = [self
+      expectationWithDescription:@"Must not receive more than MaxStreamingPendingFramesCount"];
+
+  id handlerMock = OCMClassMock([FLTImageStreamHandler class]);
+  OCMStub([handlerMock alloc]).andReturn(handlerMock);
+  OCMStub([handlerMock initWithCaptureSessionQueue:[OCMArg any]]).andReturn(handlerMock);
+  OCMStub([handlerMock eventSink]).andReturn(^(id event) {
+    [streamingExpectation fulfill];
+  });
+
+  id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
+  [_camera startImageStreamWithMessenger:messenger];
+
+  streamingExpectation.expectedFulfillmentCount = 4;
+  for (int i = 0; i < 10; i++) {
+    [_camera captureOutput:nil didOutputSampleBuffer:[self sampleBuffer] fromConnection:nil];
   }
 
-  // Initial value
-  XCTAssertEqual(cam.streamingPendingFrames, 0);
+  [self waitForExpectationsWithTimeout:3.0 handler:nil];
+}
 
-  // Emulate receiving a video frame
-  [camera.camera captureOutput:nil didOutputSampleBuffer:sampleBuffer fromConnection:nil];
-  XCTAssertEqual(cam.streamingPendingFrames, 1);
+- (void)testReceivedImageStreamData {
+  XCTestExpectation *streamingExpectation =
+      [self expectationWithDescription:
+                @"Must be able to receive again when receivedImageStreamData is called"];
 
-  // ReceivedCall reduces streamingPendingFrames
-  [camera handleMethodCallAsync:receivedCall result:nil];
-  XCTAssertEqual(cam.streamingPendingFrames, 0);
+  id handlerMock = OCMClassMock([FLTImageStreamHandler class]);
+  OCMStub([handlerMock alloc]).andReturn(handlerMock);
+  OCMStub([handlerMock initWithCaptureSessionQueue:[OCMArg any]]).andReturn(handlerMock);
+  OCMStub([handlerMock eventSink]).andReturn(^(id event) {
+    [streamingExpectation fulfill];
+  });
 
-  // Don't exceed maxStreamingPendingFrames
-  for (int i = 0; i < cam.maxStreamingPendingFrames + 2; i++) {
-    [camera.camera captureOutput:nil didOutputSampleBuffer:sampleBuffer fromConnection:nil];
+  id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
+  [_camera startImageStreamWithMessenger:messenger];
+
+  streamingExpectation.expectedFulfillmentCount = 5;
+  for (int i = 0; i < 10; i++) {
+    [_camera captureOutput:nil didOutputSampleBuffer:[self sampleBuffer] fromConnection:nil];
   }
-  XCTAssertEqual(cam.streamingPendingFrames, cam.maxStreamingPendingFrames);
+
+  [_camera receivedImageStreamData];
+  [_camera captureOutput:nil didOutputSampleBuffer:[self sampleBuffer] fromConnection:nil];
+
+  [self waitForExpectationsWithTimeout:3.0 handler:nil];
 }
 
 @end

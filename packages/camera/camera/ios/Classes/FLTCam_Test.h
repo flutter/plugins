@@ -22,4 +22,8 @@
 @property(readonly, nonatomic)
     NSMutableDictionary<NSNumber *, FLTSavePhotoDelegate *> *inProgressSavePhotoDelegates;
 
+/// Called whenever an AVCaptureVideoDataOutput instance outputs a new video frame.
+- (void)captureOutput:(AVCaptureOutput *)output
+    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+           fromConnection:(AVCaptureConnection *)connection;
 @end

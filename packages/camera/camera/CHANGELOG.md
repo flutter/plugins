@@ -1,3 +1,7 @@
+## 0.9.4+17
+
+* Fixes a crash in iOS when streaming on low-performance devices.
+
 ## NEXT
 
 * Minor iOS internal code cleanup related to queue helper functions.  

@@ -67,7 +67,8 @@
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(assign, nonatomic) int maxStreamingPendingFrames;
+@property(assign, nonatomic) int streamingPendingFramesCount;
+@property(assign, nonatomic) int maxstreamingPendingFramesCount;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -116,7 +117,7 @@ NSString *const errorMethod = @"error";
   // To prevent memory consumption, limit the number of frames pending processing.
   // After some testing, 4 was determined to be the best maximum value.
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
-  _maxStreamingPendingFrames = 4;
+  _maxstreamingPendingFramesCount = 4;
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -379,8 +380,8 @@ NSString *const errorMethod = @"error";
   }
   if (_isStreamingImages) {
     FlutterEventSink eventSink = _imageStreamHandler.eventSink;
-    if (eventSink && (_streamingPendingFrames < _maxStreamingPendingFrames)) {
-      _streamingPendingFrames++;
+    if (eventSink && (self.streamingPendingFramesCount < self.maxstreamingPendingFramesCount)) {
+      self.streamingPendingFramesCount++;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       // Must lock base address before accessing the pixel data
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
@@ -889,7 +890,7 @@ NSString *const errorMethod = @"error";
                                   completion:^{
                                     dispatch_async(self->_captureSessionQueue, ^{
                                       self.isStreamingImages = YES;
-                                      self.streamingPendingFrames = 0;
+                                      self.streamingPendingFramesCount = 0;
                                     });
                                   }];
   } else {
@@ -905,6 +906,10 @@ NSString *const errorMethod = @"error";
   } else {
     [_methodChannel invokeMethod:errorMethod arguments:@"Images from camera are not streaming!"];
   }
+}
+
+- (void)receivedImageStreamData {
+  self.streamingPendingFramesCount--;
 }
 
 - (void)getMaxZoomLevelWithResult:(FLTThreadSafeFlutterResult *)result {
