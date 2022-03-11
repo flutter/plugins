@@ -2,7 +2,7 @@
 
 * Renames internal method channels to avoid potential confusion with the
   default implementation's method channel.
-* Updates Pigeon to 1.0.19.
+* Updates Pigeon to 2.0.1.
 
 ## 2.3.0
 
