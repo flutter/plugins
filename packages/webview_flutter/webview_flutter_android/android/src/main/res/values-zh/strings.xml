@@ -1,0 +1,7 @@
+<resources>
+    <string name="take_photo">拍照</string>
+    <string name="photo_library">图库</string>
+    <string name="select_picture">选择文件</string>
+    <string name="take_pic_need_permission">拍照需要您授予相机权限</string>
+
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 这个是保存拍照图片的路径,必须配置。 -->
+    <external-path
+        name="my_images"
+        path="/" />
+
+<!--    external-path 指定Uri共享的目录-->
+<!--    name 属性值，可以随便填-->
+<!--    path 共享的具体路径-->
+</paths>

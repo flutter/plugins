@@ -27,6 +27,20 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
+    <!--Android 7.0本地文件共享 （FileUriExposedException）-->
+    <!-- authorities：可自定义（一般为 包名 + ".fileprovider"）
+            grantUriPermissions：表示授予 URI 临时访问权限。 -->
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+      <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/provider_paths" />
+    </provider>
+
   </application>
 
   <!-- The INTERNET permission is required for development. Specifically,
@@ -39,4 +53,7 @@
        permission failure prevents tests from running.
   -->
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 </manifest>
