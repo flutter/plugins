@@ -51,6 +51,12 @@ void main() {
             ImagePickerWindows.imageFormats);
       });
 
+      test('pickImage throws UnimplementedError when source is camera',
+          () async {
+        expect(() async => await plugin.pickImage(source: ImageSource.camera),
+            throwsA(isA<UnimplementedError>()));
+      });
+
       test('getImage passes the accepted type groups correctly', () async {
         await plugin.getImage(source: ImageSource.gallery);
 
@@ -61,6 +67,12 @@ void main() {
                 .single[0]
                 .extensions,
             ImagePickerWindows.imageFormats);
+      });
+
+      test('getImage throws UnimplementedError when source is camera',
+          () async {
+        expect(() async => await plugin.getImage(source: ImageSource.camera),
+            throwsA(isA<UnimplementedError>()));
       });
 
       test('getMultiImage passes the accepted type groups correctly', () async {
@@ -88,6 +100,12 @@ void main() {
             ImagePickerWindows.videoFormats);
       });
 
+      test('pickVideo throws UnimplementedError when source is camera',
+          () async {
+        expect(() async => await plugin.pickVideo(source: ImageSource.camera),
+            throwsA(isA<UnimplementedError>()));
+      });
+
       test('getVideo passes the accepted type groups correctly', () async {
         await plugin.getVideo(source: ImageSource.gallery);
 
@@ -98,6 +116,12 @@ void main() {
                 .single[0]
                 .extensions,
             ImagePickerWindows.videoFormats);
+      });
+
+      test('getVideo throws UnimplementedError when source is camera',
+          () async {
+        expect(() async => await plugin.getVideo(source: ImageSource.camera),
+            throwsA(isA<UnimplementedError>()));
       });
     });
   });
