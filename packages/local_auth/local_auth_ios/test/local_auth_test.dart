@@ -23,14 +23,65 @@ void main() {
     setUp(() {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
-        return Future<dynamic>.value(true);
+        switch (methodCall.method) {
+          case 'getAvailableBiometrics':
+            return Future<List<String>>.value(
+                <String>['face', 'fingerprint', 'iris', 'undefined']);
+          default:
+            return Future<dynamic>.value(true);
+        }
       });
       localAuthentication = LocalAuthIOS();
       log.clear();
     });
 
+    test('deviceSupportsBiometrics calls getEnrolledBiometrics', () async {
+      final bool result = await localAuthentication.deviceSupportsBiometrics();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getAvailableBiometrics', arguments: null),
+        ],
+      );
+      expect(result, true);
+    });
+
+    test('getEnrolledBiometrics calls platform', () async {
+      final List<BiometricType> result =
+          await localAuthentication.getEnrolledBiometrics();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getAvailableBiometrics', arguments: null),
+        ],
+      );
+      expect(result, <BiometricType>[
+        BiometricType.face,
+        BiometricType.fingerprint,
+        BiometricType.iris
+      ]);
+    });
+
+    test('isDeviceSupported calls platform', () async {
+      await localAuthentication.isDeviceSupported();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('isDeviceSupported', arguments: null),
+        ],
+      );
+    });
+
+    test('stopAuthentication throws UnimplementedError', () async {
+      expect(() async => await localAuthentication.stopAuthentication(),
+          throwsUnimplementedError);
+    });
+
     group('With device auth fail over', () {
-      test('authenticate with no args on iOS.', () async {
+      test('authenticate with no args.', () async {
         await localAuthentication.authenticate(
           authMessages: <AuthMessages>[const IOSAuthMessages()],
           localizedReason: 'Needs secure',
@@ -51,7 +102,7 @@ void main() {
         );
       });
 
-      test('authenticate with no localizedReason on iOS.', () async {
+      test('authenticate with no localizedReason.', () async {
         await expectLater(
           localAuthentication.authenticate(
             authMessages: <AuthMessages>[const IOSAuthMessages()],
@@ -64,7 +115,7 @@ void main() {
     });
 
     group('With biometrics only', () {
-      test('authenticate with no args on iOS.', () async {
+      test('authenticate with no args.', () async {
         await localAuthentication.authenticate(
           authMessages: <AuthMessages>[const IOSAuthMessages()],
           localizedReason: 'Needs secure',

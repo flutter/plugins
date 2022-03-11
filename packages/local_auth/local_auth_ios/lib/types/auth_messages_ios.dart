@@ -19,20 +19,19 @@ class IOSAuthMessages extends AuthMessages {
   });
 
   /// Message advising the user to re-enable biometrics on their device.
-  /// It shows in a dialog on iOS.
   final String? lockOut;
 
   /// Message shown on a button that the user can click to go to settings pages
-  /// from the current dialog. It is used on both Android and iOS sides.
+  /// from the current dialog.
   /// Maximum 30 characters.
   final String? goToSettingsButton;
 
   /// Message advising the user to go to the settings and configure Biometrics
-  /// for their device. It shows in a dialog on iOS.
+  /// for their device.
   final String? goToSettingsDescription;
 
   /// Message shown on a button that the user can click to leave the current
-  /// dialog. It is used on iOS.
+  /// dialog.
   /// Maximum 30 characters.
   final String? cancelButton;
 
@@ -65,37 +64,33 @@ class IOSAuthMessages extends AuthMessages {
       cancelButton.hashCode;
 }
 
-// Strings for local_authentication plugin. Currently supports English.
+// Default Strings for IOSAuthMessages plugin. Currently supports English.
 // Intl.message must be string literals.
 
 /// Message shown on a button that the user can click to go to settings pages
-/// from the current dialog. Maximum 30 characters.
+/// from the current dialog.
 String get goToSettings => Intl.message('Go to settings',
     desc: 'Message shown on a button that the user can click to go to '
-        'settings pages from the current dialog. It is used on both Android '
-        'and iOS sides. Maximum 30 characters.');
+        'settings pages from the current dialog. Maximum 30 characters.');
 
 /// Message advising the user to re-enable biometrics on their device.
 /// It shows in a dialog on iOS.
 String get iOSLockOut => Intl.message(
     'Biometric authentication is disabled. Please lock and unlock your screen to '
     'enable it.',
-    desc:
-        'Message advising the user to re-enable biometrics on their device. It '
-        'shows in a dialog on the iOS.');
+    desc: 'Message advising the user to re-enable biometrics on their device.');
 
 /// Message advising the user to go to the settings and configure Biometrics
-/// for their device. It shows in a dialog on iOS.
+/// for their device.
 String get iOSGoToSettingsDescription => Intl.message(
     'Biometric authentication is not set up on your device. Please either enable '
     'Touch ID or Face ID on your phone.',
     desc:
         'Message advising the user to go to the settings and configure Biometrics '
-        'for their device. It shows in a dialog on iOS.');
+        'for their device.');
 
 /// Message shown on a button that the user can click to leave the current
-/// dialog. It is used on iOS.
-/// Maximum 30 characters.
+/// dialog.
 String get iOSOkButton => Intl.message('OK',
     desc: 'Message showed on a button that the user can click to leave the '
-        'current dialog. It is used on iOS side. Maximum 30 characters.');
+        'current dialog. Maximum 30 characters.');

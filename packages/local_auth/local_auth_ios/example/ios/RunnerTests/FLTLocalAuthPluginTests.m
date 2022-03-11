@@ -10,7 +10,7 @@
 #if __has_include(<local_auth/FLTLocalAuthPlugin.h>)
 #import <local_auth/FLTLocalAuthPlugin.h>
 #else
-@import local_auth;
+@import local_auth_ios;
 #endif
 
 // Private API needed for tests.

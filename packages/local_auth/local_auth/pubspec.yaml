@@ -25,13 +25,12 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
-  platform: ^3.0.2
-  local_auth_platform_interface:
-    path: ../local_auth_platform_interface
-  local_auth_ios:
-    path: ../local_auth_ios
   local_auth_android:
     path: ../local_auth_android
+  local_auth_ios:
+    path: ../local_auth_ios
+  local_auth_platform_interface: ^1.0.0
+  platform: ^3.0.2
 
 dev_dependencies:
   flutter_driver:
@@ -40,5 +39,5 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  mockito: ^5.1.0
   pedantic: ^1.10.0
-  mockito: ^5.0.0

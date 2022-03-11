@@ -9,6 +9,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
+import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
+import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +23,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final LocalAuthIOS auth = LocalAuthIOS();
   _SupportState _supportState = _SupportState.unknown;
   bool? _canCheckBiometrics;
   List<BiometricType>? _availableBiometrics;
@@ -30,7 +32,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    auth.isDeviceSupported().then(
+    LocalAuthPlatform.instance.isDeviceSupported().then(
           (bool isSupported) => setState(() => _supportState = isSupported
               ? _SupportState.supported
               : _SupportState.unsupported),
@@ -40,7 +42,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkBiometrics() async {
     late bool canCheckBiometrics;
     try {
-      canCheckBiometrics = (await auth.getEnrolledBiometrics()).isNotEmpty;
+      canCheckBiometrics =
+          (await LocalAuthPlatform.instance.getEnrolledBiometrics()).isNotEmpty;
     } on PlatformException catch (e) {
       canCheckBiometrics = false;
       print(e);
@@ -57,7 +60,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> _getEnrolledBiometrics() async {
     late List<BiometricType> availableBiometrics;
     try {
-      availableBiometrics = await auth.getEnrolledBiometrics();
+      availableBiometrics =
+          await LocalAuthPlatform.instance.getEnrolledBiometrics();
     } on PlatformException catch (e) {
       availableBiometrics = <BiometricType>[];
       print(e);
@@ -78,7 +82,7 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticate(
+      authenticated = await LocalAuthPlatform.instance.authenticate(
         localizedReason: 'Let OS determine authentication method',
         authMessages: <AuthMessages>[const IOSAuthMessages()],
         options: const AuthenticationOptions(
@@ -112,7 +116,7 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticate(
+      authenticated = await LocalAuthPlatform.instance.authenticate(
         localizedReason:
             'Scan your fingerprint (or face or whatever) to authenticate',
         authMessages: <AuthMessages>[const IOSAuthMessages()],
@@ -145,7 +149,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _cancelAuthentication() async {
-    await auth.stopAuthentication();
+    await LocalAuthPlatform.instance.stopAuthentication();
     setState(() => _isAuthenticating = false);
   }
 
