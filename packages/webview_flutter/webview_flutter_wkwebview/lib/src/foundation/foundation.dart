@@ -33,3 +33,27 @@ class NSUrlRequest {
   /// All of the HTTP header fields for a request.
   final Map<String, String> allHttpHeaderFields;
 }
+
+/// Information about an error condition.
+///
+/// Wraps [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
+@immutable
+class NSError {
+  /// Constructs an [NSError].
+  const NSError({
+    required this.code,
+    required this.domain,
+    required this.localizedDescription,
+  });
+
+  /// The error code.
+  ///
+  /// Note that errors are domain-specific.
+  final int code;
+
+  /// A string containing the error domain.
+  final String domain;
+
+  /// A string containing the localized description of the error.
+  final String localizedDescription;
+}

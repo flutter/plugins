@@ -2,9 +2,15 @@
 
 * Fixes a crash in iOS when streaming on low-performance devices.
 
-## NEXT
+## 0.9.4+16
 
-* Minor iOS internal code cleanup related to queue helper functions.  
+* Fixes a bug resulting in a `CameraAccessException` that prevents image
+  capture on some Android devices.
+
+## 0.9.4+15
+
+* Uses dispatch queue for pixel buffer synchronization on iOS.
+* Minor iOS internal code cleanup related to queue helper functions.
 
 ## 0.9.4+14
 

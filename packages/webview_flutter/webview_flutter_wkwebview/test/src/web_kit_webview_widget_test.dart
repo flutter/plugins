@@ -16,6 +16,7 @@ import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 import 'web_kit_webview_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  WKNavigationDelegate,
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
@@ -34,6 +35,7 @@ void main() {
     late MockWKUserContentController mockUserContentController;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
     late MockWKUIDelegate mockUIDelegate;
+    late MockWKNavigationDelegate mockNavigationDelegate;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
@@ -45,10 +47,13 @@ void main() {
       mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockUserContentController = MockWKUserContentController();
       mockUIDelegate = MockWKUIDelegate();
+      mockNavigationDelegate = MockWKNavigationDelegate();
       mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
       when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
+      when(mockWebViewWidgetProxy.createNavigationDelegate())
+          .thenReturn(mockNavigationDelegate);
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
@@ -277,6 +282,152 @@ void main() {
           WKUserScriptInjectionTime.atDocumentStart,
         );
         expect(userScripts[0].isMainFrameOnly, false);
+      });
+    });
+
+    group('$WebViewPlatformCallbacksHandler', () {
+      testWidgets('onPageStarted', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        final dynamic didStartProvisionalNavigation = verify(
+                mockNavigationDelegate.didStartProvisionalNavigation =
+                    captureAny)
+            .captured
+            .single as void Function(WKWebView, String);
+        didStartProvisionalNavigation(mockWebView, 'https://google.com');
+
+        verify(mockCallbacksHandler.onPageStarted('https://google.com'));
+      });
+
+      testWidgets('onPageFinished', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        final dynamic didFinishNavigation =
+            verify(mockNavigationDelegate.didFinishNavigation = captureAny)
+                .captured
+                .single as void Function(WKWebView, String);
+        didFinishNavigation(mockWebView, 'https://google.com');
+
+        verify(mockCallbacksHandler.onPageFinished('https://google.com'));
+      });
+
+      testWidgets('onWebResourceError from didFailNavigation',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        final dynamic didFailNavigation =
+            verify(mockNavigationDelegate.didFailNavigation = captureAny)
+                .captured
+                .single as void Function(WKWebView, NSError);
+
+        didFailNavigation(
+          mockWebView,
+          const NSError(
+            code: WKErrorCode.webViewInvalidated,
+            domain: 'domain',
+            localizedDescription: 'my desc',
+          ),
+        );
+
+        final WebResourceError error =
+            verify(mockCallbacksHandler.onWebResourceError(captureAny))
+                .captured
+                .single as WebResourceError;
+        expect(error.description, 'my desc');
+        expect(error.errorCode, WKErrorCode.webViewInvalidated);
+        expect(error.domain, 'domain');
+        expect(error.errorType, WebResourceErrorType.webViewInvalidated);
+      });
+
+      testWidgets('onWebResourceError from didFailProvisionalNavigation',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        final dynamic didFailProvisionalNavigation = verify(
+                mockNavigationDelegate.didFailProvisionalNavigation =
+                    captureAny)
+            .captured
+            .single as void Function(WKWebView, NSError);
+
+        didFailProvisionalNavigation(
+          mockWebView,
+          const NSError(
+            code: WKErrorCode.webContentProcessTerminated,
+            domain: 'domain',
+            localizedDescription: 'my desc',
+          ),
+        );
+
+        final WebResourceError error =
+            verify(mockCallbacksHandler.onWebResourceError(captureAny))
+                .captured
+                .single as WebResourceError;
+        expect(error.description, 'my desc');
+        expect(error.errorCode, WKErrorCode.webContentProcessTerminated);
+        expect(error.domain, 'domain');
+        expect(
+          error.errorType,
+          WebResourceErrorType.webContentProcessTerminated,
+        );
+      });
+
+      testWidgets(
+          'onWebResourceError from webViewWebContentProcessDidTerminate',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        final dynamic webViewWebContentProcessDidTerminate = verify(
+                mockNavigationDelegate.webViewWebContentProcessDidTerminate =
+                    captureAny)
+            .captured
+            .single as void Function(WKWebView);
+        webViewWebContentProcessDidTerminate(mockWebView);
+
+        final WebResourceError error =
+            verify(mockCallbacksHandler.onWebResourceError(captureAny))
+                .captured
+                .single as WebResourceError;
+        expect(error.description, '');
+        expect(error.errorCode, WKErrorCode.webContentProcessTerminated);
+        expect(error.domain, 'WKErrorDomain');
+        expect(
+          error.errorType,
+          WebResourceErrorType.webContentProcessTerminated,
+        );
+      });
+
+      testWidgets('onNavigationRequest from decidePolicyForNavigationAction',
+          (WidgetTester tester) async {
+        await buildWidget(tester, hasNavigationDelegate: true);
+
+        final dynamic decidePolicyForNavigationAction = verify(
+                    mockNavigationDelegate.decidePolicyForNavigationAction =
+                        captureAny)
+                .captured
+                .single
+            as Future<WKNavigationActionPolicy> Function(
+                WKWebView, WKNavigationAction);
+
+        when(mockCallbacksHandler.onNavigationRequest(
+          isForMainFrame: argThat(isFalse, named: 'isForMainFrame'),
+          url: 'https://google.com',
+        )).thenReturn(true);
+
+        expect(
+          decidePolicyForNavigationAction(
+            mockWebView,
+            const WKNavigationAction(
+              request: NSUrlRequest(url: 'https://google.com'),
+              targetFrame: WKFrameInfo(isMainFrame: false),
+            ),
+          ),
+          completion(WKNavigationActionPolicy.allow),
+        );
+
+        verify(mockCallbacksHandler.onNavigationRequest(
+          url: 'https://google.com',
+          isForMainFrame: false,
+        ));
       });
     });
 
