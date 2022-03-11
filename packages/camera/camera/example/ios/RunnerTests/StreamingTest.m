@@ -7,7 +7,7 @@
 @import XCTest;
 @import AVFoundation;
 #import <OCMock/OCMock.h>
-#import "MockFLTThreadSafeFlutterResult.h"
+#import "CameraTestUtils.h"
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
 - (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue;
@@ -16,45 +16,19 @@
 
 @interface StreamingTests : XCTestCase
 @property(readonly, nonatomic) FLTCam *camera;
+@property(readonly, nonatomic) CMSampleBufferRef sampleBuffer;
 @end
 
 @implementation StreamingTests
 
 - (void)setUp {
-  // set up mocks
-  id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
-  OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
-      .andReturn(inputMock);
-
-  id sessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([sessionMock alloc]).andReturn(sessionMock);
-  OCMStub([sessionMock addInputWithNoConnections:[OCMArg any]]);
-  OCMStub([sessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
-
-  // create a camera
-  dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
-  dispatch_queue_set_specific(captureSessionQueue, FLTCaptureSessionQueueSpecific,
-                              (void *)FLTCaptureSessionQueueSpecific, NULL);
-  _camera = [[FLTCam alloc] initWithCameraName:@"camera"
-                              resolutionPreset:@"medium"
-                                   enableAudio:true
-                                   orientation:UIDeviceOrientationPortrait
-                           captureSessionQueue:captureSessionQueue
-                                         error:nil];
+  dispatch_queue_t captureSessionQueue = dispatch_queue_create("testing", NULL);
+  _camera = FLTCreateCamWithCaptureSessionQueue(captureSessionQueue);
+  _sampleBuffer = FLTCreateTestSampleBuffer();
 }
 
-// Set up a sampleBuffer
-- (CMSampleBufferRef)sampleBuffer {
-  CVPixelBufferRef pixelBuffer;
-  CVPixelBufferCreate(kCFAllocatorDefault, 100, 100, kCVPixelFormatType_32BGRA, nil, &pixelBuffer);
-  CMVideoFormatDescriptionRef formatDescription;
-  CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer,
-                                               &formatDescription);
-  CMSampleBufferRef sampleBuffer;
-  CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pixelBuffer, formatDescription,
-                                           &kCMTimingInfoInvalid, &sampleBuffer);
-
-  return sampleBuffer;
+-(void)tearDown {
+  CFRelease(_sampleBuffer);
 }
 
 - (void)testExceedMaxStreamingPendingFramesCount {
@@ -73,7 +47,7 @@
 
   streamingExpectation.expectedFulfillmentCount = 4;
   for (int i = 0; i < 10; i++) {
-    [_camera captureOutput:nil didOutputSampleBuffer:[self sampleBuffer] fromConnection:nil];
+    [_camera captureOutput:nil didOutputSampleBuffer:self.sampleBuffer fromConnection:nil];
   }
 
   [self waitForExpectationsWithTimeout:3.0 handler:nil];
@@ -96,11 +70,11 @@
 
   streamingExpectation.expectedFulfillmentCount = 5;
   for (int i = 0; i < 10; i++) {
-    [_camera captureOutput:nil didOutputSampleBuffer:[self sampleBuffer] fromConnection:nil];
+    [_camera captureOutput:nil didOutputSampleBuffer:self.sampleBuffer fromConnection:nil];
   }
 
   [_camera receivedImageStreamData];
-  [_camera captureOutput:nil didOutputSampleBuffer:[self sampleBuffer] fromConnection:nil];
+  [_camera captureOutput:nil didOutputSampleBuffer:self.sampleBuffer fromConnection:nil];
 
   [self waitForExpectationsWithTimeout:3.0 handler:nil];
 }
