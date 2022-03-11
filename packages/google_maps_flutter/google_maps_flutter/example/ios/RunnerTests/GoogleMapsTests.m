@@ -11,7 +11,7 @@
 @implementation GoogleMapsTests
 
 - (void)testPlugin {
-  FLTGoogleMapsPlugin* plugin = [[FLTGoogleMapsPlugin alloc] init];
+  FLTGoogleMapsPlugin *plugin = [[FLTGoogleMapsPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 

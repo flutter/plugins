@@ -4,6 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'sk_storefront_wrapper.g.dart';
@@ -13,8 +14,12 @@ part 'sk_storefront_wrapper.g.dart';
 /// Dart wrapper around StoreKit's
 /// [SKStorefront](https://developer.apple.com/documentation/storekit/skstorefront?language=objc).
 @JsonSerializable(createToJson: true)
+@immutable
 class SKStorefrontWrapper {
   /// Creates a new [SKStorefrontWrapper] with the provided information.
+  // TODO(stuartmorgan): Temporarily ignore const warning in other parts of the
+  // federated package, and remove this.
+  // ignore: prefer_const_constructors_in_immutables
   SKStorefrontWrapper({
     required this.countryCode,
     required this.identifier,
@@ -45,15 +50,15 @@ class SKStorefrontWrapper {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final SKStorefrontWrapper typedOther = other as SKStorefrontWrapper;
-    return typedOther.countryCode == countryCode &&
-        typedOther.identifier == identifier;
+    return other is SKStorefrontWrapper &&
+        other.countryCode == countryCode &&
+        other.identifier == identifier;
   }
 
   @override
   int get hashCode => hashValues(
-        this.countryCode,
-        this.identifier,
+        countryCode,
+        identifier,
       );
 
   @override

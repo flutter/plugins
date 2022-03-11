@@ -10,10 +10,9 @@
 
 @implementation ThreadSafeFlutterResultTests
 - (void)testAsyncSendSuccess_ShouldCallResultOnMainThread {
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
-  FLTThreadSafeFlutterResult* threadSafeFlutterResult =
+  FLTThreadSafeFlutterResult *threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
         XCTAssert(NSThread.isMainThread);
         [expectation fulfill];
@@ -23,27 +22,25 @@
     [threadSafeFlutterResult sendSuccess];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSyncSendSuccess_ShouldCallResultOnMainThread {
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
-  FLTThreadSafeFlutterResult* threadSafeFlutterResult =
+  FLTThreadSafeFlutterResult *threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
         XCTAssert(NSThread.isMainThread);
         [expectation fulfill];
       }];
   [threadSafeFlutterResult sendSuccess];
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendNotImplemented_ShouldSendNotImplementedToFlutterResult {
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
-  FLTThreadSafeFlutterResult* threadSafeFlutterResult =
+  FLTThreadSafeFlutterResult *threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
         XCTAssert([result isKindOfClass:FlutterMethodNotImplemented.class]);
         [expectation fulfill];
@@ -53,20 +50,19 @@
     [threadSafeFlutterResult sendNotImplemented];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendErrorDetails_ShouldSendErrorToFlutterResult {
-  NSString* errorCode = @"errorCode";
-  NSString* errorMessage = @"message";
-  NSString* errorDetails = @"error details";
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  NSString *errorCode = @"errorCode";
+  NSString *errorMessage = @"message";
+  NSString *errorDetails = @"error details";
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
-  FLTThreadSafeFlutterResult* threadSafeFlutterResult =
+  FLTThreadSafeFlutterResult *threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
         XCTAssert([result isKindOfClass:FlutterError.class]);
-        FlutterError* error = (FlutterError*)result;
+        FlutterError *error = (FlutterError *)result;
         XCTAssertEqualObjects(error.code, errorCode);
         XCTAssertEqualObjects(error.message, errorMessage);
         XCTAssertEqualObjects(error.details, errorDetails);
@@ -77,19 +73,18 @@
     [threadSafeFlutterResult sendErrorWithCode:errorCode message:errorMessage details:errorDetails];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendNSError_ShouldSendErrorToFlutterResult {
-  NSError* originalError = [[NSError alloc] initWithDomain:NSURLErrorDomain code:404 userInfo:nil];
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  NSError *originalError = [[NSError alloc] initWithDomain:NSURLErrorDomain code:404 userInfo:nil];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
-  FLTThreadSafeFlutterResult* threadSafeFlutterResult =
+  FLTThreadSafeFlutterResult *threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
         XCTAssert([result isKindOfClass:FlutterError.class]);
-        FlutterError* error = (FlutterError*)result;
-        NSString* constructedErrorCode =
+        FlutterError *error = (FlutterError *)result;
+        NSString *constructedErrorCode =
             [NSString stringWithFormat:@"Error %d", (int)originalError.code];
         XCTAssertEqualObjects(error.code, constructedErrorCode);
         [expectation fulfill];
@@ -99,15 +94,14 @@
     [threadSafeFlutterResult sendError:originalError];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
 - (void)testSendResult_ShouldSendResultToFlutterResult {
-  NSString* resultData = @"resultData";
-  XCTestExpectation* expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  NSString *resultData = @"resultData";
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
-  FLTThreadSafeFlutterResult* threadSafeFlutterResult =
+  FLTThreadSafeFlutterResult *threadSafeFlutterResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:^(id _Nullable result) {
         XCTAssertEqualObjects(result, resultData);
         [expectation fulfill];
@@ -117,6 +111,6 @@
     [threadSafeFlutterResult sendSuccessWithData:resultData];
   });
 
-  [self waitForExpectations:[NSArray arrayWithObject:expectation] timeout:1];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 @end

@@ -4,14 +4,16 @@
 
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
-final dummyPayment = SKPaymentWrapper(
+const SKPaymentWrapper dummyPayment = SKPaymentWrapper(
     productIdentifier: 'prod-id',
     applicationUsername: 'app-user-name',
     requestData: 'fake-data-utf8',
     quantity: 2,
     simulatesAskToBuyInSandbox: true);
-final SKError dummyError =
-    SKError(code: 111, domain: 'dummy-domain', userInfo: {'key': 'value'});
+const SKError dummyError = SKError(
+    code: 111,
+    domain: 'dummy-domain',
+    userInfo: <String, dynamic>{'key': 'value'});
 
 final SKPaymentTransactionWrapper dummyOriginalTransaction =
     SKPaymentTransactionWrapper(
@@ -34,7 +36,7 @@ final SKPaymentTransactionWrapper dummyTransaction =
 );
 
 final SKPriceLocaleWrapper dollarLocale = SKPriceLocaleWrapper(
-  currencySymbol: '\$',
+  currencySymbol: r'$',
   currencyCode: 'USD',
   countryCode: 'US',
 );
@@ -68,17 +70,17 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   price: '1.0',
   subscriptionPeriod: dummySubscription,
   introductoryPrice: dummyDiscount,
-  discounts: [dummyDiscount],
+  discounts: <SKProductDiscountWrapper>[dummyDiscount],
 );
 
 final SkProductResponseWrapper dummyProductResponseWrapper =
     SkProductResponseWrapper(
-  products: [dummyProductWrapper],
-  invalidProductIdentifiers: <String>['123'],
+  products: <SKProductWrapper>[dummyProductWrapper],
+  invalidProductIdentifiers: const <String>['123'],
 );
 
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
-  return {
+  return <String, dynamic>{
     'currencySymbol': local.currencySymbol,
     'currencyCode': local.currencyCode,
     'countryCode': local.countryCode,
@@ -90,14 +92,14 @@ Map<String, dynamic>? buildSubscriptionPeriodMap(
   if (sub == null) {
     return null;
   }
-  return {
+  return <String, dynamic>{
     'numberOfUnits': sub.numberOfUnits,
     'unit': SKSubscriptionPeriodUnit.values.indexOf(sub.unit),
   };
 }
 
 Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
-  return {
+  return <String, dynamic>{
     'price': discount.price,
     'priceLocale': buildLocaleMap(discount.priceLocale),
     'numberOfPeriods': discount.numberOfPeriods,
@@ -109,7 +111,7 @@ Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
 }
 
 Map<String, dynamic> buildProductMap(SKProductWrapper product) {
-  return {
+  return <String, dynamic>{
     'productIdentifier': product.productIdentifier,
     'localizedTitle': product.localizedTitle,
     'localizedDescription': product.localizedDescription,
@@ -119,23 +121,23 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(product.subscriptionPeriod),
     'introductoryPrice': buildDiscountMap(product.introductoryPrice!),
-    'discounts': [buildDiscountMap(product.introductoryPrice!)],
+    'discounts': <dynamic>[buildDiscountMap(product.introductoryPrice!)],
   };
 }
 
 Map<String, dynamic> buildProductResponseMap(
     SkProductResponseWrapper response) {
-  List productsMap = response.products
+  final List<dynamic> productsMap = response.products
       .map((SKProductWrapper product) => buildProductMap(product))
       .toList();
-  return {
+  return <String, dynamic>{
     'products': productsMap,
     'invalidProductIdentifiers': response.invalidProductIdentifiers
   };
 }
 
 Map<String, dynamic> buildErrorMap(SKError error) {
-  return {
+  return <String, dynamic>{
     'code': error.code,
     'domain': error.domain,
     'userInfo': error.userInfo,
@@ -144,7 +146,7 @@ Map<String, dynamic> buildErrorMap(SKError error) {
 
 Map<String, dynamic> buildTransactionMap(
     SKPaymentTransactionWrapper transaction) {
-  Map<String, dynamic> map = <String, dynamic>{
+  final Map<String, dynamic> map = <String, dynamic>{
     'transactionState': SKPaymentTransactionStateWrapper.values
         .indexOf(SKPaymentTransactionStateWrapper.purchased),
     'payment': transaction.payment.toMap(),

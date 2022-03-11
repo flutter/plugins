@@ -47,10 +47,10 @@ class _App extends StatelessWidget {
             tabs: <Widget>[
               Tab(
                 icon: Icon(Icons.cloud),
-                text: "Remote",
+                text: 'Remote',
               ),
-              Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
-              Tab(icon: Icon(Icons.list), text: "List example"),
+              Tab(icon: Icon(Icons.insert_drive_file), text: 'Asset'),
+              Tab(icon: Icon(Icons.list), text: 'List example'),
             ],
           ),
         ),
@@ -71,20 +71,20 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        _ExampleCard(title: "Item a"),
-        _ExampleCard(title: "Item b"),
-        _ExampleCard(title: "Item c"),
-        _ExampleCard(title: "Item d"),
-        _ExampleCard(title: "Item e"),
-        _ExampleCard(title: "Item f"),
-        _ExampleCard(title: "Item g"),
+        const _ExampleCard(title: 'Item a'),
+        const _ExampleCard(title: 'Item b'),
+        const _ExampleCard(title: 'Item c'),
+        const _ExampleCard(title: 'Item d'),
+        const _ExampleCard(title: 'Item e'),
+        const _ExampleCard(title: 'Item f'),
+        const _ExampleCard(title: 'Item g'),
         Card(
             child: Column(children: <Widget>[
           Column(
             children: <Widget>[
               const ListTile(
                 leading: Icon(Icons.cake),
-                title: Text("Video video"),
+                title: Text('Video video'),
               ),
               Stack(
                   alignment: FractionalOffset.bottomRight +
@@ -96,11 +96,11 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
             ],
           ),
         ])),
-        _ExampleCard(title: "Item h"),
-        _ExampleCard(title: "Item i"),
-        _ExampleCard(title: "Item j"),
-        _ExampleCard(title: "Item k"),
-        _ExampleCard(title: "Item l"),
+        const _ExampleCard(title: 'Item h'),
+        const _ExampleCard(title: 'Item i'),
+        const _ExampleCard(title: 'Item j'),
+        const _ExampleCard(title: 'Item k'),
+        const _ExampleCard(title: 'Item l'),
       ],
     );
   }
@@ -269,7 +269,18 @@ class _ControlsOverlay extends StatelessWidget {
   const _ControlsOverlay({Key? key, required this.controller})
       : super(key: key);
 
-  static const _examplePlaybackRates = [
+  static const List<Duration> _exampleCaptionOffsets = <Duration>[
+    Duration(seconds: -10),
+    Duration(seconds: -3),
+    Duration(seconds: -1, milliseconds: -500),
+    Duration(milliseconds: -250),
+    Duration(milliseconds: 0),
+    Duration(milliseconds: 250),
+    Duration(seconds: 1, milliseconds: 500),
+    Duration(seconds: 3),
+    Duration(seconds: 10),
+  ];
+  static const List<double> _examplePlaybackRates = <double>[
     0.25,
     0.5,
     1.0,
@@ -287,13 +298,13 @@ class _ControlsOverlay extends StatelessWidget {
     return Stack(
       children: <Widget>[
         AnimatedSwitcher(
-          duration: Duration(milliseconds: 50),
-          reverseDuration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 50),
+          reverseDuration: const Duration(milliseconds: 200),
           child: controller.value.isPlaying
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Container(
                   color: Colors.black26,
-                  child: Center(
+                  child: const Center(
                     child: Icon(
                       Icons.play_arrow,
                       color: Colors.white,
@@ -309,17 +320,46 @@ class _ControlsOverlay extends StatelessWidget {
           },
         ),
         Align(
+          alignment: Alignment.topLeft,
+          child: PopupMenuButton<Duration>(
+            initialValue: controller.value.captionOffset,
+            tooltip: 'Caption Offset',
+            onSelected: (Duration delay) {
+              controller.setCaptionOffset(delay);
+            },
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<Duration>>[
+                for (final Duration offsetDuration in _exampleCaptionOffsets)
+                  PopupMenuItem<Duration>(
+                    value: offsetDuration,
+                    child: Text('${offsetDuration.inMilliseconds}ms'),
+                  )
+              ];
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                // Using less vertical padding as the text is also longer
+                // horizontally, so it feels like it would need more spacing
+                // horizontally (matching the aspect ratio of the video).
+                vertical: 12,
+                horizontal: 16,
+              ),
+              child: Text('${controller.value.captionOffset.inMilliseconds}ms'),
+            ),
+          ),
+        ),
+        Align(
           alignment: Alignment.topRight,
           child: PopupMenuButton<double>(
             initialValue: controller.value.playbackSpeed,
             tooltip: 'Playback speed',
-            onSelected: (speed) {
+            onSelected: (double speed) {
               controller.setPlaybackSpeed(speed);
             },
-            itemBuilder: (context) {
-              return [
-                for (final speed in _examplePlaybackRates)
-                  PopupMenuItem(
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<double>>[
+                for (final double speed in _examplePlaybackRates)
+                  PopupMenuItem<double>(
                     value: speed,
                     child: Text('${speed}x'),
                   )

@@ -12,7 +12,7 @@
 #include "url_launcher_plugin_private.h"
 
 // See url_launcher_channel.dart for documentation.
-const char kChannelName[] = "plugins.flutter.io/url_launcher";
+const char kChannelName[] = "plugins.flutter.io/url_launcher_linux";
 const char kBadArgumentsError[] = "Bad Arguments";
 const char kLaunchError[] = "Launch Error";
 const char kCanLaunchMethod[] = "canLaunch";
@@ -45,6 +45,16 @@ static gchar* get_url(FlValue* args, GError** error) {
   return g_strdup(fl_value_get_string(url_value));
 }
 
+// Checks if URI has launchable file resource.
+static gboolean can_launch_uri_with_file_resource(FlUrlLauncherPlugin* self,
+                                                  const gchar* url) {
+  g_autoptr(GError) error = nullptr;
+  g_autoptr(GFile) file = g_file_new_for_uri(url);
+  g_autoptr(GAppInfo) app_info =
+      g_file_query_default_handler(file, NULL, &error);
+  return app_info != nullptr;
+}
+
 // Called to check if a URL can be launched.
 FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
   g_autoptr(GError) error = nullptr;
@@ -60,6 +70,10 @@ FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
     g_autoptr(GAppInfo) app_info =
         g_app_info_get_default_for_uri_scheme(scheme);
     is_launchable = app_info != nullptr;
+
+    if (!is_launchable) {
+      is_launchable = can_launch_uri_with_file_resource(self, url);
+    }
   }
 
   g_autoptr(FlValue) result = fl_value_new_bool(is_launchable);
