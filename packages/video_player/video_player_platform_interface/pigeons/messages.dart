@@ -2,43 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
+import 'package:pigeon/pigeon.dart';
 
-import 'package:pigeon/pigeon_lib.dart';
-
+@ConfigurePigeon(PigeonOptions(
+  dartOut: 'lib/messages.dart',
+  copyrightHeader: 'pigeons/copyright.txt',
+))
 class TextureMessage {
+  TextureMessage(this.textureId);
   int textureId;
 }
 
 class LoopingMessage {
+  LoopingMessage(this.textureId, this.isLooping);
   int textureId;
   bool isLooping;
 }
 
 class VolumeMessage {
+  VolumeMessage(this.textureId, this.volume);
   int textureId;
   double volume;
 }
 
 class PlaybackSpeedMessage {
+  PlaybackSpeedMessage(this.textureId, this.speed);
   int textureId;
   double speed;
 }
 
 class PositionMessage {
+  PositionMessage(this.textureId, this.position);
   int textureId;
   int position;
 }
 
 class CreateMessage {
-  String asset;
-  String uri;
-  String packageName;
-  String formatHint;
-  Map<String, String> httpHeaders;
+  CreateMessage({required this.httpHeaders});
+  String? asset;
+  String? uri;
+  String? packageName;
+  String? formatHint;
+  Map<String?, String?> httpHeaders;
 }
 
 class MixWithOthersMessage {
+  MixWithOthersMessage(this.mixWithOthers);
   bool mixWithOthers;
 }
 
@@ -55,9 +64,4 @@ abstract class VideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-}
-
-void configurePigeon(PigeonOptions opts) {
-  opts.dartOut = 'lib/messages.dart';
-  opts.dartTestOut = 'test/test.dart';
 }
