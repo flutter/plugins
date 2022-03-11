@@ -71,6 +71,31 @@ void main() {
         ]));
   });
 
+  test('runs flutter pub get for non-example subpackages', () async {
+    final Directory mainPackageDir = createFakePackage('a', packagesDir);
+    final Directory otherPackages =
+        mainPackageDir.childDirectory('other_packages');
+    final Directory subpackage1 =
+        createFakePackage('subpackage1', otherPackages);
+    final Directory subpackage2 =
+        createFakePackage('subpackage2', otherPackages);
+
+    await runCapturingPrint(runner, <String>['analyze']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall('flutter', const <String>['packages', 'get'],
+              mainPackageDir.path),
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], subpackage1.path),
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], subpackage2.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+              mainPackageDir.path),
+        ]));
+  });
+
   test('don\'t elide a non-contained example package', () async {
     final Directory plugin1Dir = createFakePlugin('a', packagesDir);
     final Directory plugin2Dir = createFakePlugin('example', packagesDir);

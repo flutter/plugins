@@ -1,3 +1,8 @@
+## 0.8.1
+
+- Fixes an `analyze` regression in 0.8.0 with packages that have non-`example`
+  sub-packages.
+
 ## 0.8.0
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
