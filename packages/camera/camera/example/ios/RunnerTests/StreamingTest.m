@@ -59,7 +59,7 @@
 
 - (void)testExceedMaxStreamingPendingFramesCount {
   XCTestExpectation *streamingExpectation = [self
-      expectationWithDescription:@"Must not receive more than MaxStreamingPendingFramesCount"];
+      expectationWithDescription:@"Must not call handler over maxStreamingPendingFramesCount"];
 
   id handlerMock = OCMClassMock([FLTImageStreamHandler class]);
   OCMStub([handlerMock alloc]).andReturn(handlerMock);
@@ -82,7 +82,7 @@
 - (void)testReceivedImageStreamData {
   XCTestExpectation *streamingExpectation =
       [self expectationWithDescription:
-                @"Must be able to receive again when receivedImageStreamData is called"];
+                @"Must be able to call the handler again when receivedImageStreamData is called"];
 
   id handlerMock = OCMClassMock([FLTImageStreamHandler class]);
   OCMStub([handlerMock alloc]).andReturn(handlerMock);
