@@ -102,13 +102,13 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    // For non-example packages, fetch dependencies. 'flutter packages get'
+    // For non-example packages, fetch dependencies. 'flutter pub get'
     // automatically runs 'pub get' in examples as part of handling the parent
     // directory, which is guaranteed to come first in the package enumeration.
     if (package.directory.basename != 'example' ||
         !RepositoryPackage(package.directory.parent).pubspecFile.existsSync()) {
       final int exitCode = await processRunner.runAndStream(
-          flutterCommand, <String>['packages', 'get'],
+          flutterCommand, <String>['pub', 'get'],
           workingDir: package.directory);
       if (exitCode != 0) {
         return PackageResult.fail(<String>['Unable to get dependencies']);

@@ -45,12 +45,10 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin1Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin2Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
@@ -64,8 +62,7 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin1Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
         ]));
@@ -80,12 +77,10 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin1Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
-          ProcessCall(
-              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin2Dir.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
@@ -102,7 +97,7 @@ void main() {
       orderedEquals(<ProcessCall>[
         ProcessCall(
           'flutter',
-          const <String>['packages', 'get'],
+          const <String>['pub', 'get'],
           pluginDir.path,
         ),
         ProcessCall(
@@ -170,7 +165,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                'flutter', const <String>['packages', 'get'], pluginDir.path),
+                'flutter', const <String>['pub', 'get'], pluginDir.path),
             ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
                 pluginDir.path),
           ]));
@@ -189,7 +184,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                'flutter', const <String>['packages', 'get'], pluginDir.path),
+                'flutter', const <String>['pub', 'get'], pluginDir.path),
             ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
                 pluginDir.path),
           ]));
@@ -207,11 +202,11 @@ void main() {
     });
   });
 
-  test('fails if "packages get" fails', () async {
+  test('fails if "pub get" fails', () async {
     createFakePlugin('foo', packagesDir);
 
     processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-      MockProcess(exitCode: 1) // flutter packages get
+      MockProcess(exitCode: 1) // flutter pub get
     ];
 
     Error? commandError;
@@ -279,7 +274,7 @@ void main() {
       orderedEquals(<ProcessCall>[
         ProcessCall(
           'flutter',
-          const <String>['packages', 'get'],
+          const <String>['pub', 'get'],
           pluginDir.path,
         ),
         ProcessCall(

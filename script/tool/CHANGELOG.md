@@ -1,3 +1,7 @@
+## NEXT
+
+- Switches from deprecated `flutter packages` alias to `flutter pub`.
+
 ## 0.8.0
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
