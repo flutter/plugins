@@ -35,7 +35,7 @@ void main() {
   });
 
   testWidgets('Initializing a polyline', (WidgetTester tester) async {
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -48,9 +48,9 @@ void main() {
     expect(platformGoogleMap.polylinesToChange.isEmpty, true);
   });
 
-  testWidgets("Adding a polyline", (WidgetTester tester) async {
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    final Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
+  testWidgets('Adding a polyline', (WidgetTester tester) async {
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
+    const Polyline p2 = Polyline(polylineId: PolylineId('polyline_2'));
 
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1, p2}));
@@ -67,8 +67,8 @@ void main() {
     expect(platformGoogleMap.polylinesToChange.isEmpty, true);
   });
 
-  testWidgets("Removing a polyline", (WidgetTester tester) async {
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
+  testWidgets('Removing a polyline', (WidgetTester tester) async {
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
 
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{}));
@@ -82,10 +82,10 @@ void main() {
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
-  testWidgets("Updating a polyline", (WidgetTester tester) async {
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    final Polyline p2 =
-        Polyline(polylineId: PolylineId("polyline_1"), geodesic: true);
+  testWidgets('Updating a polyline', (WidgetTester tester) async {
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
+    const Polyline p2 =
+        Polyline(polylineId: PolylineId('polyline_1'), geodesic: true);
 
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p2}));
@@ -99,10 +99,10 @@ void main() {
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
-  testWidgets("Updating a polyline", (WidgetTester tester) async {
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    final Polyline p2 =
-        Polyline(polylineId: PolylineId("polyline_1"), geodesic: true);
+  testWidgets('Updating a polyline', (WidgetTester tester) async {
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
+    const Polyline p2 =
+        Polyline(polylineId: PolylineId('polyline_1'), geodesic: true);
 
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p2}));
@@ -116,10 +116,11 @@ void main() {
     expect(update.geodesic, true);
   });
 
-  testWidgets("Mutate a polyline", (WidgetTester tester) async {
+  testWidgets('Mutate a polyline', (WidgetTester tester) async {
+    final List<LatLng> _points = <LatLng>[const LatLng(0.0, 0.0)];
     final Polyline p1 = Polyline(
-      polylineId: PolylineId("polyline_1"),
-      points: <LatLng>[const LatLng(0.0, 0.0)],
+      polylineId: const PolylineId('polyline_1'),
+      points: _points,
     );
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
@@ -135,12 +136,12 @@ void main() {
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
-  testWidgets("Multi Update", (WidgetTester tester) async {
-    Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
+  testWidgets('Multi Update', (WidgetTester tester) async {
+    Polyline p1 = const Polyline(polylineId: PolylineId('polyline_1'));
+    Polyline p2 = const Polyline(polylineId: PolylineId('polyline_2'));
     final Set<Polyline> prev = <Polyline>{p1, p2};
-    p1 = Polyline(polylineId: PolylineId("polyline_1"), visible: false);
-    p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
+    p1 = const Polyline(polylineId: PolylineId('polyline_1'), visible: false);
+    p2 = const Polyline(polylineId: PolylineId('polyline_2'), geodesic: true);
     final Set<Polyline> cur = <Polyline>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
@@ -154,14 +155,14 @@ void main() {
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
-  testWidgets("Multi Update", (WidgetTester tester) async {
-    Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
-    final Polyline p3 = Polyline(polylineId: PolylineId("polyline_3"));
+  testWidgets('Multi Update', (WidgetTester tester) async {
+    Polyline p2 = const Polyline(polylineId: PolylineId('polyline_2'));
+    const Polyline p3 = Polyline(polylineId: PolylineId('polyline_3'));
     final Set<Polyline> prev = <Polyline>{p2, p3};
 
     // p1 is added, p2 is updated, p3 is removed.
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
+    p2 = const Polyline(polylineId: PolylineId('polyline_2'), geodesic: true);
     final Set<Polyline> cur = <Polyline>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
@@ -179,12 +180,12 @@ void main() {
     expect(platformGoogleMap.polylineIdsToRemove.first, equals(p3.polylineId));
   });
 
-  testWidgets("Partial Update", (WidgetTester tester) async {
-    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    final Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
-    Polyline p3 = Polyline(polylineId: PolylineId("polyline_3"));
+  testWidgets('Partial Update', (WidgetTester tester) async {
+    const Polyline p1 = Polyline(polylineId: PolylineId('polyline_1'));
+    const Polyline p2 = Polyline(polylineId: PolylineId('polyline_2'));
+    Polyline p3 = const Polyline(polylineId: PolylineId('polyline_3'));
     final Set<Polyline> prev = <Polyline>{p1, p2, p3};
-    p3 = Polyline(polylineId: PolylineId("polyline_3"), geodesic: true);
+    p3 = const Polyline(polylineId: PolylineId('polyline_3'), geodesic: true);
     final Set<Polyline> cur = <Polyline>{p1, p2, p3};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
@@ -198,11 +199,12 @@ void main() {
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
-  testWidgets("Update non platform related attr", (WidgetTester tester) async {
-    Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"), onTap: null);
+  testWidgets('Update non platform related attr', (WidgetTester tester) async {
+    Polyline p1 =
+        const Polyline(polylineId: PolylineId('polyline_1'), onTap: null);
     final Set<Polyline> prev = <Polyline>{p1};
     p1 = Polyline(
-        polylineId: PolylineId("polyline_1"), onTap: () => print(2 + 2));
+        polylineId: const PolylineId('polyline_1'), onTap: () => print(2 + 2));
     final Set<Polyline> cur = <Polyline>{p1};
 
     await tester.pumpWidget(_mapWithPolylines(prev));

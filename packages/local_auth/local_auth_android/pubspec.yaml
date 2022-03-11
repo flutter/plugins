@@ -6,6 +6,10 @@ issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 version: 1.0.0
 
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.8.0"
+
 flutter:
   plugin:
     implements: local_auth
@@ -15,19 +19,13 @@ flutter:
         pluginClass: LocalAuthPlugin
         dartPluginClass: LocalAuthAndroid
 
-environment:
-  sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.8.0"
-
 dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
   intl: ^0.17.0
-  local_auth_platform_interface:
-    path: ../local_auth_platform_interface
+  local_auth_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^5.0.0

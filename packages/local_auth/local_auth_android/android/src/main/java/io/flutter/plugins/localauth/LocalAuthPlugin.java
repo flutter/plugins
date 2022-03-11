@@ -101,8 +101,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       case "authenticate":
         authenticate(call, result);
         break;
-      case "getEnrolledBiometrics":
-        getEnrolledBiometrics(result);
+      case "getAvailableBiometrics":
+        getAvailableBiometrics(result);
         break;
       case "isDeviceSupported":
         isDeviceSupported(result);
@@ -251,20 +251,20 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   /*
    * Returns biometric types available on device
    */
-  private void getEnrolledBiometrics(final Result result) {
+  private void getAvailableBiometrics(final Result result) {
     try {
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
-      ArrayList<String> biometrics = getEnrolledBiometrics();
+      ArrayList<String> biometrics = getAvailableBiometrics();
       result.success(biometrics);
     } catch (Exception e) {
       result.error("no_biometrics_available", e.getMessage(), null);
     }
   }
 
-  private ArrayList<String> getEnrolledBiometrics() {
+  private ArrayList<String> getAvailableBiometrics() {
     ArrayList<String> biometrics = new ArrayList<>();
     if (activity == null || activity.isFinishing()) {
       return biometrics;

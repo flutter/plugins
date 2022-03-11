@@ -708,6 +708,6 @@ class WebViewProxy {
   ///
   /// See [android_webview.WebView].setWebContentsDebuggingEnabled.
   Future<void> setWebContentsDebuggingEnabled(bool enabled) {
-    return android_webview.WebView.setWebContentsDebuggingEnabled(true);
+    return android_webview.WebView.setWebContentsDebuggingEnabled(enabled);
   }
 }

@@ -11,21 +11,5 @@
 
 # TODO(ecosystem): Remove everything from this list. See:
 # https://github.com/flutter/flutter/issues/76229
-- camera/camera
-- camera/camera_web
-- google_maps_flutter/google_maps_flutter
 - google_maps_flutter/google_maps_flutter_platform_interface
 - google_maps_flutter/google_maps_flutter_web
-- google_sign_in/google_sign_in
-- google_sign_in/google_sign_in_platform_interface
-- google_sign_in/google_sign_in_web
-- image_picker/image_picker
-- image_picker/image_picker_for_web
-- image_picker/image_picker_platform_interface
-- in_app_purchase/in_app_purchase
-- in_app_purchase/in_app_purchase_android
-- in_app_purchase/in_app_purchase_storekit
-- ios_platform_images
-- video_player/video_player
-- video_player/video_player_platform_interface
-- video_player/video_player_web

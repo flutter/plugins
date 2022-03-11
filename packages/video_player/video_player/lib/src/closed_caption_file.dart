@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'sub_rip.dart';
-export 'sub_rip.dart' show SubRipCaptionFile;
+import 'package:flutter/foundation.dart' show objectRuntimeType;
 
+import 'sub_rip.dart';
 import 'web_vtt.dart';
+
+export 'sub_rip.dart' show SubRipCaptionFile;
 export 'web_vtt.dart' show WebVTTCaptionFile;
 
 /// A structured representation of a parsed closed caption file.
@@ -66,7 +68,7 @@ class Caption {
 
   @override
   String toString() {
-    return '$runtimeType('
+    return '${objectRuntimeType(this, 'Caption')}('
         'number: $number, '
         'start: $start, '
         'end: $end, '

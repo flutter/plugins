@@ -7,8 +7,8 @@ library gapi_onload;
 
 import 'dart:async';
 
-import 'package:js/js.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:js/js.dart';
 
 import 'generated/gapi.dart' as gapi;
 import 'utils.dart' show injectJSLibraries;
@@ -37,8 +37,10 @@ Future<void> inject(String url, {List<String> libraries = const <String>[]}) {
   });
 
   // Attach the onload callback to the main url
-  final List<String> allLibraries = <String>[_addOnloadToScript(url)]
-    ..addAll(libraries);
+  final List<String> allLibraries = <String>[
+    _addOnloadToScript(url),
+    ...libraries
+  ];
 
   return Future.wait(
       <Future<void>>[injectJSLibraries(allLibraries), gapiOnLoad.future]);

@@ -25,48 +25,49 @@ class AndroidAuthMessages extends AuthMessages {
     this.signInTitle,
   });
 
-  /// Hint message advising the user how to authenticate with biometrics. It is
-  /// used on Android. Maximum 60 characters.
+  /// Hint message advising the user how to authenticate with biometrics.
+  /// Maximum 60 characters.
   final String? biometricHint;
 
-  /// Message to let the user know that authentication was failed. It is used
-  /// on Android. Maximum 60 characters.'
+  /// Message to let the user know that authentication was failed.
+  /// Maximum 60 characters.
   final String? biometricNotRecognized;
 
   /// Message shown as a title in a dialog which indicates the user
-  /// has not set up biometric authentication on their device. It is used on
-  /// Android. Maximum 60 characters.
+  /// has not set up biometric authentication on their device.
+  /// Maximum 60 characters.
   final String? biometricRequiredTitle;
 
-  /// Message to let the user know that authentication was successful. It
-  /// is used on Android. Maximum 60 characters
+  /// Message to let the user know that authentication was successful.
+  /// Maximum 60 characters
   final String? biometricSuccess;
 
   /// Message shown on a button that the user can click to leave the
-  /// current dialog. It is used on Android. Maximum 30 characters.
+  /// current dialog.
+  /// Maximum 30 characters.
   final String? cancelButton;
 
   /// Message shown as a title in a dialog which indicates the user
-  /// has not set up credentials authentication on their device. It is used on Android.
+  /// has not set up credentials authentication on their device.
   /// Maximum 60 characters.
   final String? deviceCredentialsRequiredTitle;
 
   /// Message advising the user to go to the settings and configure
-  /// device credentials on their device. It shows in a dialog on Android.
+  /// device credentials on their device.
   final String? deviceCredentialsSetupDescription;
 
   /// Message shown on a button that the user can click to go to settings pages
-  /// from the current dialog. It is used on both Android and iOS sides.
+  /// from the current dialog.
   /// Maximum 30 characters.
   final String? goToSettingsButton;
 
   /// Message advising the user to go to the settings and configure
-  /// biometric on their device. It shows in a dialog on Android.
+  /// biometric on their device.
   final String? goToSettingsDescription;
 
   /// Message shown as a title in a dialog which indicates the user
-  /// that they need to scan biometric to continue. It is used on
-  /// Android. Maximum 60 characters.
+  /// that they need to scan biometric to continue.
+  /// Maximum 60 characters.
   final String? signInTitle;
 
   @override
@@ -122,78 +123,69 @@ class AndroidAuthMessages extends AuthMessages {
       signInTitle.hashCode;
 }
 
-// Strings for local_authentication plugin. Currently supports English.
+// Default strings for AndroidAuthMessages. Currently supports English.
 // Intl.message must be string literals.
 
 /// Message shown on a button that the user can click to go to settings pages
-/// from the current dialog. Maximum 30 characters.
+/// from the current dialog.
 String get goToSettings => Intl.message('Go to settings',
     desc: 'Message shown on a button that the user can click to go to '
-        'settings pages from the current dialog. It is used on both Android '
-        'and iOS sides. Maximum 30 characters.');
+        'settings pages from the current dialog. Maximum 30 characters.');
 
-/// Hint message advising the user how to authenticate with biometrics. It is
-/// used on Android. Maximum 60 characters.
+/// Hint message advising the user how to authenticate with biometrics.
 String get androidBiometricHint => Intl.message('Verify identity',
-    desc:
-        'Hint message advising the user how to authenticate with biometrics. It is '
-        'used on Android. Maximum 60 characters.');
+    desc: 'Hint message advising the user how to authenticate with biometrics. '
+        'Maximum 60 characters.');
 
-/// Message to let the user know that authentication was failed. It is used
-/// on Android. Maximum 60 characters.'
+/// Message to let the user know that authentication was failed.
 String get androidBiometricNotRecognized =>
     Intl.message('Not recognized. Try again.',
-        desc: 'Message to let the user know that authentication was failed. It '
-            'is used on Android. Maximum 60 characters.');
+        desc: 'Message to let the user know that authentication was failed. '
+            'Maximum 60 characters.');
 
 /// Message to let the user know that authentication was successful. It
-/// is used on Android. Maximum 60 characters
 String get androidBiometricSuccess => Intl.message('Success',
-    desc: 'Message to let the user know that authentication was successful. It '
-        'is used on Android. Maximum 60 characters.');
+    desc: 'Message to let the user know that authentication was successful. '
+        'Maximum 60 characters.');
 
 /// Message shown on a button that the user can click to leave the
-/// current dialog. It is used on Android. Maximum 30 characters.
+/// current dialog.
 String get androidCancelButton => Intl.message('Cancel',
     desc: 'Message shown on a button that the user can click to leave the '
-        'current dialog. It is used on Android. Maximum 30 characters.');
+        'current dialog. Maximum 30 characters.');
 
 /// Message shown as a title in a dialog which indicates the user
-/// that they need to scan biometric to continue. It is used on
-/// Android. Maximum 60 characters.
+/// that they need to scan biometric to continue.
 String get androidSignInTitle => Intl.message('Authentication required',
     desc: 'Message shown as a title in a dialog which indicates the user '
-        'that they need to scan biometric to continue. It is used on '
-        'Android. Maximum 60 characters.');
+        'that they need to scan biometric to continue. Maximum 60 characters.');
 
 /// Message shown as a title in a dialog which indicates the user
-/// has not set up biometric authentication on their device. It is used on
-/// Android. Maximum 60 characters.
+/// has not set up biometric authentication on their device.
 String get androidBiometricRequiredTitle => Intl.message('Biometric required',
     desc: 'Message shown as a title in a dialog which indicates the user '
-        'has not set up biometric authentication on their device. It is used on Android.'
-        ' Maximum 60 characters.');
+        'has not set up biometric authentication on their device. '
+        'Maximum 60 characters.');
 
 /// Message shown as a title in a dialog which indicates the user
-/// has not set up credentials authentication on their device. It is used on Android.
-/// Maximum 60 characters.
-String get androidDeviceCredentialsRequiredTitle => Intl.message(
-    'Device credentials required',
-    desc: 'Message shown as a title in a dialog which indicates the user '
-        'has not set up credentials authentication on their device. It is used on Android.'
-        ' Maximum 60 characters.');
+/// has not set up credentials authentication on their device.
+String get androidDeviceCredentialsRequiredTitle =>
+    Intl.message('Device credentials required',
+        desc: 'Message shown as a title in a dialog which indicates the user '
+            'has not set up credentials authentication on their device. '
+            'Maximum 60 characters.');
 
 /// Message advising the user to go to the settings and configure
-/// device credentials on their device. It shows in a dialog on Android.
-String get androidDeviceCredentialsSetupDescription => Intl.message(
-    'Device credentials required',
-    desc: 'Message advising the user to go to the settings and configure '
-        'device credentials on their device. It shows in a dialog on Android.');
+/// device credentials on their device.
+String get androidDeviceCredentialsSetupDescription =>
+    Intl.message('Device credentials required',
+        desc: 'Message advising the user to go to the settings and configure '
+            'device credentials on their device.');
 
 /// Message advising the user to go to the settings and configure
-/// biometric on their device. It shows in a dialog on Android.
+/// biometric on their device.
 String get androidGoToSettingsDescription => Intl.message(
     'Biometric authentication is not set up on your device. Go to '
     '\'Settings > Security\' to add biometric authentication.',
     desc: 'Message advising the user to go to the settings and configure '
-        'biometric on their device. It shows in a dialog on Android.');
+        'biometric on their device.');

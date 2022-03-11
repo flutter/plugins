@@ -18,7 +18,8 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 abstract class PickedFileBase {
   /// Construct a PickedFile
-  PickedFileBase(String path);
+  // ignore: avoid_unused_constructor_parameters
+  const PickedFileBase(String path);
 
   /// Get the path of the picked file.
   ///

@@ -17,7 +17,7 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
-const String _fakeIosDevice = '67d5c3d1-8bdf-46ad-8f6b-b00e2a972dda';
+const String _fakeIOSDevice = '67d5c3d1-8bdf-46ad-8f6b-b00e2a972dda';
 const String _fakeAndroidDevice = 'emulator-1234';
 
 void main() {
@@ -42,7 +42,7 @@ void main() {
     });
 
     void setMockFlutterDevicesOutput({
-      bool hasIosDevice = true,
+      bool hasIOSDevice = true,
       bool hasAndroidDevice = true,
       bool includeBanner = false,
     }) {
@@ -54,7 +54,7 @@ void main() {
 ╚════════════════════════════════════════════════════════════════════════════╝
 ''';
       final List<String> devices = <String>[
-        if (hasIosDevice) '{"id": "$_fakeIosDevice", "targetPlatform": "ios"}',
+        if (hasIOSDevice) '{"id": "$_fakeIOSDevice", "targetPlatform": "ios"}',
         if (hasAndroidDevice)
           '{"id": "$_fakeAndroidDevice", "targetPlatform": "android-x86"}',
       ];
@@ -104,7 +104,7 @@ void main() {
     });
 
     test('fails for iOS if no iOS devices are present', () async {
-      setMockFlutterDevicesOutput(hasIosDevice: false);
+      setMockFlutterDevicesOutput(hasIOSDevice: false);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -130,7 +130,7 @@ void main() {
           'example/integration_test/foo_test.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -195,8 +195,8 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -225,7 +225,7 @@ void main() {
                 const <String>[
                   'drive',
                   '-d',
-                  _fakeIosDevice,
+                  _fakeIOSDevice,
                   '--driver',
                   'test_driver/plugin_test.dart',
                   '--target',
@@ -245,8 +245,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -278,8 +278,8 @@ void main() {
           'example/lib/main.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -314,8 +314,8 @@ void main() {
           'example/integration_test/ignore_me.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -344,7 +344,7 @@ void main() {
                 const <String>[
                   'drive',
                   '-d',
-                  _fakeIosDevice,
+                  _fakeIOSDevice,
                   '--driver',
                   'test_driver/integration_test.dart',
                   '--target',
@@ -356,7 +356,7 @@ void main() {
                 const <String>[
                   'drive',
                   '-d',
-                  _fakeIosDevice,
+                  _fakeIOSDevice,
                   '--driver',
                   'test_driver/integration_test.dart',
                   '--target',
@@ -400,7 +400,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+          platformLinux: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -473,7 +473,7 @@ void main() {
           'example/macos/macos.swift',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          platformMacOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -544,7 +544,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -593,7 +593,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -670,7 +670,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          platformWindows: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -717,7 +717,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+          platformWindows: const PlatformDetails(PlatformSupport.inline,
               variants: <String>[platformVariantWinUwp]),
         },
       );
@@ -751,7 +751,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -801,7 +801,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          platformMacOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -834,7 +834,7 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          platformMacOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -889,8 +889,8 @@ void main() {
           'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -914,7 +914,7 @@ void main() {
                 const <String>[
                   'drive',
                   '-d',
-                  _fakeIosDevice,
+                  _fakeIOSDevice,
                   '--enable-experiment=exp1',
                   '--driver',
                   'test_driver/plugin_test.dart',
@@ -931,7 +931,7 @@ void main() {
         packagesDir,
         examples: <String>[],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -963,7 +963,7 @@ void main() {
           'example/integration_test/foo_test.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -995,7 +995,7 @@ void main() {
           'example/test_driver/integration_test.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -1031,7 +1031,7 @@ void main() {
           'example/integration_test/foo_test.dart',
         ],
         platformSupport: <String, PlatformDetails>{
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          platformMacOS: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
