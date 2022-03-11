@@ -1,4 +1,8 @@
 
+## 0.8.4+12
+
+* iOS：support images with different formats
+
 ## 0.8.4+11
 
 * Fixes Activity leak.
