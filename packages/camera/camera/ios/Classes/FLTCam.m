@@ -10,14 +10,6 @@
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
 
-@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
-// The queue on which `eventSink` property should be accessed
-@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
-// `eventSink` property should be accessed on `captureSessionQueue`.
-// The block itself should be invoked on the main queue.
-@property FlutterEventSink eventSink;
-@end
-
 @implementation FLTImageStreamHandler
 
 - (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
@@ -68,7 +60,6 @@
 @property(assign, nonatomic) BOOL videoIsDisconnected;
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
-@property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) int streamingPendingFramesCount;
 @property(assign, nonatomic) int maxstreamingPendingFramesCount;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;

@@ -9,11 +9,6 @@
 #import <OCMock/OCMock.h>
 #import "CameraTestUtils.h"
 
-@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
-- (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue;
-@property FlutterEventSink eventSink;
-@end
-
 @interface StreamingTests : XCTestCase
 @property(readonly, nonatomic) FLTCam *camera;
 @property(readonly, nonatomic) CMSampleBufferRef sampleBuffer;
@@ -27,7 +22,7 @@
   _sampleBuffer = FLTCreateTestSampleBuffer();
 }
 
--(void)tearDown {
+- (void)tearDown {
   CFRelease(_sampleBuffer);
 }
 
@@ -44,6 +39,10 @@
 
   id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
   [_camera startImageStreamWithMessenger:messenger];
+
+  while (!_camera.isStreamingImages) {
+    [NSThread sleepForTimeInterval:0.001];
+  }
 
   streamingExpectation.expectedFulfillmentCount = 4;
   for (int i = 0; i < 10; i++) {
@@ -67,6 +66,10 @@
 
   id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
   [_camera startImageStreamWithMessenger:messenger];
+
+  while (!_camera.isStreamingImages) {
+    [NSThread sleepForTimeInterval:0.001];
+  }
 
   streamingExpectation.expectedFulfillmentCount = 5;
   for (int i = 0; i < 10; i++) {
