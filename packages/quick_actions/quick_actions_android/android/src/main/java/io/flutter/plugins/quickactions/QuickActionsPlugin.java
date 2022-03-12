@@ -74,6 +74,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
     }
     // Notify the Dart side if the launch intent has the intent extra relevant to quick actions.
     if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
+      channel.invokeMethod("getLaunchAction", null);
       channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
     }
     return false;
