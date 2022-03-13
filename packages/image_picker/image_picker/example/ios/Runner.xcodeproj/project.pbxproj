@@ -3,10 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E9937F227DE2EB50047F36B /* tiffImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937EE27DE2EB50047F36B /* tiffImage.tiff */; };
+		1E9937F327DE2EB50047F36B /* tiffImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937EE27DE2EB50047F36B /* tiffImage.tiff */; };
+		1E9937F427DE2EB50047F36B /* heicImage.heic in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937EF27DE2EB50047F36B /* heicImage.heic */; };
+		1E9937F527DE2EB50047F36B /* heicImage.heic in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937EF27DE2EB50047F36B /* heicImage.heic */; };
+		1E9937F627DE2EB50047F36B /* heifImage.heif in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937F027DE2EB50047F36B /* heifImage.heif */; };
+		1E9937F727DE2EB50047F36B /* heifImage.heif in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937F027DE2EB50047F36B /* heifImage.heif */; };
+		1E9937F827DE2EB50047F36B /* rawImage.raw in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937F127DE2EB50047F36B /* rawImage.raw */; };
+		1E9937F927DE2EB50047F36B /* rawImage.raw in Resources */ = {isa = PBXBuildFile; fileRef = 1E9937F127DE2EB50047F36B /* rawImage.raw */; };
 		334733FC266813EE00DCC49E /* ImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */; };
 		334733FD266813F100DCC49E /* MetaDataUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 680049252280D736006DD6AB /* MetaDataUtilTests.m */; };
 		334733FE266813F400DCC49E /* PhotoAssetUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */; };
@@ -65,6 +73,10 @@
 
 /* Begin PBXFileReference section */
 		0C7B151765FD4249454C49AD /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		1E9937EE27DE2EB50047F36B /* tiffImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = tiffImage.tiff; sourceTree = "<group>"; };
+		1E9937EF27DE2EB50047F36B /* heicImage.heic */ = {isa = PBXFileReference; lastKnownFileType = file; path = heicImage.heic; sourceTree = "<group>"; };
+		1E9937F027DE2EB50047F36B /* heifImage.heif */ = {isa = PBXFileReference; lastKnownFileType = file; path = heifImage.heif; sourceTree = "<group>"; };
+		1E9937F127DE2EB50047F36B /* rawImage.raw */ = {isa = PBXFileReference; lastKnownFileType = file; path = rawImage.raw; sourceTree = "<group>"; };
 		334733F22668136400DCC49E /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		334733F62668136400DCC49E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		35AE65F25E0B8C8214D8372B /* libPods-RunnerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RunnerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,6 +160,10 @@
 		680049282280E33D006DD6AB /* TestImages */ = {
 			isa = PBXGroup;
 			children = (
+				1E9937EF27DE2EB50047F36B /* heicImage.heic */,
+				1E9937F027DE2EB50047F36B /* heifImage.heif */,
+				1E9937F127DE2EB50047F36B /* rawImage.raw */,
+				1E9937EE27DE2EB50047F36B /* tiffImage.tiff */,
 				86E9A88F272747B90017E6E0 /* webpImage.webp */,
 				9FC8F0E8229FA49E00C8D58F /* gifImage.gif */,
 				680049362280F2B8006DD6AB /* jpgImage.jpg */,
@@ -361,10 +377,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9937F227DE2EB50047F36B /* tiffImage.tiff in Resources */,
+				1E9937F827DE2EB50047F36B /* rawImage.raw in Resources */,
+				1E9937F427DE2EB50047F36B /* heicImage.heic in Resources */,
 				86430DF9272D71E9002D9D6C /* gifImage.gif in Resources */,
 				86E9A894272754A30017E6E0 /* webpImage.webp in Resources */,
 				86E9A895272769130017E6E0 /* pngImage.png in Resources */,
 				86E9A896272769150017E6E0 /* jpgImage.jpg in Resources */,
+				1E9937F627DE2EB50047F36B /* heifImage.heif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,7 +392,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9937F927DE2EB50047F36B /* rawImage.raw in Resources */,
 				9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */,
+				1E9937F327DE2EB50047F36B /* tiffImage.tiff in Resources */,
+				1E9937F527DE2EB50047F36B /* heicImage.heic in Resources */,
+				1E9937F727DE2EB50047F36B /* heifImage.heif in Resources */,
 				680049382280F2B9006DD6AB /* pngImage.png in Resources */,
 				680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */,
 			);

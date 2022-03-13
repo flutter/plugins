@@ -55,6 +55,46 @@
   [self verifySavingImageWithPickerResult:result];
 }
 
+- (void)testSaveTIFFImage API_AVAILABLE(ios(14)) {
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"tiffImage"
+                                                             withExtension:@"tiff"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
+                                                 withIdentifier:UTTypeWebP.identifier];
+
+  [self verifySavingImageWithPickerResult:result];
+}
+
+- (void)testSaveHEICImage API_AVAILABLE(ios(14)) {
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"heicImage"
+                                                             withExtension:@"heic"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
+                                                 withIdentifier:UTTypeWebP.identifier];
+
+  [self verifySavingImageWithPickerResult:result];
+}
+
+- (void)testSaveHEIFImage API_AVAILABLE(ios(14)) {
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"heifImage"
+                                                             withExtension:@"heif"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
+                                                 withIdentifier:UTTypeWebP.identifier];
+
+  [self verifySavingImageWithPickerResult:result];
+}
+
+- (void)testSaveRAWImage API_AVAILABLE(ios(14)) {
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"rawImage"
+                                                             withExtension:@"raw"];
+  NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithContentsOfURL:imageURL];
+  PHPickerResult *result = [self createPickerResultWithProvider:itemProvider
+                                                 withIdentifier:UTTypeWebP.identifier];
+
+  [self verifySavingImageWithPickerResult:result];
+}
+
 /**
  * Creates a mock picker result using NSItemProvider.
  *
