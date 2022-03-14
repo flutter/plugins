@@ -1,6 +1,7 @@
 ## 0.2.2+3
 
 * Migrates from `ui.hash*` to `Object.hash*`.
+* Updates minimum Flutter version to 2.5.0.
 
 ## 0.2.2+2
 
