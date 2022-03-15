@@ -38,19 +38,14 @@
   XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
 }
 
-- (void)testRemoveObjectsForNonExistingKey {
-  FIATransactionCache *cache = [[FIATransactionCache alloc] init];
-  [cache removeObjectsForKey:TransactionCacheKeyUpdatedTransactions];
-}
-
-- (void)testRemoveObjectsForExistingKey {
+- (void)testClear {
   NSArray *dummyArray = @[ @1, @2, @3 ];
   FIATransactionCache *cache = [[FIATransactionCache alloc] init];
   [cache addObjects:dummyArray forKey:TransactionCacheKeyUpdatedTransactions];
 
   XCTAssertEqual(dummyArray, [cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
 
-  [cache removeObjectsForKey:TransactionCacheKeyUpdatedTransactions];
+  [cache clear];
   XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
 }
 @end

@@ -45,7 +45,7 @@
 /// client as soon as it starts observing. The Flutter client can start
 /// observing by sending a startObservingPaymentQueue message and stop by
 /// sending a stopObservingPaymentQueue message.
-@property(atomic, assign, readwrite) BOOL isObservingTransactions;
+@property(atomic, assign, readwrite, getter=isObservingTransactions) BOOL observingTransactions;
 
 @end
 
@@ -98,13 +98,19 @@
 }
 
 - (void)startObservingPaymentQueue {
-  self.isObservingTransactions = true;
+  self.observingTransactions = YES;
 
   [self processCachedTransactions];
 }
 
 - (void)stopObservingPaymentQueue {
-  self.isObservingTransactions = false;
+  // Don't remove the transaction observer from the SKPaymentQueue instance as
+  // that will result in transactions being lost during the current application
+  // lifetime. Only setting the "observingTransactions" to "NO" ensures
+  // incoming transactions from the App Store are cached and delivered to the
+  // client as soon as it indicates it is ready to receive transactions by
+  // sending the "startObservingPaymentQueue" message.
+  self.observingTransactions = NO;
 }
 
 - (void)processCachedTransactions {
@@ -112,20 +118,19 @@
       [self.transactionCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions];
   if (cachedObjects) {
     self.transactionsUpdated(cachedObjects);
-    [self.transactionCache removeObjectsForKey:TransactionCacheKeyUpdatedTransactions];
   }
 
   cachedObjects = [self.transactionCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads];
   if (cachedObjects) {
     self.updatedDownloads(cachedObjects);
-    [self.transactionCache removeObjectsForKey:TransactionCacheKeyUpdatedDownloads];
   }
 
   cachedObjects = [self.transactionCache getObjectsForKey:TransactionCacheKeyRemovedTransactions];
   if (cachedObjects) {
     self.transactionsRemoved(cachedObjects);
-    [self.transactionCache removeObjectsForKey:TransactionCacheKeyRemovedTransactions];
   }
+
+  [self.transactionCache clear];
 }
 
 - (BOOL)addPayment:(SKPayment *)payment {
@@ -168,7 +173,7 @@
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
-  if (!self.isObservingTransactions) {
+  if (!self.observingTransactions) {
     [_transactionCache addObjects:transactions forKey:TransactionCacheKeyUpdatedTransactions];
     return;
   }
@@ -180,7 +185,7 @@
 // Sent when transactions are removed from the queue (via finishTransaction:).
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
-  if (!self.isObservingTransactions) {
+  if (!self.observingTransactions) {
     [_transactionCache addObjects:transactions forKey:TransactionCacheKeyRemovedTransactions];
     return;
   }
@@ -202,7 +207,7 @@
 
 // Sent when the download state has changed.
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray<SKDownload *> *)downloads {
-  if (!self.isObservingTransactions) {
+  if (!self.observingTransactions) {
     [_transactionCache addObjects:downloads forKey:TransactionCacheKeyUpdatedDownloads];
     return;
   }

@@ -33,8 +33,8 @@
   return self.cache[@(key)];
 }
 
-- (void)removeObjectsForKey:(TransactionCacheKey)key {
-  [self.cache removeObjectForKey:@(key)];
+- (void)clear {
+  [self.cache removeAllObjects];
 }
 
 @end

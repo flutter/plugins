@@ -297,11 +297,9 @@
   ]
                     timeout:5];
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
-  OCMVerify(times(1), [mockCache removeObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
-  OCMVerify(times(1), [mockCache removeObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
-  OCMVerify(times(1), [mockCache removeObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+  OCMVerify(times(1), [mockCache clear]);
 }
 
 - (void)testTransactionsShouldBeCachedWhenNotObserving {

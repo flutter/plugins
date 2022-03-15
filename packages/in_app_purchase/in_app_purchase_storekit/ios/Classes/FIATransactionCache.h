@@ -12,9 +12,9 @@ typedef NS_ENUM(NSUInteger, TransactionCacheKey) {
 
 @interface FIATransactionCache : NSObject
 
-/// Add objects to the transaction cache.
+/// Adds objects to the transaction cache.
 ///
-/// If the cache already contain an array of objects on the specified key, the supplied
+/// If the cache already contains an array of objects on the specified key, the supplied
 /// array will be appended to the existing array.
 - (void)addObjects:(NSArray *)objects forKey:(TransactionCacheKey)key;
 
@@ -23,8 +23,8 @@ typedef NS_ENUM(NSUInteger, TransactionCacheKey) {
 /// If there are no objects associated with the given key nil is returned.
 - (NSArray *)getObjectsForKey:(TransactionCacheKey)key;
 
-/// Remove objects to the transaction cache for the supplied key.
-- (void)removeObjectsForKey:(TransactionCacheKey)key;
+/// Removes all objects from the transaction cache.
+- (void)clear;
 
 @end
 
