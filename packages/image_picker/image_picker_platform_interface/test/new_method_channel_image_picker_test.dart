@@ -340,6 +340,14 @@ void main() {
         expect(await picker.pickMultiImage(), isNull);
         expect(await picker.pickMultiImage(), isNull);
       });
+
+      test('handles a single string response gracefully', () async {
+        returnValue = '0';
+        final List<PickedFile>? files = await picker.pickMultiImage();
+        expect(files, isNotNull);
+        expect(files?.length, 1);
+        expect(files?.first.path, returnValue);
+      });
     });
 
     group('#pickVideo', () {
