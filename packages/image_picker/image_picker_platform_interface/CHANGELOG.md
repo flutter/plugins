@@ -1,3 +1,7 @@
+## 2.4.5
+
+* Avoid invalid type exceptions while using pickMultiImage on pre-iOS 14 devices.
+
 ## 2.4.4
 
 * Internal code cleanup for stricter analysis options.
