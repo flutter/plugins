@@ -81,7 +81,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     if (paths is String) {
       return <String>[paths];
     }
-    return paths as List<String>?;
+    return paths as List<dynamic>?;
   }
 
   Future<String?> _getImagePath({
