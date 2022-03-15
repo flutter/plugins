@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
@@ -57,7 +56,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-  }) {
+  }) async {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
@@ -71,7 +70,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return _channel.invokeMethod<List<dynamic>?>(
+    final dynamic paths = await _channel.invokeMethod<dynamic>(
       'pickMultiImage',
       <String, dynamic>{
         'maxWidth': maxWidth,
@@ -79,6 +78,10 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'imageQuality': imageQuality,
       },
     );
+    if (paths is String) {
+      return <String>[paths];
+    }
+    return paths as List<String>?;
   }
 
   Future<String?> _getImagePath({
