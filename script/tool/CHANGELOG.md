@@ -1,3 +1,7 @@
+## NEXT
+
+- Switches from deprecated `flutter packages` alias to `flutter pub`.
+
 ## 0.8.1
 
 - Fixes an `analyze` regression in 0.8.0 with packages that have non-`example`
