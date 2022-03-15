@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.8.
+
 ## 0.10.0+5
 
 * Internal code cleanup for stricter analysis options.

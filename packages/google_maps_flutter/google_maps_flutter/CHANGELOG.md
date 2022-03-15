@@ -1,9 +1,13 @@
 
 ## 2.2.0
 
+* Adds options for gesture handling and tilt controls on web.
+
+## 2.1.2
+
 * Removes dependencies from `pubspec.yaml` that are only needed in `example/pubspec.yaml`
 * Updates Android compileSdkVersion to 31.
-* Adds options for gesture handling and tilt controls on web.
+* Internal code cleanup for stricter analysis options.
 
 ## 2.1.1
 

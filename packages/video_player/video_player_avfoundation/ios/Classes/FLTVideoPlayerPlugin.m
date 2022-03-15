@@ -499,7 +499,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 @end
 
-@interface FLTVideoPlayerPlugin () <FLTVideoPlayerApi>
+@interface FLTVideoPlayerPlugin () <FLTAVFoundationVideoPlayerApi>
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry> *registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, strong, nonatomic)
@@ -511,7 +511,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FLTVideoPlayerPlugin *instance = [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar publish:instance];
-  FLTVideoPlayerApiSetup(registrar.messenger, instance);
+  FLTAVFoundationVideoPlayerApiSetup(registrar.messenger, instance);
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -530,7 +530,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   // TODO(57151): This should be commented out when 57151's fix lands on stable.
   // This is the correct behavior we never did it in the past and the engine
   // doesn't currently support it.
-  // FLTVideoPlayerApiSetup(registrar.messenger, nil);
+  // FLTAVFoundationVideoPlayerApiSetup(registrar.messenger, nil);
 }
 
 - (FLTTextureMessage *)onPlayerSetup:(FLTVideoPlayer *)player

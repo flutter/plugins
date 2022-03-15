@@ -11,7 +11,7 @@ class PathProviderAndroid extends PathProviderPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   MethodChannel methodChannel =
-      const MethodChannel('plugins.flutter.io/path_provider');
+      const MethodChannel('plugins.flutter.io/path_provider_android');
 
   /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {
