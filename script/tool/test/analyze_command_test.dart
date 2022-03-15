@@ -82,12 +82,12 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', const <String>['pub', 'get'],
-              mainPackageDir.path),
           ProcessCall(
-              'flutter', const <String>['packages', 'get'], subpackage1.path),
+              'flutter', const <String>['pub', 'get'], mainPackageDir.path),
           ProcessCall(
-              'flutter', const <String>['packages', 'get'], subpackage2.path),
+              'flutter', const <String>['pub', 'get'], subpackage1.path),
+          ProcessCall(
+              'flutter', const <String>['pub', 'get'], subpackage2.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               mainPackageDir.path),
         ]));
