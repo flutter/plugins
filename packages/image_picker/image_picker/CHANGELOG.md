@@ -1,3 +1,7 @@
+## 0.8.4+12
+
+* iOS: Avoid invalid type exceptions while using pickMultiImage on pre-iOS 14 devices.
+
 ## 0.8.4+11
 
 * Fixes Activity leak.
