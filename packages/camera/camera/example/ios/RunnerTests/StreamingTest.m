@@ -31,14 +31,12 @@
       expectationWithDescription:@"Must not call handler over maxStreamingPendingFramesCount"];
 
   id handlerMock = OCMClassMock([FLTImageStreamHandler class]);
-  OCMStub([handlerMock alloc]).andReturn(handlerMock);
-  OCMStub([handlerMock initWithCaptureSessionQueue:[OCMArg any]]).andReturn(handlerMock);
   OCMStub([handlerMock eventSink]).andReturn(^(id event) {
     [streamingExpectation fulfill];
   });
 
   id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
-  [_camera startImageStreamWithMessenger:messenger];
+  [_camera startImageStreamWithMessenger:messenger imageStreamHandler:handlerMock];
 
   while (!_camera.isStreamingImages) {
     [NSThread sleepForTimeInterval:0.001];
@@ -58,14 +56,12 @@
                 @"Must be able to call the handler again when receivedImageStreamData is called"];
 
   id handlerMock = OCMClassMock([FLTImageStreamHandler class]);
-  OCMStub([handlerMock alloc]).andReturn(handlerMock);
-  OCMStub([handlerMock initWithCaptureSessionQueue:[OCMArg any]]).andReturn(handlerMock);
   OCMStub([handlerMock eventSink]).andReturn(^(id event) {
     [streamingExpectation fulfill];
   });
 
   id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
-  [_camera startImageStreamWithMessenger:messenger];
+  [_camera startImageStreamWithMessenger:messenger imageStreamHandler:handlerMock];
 
   while (!_camera.isStreamingImages) {
     [NSThread sleepForTimeInterval:0.001];
