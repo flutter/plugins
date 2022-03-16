@@ -246,7 +246,8 @@
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
 }
 
-- (void)testStartObservingPaymentQueueShouldNotProcessTransactionsWhenCacheContainsEmptyTransactionArrays {
+- (void)
+    testStartObservingPaymentQueueShouldNotProcessTransactionsWhenCacheContainsEmptyTransactionArrays {
   FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
   FIAPaymentQueueHandler *handler =
       [[FIAPaymentQueueHandler alloc] initWithQueue:[[SKPaymentQueueStub alloc] init]
@@ -269,7 +270,7 @@
   OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]).andReturn(@[]);
   OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]).andReturn(@[]);
   OCMStub([mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]).andReturn(@[]);
-  
+
   [handler startObservingPaymentQueue];
 
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);

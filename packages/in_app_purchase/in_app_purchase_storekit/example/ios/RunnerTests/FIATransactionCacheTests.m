@@ -47,12 +47,15 @@
   [cache addObjects:fakeRemovedTransactions forKey:TransactionCacheKeyRemovedTransactions];
   [cache addObjects:fakeUpdatedDownloads forKey:TransactionCacheKeyUpdatedDownloads];
 
-  XCTAssertEqual(fakeUpdatedTransactions, [cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
-  XCTAssertEqual(fakeRemovedTransactions, [cache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
-  XCTAssertEqual(fakeUpdatedDownloads, [cache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
+  XCTAssertEqual(fakeUpdatedTransactions,
+                 [cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  XCTAssertEqual(fakeRemovedTransactions,
+                 [cache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+  XCTAssertEqual(fakeUpdatedDownloads,
+                 [cache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
 
   [cache clear];
-  
+
   XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
   XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
   XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
