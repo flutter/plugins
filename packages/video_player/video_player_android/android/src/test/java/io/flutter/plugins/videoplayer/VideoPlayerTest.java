@@ -176,7 +176,7 @@ public class VideoPlayerTest {
     verify(mockEventSink).success(eventCaptor.capture());
     @SuppressWarnings("unchecked")
     Map<String, Object> capturedEventMap = (Map<String, Object>) eventCaptor.getValue();
-    assertEquals(Math.PI, capturedEventMap.get("rotationCorrection"));
+    assertEquals(180, capturedEventMap.get("rotationCorrection"));
   }
 
   @Test

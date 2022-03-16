@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -153,16 +154,14 @@ void main() {
 
   testWidgets('non-zero rotationCorrection value is used',
       (WidgetTester tester) async {
-    final double expectedRotationCorrection = 3.14;
-    final FakeController controller = FakeController.value(VideoPlayerValue(
-        duration: Duration.zero,
-        rotationCorrection: expectedRotationCorrection));
+    final FakeController controller = FakeController.value(
+        VideoPlayerValue(duration: Duration.zero, rotationCorrection: 180));
     controller.textureId = 1;
     await tester.pumpWidget(VideoPlayer(controller));
     Transform actualRotationCorrection =
         find.byType(Transform).evaluate().single.widget as Transform;
-    expect(actualRotationCorrection.transform,
-        equals(Matrix4.rotationZ(expectedRotationCorrection)));
+    expect(
+        actualRotationCorrection.transform, equals(Matrix4.rotationZ(math.pi)));
   });
 
   testWidgets('no transform when rotationCorrection is zero',

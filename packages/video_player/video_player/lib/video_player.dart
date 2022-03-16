@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
-    this.rotationCorrection = 0.0,
+    this.rotationCorrection = 0,
     this.errorDescription,
   });
 
@@ -112,8 +113,8 @@ class VideoPlayerValue {
   /// The [size] of the currently loaded video.
   final Size size;
 
-  /// Radians to rotate the video so it is displayed correctly.
-  final double rotationCorrection;
+  /// Degrees to rotate the video so it is displayed correctly.
+  final int rotationCorrection;
 
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
@@ -154,6 +155,7 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? volume,
     double? playbackSpeed,
+    int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
   }) {
     return VideoPlayerValue(
@@ -770,7 +772,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
     return rotation == 0
         ? playerWidget
         : Transform.rotate(
-            angle: rotation,
+            angle: rotation * math.pi / 180,
             child: playerWidget,
           );
   }
