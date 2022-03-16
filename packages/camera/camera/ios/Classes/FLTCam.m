@@ -897,10 +897,13 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
-    [self startImageStreamWithMessenger:messenger imageStreamHandler:[[FLTImageStreamHandler alloc] initWithCaptureSessionQueue:_captureSessionQueue]];
+  [self startImageStreamWithMessenger:messenger
+                   imageStreamHandler:[[FLTImageStreamHandler alloc]
+                                          initWithCaptureSessionQueue:_captureSessionQueue]];
 }
 
-- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger imageStreamHandler:(FLTImageStreamHandler*)imageStreamHandler {
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                   imageStreamHandler:(FLTImageStreamHandler *)imageStreamHandler {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"

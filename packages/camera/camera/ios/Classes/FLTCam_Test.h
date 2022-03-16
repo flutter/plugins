@@ -13,7 +13,6 @@
 @property FlutterEventSink eventSink;
 @end
 
-
 // APIs exposed for unit testing.
 @interface FLTCam ()
 
@@ -51,6 +50,7 @@
                              error:(NSError **)error;
 
 /// Start streaming images.
-- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger imageStreamHandler:(FLTImageStreamHandler*)imageStreamHandler;
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                   imageStreamHandler:(FLTImageStreamHandler *)imageStreamHandler;
 
 @end

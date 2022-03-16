@@ -28,8 +28,9 @@
 
 - (void)waitForStart {
   NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isStreamingImages == YES"];
-  XCTNSPredicateExpectation *expectation = [[XCTNSPredicateExpectation alloc] initWithPredicate:predicate object:_camera];
-  XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:3];
+  XCTNSPredicateExpectation *expectation =
+      [[XCTNSPredicateExpectation alloc] initWithPredicate:predicate object:_camera];
+  XCTWaiterResult result = [XCTWaiter waitForExpectations:@[ expectation ] timeout:3];
   XCTAssertEqual(result, XCTWaiterResultCompleted);
 }
 
