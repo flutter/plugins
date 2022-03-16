@@ -274,7 +274,7 @@ void main() {
             await _ambiguate(ServicesBinding.instance)
                 ?.defaultBinaryMessenger
                 .handlePlatformMessage(
-                    "flutter.io/videoPlayer/videoEvents123",
+                    'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'completed',
