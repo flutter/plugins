@@ -26,6 +26,13 @@
   CFRelease(_sampleBuffer);
 }
 
+- (void)waitForStart {
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isStreamingImages == YES"];
+  XCTNSPredicateExpectation *expectation = [[XCTNSPredicateExpectation alloc] initWithPredicate:predicate object:_camera];
+  XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:3];
+  XCTAssertEqual(result, XCTWaiterResultCompleted);
+}
+
 - (void)testExceedMaxStreamingPendingFramesCount {
   XCTestExpectation *streamingExpectation = [self
       expectationWithDescription:@"Must not call handler over maxStreamingPendingFramesCount"];
@@ -38,9 +45,7 @@
   id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
   [_camera startImageStreamWithMessenger:messenger imageStreamHandler:handlerMock];
 
-  while (!_camera.isStreamingImages) {
-    [NSThread sleepForTimeInterval:0.001];
-  }
+  [self waitForStart];
 
   streamingExpectation.expectedFulfillmentCount = 4;
   for (int i = 0; i < 10; i++) {
@@ -63,9 +68,7 @@
   id messenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
   [_camera startImageStreamWithMessenger:messenger imageStreamHandler:handlerMock];
 
-  while (!_camera.isStreamingImages) {
-    [NSThread sleepForTimeInterval:0.001];
-  }
+  [self waitForStart];
 
   streamingExpectation.expectedFulfillmentCount = 5;
   for (int i = 0; i < 10; i++) {
