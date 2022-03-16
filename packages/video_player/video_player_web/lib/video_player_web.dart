@@ -205,7 +205,6 @@ class _VideoPlayer {
         isInitialized = true;
         sendInitialized();
       }
-      setBuffering(false);
     });
 
     videoElement.onCanPlayThrough.listen((dynamic _) {
