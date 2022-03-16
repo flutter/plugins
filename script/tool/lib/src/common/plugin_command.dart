@@ -417,14 +417,20 @@ abstract class PluginCommand extends Command<void> {
     await for (final PackageEnumerationEntry plugin
         in getTargetPackages(filterExcluded: filterExcluded)) {
       yield plugin;
-      yield* plugin.package.directory
-          .list(recursive: true, followLinks: false)
-          .where(_isDartPackage)
-          .map((FileSystemEntity directory) => PackageEnumerationEntry(
-              // _isDartPackage guarantees that this cast is valid.
-              RepositoryPackage(directory as Directory),
-              excluded: plugin.excluded));
+      yield* getSubpackages(plugin.package).map((RepositoryPackage package) =>
+          PackageEnumerationEntry(package, excluded: plugin.excluded));
     }
+  }
+
+  /// Returns all Dart package folders (e.g., examples) under the given package.
+  Stream<RepositoryPackage> getSubpackages(RepositoryPackage package,
+      {bool filterExcluded = true}) async* {
+    yield* package.directory
+        .list(recursive: true, followLinks: false)
+        .where(_isDartPackage)
+        .map((FileSystemEntity directory) =>
+            // _isDartPackage guarantees that this cast is valid.
+            RepositoryPackage(directory as Directory));
   }
 
   /// Returns the files contained, recursively, within the packages
