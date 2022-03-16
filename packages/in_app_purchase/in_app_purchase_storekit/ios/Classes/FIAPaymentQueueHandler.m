@@ -104,29 +104,33 @@
 }
 
 - (void)stopObservingPaymentQueue {
-  // Don't remove the transaction observer from the SKPaymentQueue instance as
-  // that will result in transactions being lost during the current application
-  // lifetime. Only setting the "observingTransactions" to "NO" ensures
-  // incoming transactions from the App Store are cached and delivered to the
-  // client as soon as it indicates it is ready to receive transactions by
-  // sending the "startObservingPaymentQueue" message.
+  // When the client stops observing transaction, the transaction observer is
+  // not removed from the SKPaymentQueue. The FIAPaymentQueueHandler will cache
+  // trasnactions in memory when the client is not observing, allowing the app
+  // to process these transactions if it starts observing again during the same
+  // lifetime of the app.
+  //
+  // If the app is killed, cached transactions will be removed from memory;
+  // however, the App Store will re-deliver the transactions as soon as the app
+  // is started again, since the cached transactions have not been acknowledged
+  // by the client (by sending the `finishTransaction` message).
   self.observingTransactions = NO;
 }
 
 - (void)processCachedTransactions {
   NSArray *cachedObjects =
       [self.transactionCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions];
-  if (cachedObjects) {
+  if (cachedObjects.count != 0) {
     self.transactionsUpdated(cachedObjects);
   }
 
   cachedObjects = [self.transactionCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads];
-  if (cachedObjects) {
+  if (cachedObjects.count != 0) {
     self.updatedDownloads(cachedObjects);
   }
 
   cachedObjects = [self.transactionCache getObjectsForKey:TransactionCacheKeyRemovedTransactions];
-  if (cachedObjects) {
+  if (cachedObjects.count != 0) {
     self.transactionsRemoved(cachedObjects);
   }
 

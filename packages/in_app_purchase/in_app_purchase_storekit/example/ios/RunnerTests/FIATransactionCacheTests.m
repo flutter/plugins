@@ -39,13 +39,22 @@
 }
 
 - (void)testClear {
-  NSArray *dummyArray = @[ @1, @2, @3 ];
+  NSArray *fakeUpdatedTransactions = @[ @1, @2, @3 ];
+  NSArray *fakeRemovedTransactions = @[ @"Remove 1", @"Remove 2", @"Remove 3" ];
+  NSArray *fakeUpdatedDownloads = @[ @"Download 1", @"Download 2" ];
   FIATransactionCache *cache = [[FIATransactionCache alloc] init];
-  [cache addObjects:dummyArray forKey:TransactionCacheKeyUpdatedTransactions];
+  [cache addObjects:fakeUpdatedTransactions forKey:TransactionCacheKeyUpdatedTransactions];
+  [cache addObjects:fakeRemovedTransactions forKey:TransactionCacheKeyRemovedTransactions];
+  [cache addObjects:fakeUpdatedDownloads forKey:TransactionCacheKeyUpdatedDownloads];
 
-  XCTAssertEqual(dummyArray, [cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  XCTAssertEqual(fakeUpdatedTransactions, [cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  XCTAssertEqual(fakeRemovedTransactions, [cache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+  XCTAssertEqual(fakeUpdatedDownloads, [cache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
 
   [cache clear];
+  
   XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+  XCTAssertNil([cache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
 }
 @end

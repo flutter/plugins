@@ -246,6 +246,37 @@
   OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
 }
 
+- (void)testStartObservingPaymentQueueShouldNotProcessTransactionsWhenCacheContainsEmptyTransactionArrays {
+  FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
+  FIAPaymentQueueHandler *handler =
+      [[FIAPaymentQueueHandler alloc] initWithQueue:[[SKPaymentQueueStub alloc] init]
+          transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTFail("transactionsUpdated callback should not be called when cache is empty.");
+          }
+          transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTFail("transactionRemoved callback should not be called when cache is empty.");
+          }
+          restoreTransactionFailed:nil
+          restoreCompletedTransactionsFinished:nil
+          shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+            return YES;
+          }
+          updatedDownloads:^(NSArray<SKDownload *> *_Nonnull downloads) {
+            XCTFail("updatedDownloads callback should not be called when cache is empty.");
+          }
+          transactionCache:mockCache];
+
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]).andReturn(@[]);
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]).andReturn(@[]);
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]).andReturn(@[]);
+  
+  [handler startObservingPaymentQueue];
+
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+}
+
 - (void)testStartObservingPaymentQueueShouldProcessTransactionsForItemsInCache {
   XCTestExpectation *updateTransactionsExpectation =
       [self expectationWithDescription:
