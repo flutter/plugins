@@ -61,7 +61,7 @@
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) int streamingPendingFramesCount;
-@property(assign, nonatomic) int maxstreamingPendingFramesCount;
+@property(assign, nonatomic) int maxStreamingPendingFramesCount;
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -131,7 +131,7 @@ NSString *const errorMethod = @"error";
   // To prevent memory consumption, limit the number of frames pending processing.
   // After some testing, 4 was determined to be the best maximum value.
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
-  _maxstreamingPendingFramesCount = 4;
+  _maxStreamingPendingFramesCount = 4;
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -399,7 +399,7 @@ NSString *const errorMethod = @"error";
   }
   if (_isStreamingImages) {
     FlutterEventSink eventSink = _imageStreamHandler.eventSink;
-    if (eventSink && (self.streamingPendingFramesCount < self.maxstreamingPendingFramesCount)) {
+    if (eventSink && (self.streamingPendingFramesCount < self.maxStreamingPendingFramesCount)) {
       self.streamingPendingFramesCount++;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       // Must lock base address before accessing the pixel data
