@@ -323,5 +323,41 @@ void main() {
         ]),
       );
     });
+
+    test('skips anything outside of the packages directory', () async {
+      final Directory toolDir = packagesDir.parent.childDirectory('tool');
+      const String newVersion = '1.1.0';
+      final Directory package = createFakePackage(
+          'flutter_plugin_tools', toolDir,
+          version: newVersion);
+
+      // Simulate a minor version change so it would be a target.
+      final File pubspecFile = RepositoryPackage(package).pubspecFile;
+      final String changedFileOutput = <File>[
+        pubspecFile,
+      ].map((File file) => file.path).join('\n');
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(stdout: changedFileOutput),
+      ];
+      final String gitPubspecContents =
+          pubspecFile.readAsStringSync().replaceAll(newVersion, '1.0.0');
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: gitPubspecContents),
+      ];
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'make-deps-path-based',
+        '--target-dependencies-with-non-breaking-updates'
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Skipping /tool/flutter_plugin_tools/pubspec.yaml; not in packages directory.'),
+          contains('No target dependencies'),
+        ]),
+      );
+    });
   });
 }

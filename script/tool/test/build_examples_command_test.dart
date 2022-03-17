@@ -63,7 +63,7 @@ void main() {
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[
-        MockProcess(exitCode: 1) // flutter packages get
+        MockProcess(exitCode: 1) // flutter pub get
       ];
 
       Error? commandError;
@@ -92,7 +92,7 @@ void main() {
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[
-        MockProcess(exitCode: 1) // flutter packages get
+        MockProcess(exitCode: 1) // flutter pub get
       ];
 
       Error? commandError;
