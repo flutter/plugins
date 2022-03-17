@@ -89,6 +89,15 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setBitrate(int textureId, double bitrate) {
+    assert(bitrate > 0);
+
+    return _api.setBitrate(BitrateMessage()
+      ..textureId = textureId
+      ..bitrate = bitrate);
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage()
       ..textureId = textureId

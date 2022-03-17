@@ -441,6 +441,10 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   _player.rate = speed;
 }
 
+- (void)setBitrate:(double)bitrate {
+    _player.currentItem.preferredPeakBitRate = 4070000;
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -530,7 +534,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   // TODO(57151): This should be commented out when 57151's fix lands on stable.
   // This is the correct behavior we never did it in the past and the engine
   // doesn't currently support it.
-  // FLTAVFoundationVideoPlayerApiSetup(registrar.messenger, nil);
+  // FLTVideoPlayerApiSetup(registrar.messenger, nil);
 }
 
 - (FLTTextureMessage *)onPlayerSetup:(FLTVideoPlayer *)player
@@ -618,6 +622,11 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player setPlaybackSpeed:input.speed.doubleValue];
+}
+
+- (void)setBitrate:(FLTBitrateMessage *)input error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player setBitrate:input.bitrate.doubleValue];
 }
 
 - (void)play:(FLTTextureMessage *)input error:(FlutterError **)error {

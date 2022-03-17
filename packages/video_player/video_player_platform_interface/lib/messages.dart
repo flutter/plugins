@@ -111,6 +111,25 @@ class PlaybackSpeedMessage {
   }
 }
 
+class BitrateMessage {
+  int? textureId;
+  double? bitrate;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['bitrate'] = bitrate;
+    return pigeonMap;
+  }
+
+  static BitrateMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return BitrateMessage()
+      ..textureId = pigeonMap['textureId'] as int?
+      ..bitrate = pigeonMap['bitrate'] as double?;
+  }
+}
+
 class PositionMessage {
   int? textureId;
   int? position;
@@ -276,6 +295,31 @@ class VideoPlayerApi {
     const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.VideoPlayerApi.setPlaybackSpeed',
         StandardMessageCodec());
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(encoded) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          replyMap['error'] as Map<Object?, Object?>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> setBitrate(BitrateMessage arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.VideoPlayerApi.setBitrate', StandardMessageCodec());
     final Map<Object?, Object?>? replyMap =
         await channel.send(encoded) as Map<Object?, Object?>?;
     if (replyMap == null) {
