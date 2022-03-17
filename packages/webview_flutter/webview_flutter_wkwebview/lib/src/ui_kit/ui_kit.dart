@@ -21,6 +21,14 @@ class UIScrollView {
     throw UnimplementedError();
   }
 
+  /// Move the scrolled position of this view.
+  ///
+  /// This method is not apart of UIKit and is only a helper method to make
+  /// scrollBy synchrounous.
+  Future<void> scrollBy(Point<double> offset) {
+    throw UnimplementedError();
+  }
+
   /// Set point at which the origin of the content view is offset from the origin of the scroll view.
   ///
   /// The default value is `Point<double>(0.0, 0.0)`.

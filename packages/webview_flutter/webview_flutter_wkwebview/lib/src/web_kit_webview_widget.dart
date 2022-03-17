@@ -267,7 +267,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<String> runJavascriptReturningResult(String javascript) async {
-    return await webView.evaluateJavaScript(javascript) ?? '';
+    final String? result = await webView.evaluateJavaScript(javascript);
+    if (result == null) {
+      throw ArgumentError(
+        'Result of JavaScript execution returned a `null` value. '
+        'Use `runJavascript` when expecting a null return value.',
+      );
+    }
+    return result;
   }
 
   @override
@@ -283,11 +290,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> scrollBy(int x, int y) async {
-    final Point<double> offset = await webView.scrollView.contentOffset;
-    webView.scrollView.contentOffset = Point<double>(
-      offset.x + x.toDouble(),
-      offset.y + y.toDouble(),
-    );
+    await webView.scrollView.scrollBy(Point<double>(
+      x.toDouble(),
+      y.toDouble(),
+    ));
   }
 
   @override

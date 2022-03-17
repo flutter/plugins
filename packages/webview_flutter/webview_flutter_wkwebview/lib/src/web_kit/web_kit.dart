@@ -428,6 +428,9 @@ class WKWebView {
   }
 
   /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// This method is not apart of WebKit and is only a Flutter specific helper
+  /// method.
   Future<void> loadFlutterAsset(String key) {
     throw UnimplementedError();
   }
