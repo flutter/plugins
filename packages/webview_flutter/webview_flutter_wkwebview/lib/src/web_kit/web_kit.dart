@@ -51,43 +51,27 @@ enum WKAudiovisualMediaType {
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
 enum WKWebsiteDataTypes {
   /// Cookies.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypecookies?language=objc.
   cookies,
 
   /// In-memory caches.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypememorycache?language=objc.
   memoryCache,
 
   /// On-disk caches.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypediskcache?language=objc.
   diskCache,
 
   /// HTML offline web app caches.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypeofflinewebapplicationcache?language=objc.
   offlineWebApplicationCache,
 
   /// HTML local storage.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypelocalstorage?language=objc.
   localStroage,
 
   /// HTML session storage.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypesessionstorage?language=objc.
   sessionStorage,
 
   /// WebSQL databases.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypewebsqldatabases?language=objc.
   sqlDatabases,
 
   /// IndexedDB databases.
-  ///
-  /// See https://developer.apple.com/documentation/webkit/wkwebsitedatatypeindexeddbdatabases?language=objc.
   indexedDBDatabases,
 }
 

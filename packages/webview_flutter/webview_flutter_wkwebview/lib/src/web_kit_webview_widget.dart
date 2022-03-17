@@ -168,6 +168,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         WKWebsiteDataTypes.memoryCache,
         WKWebsiteDataTypes.diskCache,
         WKWebsiteDataTypes.offlineWebApplicationCache,
+        WKWebsiteDataTypes.localStroage,
       },
       DateTime.fromMillisecondsSinceEpoch(0),
     );
