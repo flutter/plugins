@@ -180,7 +180,8 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map should show tilt controls. Web only.
   ///
-  /// This interrupts map dragging if the [GoogleMap] is rebuilt while dragging.
+  /// Disabling this will cause map dragging to be interrupted if the
+  /// [GoogleMap] is rebuilt while dragging.
   final bool tiltControlsEnabled;
 
   /// Padding to be set on map. See https://developers.google.com/maps/documentation/android-sdk/map#map_padding for more details.
