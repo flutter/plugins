@@ -2,7 +2,7 @@
 
 - Adds a new `custom-test` command.
 
-  ## 0.8.1
+## 0.8.1
 
 - Fixes an `analyze` regression in 0.8.0 with packages that have non-`example`
   sub-packages.
