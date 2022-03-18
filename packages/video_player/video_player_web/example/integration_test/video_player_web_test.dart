@@ -116,6 +116,35 @@ void main() {
         await eventStream.last;
       }, throwsA(isA<PlatformException>()));
     });
+    testWidgets('signals bufferingEnd onCanPlayThrough', (WidgetTester tester) async {
+      final int videoPlayerId = await textureId;
+      final Stream<VideoEvent> eventStream =
+          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
+
+      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+
+      // Let the video play, until we see a "bufferingStop" event (will be excluded!)
+      final List<VideoEvent> events = await eventStream
+          .timeout(const Duration(seconds: 5))
+          .takeWhile((VideoEvent e) => e.eventType != VideoEventType.bufferingEnd)
+          .toList();
+
+      await VideoPlayerPlatform.instance.pause(videoPlayerId);
+
+      // The expected list of event types should look like this:
+      // 1. bufferingStart,
+      // 2. bufferingUpdate (videoElement.onWaiting),
+      // 3. initialized (videoElement.onCanPlay),
+      //   The next one is excluded from the stream by takeWhile:
+      // 4. bufferingEnd (videoElement.onCanPlayThrough),
+      expect(events.map((VideoEvent e) => e.eventType), equals(<VideoEventType>[
+        VideoEventType.bufferingStart,
+        VideoEventType.bufferingUpdate,
+        VideoEventType.initialized,
+        // VideoEventType.bufferingEnd
+      ]));
+    });
 
     testWidgets('can pause', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.pause(await textureId), completes);
