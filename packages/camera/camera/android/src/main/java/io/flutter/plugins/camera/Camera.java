@@ -218,6 +218,7 @@ class Camera
     // Create capture callback.
     captureTimeouts = new CaptureTimeoutsWrapper(3000, 3000);
     captureProps = new CameraCaptureProperties();
+    captureProps.setCallback(() -> updateProperties(captureProps));
     cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts, captureProps);
 
     startBackgroundThread();
@@ -242,6 +243,15 @@ class Camera
     for (CameraFeature feature : cameraFeatures.getAllFeatures()) {
       Log.d(TAG, "Updating builder with feature: " + feature.getDebugName());
       feature.updateBuilder(requestBuilder);
+    }
+  }
+
+
+  private void updateProperties(CameraCaptureProperties props) {
+    final Long lastExposureTime = props.getLastSensorExposureTime();
+    final Integer lastIso = props.getLastSensorSensitivity();
+    if (lastExposureTime != null && lastIso != null) {
+      dartMessenger.sendCameraPreviewPropertiesEvent(lastIso, lastExposureTime.intValue());
     }
   }
 

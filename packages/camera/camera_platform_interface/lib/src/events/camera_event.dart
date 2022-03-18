@@ -127,6 +127,48 @@ class CameraInitializedEvent extends CameraEvent {
       focusPointSupported.hashCode;
 }
 
+///
+class CameraPreviewPropertiesEvent extends CameraEvent {
+  ///
+  const CameraPreviewPropertiesEvent(
+    int cameraId,
+    this.currentIso,
+    this.currentExposureTime,
+  ) : super(cameraId);
+
+  ///
+  CameraPreviewPropertiesEvent.fromJson(Map<String, dynamic> json)
+      : currentIso = json['currentIso']! as int,
+        currentExposureTime = json['currentExposureTime']! as int,
+        super(json['cameraId']! as int);
+
+  ///
+  final int currentIso;
+
+  ///
+  final int currentExposureTime;
+
+  ///
+  Map<String, dynamic> toJson() => <String, Object>{
+        'cameraId': cameraId,
+        'currentIso': currentIso,
+        'currentExposureTime': currentExposureTime,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CameraPreviewPropertiesEvent &&
+          super == other &&
+          runtimeType == other.runtimeType &&
+          currentIso == other.currentIso &&
+          currentExposureTime == other.currentExposureTime;
+
+  @override
+  int get hashCode =>
+      super.hashCode ^ currentIso.hashCode ^ currentExposureTime.hashCode;
+}
+
 /// An event fired when the resolution preset of the camera has changed.
 class CameraResolutionChangedEvent extends CameraEvent {
   /// Build a CameraResolutionChanged event triggered from the camera

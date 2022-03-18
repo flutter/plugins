@@ -161,6 +161,11 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Stream<CameraPreviewPropertiesEvent> onCameraPreviewProperties(int cameraId) {
+    return _cameraEvents(cameraId).whereType<CameraPreviewPropertiesEvent>();
+  }
+
+  @override
   Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
     return _cameraEvents(cameraId).whereType<CameraResolutionChangedEvent>();
   }
@@ -509,6 +514,14 @@ class MethodChannelCamera extends CameraPlatform {
           call.arguments['captureHeight']! as double,
         ));
         break;
+      case 'preview_properties':
+        cameraEventStreamController.add(CameraPreviewPropertiesEvent(
+          cameraId,
+          call.arguments['currentIso']! as int,
+          call.arguments['currentExposureTime']! as int,
+        ));
+        break;
+
       case 'camera_closing':
         cameraEventStreamController.add(CameraClosingEvent(
           cameraId,

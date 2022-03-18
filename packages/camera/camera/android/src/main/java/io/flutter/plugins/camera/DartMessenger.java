@@ -40,7 +40,9 @@ public class DartMessenger {
     /** Indicates that the camera is closing. */
     CLOSING("camera_closing"),
     /** Indicates that the camera is initialized. */
-    INITIALIZED("initialized");
+    INITIALIZED("initialized"),
+
+    PREVIEW_PROPERTIES("preview_properties");
 
     private final String method;
 
@@ -81,6 +83,17 @@ public class DartMessenger {
         new HashMap<String, Object>() {
           {
             put("orientation", CameraUtils.serializeDeviceOrientation(orientation));
+          }
+        });
+  }
+
+  public void sendCameraPreviewPropertiesEvent(int currentIso, int currentExposureTime) {
+    this.send(
+        CameraEventType.PREVIEW_PROPERTIES,
+        new HashMap<String, Object>() {
+          {
+            put("currentIso", currentIso);
+            put("currentExposureTime", currentExposureTime);
           }
         });
   }

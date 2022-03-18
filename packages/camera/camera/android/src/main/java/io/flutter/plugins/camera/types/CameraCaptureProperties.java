@@ -4,11 +4,19 @@
 
 package io.flutter.plugins.camera.types;
 
+
+import androidx.annotation.Nullable;
+
 public class CameraCaptureProperties {
+
+  public static interface Callback {
+    void onChanged();
+  }
 
   private Float lastLensAperture;
   private Long lastSensorExposureTime;
   private Integer lastSensorSensitivity;
+  private Callback callback;
 
   /**
    * Gets the last known lens aperture. (As f-stop value)
@@ -44,6 +52,7 @@ public class CameraCaptureProperties {
    */
   public void setLastSensorExposureTime(Long lastSensorExposureTime) {
     this.lastSensorExposureTime = lastSensorExposureTime;
+    if (callback != null) callback.onChanged();
   }
 
   /**
@@ -63,5 +72,10 @@ public class CameraCaptureProperties {
    */
   public void setLastSensorSensitivity(Integer lastSensorSensitivity) {
     this.lastSensorSensitivity = lastSensorSensitivity;
+    if (callback != null) callback.onChanged();
+  }
+
+  public void setCallback(@Nullable Callback callback) {
+    this.callback = callback;
   }
 }

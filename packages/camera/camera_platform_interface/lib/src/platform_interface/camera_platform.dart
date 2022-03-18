@@ -77,6 +77,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraInitialized() is not implemented.');
   }
 
+  /// The camera has been initialized.
+  Stream<CameraPreviewPropertiesEvent> onCameraPreviewProperties(int cameraId) {
+    throw UnimplementedError('onCameraPreviewProperties() is not implemented.');
+  }
+
   /// The camera's resolution has changed.
   /// On Web this returns an empty stream.
   Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {

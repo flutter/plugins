@@ -381,6 +381,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  Stream<CameraPreviewPropertiesEvent> cameraPreviewProperties() =>
+      CameraPlatform.instance.onCameraPreviewProperties(cameraId);
+
   /// Captures an image and returns the file where it was saved.
   ///
   /// Throws a [CameraException] if the capture fails.
