@@ -221,6 +221,7 @@ void main() {
             WKWebsiteDataTypes.memoryCache,
             WKWebsiteDataTypes.diskCache,
             WKWebsiteDataTypes.offlineWebApplicationCache,
+            WKWebsiteDataTypes.localStroage,
           },
           DateTime.fromMillisecondsSinceEpoch(0),
         ));
