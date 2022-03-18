@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -262,19 +263,30 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> runJavascript(String javascript) async {
-    await webView.evaluateJavaScript(javascript);
+    try {
+      await webView.evaluateJavaScript(javascript);
+    } on PlatformException catch (exception) {
+      // WebKit will throw an error when the type of the evaluated value is
+      // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
+      // example, when running a void function. For ease of use, this specific
+      // error is ignored when no return value is expected.
+      if (exception.code !=
+          WKErrorCode.javaScriptResultTypeIsUnsupported.toString()) {
+        rethrow;
+      }
+    }
   }
 
   @override
   Future<String> runJavascriptReturningResult(String javascript) async {
-    final String? result = await webView.evaluateJavaScript(javascript);
+    final Object? result = await webView.evaluateJavaScript(javascript);
     if (result == null) {
       throw ArgumentError(
         'Result of JavaScript execution returned a `null` value. '
         'Use `runJavascript` when expecting a null return value.',
       );
     }
-    return result;
+    return result.toString();
   }
 
   @override

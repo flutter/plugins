@@ -488,7 +488,7 @@ class WKWebView {
   ///
   /// Throws a `PlatformException` if an error occurs or return value is not
   /// supported.
-  Future<String?> evaluateJavaScript(String javaScriptString) {
+  Future<Object?> evaluateJavaScript(String javaScriptString) {
     throw UnimplementedError();
   }
 }
