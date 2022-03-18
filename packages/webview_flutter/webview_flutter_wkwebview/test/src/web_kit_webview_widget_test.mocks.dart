@@ -65,6 +65,11 @@ class MockUIScrollView extends _i1.Mock implements _i4.UIScrollView {
   set contentOffset(_i5.FutureOr<_i2.Point<double>>? offset) =>
       super.noSuchMethod(Invocation.setter(#contentOffset, offset),
           returnValueForMissingStub: null);
+  @override
+  _i5.Future<void> scrollBy(_i2.Point<double>? offset) =>
+      (super.noSuchMethod(Invocation.method(#scrollBy, [offset]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKNavigationDelegate].
@@ -228,9 +233,9 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  _i5.Future<String?> evaluateJavaScript(String? javaScriptString) => (super
+  _i5.Future<Object?> evaluateJavaScript(String? javaScriptString) => (super
       .noSuchMethod(Invocation.method(#evaluateJavaScript, [javaScriptString]),
-          returnValue: Future<String?>.value()) as _i5.Future<String?>);
+          returnValue: Future<Object?>.value()) as _i5.Future<Object?>);
 }
 
 /// A class which mocks [WKWebViewConfiguration].

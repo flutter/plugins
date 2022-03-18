@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -400,12 +401,46 @@ void main() {
         );
       });
 
+      testWidgets(
+          'runJavascriptReturningResult throws error on null return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<String?>.value(null),
+        );
+        expect(
+          () => testController.runJavascriptReturningResult('runJavaScript'),
+          throwsArgumentError,
+        );
+      });
+
       testWidgets('runJavascript', (WidgetTester tester) async {
         await buildWidget(tester);
 
         when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
           (_) => Future<String>.value('returnString'),
         );
+        expect(
+          testController.runJavascript('runJavaScript'),
+          completes,
+        );
+      });
+
+      testWidgets(
+          'runJavascript ignores exception with unsupported javascript type',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript'))
+            .thenThrow(PlatformException(
+          code: '',
+          details: const NSError(
+            code: WKErrorCode.javaScriptResultTypeIsUnsupported,
+            domain: '',
+            localizedDescription: '',
+          ),
+        ));
         expect(
           testController.runJavascript('runJavaScript'),
           completes,
@@ -424,22 +459,14 @@ void main() {
         await buildWidget(tester);
 
         await testController.scrollTo(2, 4);
-        await untilCalled<dynamic>(mockScrollView.noSuchMethod(
-          Invocation.setter(#contentOffset, const Point<double>(2.0, 4.0)),
-          returnValueForMissingStub: null,
-        ));
+        verify(mockScrollView.contentOffset = const Point<double>(2.0, 4.0));
       });
 
       testWidgets('scrollBy', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockScrollView.contentOffset).thenAnswer(
-            (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
         await testController.scrollBy(2, 4);
-        await untilCalled<dynamic>(mockScrollView.noSuchMethod(
-          Invocation.setter(#contentOffset, const Point<double>(10.0, 20.0)),
-          returnValueForMissingStub: null,
-        ));
+        verify(mockScrollView.scrollBy(const Point<double>(2.0, 4.0)));
       });
 
       testWidgets('getScrollX', (WidgetTester tester) async {
