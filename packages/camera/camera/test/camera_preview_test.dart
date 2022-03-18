@@ -125,6 +125,12 @@ class FakeController extends ValueNotifier<CameraValue>
   Stream<CameraPreviewPropertiesEvent> cameraPreviewProperties() {
     return const Stream.empty();
   }
+
+  @override
+  Future<List<XFile>> takeBracketingPictures(
+      String basePath, bool fixedIso) async {
+    return [];
+  }
 }
 
 void main() {

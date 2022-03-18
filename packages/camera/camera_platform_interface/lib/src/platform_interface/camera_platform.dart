@@ -128,6 +128,12 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('takePicture() is not implemented.');
   }
 
+  ///
+  Future<List<XFile>> takeBracketingPictures(
+      int cameraId, String basePath, bool fixedIso) {
+    throw UnimplementedError('takeBracketingPictures() is not implemented.');
+  }
+
   /// Prepare the capture session for video recording.
   Future<void> prepareForVideoRecording() {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');

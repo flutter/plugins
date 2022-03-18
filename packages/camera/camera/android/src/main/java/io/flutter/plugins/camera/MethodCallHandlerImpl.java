@@ -16,6 +16,7 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.camera.BracketingCamara.BracketingMode;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camera.features.CameraFeatureFactoryImpl;
 import io.flutter.plugins.camera.features.Point;
@@ -109,6 +110,13 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.takePicture(result);
           break;
         }
+      case "takeBracketingPictures": {
+        Boolean fixedIso = call.argument("fixedIso");
+        fixedIso = fixedIso != null ? fixedIso : true;
+        final BracketingMode mode = fixedIso ? BracketingMode.fixedIsoTimeCompensation : BracketingMode.autoExposureCompensation;
+        camera.takeBracketingPictures(call.argument("path"), mode, result);
+        break;
+      }
       case "prepareForVideoRecording":
         {
           // This optimization is not required for Android.

@@ -563,6 +563,11 @@ class Camera
     }
   }
 
+  public void takeBracketingPictures(String basePath, BracketingCamara.BracketingMode bracketingMode, @NonNull final MethodChannel.Result result) {
+    BracketingCamara bracketingCamara = new BracketingCamara(cameraFeatures, captureSession, cameraProperties, captureProps, pictureImageReader, cameraDevice);
+    bracketingCamara.takeBracketingPictures(basePath, BracketingCamara.BracketingMode.fixedIsoTimeCompensation, result);
+  }
+
   /**
    * Run the precapture sequence for capturing a still image. This method should be called when a
    * response is received in {@link #cameraCaptureCallback} from lockFocus().

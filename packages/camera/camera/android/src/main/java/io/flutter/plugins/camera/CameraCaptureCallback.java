@@ -73,7 +73,7 @@ class CameraCaptureCallback extends CaptureCallback {
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
     // Update capture properties
-    if (result instanceof TotalCaptureResult) {
+    if (result instanceof TotalCaptureResult && aeState != CaptureRequest.CONTROL_AE_STATE_LOCKED) {
       Float lensAperture = result.get(CaptureResult.LENS_APERTURE);
       Long sensorExposureTime = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
       Integer sensorSensitivity = result.get(CaptureResult.SENSOR_SENSITIVITY);

@@ -231,6 +231,28 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Future<List<XFile>> takeBracketingPictures(
+      int cameraId, String basePath, bool fixedIso) async {
+    final List<Object?>? paths = await _channel.invokeMethod(
+      'takeBracketingPictures',
+      <String, dynamic>{
+        'cameraId': cameraId,
+        'path': basePath,
+        'fixedIso': fixedIso,
+      },
+    );
+
+    if (paths == null || paths.isEmpty) {
+      throw CameraException(
+        'INVALID_PATH',
+        'The platform "$defaultTargetPlatform" did not return a path while reporting success. The platform should always return a valid path or report an error.',
+      );
+    }
+
+    return paths.map((Object? e) => XFile(e! as String)).toList();
+  }
+
+  @override
   Future<void> prepareForVideoRecording() =>
       _channel.invokeMethod<void>('prepareForVideoRecording');
 

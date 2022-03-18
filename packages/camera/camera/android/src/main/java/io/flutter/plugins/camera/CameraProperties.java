@@ -4,10 +4,12 @@
 
 package io.flutter.plugins.camera;
 
+import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build.VERSION_CODES;
 import android.util.Range;
 import android.util.Rational;
@@ -48,6 +50,9 @@ public interface CameraProperties {
    *     camera device.
    */
   Range<Integer> getControlAutoExposureCompensationRange();
+
+
+  Range<Long> getSensorInfoExposureTimeRange();
 
   /**
    * Returns the smallest step by which the exposure compensation can be changed.
@@ -235,6 +240,8 @@ public interface CameraProperties {
    * @return int[] List of noise reduction modes that are supported by this camera device.
    */
   int[] getAvailableNoiseReductionModes();
+
+  long getOutputMinFrameDuration();
 }
 
 /**
@@ -272,6 +279,12 @@ class CameraPropertiesImpl implements CameraProperties {
         cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
 
     return rational == null ? 0.0 : rational.doubleValue();
+  }
+
+  @Override
+  public Range<Long> getSensorInfoExposureTimeRange() {
+    return
+        cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
   }
 
   @Override
@@ -346,5 +359,9 @@ class CameraPropertiesImpl implements CameraProperties {
   public int[] getAvailableNoiseReductionModes() {
     return cameraCharacteristics.get(
         CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+  }
+  @Override
+  public long getOutputMinFrameDuration() {
+    return cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputMinFrameDuration(ImageFormat.JPEG, getSensorInfoPixelArraySize());
   }
 }

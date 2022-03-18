@@ -381,6 +381,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Delivers a stream about the current sensor sensitivity (iso) and exposure time
   Stream<CameraPreviewPropertiesEvent> cameraPreviewProperties() =>
       CameraPlatform.instance.onCameraPreviewProperties(cameraId);
 
@@ -400,6 +401,28 @@ class CameraController extends ValueNotifier<CameraValue> {
       final XFile file = await CameraPlatform.instance.takePicture(_cameraId);
       value = value.copyWith(isTakingPicture: false);
       return file;
+    } on PlatformException catch (e) {
+      value = value.copyWith(isTakingPicture: false);
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  ///
+  Future<List<XFile>> takeBracketingPictures(
+      String basePath, bool fixedIso) async {
+    _throwIfNotInitialized('takeBracketingPictures');
+    if (value.isTakingPicture) {
+      throw CameraException(
+        'Previous capture has not returned yet.',
+        'takeBracketingPictures was called before the previous capture returned.',
+      );
+    }
+    try {
+      value = value.copyWith(isTakingPicture: true);
+      final List<XFile> files = await CameraPlatform.instance
+          .takeBracketingPictures(cameraId, basePath, fixedIso);
+      value = value.copyWith(isTakingPicture: false);
+      return files;
     } on PlatformException catch (e) {
       value = value.copyWith(isTakingPicture: false);
       throw CameraException(e.code, e.message);
