@@ -690,7 +690,8 @@ void main() {
       TestWebStorageHostApi.setup(mockPlatformHostApi);
 
       webStorage = WebStorage();
-      webStorageInstanceId = WebStorage.api.instanceManager.getInstanceId(webStorage)!;
+      webStorageInstanceId =
+          WebStorage.api.instanceManager.getInstanceId(webStorage)!;
     });
 
     test('create', () {

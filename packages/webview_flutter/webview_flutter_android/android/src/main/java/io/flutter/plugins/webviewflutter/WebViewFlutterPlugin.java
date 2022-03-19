@@ -19,9 +19,9 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.FlutterAssetMan
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -117,7 +117,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     FlutterAssetManagerHostApi.setup(
         binaryMessenger, new FlutterAssetManagerHostApiImpl(flutterAssetManager));
     CookieManagerHostApi.setup(binaryMessenger, new CookieManagerHostApiImpl());
-    WebStorageHostApi.setup(binaryMessenger, new WebStorageHostApiImpl(instanceManager, new WebStorageHostApiImpl.WebStorageCreator()));
+    WebStorageHostApi.setup(
+        binaryMessenger,
+        new WebStorageHostApiImpl(instanceManager, new WebStorageHostApiImpl.WebStorageCreator()));
   }
 
   @Override

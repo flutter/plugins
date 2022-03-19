@@ -1,7 +1,6 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.webkit.WebStorage;
-
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 
 /**
@@ -9,7 +8,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostA
  *
  * <p>Handles creating {@link WebStorage}s that intercommunicate with a paired Dart object.
  */
-public class WebStorageHostApiImpl  implements WebStorageHostApi  {
+public class WebStorageHostApiImpl implements WebStorageHostApi {
   private final InstanceManager instanceManager;
   private final WebStorageCreator webStorageCreator;
 

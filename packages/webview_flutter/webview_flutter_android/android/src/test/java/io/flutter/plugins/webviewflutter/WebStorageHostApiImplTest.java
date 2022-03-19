@@ -4,7 +4,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.webkit.WebStorage;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,14 +12,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 public class WebStorageHostApiImplTest {
-  @Rule
-  public MockitoRule mockitoRule = MockitoJUnit.rule();
+  @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock
-  public WebStorage mockWebStorage;
+  @Mock public WebStorage mockWebStorage;
 
-  @Mock
-  WebStorageHostApiImpl.WebStorageCreator mockWebStorageCreator;
+  @Mock WebStorageHostApiImpl.WebStorageCreator mockWebStorageCreator;
 
   InstanceManager testInstanceManager;
   WebStorageHostApiImpl testHostApiImpl;
