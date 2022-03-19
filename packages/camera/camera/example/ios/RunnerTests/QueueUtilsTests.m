@@ -5,20 +5,20 @@
 @import camera;
 @import XCTest;
 
-@interface QueueHelperTests : XCTestCase
+@interface QueueUtilsTests : XCTestCase
 
 @end
 
-@implementation QueueHelperTests
+@implementation QueueUtilsTests
 
 - (void)testShouldStayOnMainQueueIfCalledFromMainQueue {
   XCTestExpectation *expectation =
       [self expectationWithDescription:@"Block must be run on the main queue."];
-  [QueueHelper ensureToRunOnMainQueue:^{
+  FLTEnsureToRunOnMainQueue(^{
     if (NSThread.isMainThread) {
       [expectation fulfill];
     }
-  }];
+  });
   [self waitForExpectationsWithTimeout:1 handler:nil];
 }
 
@@ -26,11 +26,11 @@
   XCTestExpectation *expectation =
       [self expectationWithDescription:@"Block must be run on the main queue."];
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    [QueueHelper ensureToRunOnMainQueue:^{
+    FLTEnsureToRunOnMainQueue(^{
       if (NSThread.isMainThread) {
         [expectation fulfill];
       }
-    }];
+    });
   });
   [self waitForExpectationsWithTimeout:1 handler:nil];
 }

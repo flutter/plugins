@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
 /// A [Widget] that displays a [WKWebView].
@@ -120,6 +121,32 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate();
 
+  /// Methods for handling navigation changes and tracking navigation requests.
+  @visibleForTesting
+  late final WKNavigationDelegate navigationDelegate =
+      webViewProxy.createNavigationDelegate()
+        ..didStartProvisionalNavigation = (WKWebView webView, String? url) {
+          callbacksHandler.onPageStarted(url ?? '');
+        }
+        ..didFinishNavigation = (WKWebView webView, String? url) {
+          callbacksHandler.onPageFinished(url ?? '');
+        }
+        ..didFailNavigation = (WKWebView webView, NSError error) {
+          callbacksHandler.onWebResourceError(_toWebResourceError(error));
+        }
+        ..didFailProvisionalNavigation = (WKWebView webView, NSError error) {
+          callbacksHandler.onWebResourceError(_toWebResourceError(error));
+        }
+        ..webViewWebContentProcessDidTerminate = (WKWebView webView) {
+          callbacksHandler.onWebResourceError(WebResourceError(
+            errorCode: WKErrorCode.webContentProcessTerminated,
+            // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+            domain: 'WKErrorDomain',
+            description: '',
+            errorType: WebResourceErrorType.webContentProcessTerminated,
+          ));
+        };
+
   Future<void> _setCreationParams(
     CreationParams params, {
     required WKWebViewConfiguration configuration,
@@ -133,6 +160,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     webView = webViewProxy.createWebView(configuration);
 
     await addJavascriptChannels(params.javascriptChannelNames);
+
+    webView.navigationDelegate = navigationDelegate;
+
+    if (params.webSettings != null) {
+      updateSettings(params.webSettings!);
+    }
   }
 
   void _setWebViewConfiguration(
@@ -159,6 +192,13 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       if (requiresUserAction) WKAudiovisualMediaType.all,
       if (!requiresUserAction) WKAudiovisualMediaType.none,
     };
+  }
+
+  @override
+  Future<void> updateSettings(WebSettings setting) async {
+    if (setting.hasNavigationDelegate != null) {
+      _setHasNavigationDelegate(setting.hasNavigationDelegate!);
+    }
   }
 
   @override
@@ -224,6 +264,53 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     await addJavascriptChannels(remainingNames);
   }
+
+  void _setHasNavigationDelegate(bool hasNavigationDelegate) {
+    if (hasNavigationDelegate) {
+      navigationDelegate.decidePolicyForNavigationAction =
+          (WKWebView webView, WKNavigationAction action) async {
+        final bool allow = await callbacksHandler.onNavigationRequest(
+          url: action.request.url,
+          isForMainFrame: action.targetFrame.isMainFrame,
+        );
+
+        return allow
+            ? WKNavigationActionPolicy.allow
+            : WKNavigationActionPolicy.cancel;
+      };
+    } else {
+      navigationDelegate.decidePolicyForNavigationAction = null;
+    }
+  }
+
+  static WebResourceError _toWebResourceError(NSError error) {
+    WebResourceErrorType? errorType;
+
+    switch (error.code) {
+      case WKErrorCode.unknown:
+        errorType = WebResourceErrorType.unknown;
+        break;
+      case WKErrorCode.webContentProcessTerminated:
+        errorType = WebResourceErrorType.webContentProcessTerminated;
+        break;
+      case WKErrorCode.webViewInvalidated:
+        errorType = WebResourceErrorType.webViewInvalidated;
+        break;
+      case WKErrorCode.javaScriptExceptionOccurred:
+        errorType = WebResourceErrorType.javaScriptExceptionOccurred;
+        break;
+      case WKErrorCode.javaScriptResultTypeIsUnsupported:
+        errorType = WebResourceErrorType.javaScriptResultTypeIsUnsupported;
+        break;
+    }
+
+    return WebResourceError(
+      errorCode: error.code,
+      domain: error.domain,
+      description: error.localizedDescription,
+      errorType: errorType,
+    );
+  }
 }
 
 /// Handles constructing objects and calling static methods.
@@ -247,5 +334,10 @@ class WebViewWidgetProxy {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate createUIDelgate() {
     return WKUIDelegate();
+  }
+
+  /// Constructs a [WKNavigationDelegate].
+  WKNavigationDelegate createNavigationDelegate() {
+    return WKNavigationDelegate();
   }
 }

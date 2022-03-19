@@ -53,7 +53,7 @@
         [completionExpectation fulfill];
       }];
 
-  // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
+  // Do not use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
   OCMStub([mockData writeToFile:OCMOCK_ANY
@@ -82,7 +82,7 @@
         [completionExpectation fulfill];
       }];
 
-  // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
+  // Do not use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
   OCMStub([mockData writeToFile:filePath options:NSDataWritingAtomic error:[OCMArg setTo:nil]])
@@ -107,7 +107,7 @@
   const char *ioQueueSpecific = "io_queue_specific";
   dispatch_queue_set_specific(ioQueue, ioQueueSpecific, (void *)ioQueueSpecific, NULL);
 
-  // We can't use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
+  // Do not use OCMClassMock for NSData because some XCTest APIs uses NSData (e.g.
   // `XCTRunnerIDESession::logDebugMessage:`) on a private queue.
   id mockData = OCMPartialMock([NSData data]);
   OCMStub([mockData writeToFile:OCMOCK_ANY options:NSDataWritingAtomic error:[OCMArg setTo:nil]])

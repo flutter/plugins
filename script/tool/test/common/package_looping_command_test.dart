@@ -236,6 +236,34 @@ void main() {
       expect(command.checkedPackages,
           isNot(contains(excluded.childDirectory('example2').path)));
     });
+
+    test('skips unsupported versions when requested', () async {
+      final Directory excluded = createFakePlugin('a_plugin', packagesDir,
+          flutterConstraint: '>=2.10.0');
+      final Directory included = createFakePackage('a_package', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(includeSubpackages: true, hasLongOutput: false);
+      final List<String> output = await runCommand(command, arguments: <String>[
+        '--skip-if-not-supporting-flutter-version=2.5.0'
+      ]);
+
+      expect(
+          command.checkedPackages,
+          unorderedEquals(<String>[
+            included.path,
+            included.childDirectory('example').path,
+          ]));
+      expect(command.checkedPackages, isNot(contains(excluded.path)));
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startHeadingColor}Running for a_package...$_endColor',
+            '${_startHeadingColor}Running for a_plugin...$_endColor',
+            '$_startSkipColor  SKIPPING: Does not support Flutter 2.5.0$_endColor',
+          ]));
+    });
   });
 
   group('output', () {

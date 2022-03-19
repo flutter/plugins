@@ -46,6 +46,53 @@ enum WKAudiovisualMediaType {
   all,
 }
 
+/// Indicate whether to allow or cancel navigation to a webpage.
+///
+/// Wraps [WKNavigationActionPolicy](https://developer.apple.com/documentation/webkit/wknavigationactionpolicy?language=objc).
+enum WKNavigationActionPolicy {
+  /// Allow navigation to continue.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationactionpolicy/wknavigationactionpolicyallow?language=objc.
+  allow,
+
+  /// Cancel navigation.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wknavigationactionpolicy/wknavigationactionpolicycancel?language=objc.
+  cancel,
+}
+
+/// Possible error values that WebKit APIs can return.
+///
+/// See https://developer.apple.com/documentation/webkit/wkerrorcode.
+class WKErrorCode {
+  WKErrorCode._();
+
+  /// Indicates an unknown issue occurred.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkerrorcode/wkerrorunknown.
+  static const int unknown = 1;
+
+  /// Indicates the web process that contains the content is no longer running.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkerrorcode/wkerrorwebcontentprocessterminated.
+  static const int webContentProcessTerminated = 2;
+
+  /// Indicates the web view was invalidated.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkerrorcode/wkerrorwebviewinvalidated.
+  static const int webViewInvalidated = 3;
+
+  /// Indicates a JavaScript exception occurred.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkerrorcode/wkerrorjavascriptexceptionoccurred.
+  static const int javaScriptExceptionOccurred = 4;
+
+  /// Indicates the result of JavaScript execution could not be returned.
+  ///
+  /// See https://developer.apple.com/documentation/webkit/wkerrorcode/wkerrorjavascriptresulttypeisunsupported.
+  static const int javaScriptResultTypeIsUnsupported = 5;
+}
+
 /// An object that contains information about an action that causes navigation to occur.
 ///
 /// Wraps [WKNavigationAction](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
@@ -128,7 +175,7 @@ class WKScriptMessageHandler {
     void Function(
       WKUserContentController userContentController,
       WKScriptMessage message,
-    )
+    )?
         didReceiveScriptMessage,
   ) {
     throw UnimplementedError();
@@ -247,8 +294,66 @@ class WKUIDelegate {
     void Function(
       WKWebViewConfiguration configuration,
       WKNavigationAction navigationAction,
-    )
+    )?
         onCreateeWebView,
+  ) {
+    throw UnimplementedError();
+  }
+}
+
+/// Methods for handling navigation changes and tracking navigation requests.
+///
+/// Set the methods of the [WKNavigationDelegate] in the object you use to
+/// coordinate changes in your web view’s main frame.
+///
+/// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
+class WKNavigationDelegate {
+  /// Called when navigation from the main frame has started.
+  set didStartProvisionalNavigation(
+    void Function(
+      WKWebView webView,
+      String? url,
+    )?
+        didStartProvisionalNavigation,
+  ) {
+    throw UnimplementedError();
+  }
+
+  /// Called when navigation is complete.
+  set didFinishNavigation(
+    void Function(WKWebView webView, String? url)? didFinishNavigation,
+  ) {
+    throw UnimplementedError();
+  }
+
+  /// Called when permission is needed to navigate to new content.
+  set decidePolicyForNavigationAction(
+      Future<WKNavigationActionPolicy> Function(
+    WKWebView webView,
+    WKNavigationAction navigationAction,
+  )?
+          decidePolicyForNavigationAction) {
+    throw UnimplementedError();
+  }
+
+  /// Called when an error occurred during navigation.
+  set didFailNavigation(
+    void Function(WKWebView webView, NSError error)? didFailNavigation,
+  ) {
+    throw UnimplementedError();
+  }
+
+  /// Called when an error occurred during the early navigation process.
+  set didFailProvisionalNavigation(
+    void Function(WKWebView webView, NSError error)?
+        didFailProvisionalNavigation,
+  ) {
+    throw UnimplementedError();
+  }
+
+  /// Called when the web view’s content process was terminated.
+  set webViewWebContentProcessDidTerminate(
+    void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   ) {
     throw UnimplementedError();
   }
@@ -286,7 +391,17 @@ class WKWebView {
       WKWebViewConfiguration._fromWebView(this);
 
   /// Used to integrate custom user interface elements into web view interactions.
-  set uiDelegate(WKUIDelegate delegate) {
+  set uiDelegate(WKUIDelegate? delegate) {
+    throw UnimplementedError();
+  }
+
+  /// The object you use to manage navigation behavior for the web view.
+  set navigationDelegate(WKNavigationDelegate? delegate) {
+    throw UnimplementedError();
+  }
+
+  /// The URL for the current webpage.
+  Future<String?> get url {
     throw UnimplementedError();
   }
 
