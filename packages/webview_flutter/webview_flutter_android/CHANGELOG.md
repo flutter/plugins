@@ -1,6 +1,8 @@
-## NEXT
+## 2.8.4
 
 * Fixes bug preventing `mockito` code generation for tests.
+* Fixes regression where local storage wasn't cleared when `WebViewController.clearCache` was
+  called.
 
 ## 2.8.3
 
