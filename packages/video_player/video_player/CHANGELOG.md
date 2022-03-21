@@ -4,7 +4,7 @@
 
 ## 2.3.1
 
-* Handle `BehindLiveWindowException`
+* Handle `BehindLiveWindowException` in android devices
 
 ## 2.3.0
 
