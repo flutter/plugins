@@ -211,6 +211,8 @@ final class VideoPlayer {
           public void onPlayerError(final ExoPlaybackException error) {
             setBuffering(false);
             if (isBehindLiveWindow(error) && exoPlayer != null) {
+              event.put("event", "behindLiveWindow");
+
               try {
                 exoPlayer.prepare();
               } catch (Exception e) {

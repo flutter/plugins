@@ -143,6 +143,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
             buffered: values.map<DurationRange>(_toDurationRange).toList(),
             eventType: VideoEventType.bufferingUpdate,
           );
+        case 'behindLiveWindow':
         case 'bufferingStart':
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
