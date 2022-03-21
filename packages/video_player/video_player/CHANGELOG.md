@@ -1,7 +1,7 @@
 ## NEXT
 
 * Updates minimum Flutter version to 2.10.
-* 
+
 ## 2.3.1
 
 * Handle `BehindLiveWindowException`
