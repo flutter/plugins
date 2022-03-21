@@ -21,7 +21,7 @@ dependencies:
 #    path: ../camera_platform_interface
     git:
       url: https://github.com/joecks/plugins
-      ref: 76d0ec6a1342d4ae0fbd80898d8e906bd8c837a0
+      ref: 83f67ab19c0e287c1f3e9bf9b8697dcaa36812cf
       path: packages/camera/camera_platform_interface
   flutter:
     sdk: flutter
