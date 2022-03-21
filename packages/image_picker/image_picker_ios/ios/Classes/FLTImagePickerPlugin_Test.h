@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This header is available in the Test module. Import via "@import image_picker.Test;"
+// This header is available in the Test module. Import via "@import image_picker_ios_ios.Test;"
 
 #import <image_picker/FLTImagePickerPlugin.h>
 

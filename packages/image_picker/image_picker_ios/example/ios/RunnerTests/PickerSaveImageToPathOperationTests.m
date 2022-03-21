@@ -5,8 +5,8 @@
 #import <OCMock/OCMock.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-@import image_picker;
-@import image_picker.Test;
+@import image_picker_ios;
+@import image_picker_ios.Test;
 @import XCTest;
 
 @interface PickerSaveImageToPathOperationTests : XCTestCase
