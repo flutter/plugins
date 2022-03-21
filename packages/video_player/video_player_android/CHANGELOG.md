@@ -1,6 +1,7 @@
+
 ## 2.3.2
 
-* Handle `BehindLiveWindowException`
+* Handles `BehindLiveWindowException` in live streams.
 
 ## 2.3.1
 

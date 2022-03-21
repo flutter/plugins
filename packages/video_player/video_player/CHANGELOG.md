@@ -2,10 +2,6 @@
 
 * Updates minimum Flutter version to 2.10.
 
-## 2.3.1
-
-* Handle `BehindLiveWindowException` in android devices
-
 ## 2.3.0
 
 * Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
