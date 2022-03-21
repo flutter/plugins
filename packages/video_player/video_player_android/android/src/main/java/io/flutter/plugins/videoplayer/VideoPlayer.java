@@ -211,9 +211,11 @@ final class VideoPlayer {
           public void onPlayerError(final ExoPlaybackException error) {
             setBuffering(false);
             if (isBehindLiveWindow(error) && exoPlayer != null) {
-              event.put("event", "behindLiveWindow");
-
               try {
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "behindLiveWindow");
+                eventSink.success(event);
+
                 exoPlayer.prepare();
               } catch (Exception e) {
                 eventSink.error("VideoError", "Video player had error " + error, null);
