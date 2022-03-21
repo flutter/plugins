@@ -2,7 +2,7 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 Pod::Spec.new do |s|
-  s.name             = 'image_picker'
+  s.name             = 'image_picker_ios'
   s.version          = '0.0.1'
   s.summary          = 'Flutter plugin that shows an image picker.'
   s.description      = <<-DESC
@@ -12,8 +12,8 @@ Downloaded by pub (not CocoaPods).
   s.homepage         = 'https://github.com/flutter/plugins'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/image_picker' }
-  s.documentation_url = 'https://pub.dev/packages/image_picker'
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/image_picker_ios' }
+  s.documentation_url = 'https://pub.dev/packages/image_picker_ios'
   s.source_files = 'Classes/**/*.{h,m}'
   s.public_header_files = 'Classes/**/*.h'
   s.module_map = 'Classes/ImagePickerPlugin.modulemap'
