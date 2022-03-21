@@ -1,3 +1,7 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 0.8.4+11
 
 * Fixes Activity leak.
