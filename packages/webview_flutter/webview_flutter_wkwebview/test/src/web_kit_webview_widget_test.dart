@@ -25,6 +25,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
+  WKWebsiteDataStore,
   WKUIDelegate,
   WKUserContentController,
   JavascriptChannelRegistry,
@@ -41,6 +42,7 @@ void main() {
     late MockWKWebViewConfiguration mockWebViewConfiguration;
     late MockWKUIDelegate mockUIDelegate;
     late MockUIScrollView mockScrollView;
+    late MockWKWebsiteDataStore mockWebsiteDataStore;
     late MockWKNavigationDelegate mockNavigationDelegate;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
@@ -54,6 +56,7 @@ void main() {
       mockUserContentController = MockWKUserContentController();
       mockUIDelegate = MockWKUIDelegate();
       mockScrollView = MockUIScrollView();
+      mockWebsiteDataStore = MockWKWebsiteDataStore();
       mockNavigationDelegate = MockWKNavigationDelegate();
       mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
@@ -65,7 +68,12 @@ void main() {
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
       );
+
       when(mockWebView.scrollView).thenReturn(mockScrollView);
+
+      when(mockWebViewConfiguration.webSiteDataStore).thenReturn(
+        mockWebsiteDataStore,
+      );
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
@@ -513,6 +521,21 @@ void main() {
         when(mockScrollView.contentOffset).thenAnswer(
             (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
         expect(testController.getScrollY(), completion(16.0));
+      });
+
+      testWidgets('clearCache', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.clearCache();
+        verify(mockWebsiteDataStore.removeDataOfTypes(
+          <WKWebsiteDataTypes>{
+            WKWebsiteDataTypes.memoryCache,
+            WKWebsiteDataTypes.diskCache,
+            WKWebsiteDataTypes.offlineWebApplicationCache,
+            WKWebsiteDataTypes.localStroage,
+          },
+          DateTime.fromMillisecondsSinceEpoch(0),
+        ));
       });
 
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {

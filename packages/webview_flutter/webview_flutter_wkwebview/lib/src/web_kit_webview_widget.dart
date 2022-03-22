@@ -211,6 +211,19 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
+  Future<void> clearCache() {
+    return webView.configuration.webSiteDataStore.removeDataOfTypes(
+      <WKWebsiteDataTypes>{
+        WKWebsiteDataTypes.memoryCache,
+        WKWebsiteDataTypes.diskCache,
+        WKWebsiteDataTypes.offlineWebApplicationCache,
+        WKWebsiteDataTypes.localStroage,
+      },
+      DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  @override
   Future<void> loadFlutterAsset(String key) async {
     assert(key.isNotEmpty);
     return webView.loadFlutterAsset(key);

@@ -38,14 +38,17 @@ class _FakeUIScrollView_2 extends _i1.Fake implements _i4.UIScrollView {}
 class _FakeWKUserContentController_3 extends _i1.Fake
     implements _i3.WKUserContentController {}
 
-class _FakeWKWebView_4 extends _i1.Fake implements _i3.WKWebView {}
+class _FakeWKWebsiteDataStore_4 extends _i1.Fake
+    implements _i3.WKWebsiteDataStore {}
 
-class _FakeWKScriptMessageHandler_5 extends _i1.Fake
+class _FakeWKWebView_5 extends _i1.Fake implements _i3.WKWebView {}
+
+class _FakeWKScriptMessageHandler_6 extends _i1.Fake
     implements _i3.WKScriptMessageHandler {}
 
-class _FakeWKUIDelegate_6 extends _i1.Fake implements _i3.WKUIDelegate {}
+class _FakeWKUIDelegate_7 extends _i1.Fake implements _i3.WKUIDelegate {}
 
-class _FakeWKNavigationDelegate_7 extends _i1.Fake
+class _FakeWKNavigationDelegate_8 extends _i1.Fake
     implements _i3.WKNavigationDelegate {}
 
 /// A class which mocks [UIScrollView].
@@ -262,6 +265,14 @@ class MockWKWebViewConfiguration extends _i1.Mock
           Invocation.setter(#userContentController, _userContentController),
           returnValueForMissingStub: null);
   @override
+  _i3.WKWebsiteDataStore get webSiteDataStore =>
+      (super.noSuchMethod(Invocation.getter(#webSiteDataStore),
+          returnValue: _FakeWKWebsiteDataStore_4()) as _i3.WKWebsiteDataStore);
+  @override
+  set webSiteDataStore(_i3.WKWebsiteDataStore? websiteDataStore) =>
+      super.noSuchMethod(Invocation.setter(#webSiteDataStore, websiteDataStore),
+          returnValueForMissingStub: null);
+  @override
   set allowsInlineMediaPlayback(bool? allow) =>
       super.noSuchMethod(Invocation.setter(#allowsInlineMediaPlayback, allow),
           returnValueForMissingStub: null);
@@ -271,6 +282,24 @@ class MockWKWebViewConfiguration extends _i1.Mock
       super.noSuchMethod(
           Invocation.setter(#mediaTypesRequiringUserActionForPlayback, types),
           returnValueForMissingStub: null);
+}
+
+/// A class which mocks [WKWebsiteDataStore].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWKWebsiteDataStore extends _i1.Mock
+    implements _i3.WKWebsiteDataStore {
+  MockWKWebsiteDataStore() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<void> removeDataOfTypes(
+          Set<_i3.WKWebsiteDataTypes>? dataTypes, DateTime? since) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeDataOfTypes, [dataTypes, since]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKUIDelegate].
@@ -398,18 +427,18 @@ class MockWebViewWidgetProxy extends _i1.Mock
   @override
   _i3.WKWebView createWebView(_i3.WKWebViewConfiguration? configuration) =>
       (super.noSuchMethod(Invocation.method(#createWebView, [configuration]),
-          returnValue: _FakeWKWebView_4()) as _i3.WKWebView);
+          returnValue: _FakeWKWebView_5()) as _i3.WKWebView);
   @override
   _i3.WKScriptMessageHandler createScriptMessageHandler() =>
       (super.noSuchMethod(Invocation.method(#createScriptMessageHandler, []),
-              returnValue: _FakeWKScriptMessageHandler_5())
+              returnValue: _FakeWKScriptMessageHandler_6())
           as _i3.WKScriptMessageHandler);
   @override
   _i3.WKUIDelegate createUIDelgate() =>
       (super.noSuchMethod(Invocation.method(#createUIDelgate, []),
-          returnValue: _FakeWKUIDelegate_6()) as _i3.WKUIDelegate);
+          returnValue: _FakeWKUIDelegate_7()) as _i3.WKUIDelegate);
   @override
   _i3.WKNavigationDelegate createNavigationDelegate() => (super.noSuchMethod(
       Invocation.method(#createNavigationDelegate, []),
-      returnValue: _FakeWKNavigationDelegate_7()) as _i3.WKNavigationDelegate);
+      returnValue: _FakeWKNavigationDelegate_8()) as _i3.WKNavigationDelegate);
 }
