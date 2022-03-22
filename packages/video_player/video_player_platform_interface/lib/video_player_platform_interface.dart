@@ -226,7 +226,7 @@ class VideoEvent {
   /// Only used if [eventType] is [VideoEventType.initialized].
   final Size? size;
 
-  /// Degrees to rotate the video so it is displayed correctly.
+  /// Degrees to rotate the video (clockwise) so it is displayed correctly.
   ///
   /// Only used if [eventType] is [VideoEventType.initialized].
   final int? rotationCorrection;
