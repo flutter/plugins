@@ -195,6 +195,19 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
+  Future<void> clearCache() {
+    return webView.configuration.webSiteDataStore.removeDataOfTypes(
+      <WKWebsiteDataTypes>{
+        WKWebsiteDataTypes.memoryCache,
+        WKWebsiteDataTypes.diskCache,
+        WKWebsiteDataTypes.offlineWebApplicationCache,
+        WKWebsiteDataTypes.localStroage,
+      },
+      DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  @override
   Future<void> updateSettings(WebSettings setting) async {
     if (setting.hasNavigationDelegate != null) {
       _setHasNavigationDelegate(setting.hasNavigationDelegate!);
