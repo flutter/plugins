@@ -9,7 +9,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   VideoPlayerController? _toBeDisposed;
   String? _retrieveDataError;
 
-  final ImagePicker _picker = ImagePicker();
+  final ImagePickerPlatform _picker = ImagePickerPlatform.instance;
   final TextEditingController maxWidthController = TextEditingController();
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
@@ -84,14 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller!.setVolume(0.0);
     }
     if (isVideo) {
-      final XFile? file = await _picker.pickVideo(
+      final XFile? file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else if (isMultiImage) {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final List<XFile>? pickedFileList = await _picker.pickMultiImage(
+          final List<XFile>? pickedFileList = await _picker.getMultiImage(
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final XFile? pickedFile = await _picker.pickImage(
+          final XFile? pickedFile = await _picker.getImage(
             source: source,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
@@ -214,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> retrieveLostData() async {
-    final LostDataResponse response = await _picker.retrieveLostData();
+    final LostDataResponse response = await _picker.getLostData();
     if (response.isEmpty) {
       return;
     }
