@@ -418,18 +418,18 @@ class WKWebView {
   }
 
   /// Loads the contents of the specified HTML string and navigates to it.
-  Future<void> loadHtmlString(String string, String? baseUrl) {
+  Future<void> loadHtmlString(String string, {String? baseUrl}) {
     throw UnimplementedError();
   }
 
   /// Loads the web content from the specified file and navigates to it.
-  Future<void> loadFileUrl(String url, String readAccessUrl) {
+  Future<void> loadFileUrl(String url, {required String readAccessUrl}) {
     throw UnimplementedError();
   }
 
   /// Loads the Flutter asset specified in the pubspec.yaml file.
   ///
-  /// This method is not apart of WebKit and is only a Flutter specific helper
+  /// This method is not a part of WebKit and is only a Flutter specific helper
   /// method.
   Future<void> loadFlutterAsset(String key) {
     throw UnimplementedError();

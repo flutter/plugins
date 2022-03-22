@@ -203,13 +203,16 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  _i5.Future<void> loadHtmlString(String? string, String? baseUrl) =>
-      (super.noSuchMethod(Invocation.method(#loadHtmlString, [string, baseUrl]),
+  _i5.Future<void> loadHtmlString(String? string, {String? baseUrl}) =>
+      (super.noSuchMethod(
+          Invocation.method(#loadHtmlString, [string], {#baseUrl: baseUrl}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  _i5.Future<void> loadFileUrl(String? url, String? readAccessUrl) =>
-      (super.noSuchMethod(Invocation.method(#loadFileUrl, [url, readAccessUrl]),
+  _i5.Future<void> loadFileUrl(String? url, {String? readAccessUrl}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #loadFileUrl, [url], {#readAccessUrl: readAccessUrl}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override

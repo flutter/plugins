@@ -199,14 +199,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> loadHtmlString(String html, {String? baseUrl}) {
-    return webView.loadHtmlString(html, baseUrl);
+    return webView.loadHtmlString(html, baseUrl: baseUrl);
   }
 
   @override
   Future<void> loadFile(String absoluteFilePath) async {
     await webView.loadFileUrl(
       absoluteFilePath,
-      path.dirname(absoluteFilePath),
+      readAccessUrl: path.dirname(absoluteFilePath),
     );
   }
 
@@ -258,7 +258,23 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<String> evaluateJavascript(String javascript) async {
-    return runJavascriptReturningResult(javascript);
+    try {
+      final Object? result = await webView.evaluateJavaScript(javascript);
+      return result?.toString() ?? '';
+    } on PlatformException catch (exception) {
+      // WebKit will throw an error when the type of the evaluated value is
+      // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
+      // example, when running a void function. For ease of use, this specific
+      // error is ignored when no return value is expected.
+      // TODO(bparrishMines): Ensure the platform code includes the NSError in
+      // the FlutterError.details.
+      if (exception.details is NSError &&
+          exception.details.code ==
+              WKErrorCode.javaScriptResultTypeIsUnsupported) {
+        return '';
+      }
+      rethrow;
+    }
   }
 
   @override

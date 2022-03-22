@@ -23,8 +23,8 @@ class UIScrollView {
 
   /// Move the scrolled position of this view.
   ///
-  /// This method is not apart of UIKit and is only a helper method to make
-  /// scrollBy synchrounous.
+  /// This method is not a part of UIKit and is only a helper method to make
+  /// scrollBy atomic.
   Future<void> scrollBy(Point<double> offset) {
     throw UnimplementedError();
   }

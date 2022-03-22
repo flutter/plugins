@@ -218,7 +218,10 @@ void main() {
         await buildWidget(tester);
 
         await testController.loadFile('/path/to/file.html');
-        verify(mockWebView.loadFileUrl('/path/to/file.html', '/path/to'));
+        verify(mockWebView.loadFileUrl(
+          '/path/to/file.html',
+          readAccessUrl: '/path/to',
+        ));
       });
 
       testWidgets('loadFlutterAsset', (WidgetTester tester) async {
@@ -236,7 +239,7 @@ void main() {
 
         verify(mockWebView.loadHtmlString(
           '<html><body>Test data.</body></html>',
-          'baseUrl',
+          baseUrl: 'baseUrl',
         ));
       });
 
@@ -386,6 +389,51 @@ void main() {
         expect(
           testController.evaluateJavascript('runJavaScript'),
           completion('returnString'),
+        );
+      });
+
+      testWidgets('evaluateJavascript with null return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(),
+        );
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion(''),
+        );
+      });
+
+      testWidgets(
+          'evaluateJavascript ignores exception with unsupported javascript type',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript'))
+            .thenThrow(PlatformException(
+          code: '',
+          details: const NSError(
+            code: WKErrorCode.javaScriptResultTypeIsUnsupported,
+            domain: '',
+            localizedDescription: '',
+          ),
+        ));
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completes,
+        );
+      });
+
+      testWidgets('evaluateJavascript rethrows exception',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript'))
+            .thenThrow(Error());
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          throwsA(isA<Error>()),
         );
       });
 
