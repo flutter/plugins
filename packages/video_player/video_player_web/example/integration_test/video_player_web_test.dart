@@ -24,7 +24,7 @@ void main() {
             DataSource(
               sourceType: DataSourceType.network,
               uri:
-                  'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                  'https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/example/assets/Butterfly-209.webm?raw=true',
             ),
           )
           .then((int? textureId) => textureId!);
@@ -40,7 +40,7 @@ void main() {
             DataSource(
                 sourceType: DataSourceType.network,
                 uri:
-                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
+                    'https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/example/assets/Butterfly-209.webm?raw=true'),
           ),
           completion(isNonZero));
     });
