@@ -401,31 +401,11 @@ void main() {
         );
         expect(
           testController.evaluateJavascript('runJavaScript'),
-          completion(''),
+          completion('null'),
         );
       });
 
-      testWidgets(
-          'evaluateJavascript ignores exception with unsupported javascript type',
-          (WidgetTester tester) async {
-        await buildWidget(tester);
-
-        when(mockWebView.evaluateJavaScript('runJavaScript'))
-            .thenThrow(PlatformException(
-          code: '',
-          details: const NSError(
-            code: WKErrorCode.javaScriptResultTypeIsUnsupported,
-            domain: '',
-            localizedDescription: '',
-          ),
-        ));
-        expect(
-          testController.evaluateJavascript('runJavaScript'),
-          completes,
-        );
-      });
-
-      testWidgets('evaluateJavascript rethrows exception',
+      testWidgets('evaluateJavascript throws exception',
           (WidgetTester tester) async {
         await buildWidget(tester);
 
