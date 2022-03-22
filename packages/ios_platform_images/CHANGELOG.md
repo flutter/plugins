@@ -10,7 +10,7 @@
 
 ## 0.2.1
 
-* Added `loadSystemImage` to load system images, also known as 'sfsymbols'.
+* Adds `loadSystemImage` to load system images, also known as 'sfsymbols'.
 
 ## 0.2.0+9
 
