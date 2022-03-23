@@ -46,6 +46,35 @@ enum WKAudiovisualMediaType {
   all,
 }
 
+/// Types of data that websites store.
+///
+/// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
+enum WKWebsiteDataTypes {
+  /// Cookies.
+  cookies,
+
+  /// In-memory caches.
+  memoryCache,
+
+  /// On-disk caches.
+  diskCache,
+
+  /// HTML offline web app caches.
+  offlineWebApplicationCache,
+
+  /// HTML local storage.
+  localStroage,
+
+  /// HTML session storage.
+  sessionStorage,
+
+  /// WebSQL databases.
+  sqlDatabases,
+
+  /// IndexedDB databases.
+  indexedDBDatabases,
+}
+
 /// Indicate whether to allow or cancel navigation to a webpage.
 ///
 /// Wraps [WKNavigationActionPolicy](https://developer.apple.com/documentation/webkit/wknavigationactionpolicy?language=objc).
@@ -162,6 +191,25 @@ class WKScriptMessage {
   final Object? body;
 }
 
+/// Manages cookies, disk and memory caches, and other types of data for a web view.
+///
+/// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
+class WKWebsiteDataStore {
+  WKWebsiteDataStore._fromWebViewConfiguration(
+    // TODO(bparrishMines): Remove ignore once constructor is implemented.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebViewConfiguration configuration,
+  );
+
+  /// Removes website data that changed after the specified date.
+  Future<void> removeDataOfTypes(
+    Set<WKWebsiteDataTypes> dataTypes,
+    DateTime since,
+  ) {
+    throw UnimplementedError();
+  }
+}
+
 /// An interface for receiving messages from JavaScript code running in a webpage.
 ///
 /// Wraps [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc)
@@ -267,6 +315,18 @@ class WKWebViewConfiguration {
 
   /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
   late final WKUserContentController userContentController;
+
+  late WKWebsiteDataStore _websiteDataStore =
+      WKWebsiteDataStore._fromWebViewConfiguration(this);
+
+  /// Used to get and set the site’s cookies and to track the cached data objects.
+  WKWebsiteDataStore get webSiteDataStore => _websiteDataStore;
+
+  /// Used to get and set the site’s cookies and to track the cached data objects.
+  set webSiteDataStore(WKWebsiteDataStore websiteDataStore) {
+    _websiteDataStore = websiteDataStore;
+    throw UnimplementedError();
+  }
 
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   set allowsInlineMediaPlayback(bool allow) {

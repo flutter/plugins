@@ -20,6 +20,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
+  WKWebsiteDataStore,
   WKUIDelegate,
   WKUserContentController,
   JavascriptChannelRegistry,
@@ -35,6 +36,7 @@ void main() {
     late MockWKUserContentController mockUserContentController;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
     late MockWKUIDelegate mockUIDelegate;
+    late MockWKWebsiteDataStore mockWebsiteDataStore;
     late MockWKNavigationDelegate mockNavigationDelegate;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
@@ -47,6 +49,7 @@ void main() {
       mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockUserContentController = MockWKUserContentController();
       mockUIDelegate = MockWKUIDelegate();
+      mockWebsiteDataStore = MockWKWebsiteDataStore();
       mockNavigationDelegate = MockWKNavigationDelegate();
       mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
@@ -57,6 +60,9 @@ void main() {
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
+      );
+      when(mockWebViewConfiguration.webSiteDataStore).thenReturn(
+        mockWebsiteDataStore,
       );
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
@@ -206,6 +212,21 @@ void main() {
     });
 
     group('$WebKitWebViewPlatformController', () {
+      testWidgets('clearCache', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.clearCache();
+        verify(mockWebsiteDataStore.removeDataOfTypes(
+          <WKWebsiteDataTypes>{
+            WKWebsiteDataTypes.memoryCache,
+            WKWebsiteDataTypes.diskCache,
+            WKWebsiteDataTypes.offlineWebApplicationCache,
+            WKWebsiteDataTypes.localStroage,
+          },
+          DateTime.fromMillisecondsSinceEpoch(0),
+        ));
+      });
+
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
         when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
