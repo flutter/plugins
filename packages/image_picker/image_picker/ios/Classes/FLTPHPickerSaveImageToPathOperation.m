@@ -101,60 +101,22 @@ typedef void (^GetSavedPath)(NSString *);
             loadDataRepresentationForTypeIdentifier:identifier
                                   completionHandler:^(NSData *_Nullable data,
                                                       NSError *_Nullable error) {
-                                    if (error == nil) {
-                                      __block UIImage *localImage =
-                                          [[UIImage alloc] initWithData:data];
-                                      PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil
-                                          getAssetFromPHPickerResult:self.result];
-
-                                      if (self.maxWidth != (id)[NSNull null] ||
-                                          self.maxHeight != (id)[NSNull null]) {
-                                        localImage = [FLTImagePickerImageUtil
-                                                    scaledImage:localImage
-                                                       maxWidth:self.maxWidth
-                                                      maxHeight:self.maxHeight
-                                            isMetadataAvailable:originalAsset != nil];
-                                      }
-                                      __block NSString *savedPath;
-                                      if (!originalAsset) {
-                                        // Image picked without an original asset (e.g. User pick
-                                        // image without permission)
-                                        savedPath = [FLTImagePickerPhotoAssetUtil
-                                            saveImageWithPickerInfo:nil
-                                                              image:localImage
-                                                       imageQuality:self.desiredImageQuality];
-                                        [self completeOperationWithPath:savedPath];
-                                      } else {
-                                        [[PHImageManager defaultManager]
-                                            requestImageDataForAsset:originalAsset
-                                                             options:nil
-                                                       resultHandler:^(
-                                                           NSData *_Nullable imageData,
-                                                           NSString *_Nullable dataUTI,
-                                                           UIImageOrientation orientation,
-                                                           NSDictionary *_Nullable info) {
-                                                         // maxWidth and maxHeight are used only for
-                                                         // GIF images.
-                                                         savedPath = [FLTImagePickerPhotoAssetUtil
-                                                             saveImageWithOriginalImageData:
-                                                                 imageData
-                                                                                      image:
-                                                                                          localImage
-                                                                                   maxWidth:
-                                                                                       self.maxWidth
-                                                                                  maxHeight:
-                                                                                      self.maxHeight
-                                                                               imageQuality:
-                                                                                   self.desiredImageQuality];
-                                                         [self completeOperationWithPath:savedPath];
-                                                       }];
-                                      }
-                                    } else {
-                                      [self completeOperationWithPath:nil];
-                                    }
+                                    UIImage *image = [[UIImage alloc] initWithData:data];
+                                    [self processImage:image];
                                   }];
+        return;
       }
     }
+
+    [self.result.itemProvider
+        loadObjectOfClass:[UIImage class]
+        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
+                            NSError *_Nullable error) {
+          if ([image isKindOfClass:[UIImage class]]) {
+            [self processImage:image];
+          }
+        }];
+
   } else {
     [self setFinished:YES];
   }
