@@ -1257,7 +1257,7 @@ Future<void> main() async {
         controller.runJavascriptReturningResult(
           'localStorage.getItem("myCat");',
         ),
-        completion('null'),
+        completion(_webviewNull()),
       );
     },
   );
@@ -1270,6 +1270,15 @@ String _webviewBool(bool value) {
     return value ? '1' : '0';
   }
   return value ? 'true' : 'false';
+}
+
+// JavaScript `null` evaluate to different string values on Android and iOS.
+// This utility method returns the string boolean value of the current platform.
+String _webviewNull() {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return '<null>';
+  }
+  return 'null';
 }
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
