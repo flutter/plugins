@@ -881,7 +881,7 @@ Future<void> main() async {
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
-              return (request.url.contains('does-not-match-target'))
+              return (request.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
             },
@@ -1005,14 +1005,13 @@ Future<void> main() async {
           textDirection: TextDirection.ltr,
           child: WebView(
             key: GlobalKey(),
-            initialUrl: primaryUrl,
+            initialUrl: blankPageEncoded,
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
-              print('### GOT NAVIGATION REQUEST ### ${request.url}');
-              return (request.url.contains('secondary.txt'))
+              return (request.url.contains('youtube.com'))
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
             },
@@ -1023,7 +1022,8 @@ Future<void> main() async {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller.runJavascript('location.href = "$secondaryUrl"');
+      await controller
+          .runJavascript('location.href = "https://www.youtube.com/"');
 
       // There should never be any second page load, since our new URL is
       // blocked. Still wait for a potential page change for some time in order
@@ -1031,7 +1031,7 @@ Future<void> main() async {
       await pageLoads.stream.first
           .timeout(const Duration(milliseconds: 500), onTimeout: () => '');
       final String? currentUrl = await controller.currentUrl();
-      expect(currentUrl, isNot(contains('secondary.txt')));
+      expect(currentUrl, isNot(contains('youtube.com')));
     });
 
     testWidgets('supports asynchronous decisions', (WidgetTester tester) async {
