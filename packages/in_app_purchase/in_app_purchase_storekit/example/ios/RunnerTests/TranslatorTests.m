@@ -36,7 +36,7 @@
     @"paymentMode" : @1,
   }];
   if (@available(iOS 12.2, *)) {
-    self.discountMap[@"identifier"] = [NSNull null];
+    self.discountMap[@"identifier"] = @"test offer id";
     self.discountMap[@"type"] = @(SKProductDiscountTypeIntroductory);
   }
 
