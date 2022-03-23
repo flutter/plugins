@@ -11,6 +11,22 @@ import 'package:integration_test/integration_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
+// Returns the URL to load an asset from this example app as a network source.
+//
+// TODO(stuartmorgan): Convert this to a local `HttpServer` that vends the
+// assets directly, https://github.com/flutter/flutter/issues/95420
+String getUrlForAssetAsNetworkSource(String assetKey) {
+  return 'https://github.com/flutter/plugins/blob/'
+      // This hash can be rolled forward to pick up newly-added assets.
+      'cb381ced070d356799dddf24aca38ce0579d3d7b'
+      '/packages/video_player/video_player/example/'
+      '$assetKey'
+      '?raw=true';
+}
+
+// Use WebM for web to allow CI to use Chromium.
+const String _videoAssetKey = 'assets/Butterfly-209.webm';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -23,8 +39,7 @@ void main() {
           .create(
             DataSource(
               sourceType: DataSourceType.network,
-              uri:
-                  'https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/example/assets/Butterfly-209.webm?raw=true',
+              uri: getUrlForAssetAsNetworkSource(_videoAssetKey),
             ),
           )
           .then((int? textureId) => textureId!);
@@ -38,9 +53,9 @@ void main() {
       expect(
           VideoPlayerPlatform.instance.create(
             DataSource(
-                sourceType: DataSourceType.network,
-                uri:
-                    'https://github.com/flutter/plugins/blob/main/packages/video_player/video_player/example/assets/Butterfly-209.webm?raw=true'),
+              sourceType: DataSourceType.network,
+              uri: getUrlForAssetAsNetworkSource(_videoAssetKey),
+            ),
           ),
           completion(isNonZero));
     });
@@ -100,9 +115,9 @@ void main() {
         (WidgetTester tester) async {
       final int videoPlayerId = (await VideoPlayerPlatform.instance.create(
         DataSource(
-            sourceType: DataSourceType.network,
-            uri:
-                'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
+          sourceType: DataSourceType.network,
+          uri: getUrlForAssetAsNetworkSource('assets/__non_existent.webm'),
+        ),
       ))!;
 
       final Stream<VideoEvent> eventStream =
