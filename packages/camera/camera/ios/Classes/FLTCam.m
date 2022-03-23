@@ -60,8 +60,13 @@
 @property(assign, nonatomic) BOOL videoIsDisconnected;
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
+
+/// Number of frames currently pending processing.
 @property(assign, nonatomic) int streamingPendingFramesCount;
+
+/// Maximum number of frames pending processing.
 @property(assign, nonatomic) int maxStreamingPendingFramesCount;
+
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;

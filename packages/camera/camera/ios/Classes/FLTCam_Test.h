@@ -6,11 +6,14 @@
 #import "FLTSavePhotoDelegate.h"
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
-// The queue on which `eventSink` property should be accessed
+
+/// The queue on which `eventSink` property should be accessed
 @property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
-// `eventSink` property should be accessed on `captureSessionQueue`.
-// The block itself should be invoked on the main queue.
+
+/// `eventSink` property should be accessed on `captureSessionQueue`.
+/// The block itself should be invoked on the main queue.
 @property FlutterEventSink eventSink;
+
 @end
 
 // APIs exposed for unit testing.

@@ -60,6 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)applyFocusMode;
+
+/// Sets that a streaming image has been received.
+/// Call it every time a streaming image is received.
+/// To prevent memory consumption, the number of frames pending processing is limited.
 - (void)receivedImageStreamData;
 
 /**
