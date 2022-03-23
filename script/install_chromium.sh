@@ -19,15 +19,15 @@ readonly CHROMIUM_BUILD=929514
 readonly DOWNLOAD_ROOT="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F${CHROMIUM_BUILD}%2F"
 
 # Install Chromium.
-mkdir $TARGET_DIR
+mkdir "$TARGET_DIR"
 readonly CHROMIUM_ZIP_FILE="$TARGET_DIR/chromium.zip"
-wget --no-verbose "${DOWNLOAD_ROOT}chrome-linux.zip?alt=media" -O $CHROMIUM_ZIP_FILE
-unzip -q $CHROMIUM_ZIP_FILE -d "$TARGET_DIR/"
+wget --no-verbose "${DOWNLOAD_ROOT}chrome-linux.zip?alt=media" -O "$CHROMIUM_ZIP_FILE"
+unzip -q "$CHROMIUM_ZIP_FILE" -d "$TARGET_DIR/"
 
 # Install ChromeDriver.
 readonly DRIVER_ZIP_FILE="$TARGET_DIR/chromedriver.zip"
-wget --no-verbose "${DOWNLOAD_ROOT}chromedriver_linux64.zip?alt=media" -O $DRIVER_ZIP_FILE
-unzip -q $DRIVER_ZIP_FILE -d "$TARGET_DIR/"
+wget --no-verbose "${DOWNLOAD_ROOT}chromedriver_linux64.zip?alt=media" -O "$DRIVER_ZIP_FILE"
+unzip -q "$DRIVER_ZIP_FILE" -d "$TARGET_DIR/"
 # Rename TARGET_DIR/chromedriver_linux64 to the expected TARGET_DIR/chromedriver
 mv -T "$TARGET_DIR/chromedriver_linux64" "$TARGET_DIR/chromedriver"
 
@@ -37,8 +37,8 @@ export CHROME_EXECUTABLE="$TARGET_DIR/chrome-linux/chrome"
 set +x
 echo
 readonly CHROMEDRIVER_EXECUTABLE="$TARGET_DIR/chromedriver/chromedriver"
-echo $CHROME_EXECUTABLE
-$CHROME_EXECUTABLE --version
-echo $CHROMEDRIVER_EXECUTABLE
-$CHROMEDRIVER_EXECUTABLE --version
+echo "$CHROME_EXECUTABLE"
+"$CHROME_EXECUTABLE" --version
+echo "$CHROMEDRIVER_EXECUTABLE"
+"$CHROMEDRIVER_EXECUTABLE" --version
 echo
