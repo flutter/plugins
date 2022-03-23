@@ -36,7 +36,6 @@ const _$SKProductDiscountPaymentModeEnumMap = {
   SKProductDiscountPaymentMode.unspecified: -1,
 };
 
-
 const _$SKProductDiscountTypeEnumMap = {
   SKProductDiscountType.introductory: 0,
   SKProductDiscountType.subscription: 1,

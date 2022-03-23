@@ -259,8 +259,8 @@ class SKProductDiscountWrapper {
   }
 
   @override
-  int get hashCode => hashValues(
-      price, priceLocale, numberOfPeriods, paymentMode, subscriptionPeriod, identifier, type);
+  int get hashCode => hashValues(price, priceLocale, numberOfPeriods,
+      paymentMode, subscriptionPeriod, identifier, type);
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).

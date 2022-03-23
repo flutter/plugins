@@ -43,8 +43,8 @@ SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) =>
         (k, e) => MapEntry(k as String, e),
       )),
       identifier: json['identifier'] as String? ?? '',
-      type: const SKProductDiscountTypeConverter()
-          .fromJson(json['type'] as int?),
+      type:
+          const SKProductDiscountTypeConverter().fromJson(json['type'] as int?),
     );
 
 SKProductWrapper _$SKProductWrapperFromJson(Map json) => SKProductWrapper(
