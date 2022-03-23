@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTThreadSafeMethodChannel.h"
-#import "QueueHelper.h"
+#import "QueueUtils.h"
 
 @interface FLTThreadSafeMethodChannel ()
 @property(nonatomic, strong) FlutterMethodChannel *channel;
@@ -20,9 +20,9 @@
 }
 
 - (void)invokeMethod:(NSString *)method arguments:(id)arguments {
-  [QueueHelper ensureToRunOnMainQueue:^{
+  FLTEnsureToRunOnMainQueue(^{
     [self.channel invokeMethod:method arguments:arguments];
-  }];
+  });
 }
 
 @end

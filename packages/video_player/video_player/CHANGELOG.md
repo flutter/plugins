@@ -1,3 +1,11 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.10.
+
+## 2.3.0
+
+* Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
+
 ## 2.2.19
 
 * Internal code cleanup for stricter analysis options.

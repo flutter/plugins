@@ -14,7 +14,7 @@ import 'messages.g.dart';
 /// An Android implementation of [VideoPlayerPlatform] that uses the
 /// Pigeon-generated [VideoPlayerApi].
 class AndroidVideoPlayer extends VideoPlayerPlatform {
-  final VideoPlayerApi _api = VideoPlayerApi();
+  final AndroidVideoPlayerApi _api = AndroidVideoPlayerApi();
 
   /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {

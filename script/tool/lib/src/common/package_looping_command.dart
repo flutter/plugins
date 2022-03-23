@@ -9,6 +9,8 @@ import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'core.dart';
 import 'plugin_command.dart';
@@ -75,7 +77,16 @@ abstract class PackageLoopingCommand extends PluginCommand {
     Platform platform = const LocalPlatform(),
     GitDir? gitDir,
   }) : super(packagesDir,
-            processRunner: processRunner, platform: platform, gitDir: gitDir);
+            processRunner: processRunner, platform: platform, gitDir: gitDir) {
+    argParser.addOption(
+      _skipByFlutterVersionArg,
+      help: 'Skip any packages that require a Flutter version newer than '
+          'the provided version.',
+    );
+  }
+
+  static const String _skipByFlutterVersionArg =
+      'skip-if-not-supporting-flutter-version';
 
   /// Packages that had at least one [logWarning] call.
   final Set<PackageEnumerationEntry> _packagesWithWarnings =
@@ -219,6 +230,11 @@ abstract class PackageLoopingCommand extends PluginCommand {
     _otherWarningCount = 0;
     _currentPackageEntry = null;
 
+    final String minFlutterVersionArg = getStringArg(_skipByFlutterVersionArg);
+    final Version? minFlutterVersion = minFlutterVersionArg.isEmpty
+        ? null
+        : Version.parse(minFlutterVersionArg);
+
     final DateTime runStart = DateTime.now();
 
     await initializeRun();
@@ -242,7 +258,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
       PackageResult result;
       try {
-        result = await runForPackage(entry.package);
+        result = await _runForPackageIfSupported(entry.package,
+            minFlutterVersion: minFlutterVersion);
       } catch (e, stack) {
         printError(e.toString());
         printError(stack.toString());
@@ -283,6 +300,26 @@ abstract class PackageLoopingCommand extends PluginCommand {
     print('\n');
     _printSuccess('No issues found!');
     return true;
+  }
+
+  /// Returns the result of running [runForPackage] if the package is supported
+  /// by any run constraints, or a skip result if it is not.
+  Future<PackageResult> _runForPackageIfSupported(
+    RepositoryPackage package, {
+    Version? minFlutterVersion,
+  }) async {
+    if (minFlutterVersion != null) {
+      final Pubspec pubspec = package.parsePubspec();
+      final VersionConstraint? flutterConstraint =
+          pubspec.environment?['flutter'];
+      if (flutterConstraint != null &&
+          !flutterConstraint.allows(minFlutterVersion)) {
+        return PackageResult.skip(
+            'Does not support Flutter ${minFlutterVersion.toString()}');
+      }
+    }
+
+    return await runForPackage(package);
   }
 
   void _printSuccess(String message) {

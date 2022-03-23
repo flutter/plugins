@@ -295,7 +295,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   bool _isDisposed = false;
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
-  late _VideoAppLifeCycleObserver _lifeCycleObserver;
+  _VideoAppLifeCycleObserver? _lifeCycleObserver;
 
   /// The id of a texture that hasn't been initialized.
   @visibleForTesting
@@ -309,8 +309,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
-    _lifeCycleObserver.initialize();
+    final bool allowBackgroundPlayback =
+        videoPlayerOptions?.allowBackgroundPlayback ?? false;
+    if (!allowBackgroundPlayback) {
+      _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
+    }
+    _lifeCycleObserver?.initialize();
     _creatingCompleter = Completer<void>();
 
     late DataSource dataSourceDescription;
@@ -423,7 +427,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         await _eventSubscription?.cancel();
         await _videoPlayerPlatform.dispose(_textureId);
       }
-      _lifeCycleObserver.dispose();
+      _lifeCycleObserver?.dispose();
     }
     _isDisposed = true;
     super.dispose();
