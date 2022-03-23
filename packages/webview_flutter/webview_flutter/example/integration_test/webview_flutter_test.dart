@@ -1242,13 +1242,13 @@ Future<void> main() async {
       final WebViewController controller = await controllerCompleter.future;
       await onPageFinished.future;
 
-      await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
+      await controller.runJavascript('localStorage.setItem("myCat", 42);');
 
       expect(
         controller.runJavascriptReturningResult(
           'localStorage.getItem("myCat");',
         ),
-        completion('"Tom"'),
+        completion('42'),
       );
 
       await controller.clearCache();
