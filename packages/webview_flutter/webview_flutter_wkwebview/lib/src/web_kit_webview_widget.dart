@@ -212,6 +212,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     if (setting.hasNavigationDelegate != null) {
       _setHasNavigationDelegate(setting.hasNavigationDelegate!);
     }
+    if (setting.hasProgressTracking != null) {
+      _setHasProgressTracking(setting.hasProgressTracking!);
+    }
   }
 
   @override
@@ -293,6 +296,27 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       };
     } else {
       navigationDelegate.decidePolicyForNavigationAction = null;
+    }
+  }
+
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) {
+    if (hasProgressTracking) {
+      webView.observeValue = (
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) {
+        final double progress = (change[NSKeyValueChangeKey.new_] as double?)!;
+        callbacksHandler.onProgress((progress * 100).round());
+      };
+      return webView.addObserver(
+        webView,
+        keyPath: 'estimatedProgress',
+        options: <NSKeyValueObservingOptions>{NSKeyValueObservingOptions.new_},
+      );
+    } else {
+      webView.observeValue = null;
+      return webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
 

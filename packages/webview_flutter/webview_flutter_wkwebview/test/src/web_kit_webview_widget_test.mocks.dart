@@ -143,8 +143,33 @@ class MockWKWebView extends _i1.Mock implements _i2.WKWebView {
   _i3.Future<String?> get url => (super.noSuchMethod(Invocation.getter(#url),
       returnValue: Future<String?>.value()) as _i3.Future<String?>);
   @override
+  _i3.Future<double> get estimatedProgress =>
+      (super.noSuchMethod(Invocation.getter(#estimatedProgress),
+          returnValue: Future<double>.value(0.0)) as _i3.Future<double>);
+  @override
+  set observeValue(
+          void Function(
+                  String, _i4.NSObject, Map<_i4.NSKeyValueChangeKey, Object?>)?
+              observeValue) =>
+      super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
+          returnValueForMissingStub: null);
+  @override
   _i3.Future<void> loadRequest(_i4.NSUrlRequest? request) =>
       (super.noSuchMethod(Invocation.method(#loadRequest, [request]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<void> addObserver(_i4.NSObject? observer,
+          {String? keyPath, Set<_i4.NSKeyValueObservingOptions>? options}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<void> removeObserver(_i4.NSObject? observer, {String? keyPath}) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
 }
