@@ -478,8 +478,8 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       for (final MapEntry<Object?, Object?> entry in value.entries) {
         stringValues.add(
           '${_asObjectiveCString(entry.key, inContainer: true)} '
-              '= '
-              '${_asObjectiveCString(entry.value, inContainer: true)}',
+          '= '
+          '${_asObjectiveCString(entry.value, inContainer: true)}',
         );
       }
       return '{${stringValues.join(';')}}';
