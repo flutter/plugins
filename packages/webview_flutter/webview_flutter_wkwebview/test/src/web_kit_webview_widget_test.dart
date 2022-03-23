@@ -407,9 +407,47 @@ void main() {
         when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
           (_) => Future<Object?>.value(),
         );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies null
+        // is represented the way it is in Objective-C.
         expect(
           testController.evaluateJavascript('runJavaScript'),
-          completion('null'),
+          completion('(null)'),
+        );
+      });
+
+      testWidgets('evaluateJavascript with list return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(<Object?>[1, 'string', null]),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies list
+        // is represented the way it is in Objective-C.
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('(1,string,"<null>")'),
+        );
+      });
+
+      testWidgets('evaluateJavascript with map return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(<Object?, Object?>{
+            1: 'string',
+            null: null,
+          }),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies map
+        // is represented the way it is in Objective-C.
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('{1 = string;"<null>" = "<null>"}'),
         );
       });
 
