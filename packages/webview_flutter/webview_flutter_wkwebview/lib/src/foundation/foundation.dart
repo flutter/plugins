@@ -155,7 +155,7 @@ class NSObject {
     throw UnimplementedError();
   }
 
-  /// Informs the observing object when the value at the specified key path.
+  /// Informs the observing object when the value at the specified key path has changed.
   set observeValue(
     void Function(
       String keyPath,
