@@ -27,7 +27,7 @@
 
 - (void)setUp {
   self.periodMap = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
-    
+
   self.discountMap = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"price" : @"1",
     @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
