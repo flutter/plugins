@@ -1,3 +1,7 @@
+## 0.8.4+11
+
+* Fixes Activity leak.
+
 ## 0.8.4+10
 
 * iOS: allows picking images with WebP format.
