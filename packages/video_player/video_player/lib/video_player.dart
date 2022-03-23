@@ -113,7 +113,7 @@ class VideoPlayerValue {
   /// The [size] of the currently loaded video.
   final Size size;
 
-  /// Degrees to rotate the video so it is displayed correctly.
+  /// Degrees to rotate the video (clockwise) so it is displayed correctly.
   final int rotationCorrection;
 
   /// Indicates whether or not the video has been loaded and is ready to play.
@@ -171,6 +171,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
+      rotationCorrection: rotationCorrection ?? this.rotationCorrection,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
           : this.errorDescription,

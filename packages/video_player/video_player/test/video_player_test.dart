@@ -158,7 +158,7 @@ void main() {
         VideoPlayerValue(duration: Duration.zero, rotationCorrection: 180));
     controller.textureId = 1;
     await tester.pumpWidget(VideoPlayer(controller));
-    Transform actualRotationCorrection =
+    final Transform actualRotationCorrection =
         find.byType(Transform).evaluate().single.widget as Transform;
     expect(
         actualRotationCorrection.transform, equals(Matrix4.rotationZ(math.pi)));
