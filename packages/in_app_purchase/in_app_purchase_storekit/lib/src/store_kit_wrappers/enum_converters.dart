@@ -41,10 +41,10 @@ class SKTransactionStatusConverter
       case SKPaymentTransactionStateWrapper.restored:
         return PurchaseStatus.restored;
       case SKPaymentTransactionStateWrapper.failed:
-        // According to the Apple documentation the error code "2" indicates
-        // the user cancelled the payment (SKErrorPaymentCancelled) and error
-        // code "15" indicates the cancellation of the overlay (SKErrorOverlayCancelled).
-        // An overview of all error codes can be found at: https://developer.apple.com/documentation/storekit/skerrorcode?language=objc
+      // According to the Apple documentation the error code "2" indicates
+      // the user cancelled the payment (SKErrorPaymentCancelled) and error
+      // code "15" indicates the cancellation of the overlay (SKErrorOverlayCancelled).
+      // An overview of all error codes can be found at: https://developer.apple.com/documentation/storekit/skerrorcode?language=objc
         if (error != null && (error.code == 2 || error.code == 15)) {
           return PurchaseStatus.canceled;
         }
@@ -109,6 +109,15 @@ class SKProductDiscountPaymentModeConverter
       _$SKProductDiscountPaymentModeEnumMap[object]!;
 }
 
+// Define a class so we generate serializer helper methods for the enums
+// See https://github.com/google/json_serializable.dart/issues/778
+@JsonSerializable()
+class _SerializedEnums {
+  late SKPaymentTransactionStateWrapper response;
+  late SKSubscriptionPeriodUnit unit;
+  late SKProductDiscountPaymentMode discountPaymentMode;
+}
+
 /// Serializer for [SKProductDiscountType].
 ///
 /// Use these in `@JsonSerializable()` classes by annotating them with
@@ -125,8 +134,7 @@ class SKProductDiscountTypeConverter
     }
     return $enumDecode<SKProductDiscountType, dynamic>(
         _$SKProductDiscountTypeEnumMap
-            .cast<SKProductDiscountType, dynamic>(),
-        json);
+            .cast<SKProductDiscountType, dynamic>(), json);
   }
 
   @override
@@ -134,11 +142,3 @@ class SKProductDiscountTypeConverter
       _$SKProductDiscountTypeEnumMap[object]!;
 }
 
-// Define a class so we generate serializer helper methods for the enums
-// See https://github.com/google/json_serializable.dart/issues/778
-@JsonSerializable()
-class _SerializedEnums {
-  late SKPaymentTransactionStateWrapper response;
-  late SKSubscriptionPeriodUnit unit;
-  late SKProductDiscountPaymentMode discountPaymentMode;
-}
