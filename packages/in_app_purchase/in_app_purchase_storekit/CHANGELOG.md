@@ -1,3 +1,7 @@
+## 0.3.0+4
+
+* Add "identifier", "type" fields to SKProductDiscountWrapper for the changes of SKProductDiscount in iOS12.2.
+
 ## 0.3.0+3
 
 * Implements transaction caching for StoreKit ensuring transactions are delivered to the Flutter client.

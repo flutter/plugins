@@ -168,6 +168,21 @@ enum SKProductDiscountPaymentMode {
   unspecified,
 }
 
+/// Dart wrapper around StoreKit's [SKProductDiscountType](https://developer.apple.com/documentation/storekit/skproductdiscounttype?language=objc)
+///
+/// This is used as a property in the [SKProductDiscountWrapper].
+// The values of the enum options are matching the [SKProductDiscountType]'s values. Should there be an update or addition
+// in the [SKProductDiscountType], this need to be updated to match.
+enum SKProductDiscountType {
+  /// A constant indicating the discount type is an introductory offer.
+  @JsonValue(0)
+  introductory,
+
+  /// A constant indicating the discount type is a promotional offer.
+  @JsonValue(1)
+  subscription,
+}
+
 /// Dart wrapper around StoreKit's [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
 ///
 /// It is used as a property in [SKProductWrapper].
@@ -183,7 +198,9 @@ class SKProductDiscountWrapper {
       required this.priceLocale,
       required this.numberOfPeriods,
       required this.paymentMode,
-      required this.subscriptionPeriod});
+      required this.subscriptionPeriod,
+      required this.identifier,
+      required this.type});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
@@ -215,6 +232,14 @@ class SKProductDiscountWrapper {
   /// and their units and duration do not have to be matched.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 
+  /// A string used to uniquely identify a discount offer for a product.
+  @JsonKey(defaultValue: '')
+  final String identifier;
+
+  /// Values representing the types of discount offers an app can present.
+  @SKProductDiscountTypeConverter()
+  final SKProductDiscountType type;
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) {
@@ -228,12 +253,14 @@ class SKProductDiscountWrapper {
         other.priceLocale == priceLocale &&
         other.numberOfPeriods == numberOfPeriods &&
         other.paymentMode == paymentMode &&
-        other.subscriptionPeriod == subscriptionPeriod;
+        other.subscriptionPeriod == subscriptionPeriod &&
+        other.identifier == identifier &&
+        other.type == type;
   }
 
   @override
   int get hashCode => hashValues(
-      price, priceLocale, numberOfPeriods, paymentMode, subscriptionPeriod);
+      price, priceLocale, numberOfPeriods, paymentMode, subscriptionPeriod, identifier, type);
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).

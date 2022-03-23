@@ -59,6 +59,8 @@ final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   numberOfPeriods: 1,
   paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
+  identifier: 'id',
+  type: SKProductDiscountType.introductory,
 );
 
 final SKProductWrapper dummyProductWrapper = SKProductWrapper(
@@ -107,6 +109,8 @@ Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
         SKProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(discount.subscriptionPeriod),
+    'identifier': discount.identifier,
+    'type': SKProductDiscountType.values.indexOf(discount.type)
   };
 }
 

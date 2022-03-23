@@ -109,6 +109,31 @@ class SKProductDiscountPaymentModeConverter
       _$SKProductDiscountPaymentModeEnumMap[object]!;
 }
 
+/// Serializer for [SKProductDiscountType].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@SKProductDiscountTypeConverter()`.
+class SKProductDiscountTypeConverter
+    implements JsonConverter<SKProductDiscountType, int?> {
+  /// Default const constructor.
+  const SKProductDiscountTypeConverter();
+
+  @override
+  SKProductDiscountType fromJson(int? json) {
+    if (json == null) {
+      return SKProductDiscountType.introductory;
+    }
+    return $enumDecode<SKProductDiscountType, dynamic>(
+        _$SKProductDiscountTypeEnumMap
+            .cast<SKProductDiscountType, dynamic>(),
+        json);
+  }
+
+  @override
+  int toJson(SKProductDiscountType object) =>
+      _$SKProductDiscountTypeEnumMap[object]!;
+}
+
 // Define a class so we generate serializer helper methods for the enums
 // See https://github.com/google/json_serializable.dart/issues/778
 @JsonSerializable()
