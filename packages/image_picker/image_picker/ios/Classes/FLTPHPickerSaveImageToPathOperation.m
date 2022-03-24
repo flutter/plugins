@@ -116,7 +116,6 @@ typedef void (^GetSavedPath)(NSString *);
             [self processImage:image];
           }
         }];
-
   } else {
     [self setFinished:YES];
   }
