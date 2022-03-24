@@ -1,6 +1,6 @@
 ## 2.0.8
 
-* Ensure `buffering` state is only removed when the browser reports enough video
+* Ensures `buffering` state is only removed when the browser reports enough video
   has been buffered for full playback (`onCanPlayThrough`).
   Issue [#94630](https://github.com/flutter/flutter/issues/94630).
 

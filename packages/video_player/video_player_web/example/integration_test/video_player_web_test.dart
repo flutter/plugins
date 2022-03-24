@@ -131,6 +131,7 @@ void main() {
         await eventStream.last;
       }, throwsA(isA<PlatformException>()));
     });
+
     testWidgets('signals bufferingEnd onCanPlayThrough',
         (WidgetTester tester) async {
       final int videoPlayerId = await textureId;
