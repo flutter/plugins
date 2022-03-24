@@ -49,7 +49,7 @@ class RepositoryPackage {
   File get pubspecFile => directory.childFile('pubspec.yaml');
 
   /// The package's top-level README.
-  File get readmeFile => directory.childFile('README');
+  File get readmeFile => directory.childFile('README.md');
 
   late final Pubspec _parsedPubspec =
       Pubspec.parse(pubspecFile.readAsStringSync());

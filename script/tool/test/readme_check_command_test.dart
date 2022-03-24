@@ -50,7 +50,7 @@ void main() {
     expect(
       output,
       containsAllInOrder(<Matcher>[
-        contains('Missing README'),
+        contains('Missing README.md'),
       ]),
     );
   });
@@ -72,7 +72,7 @@ void main() {
       ];
 
       for (final Directory package in packageDirectories) {
-        package.childFile('README').writeAsStringSync('''
+        package.childFile('README.md').writeAsStringSync('''
 A very useful package.
 ''');
       }
@@ -96,7 +96,7 @@ A very useful package.
         () async {
       final Directory pluginDir = createFakePlugin('a_plugin', packagesDir);
 
-      pluginDir.childFile('README').writeAsStringSync('''
+      pluginDir.childFile('README.md').writeAsStringSync('''
 A very useful plugin.
 ''');
 
@@ -121,7 +121,7 @@ A very useful plugin.
       final Directory pluginDir =
           createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
 
-      pluginDir.childFile('README').writeAsStringSync('''
+      pluginDir.childFile('README.md').writeAsStringSync('''
 A very useful plugin.
 ''');
 
@@ -143,7 +143,7 @@ A very useful plugin.
     test('fails the OS support table is missing the header', () async {
       final Directory pluginDir = createFakePlugin('a_plugin', packagesDir);
 
-      pluginDir.childFile('README').writeAsStringSync('''
+      pluginDir.childFile('README.md').writeAsStringSync('''
 A very useful plugin.
 
 | **Support**    | SDK 21+ | iOS 10+* | [See `camera_web `][1] |
@@ -175,7 +175,7 @@ A very useful plugin.
         },
       );
 
-      pluginDir.childFile('README').writeAsStringSync('''
+      pluginDir.childFile('README.md').writeAsStringSync('''
 A very useful plugin.
 
 |                | Android | iOS      |
@@ -211,7 +211,7 @@ A very useful plugin.
         },
       );
 
-      pluginDir.childFile('README').writeAsStringSync('''
+      pluginDir.childFile('README.md').writeAsStringSync('''
 A very useful plugin.
 
 |                | Android | iOS      | Web                    |
@@ -250,7 +250,7 @@ A very useful plugin.
         },
       );
 
-      pluginDir.childFile('README').writeAsStringSync('''
+      pluginDir.childFile('README.md').writeAsStringSync('''
 A very useful plugin.
 
 |                | android | ios      | MacOS | web                    |

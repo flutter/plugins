@@ -53,7 +53,7 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     final File readme = package.readmeFile;
 
     if (!readme.existsSync()) {
-      return PackageResult.fail(<String>['Missing README']);
+      return PackageResult.fail(<String>['Missing README.md']);
     }
 
     final List<String> errors = <String>[];
