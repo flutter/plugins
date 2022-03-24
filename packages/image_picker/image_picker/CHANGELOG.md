@@ -1,7 +1,7 @@
 
 ## 0.8.4+12
 
-* iOS：support images with different formats
+* iOS：support images with heic,heif,raw,tiff formats.
 
 ## 0.8.4+11
 
