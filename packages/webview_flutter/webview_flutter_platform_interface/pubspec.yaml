@@ -16,6 +16,7 @@ dependencies:
   plugin_platform_interface: ^2.1.0
 
 dev_dependencies:
+  build_runner: ^2.1.8
   flutter_test:
     sdk: flutter
   mockito: ^5.0.0

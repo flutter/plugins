@@ -1,0 +1,83 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:async';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_handler_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
+
+import 'webview_platform_test.mocks.dart';
+
+void main() {
+  setUp(() {
+    WebViewPlatform.instance = MockWebViewPlatformWithMixin();
+  });
+
+  test('Cannot be implemented with `implements`', () {
+    when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
+        .thenReturn(ImplementsNavigationCallbackHandlerDelegate());
+
+    expect(() {
+      NavigationCallbackHandlerDelegate();
+    }, throwsNoSuchMethodError);
+  });
+
+  test('Can be extended', () {
+    when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
+        .thenReturn(ExtendsNavigationCallbackHandlerDelegate());
+
+    expect(NavigationCallbackHandlerDelegate(), isNotNull);
+  });
+
+  test('Can be mocked with `implements`', () {
+    when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
+        .thenReturn(MockNavigationCallbackHandlerDelegate());
+
+    expect(NavigationCallbackHandlerDelegate(), isNotNull);
+  });
+}
+
+class MockWebViewPlatformWithMixin extends MockWebViewPlatform
+    with
+        // ignore: prefer_mixin
+        MockPlatformInterfaceMixin {}
+
+class ImplementsNavigationCallbackHandlerDelegate
+    implements NavigationCallbackHandlerDelegate {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class MockNavigationCallbackHandlerDelegate extends Mock
+    with
+        // ignore: prefer_mixin
+        MockPlatformInterfaceMixin
+    implements
+        NavigationCallbackHandlerDelegate {}
+
+class ExtendsNavigationCallbackHandlerDelegate
+    extends NavigationCallbackHandlerDelegate {
+  ExtendsNavigationCallbackHandlerDelegate() : super.implementation();
+
+  @override
+  FutureOr<bool> onNavigationRequest(
+      {required String url, required bool isForMainFrame}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void onPageFinished(String url) {}
+
+  @override
+  void onPageStarted(String url) {}
+
+  @override
+  void onProgress(int progress) {}
+
+  @override
+  void onWebResourceError(WebResourceError error) {}
+}
