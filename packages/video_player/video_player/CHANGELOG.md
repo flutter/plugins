@@ -2,6 +2,10 @@
 
 * Updates minimum Flutter version to 2.10.
 
+## 2.3.1
+
+* Adds `setClosedCaptionFile` method to `VideoPlayerController`
+
 ## 2.3.0
 
 * Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
