@@ -468,7 +468,10 @@ class WKWebView extends NSObject {
   /// An estimate of what fraction of the current navigation has been loaded.
   ///
   /// This value ranges from 0.0 to 1.0.
-  Future<double> get estimatedProgress {
+  ///
+  /// This method represents
+  /// [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
+  Future<double> getEstimatedProgress() {
     throw UnimplementedError();
   }
 
