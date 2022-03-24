@@ -1,3 +1,7 @@
+## NEXT
+
+- Adds a new `readme-check` command.
+
 ## 0.8.2
 
 - Adds a new `custom-test` command.
