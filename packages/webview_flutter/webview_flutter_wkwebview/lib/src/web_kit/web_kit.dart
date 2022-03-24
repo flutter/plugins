@@ -423,7 +423,7 @@ class WKNavigationDelegate {
 /// Object that displays interactive web content, such as for an in-app browser.
 ///
 /// Wraps [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview?language=objc).
-class WKWebView {
+class WKWebView extends NSObject {
   /// Constructs a [WKWebView].
   ///
   /// [configuration] contains the configuration details for the web view. This
@@ -466,6 +466,16 @@ class WKWebView {
 
   /// The URL for the current webpage.
   Future<String?> get url {
+    throw UnimplementedError();
+  }
+
+  /// An estimate of what fraction of the current navigation has been loaded.
+  ///
+  /// This value ranges from 0.0 to 1.0.
+  ///
+  /// This method represents
+  /// [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
+  Future<double> getEstimatedProgress() {
     throw UnimplementedError();
   }
 
