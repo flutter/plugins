@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -100,6 +99,14 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     return _api.setPlaybackSpeed(PlaybackSpeedMessage(
       textureId: textureId,
       speed: speed,
+    ));
+  }
+
+  @override
+  Future<void> setBitrate(int textureId, double bitrate) {
+    return _api.setBitrate(BitrateMessage(
+      textureId: textureId,
+      bitrate: bitrate,
     ));
   }
 
