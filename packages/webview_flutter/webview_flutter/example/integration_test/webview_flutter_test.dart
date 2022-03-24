@@ -1242,13 +1242,13 @@ Future<void> main() async {
       final WebViewController controller = await controllerCompleter.future;
       await onPageFinished.future;
 
-      await controller.runJavascript('localStorage.setItem("myCat", 42);');
+      await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
 
       expect(
         controller.runJavascriptReturningResult(
           'localStorage.getItem("myCat");',
         ),
-        completion('42'),
+        completion(_webviewString('Tom')),
       );
 
       await controller.clearCache();
@@ -1279,6 +1279,15 @@ String _webviewNull() {
     return '<null>';
   }
   return 'null';
+}
+
+// JavaScript String evaluate to different string values on Android and iOS.
+// This utility method returns the string boolean value of the current platform.
+String _webviewString(String value) {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return value;
+  }
+  return '"$value"';
 }
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
