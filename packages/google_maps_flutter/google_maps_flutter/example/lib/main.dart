@@ -26,21 +26,21 @@ import 'snapshot.dart';
 import 'tile_overlay.dart';
 
 final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
-  MapUiPage(),
-  MapCoordinatesPage(),
-  MapClickPage(),
-  AnimateCameraPage(),
-  MoveCameraPage(),
-  PlaceMarkerPage(),
-  MarkerIconsPage(),
-  ScrollingMapPage(),
-  PlacePolylinePage(),
-  PlacePolygonPage(),
-  PlaceCirclePage(),
-  PaddingPage(),
-  SnapshotPage(),
-  LiteModePage(),
-  TileOverlayPage(),
+  const MapUiPage(),
+  const MapCoordinatesPage(),
+  const MapClickPage(),
+  const AnimateCameraPage(),
+  const MoveCameraPage(),
+  const PlaceMarkerPage(),
+  const MarkerIconsPage(),
+  const ScrollingMapPage(),
+  const PlacePolylinePage(),
+  const PlacePolygonPage(),
+  const PlaceCirclePage(),
+  const PaddingPage(),
+  const SnapshotPage(),
+  const LiteModePage(),
+  const TileOverlayPage(),
 ];
 
 class MapsDemo extends StatelessWidget {

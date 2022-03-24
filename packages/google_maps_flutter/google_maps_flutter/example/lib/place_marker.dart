@@ -6,8 +6,8 @@
 
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,7 +15,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlaceMarkerPage extends GoogleMapExampleAppPage {
-  PlaceMarkerPage() : super(const Icon(Icons.place), 'Place marker');
+  const PlaceMarkerPage() : super(const Icon(Icons.place), 'Place marker');
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ typedef MarkerUpdateAction = Marker Function(Marker marker);
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
-  static final LatLng center = const LatLng(-33.86711, 151.1947171);
+  static const LatLng center = LatLng(-33.86711, 151.1947171);
 
   GoogleMapController? controller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -74,17 +74,17 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     }
   }
 
-  void _onMarkerDrag(MarkerId markerId, LatLng newPosition) async {
+  Future<void> _onMarkerDrag(MarkerId markerId, LatLng newPosition) async {
     setState(() {
-      this.markerPosition = newPosition;
+      markerPosition = newPosition;
     });
   }
 
-  void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
+  Future<void> _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
     final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
       setState(() {
-        this.markerPosition = null;
+        markerPosition = null;
       });
       await showDialog<void>(
           context: context,
@@ -289,7 +289,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   @override
   Widget build(BuildContext context) {
     final MarkerId? selectedId = selectedMarker;
-    return Stack(children: [
+    return Stack(children: <Widget>[
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -397,17 +397,19 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         child: Container(
           color: Colors.white70,
           height: 30,
-          padding: EdgeInsets.only(left: 12, right: 12),
+          padding: const EdgeInsets.only(left: 12, right: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             mainAxisSize: MainAxisSize.max,
-            children: [
-              markerPosition == null
-                  ? Container()
-                  : Expanded(child: Text("lat: ${markerPosition!.latitude}")),
-              markerPosition == null
-                  ? Container()
-                  : Expanded(child: Text("lng: ${markerPosition!.longitude}")),
+            children: <Widget>[
+              if (markerPosition == null)
+                Container()
+              else
+                Expanded(child: Text('lat: ${markerPosition!.latitude}')),
+              if (markerPosition == null)
+                Container()
+              else
+                Expanded(child: Text('lng: ${markerPosition!.longitude}')),
             ],
           ),
         ),

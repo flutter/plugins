@@ -23,9 +23,9 @@ List<LatLng> _rectPoints({
   required double size,
   LatLng center = const LatLng(0, 0),
 }) {
-  final halfSize = size / 2;
+  final double halfSize = size / 2;
 
-  return [
+  return <LatLng>[
     LatLng(center.latitude + halfSize, center.longitude + halfSize),
     LatLng(center.latitude - halfSize, center.longitude + halfSize),
     LatLng(center.latitude - halfSize, center.longitude - halfSize),
@@ -38,7 +38,7 @@ Polygon _polygonWithPointsAndHole(PolygonId polygonId) {
   return Polygon(
     polygonId: polygonId,
     points: _rectPoints(size: 1),
-    holes: [_rectPoints(size: 0.5)],
+    holes: <List<LatLng>>[_rectPoints(size: 0.5)],
   );
 }
 
@@ -58,7 +58,7 @@ void main() {
   });
 
   testWidgets('Initializing a polygon', (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -71,9 +71,9 @@ void main() {
     expect(platformGoogleMap.polygonsToChange.isEmpty, true);
   });
 
-  testWidgets("Adding a polygon", (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
+  testWidgets('Adding a polygon', (WidgetTester tester) async {
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
+    const Polygon p2 = Polygon(polygonId: PolygonId('polygon_2'));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1, p2}));
@@ -90,8 +90,8 @@ void main() {
     expect(platformGoogleMap.polygonsToChange.isEmpty, true);
   });
 
-  testWidgets("Removing a polygon", (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
+  testWidgets('Removing a polygon', (WidgetTester tester) async {
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{}));
@@ -105,10 +105,10 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Updating a polygon", (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 =
-        Polygon(polygonId: PolygonId("polygon_1"), geodesic: true);
+  testWidgets('Updating a polygon', (WidgetTester tester) async {
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
+    const Polygon p2 =
+        Polygon(polygonId: PolygonId('polygon_1'), geodesic: true);
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p2}));
@@ -122,10 +122,11 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Mutate a polygon", (WidgetTester tester) async {
+  testWidgets('Mutate a polygon', (WidgetTester tester) async {
+    final List<LatLng> _points = <LatLng>[const LatLng(0.0, 0.0)];
     final Polygon p1 = Polygon(
-      polygonId: PolygonId("polygon_1"),
-      points: <LatLng>[const LatLng(0.0, 0.0)],
+      polygonId: const PolygonId('polygon_1'),
+      points: _points,
     );
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
@@ -141,12 +142,12 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Multi Update", (WidgetTester tester) async {
-    Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
+  testWidgets('Multi Update', (WidgetTester tester) async {
+    Polygon p1 = const Polygon(polygonId: PolygonId('polygon_1'));
+    Polygon p2 = const Polygon(polygonId: PolygonId('polygon_2'));
     final Set<Polygon> prev = <Polygon>{p1, p2};
-    p1 = Polygon(polygonId: PolygonId("polygon_1"), visible: false);
-    p2 = Polygon(polygonId: PolygonId("polygon_2"), geodesic: true);
+    p1 = const Polygon(polygonId: PolygonId('polygon_1'), visible: false);
+    p2 = const Polygon(polygonId: PolygonId('polygon_2'), geodesic: true);
     final Set<Polygon> cur = <Polygon>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
@@ -160,14 +161,14 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Multi Update", (WidgetTester tester) async {
-    Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
-    final Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
+  testWidgets('Multi Update', (WidgetTester tester) async {
+    Polygon p2 = const Polygon(polygonId: PolygonId('polygon_2'));
+    const Polygon p3 = Polygon(polygonId: PolygonId('polygon_3'));
     final Set<Polygon> prev = <Polygon>{p2, p3};
 
     // p1 is added, p2 is updated, p3 is removed.
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    p2 = Polygon(polygonId: PolygonId("polygon_2"), geodesic: true);
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
+    p2 = const Polygon(polygonId: PolygonId('polygon_2'), geodesic: true);
     final Set<Polygon> cur = <Polygon>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
@@ -185,12 +186,12 @@ void main() {
     expect(platformGoogleMap.polygonIdsToRemove.first, equals(p3.polygonId));
   });
 
-  testWidgets("Partial Update", (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
-    Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
+  testWidgets('Partial Update', (WidgetTester tester) async {
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
+    const Polygon p2 = Polygon(polygonId: PolygonId('polygon_2'));
+    Polygon p3 = const Polygon(polygonId: PolygonId('polygon_3'));
     final Set<Polygon> prev = <Polygon>{p1, p2, p3};
-    p3 = Polygon(polygonId: PolygonId("polygon_3"), geodesic: true);
+    p3 = const Polygon(polygonId: PolygonId('polygon_3'), geodesic: true);
     final Set<Polygon> cur = <Polygon>{p1, p2, p3};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
@@ -204,10 +205,11 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Update non platform related attr", (WidgetTester tester) async {
-    Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
+  testWidgets('Update non platform related attr', (WidgetTester tester) async {
+    Polygon p1 = const Polygon(polygonId: PolygonId('polygon_1'));
     final Set<Polygon> prev = <Polygon>{p1};
-    p1 = Polygon(polygonId: PolygonId("polygon_1"), onTap: () => print(2 + 2));
+    p1 = Polygon(
+        polygonId: const PolygonId('polygon_1'), onTap: () => print(2 + 2));
     final Set<Polygon> cur = <Polygon>{p1};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
@@ -223,7 +225,7 @@ void main() {
 
   testWidgets('Initializing a polygon with points and hole',
       (WidgetTester tester) async {
-    final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
+    final Polygon p1 = _polygonWithPointsAndHole(const PolygonId('polygon_1'));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -236,10 +238,10 @@ void main() {
     expect(platformGoogleMap.polygonsToChange.isEmpty, true);
   });
 
-  testWidgets("Adding a polygon with points and hole",
+  testWidgets('Adding a polygon with points and hole',
       (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 = _polygonWithPointsAndHole(PolygonId("polygon_2"));
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
+    final Polygon p2 = _polygonWithPointsAndHole(const PolygonId('polygon_2'));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1, p2}));
@@ -256,9 +258,9 @@ void main() {
     expect(platformGoogleMap.polygonsToChange.isEmpty, true);
   });
 
-  testWidgets("Removing a polygon with points and hole",
+  testWidgets('Removing a polygon with points and hole',
       (WidgetTester tester) async {
-    final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
+    final Polygon p1 = _polygonWithPointsAndHole(const PolygonId('polygon_1'));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{}));
@@ -272,10 +274,10 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Updating a polygon by adding points and hole",
+  testWidgets('Updating a polygon by adding points and hole',
       (WidgetTester tester) async {
-    final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
+    const Polygon p1 = Polygon(polygonId: PolygonId('polygon_1'));
+    final Polygon p2 = _polygonWithPointsAndHole(const PolygonId('polygon_1'));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p2}));
@@ -289,12 +291,12 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Mutate a polygon with points and holes",
+  testWidgets('Mutate a polygon with points and holes',
       (WidgetTester tester) async {
     final Polygon p1 = Polygon(
-      polygonId: PolygonId("polygon_1"),
+      polygonId: const PolygonId('polygon_1'),
       points: _rectPoints(size: 1),
-      holes: [_rectPoints(size: 0.5)],
+      holes: <List<LatLng>>[_rectPoints(size: 0.5)],
     );
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
@@ -303,7 +305,7 @@ void main() {
       ..addAll(_rectPoints(size: 2));
     p1.holes
       ..clear()
-      ..addAll([_rectPoints(size: 1)]);
+      ..addAll(<List<LatLng>>[_rectPoints(size: 1)]);
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -315,19 +317,19 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Multi Update polygons with points and hole",
+  testWidgets('Multi Update polygons with points and hole',
       (WidgetTester tester) async {
-    Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
+    Polygon p1 = const Polygon(polygonId: PolygonId('polygon_1'));
     Polygon p2 = Polygon(
-      polygonId: PolygonId("polygon_2"),
+      polygonId: const PolygonId('polygon_2'),
       points: _rectPoints(size: 2),
-      holes: [_rectPoints(size: 1)],
+      holes: <List<LatLng>>[_rectPoints(size: 1)],
     );
     final Set<Polygon> prev = <Polygon>{p1, p2};
-    p1 = Polygon(polygonId: PolygonId("polygon_1"), visible: false);
+    p1 = const Polygon(polygonId: PolygonId('polygon_1'), visible: false);
     p2 = p2.copyWith(
       pointsParam: _rectPoints(size: 5),
-      holesParam: [_rectPoints(size: 2)],
+      holesParam: <List<LatLng>>[_rectPoints(size: 2)],
     );
     final Set<Polygon> cur = <Polygon>{p1, p2};
 
@@ -342,21 +344,21 @@ void main() {
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
-  testWidgets("Multi Update polygons with points and hole",
+  testWidgets('Multi Update polygons with points and hole',
       (WidgetTester tester) async {
     Polygon p2 = Polygon(
-      polygonId: PolygonId("polygon_2"),
+      polygonId: const PolygonId('polygon_2'),
       points: _rectPoints(size: 2),
-      holes: [_rectPoints(size: 1)],
+      holes: <List<LatLng>>[_rectPoints(size: 1)],
     );
-    final Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
+    const Polygon p3 = Polygon(polygonId: PolygonId('polygon_3'));
     final Set<Polygon> prev = <Polygon>{p2, p3};
 
     // p1 is added, p2 is updated, p3 is removed.
-    final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
+    final Polygon p1 = _polygonWithPointsAndHole(const PolygonId('polygon_1'));
     p2 = p2.copyWith(
       pointsParam: _rectPoints(size: 5),
-      holesParam: [_rectPoints(size: 3)],
+      holesParam: <List<LatLng>>[_rectPoints(size: 3)],
     );
     final Set<Polygon> cur = <Polygon>{p1, p2};
 
@@ -375,19 +377,19 @@ void main() {
     expect(platformGoogleMap.polygonIdsToRemove.first, equals(p3.polygonId));
   });
 
-  testWidgets("Partial Update polygons with points and hole",
+  testWidgets('Partial Update polygons with points and hole',
       (WidgetTester tester) async {
-    final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
-    final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
+    final Polygon p1 = _polygonWithPointsAndHole(const PolygonId('polygon_1'));
+    const Polygon p2 = Polygon(polygonId: PolygonId('polygon_2'));
     Polygon p3 = Polygon(
-      polygonId: PolygonId("polygon_3"),
+      polygonId: const PolygonId('polygon_3'),
       points: _rectPoints(size: 2),
-      holes: [_rectPoints(size: 1)],
+      holes: <List<LatLng>>[_rectPoints(size: 1)],
     );
     final Set<Polygon> prev = <Polygon>{p1, p2, p3};
     p3 = p3.copyWith(
       pointsParam: _rectPoints(size: 5),
-      holesParam: [_rectPoints(size: 3)],
+      holesParam: <List<LatLng>>[_rectPoints(size: 3)],
     );
     final Set<Polygon> cur = <Polygon>{p1, p2, p3};
 

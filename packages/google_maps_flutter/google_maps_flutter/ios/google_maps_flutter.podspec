@@ -14,8 +14,9 @@ Downloaded by pub (not CocoaPods).
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/google_maps_flutter/google_maps_flutter' }
   s.documentation_url = 'https://pub.dev/packages/google_maps_flutter'
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'Classes/**/*.{h,m}'
   s.public_header_files = 'Classes/**/*.h'
+  s.module_map = 'Classes/google_maps_flutter.modulemap'
   s.dependency 'Flutter'
   s.dependency 'GoogleMaps'
   s.static_framework = true

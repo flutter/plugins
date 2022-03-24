@@ -1,3 +1,13 @@
+## 0.8.2
+
+- Adds a new `custom-test` command.
+- Switches from deprecated `flutter packages` alias to `flutter pub`.
+
+## 0.8.1
+
+- Fixes an `analyze` regression in 0.8.0 with packages that have non-`example`
+  sub-packages.
+
 ## 0.8.0
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
@@ -19,6 +29,9 @@
   `flutter` behavior.
 - Validates `default_package` entries in plugins.
 - Removes `allow-warnings` from the `podspecs` command.
+- Adds `skip-if-not-supporting-flutter-version` to allow running tests using a
+  version of Flutter that not all packages support. (E.g., to allow for running
+  some tests against old versions of Flutter to help avoid accidental breakage.)
 
 ## 0.7.3
 
