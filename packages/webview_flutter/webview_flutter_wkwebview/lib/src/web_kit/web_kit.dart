@@ -485,8 +485,7 @@ class WKWebView extends NSObject {
   ///
   /// This value ranges from 0.0 to 1.0.
   ///
-  /// This method represents
-  /// [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
+  /// Represents [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
   Future<double> getEstimatedProgress() {
     throw UnimplementedError();
   }
