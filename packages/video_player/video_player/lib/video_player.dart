@@ -398,8 +398,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     if (closedCaptionFile != null) {
-      _closedCaptionFile ??= await closedCaptionFile;
-      value = value.copyWith(caption: _getCaptionAt(value.position));
+      await setClosedCaptionFile(closedCaptionFile);
     }
 
     void errorListener(Object obj) {
@@ -632,6 +631,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     return Caption.none;
+  }
+
+  /// Sets a closed caption file.
+  Future<void> setClosedCaptionFile(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {
+    _closedCaptionFile = await closedCaptionFile;
+    value = value.copyWith(caption: _getCaptionAt(value.position));
   }
 
   void _updatePosition(Duration position) {
