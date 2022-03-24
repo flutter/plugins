@@ -1260,6 +1260,8 @@ Future<void> main() async {
         completion(_webviewNull()),
       );
     },
+    // TODO(bparrishMines): Unskip once https://github.com/flutter/plugins/pull/5086 lands and is published.
+    skip: Platform.isAndroid,
   );
 }
 
