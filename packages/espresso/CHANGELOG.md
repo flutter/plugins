@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updates compileSdkVersion to 31.
+* Adds OS version support information to README.
 
 ## 0.1.0+4
 

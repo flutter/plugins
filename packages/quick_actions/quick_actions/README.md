@@ -7,10 +7,13 @@ Quick actions refer to the [eponymous
 concept](https://developer.apple.com/design/human-interface-guidelines/ios/system-capabilities/home-screen-actions/)
 on iOS and to the [App
 Shortcuts](https://developer.android.com/guide/topics/ui/shortcuts.html) APIs on
-Android (introduced in Android 7.1 / API level 25). It is safe to run this plugin
-with earlier versions of Android as it will produce a noop.
+Android.
 
-## Usage in Dart
+|             | Android   | iOS  |
+|-------------|-----------|------|
+| **Support** | SDK 16+\* | 9.0+ |
+
+## Usage
 
 Initialize the library early in your application's lifecycle by providing a
 callback, which will then be called whenever the user launches the app via a
@@ -40,9 +43,7 @@ Please note, that the `type` argument should be unique within your application
 name of the native resource (xcassets on iOS or drawable on Android) that the app will display for the
 quick action.
 
-## Getting Started
+### Android
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.dev/).
-
-For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).
+\* The plugin will compile and run on SDK 16+, but will be a no-op below SDK 25
+(Android 7.1).
