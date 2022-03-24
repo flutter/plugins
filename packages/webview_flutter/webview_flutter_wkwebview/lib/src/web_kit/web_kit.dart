@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../foundation/foundation.dart';
+import '../ui_kit/ui_kit.dart';
 
 /// Times at which to inject script content into a webpage.
 ///
@@ -450,6 +451,9 @@ class WKWebView {
   late final WKWebViewConfiguration configuration =
       WKWebViewConfiguration._fromWebView(this);
 
+  /// The scrollable view associated with the web view.
+  late final UIScrollView scrollView = UIScrollView.fromWebView(this);
+
   /// Used to integrate custom user interface elements into web view interactions.
   set uiDelegate(WKUIDelegate? delegate) {
     throw UnimplementedError();
@@ -470,6 +474,81 @@ class WKWebView {
   /// Use this method to load a page from a local or network-based URL. For
   /// example, you might use it to navigate to a network-based webpage.
   Future<void> loadRequest(NSUrlRequest request) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the contents of the specified HTML string and navigates to it.
+  Future<void> loadHtmlString(String string, {String? baseUrl}) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the web content from the specified file and navigates to it.
+  Future<void> loadFileUrl(String url, {required String readAccessUrl}) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// This method is not a part of WebKit and is only a Flutter specific helper
+  /// method.
+  Future<void> loadFlutterAsset(String key) {
+    throw UnimplementedError();
+  }
+
+  /// Indicates whether there is a valid back item in the back-forward list.
+  Future<bool> get canGoBack {
+    throw UnimplementedError();
+  }
+
+  /// Indicates whether there is a valid forward item in the back-forward list.
+  Future<bool> get canGoForward {
+    throw UnimplementedError();
+  }
+
+  /// Navigates to the back item in the back-forward list.
+  Future<void> goBack() {
+    throw UnimplementedError();
+  }
+
+  /// Navigates to the forward item in the back-forward list.
+  Future<void> goForward() {
+    throw UnimplementedError();
+  }
+
+  /// Reloads the current webpage.
+  Future<void> reload() {
+    throw UnimplementedError();
+  }
+
+  /// The page title.
+  Future<String?> get title {
+    throw UnimplementedError();
+  }
+
+  /// An estimate of what fraction of the current navigation has been loaded.
+  Future<double> get estimatedProgress {
+    throw UnimplementedError();
+  }
+
+  /// Indicates whether horizontal swipe gestures trigger page navigation.
+  ///
+  /// The default value is false.
+  set allowsBackForwardNavigationGestures(bool allow) {
+    throw UnimplementedError();
+  }
+
+  /// The custom user agent string.
+  ///
+  /// The default value of this property is null.
+  set customUserAgent(String? userAgent) {
+    throw UnimplementedError();
+  }
+
+  /// Evaluates the specified JavaScript string.
+  ///
+  /// Throws a `PlatformException` if an error occurs or return value is not
+  /// supported.
+  Future<Object?> evaluateJavaScript(String javaScriptString) {
     throw UnimplementedError();
   }
 }
