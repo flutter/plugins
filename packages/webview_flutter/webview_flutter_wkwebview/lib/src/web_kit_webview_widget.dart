@@ -306,13 +306,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
-        final double progress = (change[NSKeyValueChangeKey.new_] as double?)!;
+        final double progress = change[NSKeyValueChangeKey.newValue]! as double;
         callbacksHandler.onProgress((progress * 100).round());
       };
       return webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
-        options: <NSKeyValueObservingOptions>{NSKeyValueObservingOptions.new_},
+        options: <NSKeyValueObservingOptions>{
+          NSKeyValueObservingOptions.newValue,
+        },
       );
     } else {
       webView.observeValue = null;

@@ -13,22 +13,22 @@ enum NSKeyValueObservingOptions {
   /// Indicates that the change map should provide the new attribute value, if applicable.
   ///
   /// See https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions/nskeyvalueobservingoptionnew?language=objc.
-  new_,
+  newValue,
 
   /// Indicates that the change map should contain the old attribute value, if applicable.
   ///
   /// See https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions/nskeyvalueobservingoptionold?language=objc.
-  old,
+  oldValue,
 
   /// Indicates a notification should be sent to the observer immediately.
   ///
   /// See https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions/nskeyvalueobservingoptioninitial?language=objc.
-  initial,
+  initialValue,
 
   /// Whether separate notifications should be sent to the observer before and after each change.
   ///
-  /// https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions/nskeyvalueobservingoptionprior?language=objc
-  prior,
+  /// See https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions/nskeyvalueobservingoptionprior?language=objc.
+  priorNotification,
 }
 
 /// The kinds of changes that can be observed.
@@ -73,17 +73,17 @@ enum NSKeyValueChangeKey {
   /// Indicates the new value for the attribute.
   ///
   /// See https://developer.apple.com/documentation/foundation/nskeyvaluechangenewkey?language=objc.
-  new_,
+  newValue,
 
   /// Indicates a notification is sent prior to a change.
   ///
   /// See https://developer.apple.com/documentation/foundation/nskeyvaluechangenotificationispriorkey?language=objc.
   notificationIsPrior,
 
-  /// Indicates a notification before the attribute was changed.
+  /// Indicates the value of this key is the value before the attribute was changed.
   ///
   /// https://developer.apple.com/documentation/foundation/nskeyvaluechangeoldkey?language=objc.
-  old,
+  oldValue,
 }
 
 /// A URL load request that is independent of protocol or URL scheme.

@@ -465,14 +465,14 @@ void main() {
           mockWebView,
           keyPath: 'estimatedProgress',
           options: <NSKeyValueObservingOptions>{
-            NSKeyValueObservingOptions.new_,
+            NSKeyValueObservingOptions.newValue,
           },
         ));
 
         observeValue(
           'estimatedProgress',
           mockWebView,
-          <NSKeyValueChangeKey, Object?>{NSKeyValueChangeKey.new_: 0.32},
+          <NSKeyValueChangeKey, Object?>{NSKeyValueChangeKey.newValue: 0.32},
         );
 
         verify(mockCallbacksHandler.onProgress(32));
