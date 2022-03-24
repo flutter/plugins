@@ -22,6 +22,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+    <key>NSCameraUsageDescription</key>
+    <string>WebView Pro App会在拍照上传图片服务中访问您的相机权限，需要您同意才能进行图片拍照上传。 请点击好允许访问， 若不允许，您将无法使用拍照功能。</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>WebView Pro App需要您的同意，才能在使用期间访问位置，快速定位。请点击好允许访问，若不允许, 您将无法快速定位到当前位置。</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>WebView Pro App需要您的同意，才能在使用期间访问位置，快速定位。请点击好允许访问，若不允许, 您将无法快速定位到当前位置。</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>WebView Pro App需要您的同意，才能在使用期间访问位置，快速定位。请点击好允许访问，若不允许, 您将无法快速定位到当前位置。</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -15,6 +15,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import '../platform_interface.dart';
+import '../platform_interface.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
@@ -93,6 +94,7 @@ class WebView extends StatefulWidget {
     this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
+    this.geolocationEnabled = false,
     this.userAgent,
     this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
@@ -263,6 +265,12 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  ///
+  /// This only works on Android.
+  ///
+  /// By default `geolocationEnabled` is false.
+  final bool geolocationEnabled;
+
   /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
@@ -384,6 +392,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
+    geolocationEnabled: widget.geolocationEnabled,
     userAgent: WebSetting<String?>.of(widget.userAgent),
     zoomEnabled: widget.zoomEnabled,
   );

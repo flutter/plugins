@@ -9,6 +9,7 @@ import static io.flutter.plugins.webviewflutter.WebViewFlutterPlugin.application
 import android.app.Application;
 import android.os.Build;
 import android.os.Message;
+import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -64,7 +65,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
 
   private static final String[] perms = {Manifest.permission.CAMERA};
   private static final int REQUEST_CAMERA = 1;
-  private static final int REQUEST_LOCATION = 100;
+
   private static Uri cameraUri;
 
   /**
@@ -172,6 +173,12 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      */
     public void setWebViewClient(WebViewClient webViewClient) {
       this.webViewClient = webViewClient;
+    }
+
+    @Override
+    public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+      callback.invoke(origin, true, false);
+      super.onGeolocationPermissionsShowPrompt(origin, callback);
     }
 
     @Override

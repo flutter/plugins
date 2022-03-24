@@ -131,6 +131,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           gestureNavigationEnabled: true,
           backgroundColor: const Color(0x00000000),
+          geolocationEnabled: true,// set geolocationEnable true or not
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -178,6 +179,7 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  geolocation,
   doPostRequest,
   loadLocalFile,
   loadFlutterAsset,
@@ -222,6 +224,9 @@ class SampleMenu extends StatelessWidget {
                 break;
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
+                break;
+              case MenuOptions.geolocation:
+                _toLocationExample(controller.data!, context);
                 break;
               case MenuOptions.doPostRequest:
                 _onDoPostRequest(controller.data!, context);
@@ -272,6 +277,10 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.geolocation,
+              child: Text('Navigation Geolocation example'),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.doPostRequest,
@@ -372,6 +381,11 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  Future<void> _toLocationExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadUrl('https://amap.com/dir');
   }
 
   Future<void> _onSetCookie(
