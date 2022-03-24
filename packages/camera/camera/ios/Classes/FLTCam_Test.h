@@ -7,10 +7,12 @@
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
 
-/// The queue on which `eventSink` property should be accessed
+/// The queue on which `eventSink` property should be accessed.
 @property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
 
-/// `eventSink` property should be accessed on `captureSessionQueue`.
+/// The event sink to stream camera events to Dart.
+///
+/// The property should only be accessed on `captureSessionQueue`.
 /// The block itself should be invoked on the main queue.
 @property FlutterEventSink eventSink;
 

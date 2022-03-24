@@ -133,7 +133,7 @@ NSString *const errorMethod = @"error";
   _videoFormat = kCVPixelFormatType_32BGRA;
   _inProgressSavePhotoDelegates = [NSMutableDictionary dictionary];
 
-  // To prevent memory consumption, limit the number of frames pending processing.
+  // To limit memory consumption, limit the number of frames pending processing.
   // After some testing, 4 was determined to be the best maximum value.
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
   _maxStreamingPendingFramesCount = 4;
