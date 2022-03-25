@@ -1,5 +1,10 @@
 ## NEXT
 
+- Updates `publish-plugin` command documentation.
+
+## 0.8.2
+
+- Adds a new `custom-test` command.
 - Switches from deprecated `flutter packages` alias to `flutter pub`.
 
 ## 0.8.1

@@ -1,6 +1,10 @@
-## 0.9.4+17
+## 0.9.4+18
 
 * Fixes a crash in iOS when streaming on low-performance devices.
+
+## 0.9.4+17
+
+* Removes obsolete information from README, and adds OS support table.
 
 ## 0.9.4+16
 

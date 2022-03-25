@@ -51,7 +51,6 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
   FlutterMethodChannel *_channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar> *_registrar;
-  BOOL _cameraDidInitialSetup;
   FLTMarkersController *_markersController;
   FLTPolygonsController *_polygonsController;
   FLTPolylinesController *_polylinesController;
@@ -63,11 +62,19 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  GMSCameraPosition *camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
+  GMSMapView *mapView = [GMSMapView mapWithFrame:frame camera:camera];
+  return [self initWithMapView:mapView viewIdentifier:viewId arguments:args registrar:registrar];
+}
+
+- (instancetype)initWithMapView:(GMSMapView *_Nonnull)mapView
+                 viewIdentifier:(int64_t)viewId
+                      arguments:(id _Nullable)args
+                      registrar:(NSObject<FlutterPluginRegistrar> *_Nonnull)registrar {
   if (self = [super init]) {
+    _mapView = mapView;
     _viewId = viewId;
 
-    GMSCameraPosition *camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
-    _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _mapView.accessibilityElementsHidden = NO;
     _trackCameraPosition = NO;
     InterpretMapOptions(args[@"options"], self);
@@ -83,7 +90,6 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     }];
     _mapView.delegate = weakSelf;
     _registrar = registrar;
-    _cameraDidInitialSetup = NO;
     _markersController = [[FLTMarkersController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
@@ -119,12 +125,13 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
       [_tileOverlaysController addTileOverlays:tileOverlaysToAdd];
     }
+
+    [_mapView addObserver:self forKeyPath:@"frame" options:0 context:nil];
   }
   return self;
 }
 
 - (UIView *)view {
-  [_mapView addObserver:self forKeyPath:@"frame" options:0 context:nil];
   return _mapView;
 }
 
@@ -132,11 +139,6 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-  if (_cameraDidInitialSetup) {
-    // We only observe the frame for initial setup.
-    [_mapView removeObserver:self forKeyPath:@"frame"];
-    return;
-  }
   if (object == _mapView && [keyPath isEqualToString:@"frame"]) {
     CGRect bounds = _mapView.bounds;
     if (CGRectEqualToRect(bounds, CGRectZero)) {
@@ -146,7 +148,7 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
       // zero.
       return;
     }
-    _cameraDidInitialSetup = YES;
+    // We only observe the frame for initial setup.
     [_mapView removeObserver:self forKeyPath:@"frame"];
     [_mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   } else {
