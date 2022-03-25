@@ -17,6 +17,7 @@ import 'webview_cookie_manager_delegate.dart';
 
 export 'types/types.dart';
 
+/// Interface for a platform implementation of a WebView.
 abstract class WebViewPlatform extends PlatformInterface {
   /// Creates a new [WebViewPlatform].
   WebViewPlatform() : super(token: _token);

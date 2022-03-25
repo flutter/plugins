@@ -9,7 +9,7 @@ import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart'
 
 import 'webview_platform_test.mocks.dart';
 
-@GenerateMocks([WebViewPlatform])
+@GenerateMocks(<Type>[WebViewPlatform])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -28,7 +28,7 @@ void main() {
   });
 
   test('Can be mocked with `implements`', () {
-    final MockWebViewPlatform mock = MockWebViewPlatform();
+    final MockWebViewPlatform mock = MockWebViewPlatformWithMixin();
     WebViewPlatform.instance = mock;
   });
 
@@ -66,7 +66,7 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      webViewPlatform.createNavigationCallbackHandlerDelegate(),
+      () => webViewPlatform.createNavigationCallbackHandlerDelegate(),
       throwsUnimplementedError,
     );
   });
