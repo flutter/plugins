@@ -799,6 +799,33 @@ void main() {
           isForMainFrame: false,
         ));
       });
+
+      testWidgets('onProgress', (WidgetTester tester) async {
+        await buildWidget(tester, hasProgressTracking: true);
+        final dynamic observeValue =
+            verify(mockWebView.observeValue = captureAny).captured.single
+                as void Function(
+          String keyPath,
+          NSObject object,
+          Map<NSKeyValueChangeKey, Object?> change,
+        );
+
+        verify(mockWebView.addObserver(
+          mockWebView,
+          keyPath: 'estimatedProgress',
+          options: <NSKeyValueObservingOptions>{
+            NSKeyValueObservingOptions.newValue,
+          },
+        ));
+
+        observeValue(
+          'estimatedProgress',
+          mockWebView,
+          <NSKeyValueChangeKey, Object?>{NSKeyValueChangeKey.newValue: 0.32},
+        );
+
+        verify(mockCallbacksHandler.onProgress(32));
+      });
     });
 
     group('$JavascriptChannelRegistry', () {

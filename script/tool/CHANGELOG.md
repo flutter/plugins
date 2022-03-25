@@ -1,6 +1,7 @@
 ## NEXT
 
 - Adds a new `readme-check` command.
+- Updates `publish-plugin` command documentation.
 
 ## 0.8.2
 

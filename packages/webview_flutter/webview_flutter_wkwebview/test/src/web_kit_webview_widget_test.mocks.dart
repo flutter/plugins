@@ -201,6 +201,17 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
       super.noSuchMethod(Invocation.setter(#customUserAgent, userAgent),
           returnValueForMissingStub: null);
   @override
+  set observeValue(
+          void Function(
+                  String, _i6.NSObject, Map<_i6.NSKeyValueChangeKey, Object?>)?
+              observeValue) =>
+      super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
+          returnValueForMissingStub: null);
+  @override
+  _i5.Future<double> getEstimatedProgress() =>
+      (super.noSuchMethod(Invocation.method(#getEstimatedProgress, []),
+          returnValue: Future<double>.value(0.0)) as _i5.Future<double>);
+  @override
   _i5.Future<void> loadRequest(_i6.NSUrlRequest? request) =>
       (super.noSuchMethod(Invocation.method(#loadRequest, [request]),
           returnValue: Future<void>.value(),
@@ -242,6 +253,20 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
   _i5.Future<Object?> evaluateJavaScript(String? javaScriptString) => (super
       .noSuchMethod(Invocation.method(#evaluateJavaScript, [javaScriptString]),
           returnValue: Future<Object?>.value()) as _i5.Future<Object?>);
+  @override
+  _i5.Future<void> addObserver(_i6.NSObject? observer,
+          {String? keyPath, Set<_i6.NSKeyValueObservingOptions>? options}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<void> removeObserver(_i6.NSObject? observer, {String? keyPath}) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKWebViewConfiguration].
