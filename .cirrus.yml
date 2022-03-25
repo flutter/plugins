@@ -57,7 +57,7 @@ macos_template: &MACOS_TEMPLATE
   # PRs on macOS.
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: big-sur-xcode-13
+    image: monterey-xcode-13.1
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
