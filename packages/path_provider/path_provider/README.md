@@ -38,10 +38,6 @@ Directories support by platform:
 | External Storage Directories | ✔️ | ❌ | ❌ | ❌️ | ❌️ |
 | Downloads | ❌ | ❌ | ✔️ | ✔️ | ✔️ |
 
-### Linux
-
-Supports
-
 ## Testing
 
 `path_provider` now uses a `PlatformInterface`, meaning that not all platforms share a single `PlatformChannel`-based implementation.
