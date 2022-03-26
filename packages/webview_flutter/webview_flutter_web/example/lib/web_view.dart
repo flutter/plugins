@@ -378,6 +378,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasProgressTracking: false,
     debuggingEnabled: false,
     gestureNavigationEnabled: false,
+    allowsLinkPreview: true,
     allowsInlineMediaPlayback: true,
     userAgent: const WebSetting<String?>.of(''),
     zoomEnabled: false,
