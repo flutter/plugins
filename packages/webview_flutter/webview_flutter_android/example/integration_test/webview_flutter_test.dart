@@ -1240,6 +1240,32 @@ Future<void> main() async {
     expect(currentUrl, primaryUrl);
   });
 
+  testWidgets('launches with allowsLinkPreview on iOS',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: SizedBox(
+          width: 400,
+          height: 300,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
+            allowsLinkPreview: false,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String? currentUrl = await controller.currentUrl();
+    expect(currentUrl, primaryUrl);
+  });
+
   testWidgets('target _blank opens in same window',
       (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
