@@ -522,7 +522,7 @@
       NSNumber *allowsBackForwardNavigationGestures = settings[key];
       _webView.allowsBackForwardNavigationGestures =
           [allowsBackForwardNavigationGestures boolValue];
-    }  else if ([key isEqualToString:@"allowsLinkPreview"]) {
+    } else if ([key isEqualToString:@"allowsLinkPreview"]) {
       NSNumber *allowsLinkPreview = settings[key];
       _webView.allowsLinkPreview = [allowsLinkPreview boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
