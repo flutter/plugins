@@ -142,8 +142,8 @@ public class DeviceOrientationManager {
   }
 
   /**
-   * Returns the device's video orientation in clockwise degrees based on the sensor orientation
-   * and the last known UI orientation.
+   * Returns the device's video orientation in clockwise degrees based on the sensor orientation and
+   * the last known UI orientation.
    *
    * <p>Returns one of 0, 90, 180 or 270.
    *
@@ -154,10 +154,10 @@ public class DeviceOrientationManager {
   }
 
   /**
-   * Returns the device's video orientation in clockwise degrees based on the sensor orientation
-   * and the supplied {@link PlatformChannel.DeviceOrientation} value.
+   * Returns the device's video orientation in clockwise degrees based on the sensor orientation and
+   * the supplied {@link PlatformChannel.DeviceOrientation} value.
    *
-   * <p>Returns one of 0, 90, 180 or 270. 
+   * <p>Returns one of 0, 90, 180 or 270.
    *
    * <p>More details can be found in the official Android documentation:
    * https://developer.android.com/reference/android/media/MediaRecorder#setOrientationHint(int)

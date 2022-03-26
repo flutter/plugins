@@ -115,7 +115,8 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getVideoOrientationBackFacing_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
+  public void
+      getVideoOrientationBackFacing_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
     setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
 
     DeviceOrientationManager orientationManager =
@@ -127,7 +128,8 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getVideoOrientationFrontFacing_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
+  public void
+      getVideoOrientationFrontFacing_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
     setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
 
     DeviceOrientationManager orientationManager =
