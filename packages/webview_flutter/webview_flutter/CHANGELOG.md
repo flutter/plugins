@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Adds support for the `allowsLinkPreview` property on iOS.
+
 ## 3.0.1
 
 * Removes a duplicate Android-specific integration test.
