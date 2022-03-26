@@ -1,3 +1,7 @@
+## 1.8.2
+
+* Adds support for the `allowsLinkPreview` property on iOS.
+
 ## 1.8.1
 
 * Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
