@@ -185,10 +185,10 @@ public class DeviceOrientationManager {
         angle = 180;
         break;
       case LANDSCAPE_LEFT:
-        angle = isFrontFacing ? 90 : 270;
+        angle = 270;
         break;
       case LANDSCAPE_RIGHT:
-        angle = isFrontFacing ? 270 : 90;
+        angle = 90;
         break;
     }
 

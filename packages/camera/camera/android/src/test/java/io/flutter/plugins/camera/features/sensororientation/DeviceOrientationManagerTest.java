@@ -100,9 +100,9 @@ public class DeviceOrientationManagerTest {
         orientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
 
     assertEquals(90, degreesPortraitUp);
-    assertEquals(0, degreesLandscapeLeft);
+    assertEquals(180, degreesLandscapeLeft);
     assertEquals(270, degreesPortraitDown);
-    assertEquals(180, degreesLandscapeRight);
+    assertEquals(0, degreesLandscapeRight);
   }
 
   @Test
@@ -135,7 +135,7 @@ public class DeviceOrientationManagerTest {
 
     int degrees = orientationManager.getVideoOrientation(null);
 
-    assertEquals(0, degrees);
+    assertEquals(180, degrees);
   }
 
   @Test
