@@ -1,8 +1,8 @@
-name: webview_flutter
-description: A Flutter plugin that provides a WebView widget on Android and iOS.
-repository: https://github.com/flutter/plugins/tree/main/packages/webview_flutter/webview_flutter
-issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+webview%22
-version: 3.0.1
+name: flutter_webview_pro
+description: A Flutter plugin that provides a WebView widget who Support photo upload/take camera and Geolocation.一个在Flutter上支持图片上传、相机拍照、地理定位的webview插件
+repository: https://github.com/wenzhiming/flutter-plugins/tree/dev/packages/webview_flutter/webview_flutter
+issue_tracker: https://github.com/wenzhiming/flutter-plugins/issues
+version: 3.0.1+1
 
 environment:
   sdk: ">=2.14.0 <3.0.0"

@@ -1,3 +1,10 @@
+## 3.0.1+1
+
+* Support photo upload,take camera.
+* Support Geolocation.
+* Support select pdf|doc|xls files.
+
+
 ## 3.0.1
 
 * Removes a duplicate Android-specific integration test.
