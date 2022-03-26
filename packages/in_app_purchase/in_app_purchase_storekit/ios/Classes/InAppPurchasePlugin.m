@@ -79,7 +79,8 @@
       }
       updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
         [weakSelf updatedDownloads:downloads];
-      }];
+      }
+      transactionCache:[[FIATransactionCache alloc] init]];
 
   _transactionObserverCallbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"

@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Adds additional explanation on why it is important to complete a purchase.
+
 ## 3.0.1
 
 * Internal code cleanup for stricter analysis options.

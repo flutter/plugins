@@ -1,6 +1,6 @@
 ## 0.9.4+17
 
-* Fix an issue with the orientation of video's recorded in landscape on Android. 
+* Removes obsolete information from README, and adds OS support table.
 
 ## 0.9.4+16
 
