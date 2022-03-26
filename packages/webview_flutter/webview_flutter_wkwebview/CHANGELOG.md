@@ -1,6 +1,7 @@
-## NEXT
+## 2.7.2
 
 * Fixes an integration test race condition.
+* Adds support for the `allowsLinkPreview` property on iOS.
 
 ## 2.7.1
 
