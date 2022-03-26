@@ -93,6 +93,7 @@ class WebView extends StatefulWidget {
     this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
+    this.allowsLinkPreview = true,
     this.userAgent,
     this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
@@ -263,6 +264,13 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  /// A Boolean value that determines whether pressing a link displays a preview of the destination for the link.
+  ///
+  /// This only works on iOS.
+  ///
+  /// By default `allowsLinkPreview` is true, to match the default on iOS.
+  final bool allowsLinkPreview;
+
   /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
@@ -383,6 +391,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    allowsLinkPreview: widget.allowsLinkPreview,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
     zoomEnabled: widget.zoomEnabled,

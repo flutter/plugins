@@ -1139,6 +1139,7 @@ void main() {
         const WebView(
           initialUrl: 'https://youtube.com',
           gestureNavigationEnabled: true,
+          allowsLinkPreview: false,
         ),
       );
 
@@ -1155,6 +1156,7 @@ void main() {
               debuggingEnabled: false,
               userAgent: const WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
+              allowsLinkPreview: false,
               zoomEnabled: true,
             ),
           )));
@@ -1337,6 +1339,7 @@ class MatchesWebSettings extends Matcher {
         _webSettings!.debuggingEnabled == webSettings.debuggingEnabled &&
         _webSettings!.gestureNavigationEnabled ==
             webSettings.gestureNavigationEnabled &&
+        _webSettings!.allowsLinkPreview == webSettings.allowsLinkPreview &&
         _webSettings!.userAgent == webSettings.userAgent &&
         _webSettings!.zoomEnabled == webSettings.zoomEnabled;
   }
