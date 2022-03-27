@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Page for showing an example of saving with file_selector
 class SaveTextPage extends StatelessWidget {
@@ -17,8 +18,10 @@ class SaveTextPage extends StatelessWidget {
     final Uint8List fileData = Uint8List.fromList(text.codeUnits);
     const String fileMimeType = 'text/plain';
     final XFile textFile = XFile.fromData(fileData, mimeType: fileMimeType);
+    final String initialDirectory =
+        (await getApplicationDocumentsDirectory()).path;
     final String? path = await getSavePath(
-      initialDirectory: '/',
+      initialDirectory: initialDirectory,
       suggestedName: fileName,
     );
     if (path == null) {
