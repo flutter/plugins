@@ -17,7 +17,8 @@ class SaveTextPage extends StatelessWidget {
     final String fileName = _nameController.text;
     final Uint8List fileData = Uint8List.fromList(text.codeUnits);
     const String fileMimeType = 'text/plain';
-    final XFile textFile = XFile.fromData(fileData, mimeType: fileMimeType);
+    final XFile textFile =
+        XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
     final String initialDirectory =
         (await getApplicationDocumentsDirectory()).path;
     final String? path = await getSavePath(
