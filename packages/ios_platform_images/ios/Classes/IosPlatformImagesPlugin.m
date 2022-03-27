@@ -43,10 +43,9 @@
     } else if ([@"loadSystemImage" isEqualToString:call.method]) {
       if (@available(iOS 13, *)) {
         NSString *name = call.arguments[0];
-        double pixelSize = [(NSNumber *)(call.arguments[1]) doubleValue];
         // iOS adds 15% padding to the outside of the image so we scale down to match the requested
         // size.
-        double pointSize = pixelSize * 0.85;
+        double pointSize = [(NSNumber *)(call.arguments[1]) doubleValue] * 0.85;
         NSNumber *weightIndex = call.arguments[2];
 
         // Up to 3 rgb values for primary, seconday and tertiary colors.
