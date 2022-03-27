@@ -13,7 +13,7 @@ const CameraPosition _kInitialPosition =
     CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
 
 class MapCoordinatesPage extends GoogleMapExampleAppPage {
-  MapCoordinatesPage() : super(const Icon(Icons.map), 'Map coordinates');
+  const MapCoordinatesPage() : super(const Icon(Icons.map), 'Map coordinates');
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     );
   }
 
-  void onMapCreated(GoogleMapController controller) async {
+  Future<void> onMapCreated(GoogleMapController controller) async {
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     setState(() {
       mapController = controller;

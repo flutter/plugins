@@ -6,11 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MethodChannelMock {
-  final Duration? delay;
-  final MethodChannel methodChannel;
-  final Map<String, dynamic> methods;
-  final log = <MethodCall>[];
-
   MethodChannelMock({
     required String channelName,
     this.delay,
@@ -19,7 +14,12 @@ class MethodChannelMock {
     methodChannel.setMockMethodCallHandler(_handler);
   }
 
-  Future _handler(MethodCall methodCall) async {
+  final Duration? delay;
+  final MethodChannel methodChannel;
+  final Map<String, dynamic> methods;
+  final List<MethodCall> log = <MethodCall>[];
+
+  Future<dynamic> _handler(MethodCall methodCall) async {
     log.add(methodCall);
 
     if (!methods.containsKey(methodCall.method)) {
@@ -27,13 +27,13 @@ class MethodChannelMock {
           '${methodCall.method} on channel ${methodChannel.name}');
     }
 
-    return Future.delayed(delay ?? Duration.zero, () {
-      final result = methods[methodCall.method];
+    return Future<dynamic>.delayed(delay ?? Duration.zero, () {
+      final Object? result = methods[methodCall.method];
       if (result is Exception) {
         throw result;
       }
 
-      return Future.value(result);
+      return Future<dynamic>.value(result);
     });
   }
 }

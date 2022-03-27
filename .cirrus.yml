@@ -1,4 +1,4 @@
-gcp_credentials: ENCRYPTED[!cc769765170bebc37e0556e2da5915ca64ee37f4ec8c966ec147e2f59578b476c99e457eafce4e2f8b1a4e305f7096b8!]
+gcp_credentials: ENCRYPTED[!2c88dee9c9d9805b214c9f7ad8f3bc8fae936cdb0f881d562101151c408c7e024a41222677d5831df90c60d2dd6cd80a!]
 
 # Don't run on release tags since it creates O(n^2) tasks where n is the
 # number of plugins
@@ -28,10 +28,10 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - git fetch origin
     # Switch to the requested channel.
     - git checkout $TARGET_TREEISH
-    # When using a branch rather than a hash, reset to the upstream branch
-    # rather than using pull, since the base image can sometimes be in a state
-    # where it has diverged from upstream (!).
-    - if [[ "$TARGET_TREEISH" == "$CHANNEL" ]]; then
+    # When using a branch rather than a hash or version tag, reset to the
+    # upstream branch rather than using pull, since the base image can sometimes
+    # be in a state where it has diverged from upstream (!).
+    - if [[ "$TARGET_TREEISH" == "$CHANNEL" ]] && [[ "$CHANNEL" != *"."* ]]; then
     -   git reset --hard @{u}
     - fi
     # Run doctor to allow auditing of what version of Flutter the run is using.
@@ -138,6 +138,22 @@ task:
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
+    # Does a sanity check that plugins at least pass analysis on the N-1 and N-2
+    # versions of Flutter stable if the plugin claims to support that version.
+    # This is to minimize accidentally making changes that break old versions
+    # (which we don't commit to supporting, but don't want to actively break)
+    # without updating the constraints.
+    # Note: The versions below should be manually updated after a new stable
+    # version comes out.
+    - name: legacy-version-analyze
+      depends_on: analyze
+      env:
+        matrix:
+          CHANNEL: "2.5.3"
+          CHANNEL: "2.8.1"
+      analyze_script:
+        - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+        - echo "If this test fails, the minumum Flutter version should be updated"
     ### Web tasks ###
     - name: web-build_all_plugins
       env:
@@ -197,7 +213,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[de02374f8d2d14d50792c6b521af2dfb86cbb522efed104f905002e4332546104d387d2bb8710956b729b4bd6533bba0]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[4c11f1a80a5741d51e92ab609bc7214ab2aa015e68a490e4d6777ebdf84f9c899b97c0ded2f4b2e6adf2c8b5ead1e3c5]
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -230,15 +246,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        # TODO(stuartmorgan): Remove this condition once
-        # https://github.com/flutter/flutter/issues/96661 is fixed and
-        # cherry picked. Currently webview_flutter tests crash on stable on
-        # Android so must be skipped.
-        -   if [[ "$CHANNEL" == "stable" ]]; then
-        -     ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml,webview_flutter
-        -   else
-        -     ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
-        -   fi
+        -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
@@ -346,4 +354,4 @@ task:
       native_test_script:
         - ./script/tool_runner.sh native-test --macos
       drive_script:
-        - ./script/tool_runner.sh drive-examples --macos
+        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml

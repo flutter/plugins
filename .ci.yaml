@@ -47,7 +47,6 @@ targets:
         [
           {"dependency": "vs_build"}
         ]
-    scheduler: luci
 
   - name: Windows win32-platform_tests stable
     recipe: plugins/plugins
@@ -60,7 +59,6 @@ targets:
         [
           {"dependency": "vs_build"}
         ]
-    scheduler: luci
 
   - name: Windows windows-build_all_plugins master
     recipe: plugins/plugins
@@ -74,7 +72,6 @@ targets:
         [
           {"dependency": "vs_build"}
         ]
-    scheduler: luci
 
   - name: Windows windows-build_all_plugins stable
     recipe: plugins/plugins
@@ -87,7 +84,6 @@ targets:
         [
           {"dependency": "vs_build"}
         ]
-    scheduler: luci
 
   - name: Windows uwp-platform_tests master
     recipe: plugins/plugins
@@ -101,7 +97,6 @@ targets:
         [
           {"dependency": "vs_build"}
         ]
-    scheduler: luci
 
   - name: Windows plugin_tools_tests
     recipe: plugins/plugins
@@ -111,11 +106,9 @@ targets:
       target_file: plugin_tools_tests.yaml
       channel: master
       version_file: flutter_master.version
-    scheduler: luci
 
   - name: Linux ci_yaml plugins roller
     recipe: infra/ci_yaml
     timeout: 30
-    scheduler: luci
     runIf:
       - .ci.yaml

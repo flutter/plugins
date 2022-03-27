@@ -1,12 +1,11 @@
 ## Updating pigeon-generated files
 
 If you update files in the pigeons/ directory, run the following
-command in this directory (ignore the errors you get about
-dependencies in the examples directory):
+command in this directory:
 
 ```bash
 flutter pub upgrade
-flutter pub run pigeon --dart_null_safety --input pigeons/messages.dart
+flutter pub run pigeon --input pigeons/messages.dart
 # git commit your changes so that your working environment is clean
 (cd ../../../; ./script/tool_runner.sh format --clang-format=clang-format-7)
 ```
@@ -28,6 +27,5 @@ publish pigeon before you can land the updates to this package, since
 the CI tests run the analysis using latest published version of
 pigeon, not your version or the version on master.
 
-In either case, the configuration will be obtained automatically from
-the `pigeons/messages.dart` file (see `configurePigeon` at the bottom
-of that file).
+In either case, the configuration will be obtained automatically from the
+`pigeons/messages.dart` file (see `ConfigurePigeon` at the top of that file).

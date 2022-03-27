@@ -16,7 +16,7 @@ import 'package:flutter/services.dart';
 /// obtain the camera stream.
 class CameraService {
   // A facing mode constraint name.
-  static const _facingModeKey = "facingMode";
+  static const String _facingModeKey = 'facingMode';
 
   /// The current browser window used to access media devices.
   @visibleForTesting
@@ -32,7 +32,7 @@ class CameraService {
     CameraOptions options, {
     int cameraId = 0,
   }) async {
-    final mediaDevices = window?.navigator.mediaDevices;
+    final html.MediaDevices? mediaDevices = window?.navigator.mediaDevices;
 
     // Throw a not supported exception if the current browser window
     // does not support any media devices.
@@ -44,7 +44,7 @@ class CameraService {
     }
 
     try {
-      final constraints = await options.toJson();
+      final Map<String, dynamic> constraints = options.toJson();
       return await mediaDevices.getUserMedia(constraints);
     } on html.DomException catch (e) {
       switch (e.name) {
@@ -120,10 +120,12 @@ class CameraService {
   ZoomLevelCapability getZoomLevelCapabilityForCamera(
     Camera camera,
   ) {
-    final mediaDevices = window?.navigator.mediaDevices;
-    final supportedConstraints = mediaDevices?.getSupportedConstraints();
-    final zoomLevelSupported =
-        supportedConstraints?[ZoomLevelCapability.constraintName] ?? false;
+    final html.MediaDevices? mediaDevices = window?.navigator.mediaDevices;
+    final Map<dynamic, dynamic>? supportedConstraints =
+        mediaDevices?.getSupportedConstraints();
+    final bool zoomLevelSupported =
+        supportedConstraints?[ZoomLevelCapability.constraintName] as bool? ??
+            false;
 
     if (!zoomLevelSupported) {
       throw CameraWebException(
@@ -133,22 +135,26 @@ class CameraService {
       );
     }
 
-    final videoTracks = camera.stream?.getVideoTracks() ?? [];
+    final List<html.MediaStreamTrack> videoTracks =
+        camera.stream?.getVideoTracks() ?? <html.MediaStreamTrack>[];
 
     if (videoTracks.isNotEmpty) {
-      final defaultVideoTrack = videoTracks.first;
+      final html.MediaStreamTrack defaultVideoTrack = videoTracks.first;
 
       /// The zoom level capability is represented by MediaSettingsRange.
       /// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaSettingsRange
-      final zoomLevelCapability = defaultVideoTrack
-              .getCapabilities()[ZoomLevelCapability.constraintName] ??
-          {};
+      final Object zoomLevelCapability = defaultVideoTrack
+                  .getCapabilities()[ZoomLevelCapability.constraintName]
+              as Object? ??
+          <dynamic, dynamic>{};
 
       // The zoom level capability is a nested JS object, therefore
       // we need to access its properties with the js_util library.
       // See: https://api.dart.dev/stable/2.13.4/dart-js_util/getProperty.html
-      final minimumZoomLevel = jsUtil.getProperty(zoomLevelCapability, 'min');
-      final maximumZoomLevel = jsUtil.getProperty(zoomLevelCapability, 'max');
+      final num? minimumZoomLevel =
+          jsUtil.getProperty(zoomLevelCapability, 'min') as num?;
+      final num? maximumZoomLevel =
+          jsUtil.getProperty(zoomLevelCapability, 'max') as num?;
 
       if (minimumZoomLevel != null && maximumZoomLevel != null) {
         return ZoomLevelCapability(
@@ -175,7 +181,7 @@ class CameraService {
   /// Returns a facing mode of the [videoTrack]
   /// (null if the facing mode is not available).
   String? getFacingModeForVideoTrack(html.MediaStreamTrack videoTrack) {
-    final mediaDevices = window?.navigator.mediaDevices;
+    final html.MediaDevices? mediaDevices = window?.navigator.mediaDevices;
 
     // Throw a not supported exception if the current browser window
     // does not support any media devices.
@@ -187,8 +193,10 @@ class CameraService {
     }
 
     // Check if the camera facing mode is supported by the current browser.
-    final supportedConstraints = mediaDevices.getSupportedConstraints();
-    final facingModeSupported = supportedConstraints[_facingModeKey] ?? false;
+    final Map<dynamic, dynamic> supportedConstraints =
+        mediaDevices.getSupportedConstraints();
+    final bool facingModeSupported =
+        supportedConstraints[_facingModeKey] as bool? ?? false;
 
     // Return null if the facing mode is not supported.
     if (!facingModeSupported) {
@@ -201,8 +209,8 @@ class CameraService {
     //
     // MediaTrackSettings:
     // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings
-    final videoTrackSettings = videoTrack.getSettings();
-    final facingMode = videoTrackSettings[_facingModeKey];
+    final Map<dynamic, dynamic> videoTrackSettings = videoTrack.getSettings();
+    final String? facingMode = videoTrackSettings[_facingModeKey] as String?;
 
     if (facingMode == null) {
       // If the facing mode does not exist in the video track settings,
@@ -220,15 +228,18 @@ class CameraService {
         return null;
       }
 
-      final videoTrackCapabilities = videoTrack.getCapabilities();
+      final Map<dynamic, dynamic> videoTrackCapabilities =
+          videoTrack.getCapabilities();
 
       // A list of facing mode capabilities as
       // the camera may support multiple facing modes.
-      final facingModeCapabilities =
-          List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
+      final List<String> facingModeCapabilities = List<String>.from(
+          (videoTrackCapabilities[_facingModeKey] as List<dynamic>?)
+                  ?.cast<String>() ??
+              <String>[]);
 
       if (facingModeCapabilities.isNotEmpty) {
-        final facingModeCapability = facingModeCapabilities.first;
+        final String facingModeCapability = facingModeCapabilities.first;
         return facingModeCapability;
       } else {
         // Return null if there are no facing mode capabilities.
@@ -277,16 +288,16 @@ class CameraService {
     switch (resolutionPreset) {
       case ResolutionPreset.max:
       case ResolutionPreset.ultraHigh:
-        return Size(4096, 2160);
+        return const Size(4096, 2160);
       case ResolutionPreset.veryHigh:
-        return Size(1920, 1080);
+        return const Size(1920, 1080);
       case ResolutionPreset.high:
-        return Size(1280, 720);
+        return const Size(1280, 720);
       case ResolutionPreset.medium:
-        return Size(720, 480);
+        return const Size(720, 480);
       case ResolutionPreset.low:
       default:
-        return Size(320, 240);
+        return const Size(320, 240);
     }
   }
 

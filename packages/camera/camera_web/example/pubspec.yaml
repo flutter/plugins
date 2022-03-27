@@ -10,7 +10,6 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  mocktail: ^0.1.4
   camera_web:
     path: ../
   flutter_driver:
@@ -19,3 +18,4 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  mocktail: ^0.1.4

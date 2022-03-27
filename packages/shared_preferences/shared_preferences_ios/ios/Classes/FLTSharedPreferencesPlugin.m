@@ -3,68 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTSharedPreferencesPlugin.h"
-
-static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences_ios";
-
-@implementation FLTSharedPreferencesPlugin
-
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
-                                                              binaryMessenger:registrar.messenger];
-  [channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
-    NSString *method = [call method];
-    NSDictionary *arguments = [call arguments];
-
-    if ([method isEqualToString:@"getAll"]) {
-      result(getAllPrefs());
-    } else if ([method isEqualToString:@"setBool"]) {
-      NSString *key = arguments[@"key"];
-      NSNumber *value = arguments[@"value"];
-      [[NSUserDefaults standardUserDefaults] setBool:value.boolValue forKey:key];
-      result(@YES);
-    } else if ([method isEqualToString:@"setInt"]) {
-      NSString *key = arguments[@"key"];
-      NSNumber *value = arguments[@"value"];
-      // int type in Dart can come to native side in a variety of forms
-      // It is best to store it as is and send it back when needed.
-      // Platform channel will handle the conversion.
-      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
-      result(@YES);
-    } else if ([method isEqualToString:@"setDouble"]) {
-      NSString *key = arguments[@"key"];
-      NSNumber *value = arguments[@"value"];
-      [[NSUserDefaults standardUserDefaults] setDouble:value.doubleValue forKey:key];
-      result(@YES);
-    } else if ([method isEqualToString:@"setString"]) {
-      NSString *key = arguments[@"key"];
-      NSString *value = arguments[@"value"];
-      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
-      result(@YES);
-    } else if ([method isEqualToString:@"setStringList"]) {
-      NSString *key = arguments[@"key"];
-      NSArray *value = arguments[@"value"];
-      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
-      result(@YES);
-    } else if ([method isEqualToString:@"commit"]) {
-      // synchronize is deprecated.
-      // "this method is unnecessary and shouldn't be used."
-      result(@YES);
-    } else if ([method isEqualToString:@"remove"]) {
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:arguments[@"key"]];
-      result(@YES);
-    } else if ([method isEqualToString:@"clear"]) {
-      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-      for (NSString *key in getAllPrefs()) {
-        [defaults removeObjectForKey:key];
-      }
-      result(@YES);
-    } else {
-      result(FlutterMethodNotImplemented);
-    }
-  }];
-}
-
-#pragma mark - Private
+#import "messages.g.h"
 
 static NSMutableDictionary *getAllPrefs() {
   NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
@@ -78,6 +17,52 @@ static NSMutableDictionary *getAllPrefs() {
     }
   }
   return filteredPrefs;
+}
+
+@interface FLTSharedPreferencesPlugin () <UserDefaultsApi>
+@end
+
+@implementation FLTSharedPreferencesPlugin
+
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  FLTSharedPreferencesPlugin *plugin = [[FLTSharedPreferencesPlugin alloc] init];
+  UserDefaultsApiSetup(registrar.messenger, plugin);
+}
+
+// Must not return nil unless "error" is set.
+- (nullable NSDictionary<NSString *, id> *)getAllWithError:
+    (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  return getAllPrefs();
+}
+
+- (void)clearWithError:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  for (NSString *key in getAllPrefs()) {
+    [defaults removeObjectForKey:key];
+  }
+}
+
+- (void)removeKey:(nonnull NSString *)key
+            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+}
+
+- (void)setBoolKey:(nonnull NSString *)key
+             value:(nonnull NSNumber *)value
+             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[NSUserDefaults standardUserDefaults] setBool:value.boolValue forKey:key];
+}
+
+- (void)setDoubleKey:(nonnull NSString *)key
+               value:(nonnull NSNumber *)value
+               error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[NSUserDefaults standardUserDefaults] setDouble:value.doubleValue forKey:key];
+}
+
+- (void)setValueKey:(nonnull NSString *)key
+              value:(nonnull NSString *)value
+              error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
 }
 
 @end
