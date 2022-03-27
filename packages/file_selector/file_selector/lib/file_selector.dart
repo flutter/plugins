@@ -67,7 +67,7 @@ Future<List<XFile>> openFiles({
 /// [suggestedName] is initial value of file name.
 ///
 /// [confirmButtonText] is the text in the confirmation button of the dialog.
-/// when omitted, the default OS label. (for example, "Open")
+/// when omitted, the default OS label. (for example, "Save")
 ///
 /// returns `null` if user cancels the operation.
 Future<String?> getSavePath({
