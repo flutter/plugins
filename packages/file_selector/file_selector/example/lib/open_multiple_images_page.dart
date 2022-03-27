@@ -28,7 +28,6 @@ class OpenMultipleImagesPage extends StatelessWidget {
         pngTypeGroup,
       ],
       initialDirectory: initialDirectory,
-      confirmButtonText: 'select image files',
     );
     if (files.isEmpty) {
       // Operation was canceled by the user.

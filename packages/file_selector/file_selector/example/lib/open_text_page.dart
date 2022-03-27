@@ -18,7 +18,6 @@ class OpenTextPage extends StatelessWidget {
     final XFile? file = await openFile(
       acceptedTypeGroups: <XTypeGroup>[typeGroup],
       initialDirectory: initialDirectory,
-      confirmButtonText: 'select text file',
     );
     if (file == null) {
       // Operation was canceled by the user.

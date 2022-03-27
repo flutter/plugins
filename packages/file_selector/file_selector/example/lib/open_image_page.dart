@@ -21,7 +21,6 @@ class OpenImagePage extends StatelessWidget {
     final List<XFile> files = await openFiles(
       acceptedTypeGroups: <XTypeGroup>[typeGroup],
       initialDirectory: initialDirectory,
-      confirmButtonText: 'select image file',
     );
     if (files.isEmpty) {
       // Operation was canceled by the user.
