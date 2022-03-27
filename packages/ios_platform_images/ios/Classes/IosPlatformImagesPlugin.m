@@ -43,16 +43,16 @@
     } else if ([@"loadSystemImage" isEqualToString:call.method]) {
       if (@available(iOS 13, *)) {
         NSString *name = call.arguments[0];
-        NSNumber *pixelSizeWithDouble = call.arguments[1];
+        double pixelSize = [(NSNumber *)(call.arguments[1]) doubleValue];
         // iOS adds 15% padding to the outside of the image so we scale down to match the requested
         // size.
-        double pointSize = [pixelSizeWithDouble doubleValue] * 0.85;
+        double pointSize = pixelSize * 0.85;
         NSNumber *weightIndex = call.arguments[2];
 
         // Up to 3 rgb values for primary, seconday and tertiary colors.
         // see
         // https://developer.apple.com/documentation/uikit/uiimagesymbolconfiguration/3810054-configurationwithpalettecolors
-        NSArray *rgbaValuesList = call.arguments[3];
+        NSArray<UIColor *> *rgbaValuesList = call.arguments[3];
 
         NSMutableArray *colorArray = [[NSMutableArray alloc] init];
 
@@ -76,7 +76,6 @@
           case 2:
             weight = UIImageSymbolWeightLight;
             break;
-          // 3 is regular
           case 4:
             weight = UIImageSymbolWeightMedium;
             break;
@@ -92,6 +91,7 @@
           case 8:
             weight = UIImageSymbolWeightBlack;
             break;
+          case 3:
           default:
             weight = UIImageSymbolWeightRegular;
             break;
@@ -106,20 +106,18 @@
 
         if (@available(iOS 15, *)) {
           NSNumber *preferMulticolor = call.arguments[4];
-          UIImageSymbolConfiguration *colors;
-
-          if ([preferMulticolor boolValue]) {
-            colors = [UIImageSymbolConfiguration configurationPreferringMulticolor];
-          } else {
-            colors = [UIImageSymbolConfiguration configurationWithPaletteColors:colorArray];
-          }
+          UIImageSymbolConfiguration *colors =
+              [preferMulticolor boolValue]
+                  ? [UIImageSymbolConfiguration configurationPreferringMulticolor]
+                  : [UIImageSymbolConfiguration configurationWithPaletteColors:colorArray];
 
           UIImageSymbolConfiguration *final =
               [pointSizeConfig configurationByApplyingConfiguration:colors];
           finalImage = [UIImage systemImageNamed:name withConfiguration:final];
         } else {
           UIImage *image = [UIImage systemImageNamed:name withConfiguration:pointSizeConfig];
-          finalImage = [image imageWithTintColor:colorArray.count > 0 ? colorArray[0] : nil];
+          finalImage = [image
+              imageWithTintColor:colorArray.count > 0 ? colorArray[0] : [UIColor blackColor]];
         }
 
         NSData *data = UIImagePNGRepresentation(finalImage);
