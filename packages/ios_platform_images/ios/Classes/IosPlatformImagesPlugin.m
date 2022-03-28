@@ -51,7 +51,7 @@
         // Up to 3 rgb values for primary, seconday and tertiary colors.
         // see
         // https://developer.apple.com/documentation/uikit/uiimagesymbolconfiguration/3810054-configurationwithpalettecolors
-        NSArray<UIColor *> *rgbaValuesList = call.arguments[3];
+        NSArray<NSNumber *> *rgbaValuesList = call.arguments[3];
 
         NSMutableArray *colorArray = [[NSMutableArray alloc] init];
 
