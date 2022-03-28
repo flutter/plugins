@@ -535,6 +535,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyBitrate() async {
+    if (_isDisposedOrNotInitialized) {
+      return;
+    }
     await _videoPlayerPlatform.setBitrate(
       _textureId,
       value.bitrate,
