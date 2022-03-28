@@ -40,7 +40,9 @@ class LocalAuthAndroid extends LocalAuthPlatform {
     };
     args.addAll(const AndroidAuthMessages().args);
     for (final AuthMessages messages in authMessages) {
-      args.addAll(messages.args);
+      if (messages is AndroidAuthMessages) {
+        args.addAll(messages.args);
+      }
     }
     return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
   }
