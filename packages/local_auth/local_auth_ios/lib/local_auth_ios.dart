@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
+import 'package:local_auth_ios/types/auth_messages_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:local_auth_platform_interface/types/auth_messages.dart';
 import 'package:local_auth_platform_interface/types/auth_options.dart';
@@ -37,6 +38,7 @@ class LocalAuthIOS extends LocalAuthPlatform {
       'sensitiveTransaction': options.sensitiveTransaction,
       'biometricOnly': options.biometricOnly,
     };
+    args.addAll(const IOSAuthMessages().args);
     for (final AuthMessages messages in authMessages) {
       args.addAll(messages.args);
     }
