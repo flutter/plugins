@@ -79,7 +79,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 /// Example app containing an invalid symbol reference.
-class IOSImageExampleError extends StatelessWidget {
+class IOSImageErrorExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
