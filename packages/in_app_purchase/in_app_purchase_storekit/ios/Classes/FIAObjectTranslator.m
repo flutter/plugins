@@ -167,6 +167,13 @@
   if (!error) {
     return nil;
   }
+
+  NSString *unsupportedMessage =
+      @"Unable to encode native userInfo object of type %@ to map. Please submit an issue at "
+      @"https://github.com/flutter/flutter/issues/new with the title \"[in_app_purchase_storekit] "
+      @"Unable to encode userInfo of type %@\" and add reproduction steps and the error details in "
+      @"the description field.";
+
   NSMutableDictionary *userInfo = [NSMutableDictionary new];
   for (NSErrorUserInfoKey key in error.userInfo) {
     id value = error.userInfo[key];
@@ -174,8 +181,19 @@
       userInfo[key] = [FIAObjectTranslator getMapFromNSError:value];
     } else if ([value isKindOfClass:[NSURL class]]) {
       userInfo[key] = [value absoluteString];
+    } else if ([value isKindOfClass:[NSArray class]]) {
+      NSMutableArray *errors = [[NSMutableArray alloc] init];
+      for (id error in value) {
+        if ([error isKindOfClass:[NSError class]]) {
+          [errors addObject:[FIAObjectTranslator getMapFromNSError:error]];
+        } else {
+          [errors addObject:[NSString
+                                stringWithFormat:unsupportedMessage, [value class], [value class]]];
+        }
+      }
+      userInfo[key] = errors;
     } else {
-      userInfo[key] = value;
+      userInfo[key] = [NSString stringWithFormat:unsupportedMessage, [value class], [value class]];
     }
   }
   return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
