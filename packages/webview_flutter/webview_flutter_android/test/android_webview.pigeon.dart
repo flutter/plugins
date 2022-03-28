@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/src/android_webview.pigeon.dart';
+import 'package:webview_flutter_android/src/android_webview.pigeon.dart';
 
 class _TestWebViewHostApiCodec extends StandardMessageCodec {
   const _TestWebViewHostApiCodec();

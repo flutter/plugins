@@ -28,10 +28,10 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - git fetch origin
     # Switch to the requested channel.
     - git checkout $TARGET_TREEISH
-    # When using a branch rather than a hash, reset to the upstream branch
-    # rather than using pull, since the base image can sometimes be in a state
-    # where it has diverged from upstream (!).
-    - if [[ "$TARGET_TREEISH" == "$CHANNEL" ]]; then
+    # When using a branch rather than a hash or version tag, reset to the
+    # upstream branch rather than using pull, since the base image can sometimes
+    # be in a state where it has diverged from upstream (!).
+    - if [[ "$TARGET_TREEISH" == "$CHANNEL" ]] && [[ "$CHANNEL" != *"."* ]]; then
     -   git reset --hard @{u}
     - fi
     # Run doctor to allow auditing of what version of Flutter the run is using.
@@ -138,6 +138,22 @@ task:
         # Restore the tree to a clean state, to avoid accidental issues if
         # other script steps are added to this task.
         - git checkout .
+    # Does a sanity check that plugins at least pass analysis on the N-1 and N-2
+    # versions of Flutter stable if the plugin claims to support that version.
+    # This is to minimize accidentally making changes that break old versions
+    # (which we don't commit to supporting, but don't want to actively break)
+    # without updating the constraints.
+    # Note: The versions below should be manually updated after a new stable
+    # version comes out.
+    - name: legacy-version-analyze
+      depends_on: analyze
+      env:
+        matrix:
+          CHANNEL: "2.5.3"
+          CHANNEL: "2.8.1"
+      analyze_script:
+        - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+        - echo "If this test fails, the minumum Flutter version should be updated"
     ### Web tasks ###
     - name: web-build_all_plugins
       env:
