@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_platform_interface/src/types/types.dart';
+import 'package:webview_pro_platform_interface/src/types/types.dart';
 
 import 'auto_media_playback_policy.dart';
 import 'web_settings.dart';

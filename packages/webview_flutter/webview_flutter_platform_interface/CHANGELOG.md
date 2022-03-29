@@ -1,3 +1,8 @@
+## 1.8.1+1
+
+* add geolocation for android
+
+
 ## 1.8.1
 
 * Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.

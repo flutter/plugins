@@ -1,6 +1,6 @@
-# webview_flutter_platform_interface
+# webview_pro_platform_interface
 
-A common platform interface for the [`webview_flutter`](https://pub.dev/packages/webview_flutter) plugin.
+A common platform interface for the [`flutter_webview_pro`](https://pub.dev/packages//flutter_webview_pro) plugin.
 
 This interface allows platform-specific implementations of the `webview_flutter`
 plugin, as well as the plugin itself, to ensure they are supporting the
