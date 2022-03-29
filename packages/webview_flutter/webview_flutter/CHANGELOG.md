@@ -1,4 +1,4 @@
-## 3.0.2
+## NEXT
 
 * Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
 

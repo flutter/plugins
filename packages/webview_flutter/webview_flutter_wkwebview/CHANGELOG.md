@@ -1,6 +1,7 @@
 ## NEXT
 
 * Fixes an integration test race condition.
+* Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
 
 ## 2.7.1
 
