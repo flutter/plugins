@@ -92,15 +92,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
           ),
     );
 
-    webView.uiDelegate = uiDelegate;
-    uiDelegate.onCreateWebView = (
+    webView.setUIDelegate(uiDelegate);
+    uiDelegate.setOnCreateWebView((
       WKWebViewConfiguration configuration,
       WKNavigationAction navigationAction,
     ) {
       if (!navigationAction.targetFrame.isMainFrame) {
         webView.loadRequest(navigationAction.request);
       }
-    };
+    });
   }
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
@@ -128,19 +128,19 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WKNavigationDelegate navigationDelegate =
       webViewProxy.createNavigationDelegate()
-        ..didStartProvisionalNavigation = (WKWebView webView, String? url) {
+        ..setDidStartProvisionalNavigation((WKWebView webView, String? url) {
           callbacksHandler.onPageStarted(url ?? '');
-        }
-        ..didFinishNavigation = (WKWebView webView, String? url) {
+        })
+        ..setDidFinishNavigation((WKWebView webView, String? url) {
           callbacksHandler.onPageFinished(url ?? '');
-        }
-        ..didFailNavigation = (WKWebView webView, NSError error) {
+        })
+        ..setDidFailNavigation((WKWebView webView, NSError error) {
           callbacksHandler.onWebResourceError(_toWebResourceError(error));
-        }
-        ..didFailProvisionalNavigation = (WKWebView webView, NSError error) {
+        })
+        ..setDidFailProvisionalNavigation((WKWebView webView, NSError error) {
           callbacksHandler.onWebResourceError(_toWebResourceError(error));
-        }
-        ..webViewWebContentProcessDidTerminate = (WKWebView webView) {
+        })
+        ..setWebViewWebContentProcessDidTerminate((WKWebView webView) {
           callbacksHandler.onWebResourceError(WebResourceError(
             errorCode: WKErrorCode.webContentProcessTerminated,
             // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
@@ -148,7 +148,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             description: '',
             errorType: WebResourceErrorType.webContentProcessTerminated,
           ));
-        };
+        });
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -164,7 +164,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     await addJavascriptChannels(params.javascriptChannelNames);
 
-    webView.navigationDelegate = navigationDelegate;
+    webView.setNavigationDelegate(navigationDelegate);
 
     if (params.webSettings != null) {
       updateSettings(params.webSettings!);
@@ -177,7 +177,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     required AutoMediaPlaybackPolicy autoMediaPlaybackPolicy,
   }) {
     if (allowsInlineMediaPlayback != null) {
-      configuration.allowsInlineMediaPlayback = allowsInlineMediaPlayback;
+      configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
     }
 
     late final bool requiresUserAction;
@@ -190,11 +190,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         break;
     }
 
-    configuration.mediaTypesRequiringUserActionForPlayback =
-        <WKAudiovisualMediaType>{
+    configuration
+        .setMediaTypesRequiringUserActionForPlayback(<WKAudiovisualMediaType>{
       if (requiresUserAction) WKAudiovisualMediaType.all,
       if (!requiresUserAction) WKAudiovisualMediaType.none,
-    };
+    });
   }
 
   @override
@@ -255,10 +255,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
-  Future<bool> canGoBack() => webView.canGoBack;
+  Future<bool> canGoBack() => webView.canGoBack();
 
   @override
-  Future<bool> canGoForward() => webView.canGoForward;
+  Future<bool> canGoForward() => webView.canGoForward();
 
   @override
   Future<void> goBack() => webView.goBack();
@@ -311,14 +311,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
-  Future<String?> getTitle() => webView.title;
+  Future<String?> getTitle() => webView.getTitle();
 
   @override
   Future<void> scrollTo(int x, int y) async {
-    webView.scrollView.contentOffset = Point<double>(
+    webView.scrollView.setContentOffset(Point<double>(
       x.toDouble(),
       y.toDouble(),
-    );
+    ));
   }
 
   @override
@@ -331,13 +331,13 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<int> getScrollX() async {
-    final Point<double> offset = await webView.scrollView.contentOffset;
+    final Point<double> offset = await webView.scrollView.getContentOffset();
     return offset.x.toInt();
   }
 
   @override
   Future<int> getScrollY() async {
-    final Point<double> offset = await webView.scrollView.contentOffset;
+    final Point<double> offset = await webView.scrollView.getContentOffset();
     return offset.y.toInt();
   }
 
@@ -362,7 +362,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         (String channelName) {
           final WKScriptMessageHandler handler =
               webViewProxy.createScriptMessageHandler()
-                ..didReceiveScriptMessage = (
+                ..setDidReceiveScriptMessage((
                   WKUserContentController userContentController,
                   WKScriptMessage message,
                 ) {
@@ -370,7 +370,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
                     message.name,
                     message.body!.toString(),
                   );
-                };
+                });
           _scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
@@ -417,7 +417,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   void _setHasNavigationDelegate(bool hasNavigationDelegate) {
     if (hasNavigationDelegate) {
-      navigationDelegate.decidePolicyForNavigationAction =
+      navigationDelegate.setDecidePolicyForNavigationAction(
           (WKWebView webView, WKNavigationAction action) async {
         final bool allow = await callbacksHandler.onNavigationRequest(
           url: action.request.url,
@@ -427,9 +427,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         return allow
             ? WKNavigationActionPolicy.allow
             : WKNavigationActionPolicy.cancel;
-      };
+      });
     } else {
-      navigationDelegate.decidePolicyForNavigationAction = null;
+      navigationDelegate.setDecidePolicyForNavigationAction(null);
     }
   }
 

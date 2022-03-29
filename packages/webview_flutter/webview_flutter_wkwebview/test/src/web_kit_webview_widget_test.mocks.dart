@@ -60,17 +60,18 @@ class MockUIScrollView extends _i1.Mock implements _i4.UIScrollView {
   }
 
   @override
-  _i5.Future<_i2.Point<double>> get contentOffset => (super.noSuchMethod(
-          Invocation.getter(#contentOffset),
+  _i5.Future<_i2.Point<double>> getContentOffset() => (super.noSuchMethod(
+          Invocation.method(#getContentOffset, []),
           returnValue: Future<_i2.Point<double>>.value(_FakePoint_0<double>()))
       as _i5.Future<_i2.Point<double>>);
   @override
-  set contentOffset(_i5.FutureOr<_i2.Point<double>>? offset) =>
-      super.noSuchMethod(Invocation.setter(#contentOffset, offset),
-          returnValueForMissingStub: null);
-  @override
   _i5.Future<void> scrollBy(_i2.Point<double>? offset) =>
       (super.noSuchMethod(Invocation.method(#scrollBy, [offset]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<void> setContentOffset(_i5.FutureOr<_i2.Point<double>>? offset) =>
+      (super.noSuchMethod(Invocation.method(#setContentOffset, [offset]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
@@ -85,49 +86,55 @@ class MockWKNavigationDelegate extends _i1.Mock
   }
 
   @override
-  set didStartProvisionalNavigation(
+  _i5.Future<void> setDidStartProvisionalNavigation(
           void Function(_i3.WKWebView, String?)?
               didStartProvisionalNavigation) =>
-      super.noSuchMethod(
-          Invocation.setter(
-              #didStartProvisionalNavigation, didStartProvisionalNavigation),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(#setDidStartProvisionalNavigation,
+              [didStartProvisionalNavigation]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set didFinishNavigation(
+  _i5.Future<void> setDidFinishNavigation(
           void Function(_i3.WKWebView, String?)? didFinishNavigation) =>
-      super.noSuchMethod(
-          Invocation.setter(#didFinishNavigation, didFinishNavigation),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(#setDidFinishNavigation, [didFinishNavigation]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set decidePolicyForNavigationAction(
+  _i5.Future<void> setDecidePolicyForNavigationAction(
           _i5.Future<_i3.WKNavigationActionPolicy> Function(
                   _i3.WKWebView, _i3.WKNavigationAction)?
               decidePolicyForNavigationAction) =>
-      super.noSuchMethod(
-          Invocation.setter(#decidePolicyForNavigationAction,
-              decidePolicyForNavigationAction),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(#setDecidePolicyForNavigationAction,
+              [decidePolicyForNavigationAction]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set didFailNavigation(
+  _i5.Future<void> setDidFailNavigation(
           void Function(_i3.WKWebView, _i6.NSError)? didFailNavigation) =>
-      super.noSuchMethod(
-          Invocation.setter(#didFailNavigation, didFailNavigation),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(#setDidFailNavigation, [didFailNavigation]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set didFailProvisionalNavigation(
+  _i5.Future<void> setDidFailProvisionalNavigation(
           void Function(_i3.WKWebView, _i6.NSError)?
               didFailProvisionalNavigation) =>
-      super.noSuchMethod(
-          Invocation.setter(
-              #didFailProvisionalNavigation, didFailProvisionalNavigation),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(
+              #setDidFailProvisionalNavigation, [didFailProvisionalNavigation]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set webViewWebContentProcessDidTerminate(
+  _i5.Future<void> setWebViewWebContentProcessDidTerminate(
           void Function(_i3.WKWebView)? webViewWebContentProcessDidTerminate) =>
-      super.noSuchMethod(
-          Invocation.setter(#webViewWebContentProcessDidTerminate,
-              webViewWebContentProcessDidTerminate),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(#setWebViewWebContentProcessDidTerminate,
+              [webViewWebContentProcessDidTerminate]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKScriptMessageHandler].
@@ -140,12 +147,14 @@ class MockWKScriptMessageHandler extends _i1.Mock
   }
 
   @override
-  set didReceiveScriptMessage(
+  _i5.Future<void> setDidReceiveScriptMessage(
           void Function(_i3.WKUserContentController, _i3.WKScriptMessage)?
               didReceiveScriptMessage) =>
-      super.noSuchMethod(
-          Invocation.setter(#didReceiveScriptMessage, didReceiveScriptMessage),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(
+              #setDidReceiveScriptMessage, [didReceiveScriptMessage]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKWebView].
@@ -166,47 +175,26 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
       (super.noSuchMethod(Invocation.getter(#scrollView),
           returnValue: _FakeUIScrollView_2()) as _i4.UIScrollView);
   @override
-  set uiDelegate(_i3.WKUIDelegate? delegate) =>
-      super.noSuchMethod(Invocation.setter(#uiDelegate, delegate),
-          returnValueForMissingStub: null);
-  @override
-  set navigationDelegate(_i3.WKNavigationDelegate? delegate) =>
-      super.noSuchMethod(Invocation.setter(#navigationDelegate, delegate),
-          returnValueForMissingStub: null);
-  @override
-  _i5.Future<String?> get url => (super.noSuchMethod(Invocation.getter(#url),
-      returnValue: Future<String?>.value()) as _i5.Future<String?>);
-  @override
-  _i5.Future<bool> get canGoBack =>
-      (super.noSuchMethod(Invocation.getter(#canGoBack),
-          returnValue: Future<bool>.value(false)) as _i5.Future<bool>);
-  @override
-  _i5.Future<bool> get canGoForward =>
-      (super.noSuchMethod(Invocation.getter(#canGoForward),
-          returnValue: Future<bool>.value(false)) as _i5.Future<bool>);
-  @override
-  _i5.Future<String?> get title =>
-      (super.noSuchMethod(Invocation.getter(#title),
-          returnValue: Future<String?>.value()) as _i5.Future<String?>);
-  @override
-  _i5.Future<double> get estimatedProgress =>
-      (super.noSuchMethod(Invocation.getter(#estimatedProgress),
-          returnValue: Future<double>.value(0.0)) as _i5.Future<double>);
-  @override
-  set allowsBackForwardNavigationGestures(bool? allow) => super.noSuchMethod(
-      Invocation.setter(#allowsBackForwardNavigationGestures, allow),
-      returnValueForMissingStub: null);
-  @override
-  set customUserAgent(String? userAgent) =>
-      super.noSuchMethod(Invocation.setter(#customUserAgent, userAgent),
-          returnValueForMissingStub: null);
-  @override
   set observeValue(
           void Function(
                   String, _i6.NSObject, Map<_i6.NSKeyValueChangeKey, Object?>)?
               observeValue) =>
       super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
           returnValueForMissingStub: null);
+  @override
+  _i5.Future<void> setUIDelegate(_i3.WKUIDelegate? delegate) =>
+      (super.noSuchMethod(Invocation.method(#setUIDelegate, [delegate]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<void> setNavigationDelegate(_i3.WKNavigationDelegate? delegate) =>
+      (super.noSuchMethod(Invocation.method(#setNavigationDelegate, [delegate]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<String?> getUrl() =>
+      (super.noSuchMethod(Invocation.method(#getUrl, []),
+          returnValue: Future<String?>.value()) as _i5.Future<String?>);
   @override
   _i5.Future<double> getEstimatedProgress() =>
       (super.noSuchMethod(Invocation.method(#getEstimatedProgress, []),
@@ -235,6 +223,14 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
+  _i5.Future<bool> canGoBack() =>
+      (super.noSuchMethod(Invocation.method(#canGoBack, []),
+          returnValue: Future<bool>.value(false)) as _i5.Future<bool>);
+  @override
+  _i5.Future<bool> canGoForward() =>
+      (super.noSuchMethod(Invocation.method(#canGoForward, []),
+          returnValue: Future<bool>.value(false)) as _i5.Future<bool>);
+  @override
   _i5.Future<void> goBack() =>
       (super.noSuchMethod(Invocation.method(#goBack, []),
           returnValue: Future<void>.value(),
@@ -247,6 +243,21 @@ class MockWKWebView extends _i1.Mock implements _i3.WKWebView {
   @override
   _i5.Future<void> reload() =>
       (super.noSuchMethod(Invocation.method(#reload, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<String?> getTitle() =>
+      (super.noSuchMethod(Invocation.method(#getTitle, []),
+          returnValue: Future<String?>.value()) as _i5.Future<String?>);
+  @override
+  _i5.Future<void> setAllowsBackForwardNavigationGestures(bool? allow) =>
+      (super.noSuchMethod(
+          Invocation.method(#setAllowsBackForwardNavigationGestures, [allow]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
+  @override
+  _i5.Future<void> setCustomUserAgent(String? userAgent) =>
+      (super.noSuchMethod(Invocation.method(#setCustomUserAgent, [userAgent]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
@@ -294,19 +305,25 @@ class MockWKWebViewConfiguration extends _i1.Mock
       (super.noSuchMethod(Invocation.getter(#webSiteDataStore),
           returnValue: _FakeWKWebsiteDataStore_4()) as _i3.WKWebsiteDataStore);
   @override
-  set webSiteDataStore(_i3.WKWebsiteDataStore? websiteDataStore) =>
-      super.noSuchMethod(Invocation.setter(#webSiteDataStore, websiteDataStore),
-          returnValueForMissingStub: null);
+  _i5.Future<void> setWebSiteDataStore(
+          _i3.WKWebsiteDataStore? websiteDataStore) =>
+      (super.noSuchMethod(
+          Invocation.method(#setWebSiteDataStore, [websiteDataStore]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set allowsInlineMediaPlayback(bool? allow) =>
-      super.noSuchMethod(Invocation.setter(#allowsInlineMediaPlayback, allow),
-          returnValueForMissingStub: null);
+  _i5.Future<void> setAllowsInlineMediaPlayback(bool? allow) => (super
+      .noSuchMethod(Invocation.method(#setAllowsInlineMediaPlayback, [allow]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  set mediaTypesRequiringUserActionForPlayback(
+  _i5.Future<void> setMediaTypesRequiringUserActionForPlayback(
           Set<_i3.WKAudiovisualMediaType>? types) =>
-      super.noSuchMethod(
-          Invocation.setter(#mediaTypesRequiringUserActionForPlayback, types),
-          returnValueForMissingStub: null);
+      (super.noSuchMethod(
+          Invocation.method(
+              #setMediaTypesRequiringUserActionForPlayback, [types]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKWebsiteDataStore].
@@ -336,11 +353,13 @@ class MockWKUIDelegate extends _i1.Mock implements _i3.WKUIDelegate {
   }
 
   @override
-  set onCreateWebView(
+  _i5.Future<void> setOnCreateWebView(
           void Function(_i3.WKWebViewConfiguration, _i3.WKNavigationAction)?
-              onCreateeWebView) =>
-      super.noSuchMethod(Invocation.setter(#onCreateWebView, onCreateeWebView),
-          returnValueForMissingStub: null);
+              onCreateWebView) =>
+      (super.noSuchMethod(
+          Invocation.method(#setOnCreateWebView, [onCreateWebView]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [WKUserContentController].

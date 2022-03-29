@@ -115,7 +115,7 @@ void main() {
       await buildWidget(tester);
 
       final dynamic onCreateWebView =
-          verify(mockUIDelegate.onCreateWebView = captureAny).captured.single
+          verify(mockUIDelegate.setOnCreateWebView(captureAny)).captured.single
               as void Function(WKWebViewConfiguration, WKNavigationAction);
 
       const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
@@ -144,11 +144,11 @@ void main() {
           ),
         );
 
-        verify(
-            mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-                <WKAudiovisualMediaType>{
+        verify(mockWebViewConfiguration
+            .setMediaTypesRequiringUserActionForPlayback(<
+                WKAudiovisualMediaType>{
           WKAudiovisualMediaType.all,
-        });
+        }));
       });
 
       testWidgets('autoMediaPlaybackPolicy false', (WidgetTester tester) async {
@@ -163,11 +163,11 @@ void main() {
           ),
         );
 
-        verify(
-            mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-                <WKAudiovisualMediaType>{
+        verify(mockWebViewConfiguration
+            .setMediaTypesRequiringUserActionForPlayback(<
+                WKAudiovisualMediaType>{
           WKAudiovisualMediaType.none,
-        });
+        }));
       });
 
       testWidgets('javascriptChannelNames', (WidgetTester tester) async {
@@ -216,7 +216,7 @@ void main() {
             ),
           );
 
-          verify(mockWebViewConfiguration.allowsInlineMediaPlayback = true);
+          verify(mockWebViewConfiguration.setAllowsInlineMediaPlayback(true));
         });
       });
     });
@@ -352,7 +352,7 @@ void main() {
       testWidgets('canGoBack', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.canGoBack).thenAnswer(
+        when(mockWebView.canGoBack()).thenAnswer(
           (_) => Future<bool>.value(false),
         );
         expect(testController.canGoBack(), completion(false));
@@ -361,7 +361,7 @@ void main() {
       testWidgets('canGoForward', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.canGoForward).thenAnswer(
+        when(mockWebView.canGoForward()).thenAnswer(
           (_) => Future<bool>.value(true),
         );
         expect(testController.canGoForward(), completion(true));
@@ -524,7 +524,7 @@ void main() {
       testWidgets('getTitle', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.title)
+        when(mockWebView.getTitle())
             .thenAnswer((_) => Future<String>.value('Web Title'));
         expect(testController.getTitle(), completion('Web Title'));
       });
@@ -533,7 +533,7 @@ void main() {
         await buildWidget(tester);
 
         await testController.scrollTo(2, 4);
-        verify(mockScrollView.contentOffset = const Point<double>(2.0, 4.0));
+        verify(mockScrollView.setContentOffset(const Point<double>(2.0, 4.0)));
       });
 
       testWidgets('scrollBy', (WidgetTester tester) async {
@@ -546,7 +546,7 @@ void main() {
       testWidgets('getScrollX', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockScrollView.contentOffset).thenAnswer(
+        when(mockScrollView.getContentOffset()).thenAnswer(
             (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
         expect(testController.getScrollX(), completion(8.0));
       });
@@ -556,7 +556,7 @@ void main() {
 
         await buildWidget(tester);
 
-        when(mockScrollView.contentOffset).thenAnswer(
+        when(mockScrollView.getContentOffset()).thenAnswer(
             (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
         expect(testController.getScrollY(), completion(16.0));
       });
@@ -660,8 +660,8 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didStartProvisionalNavigation = verify(
-                mockNavigationDelegate.didStartProvisionalNavigation =
-                    captureAny)
+                mockNavigationDelegate
+                    .setDidStartProvisionalNavigation(captureAny))
             .captured
             .single as void Function(WKWebView, String);
         didStartProvisionalNavigation(mockWebView, 'https://google.com');
@@ -673,7 +673,7 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFinishNavigation =
-            verify(mockNavigationDelegate.didFinishNavigation = captureAny)
+            verify(mockNavigationDelegate.setDidFinishNavigation(captureAny))
                 .captured
                 .single as void Function(WKWebView, String);
         didFinishNavigation(mockWebView, 'https://google.com');
@@ -686,7 +686,7 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFailNavigation =
-            verify(mockNavigationDelegate.didFailNavigation = captureAny)
+            verify(mockNavigationDelegate.setDidFailNavigation(captureAny))
                 .captured
                 .single as void Function(WKWebView, NSError);
 
@@ -714,8 +714,8 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFailProvisionalNavigation = verify(
-                mockNavigationDelegate.didFailProvisionalNavigation =
-                    captureAny)
+                mockNavigationDelegate
+                    .setDidFailProvisionalNavigation(captureAny))
             .captured
             .single as void Function(WKWebView, NSError);
 
@@ -747,8 +747,8 @@ void main() {
         await buildWidget(tester);
 
         final dynamic webViewWebContentProcessDidTerminate = verify(
-                mockNavigationDelegate.webViewWebContentProcessDidTerminate =
-                    captureAny)
+                mockNavigationDelegate
+                    .setWebViewWebContentProcessDidTerminate(captureAny))
             .captured
             .single as void Function(WKWebView);
         webViewWebContentProcessDidTerminate(mockWebView);
@@ -771,8 +771,8 @@ void main() {
         await buildWidget(tester, hasNavigationDelegate: true);
 
         final dynamic decidePolicyForNavigationAction = verify(
-                    mockNavigationDelegate.decidePolicyForNavigationAction =
-                        captureAny)
+                    mockNavigationDelegate
+                        .setDecidePolicyForNavigationAction(captureAny))
                 .captured
                 .single
             as Future<WKNavigationActionPolicy> Function(
@@ -844,7 +844,7 @@ void main() {
             .single as MockWKScriptMessageHandler;
 
         final dynamic didReceiveScriptMessage =
-            verify(messageHandler.didReceiveScriptMessage = captureAny)
+            verify(messageHandler.setDidReceiveScriptMessage(captureAny))
                 .captured
                 .single as void Function(
           WKUserContentController userContentController,
