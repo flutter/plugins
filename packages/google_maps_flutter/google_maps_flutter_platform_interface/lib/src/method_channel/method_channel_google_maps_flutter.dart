@@ -520,24 +520,21 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
             );
           },
           onCreatePlatformView: (PlatformViewCreationParams params) {
-            final SurfaceAndroidViewController controller =
-                PlatformViewsService.initSurfaceAndroidView(
+            return PlatformViewsService.initSurfaceAndroidView(
               id: params.id,
               viewType: 'plugins.flutter.io/google_maps',
               layoutDirection: textDirection,
               creationParams: creationParams,
               creationParamsCodec: const StandardMessageCodec(),
               onFocus: () => params.onFocusChanged(true),
-            );
-            controller.addOnPlatformViewCreatedListener(
-              params.onPlatformViewCreated,
-            );
-            controller.addOnPlatformViewCreatedListener(
-              onPlatformViewCreated,
-            );
-
-            controller.create();
-            return controller;
+            )
+              ..addOnPlatformViewCreatedListener(
+                params.onPlatformViewCreated,
+              )
+              ..addOnPlatformViewCreatedListener(
+                onPlatformViewCreated,
+              )
+              ..create();
           },
         );
       } else {

@@ -1,3 +1,8 @@
+## 2.1.6
+
+* `PlatformViewsService.initSurfaceAndroidView` will start returning a `AndroidViewController` 
+  instead of `SurfaceAndroidViewController` after Flutter v2.11.0-0.1.pre.
+
 ## 2.1.5
 
 Removes dependency on `meta`.
