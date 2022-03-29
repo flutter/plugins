@@ -18,6 +18,11 @@
 		680049382280F2B9006DD6AB /* pngImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 680049352280F2B8006DD6AB /* pngImage.png */; };
 		680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
 		6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */; };
+		86430DF9272D71E9002D9D6C /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
+		86E9A893272754860017E6E0 /* PickerSaveImageToPathOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 86E9A892272754860017E6E0 /* PickerSaveImageToPathOperationTests.m */; };
+		86E9A894272754A30017E6E0 /* webpImage.webp in Resources */ = {isa = PBXBuildFile; fileRef = 86E9A88F272747B90017E6E0 /* webpImage.webp */; };
+		86E9A895272769130017E6E0 /* pngImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 680049352280F2B8006DD6AB /* pngImage.png */; };
+		86E9A896272769150017E6E0 /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -79,6 +84,8 @@
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		86E9A88F272747B90017E6E0 /* webpImage.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = webpImage.webp; sourceTree = "<group>"; };
+		86E9A892272754860017E6E0 /* PickerSaveImageToPathOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PickerSaveImageToPathOperationTests.m; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,6 +139,7 @@
 				F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */,
 				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
 				68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */,
+				86E9A892272754860017E6E0 /* PickerSaveImageToPathOperationTests.m */,
 				334733F62668136400DCC49E /* Info.plist */,
 			);
 			path = RunnerTests;
@@ -140,6 +148,7 @@
 		680049282280E33D006DD6AB /* TestImages */ = {
 			isa = PBXGroup;
 			children = (
+				86E9A88F272747B90017E6E0 /* webpImage.webp */,
 				9FC8F0E8229FA49E00C8D58F /* gifImage.gif */,
 				680049362280F2B8006DD6AB /* jpgImage.jpg */,
 				680049352280F2B8006DD6AB /* pngImage.png */,
@@ -352,6 +361,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86430DF9272D71E9002D9D6C /* gifImage.gif in Resources */,
+				86E9A894272754A30017E6E0 /* webpImage.webp in Resources */,
+				86E9A895272769130017E6E0 /* pngImage.png in Resources */,
+				86E9A896272769150017E6E0 /* jpgImage.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +469,7 @@
 			files = (
 				334733FD266813F100DCC49E /* MetaDataUtilTests.m in Sources */,
 				334733FF266813FA00DCC49E /* ImagePickerTestImages.m in Sources */,
+				86E9A893272754860017E6E0 /* PickerSaveImageToPathOperationTests.m in Sources */,
 				334733FC266813EE00DCC49E /* ImageUtilTests.m in Sources */,
 				33473400266813FD00DCC49E /* ImagePickerPluginTests.m in Sources */,
 				334733FE266813F400DCC49E /* PhotoAssetUtilTests.m in Sources */,

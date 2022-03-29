@@ -7,7 +7,9 @@
 @import AVFoundation;
 @import XCTest;
 #import <OCMock/OCMock.h>
+#import "CameraTestUtils.h"
 
+/// Includes test cases related to sample buffer handling for FLTCam class.
 @interface FLTCamSampleBufferTests : XCTestCase
 
 @end
@@ -15,23 +17,25 @@
 @implementation FLTCamSampleBufferTests
 
 - (void)testSampleBufferCallbackQueueMustBeCaptureSessionQueue {
-  id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
-  OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
-      .andReturn(inputMock);
-
-  id sessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([sessionMock alloc]).andReturn(sessionMock);
-  OCMStub([sessionMock addInputWithNoConnections:[OCMArg any]]);  // no-op
-  OCMStub([sessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
-
   dispatch_queue_t captureSessionQueue = dispatch_queue_create("testing", NULL);
-  FLTCam *cam = [[FLTCam alloc] initWithCameraName:@"camera"
-                                  resolutionPreset:@"medium"
-                                       enableAudio:true
-                                       orientation:UIDeviceOrientationPortrait
-                               captureSessionQueue:captureSessionQueue
-                                             error:nil];
-  XCTAssertEqual(captureSessionQueue, cam.captureVideoOutput.sampleBufferCallbackQueue);
+  FLTCam *cam = FLTCreateCamWithCaptureSessionQueue(captureSessionQueue);
+  XCTAssertEqual(captureSessionQueue, cam.captureVideoOutput.sampleBufferCallbackQueue,
+                 @"Sample buffer callback queue must be the capture session queue.");
+}
+
+- (void)testCopyPixelBuffer {
+  FLTCam *cam = FLTCreateCamWithCaptureSessionQueue(dispatch_queue_create("test", NULL));
+  CMSampleBufferRef capturedSampleBuffer = FLTCreateTestSampleBuffer();
+  CVPixelBufferRef capturedPixelBuffer = CMSampleBufferGetImageBuffer(capturedSampleBuffer);
+  // Mimic sample buffer callback when captured a new video sample
+  [cam captureOutput:cam.captureVideoOutput
+      didOutputSampleBuffer:capturedSampleBuffer
+             fromConnection:OCMClassMock([AVCaptureConnection class])];
+  CVPixelBufferRef deliveriedPixelBuffer = [cam copyPixelBuffer];
+  XCTAssertEqual(deliveriedPixelBuffer, capturedPixelBuffer,
+                 @"FLTCam must deliver the latest captured pixel buffer to copyPixelBuffer API.");
+  CFRelease(capturedSampleBuffer);
+  CFRelease(deliveriedPixelBuffer);
 }
 
 @end
