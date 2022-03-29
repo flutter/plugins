@@ -2,6 +2,10 @@
 
 * Adds `getImageOrVideo` and `getMultiImageAndVideo` methods for picking both videos and images simultaneously.
 
+## 2.4.4
+
+* Internal code cleanup for stricter analysis options.
+
 ## 2.4.3
 
 * Removes dependency on `meta`.

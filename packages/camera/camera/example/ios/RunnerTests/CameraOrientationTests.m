@@ -49,6 +49,28 @@
   OCMVerifyAll(mockMessenger);
 }
 
+- (void)testOrientationUpdateMustBeOnCaptureSessionQueue {
+  XCTestExpectation *queueExpectation = [self
+      expectationWithDescription:@"Orientation update must happen on the capture session queue"];
+
+  CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
+  const char *captureSessionQueueSpecific = "capture_session_queue";
+  dispatch_queue_set_specific(camera.captureSessionQueue, captureSessionQueueSpecific,
+                              (void *)captureSessionQueueSpecific, NULL);
+  FLTCam *mockCam = OCMClassMock([FLTCam class]);
+  camera.camera = mockCam;
+  OCMStub([mockCam setDeviceOrientation:UIDeviceOrientationLandscapeLeft])
+      .andDo(^(NSInvocation *invocation) {
+        if (dispatch_get_specific(captureSessionQueueSpecific)) {
+          [queueExpectation fulfill];
+        }
+      });
+
+  [camera orientationChanged:
+              [self createMockNotificationForOrientation:UIDeviceOrientationLandscapeLeft]];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
+}
+
 - (void)rotate:(UIDeviceOrientation)deviceOrientation
     expectedChannelOrientation:(NSString *)channelOrientation
                   cameraPlugin:(CameraPlugin *)cameraPlugin

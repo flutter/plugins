@@ -715,8 +715,8 @@ class WebViewController {
   /// The Future completes with an error if a JavaScript error occurred.
   ///
   /// When running JavaScript in a [WebView], it is best practice to wait for
-  //  the [WebView.onPageFinished] callback. This guarantees all the JavaScript
-  //  embedded in the main frame HTML has been loaded.
+  /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
+  /// embedded in the main frame HTML has been loaded.
   Future<void> runJavascript(String javaScriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       return Future<void>.error(FlutterError(

@@ -27,7 +27,7 @@ void main() {
                   'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
             ),
           )
-          .then((textureId) => textureId!);
+          .then((int? textureId) => textureId!);
     });
 
     testWidgets('can init', (WidgetTester tester) async {
@@ -98,14 +98,14 @@ void main() {
 
     testWidgets('throws PlatformException when playing bad media',
         (WidgetTester tester) async {
-      int videoPlayerId = (await VideoPlayerPlatform.instance.create(
+      final int videoPlayerId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
             uri:
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
       ))!;
 
-      Stream<VideoEvent> eventStream =
+      final Stream<VideoEvent> eventStream =
           VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
 
       // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
@@ -139,7 +139,7 @@ void main() {
       expect(
         VideoPlayerPlatform.instance.seekTo(
           await textureId,
-          Duration(seconds: 1),
+          const Duration(seconds: 1),
         ),
         completes,
       );

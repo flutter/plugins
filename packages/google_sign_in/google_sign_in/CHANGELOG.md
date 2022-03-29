@@ -1,3 +1,7 @@
+## 5.2.4
+
+* Internal code cleanup for stricter analysis options.
+
 ## 5.2.3
 
 * Bumps the Android dependency on `com.google.android.gms:play-services-auth` and therefore removes the need for `jetifier`.

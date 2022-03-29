@@ -31,7 +31,7 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  final SharedPreferencesWindows prefs = SharedPreferencesWindows.instance;
+  final SharedPreferencesWindows prefs = SharedPreferencesWindows();
   late Future<int> _counter;
 
   Future<void> _incrementCounter() async {

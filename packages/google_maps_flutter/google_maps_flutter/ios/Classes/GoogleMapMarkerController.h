@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setConsumeTapEvents:(BOOL)consume;
 - (void)setDraggable:(BOOL)draggable;
 - (void)setFlat:(BOOL)flat;
-- (void)setIcon:(UIImage*)icon;
+- (void)setIcon:(UIImage *)icon;
 - (void)setInfoWindowAnchor:(CGPoint)anchor;
-- (void)setInfoWindowTitle:(NSString*)title snippet:(NSString*)snippet;
+- (void)setInfoWindowTitle:(NSString *)title snippet:(NSString *)snippet;
 - (void)setPosition:(CLLocationCoordinate2D)position;
 - (void)setRotation:(CLLocationDegrees)rotation;
 - (void)setVisible:(BOOL)visible;
@@ -26,10 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapMarkerController : NSObject <FLTGoogleMapMarkerOptionsSink>
-@property(atomic, readonly) NSString* markerId;
+@property(atomic, readonly) NSString *markerId;
 - (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
-                              markerId:(NSString*)markerId
-                               mapView:(GMSMapView*)mapView;
+                              markerId:(NSString *)markerId
+                               mapView:(GMSMapView *)mapView;
 - (void)showInfoWindow;
 - (void)hideInfoWindow;
 - (BOOL)isInfoWindowShown;
@@ -38,20 +38,20 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface FLTMarkersController : NSObject
-- (instancetype)init:(FlutterMethodChannel*)methodChannel
-             mapView:(GMSMapView*)mapView
-           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
-- (void)addMarkers:(NSArray*)markersToAdd;
-- (void)changeMarkers:(NSArray*)markersToChange;
-- (void)removeMarkerIds:(NSArray*)markerIdsToRemove;
-- (BOOL)onMarkerTap:(NSString*)markerId;
-- (void)onMarkerDragStart:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate;
-- (void)onMarkerDragEnd:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate;
-- (void)onMarkerDrag:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate;
-- (void)onInfoWindowTap:(NSString*)markerId;
-- (void)showMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result;
-- (void)hideMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result;
-- (void)isMarkerInfoWindowShown:(NSString*)markerId result:(FlutterResult)result;
+- (instancetype)init:(FlutterMethodChannel *)methodChannel
+             mapView:(GMSMapView *)mapView
+           registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+- (void)addMarkers:(NSArray *)markersToAdd;
+- (void)changeMarkers:(NSArray *)markersToChange;
+- (void)removeMarkerIds:(NSArray *)markerIdsToRemove;
+- (BOOL)onMarkerTap:(NSString *)markerId;
+- (void)onMarkerDragStart:(NSString *)markerId coordinate:(CLLocationCoordinate2D)coordinate;
+- (void)onMarkerDragEnd:(NSString *)markerId coordinate:(CLLocationCoordinate2D)coordinate;
+- (void)onMarkerDrag:(NSString *)markerId coordinate:(CLLocationCoordinate2D)coordinate;
+- (void)onInfoWindowTap:(NSString *)markerId;
+- (void)showMarkerInfoWindow:(NSString *)markerId result:(FlutterResult)result;
+- (void)hideMarkerInfoWindow:(NSString *)markerId result:(FlutterResult)result;
+- (void)isMarkerInfoWindowShown:(NSString *)markerId result:(FlutterResult)result;
 @end
 
 NS_ASSUME_NONNULL_END

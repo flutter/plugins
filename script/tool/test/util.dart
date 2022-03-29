@@ -85,12 +85,14 @@ Directory createFakePlugin(
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
   String? version = '0.0.1',
+  String flutterConstraint = '>=2.5.0',
 }) {
   final Directory pluginDirectory = createFakePackage(name, parentDirectory,
       isFlutter: true,
       examples: examples,
       extraFiles: extraFiles,
-      version: version);
+      version: version,
+      flutterConstraint: flutterConstraint);
 
   createFakePubspec(
     pluginDirectory,
@@ -99,6 +101,7 @@ Directory createFakePlugin(
     isPlugin: true,
     platformSupport: platformSupport,
     version: version,
+    flutterConstraint: flutterConstraint,
   );
 
   return pluginDirectory;
@@ -116,12 +119,16 @@ Directory createFakePackage(
   List<String> extraFiles = const <String>[],
   bool isFlutter = false,
   String? version = '0.0.1',
+  String flutterConstraint = '>=2.5.0',
 }) {
   final Directory packageDirectory = parentDirectory.childDirectory(name);
   packageDirectory.createSync(recursive: true);
 
   createFakePubspec(packageDirectory,
-      name: name, isFlutter: isFlutter, version: version);
+      name: name,
+      isFlutter: isFlutter,
+      version: version,
+      flutterConstraint: flutterConstraint);
   createFakeCHANGELOG(packageDirectory, '''
 ## $version
   * Some changes.
@@ -132,7 +139,10 @@ Directory createFakePackage(
     final Directory exampleDir = packageDirectory.childDirectory(examples.first)
       ..createSync();
     createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
+        name: '${name}_example',
+        isFlutter: isFlutter,
+        publishTo: 'none',
+        flutterConstraint: flutterConstraint);
   } else if (examples.isNotEmpty) {
     final Directory exampleDir = packageDirectory.childDirectory('example')
       ..createSync();
@@ -140,7 +150,10 @@ Directory createFakePackage(
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
       createFakePubspec(currentExample,
-          name: example, isFlutter: isFlutter, publishTo: 'none');
+          name: example,
+          isFlutter: isFlutter,
+          publishTo: 'none',
+          flutterConstraint: flutterConstraint);
     }
   }
 
@@ -172,40 +185,61 @@ void createFakePubspec(
       const <String, PlatformDetails>{},
   String publishTo = 'http://no_pub_server.com',
   String? version,
+  String dartConstraint = '>=2.0.0 <3.0.0',
+  String flutterConstraint = '>=2.5.0',
 }) {
   isPlugin |= platformSupport.isNotEmpty;
-  parent.childFile('pubspec.yaml').createSync();
-  String yaml = '''
-name: $name
+
+  String environmentSection = '''
+environment:
+  sdk: "$dartConstraint"
 ''';
+  String dependenciesSection = '''
+dependencies:
+''';
+  String pluginSection = '';
+
+  // Add Flutter-specific entries if requested.
   if (isFlutter) {
+    environmentSection += '''
+  flutter: "$flutterConstraint"
+''';
+    dependenciesSection += '''
+  flutter:
+    sdk: flutter
+''';
+
     if (isPlugin) {
-      yaml += '''
+      pluginSection += '''
 flutter:
   plugin:
     platforms:
 ''';
       for (final MapEntry<String, PlatformDetails> platform
           in platformSupport.entries) {
-        yaml += _pluginPlatformSection(platform.key, platform.value, name);
+        pluginSection +=
+            _pluginPlatformSection(platform.key, platform.value, name);
       }
     }
-    yaml += '''
-dependencies:
-  flutter:
-    sdk: flutter
-''';
   }
-  if (version != null) {
-    yaml += '''
-version: $version
+
+  String yaml = '''
+name: $name
+${(version != null) ? 'version: $version' : ''}
+
+$environmentSection
+
+$dependenciesSection
+
+$pluginSection
 ''';
-  }
+
   if (publishTo.isNotEmpty) {
     yaml += '''
 publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
+  parent.childFile('pubspec.yaml').createSync();
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
 }
 
@@ -229,24 +263,24 @@ String _pluginPlatformSection(
       '      $platform:',
     ];
     switch (platform) {
-      case kPlatformAndroid:
+      case platformAndroid:
         lines.add('        package: io.flutter.plugins.fake');
         continue nativeByDefault;
       nativeByDefault:
-      case kPlatformIos:
-      case kPlatformLinux:
-      case kPlatformMacos:
-      case kPlatformWindows:
+      case platformIOS:
+      case platformLinux:
+      case platformMacOS:
+      case platformWindows:
         if (support.hasNativeCode) {
           final String className =
-              platform == kPlatformIos ? 'FLTFakePlugin' : 'FakePlugin';
+              platform == platformIOS ? 'FLTFakePlugin' : 'FakePlugin';
           lines.add('        pluginClass: $className');
         }
         if (support.hasDartCode) {
           lines.add('        dartPluginClass: FakeDartPlugin');
         }
         break;
-      case kPlatformWeb:
+      case platformWeb:
         lines.addAll(<String>[
           '        pluginClass: FakePlugin',
           '        fileName: ${packageName}_web.dart',

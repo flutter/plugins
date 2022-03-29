@@ -1,5 +1,10 @@
 ## NEXT
 
+* Fixes bug preventing `mockito` code generation for tests.
+
+## 2.8.3
+
+* Fixes a bug causing `debuggingEnabled` to always be set to true.
 * Fixes an integration test race condition.
 
 ## 2.8.2

@@ -4,6 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'enum_converters.dart';
@@ -104,8 +105,12 @@ enum SKPaymentTransactionStateWrapper {
 /// Dart wrapper around StoreKit's
 /// [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
 @JsonSerializable(createToJson: true)
+@immutable
 class SKPaymentTransactionWrapper {
   /// Creates a new [SKPaymentTransactionWrapper] with the provided information.
+  // TODO(stuartmorgan): Temporarily ignore const warning in other parts of the
+  // federated package, and remove this.
+  // ignore: prefer_const_constructors_in_immutables
   SKPaymentTransactionWrapper({
     required this.payment,
     required this.transactionState,
@@ -175,31 +180,25 @@ class SKPaymentTransactionWrapper {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final SKPaymentTransactionWrapper typedOther =
-        other as SKPaymentTransactionWrapper;
-    return typedOther.payment == payment &&
-        typedOther.transactionState == transactionState &&
-        typedOther.originalTransaction == originalTransaction &&
-        typedOther.transactionTimeStamp == transactionTimeStamp &&
-        typedOther.transactionIdentifier == transactionIdentifier &&
-        typedOther.error == error;
+    return other is SKPaymentTransactionWrapper &&
+        other.payment == payment &&
+        other.transactionState == transactionState &&
+        other.originalTransaction == originalTransaction &&
+        other.transactionTimeStamp == transactionTimeStamp &&
+        other.transactionIdentifier == transactionIdentifier &&
+        other.error == error;
   }
 
   @override
-  int get hashCode => hashValues(
-      this.payment,
-      this.transactionState,
-      this.originalTransaction,
-      this.transactionTimeStamp,
-      this.transactionIdentifier,
-      this.error);
+  int get hashCode => hashValues(payment, transactionState, originalTransaction,
+      transactionTimeStamp, transactionIdentifier, error);
 
   @override
   String toString() => _$SKPaymentTransactionWrapperToJson(this).toString();
 
   /// The payload that is used to finish this transaction.
   Map<String, String?> toFinishMap() => <String, String?>{
-        "transactionIdentifier": this.transactionIdentifier,
-        "productIdentifier": this.payment.productIdentifier,
+        'transactionIdentifier': transactionIdentifier,
+        'productIdentifier': payment.productIdentifier,
       };
 }

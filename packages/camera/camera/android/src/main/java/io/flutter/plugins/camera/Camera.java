@@ -79,6 +79,24 @@ interface ErrorCallback {
   void onError(String errorCode, String errorMessage);
 }
 
+/** A mockable wrapper for CameraDevice calls. */
+interface CameraDeviceWrapper {
+  @NonNull
+  CaptureRequest.Builder createCaptureRequest(int templateType) throws CameraAccessException;
+
+  @TargetApi(VERSION_CODES.P)
+  void createCaptureSession(SessionConfiguration config) throws CameraAccessException;
+
+  @TargetApi(VERSION_CODES.LOLLIPOP)
+  void createCaptureSession(
+      @NonNull List<Surface> outputs,
+      @NonNull CameraCaptureSession.StateCallback callback,
+      @Nullable Handler handler)
+      throws CameraAccessException;
+
+  void close();
+}
+
 class Camera
     implements CameraCaptureCallback.CameraCaptureStateListener,
         ImageReader.OnImageAvailableListener {
@@ -114,7 +132,7 @@ class Camera
   /** An additional thread for running tasks that shouldn't block the UI. */
   private HandlerThread backgroundHandlerThread;
 
-  private CameraDevice cameraDevice;
+  private CameraDeviceWrapper cameraDevice;
   private CameraCaptureSession captureSession;
   private ImageReader pictureImageReader;
   private ImageReader imageStreamReader;
@@ -135,6 +153,44 @@ class Camera
   private CameraCaptureProperties captureProps;
 
   private MethodChannel.Result flutterResult;
+
+  /** A CameraDeviceWrapper implementation that forwards calls to a CameraDevice. */
+  private class DefaultCameraDeviceWrapper implements CameraDeviceWrapper {
+    private final CameraDevice cameraDevice;
+
+    private DefaultCameraDeviceWrapper(CameraDevice cameraDevice) {
+      this.cameraDevice = cameraDevice;
+    }
+
+    @NonNull
+    @Override
+    public CaptureRequest.Builder createCaptureRequest(int templateType)
+        throws CameraAccessException {
+      return cameraDevice.createCaptureRequest(templateType);
+    }
+
+    @TargetApi(VERSION_CODES.P)
+    @Override
+    public void createCaptureSession(SessionConfiguration config) throws CameraAccessException {
+      cameraDevice.createCaptureSession(config);
+    }
+
+    @TargetApi(VERSION_CODES.LOLLIPOP)
+    @SuppressWarnings("deprecation")
+    @Override
+    public void createCaptureSession(
+        @NonNull List<Surface> outputs,
+        @NonNull CameraCaptureSession.StateCallback callback,
+        @Nullable Handler handler)
+        throws CameraAccessException {
+      cameraDevice.createCaptureSession(outputs, callback, backgroundHandler);
+    }
+
+    @Override
+    public void close() {
+      cameraDevice.close();
+    }
+  }
 
   public Camera(
       final Activity activity,
@@ -261,7 +317,7 @@ class Camera
         new CameraDevice.StateCallback() {
           @Override
           public void onOpened(@NonNull CameraDevice device) {
-            cameraDevice = device;
+            cameraDevice = new DefaultCameraDeviceWrapper(device);
             try {
               startPreview();
               dartMessenger.sendCameraInitializedEvent(
@@ -584,7 +640,6 @@ class Camera
 
     try {
       captureSession.stopRepeating();
-      captureSession.abortCaptures();
       Log.i(TAG, "sending capture request");
       captureSession.capture(stillBuilder.build(), captureCallback, backgroundHandler);
     } catch (CameraAccessException e) {

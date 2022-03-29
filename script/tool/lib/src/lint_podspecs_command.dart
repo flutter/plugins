@@ -26,13 +26,7 @@ class LintPodspecsCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
-  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
-    argParser.addMultiOption('ignore-warnings',
-        help:
-            'Do not pass --allow-warnings flag to "pod lib lint" for podspecs '
-            'with this basename (example: plugins with known warnings)',
-        valueHelp: 'podspec_file_name');
-  }
+  }) : super(packagesDir, processRunner: processRunner, platform: platform);
 
   @override
   final String name = 'podspecs';
@@ -118,8 +112,6 @@ class LintPodspecsCommand extends PackageLoopingCommand {
 
   Future<ProcessResult> _runPodLint(String podspecPath,
       {required bool libraryLint}) async {
-    final bool allowWarnings = (getStringListArg('ignore-warnings'))
-        .contains(p.basenameWithoutExtension(podspecPath));
     final List<String> arguments = <String>[
       'lib',
       'lint',
@@ -127,7 +119,6 @@ class LintPodspecsCommand extends PackageLoopingCommand {
       '--configuration=Debug', // Release targets unsupported arm64 simulators. Use Debug to only build against targeted x86_64 simulator devices.
       '--skip-tests',
       '--use-modular-headers', // Flutter sets use_modular_headers! in its templates.
-      if (allowWarnings) '--allow-warnings',
       if (libraryLint) '--use-libraries'
     ];
 

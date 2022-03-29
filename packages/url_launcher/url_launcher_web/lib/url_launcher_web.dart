@@ -46,7 +46,8 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
-    ui.platformViewRegistry.registerViewFactory(linkViewType, linkViewFactory);
+    ui.platformViewRegistry
+        .registerViewFactory(linkViewType, linkViewFactory, isVisible: false);
   }
 
   @override

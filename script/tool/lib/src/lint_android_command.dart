@@ -32,7 +32,7 @@ class LintAndroidCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    if (!pluginSupportsPlatform(kPlatformAndroid, package,
+    if (!pluginSupportsPlatform(platformAndroid, package,
         requiredMode: PlatformSupport.inline)) {
       return PackageResult.skip(
           'Plugin does not have an Android implemenatation.');

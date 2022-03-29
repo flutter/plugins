@@ -4,10 +4,9 @@
 # These names are just suggestions. It is fine to have your changes
 # reviewed by someone else.
 
+# Plugin-level rules.
+packages/webview_flutter/**                    @bparrishMines
 
-packages/camera/**                             @bparrishMines
-packages/file_selector/**                      @ditman
-packages/google_maps_flutter/**                @cyanglaz
-packages/image_picker/**                       @cyanglaz
-packages/in_app_purchase/**                    @cyanglaz @LHLL
-packages/ios_platform_images/**                @gaaclarke
+# Sub-package-level rules. These should stay last, since the last matching
+# entry takes precedence.
+packages/**/*_web/**                           @ditman

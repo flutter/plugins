@@ -3,24 +3,10 @@
 // found in the LICENSE file.
 
 @import camera;
+@import camera.Test;
 @import XCTest;
 @import AVFoundation;
 #import <OCMock/OCMock.h>
-
-// Mirrors FocusMode in camera.dart
-typedef enum {
-  FocusModeAuto,
-  FocusModeLocked,
-} FocusMode;
-
-@interface FLTCam : NSObject <FlutterTexture,
-                              AVCaptureVideoDataOutputSampleBufferDelegate,
-                              AVCaptureAudioDataOutputSampleBufferDelegate>
-
-- (void)applyFocusMode;
-- (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice;
-- (void)setFocusPointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y;
-@end
 
 @interface CameraFocusTests : XCTestCase
 @property(readonly, nonatomic) FLTCam *camera;
@@ -51,7 +37,7 @@ typedef enum {
   [[_mockDevice reject] setFocusMode:AVCaptureFocusModeAutoFocus];
 
   // Run test
-  [_camera applyFocusMode:FocusModeAuto onDevice:_mockDevice];
+  [_camera applyFocusMode:FLTFocusModeAuto onDevice:_mockDevice];
 
   // Expect setFocusMode:AVCaptureFocusModeContinuousAutoFocus
   OCMVerify([_mockDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus]);
@@ -68,7 +54,7 @@ typedef enum {
   [[_mockDevice reject] setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
 
   // Run test
-  [_camera applyFocusMode:FocusModeAuto onDevice:_mockDevice];
+  [_camera applyFocusMode:FLTFocusModeAuto onDevice:_mockDevice];
 
   // Expect setFocusMode:AVCaptureFocusModeAutoFocus
   OCMVerify([_mockDevice setFocusMode:AVCaptureFocusModeAutoFocus]);
@@ -86,7 +72,7 @@ typedef enum {
   [[_mockDevice reject] setFocusMode:AVCaptureFocusModeAutoFocus];
 
   // Run test
-  [_camera applyFocusMode:FocusModeAuto onDevice:_mockDevice];
+  [_camera applyFocusMode:FLTFocusModeAuto onDevice:_mockDevice];
 }
 
 - (void)testLockedFocusWithModeSupported_ShouldSetModeAutoFocus {
@@ -99,7 +85,7 @@ typedef enum {
   [[_mockDevice reject] setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
 
   // Run test
-  [_camera applyFocusMode:FocusModeLocked onDevice:_mockDevice];
+  [_camera applyFocusMode:FLTFocusModeLocked onDevice:_mockDevice];
 
   // Expect setFocusMode:AVCaptureFocusModeAutoFocus
   OCMVerify([_mockDevice setFocusMode:AVCaptureFocusModeAutoFocus]);
@@ -116,7 +102,7 @@ typedef enum {
   [[_mockDevice reject] setFocusMode:AVCaptureFocusModeAutoFocus];
 
   // Run test
-  [_camera applyFocusMode:FocusModeLocked onDevice:_mockDevice];
+  [_camera applyFocusMode:FLTFocusModeLocked onDevice:_mockDevice];
 }
 
 - (void)testSetFocusPointWithResult_SetsFocusPointOfInterest {
