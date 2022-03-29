@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart';
 import 'src/instance_manager.dart';

@@ -1,3 +1,7 @@
+## 2.8.3+1
+
+* support image upload、take camera and add geolocation for android
+
 ## 2.8.3
 
 * Fixes a bug causing `debuggingEnabled` to always be set to true.

@@ -9,12 +9,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter_android/src/android_webview.dart'
+import 'package:webview_pro_android/src/android_webview.dart'
     as android_webview;
-import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
-import 'package:webview_flutter_android/src/instance_manager.dart';
-import 'package:webview_flutter_android/webview_android_widget.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_pro_android/src/android_webview_api_impls.dart';
+import 'package:webview_pro_android/src/instance_manager.dart';
+import 'package:webview_pro_android/webview_android_widget.dart';
+import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart' show MockTestWebViewHostApi;
