@@ -5,7 +5,7 @@
 /// Re-export the classes from the webview_flutter_platform_interface through
 /// the `platform_interface.dart` file so we don't accidentally break any
 /// non-endorsed existing implementations of the interface.
-export 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
+export 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart'
     show
         AutoMediaPlaybackPolicy,
         CreationParams,
