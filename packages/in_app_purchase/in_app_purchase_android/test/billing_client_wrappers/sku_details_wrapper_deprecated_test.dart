@@ -13,7 +13,7 @@ void main() {
   test(
       'Deprecated `introductoryPriceMicros` field reflects parameter from constructor',
       () {
-    final SkuDetailsWrapper skuDetails = SkuDetailsWrapper(
+    const SkuDetailsWrapper skuDetails = SkuDetailsWrapper(
       description: 'description',
       freeTrialPeriod: 'freeTrialPeriod',
       introductoryPrice: 'introductoryPrice',
@@ -42,7 +42,7 @@ void main() {
   test(
       '`introductoryPriceAmoutMicros` constructor parameter is reflected by deprecated `introductoryPriceMicros` and `introductoryPriceAmountMicros` fields',
       () {
-    final SkuDetailsWrapper skuDetails = SkuDetailsWrapper(
+    const SkuDetailsWrapper skuDetails = SkuDetailsWrapper(
       description: 'description',
       freeTrialPeriod: 'freeTrialPeriod',
       introductoryPrice: 'introductoryPrice',

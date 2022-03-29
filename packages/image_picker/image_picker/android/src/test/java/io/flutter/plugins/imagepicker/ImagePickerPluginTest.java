@@ -5,10 +5,13 @@
 package io.flutter.plugins.imagepicker;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -16,6 +19,11 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.Application;
+import androidx.lifecycle.Lifecycle;
+import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
@@ -41,6 +49,9 @@ public class ImagePickerPluginTest {
   @Mock
   io.flutter.plugin.common.PluginRegistry.Registrar mockRegistrar;
 
+  @Mock ActivityPluginBinding mockActivityBinding;
+  @Mock FlutterPluginBinding mockPluginBinding;
+
   @Mock Activity mockActivity;
   @Mock Application mockApplication;
   @Mock ImagePickerDelegate mockImagePickerDelegate;
@@ -52,7 +63,8 @@ public class ImagePickerPluginTest {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     when(mockRegistrar.context()).thenReturn(mockApplication);
-
+    when(mockActivityBinding.getActivity()).thenReturn(mockActivity);
+    when(mockPluginBinding.getApplicationContext()).thenReturn(mockApplication);
     plugin = new ImagePickerPlugin(mockImagePickerDelegate, mockActivity);
   }
 
@@ -174,6 +186,25 @@ public class ImagePickerPluginTest {
         "Delegate uses cache directory for storing camera captures",
         delegate.externalFilesDirectory,
         equalTo(mockDirectory));
+  }
+
+  @Test
+  public void onDetachedFromActivity_ShouldReleaseActivityState() {
+    final BinaryMessenger mockBinaryMessenger = mock(BinaryMessenger.class);
+    when(mockPluginBinding.getBinaryMessenger()).thenReturn(mockBinaryMessenger);
+
+    final HiddenLifecycleReference mockLifecycleReference = mock(HiddenLifecycleReference.class);
+    when(mockActivityBinding.getLifecycle()).thenReturn(mockLifecycleReference);
+
+    final Lifecycle mockLifecycle = mock(Lifecycle.class);
+    when(mockLifecycleReference.getLifecycle()).thenReturn(mockLifecycle);
+
+    plugin.onAttachedToEngine(mockPluginBinding);
+    plugin.onAttachedToActivity(mockActivityBinding);
+    assertNotNull(plugin.getActivityState());
+
+    plugin.onDetachedFromActivity();
+    assertNull(plugin.getActivityState());
   }
 
   private MethodCall buildMethodCall(String method, final int source) {

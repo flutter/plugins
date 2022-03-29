@@ -153,7 +153,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
   public PathProviderPlugin() {}
 
   private void setup(BinaryMessenger messenger, Context context) {
-    String channelName = "plugins.flutter.io/path_provider";
+    String channelName = "plugins.flutter.io/path_provider_android";
     // TODO(gaaclarke): Remove reflection guard when https://github.com/flutter/engine/pull/29147
     // becomes available on the stable branch.
     try {

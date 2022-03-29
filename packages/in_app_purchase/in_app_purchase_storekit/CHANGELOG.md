@@ -1,3 +1,11 @@
+## 0.3.0+3
+
+* Implements transaction caching for StoreKit ensuring transactions are delivered to the Flutter client.
+
+## 0.3.0+2
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.3.0+1
 
 * Removes dependency on `meta`.

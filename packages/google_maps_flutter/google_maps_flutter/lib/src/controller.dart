@@ -6,16 +6,15 @@ part of google_maps_flutter;
 
 /// Controller for a single GoogleMap instance running on the host platform.
 class GoogleMapController {
-  /// The mapId for this controller
-  final int mapId;
-
   GoogleMapController._(
-    CameraPosition initialCameraPosition,
     this._googleMapState, {
     required this.mapId,
   }) {
     _connectStreams(mapId);
   }
+
+  /// The mapId for this controller
+  final int mapId;
 
   /// Initialize control of a [GoogleMap] with [id].
   ///
@@ -29,7 +28,6 @@ class GoogleMapController {
     assert(id != null);
     await GoogleMapsFlutterPlatform.instance.init(id);
     return GoogleMapController._(
-      initialCameraPosition,
       googleMapState,
       mapId: id,
     );
@@ -38,7 +36,7 @@ class GoogleMapController {
   /// Used to communicate with the native platform.
   ///
   /// Accessible only for testing.
-  // TODO(dit) https://github.com/flutter/flutter/issues/55504 Remove this getter.
+  // TODO(dit): Remove this getter, https://github.com/flutter/flutter/issues/55504.
   @visibleForTesting
   MethodChannel? get channel {
     if (GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter) {
