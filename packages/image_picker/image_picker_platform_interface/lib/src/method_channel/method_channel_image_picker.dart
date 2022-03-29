@@ -143,7 +143,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     );
   }
 
-  Future<List<dynamic>?> _getMultiImageAndVideoPath({
+  Future<List<String>?> _getMultiImageAndVideoPath({
     double? maxImageWidth,
     double? maxImageHeight,
     int? imageQuality,
@@ -170,7 +170,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxHeight': maxImageHeight,
         'imageQuality': imageQuality,
       },
-    );
+    ).then((List<dynamic>? paths) => paths?.map((dynamic path) => path as String).toList());
   }
 
   @override
@@ -295,14 +295,14 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxImageHeight,
     int? imageQuality,
   }) async {
-    final List<dynamic>? paths = await _getMultiImageAndVideoPath(
+    final List<String>? paths = await _getMultiImageAndVideoPath(
       maxImageWidth: maxImageWidth,
       maxImageHeight: maxImageHeight,
       imageQuality: imageQuality,
     );
     if (paths == null) return null;
 
-    return paths.map((path) => XFile(path)).toList();
+    return paths.map((String path) => XFile(path)).toList() as List<XFile>;
   }
 
   @override
