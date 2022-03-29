@@ -5,15 +5,15 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/src/types/javascript_channel.dart'
+import 'package:webview_pro_platform_interface/src/types/javascript_channel.dart'
     as _i6;
-import 'package:webview_flutter_platform_interface/src/types/types.dart' as _i7;
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
+import 'package:webview_pro_platform_interface/src/types/types.dart' as _i7;
+import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart'
     as _i5;
-import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart'
+import 'package:webview_pro_wkwebview/src/foundation/foundation.dart'
     as _i4;
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart' as _i2;
-import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart'
+import 'package:webview_pro_wkwebview/src/web_kit/web_kit.dart' as _i2;
+import 'package:webview_pro_wkwebview/src/web_kit_webview_widget.dart'
     as _i8;
 
 // ignore_for_file: avoid_redundant_argument_values

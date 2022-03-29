@@ -8,10 +8,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
+import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_pro_wkwebview/src/foundation/foundation.dart';
+import 'package:webview_pro_wkwebview/src/web_kit/web_kit.dart';
+import 'package:webview_pro_wkwebview/src/web_kit_webview_widget.dart';
 
 import 'web_kit_webview_widget_test.mocks.dart';
 

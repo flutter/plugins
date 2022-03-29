@@ -4,8 +4,8 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/src/wkwebview_cookie_manager.dart';
+import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_pro_wkwebview/src/wkwebview_cookie_manager.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

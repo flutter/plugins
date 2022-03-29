@@ -1,3 +1,7 @@
+## 2.7.1+1
+
+* dependency webview_pro_platform_interface
+
 ## NEXT
 
 * Fixes an integration test race condition.
