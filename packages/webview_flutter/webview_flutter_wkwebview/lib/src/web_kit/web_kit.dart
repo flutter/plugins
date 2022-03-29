@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../foundation/foundation.dart';
+import '../ui_kit/ui_kit.dart';
 
 /// Times at which to inject script content into a webpage.
 ///
@@ -44,6 +45,35 @@ enum WKAudiovisualMediaType {
   ///
   /// See https://developer.apple.com/documentation/webkit/wkaudiovisualmediatypes/wkaudiovisualmediatypeall?language=objc.
   all,
+}
+
+/// Types of data that websites store.
+///
+/// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
+enum WKWebsiteDataTypes {
+  /// Cookies.
+  cookies,
+
+  /// In-memory caches.
+  memoryCache,
+
+  /// On-disk caches.
+  diskCache,
+
+  /// HTML offline web app caches.
+  offlineWebApplicationCache,
+
+  /// HTML local storage.
+  localStroage,
+
+  /// HTML session storage.
+  sessionStorage,
+
+  /// WebSQL databases.
+  sqlDatabases,
+
+  /// IndexedDB databases.
+  indexedDBDatabases,
 }
 
 /// Indicate whether to allow or cancel navigation to a webpage.
@@ -162,6 +192,25 @@ class WKScriptMessage {
   final Object? body;
 }
 
+/// Manages cookies, disk and memory caches, and other types of data for a web view.
+///
+/// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
+class WKWebsiteDataStore {
+  WKWebsiteDataStore._fromWebViewConfiguration(
+    // TODO(bparrishMines): Remove ignore once constructor is implemented.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebViewConfiguration configuration,
+  );
+
+  /// Removes website data that changed after the specified date.
+  Future<void> removeDataOfTypes(
+    Set<WKWebsiteDataTypes> dataTypes,
+    DateTime since,
+  ) {
+    throw UnimplementedError();
+  }
+}
+
 /// An interface for receiving messages from JavaScript code running in a webpage.
 ///
 /// Wraps [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc)
@@ -268,6 +317,18 @@ class WKWebViewConfiguration {
   /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
   late final WKUserContentController userContentController;
 
+  late WKWebsiteDataStore _websiteDataStore =
+      WKWebsiteDataStore._fromWebViewConfiguration(this);
+
+  /// Used to get and set the site’s cookies and to track the cached data objects.
+  WKWebsiteDataStore get webSiteDataStore => _websiteDataStore;
+
+  /// Used to get and set the site’s cookies and to track the cached data objects.
+  set webSiteDataStore(WKWebsiteDataStore websiteDataStore) {
+    _websiteDataStore = websiteDataStore;
+    throw UnimplementedError();
+  }
+
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   set allowsInlineMediaPlayback(bool allow) {
     throw UnimplementedError();
@@ -362,7 +423,7 @@ class WKNavigationDelegate {
 /// Object that displays interactive web content, such as for an in-app browser.
 ///
 /// Wraps [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview?language=objc).
-class WKWebView {
+class WKWebView extends NSObject {
   /// Constructs a [WKWebView].
   ///
   /// [configuration] contains the configuration details for the web view. This
@@ -390,6 +451,9 @@ class WKWebView {
   late final WKWebViewConfiguration configuration =
       WKWebViewConfiguration._fromWebView(this);
 
+  /// The scrollable view associated with the web view.
+  late final UIScrollView scrollView = UIScrollView.fromWebView(this);
+
   /// Used to integrate custom user interface elements into web view interactions.
   set uiDelegate(WKUIDelegate? delegate) {
     throw UnimplementedError();
@@ -405,11 +469,96 @@ class WKWebView {
     throw UnimplementedError();
   }
 
+  /// An estimate of what fraction of the current navigation has been loaded.
+  ///
+  /// This value ranges from 0.0 to 1.0.
+  ///
+  /// This method represents
+  /// [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
+  Future<double> getEstimatedProgress() {
+    throw UnimplementedError();
+  }
+
   /// Loads the web content referenced by the specified URL request object and navigates to it.
   ///
   /// Use this method to load a page from a local or network-based URL. For
   /// example, you might use it to navigate to a network-based webpage.
   Future<void> loadRequest(NSUrlRequest request) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the contents of the specified HTML string and navigates to it.
+  Future<void> loadHtmlString(String string, {String? baseUrl}) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the web content from the specified file and navigates to it.
+  Future<void> loadFileUrl(String url, {required String readAccessUrl}) {
+    throw UnimplementedError();
+  }
+
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// This method is not a part of WebKit and is only a Flutter specific helper
+  /// method.
+  Future<void> loadFlutterAsset(String key) {
+    throw UnimplementedError();
+  }
+
+  /// Indicates whether there is a valid back item in the back-forward list.
+  Future<bool> get canGoBack {
+    throw UnimplementedError();
+  }
+
+  /// Indicates whether there is a valid forward item in the back-forward list.
+  Future<bool> get canGoForward {
+    throw UnimplementedError();
+  }
+
+  /// Navigates to the back item in the back-forward list.
+  Future<void> goBack() {
+    throw UnimplementedError();
+  }
+
+  /// Navigates to the forward item in the back-forward list.
+  Future<void> goForward() {
+    throw UnimplementedError();
+  }
+
+  /// Reloads the current webpage.
+  Future<void> reload() {
+    throw UnimplementedError();
+  }
+
+  /// The page title.
+  Future<String?> get title {
+    throw UnimplementedError();
+  }
+
+  /// An estimate of what fraction of the current navigation has been loaded.
+  Future<double> get estimatedProgress {
+    throw UnimplementedError();
+  }
+
+  /// Indicates whether horizontal swipe gestures trigger page navigation.
+  ///
+  /// The default value is false.
+  set allowsBackForwardNavigationGestures(bool allow) {
+    throw UnimplementedError();
+  }
+
+  /// The custom user agent string.
+  ///
+  /// The default value of this property is null.
+  set customUserAgent(String? userAgent) {
+    throw UnimplementedError();
+  }
+
+  /// Evaluates the specified JavaScript string.
+  ///
+  /// Throws a `PlatformException` if an error occurs or return value is not
+  /// supported.
+  Future<Object?> evaluateJavaScript(String javaScriptString) {
     throw UnimplementedError();
   }
 }

@@ -203,8 +203,8 @@ class VideoEvent {
   ///
   /// The [eventType] argument is required.
   ///
-  /// Depending on the [eventType], the [duration], [size] and [buffered]
-  /// arguments can be null.
+  /// Depending on the [eventType], the [duration], [size],
+  /// [rotationCorrection], and [buffered] arguments can be null.
   // TODO(stuartmorgan): Temporarily suppress warnings about not using const
   // in all of the other video player packages, fix this, and then update
   // the other packages to use const.
@@ -213,6 +213,7 @@ class VideoEvent {
     required this.eventType,
     this.duration,
     this.size,
+    this.rotationCorrection,
     this.buffered,
   });
 
@@ -229,6 +230,11 @@ class VideoEvent {
   /// Only used if [eventType] is [VideoEventType.initialized].
   final Size? size;
 
+  /// Degrees to rotate the video (clockwise) so it is displayed correctly.
+  ///
+  /// Only used if [eventType] is [VideoEventType.initialized].
+  final int? rotationCorrection;
+
   /// Buffered parts of the video.
   ///
   /// Only used if [eventType] is [VideoEventType.bufferingUpdate].
@@ -242,6 +248,7 @@ class VideoEvent {
             eventType == other.eventType &&
             duration == other.duration &&
             size == other.size &&
+            rotationCorrection == other.rotationCorrection &&
             listEquals(buffered, other.buffered);
   }
 
@@ -250,6 +257,7 @@ class VideoEvent {
       eventType.hashCode ^
       duration.hashCode ^
       size.hashCode ^
+      rotationCorrection.hashCode ^
       buffered.hashCode;
 }
 
