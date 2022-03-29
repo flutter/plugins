@@ -6,7 +6,7 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
   PigeonOptions(
-    dartOut: 'lib/src/web_kit.pigeon.dart',
+    dartOut: 'lib/src/common/web_kit.pigeon.dart',
     dartTestOut: 'test/src/test_web_kit.pigeon.dart',
     dartOptions: DartOptions(isNullSafe: true, copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
@@ -173,8 +173,12 @@ abstract class WKWebsiteDataStoreHostApi {
 /// See https://developer.apple.com/documentation/uikit/uiscrollview?language=objc.
 @HostApi(dartHostTestHandler: 'TestUIScrollViewHostApi')
 abstract class UIScrollViewHostApi {
-  List<double> getContentOffset(int instanceId);
+  void createFromWebView(int instanceId, int webViewInstanceId);
+
+  List<double?> getContentOffset(int instanceId);
+
   void scrollBy(int instanceId, double x, double y);
+
   void setContentOffset(int instanceId, double x, double y);
 }
 
@@ -200,8 +204,6 @@ abstract class WKWebViewConfigurationHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKUserContentControllerHostApi')
 abstract class WKUserContentControllerHostApi {
-  void create(int instanceId);
-
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,
@@ -244,12 +246,14 @@ abstract class WKNavigationDelegateHostApi {
 @HostApi(dartHostTestHandler: 'TestNSObjectHostApi')
 abstract class NSObjectHostApi {
   void dispose(int instanceId);
+
   void addObserver(
     int instanceId,
     int observerInstanceId,
     String keyPath,
     List<NSKeyValueObservingOptionsEnumData> options,
   );
+
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
 }
 

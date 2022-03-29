@@ -329,6 +329,32 @@ class UIScrollViewHostApi {
 
   static const MessageCodec<Object?> codec = _UIScrollViewHostApiCodec();
 
+  Future<void> createFromWebView(
+      int arg_instanceId, int arg_webViewInstanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.UIScrollViewHostApi.createFromWebView', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_instanceId, arg_webViewInstanceId])
+            as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
   Future<List<double?>> getContentOffset(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.UIScrollViewHostApi.getContentOffset', codec,
@@ -591,30 +617,6 @@ class WKUserContentControllerHostApi {
 
   static const MessageCodec<Object?> codec =
       _WKUserContentControllerHostApiCodec();
-
-  Future<void> create(int arg_instanceId) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.create', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return;
-    }
-  }
 
   Future<void> createFromWebViewConfiguration(
       int arg_instanceId, int arg_configurationInstanceId) async {

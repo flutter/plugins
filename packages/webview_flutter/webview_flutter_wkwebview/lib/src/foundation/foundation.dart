@@ -6,6 +6,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 
+import 'foundation_api_impls.dart';
+
 /// The values that can be returned in a change map.
 ///
 /// Wraps [NSKeyValueObservingOptions](https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions?language=objc).
@@ -140,6 +142,14 @@ class NSError {
 
 /// The root class of most Objective-C class hierarchies.
 class NSObject {
+  /// Constructs an [NSObject].
+  NSObject({@visibleForTesting NSObjectHostApiImpl? nsObjectApi})
+      : objectApi = nsObjectApi ?? NSObjectHostApiImpl();
+
+  /// Pigeon Host Api implementation for [NSObject].
+  @visibleForTesting
+  final NSObjectHostApiImpl objectApi;
+
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
     NSObject observer, {
@@ -147,12 +157,22 @@ class NSObject {
     required Set<NSKeyValueObservingOptions> options,
   }) {
     assert(options.isNotEmpty);
-    throw UnimplementedError();
+    return objectApi.addObserverFromInstance(
+      this,
+      observer,
+      keyPath,
+      options,
+    );
   }
 
   /// Stops the observer object from receiving change notifications for the property.
   Future<void> removeObserver(NSObject observer, {required String keyPath}) {
-    throw UnimplementedError();
+    return objectApi.removeObserverFromInstance(this, observer, keyPath);
+  }
+
+  /// Release the reference to the Objective-C object.
+  Future<void> dispose() {
+    return objectApi.disposeFromInstance(this);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.

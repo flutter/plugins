@@ -5,22 +5,32 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+
 import '../web_kit/web_kit.dart';
+import 'ui_kit_api_impls.dart';
 
 /// A view that allows the scrolling and zooming of its contained views.
 ///
 /// Wraps [UIScrollView](https://developer.apple.com/documentation/uikit/uiscrollview?language=objc).
 class UIScrollView {
   /// Constructs a [UIScrollView] that is owned by [webView].
-  // TODO(bparrishMines): Remove ignore once constructor is implemented.
-  // ignore: avoid_unused_constructor_parameters
-  UIScrollView.fromWebView(WKWebView webView);
+  UIScrollView.fromWebView(
+    WKWebView webView, {
+    @visibleForTesting UIScrollViewHostApiImpl? scrollViewApi,
+  }) : scrollViewApi = scrollViewApi ?? UIScrollViewHostApiImpl() {
+    this.scrollViewApi.createFromWebViewFromInstance(this, webView);
+  }
+
+  /// Pigeon Host Api implementation for [UIScrollView].
+  @visibleForTesting
+  final UIScrollViewHostApiImpl scrollViewApi;
 
   /// Point at which the origin of the content view is offset from the origin of the scroll view.
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<Point<double>> getContentOffset() {
-    throw UnimplementedError();
+    return scrollViewApi.getContentOffsetFromInstance(this);
   }
 
   /// Move the scrolled position of this view.
@@ -28,7 +38,7 @@ class UIScrollView {
   /// This method is not a part of UIKit and is only a helper method to make
   /// scrollBy atomic.
   Future<void> scrollBy(Point<double> offset) {
-    throw UnimplementedError();
+    return scrollViewApi.scrollByFromInstance(this, offset);
   }
 
   /// Set point at which the origin of the content view is offset from the origin of the scroll view.
@@ -37,6 +47,6 @@ class UIScrollView {
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<void> setContentOffset(FutureOr<Point<double>> offset) {
-    throw UnimplementedError();
+    return scrollViewApi.setContentOffsetFromInstance(this, offset);
   }
 }

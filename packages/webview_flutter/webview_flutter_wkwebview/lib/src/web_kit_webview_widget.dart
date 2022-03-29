@@ -86,10 +86,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
-      configuration: configuration ??
-          WKWebViewConfiguration(
-            userContentController: WKUserContentController(),
-          ),
+      configuration: configuration ?? WKWebViewConfiguration(),
     );
 
     webView.setUIDelegate(uiDelegate);
@@ -212,7 +209,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> clearCache() {
-    return webView.configuration.webSiteDataStore.removeDataOfTypes(
+    return webView.configuration.websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataTypes>{
         WKWebsiteDataTypes.memoryCache,
         WKWebsiteDataTypes.diskCache,
