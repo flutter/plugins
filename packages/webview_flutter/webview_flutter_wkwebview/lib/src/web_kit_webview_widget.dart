@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path;
@@ -86,22 +87,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
-      configuration: configuration ??
-          WKWebViewConfiguration(
-            userContentController: WKUserContentController(),
-          ),
+      configuration: configuration ?? WKWebViewConfiguration(),
     );
-
-    webView.setUIDelegate(uiDelegate);
-    uiDelegate.setOnCreateWebView((
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    ) {
-      if (!navigationAction.targetFrame.isMainFrame) {
-        webView.loadRequest(navigationAction.request);
-      }
-    });
   }
+
+  bool _zoomEnabled = true;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -162,12 +152,32 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     webView = webViewProxy.createWebView(configuration);
 
+    webView.setUIDelegate(uiDelegate);
+    uiDelegate.setOnCreateWebView((
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    ) {
+      if (!navigationAction.targetFrame.isMainFrame) {
+        webView.loadRequest(navigationAction.request);
+      }
+    });
+
     await addJavascriptChannels(params.javascriptChannelNames);
 
     webView.setNavigationDelegate(navigationDelegate);
 
     if (params.webSettings != null) {
       updateSettings(params.webSettings!);
+    }
+
+    if (params.backgroundColor != null) {
+      webView.setOpaque(false);
+      webView.scrollView.setBackgroundColor(Colors.transparent);
+      webView.setBackgroundColor(params.backgroundColor!);
+    }
+
+    if (params.initialUrl != null) {
+      await loadUrl(params.initialUrl!, null);
     }
   }
 
@@ -343,11 +353,23 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> updateSettings(WebSettings setting) async {
+    _setUserAgent(setting.userAgent);
     if (setting.hasNavigationDelegate != null) {
       _setHasNavigationDelegate(setting.hasNavigationDelegate!);
     }
     if (setting.hasProgressTracking != null) {
       _setHasProgressTracking(setting.hasProgressTracking!);
+    }
+    if (setting.javascriptMode != null) {
+      _setJavaScriptMode(setting.javascriptMode!);
+    }
+    if (setting.zoomEnabled != null) {
+      _setZoomEnabled(setting.zoomEnabled!);
+    }
+    if (setting.gestureNavigationEnabled != null) {
+      webView.setAllowsBackForwardNavigationGestures(
+        setting.gestureNavigationEnabled!,
+      );
     }
   }
 
@@ -412,6 +434,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
     _scriptMessageHandlers.clear();
 
+    // Zoom is disabled with a WKUserScript, so this adds it back if it was
+    // removed above.
+    if (!_zoomEnabled) {
+      _disableZoom();
+    }
+
     await addJavascriptChannels(remainingNames);
   }
 
@@ -454,6 +482,62 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       webView.observeValue = null;
       return webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
+  }
+
+  void _setJavaScriptMode(JavascriptMode mode) {
+    switch (mode) {
+      case JavascriptMode.disabled:
+        webView.configuration.preferences.setJavaScriptEnabled(false);
+        break;
+      case JavascriptMode.unrestricted:
+        webView.configuration.preferences.setJavaScriptEnabled(true);
+        break;
+    }
+  }
+
+  void _setUserAgent(WebSetting<String?> userAgent) {
+    if (userAgent.isPresent) {
+      webView.setCustomUserAgent(userAgent.value);
+    }
+  }
+
+  Future<void> _setZoomEnabled(bool zoomEnabled) async {
+    if (_zoomEnabled == zoomEnabled) {
+      return;
+    }
+
+    _zoomEnabled = zoomEnabled;
+    if (!zoomEnabled) {
+      await _disableZoom();
+    } else {
+      // WkWebView does not support removing a single user script, so instead we
+      // remove all user scripts, all message handlers, and re-register channels
+      // that shouldn't be removed. Note that this workaround could interfere
+      // with exposing support for custom scripts from applications.
+      webView.configuration.userContentController.removeAllUserScripts();
+      webView.configuration.userContentController
+          .removeAllScriptMessageHandlers();
+
+      final Set<String> javaScriptChannelNames =
+          _scriptMessageHandlers.keys.toSet();
+      _scriptMessageHandlers.clear();
+
+      await addJavascriptChannels(javaScriptChannelNames);
+    }
+  }
+
+  Future<void> _disableZoom() {
+    const WKUserScript userScript = WKUserScript(
+      "var meta = document.createElement('meta');"
+      "meta.name = 'viewport';"
+      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
+      "user-scalable=no';"
+      "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+      WKUserScriptInjectionTime.atDocumentEnd,
+      isMainFrameOnly: true,
+    );
+    return webView.configuration.userContentController
+        .addUserScript(userScript);
   }
 
   static WebResourceError _toWebResourceError(NSError error) {

@@ -5,6 +5,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/painting.dart';
+
 import '../web_kit/web_kit.dart';
 
 /// A view that allows the scrolling and zooming of its contained views.
@@ -20,6 +22,15 @@ class UIScrollView {
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<Point<double>> getContentOffset() {
+    throw UnimplementedError();
+  }
+
+  /// The view’s background color.
+  ///
+  /// The default value is null, which results in a transparent background color.
+  ///
+  /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
+  Future<void> setBackgroundColor(Color? color) {
     throw UnimplementedError();
   }
 
