@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
+
 ## 3.0.1
 
 * Removes a duplicate Android-specific integration test.
