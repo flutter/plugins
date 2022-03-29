@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
 @GenerateMocks(<Type>[
   UIScrollView,
   WKNavigationDelegate,
+  WKPreferences,
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
@@ -39,6 +41,7 @@ void main() {
     late MockWKWebView mockWebView;
     late MockWebViewWidgetProxy mockWebViewWidgetProxy;
     late MockWKUserContentController mockUserContentController;
+    late MockWKPreferences mockPreferences;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
     late MockWKUIDelegate mockUIDelegate;
     late MockUIScrollView mockScrollView;
@@ -54,6 +57,7 @@ void main() {
       mockWebView = MockWKWebView();
       mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockUserContentController = MockWKUserContentController();
+      mockPreferences = MockWKPreferences();
       mockUIDelegate = MockWKUIDelegate();
       mockScrollView = MockUIScrollView();
       mockWebsiteDataStore = MockWKWebsiteDataStore();
@@ -68,6 +72,7 @@ void main() {
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
       );
+      when(mockWebViewConfiguration.preferences).thenReturn(mockPreferences);
 
       when(mockWebView.scrollView).thenReturn(mockScrollView);
 
@@ -131,6 +136,55 @@ void main() {
     });
 
     group('$CreationParams', () {
+      testWidgets('initialUrl', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            initialUrl: 'https://www.google.com',
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+        final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
+            .captured
+            .single as NSUrlRequest;
+        expect(request.url, 'https://www.google.com');
+      });
+
+      testWidgets('backgroundColor', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            backgroundColor: Colors.red,
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        verify(mockScrollView.setBackgroundColor(Colors.transparent));
+        verify(mockWebView.setBackgroundColor(Colors.red));
+        verify(mockWebView.setOpaque(false));
+      });
+
+      testWidgets('userAgent', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            userAgent: 'MyUserAgent',
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        verify(mockWebView.setCustomUserAgent('MyUserAgent'));
+      });
+
       testWidgets('autoMediaPlaybackPolicy true', (WidgetTester tester) async {
         await buildWidget(
           tester,
@@ -205,6 +259,79 @@ void main() {
       });
 
       group('$WebSettings', () {
+        testWidgets('javascriptMode', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                javascriptMode: JavascriptMode.unrestricted,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockPreferences.setJavaScriptEnabled(true));
+        });
+
+        testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                hasNavigationDelegate: true,
+              ),
+            ),
+          );
+
+          verify(mockNavigationDelegate
+              .setDecidePolicyForNavigationAction(argThat(isNotNull)));
+        });
+
+        testWidgets('userAgent', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.of('myUserAgent'),
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockWebView.setCustomUserAgent('myUserAgent'));
+        });
+
+        testWidgets('zoomEnabled', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                zoomEnabled: false,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          final WKUserScript zoomScript =
+              verify(mockUserContentController.addUserScript(captureAny))
+                  .captured
+                  .first as WKUserScript;
+          expect(zoomScript.isMainFrameOnly, isTrue);
+          expect(zoomScript.injectionTime,
+              WKUserScriptInjectionTime.atDocumentEnd);
+          expect(
+            zoomScript.source,
+            "var meta = document.createElement('meta');"
+            "meta.name = 'viewport';"
+            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
+            "user-scalable=no';"
+            "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+          );
+        });
+
         testWidgets('allowsInlineMediaPlayback', (WidgetTester tester) async {
           await buildWidget(
             tester,
@@ -652,6 +779,44 @@ void main() {
           WKUserScriptInjectionTime.atDocumentStart,
         );
         expect(userScripts[0].isMainFrameOnly, false);
+      });
+
+      testWidgets('removeJavascriptChannels with zoom disabled',
+          (WidgetTester tester) async {
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+          MockWKScriptMessageHandler(),
+        );
+
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              zoomEnabled: false,
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        await testController.addJavascriptChannels(<String>{'c'});
+        clearInteractions(mockUserContentController);
+        await testController.removeJavascriptChannels(<String>{'c'});
+
+        final WKUserScript zoomScript =
+            verify(mockUserContentController.addUserScript(captureAny))
+                .captured
+                .first as WKUserScript;
+        expect(zoomScript.isMainFrameOnly, isTrue);
+        expect(
+            zoomScript.injectionTime, WKUserScriptInjectionTime.atDocumentEnd);
+        expect(
+          zoomScript.source,
+          "var meta = document.createElement('meta');"
+          "meta.name = 'viewport';"
+          "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
+          "user-scalable=no';"
+          "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+        );
       });
     });
 

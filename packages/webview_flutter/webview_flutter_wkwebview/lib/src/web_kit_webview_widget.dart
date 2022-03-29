@@ -166,6 +166,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     webView.setNavigationDelegate(navigationDelegate);
 
+    if (params.userAgent != null) {
+      webView.setCustomUserAgent(params.userAgent!);
+    }
+
     if (params.webSettings != null) {
       updateSettings(params.webSettings!);
     }
