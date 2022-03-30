@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/// Maintains instances stored to communicate with java objects.
+/// Maintains instances stored to communicate with Objective-C objects.
 class InstanceManager {
   final Map<int, Object> _instanceIdsToInstances = <int, Object>{};
   final Map<Object, int> _instancesToInstanceIds = <Object, int>{};
