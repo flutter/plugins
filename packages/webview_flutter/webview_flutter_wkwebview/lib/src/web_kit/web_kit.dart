@@ -7,6 +7,7 @@ import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart';
 
 import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
+import '../ui_kit/ui_kit_api_impls.dart';
 
 /// Times at which to inject script content into a webpage.
 ///
@@ -266,8 +267,9 @@ class WKScriptMessageHandler {
 ///
 /// Wraps [WKUserContentController](https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc).
 class WKUserContentController {
-  // A WKUserContentController that is owned by configuration.
-  WKUserContentController._fromWebViewConfiguretion(
+  /// Constructs a [WKUserContentController] that is owned by [configuration].
+  @visibleForTesting
+  WKUserContentController.fromWebViewConfiguretion(
     WKWebViewConfiguration configuration, {
     WKUserContentControllerHostApiImpl? userContentControllerApi,
   }) : userContentControllerApi =
@@ -363,13 +365,23 @@ class WKWebViewConfiguration extends NSObject {
 
   /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
   late final WKUserContentController userContentController =
-      WKUserContentController._fromWebViewConfiguretion(this);
+      WKUserContentController.fromWebViewConfiguretion(
+    this,
+    userContentControllerApi: WKUserContentControllerHostApiImpl(
+      instanceManager: webViewConfigurationApi.instanceManager,
+    ),
+  );
 
   /// Used to get and set the site’s cookies and to track the cached data objects.
   ///
   /// Represents [WKWebViewConfiguration.webSiteDataStore](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1395661-websitedatastore?language=objc).
   late final WKWebsiteDataStore websiteDataStore =
-      WKWebsiteDataStore.fromWebViewConfiguration(this);
+      WKWebsiteDataStore.fromWebViewConfiguration(
+    this,
+    websiteDataStoreHostApi: WKWebsiteDataStoreHostApiImpl(
+      instanceManager: webViewConfigurationApi.instanceManager,
+    ),
+  );
 
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   ///
@@ -526,10 +538,20 @@ class WKWebView extends NSObject {
   /// If you didn’t create your web view with a [WKWebViewConfiguration] this
   /// property contains a default configuration object.
   late final WKWebViewConfiguration configuration =
-      WKWebViewConfiguration._fromWebView(this);
+      WKWebViewConfiguration._fromWebView(
+    this,
+    webViewConfigurationApi: WKWebViewConfigurationHostApiImpl(
+      instanceManager: webviewHostApi.instanceManager,
+    ),
+  );
 
   /// The scrollable view associated with the web view.
-  late final UIScrollView scrollView = UIScrollView.fromWebView(this);
+  late final UIScrollView scrollView = UIScrollView.fromWebView(
+    this,
+    scrollViewApi: UIScrollViewHostApiImpl(
+      instanceManager: webviewHostApi.instanceManager,
+    ),
+  );
 
   /// Used to integrate custom user interface elements into web view interactions.
   ///
@@ -594,12 +616,12 @@ class WKWebView extends NSObject {
 
   /// Indicates whether there is a valid forward item in the back-forward list.
   Future<bool> canGoForward() {
-    return webviewHostApi.canGoBackFromInstance(this);
+    return webviewHostApi.canGoForwardFromInstance(this);
   }
 
   /// Navigates to the back item in the back-forward list.
   Future<void> goBack() {
-    return webviewHostApi.canGoBackFromInstance(this);
+    return webviewHostApi.goBackFromInstance(this);
   }
 
   /// Navigates to the forward item in the back-forward list.
@@ -626,7 +648,7 @@ class WKWebView extends NSObject {
   /// Sets [WKWebView.allowsBackForwardNavigationGestures](https://developer.apple.com/documentation/webkit/wkwebview/1414995-allowsbackforwardnavigationgestu?language=objc).
   Future<void> setAllowsBackForwardNavigationGestures(bool allow) {
     return webviewHostApi.setAllowsBackForwardNavigationGesturesFromInstance(
-        this, allow);
+        this, allow,);
   }
 
   /// The custom user agent string.

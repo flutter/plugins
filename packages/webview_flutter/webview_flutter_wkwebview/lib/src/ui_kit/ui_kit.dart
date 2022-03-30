@@ -17,7 +17,7 @@ class UIScrollView {
   /// Constructs a [UIScrollView] that is owned by [webView].
   UIScrollView.fromWebView(
     WKWebView webView, {
-    @visibleForTesting UIScrollViewHostApiImpl? scrollViewApi,
+    UIScrollViewHostApiImpl? scrollViewApi,
   }) : scrollViewApi = scrollViewApi ?? UIScrollViewHostApiImpl() {
     this.scrollViewApi.createFromWebViewFromInstance(this, webView);
   }

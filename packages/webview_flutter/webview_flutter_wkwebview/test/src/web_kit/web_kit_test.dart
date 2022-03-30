@@ -21,25 +21,20 @@ import 'web_kit_test.mocks.dart';
 import '../test_web_kit.pigeon.dart';
 
 @GenerateMocks(<Type>[
+  WKNavigationDelegate,
+  WKScriptMessageHandler,
+  WKUIDelegate,
+  WKUserContentController,
+  WKWebView,
+  WKWebViewConfiguration,
   WKWebsiteDataStore,
+  TestWKNavigationDelegateHostApi,
+  TestWKScriptMessageHandlerHostApi,
+  TestWKUIDelegateHostApi,
+  TestWKUserContentControllerHostApi,
+  TestWKWebViewHostApi,
+  TestWKWebViewConfigurationHostApi,
   TestWKWebsiteDataStoreHostApi,
-  // TestScrollViewHostApi,
-  // TestWebSiteDataStoreHostApi,
-  // TestPreferencesHostApi,
-  // TestScriptMessageHandlerHostApi,
-  // TestUserContentControllerHostApi,
-  // TestNavigationDelegateHostApi,
-  // TestFoundationObjectHostApi,
-  // TestWebViewHostApi,
-  // TestWebViewConfigurationHostApi,
-  // TestIosViewHostApi,
-  // TestIosDelegateHostApi,
-  // ScriptMessageHandler,
-  // NavigationDelegate,
-  // FoundationObject,
-  // WebView,
-  // WebViewConfiguration,
-  // IosDelegate,
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,16 +47,15 @@ void main() {
     });
 
     group('$WKWebsiteDataStore', () {
-      final MockTestWKWebsiteDataStoreHostApi mockPlatformHostApi =
-          MockTestWKWebsiteDataStoreHostApi();
+      late MockTestWKWebsiteDataStoreHostApi mockPlatformHostApi;
+
+      late WKWebsiteDataStore websiteDataStore;
 
       final WKWebViewConfiguration webViewConfiguration =
           WKWebViewConfiguration();
 
-      late WKWebsiteDataStore websiteDataStore;
-      late int websiteDataStoreInstanceId;
-
       setUp(() {
+        mockPlatformHostApi = MockTestWKWebsiteDataStoreHostApi();
         TestWKWebsiteDataStoreHostApi.setup(mockPlatformHostApi);
 
         instanceManager.tryAddInstance(webViewConfiguration);
@@ -71,14 +65,11 @@ void main() {
             instanceManager: instanceManager,
           ),
         );
-
-        websiteDataStoreInstanceId =
-            instanceManager.getInstanceId(websiteDataStore)!;
       });
 
       test('createFromWebViewConfiguration', () {
         verify(mockPlatformHostApi.createFromWebViewConfiguration(
-          websiteDataStoreInstanceId,
+          instanceManager.getInstanceId(websiteDataStore),
           instanceManager.getInstanceId(webViewConfiguration),
         ));
       });
@@ -91,7 +82,7 @@ void main() {
 
         final WKWebsiteDataTypesEnumData typeData =
             verify(mockPlatformHostApi.removeDataOfTypes(
-          websiteDataStoreInstanceId,
+          instanceManager.getInstanceId(websiteDataStore),
           captureAny,
           5.0,
         )).captured.single.single as WKWebsiteDataTypesEnumData;
@@ -142,625 +133,353 @@ void main() {
     //     });
     //   });
     //
-    //   group('$ScrollViewFlutterApiImpl', () {
-    //     late ScrollViewFlutterApiImpl flutterApi;
-    //
-    //     setUp(() {
-    //       flutterApi = ScrollViewFlutterApiImpl(
-    //         instanceManager: instanceManager,
-    //       );
-    //     });
-    //
-    //     test('create', () {
-    //       flutterApi.create(0);
-    //       expect(instanceManager.getInstance(0)!, isA<ScrollView>());
-    //     });
-    //   });
-    // });
-    //
-    // group('$Preferences', () {
-    //   late MockTestPreferencesHostApi mockPlatformHostApi;
-    //   late InstanceManager instanceManager;
-    //
-    //   late Preferences preferences;
-    //   late int preferencesInstanceId;
-    //
-    //   setUp(() {
-    //     mockPlatformHostApi = MockTestPreferencesHostApi();
-    //     TestPreferencesHostApi.setup(mockPlatformHostApi);
-    //
-    //     instanceManager = InstanceManager();
-    //     Preferences.api = PreferencesHostApiImpl(
-    //       instanceManager: instanceManager,
-    //     );
-    //
-    //     preferences = Preferences();
-    //     preferencesInstanceId = instanceManager.tryAddInstance(preferences)!;
-    //   });
-    //
-    //   test('create', () {
-    //     final Preferences createdPreferences = Preferences();
-    //     Preferences.api.createFromInstance(createdPreferences);
-    //     verify(mockPlatformHostApi.create(instanceManager.getInstanceId(
-    //       createdPreferences,
-    //     )!));
-    //   });
-    //
-    //   test('setJavaScriptEnabled', () async {
-    //     preferences.javaScriptEnabled = false;
-    //     verify(mockPlatformHostApi.setJavaScriptEnabled(
-    //       preferencesInstanceId,
-    //       false,
-    //     ));
-    //   });
-    // });
-    //
-    // group('$ScriptMessageHandler', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$ScriptMessageHandlerHostApiImpl', () {
-    //     late MockTestScriptMessageHandlerHostApi mockPlatformHostApi;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestScriptMessageHandlerHostApi();
-    //       TestScriptMessageHandlerHostApi.setup(mockPlatformHostApi);
-    //
-    //       ScriptMessageHandler.api = ScriptMessageHandlerHostApiImpl(
-    //         instanceManager: instanceManager,
-    //       );
-    //     });
-    //
-    //     test('create', () async {
-    //       final ScriptMessageHandler instance = MockScriptMessageHandler();
-    //       await ScriptMessageHandler.api.createFromInstance(instance);
-    //       expect(instanceManager.getInstance(0), instance);
-    //     });
-    //   });
-    //
-    //   group('$ScriptMessageHandlerFlutterApiImpl', () {
-    //     late ScriptMessageHandlerFlutterApiImpl flutterApi;
-    //
-    //     late MockScriptMessageHandler mockScriptMessageHandler;
-    //     late int scriptMessageHandlerInstanceId;
-    //
-    //     setUp(() {
-    //       flutterApi = ScriptMessageHandlerFlutterApiImpl(
-    //         instanceManager: instanceManager,
-    //       );
-    //       mockScriptMessageHandler = MockScriptMessageHandler();
-    //       instanceManager.tryAddInstance(mockScriptMessageHandler);
-    //       scriptMessageHandlerInstanceId =
-    //       instanceManager.getInstanceId(mockScriptMessageHandler)!;
-    //     });
-    //
-    //     test('didReceiveScriptMessage', () {
-    //       final UserContentController userContentController =
-    //       UserContentController();
-    //       instanceManager.tryAddInstance(userContentController);
-    //       final int userContentControllerInstanceId =
-    //       instanceManager.getInstanceId(
-    //         userContentController,
-    //       )!;
-    //
-    //       flutterApi.didReceiveScriptMessage(
-    //         scriptMessageHandlerInstanceId,
-    //         userContentControllerInstanceId,
-    //         ScriptMessageData()
-    //           ..name = 'myName'
-    //           ..body = 'body',
-    //       );
-    //
-    //       verify(mockScriptMessageHandler.didReceiveScriptMessage(
-    //           userContentController,
-    //           argThat(
-    //             isA<ScriptMessage>(),
-    //           )));
-    //     });
-    //   });
-    // });
-    //
-    // group('$UserContentController', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$UserContentControllerHostApiImpl', () {
-    //     late MockTestUserContentControllerHostApi mockPlatformHostApi;
-    //
-    //     late UserContentController userContentController;
-    //     late int userContentControllerInstanceId;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestUserContentControllerHostApi();
-    //       TestUserContentControllerHostApi.setup(mockPlatformHostApi);
-    //       UserContentController.api = UserContentControllerHostApiImpl(
-    //           instanceManager: instanceManager);
-    //
-    //       userContentController = UserContentController();
-    //       userContentControllerInstanceId =
-    //       instanceManager.tryAddInstance(userContentController)!;
-    //     });
-    //
-    //     test('create', () async {
-    //       final InstanceManager createInstanceManager = InstanceManager();
-    //       UserContentController.api = UserContentControllerHostApiImpl(
-    //         instanceManager: createInstanceManager,
-    //       );
-    //       final UserContentController instance = UserContentController();
-    //       await UserContentController.api.createFromInstance(instance);
-    //       expect(createInstanceManager.getInstance(0), instance);
-    //     });
-    //
-    //     test('addScriptMessageHandler', () async {
-    //       final ScriptMessageHandler handler = MockScriptMessageHandler();
-    //       final int handlerInstanceId =
-    //       instanceManager.tryAddInstance(handler)!;
-    //
-    //       userContentController.addScriptMessageHandler(handler, 'handlerName');
-    //       verify(mockPlatformHostApi.addScriptMessageHandler(
-    //         userContentControllerInstanceId,
-    //         handlerInstanceId,
-    //         'handlerName',
-    //       ));
-    //     });
-    //
-    //     test('removeScriptMessageHandler', () async {
-    //       userContentController.removeScriptMessageHandler('handlerName');
-    //       verify(mockPlatformHostApi.removeScriptMessageHandler(
-    //         userContentControllerInstanceId,
-    //         'handlerName',
-    //       ));
-    //     });
-    //
-    //     test('removeAllScriptMessageHandlers', () async {
-    //       userContentController.removeAllScriptMessageHandlers();
-    //       verify(mockPlatformHostApi.removeAllScriptMessageHandlers(
-    //         userContentControllerInstanceId,
-    //       ));
-    //     });
-    //
-    //     test('addUserScript', () {
-    //       userContentController.addUserScript(UserScript(
-    //         'aScript',
-    //         UserScriptInjectionTime.atDocumentEnd,
-    //         isMainFrameOnly: false,
-    //       ));
-    //       verify(mockPlatformHostApi.addUserScript(
-    //         userContentControllerInstanceId,
-    //         argThat(isA<UserScriptData>()),
-    //       ));
-    //     });
-    //
-    //     test('removeAllUserScripts', () {
-    //       userContentController.removeAllUserScripts();
-    //       verify(mockPlatformHostApi.removeAllUserScripts(
-    //         userContentControllerInstanceId,
-    //       ));
-    //     });
-    //   });
-    // });
-    //
-    // group('$WebViewConfiguration', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$WebViewConfigurationHostApiImpl', () {
-    //     late MockTestWebViewConfigurationHostApi mockPlatformHostApi;
-    //
-    //     late WebViewConfiguration webViewConfiguration;
-    //     late int webViewConfigurationInstanceId;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestWebViewConfigurationHostApi();
-    //       TestWebViewConfigurationHostApi.setup(mockPlatformHostApi);
-    //       WebViewConfiguration.api =
-    //           WebViewConfigurationHostApiImpl(instanceManager: instanceManager);
-    //
-    //       webViewConfiguration = WebViewConfiguration();
-    //       webViewConfigurationInstanceId =
-    //       instanceManager.tryAddInstance(webViewConfiguration)!;
-    //     });
-    //
-    //     test('create', () async {
-    //       final InstanceManager createInstanceManager = InstanceManager();
-    //       WebViewConfiguration.api = WebViewConfigurationHostApiImpl(
-    //         instanceManager: createInstanceManager,
-    //       );
-    //       final WebViewConfiguration instance = WebViewConfiguration();
-    //       await WebViewConfiguration.api.createFromInstance(instance);
-    //       expect(createInstanceManager.getInstance(0), instance);
-    //     });
-    //
-    //     test('setUserContentController', () {
-    //       final UserContentController controller = UserContentController();
-    //       final int controllerInstanceId =
-    //       instanceManager.tryAddInstance(controller)!;
-    //       webViewConfiguration.userContentController = controller;
-    //       verify(mockPlatformHostApi.setUserContentController(
-    //         webViewConfigurationInstanceId,
-    //         controllerInstanceId,
-    //       ));
-    //     });
-    //
-    //     test('setPreferences', () {
-    //       final Preferences preferences = Preferences();
-    //       final int preferencesInstanceId =
-    //       instanceManager.tryAddInstance(preferences)!;
-    //       webViewConfiguration.preferences = preferences;
-    //       verify(mockPlatformHostApi.setPreferences(
-    //         webViewConfigurationInstanceId,
-    //         preferencesInstanceId,
-    //       ));
-    //     });
-    //
-    //     test('allowsInlineMediaPlayback', () {
-    //       webViewConfiguration.allowsInlineMediaPlayback = true;
-    //       verify(mockPlatformHostApi.setAllowsInlineMediaPlayback(
-    //         webViewConfigurationInstanceId,
-    //         true,
-    //       ));
-    //     });
-    //
-    //     test('mediaTypesRequiringUserActionForPlayback', () {
-    //       webViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-    //       <AudiovisualMediaType>{
-    //         AudiovisualMediaType.audio,
-    //         AudiovisualMediaType.video,
-    //       };
-    //       verify(
-    //           mockPlatformHostApi.setMediaTypesRequiringUserActionForPlayback(
-    //             webViewConfigurationInstanceId,
-    //             1 | 2,
-    //           ));
-    //     });
-    //
-    //     test('requiresUserActionForMediaPlayback', () {
-    //       webViewConfiguration.requiresUserActionForMediaPlayback = true;
-    //       verify(mockPlatformHostApi.setRequiresUserActionForMediaPlayback(
-    //         webViewConfigurationInstanceId,
-    //         true,
-    //       ));
-    //     });
-    //
-    //     test('mediaPlaybackRequiresUserAction', () {
-    //       webViewConfiguration.mediaPlaybackRequiresUserAction = false;
-    //       verify(mockPlatformHostApi.setMediaPlaybackRequiresUserAction(
-    //         webViewConfigurationInstanceId,
-    //         false,
-    //       ));
-    //     });
-    //   });
-    //
-    //   group('$WebViewConfigurationFlutterApiImpl', () {
-    //     late WebViewConfigurationFlutterApiImpl flutterApi;
-    //
-    //     setUp(() {
-    //       flutterApi = WebViewConfigurationFlutterApiImpl(
-    //         instanceManager: instanceManager,
-    //       );
-    //     });
-    //
-    //     test('create', () {
-    //       final InstanceManager createInstanceManager = InstanceManager();
-    //       flutterApi = WebViewConfigurationFlutterApiImpl(
-    //         instanceManager: createInstanceManager,
-    //       );
-    //       flutterApi.create(0);
-    //       expect(
-    //         createInstanceManager.getInstance(0)!,
-    //         isA<WebViewConfiguration>(),
-    //       );
-    //     });
-    //   });
-    // });
-    //
-    // group('$NavigationDelegate', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$NavigationDelegateHostApiImpl', () {
-    //     late MockTestNavigationDelegateHostApi mockPlatformHostApi;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestNavigationDelegateHostApi();
-    //       TestNavigationDelegateHostApi.setup(mockPlatformHostApi);
-    //       NavigationDelegate.api =
-    //           NavigationDelegateHostApiImpl(instanceManager: instanceManager);
-    //     });
-    //
-    //     test('create', () async {
-    //       final NavigationDelegate instance = MockNavigationDelegate();
-    //       await NavigationDelegate.api.createFromInstance(instance);
-    //       expect(instanceManager.getInstance(0), instance);
-    //     });
-    //   });
-    //
-    //   group('$NavigationDelegateFlutterApiImpl', () {
-    //     late NavigationDelegateFlutterApiImpl flutterApi;
-    //
-    //     late MockNavigationDelegate mockNavigationDelegate;
-    //     late int navigationDelegateInstanceId;
-    //
-    //     late WebView mockWebView;
-    //     late int mockWebViewInstanceId;
-    //
-    //     setUp(() {
-    //       flutterApi = NavigationDelegateFlutterApiImpl(
-    //           instanceManager: instanceManager);
-    //       mockNavigationDelegate = MockNavigationDelegate();
-    //       instanceManager.tryAddInstance(mockNavigationDelegate);
-    //       navigationDelegateInstanceId =
-    //       instanceManager.getInstanceId(mockNavigationDelegate)!;
-    //
-    //       mockWebView = MockWebView();
-    //       mockWebViewInstanceId = instanceManager.tryAddInstance(mockWebView)!;
-    //     });
-    //
-    //     test('didStartProvisionalNavigation', () {
-    //       flutterApi.didStartProvisionalNavigation(
-    //         navigationDelegateInstanceId,
-    //         mockWebViewInstanceId,
-    //       );
-    //       verify(
-    //         mockNavigationDelegate.didStartProvisionalNavigation(mockWebView),
-    //       );
-    //     });
-    //
-    //     test('didFinishNavigation', () {
-    //       flutterApi.didFinishNavigation(
-    //         navigationDelegateInstanceId,
-    //         mockWebViewInstanceId,
-    //       );
-    //       verify(
-    //         mockNavigationDelegate.didFinishNavigation(mockWebView),
-    //       );
-    //     });
-    //
-    //     test('decidePolicyForNavigationAction', () {
-    //       when(mockNavigationDelegate.decidePolicyForNavigationAction(
-    //         mockWebView,
-    //         argThat(isA<NavigationAction>()),
-    //       )).thenAnswer((_) => Future<NavigationActionPolicy>.value(
-    //           NavigationActionPolicy.cancel));
-    //
-    //       final UrlRequestData urlRequest = UrlRequestData()..url = 'apple';
-    //       final FrameInfoData targetFrame = FrameInfoData()
-    //         ..isMainFrame = false;
-    //       expect(
-    //         flutterApi.decidePolicyForNavigationAction(
-    //           navigationDelegateInstanceId,
-    //           mockWebViewInstanceId,
-    //           NavigationActionData()
-    //             ..request = urlRequest
-    //             ..targetFrame = targetFrame,
-    //         ),
-    //         completion(1),
-    //       );
-    //     });
-    //
-    //     test('didFailNavigation', () {
-    //       flutterApi.didFailNavigation(
-    //         navigationDelegateInstanceId,
-    //         mockWebViewInstanceId,
-    //         FoundationErrorData()
-    //           ..code = 1
-    //           ..domain = 'myDomain'
-    //           ..localiziedDescription = 'desc',
-    //       );
-    //       verify(mockNavigationDelegate.didFailNavigation(
-    //         mockWebView,
-    //         argThat(isA<FoundationError>()),
-    //       ));
-    //     });
-    //
-    //     test('didFailProvisionalNavigation', () {
-    //       flutterApi.didFailProvisionalNavigation(
-    //         navigationDelegateInstanceId,
-    //         mockWebViewInstanceId,
-    //         FoundationErrorData()
-    //           ..code = 1
-    //           ..domain = 'myDomain'
-    //           ..localiziedDescription = 'desc',
-    //       );
-    //       verify(mockNavigationDelegate.didFailProvisionalNavigation(
-    //         mockWebView,
-    //         argThat(isA<FoundationError>()),
-    //       ));
-    //     });
-    //
-    //     test('webViewWebContentProcessDidTerminate', () {
-    //       flutterApi.webViewWebContentProcessDidTerminate(
-    //         navigationDelegateInstanceId,
-    //         mockWebViewInstanceId,
-    //       );
-    //       verify(
-    //         mockNavigationDelegate
-    //             .webViewWebContentProcessDidTerminate(mockWebView),
-    //       );
-    //     });
-    //   });
-    // });
-    //
-    // group('$WebView', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$WebViewHostApiImpl', () {
-    //     late MockTestWebViewHostApi mockPlatformHostApi;
-    //
-    //     late WebView webView;
-    //     late int webViewInstanceId;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestWebViewHostApi();
-    //       TestWebViewHostApi.setup(mockPlatformHostApi);
-    //       WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
-    //
-    //       webView = WebView();
-    //       webViewInstanceId = instanceManager.tryAddInstance(webView)!;
-    //     });
-    //
-    //     test('create', () async {
-    //       final InstanceManager createInstanceManager = InstanceManager();
-    //       WebView.api = WebViewHostApiImpl(
-    //         instanceManager: createInstanceManager,
-    //       );
-    //
-    //       final WebViewConfiguration configuration = WebViewConfiguration();
-    //       final WebView instance = WebView(configuration);
-    //       createInstanceManager.tryAddInstance(configuration);
-    //
-    //       await WebView.api.createFromInstance(instance, configuration);
-    //       expect(createInstanceManager.getInstance(1), instance);
-    //     });
-    //
-    //     test('scrollView', () {
-    //       final ScrollView scrollView = ScrollView();
-    //       final int scrollViewInstanceId =
-    //       instanceManager.tryAddInstance(scrollView)!;
-    //       when(mockPlatformHostApi.getScrollView(any))
-    //           .thenReturn(scrollViewInstanceId);
-    //
-    //       expect(webView.scrollView, completion(scrollView));
-    //       // Checks that multiple calls work.
-    //       expect(webView.scrollView, completion(scrollView));
-    //     });
-    //
-    //     test('loadRequest', () {
-    //       webView.loadRequest(UrlRequest(url: 'www.flutter.dev'));
-    //       verify(mockPlatformHostApi.loadRequest(
-    //         webViewInstanceId,
-    //         argThat(isA<UrlRequestData>()),
-    //       ));
-    //     });
-    //
-    //     test('loadHtmlString', () {
-    //       webView.loadHtmlString('a', 'string');
-    //       verify(mockPlatformHostApi.loadHtmlString(
-    //         webViewInstanceId,
-    //         'a',
-    //         'string',
-    //       ));
-    //     });
-    //
-    //     test('loadFileUrl', () {
-    //       webView.loadFileUrl('a', 'string');
-    //       verify(mockPlatformHostApi.loadFileUrl(
-    //         webViewInstanceId,
-    //         'a',
-    //         'string',
-    //       ));
-    //     });
-    //
-    //     test('canGoBack', () {
-    //       when(mockPlatformHostApi.canGoBack(webViewInstanceId))
-    //           .thenReturn(true);
-    //       expect(webView.canGoBack, completion(isTrue));
-    //     });
-    //
-    //     test('canGoForward', () {
-    //       when(mockPlatformHostApi.canGoForward(webViewInstanceId))
-    //           .thenReturn(false);
-    //       expect(webView.canGoForward, completion(isFalse));
-    //     });
-    //
-    //     test('goBack', () {
-    //       webView.goBack();
-    //       verify(mockPlatformHostApi.goBack(webViewInstanceId));
-    //     });
-    //
-    //     test('goForward', () {
-    //       webView.goForward();
-    //       verify(mockPlatformHostApi.goForward(webViewInstanceId));
-    //     });
-    //
-    //     test('reload', () {
-    //       webView.reload();
-    //       verify(mockPlatformHostApi.reload(webViewInstanceId));
-    //     });
-    //
-    //     test('url', () {
-    //       when(mockPlatformHostApi.getUrl(webViewInstanceId))
-    //           .thenReturn('www.flutter.dev');
-    //       expect(webView.url, completion('www.flutter.dev'));
-    //     });
-    //
-    //     test('title', () {
-    //       when(mockPlatformHostApi.getTitle(webViewInstanceId))
-    //           .thenReturn('MyTitle');
-    //       expect(webView.title, completion('MyTitle'));
-    //     });
-    //
-    //     test('estimatedProgress', () {
-    //       when(mockPlatformHostApi.getEstimatedProgress(webViewInstanceId))
-    //           .thenReturn(54.5);
-    //       expect(webView.estimatedProgress, completion(54.5));
-    //     });
-    //
-    //     test('allowsBackForwardNavigationGestures', () {
-    //       webView.allowsBackForwardNavigationGestures = false;
-    //       verify(mockPlatformHostApi.setAllowsBackForwardNavigationGestures(
-    //         webViewInstanceId,
-    //         false,
-    //       ));
-    //     });
-    //
-    //     test('customUserAgent', () {
-    //       webView.customUserAgent = 'hello';
-    //       verify(mockPlatformHostApi.setCustomUserAgent(
-    //         webViewInstanceId,
-    //         'hello',
-    //       ));
-    //     });
-    //
-    //     test('evaluateJavaScript', () {
-    //       when(mockPlatformHostApi.evaluateJavaScript(
-    //           webViewInstanceId, 'gogo'))
-    //           .thenAnswer((_) => Future<String>.value('stopstop'));
-    //       expect(webView.evaluateJavaScript('gogo'), completion('stopstop'));
-    //     });
-    //
-    //     test('setNavigationDelegate', () {
-    //       final NavigationDelegate mockNavigationDelegate =
-    //       MockNavigationDelegate();
-    //       final int mockNavigationDelegateInstanceId =
-    //       instanceManager.tryAddInstance(mockNavigationDelegate)!;
-    //
-    //       webView.navigationDelegate = mockNavigationDelegate;
-    //       verify(mockPlatformHostApi.setNavigationDelegate(
-    //         webViewInstanceId,
-    //         mockNavigationDelegateInstanceId,
-    //       ));
-    //     });
-    //
-    //     test('setIosDelegate', () {
-    //       final IosDelegate mockIosDelegate = MockIosDelegate();
-    //       final int mockIosDelegateInstanceId =
-    //       instanceManager.tryAddInstance(mockIosDelegate)!;
-    //
-    //       webView.iosDelegate = mockIosDelegate;
-    //       verify(mockPlatformHostApi.setIosDelegate(
-    //         webViewInstanceId,
-    //         mockIosDelegateInstanceId,
-    //       ));
-    //     });
-    //   });
-    // });
+    group('$WKScriptMessageHandler', () {
+      late MockTestWKScriptMessageHandlerHostApi mockPlatformHostApi;
+
+      late WKScriptMessageHandler scriptMessageHandler;
+
+      setUp(() async {
+        mockPlatformHostApi = MockTestWKScriptMessageHandlerHostApi();
+        TestWKScriptMessageHandlerHostApi.setup(mockPlatformHostApi);
+
+        scriptMessageHandler = WKScriptMessageHandler(
+          scriptMessengerApi: WKScriptMessageHandlerHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+
+        await scriptMessageHandler.scriptMessengerApi
+            .createFromInstance(scriptMessageHandler);
+      });
+
+      test('create', () async {
+        verify(mockPlatformHostApi.create(
+          instanceManager.getInstanceId(scriptMessageHandler),
+        ));
+      });
+    });
+
+    group('$WKUserContentController', () {
+      late MockTestWKUserContentControllerHostApi mockPlatformHostApi;
+
+      late WKUserContentController userContentController;
+
+      final WKWebViewConfiguration webViewConfiguration =
+          WKWebViewConfiguration();
+
+      setUp(() {
+        mockPlatformHostApi = MockTestWKUserContentControllerHostApi();
+        TestWKUserContentControllerHostApi.setup(mockPlatformHostApi);
+
+        instanceManager.tryAddInstance(webViewConfiguration);
+        userContentController =
+            WKUserContentController.fromWebViewConfiguretion(
+          webViewConfiguration,
+          userContentControllerApi: WKUserContentControllerHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+      });
+
+      test('createFromWebViewConfiguration', () async {
+        verify(mockPlatformHostApi.createFromWebViewConfiguration(
+          instanceManager.getInstanceId(userContentController),
+          instanceManager.getInstanceId(webViewConfiguration),
+        ));
+      });
+
+      test('addScriptMessageHandler', () async {
+        final WKScriptMessageHandler handler = MockWKScriptMessageHandler();
+        instanceManager.tryAddInstance(handler);
+
+        userContentController.addScriptMessageHandler(handler, 'handlerName');
+        verify(mockPlatformHostApi.addScriptMessageHandler(
+          instanceManager.getInstanceId(userContentController),
+          instanceManager.getInstanceId(handler),
+          'handlerName',
+        ));
+      });
+
+      test('removeScriptMessageHandler', () async {
+        userContentController.removeScriptMessageHandler('handlerName');
+        verify(mockPlatformHostApi.removeScriptMessageHandler(
+          instanceManager.getInstanceId(userContentController),
+          'handlerName',
+        ));
+      });
+
+      test('removeAllScriptMessageHandlers', () async {
+        userContentController.removeAllScriptMessageHandlers();
+        verify(mockPlatformHostApi.removeAllScriptMessageHandlers(
+          instanceManager.getInstanceId(userContentController),
+        ));
+      });
+
+      test('addUserScript', () {
+        userContentController.addUserScript(const WKUserScript(
+          'aScript',
+          WKUserScriptInjectionTime.atDocumentEnd,
+          isMainFrameOnly: false,
+        ));
+        verify(mockPlatformHostApi.addUserScript(
+          instanceManager.getInstanceId(userContentController),
+          argThat(isA<WKUserScriptData>()),
+        ));
+      });
+
+      test('removeAllUserScripts', () {
+        userContentController.removeAllUserScripts();
+        verify(mockPlatformHostApi.removeAllUserScripts(
+          instanceManager.getInstanceId(userContentController),
+        ));
+      });
+    });
+
+    group('$WKWebViewConfiguration', () {
+      late MockTestWKWebViewConfigurationHostApi mockPlatformHostApi;
+
+      late WKWebViewConfiguration webViewConfiguration;
+
+      setUp(() async {
+        mockPlatformHostApi = MockTestWKWebViewConfigurationHostApi();
+        TestWKWebViewConfigurationHostApi.setup(mockPlatformHostApi);
+
+        webViewConfiguration = WKWebViewConfiguration(
+          webViewConfigurationApi: WKWebViewConfigurationHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+
+        await webViewConfiguration.webViewConfigurationApi
+            .createFromInstance(webViewConfiguration);
+      });
+
+      test('create', () async {
+        verify(
+          mockPlatformHostApi.create(instanceManager.getInstanceId(
+            webViewConfiguration,
+          )),
+        );
+      });
+
+      test('createFromWebView', () async {
+        TestWKWebViewHostApi.setup(MockTestWKWebViewHostApi());
+
+        final WKWebView webView = WKWebView(
+          webViewConfiguration,
+          webviewHostApi: WKWebViewHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+
+        final WKWebViewConfiguration configurationFromWebView =
+            webView.configuration;
+        verify(mockPlatformHostApi.createFromWebView(
+          instanceManager.getInstanceId(configurationFromWebView)!,
+          instanceManager.getInstanceId(webView)!,
+        ));
+      });
+
+      test('allowsInlineMediaPlayback', () {
+        webViewConfiguration.setAllowsInlineMediaPlayback(true);
+        verify(mockPlatformHostApi.setAllowsInlineMediaPlayback(
+          instanceManager.getInstanceId(webViewConfiguration),
+          true,
+        ));
+      });
+
+      test('mediaTypesRequiringUserActionForPlayback', () {
+        webViewConfiguration.setMediaTypesRequiringUserActionForPlayback(
+          <WKAudiovisualMediaType>{
+            WKAudiovisualMediaType.audio,
+            WKAudiovisualMediaType.video,
+          },
+        );
+
+        final List<WKAudiovisualMediaTypeEnumData?> typeData = verify(
+            mockPlatformHostApi.setMediaTypesRequiringUserActionForPlayback(
+          instanceManager.getInstanceId(webViewConfiguration),
+          captureAny,
+        )).captured.single as List<WKAudiovisualMediaTypeEnumData?>;
+
+        expect(typeData, hasLength(2));
+        expect(typeData[0]!.value, WKAudiovisualMediaTypeEnum.audio);
+        expect(typeData[1]!.value, WKAudiovisualMediaTypeEnum.video);
+      });
+    });
+
+    group('$WKNavigationDelegate', () {
+      late MockTestWKNavigationDelegateHostApi mockPlatformHostApi;
+
+      late WKNavigationDelegate navigationDelegate;
+
+      setUp(() async {
+        mockPlatformHostApi = MockTestWKNavigationDelegateHostApi();
+        TestWKNavigationDelegateHostApi.setup(mockPlatformHostApi);
+
+        navigationDelegate = WKNavigationDelegate(
+          navigationDelegateApi: WKNavigationDelegateHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+
+        await navigationDelegate.navigationDelegateApi
+            .createFromInstance(navigationDelegate);
+      });
+
+      test('create', () async {
+        verify(mockPlatformHostApi.create(
+          instanceManager.getInstanceId(navigationDelegate),
+        ));
+      });
+    });
+
+    group('$WKWebView', () {
+      late MockTestWKWebViewHostApi mockPlatformHostApi;
+
+      late WKWebViewConfiguration webViewConfiguration;
+
+      late WKWebView webView;
+      late int webViewInstanceId;
+
+      setUp(() {
+        mockPlatformHostApi = MockTestWKWebViewHostApi();
+        TestWKWebViewHostApi.setup(mockPlatformHostApi);
+
+        webViewConfiguration = WKWebViewConfiguration();
+        instanceManager.tryAddInstance(webViewConfiguration);
+
+        webView = WKWebView(
+          webViewConfiguration,
+          webviewHostApi: WKWebViewHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+        webViewInstanceId = instanceManager.getInstanceId(webView)!;
+      });
+
+      test('create', () async {
+        verify(mockPlatformHostApi.create(
+          instanceManager.getInstanceId(webView),
+          instanceManager.getInstanceId(
+            webViewConfiguration,
+          ),
+        ));
+      });
+
+      test('setUIDelegate', () async {
+        final WKUIDelegate uiDelegate = WKUIDelegate();
+        instanceManager.tryAddInstance(uiDelegate)!;
+
+        await webView.setUIDelegate(uiDelegate);
+        verify(mockPlatformHostApi.setUIDelegate(
+          webViewInstanceId,
+          instanceManager.getInstanceId(uiDelegate),
+        ));
+      });
+
+      test('setNavigationDelegate', () async {
+        final WKNavigationDelegate navigationDelegate = WKNavigationDelegate();
+        instanceManager.tryAddInstance(navigationDelegate)!;
+
+        await webView.setNavigationDelegate(navigationDelegate);
+        verify(mockPlatformHostApi.setNavigationDelegate(
+          webViewInstanceId,
+          instanceManager.getInstanceId(navigationDelegate),
+        ));
+      });
+
+      test('getUrl', () {
+        when(
+          mockPlatformHostApi.getUrl(webViewInstanceId),
+        ).thenReturn('www.flutter.dev');
+        expect(webView.getUrl(), completion('www.flutter.dev'));
+      });
+
+      test('getEstimatedProgress', () {
+        when(
+          mockPlatformHostApi.getEstimatedProgress(webViewInstanceId),
+        ).thenReturn(54.5);
+        expect(webView.getEstimatedProgress(), completion(54.5));
+      });
+
+      test('loadRequest', () {
+        webView.loadRequest(const NSUrlRequest(url: 'www.flutter.dev'));
+        verify(mockPlatformHostApi.loadRequest(
+          webViewInstanceId,
+          argThat(isA<NSUrlRequestData>()),
+        ));
+      });
+
+      test('loadHtmlString', () {
+        webView.loadHtmlString('a', baseUrl: 'b');
+        verify(mockPlatformHostApi.loadHtmlString(webViewInstanceId, 'a', 'b'));
+      });
+
+      test('loadFileUrl', () {
+        webView.loadFileUrl('a', readAccessUrl: 'b');
+        verify(mockPlatformHostApi.loadFileUrl(webViewInstanceId, 'a', 'b'));
+      });
+
+      test('loadFlutterAsset', () {
+        webView.loadFlutterAsset('a');
+        verify(mockPlatformHostApi.loadFlutterAsset(webViewInstanceId, 'a'));
+      });
+
+      test('canGoBack', () {
+        when(mockPlatformHostApi.canGoBack(webViewInstanceId)).thenReturn(true);
+        expect(webView.canGoBack(), completion(isTrue));
+      });
+
+      test('canGoForward', () {
+        when(mockPlatformHostApi.canGoForward(webViewInstanceId))
+            .thenReturn(false);
+        expect(webView.canGoForward(), completion(isFalse));
+      });
+
+      test('goBack', () {
+        webView.goBack();
+        verify(mockPlatformHostApi.goBack(webViewInstanceId));
+      });
+
+      test('goForward', () {
+        webView.goForward();
+        verify(mockPlatformHostApi.goForward(webViewInstanceId));
+      });
+
+      test('reload', () {
+        webView.reload();
+        verify(mockPlatformHostApi.reload(webViewInstanceId));
+      });
+
+      test('getTitle', () {
+        when(mockPlatformHostApi.getTitle(webViewInstanceId))
+            .thenReturn('MyTitle');
+        expect(webView.getTitle(), completion('MyTitle'));
+      });
+
+      test('setAllowsBackForwardNavigationGestures', () {
+        webView.setAllowsBackForwardNavigationGestures(false);
+        verify(mockPlatformHostApi.setAllowsBackForwardNavigationGestures(
+          webViewInstanceId,
+          false,
+        ));
+      });
+
+      test('customUserAgent', () {
+        webView.setCustomUserAgent('hello');
+        verify(mockPlatformHostApi.setCustomUserAgent(
+          webViewInstanceId,
+          'hello',
+        ));
+      });
+
+      test('evaluateJavaScript', () {
+        when(mockPlatformHostApi.evaluateJavaScript(webViewInstanceId, 'gogo'))
+            .thenAnswer((_) => Future<String>.value('stopstop'));
+        expect(webView.evaluateJavaScript('gogo'), completion('stopstop'));
+      });
+    });
     //
     // group('$FoundationObject', () {
     //   late InstanceManager instanceManager;
@@ -866,104 +585,30 @@ void main() {
     //   });
     // });
     //
-    // group('$IosView', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$IosViewHostApiImpl', () {
-    //     late MockTestIosViewHostApi mockPlatformHostApi;
-    //
-    //     late IosView iosView;
-    //     late int iosViewInstanceId;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestIosViewHostApi();
-    //       TestIosViewHostApi.setup(mockPlatformHostApi);
-    //       IosView.api = IosViewHostApiImpl(instanceManager: instanceManager);
-    //
-    //       iosView = IosView();
-    //       iosViewInstanceId = instanceManager.tryAddInstance(iosView)!;
-    //     });
-    //
-    //     test('backgroundColor', () {
-    //       iosView.backgroundColor = material.Colors.red;
-    //       verify(mockPlatformHostApi.setBackgroundColor(
-    //         iosViewInstanceId,
-    //         material.Colors.red.value,
-    //       ));
-    //     });
-    //
-    //     test('opaque', () {
-    //       iosView.opaque = false;
-    //       verify(mockPlatformHostApi.setOpaque(iosViewInstanceId, false));
-    //     });
-    //   });
-    // });
-    //
-    // group('$IosDelegate', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$IosDelegateHostApiImpl', () {
-    //     late MockTestIosDelegateHostApi mockPlatformHostApi;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestIosDelegateHostApi();
-    //       TestIosDelegateHostApi.setup(mockPlatformHostApi);
-    //     });
-    //
-    //     test('create', () async {
-    //       final InstanceManager createInstanceManager = InstanceManager();
-    //       IosDelegate.api = IosDelegateHostApiImpl(
-    //         instanceManager: createInstanceManager,
-    //       );
-    //       final IosDelegate instance = MockIosDelegate();
-    //       await IosDelegate.api.createFromInstance(instance);
-    //       expect(createInstanceManager.getInstance(0), instance);
-    //     });
-    //   });
-    //
-    //   group('$IosDelegateFlutterApiImpl', () {
-    //     late IosDelegateFlutterApiImpl flutterApi;
-    //
-    //     late MockIosDelegate mockIosDelegate;
-    //     late int iosDelegateInstanceId;
-    //
-    //     setUp(() {
-    //       flutterApi =
-    //           IosDelegateFlutterApiImpl(instanceManager: instanceManager);
-    //       mockIosDelegate = MockIosDelegate();
-    //       instanceManager.tryAddInstance(mockIosDelegate);
-    //       iosDelegateInstanceId =
-    //       instanceManager.getInstanceId(mockIosDelegate)!;
-    //     });
-    //
-    //     test('onCreateWebView', () {
-    //       final WebViewConfiguration configuration = WebViewConfiguration();
-    //       final int configurationInstanceId =
-    //       instanceManager.tryAddInstance(configuration)!;
-    //       final UrlRequestData urlRequest = UrlRequestData()..url = 'apple';
-    //       final FrameInfoData targetFrame = FrameInfoData()
-    //         ..isMainFrame = false;
-    //       flutterApi.onCreateWebView(
-    //         iosDelegateInstanceId,
-    //         configurationInstanceId,
-    //         NavigationActionData()
-    //           ..request = urlRequest
-    //           ..targetFrame = targetFrame,
-    //       );
-    //       verify(mockIosDelegate.onCreateWebView(
-    //         configuration,
-    //         argThat(isA<NavigationAction>()),
-    //       ));
-    //     });
-    //   });
-    // });
+
+    group('$WKUIDelegate', () {
+      late MockTestWKUIDelegateHostApi mockPlatformHostApi;
+
+      late WKUIDelegate uiDelegate;
+
+      setUp(() async {
+        mockPlatformHostApi = MockTestWKUIDelegateHostApi();
+        TestWKUIDelegateHostApi.setup(mockPlatformHostApi);
+
+        uiDelegate = WKUIDelegate(
+          uiDelegateApi: WKUIDelegateHostApiImpl(
+            instanceManager: instanceManager,
+          ),
+        );
+
+        await uiDelegate.uiDelegateApi.createFromInstance(uiDelegate);
+      });
+
+      test('create', () async {
+        verify(mockPlatformHostApi.create(
+          instanceManager.getInstanceId(uiDelegate),
+        ));
+      });
+    });
   });
 }
