@@ -6,7 +6,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
+import '../common/instance_manager.dart';
 import '../web_kit/web_kit.dart';
 import 'ui_kit_api_impls.dart';
 
@@ -17,9 +19,13 @@ class UIScrollView {
   /// Constructs a [UIScrollView] that is owned by [webView].
   UIScrollView.fromWebView(
     WKWebView webView, {
-    UIScrollViewHostApiImpl? scrollViewApi,
-  }) : scrollViewApi = scrollViewApi ?? UIScrollViewHostApiImpl() {
-    this.scrollViewApi.createFromWebViewFromInstance(this, webView);
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : scrollViewApi = UIScrollViewHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ) {
+    scrollViewApi.createFromWebViewFromInstance(this, webView);
   }
 
   /// Pigeon Host Api implementation for [UIScrollView].

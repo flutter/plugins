@@ -22,7 +22,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [createFromWebViewFromInstance].
   Future<void> createFromWebViewFromInstance(

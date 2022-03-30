@@ -112,7 +112,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [createFromWebViewConfiguration].
   Future<void> createFromWebViewConfigurationFromInstance(
@@ -155,7 +155,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [create].
   Future<void> createFromInstance(WKScriptMessageHandler instance) async {
@@ -177,7 +177,7 @@ class WKUserContentControllerHostApiImpl
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [createFromWebViewConfiguration].
   Future<void> createFromWebViewConfigurationFromInstance(
@@ -255,13 +255,13 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [create].
   Future<void> createFromInstance(WKWebViewConfiguration instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId);
+      await create(instanceId);
     }
   }
 
@@ -272,8 +272,8 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   ) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return createFromWebView(
-          instanceId, instanceManager.getInstanceId(webView)!);
+      await createFromWebView(
+          instanceId, instanceManager.getInstanceId(webView)!,);
     }
   }
 
@@ -313,13 +313,13 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [create].
   Future<void> createFromInstance(WKUIDelegate instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId);
+      await create(instanceId);
     }
   }
 }
@@ -334,13 +334,13 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [create].
   Future<void> createFromInstance(WKNavigationDelegate instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId);
+      await create(instanceId);
     }
   }
 }
@@ -355,7 +355,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [create].
   Future<void> createFromInstance(
@@ -364,7 +364,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   ) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(
+      await create(
         instanceId,
         instanceManager.getInstanceId(configuration)!,
       );

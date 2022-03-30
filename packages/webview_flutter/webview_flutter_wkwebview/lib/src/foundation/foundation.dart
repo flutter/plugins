@@ -5,6 +5,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 
 import 'foundation_api_impls.dart';
 
@@ -143,8 +145,11 @@ class NSError {
 /// The root class of most Objective-C class hierarchies.
 class NSObject {
   /// Constructs an [NSObject].
-  NSObject({@visibleForTesting NSObjectHostApiImpl? nsObjectApi})
-      : objectApi = nsObjectApi ?? NSObjectHostApiImpl();
+  NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
+      : objectApi = NSObjectHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
 
   /// Pigeon Host Api implementation for [NSObject].
   @visibleForTesting

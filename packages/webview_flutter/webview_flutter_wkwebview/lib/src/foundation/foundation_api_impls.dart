@@ -8,10 +8,15 @@ import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
 import 'foundation.dart';
 
-extension _NSKeyValueObservingOptionsConverter on NSKeyValueObservingOptions {
-  NSKeyValueObservingOptionsEnumData toNSKeyValueObservingOptionsEnumData() {
+Iterable<NSKeyValueObservingOptionsEnumData>
+    _toNSKeyValueObservingOptionsEnumData(
+  Iterable<NSKeyValueObservingOptions> options,
+) {
+  return options.map<NSKeyValueObservingOptionsEnumData>((
+    NSKeyValueObservingOptions option,
+  ) {
     late final NSKeyValueObservingOptionsEnum? value;
-    switch (this) {
+    switch (option) {
       case NSKeyValueObservingOptions.newValue:
         value = NSKeyValueObservingOptionsEnum.newValue;
         break;
@@ -27,7 +32,7 @@ extension _NSKeyValueObservingOptionsConverter on NSKeyValueObservingOptions {
     }
 
     return NSKeyValueObservingOptionsEnumData(value: value);
-  }
+  });
 }
 
 /// Host api implementation for [NSObject].
@@ -40,7 +45,7 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   /// Converts objects to instances ids for [addObserver].
   Future<void> addObserverFromInstance(
@@ -53,11 +58,7 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
       instanceManager.getInstanceId(instance)!,
       instanceManager.getInstanceId(observer)!,
       keyPath,
-      options
-          .map<NSKeyValueObservingOptionsEnumData>(
-              (NSKeyValueObservingOptions option) =>
-                  option.toNSKeyValueObservingOptionsEnumData())
-          .toList(),
+      _toNSKeyValueObservingOptionsEnumData(options).toList(),
     );
   }
 
