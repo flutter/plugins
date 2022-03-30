@@ -968,7 +968,7 @@ void main() {
       testWidgets('onProgress', (WidgetTester tester) async {
         await buildWidget(tester, hasProgressTracking: true);
         final dynamic observeValue =
-            verify(mockWebView.observeValue = captureAny).captured.single
+            verify(mockWebView.setObserveValue(captureAny)).captured.single
                 as void Function(
           String keyPath,
           NSObject object,
