@@ -17,12 +17,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webview_flutter_android/webview_android.dart';
-import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_android_example/navigation_decision.dart';
 import 'package:webview_flutter_android_example/navigation_request.dart';
 import 'package:webview_flutter_android_example/web_view.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_pro_android/webview_android.dart';
+import 'package:webview_pro_android/webview_surface_android.dart';
+import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart';
 
 Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

@@ -1,3 +1,7 @@
+## 2.8.3+2
+
+* fix flutter analyze issues
+
 ## 2.8.3+1
 
 * support image upload、take camera and add geolocation for android
