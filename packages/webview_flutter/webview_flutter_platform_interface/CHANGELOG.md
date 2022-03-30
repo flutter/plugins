@@ -1,3 +1,7 @@
+## 1.8.1+2
+
+* fix flutter analyze issues
+
 ## 1.8.1+1
 
 * add geolocation for android

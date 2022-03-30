@@ -4,7 +4,7 @@ repository: https://github.com/wenzhiming/flutter-plugins/tree/main/packages/web
 issue_tracker: https://github.com/wenzhiming/flutter-plugins/issues
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
-version: 1.8.1+1
+version: 1.8.1+2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
