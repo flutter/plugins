@@ -146,14 +146,12 @@ class NSError {
 class NSObject {
   /// Constructs an [NSObject].
   NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : objectApi = NSObjectHostApiImpl(
+      : _api = NSObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         );
 
-  /// Pigeon Host Api implementation for [NSObject].
-  @visibleForTesting
-  final NSObjectHostApiImpl objectApi;
+  final NSObjectHostApiImpl _api;
 
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
@@ -162,7 +160,7 @@ class NSObject {
     required Set<NSKeyValueObservingOptions> options,
   }) {
     assert(options.isNotEmpty);
-    return objectApi.addObserverFromInstance(
+    return _api.addObserverFromInstance(
       this,
       observer,
       keyPath,
@@ -172,12 +170,12 @@ class NSObject {
 
   /// Stops the observer object from receiving change notifications for the property.
   Future<void> removeObserver(NSObject observer, {required String keyPath}) {
-    return objectApi.removeObserverFromInstance(this, observer, keyPath);
+    return _api.removeObserverFromInstance(this, observer, keyPath);
   }
 
   /// Release the reference to the Objective-C object.
   Future<void> dispose() {
-    return objectApi.disposeFromInstance(this);
+    return _api.disposeFromInstance(this);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.

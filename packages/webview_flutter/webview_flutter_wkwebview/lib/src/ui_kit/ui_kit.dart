@@ -20,22 +20,20 @@ class UIScrollView {
     WKWebView webView, {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : scrollViewApi = UIScrollViewHostApiImpl(
+  }) : _api = UIScrollViewHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    scrollViewApi.createFromWebViewFromInstance(this, webView);
+    _api.createFromWebViewFromInstance(this, webView);
   }
 
-  /// Pigeon Host Api implementation for [UIScrollView].
-  @visibleForTesting
-  final UIScrollViewHostApiImpl scrollViewApi;
+  final UIScrollViewHostApiImpl _api;
 
   /// Point at which the origin of the content view is offset from the origin of the scroll view.
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<Point<double>> getContentOffset() {
-    return scrollViewApi.getContentOffsetFromInstance(this);
+    return _api.getContentOffsetFromInstance(this);
   }
 
   /// Move the scrolled position of this view.
@@ -43,7 +41,7 @@ class UIScrollView {
   /// This method is not a part of UIKit and is only a helper method to make
   /// scrollBy atomic.
   Future<void> scrollBy(Point<double> offset) {
-    return scrollViewApi.scrollByFromInstance(this, offset);
+    return _api.scrollByFromInstance(this, offset);
   }
 
   /// Set point at which the origin of the content view is offset from the origin of the scroll view.
@@ -52,6 +50,6 @@ class UIScrollView {
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<void> setContentOffset(Point<double> offset) {
-    return scrollViewApi.setContentOffsetFromInstance(this, offset);
+    return _api.setContentOffsetFromInstance(this, offset);
   }
 }
