@@ -7,7 +7,7 @@ import 'package:pigeon/pigeon.dart';
 @ConfigurePigeon(
   PigeonOptions(
     dartOut: 'lib/src/common/web_kit.pigeon.dart',
-    dartTestOut: 'test/src/test_web_kit.pigeon.dart',
+    dartTestOut: 'test/src/common/test_web_kit.pigeon.dart',
     dartOptions: DartOptions(isNullSafe: true, copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
@@ -15,6 +15,10 @@ import 'package:pigeon/pigeon.dart';
     ]),
   ),
 )
+
+/// Mirror of NSKeyValueObservingOptions.
+///
+/// See https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions?language=objc.
 enum NSKeyValueObservingOptionsEnum {
   newValue,
   oldValue,
@@ -23,10 +27,15 @@ enum NSKeyValueObservingOptionsEnum {
 }
 
 class NSKeyValueObservingOptionsEnumData {
-  // TODO(bparrishMines): Fails when marked as nonnull. This is true for all enums in Data.
+  // TODO(bparrishMines): Generated code fails when enums are marked as nonnull.
+  // This is true for all enums in a data class. Change to nonnull once this is
+  // fixed: https://github.com/flutter/flutter/issues/100594
   late NSKeyValueObservingOptionsEnum? value;
 }
 
+/// Mirror of NSKeyValueChange.
+///
+/// See https://developer.apple.com/documentation/foundation/nskeyvaluechange?language=objc.
 enum NSKeyValueChangeEnum {
   setting,
   insertion,
@@ -38,6 +47,9 @@ class NSKeyValueChangeEnumData {
   late NSKeyValueChangeEnum? value;
 }
 
+/// Mirror of NSKeyValueChangeKey.
+///
+/// See https://developer.apple.com/documentation/foundation/nskeyvaluechangekey?language=objc.
 enum NSKeyValueChangeKeyEnum {
   indexes,
   kind,
@@ -50,6 +62,9 @@ class NSKeyValueChangeKeyEnumData {
   late NSKeyValueChangeKeyEnum? value;
 }
 
+/// Mirror of WKUserScriptInjectionTime.
+///
+/// See https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime?language=objc.
 enum WKUserScriptInjectionTimeEnum {
   atDocumentStart,
   atDocumentEnd,
@@ -91,6 +106,9 @@ class WKWebsiteDataTypesEnumData {
   late WKWebsiteDataTypesEnum? value;
 }
 
+/// Mirror of WKNavigationActionPolicy.
+///
+/// See https://developer.apple.com/documentation/webkit/wknavigationactionpolicy?language=objc.
 enum WKNavigationActionPolicyEnum {
   allow,
   cancel,

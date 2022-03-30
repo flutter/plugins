@@ -11,7 +11,7 @@ import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
-import '../test_web_kit.pigeon.dart';
+import '../common/test_web_kit.pigeon.dart';
 import 'ui_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[

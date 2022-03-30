@@ -10,7 +10,7 @@ import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
-import '../test_web_kit.pigeon.dart';
+import '../common/test_web_kit.pigeon.dart';
 import 'web_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[
