@@ -1,3 +1,7 @@
+## 3.0.1+2
+
+* dependency new plugins to solve the problem of 3.0.1 + 1 running failure
+
 ## 3.0.1+1
 
 * Support photo upload,take camera.

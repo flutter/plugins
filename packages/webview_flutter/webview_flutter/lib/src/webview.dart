@@ -12,9 +12,8 @@ import 'package:flutter/widgets.dart';
 import 'package:webview_pro_android/webview_android_cookie_manager.dart';
 import 'package:webview_pro_android/webview_surface_android.dart';
 import 'package:webview_pro_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:webview_pro_wkwebview/webview_flutter_wkwebview.dart';
 
-import '../platform_interface.dart';
 import '../platform_interface.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is

@@ -10,8 +10,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_webview_pro/webview_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
@@ -131,7 +131,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           gestureNavigationEnabled: true,
           backgroundColor: const Color(0x00000000),
-          geolocationEnabled: true,// set geolocationEnable true or not
+          geolocationEnabled: true, // set geolocationEnable true or not
         );
       }),
       floatingActionButton: favoriteButton(),
