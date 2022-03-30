@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -52,7 +51,7 @@ class UIScrollView {
   /// The default value is `Point<double>(0.0, 0.0)`.
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
-  Future<void> setContentOffset(FutureOr<Point<double>> offset) {
+  Future<void> setContentOffset(Point<double> offset) {
     return scrollViewApi.setContentOffsetFromInstance(this, offset);
   }
 }

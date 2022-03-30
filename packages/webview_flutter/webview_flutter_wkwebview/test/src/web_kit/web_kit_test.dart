@@ -2,38 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math';
-
-import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
-import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';
-import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart';
-import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit_api_impls.dart';
-import 'package:webview_flutter_wkwebview/src/foundation/foundation_api_impls.dart';
+import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
-import 'web_kit_test.mocks.dart';
 import '../test_web_kit.pigeon.dart';
+import 'web_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[
-  WKNavigationDelegate,
-  WKScriptMessageHandler,
-  WKUIDelegate,
-  WKUserContentController,
-  WKWebView,
-  WKWebViewConfiguration,
-  WKWebsiteDataStore,
   TestWKNavigationDelegateHostApi,
   TestWKScriptMessageHandlerHostApi,
   TestWKUIDelegateHostApi,
   TestWKUserContentControllerHostApi,
-  TestWKWebViewHostApi,
   TestWKWebViewConfigurationHostApi,
+  TestWKWebViewHostApi,
   TestWKWebsiteDataStoreHostApi,
 ])
 void main() {
@@ -98,49 +84,7 @@ void main() {
         expect(typeData.value, WKWebsiteDataTypesEnum.cookies);
       });
     });
-    //
-    // group('$ScrollView', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$ScrollViewHostApiImpl', () {
-    //     late MockTestScrollViewHostApi mockPlatformHostApi;
-    //
-    //     late ScrollView scrollView;
-    //     late int scrollViewInstanceId;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestScrollViewHostApi();
-    //       TestScrollViewHostApi.setup(mockPlatformHostApi);
-    //
-    //       ScrollView.api = ScrollViewHostApiImpl(
-    //         instanceManager: instanceManager,
-    //       );
-    //
-    //       scrollView = ScrollView();
-    //       scrollViewInstanceId = instanceManager.tryAddInstance(scrollView)!;
-    //     });
-    //
-    //     test('contentOffset', () async {
-    //       when(mockPlatformHostApi.getContentOffset(scrollViewInstanceId))
-    //           .thenReturn(<double>[4.0, 10.0]);
-    //       expect(
-    //         scrollView.contentOffset,
-    //         completion(const Point<double>(4.0, 10.0)),
-    //       );
-    //
-    //       scrollView.contentOffset = const Point<double>(6.0, 11.0);
-    //       await untilCalled(mockPlatformHostApi.setContentOffset(
-    //         scrollViewInstanceId,
-    //         6.0,
-    //         11.0,
-    //       ));
-    //     });
-    //   });
-    //
+
     group('$WKScriptMessageHandler', () {
       late MockTestWKScriptMessageHandlerHostApi mockPlatformHostApi;
 
@@ -204,8 +148,12 @@ void main() {
       });
 
       test('addScriptMessageHandler', () async {
-        final WKScriptMessageHandler handler = MockWKScriptMessageHandler();
-        instanceManager.tryAddInstance(handler);
+        TestWKScriptMessageHandlerHostApi.setup(
+          MockTestWKScriptMessageHandlerHostApi(),
+        );
+        final WKScriptMessageHandler handler = WKScriptMessageHandler(
+          instanceManager: instanceManager,
+        );
 
         userContentController.addScriptMessageHandler(handler, 'handlerName');
         verify(mockPlatformHostApi.addScriptMessageHandler(
@@ -509,111 +457,6 @@ void main() {
         expect(webView.evaluateJavaScript('gogo'), completion('stopstop'));
       });
     });
-    //
-    // group('$FoundationObject', () {
-    //   late InstanceManager instanceManager;
-    //
-    //   setUp(() {
-    //     instanceManager = InstanceManager();
-    //   });
-    //
-    //   group('$FoundationObjectHostApiImpl', () {
-    //     late MockTestFoundationObjectHostApi mockPlatformHostApi;
-    //
-    //     late FoundationObject foundationObject;
-    //     late int foundationObjectInstanceId;
-    //
-    //     setUp(() {
-    //       mockPlatformHostApi = MockTestFoundationObjectHostApi();
-    //       TestFoundationObjectHostApi.setup(mockPlatformHostApi);
-    //       FoundationObject.api =
-    //           FoundationObjectHostApiImpl(instanceManager: instanceManager);
-    //
-    //       foundationObject = FoundationObject();
-    //       foundationObjectInstanceId =
-    //       instanceManager.tryAddInstance(foundationObject)!;
-    //     });
-    //
-    //     test('addObserver', () async {
-    //       foundationObject.addObserver(
-    //         foundationObject,
-    //         'keyPath',
-    //         <KeyValueObservingOptions>{
-    //           KeyValueObservingOptions.initial,
-    //           KeyValueObservingOptions.prior,
-    //         },
-    //       );
-    //       verify(mockPlatformHostApi.addObserver(
-    //         foundationObjectInstanceId,
-    //         foundationObjectInstanceId,
-    //         'keyPath',
-    //         0x04 | 0x08,
-    //       ));
-    //     });
-    //
-    //     test('removeObserver', () async {
-    //       foundationObject.addObserver(
-    //         foundationObject,
-    //         'keyPath',
-    //         <KeyValueObservingOptions>{
-    //           KeyValueObservingOptions.initial,
-    //           KeyValueObservingOptions.prior,
-    //         },
-    //       );
-    //       verify(mockPlatformHostApi.addObserver(
-    //         foundationObjectInstanceId,
-    //         foundationObjectInstanceId,
-    //         'keyPath',
-    //         0x04 | 0x08,
-    //       ));
-    //     });
-    //   });
-    //
-    //   group('$FoundationObjectFlutterApiImpl', () {
-    //     late FoundationObjectFlutterApiImpl flutterApi;
-    //
-    //     late MockFoundationObject mockFoundationObject;
-    //     late int foundationObjectInstanceId;
-    //
-    //     setUp(() {
-    //       flutterApi =
-    //           FoundationObjectFlutterApiImpl(instanceManager: instanceManager);
-    //       mockFoundationObject = MockFoundationObject();
-    //       instanceManager.tryAddInstance(mockFoundationObject);
-    //       foundationObjectInstanceId =
-    //       instanceManager.getInstanceId(mockFoundationObject)!;
-    //     });
-    //
-    //     test('observeValue', () {
-    //       final FoundationObject mockObserver = MockFoundationObject();
-    //       final int mockObserverInstanceId =
-    //       instanceManager.tryAddInstance(mockObserver)!;
-    //
-    //       flutterApi.observeValue(
-    //         foundationObjectInstanceId,
-    //         'aKeyPath',
-    //         mockObserverInstanceId,
-    //         <String, Object?>{
-    //           'kind': 'setting',
-    //           'new': 23,
-    //           'old': 45,
-    //           'notificationIsPrior': false,
-    //         },
-    //       );
-    //       verify(mockFoundationObject.observeValue(
-    //         'aKeyPath',
-    //         mockObserver,
-    //         <KeyValueChangeKey, Object?>{
-    //           KeyValueChangeKey.kind: KeyValueChange.setting,
-    //           KeyValueChangeKey.new_: 23,
-    //           KeyValueChangeKey.old: 45,
-    //           KeyValueChangeKey.notificationIsPrior: false,
-    //         },
-    //       ));
-    //     });
-    //   });
-    // });
-    //
 
     group('$WKUIDelegate', () {
       late MockTestWKUIDelegateHostApi mockPlatformHostApi;

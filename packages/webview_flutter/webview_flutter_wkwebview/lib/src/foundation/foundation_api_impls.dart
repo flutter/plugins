@@ -76,8 +76,10 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
   }
 
   /// Converts objects to instances ids for [dispose].
-  Future<void> disposeFromInstance(NSObject instance) {
-    instanceManager.removeInstance(instance);
-    return dispose(instanceManager.getInstanceId(instance)!);
+  Future<void> disposeFromInstance(NSObject instance) async {
+    final int? instanceId = instanceManager.removeInstance(instance);
+    if (instanceId != null) {
+      await dispose(instanceId);
+    }
   }
 }

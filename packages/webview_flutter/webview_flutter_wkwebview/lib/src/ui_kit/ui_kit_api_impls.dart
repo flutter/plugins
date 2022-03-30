@@ -18,7 +18,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   UIScrollViewHostApiImpl({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance,
+  })  : instanceManager = instanceManager ?? InstanceManager.instance,
         super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
@@ -63,13 +63,12 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   /// Converts objects to instances ids for [setContentOffset].
   Future<void> setContentOffsetFromInstance(
     UIScrollView instance,
-    FutureOr<Point<double>> offset,
+    Point<double> offset,
   ) async {
-    final Point<double> offsetValue = await offset;
     return setContentOffset(
       instanceManager.getInstanceId(instance)!,
-      offsetValue.x,
-      offsetValue.y,
+      offset.x,
+      offset.y,
     );
   }
 }

@@ -2,28 +2,26 @@
 // in webview_flutter_wkwebview/test/src/web_kit_webview_widget_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i8;
+import 'dart:async' as _i7;
 import 'dart:math' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_platform_interface/src/types/javascript_channel.dart'
-    as _i11;
-import 'package:webview_flutter_platform_interface/src/types/types.dart'
-    as _i12;
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     as _i10;
-import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart'
+import 'package:webview_flutter_platform_interface/src/types/types.dart'
+    as _i11;
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
     as _i9;
+import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart'
+    as _i8;
 import 'package:webview_flutter_wkwebview/src/foundation/foundation_api_impls.dart'
-    as _i5;
-import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart' as _i7;
+    as _i6;
+import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart' as _i5;
 import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit_api_impls.dart'
     as _i2;
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart' as _i6;
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart'
-    as _i4;
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart' as _i4;
 import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart'
-    as _i13;
+    as _i12;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -40,55 +38,34 @@ class _FakeUIScrollViewHostApiImpl_0 extends _i1.Fake
 
 class _FakePoint_1<T extends num> extends _i1.Fake implements _i3.Point<T> {}
 
-class _FakeWKNavigationDelegateHostApiImpl_2 extends _i1.Fake
-    implements _i4.WKNavigationDelegateHostApiImpl {}
+class _FakeWKWebViewConfiguration_2 extends _i1.Fake
+    implements _i4.WKWebViewConfiguration {}
 
-class _FakeNSObjectHostApiImpl_3 extends _i1.Fake
-    implements _i5.NSObjectHostApiImpl {}
+class _FakeUIScrollView_3 extends _i1.Fake implements _i5.UIScrollView {}
 
-class _FakeWKScriptMessageHandlerHostApiImpl_4 extends _i1.Fake
-    implements _i4.WKScriptMessageHandlerHostApiImpl {}
+class _FakeNSObjectHostApiImpl_4 extends _i1.Fake
+    implements _i6.NSObjectHostApiImpl {}
 
-class _FakeWKWebViewHostApiImpl_5 extends _i1.Fake
-    implements _i4.WKWebViewHostApiImpl {}
+class _FakeWKUserContentController_5 extends _i1.Fake
+    implements _i4.WKUserContentController {}
 
-class _FakeWKWebViewConfiguration_6 extends _i1.Fake
-    implements _i6.WKWebViewConfiguration {}
+class _FakeWKWebsiteDataStore_6 extends _i1.Fake
+    implements _i4.WKWebsiteDataStore {}
 
-class _FakeUIScrollView_7 extends _i1.Fake implements _i7.UIScrollView {}
+class _FakeWKWebView_7 extends _i1.Fake implements _i4.WKWebView {}
 
-class _FakeWKWebViewConfigurationHostApiImpl_8 extends _i1.Fake
-    implements _i4.WKWebViewConfigurationHostApiImpl {}
+class _FakeWKScriptMessageHandler_8 extends _i1.Fake
+    implements _i4.WKScriptMessageHandler {}
 
-class _FakeWKUserContentController_9 extends _i1.Fake
-    implements _i6.WKUserContentController {}
+class _FakeWKUIDelegate_9 extends _i1.Fake implements _i4.WKUIDelegate {}
 
-class _FakeWKWebsiteDataStore_10 extends _i1.Fake
-    implements _i6.WKWebsiteDataStore {}
-
-class _FakeWKWebsiteDataStoreHostApiImpl_11 extends _i1.Fake
-    implements _i4.WKWebsiteDataStoreHostApiImpl {}
-
-class _FakeWKUIDelegateHostApiImpl_12 extends _i1.Fake
-    implements _i4.WKUIDelegateHostApiImpl {}
-
-class _FakeWKUserContentControllerHostApiImpl_13 extends _i1.Fake
-    implements _i4.WKUserContentControllerHostApiImpl {}
-
-class _FakeWKWebView_14 extends _i1.Fake implements _i6.WKWebView {}
-
-class _FakeWKScriptMessageHandler_15 extends _i1.Fake
-    implements _i6.WKScriptMessageHandler {}
-
-class _FakeWKUIDelegate_16 extends _i1.Fake implements _i6.WKUIDelegate {}
-
-class _FakeWKNavigationDelegate_17 extends _i1.Fake
-    implements _i6.WKNavigationDelegate {}
+class _FakeWKNavigationDelegate_10 extends _i1.Fake
+    implements _i4.WKNavigationDelegate {}
 
 /// A class which mocks [UIScrollView].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUIScrollView extends _i1.Mock implements _i7.UIScrollView {
+class MockUIScrollView extends _i1.Mock implements _i5.UIScrollView {
   MockUIScrollView() {
     _i1.throwOnMissingStub(this);
   }
@@ -99,487 +76,363 @@ class MockUIScrollView extends _i1.Mock implements _i7.UIScrollView {
               returnValue: _FakeUIScrollViewHostApiImpl_0())
           as _i2.UIScrollViewHostApiImpl);
   @override
-  _i8.Future<_i3.Point<double>> getContentOffset() => (super.noSuchMethod(
+  _i7.Future<_i3.Point<double>> getContentOffset() => (super.noSuchMethod(
           Invocation.method(#getContentOffset, []),
           returnValue: Future<_i3.Point<double>>.value(_FakePoint_1<double>()))
-      as _i8.Future<_i3.Point<double>>);
+      as _i7.Future<_i3.Point<double>>);
   @override
-  _i8.Future<void> scrollBy(_i3.Point<double>? offset) =>
+  _i7.Future<void> scrollBy(_i3.Point<double>? offset) =>
       (super.noSuchMethod(Invocation.method(#scrollBy, [offset]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setContentOffset(_i8.FutureOr<_i3.Point<double>>? offset) =>
+  _i7.Future<void> setContentOffset(_i7.FutureOr<_i3.Point<double>>? offset) =>
       (super.noSuchMethod(Invocation.method(#setContentOffset, [offset]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKNavigationDelegate].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWKNavigationDelegate extends _i1.Mock
-    implements _i6.WKNavigationDelegate {
+    implements _i4.WKNavigationDelegate {
   MockWKNavigationDelegate() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKNavigationDelegateHostApiImpl get navigationDelegateApi =>
-      (super.noSuchMethod(Invocation.getter(#navigationDelegateApi),
-              returnValue: _FakeWKNavigationDelegateHostApiImpl_2())
-          as _i4.WKNavigationDelegateHostApiImpl);
-  @override
-  _i5.NSObjectHostApiImpl get objectApi => (super.noSuchMethod(
-      Invocation.getter(#objectApi),
-      returnValue: _FakeNSObjectHostApiImpl_3()) as _i5.NSObjectHostApiImpl);
-  @override
-  set observeValue(
-          void Function(
-                  String, _i9.NSObject, Map<_i9.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
-          returnValueForMissingStub: null);
-  @override
-  _i8.Future<void> setDidStartProvisionalNavigation(
-          void Function(_i6.WKWebView, String?)?
+  _i7.Future<void> setDidStartProvisionalNavigation(
+          void Function(_i4.WKWebView, String?)?
               didStartProvisionalNavigation) =>
       (super.noSuchMethod(
           Invocation.method(#setDidStartProvisionalNavigation,
               [didStartProvisionalNavigation]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setDidFinishNavigation(
-          void Function(_i6.WKWebView, String?)? didFinishNavigation) =>
+  _i7.Future<void> setDidFinishNavigation(
+          void Function(_i4.WKWebView, String?)? didFinishNavigation) =>
       (super.noSuchMethod(
           Invocation.method(#setDidFinishNavigation, [didFinishNavigation]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setDecidePolicyForNavigationAction(
-          _i8.Future<_i6.WKNavigationActionPolicy> Function(
-                  _i6.WKWebView, _i6.WKNavigationAction)?
+  _i7.Future<void> setDecidePolicyForNavigationAction(
+          _i7.Future<_i4.WKNavigationActionPolicy> Function(
+                  _i4.WKWebView, _i4.WKNavigationAction)?
               decidePolicyForNavigationAction) =>
       (super.noSuchMethod(
           Invocation.method(#setDecidePolicyForNavigationAction,
               [decidePolicyForNavigationAction]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setDidFailNavigation(
-          void Function(_i6.WKWebView, _i9.NSError)? didFailNavigation) =>
+  _i7.Future<void> setDidFailNavigation(
+          void Function(_i4.WKWebView, _i8.NSError)? didFailNavigation) =>
       (super.noSuchMethod(
           Invocation.method(#setDidFailNavigation, [didFailNavigation]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setDidFailProvisionalNavigation(
-          void Function(_i6.WKWebView, _i9.NSError)?
+  _i7.Future<void> setDidFailProvisionalNavigation(
+          void Function(_i4.WKWebView, _i8.NSError)?
               didFailProvisionalNavigation) =>
       (super.noSuchMethod(
           Invocation.method(
               #setDidFailProvisionalNavigation, [didFailProvisionalNavigation]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setWebViewWebContentProcessDidTerminate(
-          void Function(_i6.WKWebView)? webViewWebContentProcessDidTerminate) =>
+  _i7.Future<void> setWebViewWebContentProcessDidTerminate(
+          void Function(_i4.WKWebView)? webViewWebContentProcessDidTerminate) =>
       (super.noSuchMethod(
           Invocation.method(#setWebViewWebContentProcessDidTerminate,
               [webViewWebContentProcessDidTerminate]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> addObserver(_i9.NSObject? observer,
-          {String? keyPath, Set<_i9.NSKeyValueObservingOptions>? options}) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> removeObserver(_i9.NSObject? observer, {String? keyPath}) =>
-      (super.noSuchMethod(
-          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> dispose() =>
-      (super.noSuchMethod(Invocation.method(#dispose, []),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKScriptMessageHandler].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWKScriptMessageHandler extends _i1.Mock
-    implements _i6.WKScriptMessageHandler {
+    implements _i4.WKScriptMessageHandler {
   MockWKScriptMessageHandler() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKScriptMessageHandlerHostApiImpl get scriptMessengerApi =>
-      (super.noSuchMethod(Invocation.getter(#scriptMessengerApi),
-              returnValue: _FakeWKScriptMessageHandlerHostApiImpl_4())
-          as _i4.WKScriptMessageHandlerHostApiImpl);
-  @override
-  _i8.Future<void> setDidReceiveScriptMessage(
-          void Function(_i6.WKUserContentController, _i6.WKScriptMessage)?
+  _i7.Future<void> setDidReceiveScriptMessage(
+          void Function(_i4.WKUserContentController, _i4.WKScriptMessage)?
               didReceiveScriptMessage) =>
       (super.noSuchMethod(
           Invocation.method(
               #setDidReceiveScriptMessage, [didReceiveScriptMessage]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKWebView].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockWKWebView extends _i1.Mock implements _i6.WKWebView {
+class MockWKWebView extends _i1.Mock implements _i4.WKWebView {
   MockWKWebView() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKWebViewHostApiImpl get webviewHostApi => (super.noSuchMethod(
-      Invocation.getter(#webviewHostApi),
-      returnValue: _FakeWKWebViewHostApiImpl_5()) as _i4.WKWebViewHostApiImpl);
-  @override
-  _i6.WKWebViewConfiguration get configuration =>
+  _i4.WKWebViewConfiguration get configuration =>
       (super.noSuchMethod(Invocation.getter(#configuration),
-              returnValue: _FakeWKWebViewConfiguration_6())
-          as _i6.WKWebViewConfiguration);
+              returnValue: _FakeWKWebViewConfiguration_2())
+          as _i4.WKWebViewConfiguration);
   @override
-  _i7.UIScrollView get scrollView =>
+  _i5.UIScrollView get scrollView =>
       (super.noSuchMethod(Invocation.getter(#scrollView),
-          returnValue: _FakeUIScrollView_7()) as _i7.UIScrollView);
+          returnValue: _FakeUIScrollView_3()) as _i5.UIScrollView);
   @override
-  _i5.NSObjectHostApiImpl get objectApi => (super.noSuchMethod(
+  _i6.NSObjectHostApiImpl get objectApi => (super.noSuchMethod(
       Invocation.getter(#objectApi),
-      returnValue: _FakeNSObjectHostApiImpl_3()) as _i5.NSObjectHostApiImpl);
+      returnValue: _FakeNSObjectHostApiImpl_4()) as _i6.NSObjectHostApiImpl);
   @override
   set observeValue(
           void Function(
-                  String, _i9.NSObject, Map<_i9.NSKeyValueChangeKey, Object?>)?
+                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
               observeValue) =>
       super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
           returnValueForMissingStub: null);
   @override
-  _i8.Future<void> setUIDelegate(_i6.WKUIDelegate? delegate) =>
+  _i7.Future<void> setUIDelegate(_i4.WKUIDelegate? delegate) =>
       (super.noSuchMethod(Invocation.method(#setUIDelegate, [delegate]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setNavigationDelegate(_i6.WKNavigationDelegate? delegate) =>
+  _i7.Future<void> setNavigationDelegate(_i4.WKNavigationDelegate? delegate) =>
       (super.noSuchMethod(Invocation.method(#setNavigationDelegate, [delegate]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<String?> getUrl() =>
+  _i7.Future<String?> getUrl() =>
       (super.noSuchMethod(Invocation.method(#getUrl, []),
-          returnValue: Future<String?>.value()) as _i8.Future<String?>);
+          returnValue: Future<String?>.value()) as _i7.Future<String?>);
   @override
-  _i8.Future<double> getEstimatedProgress() =>
+  _i7.Future<double> getEstimatedProgress() =>
       (super.noSuchMethod(Invocation.method(#getEstimatedProgress, []),
-          returnValue: Future<double>.value(0.0)) as _i8.Future<double>);
+          returnValue: Future<double>.value(0.0)) as _i7.Future<double>);
   @override
-  _i8.Future<void> loadRequest(_i9.NSUrlRequest? request) =>
+  _i7.Future<void> loadRequest(_i8.NSUrlRequest? request) =>
       (super.noSuchMethod(Invocation.method(#loadRequest, [request]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> loadHtmlString(String? string, {String? baseUrl}) =>
+  _i7.Future<void> loadHtmlString(String? string, {String? baseUrl}) =>
       (super.noSuchMethod(
           Invocation.method(#loadHtmlString, [string], {#baseUrl: baseUrl}),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> loadFileUrl(String? url, {String? readAccessUrl}) =>
+  _i7.Future<void> loadFileUrl(String? url, {String? readAccessUrl}) =>
       (super.noSuchMethod(
           Invocation.method(
               #loadFileUrl, [url], {#readAccessUrl: readAccessUrl}),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> loadFlutterAsset(String? key) =>
+  _i7.Future<void> loadFlutterAsset(String? key) =>
       (super.noSuchMethod(Invocation.method(#loadFlutterAsset, [key]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<bool> canGoBack() =>
+  _i7.Future<bool> canGoBack() =>
       (super.noSuchMethod(Invocation.method(#canGoBack, []),
-          returnValue: Future<bool>.value(false)) as _i8.Future<bool>);
+          returnValue: Future<bool>.value(false)) as _i7.Future<bool>);
   @override
-  _i8.Future<bool> canGoForward() =>
+  _i7.Future<bool> canGoForward() =>
       (super.noSuchMethod(Invocation.method(#canGoForward, []),
-          returnValue: Future<bool>.value(false)) as _i8.Future<bool>);
+          returnValue: Future<bool>.value(false)) as _i7.Future<bool>);
   @override
-  _i8.Future<void> goBack() =>
+  _i7.Future<void> goBack() =>
       (super.noSuchMethod(Invocation.method(#goBack, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> goForward() =>
+  _i7.Future<void> goForward() =>
       (super.noSuchMethod(Invocation.method(#goForward, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> reload() =>
+  _i7.Future<void> reload() =>
       (super.noSuchMethod(Invocation.method(#reload, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<String?> getTitle() =>
+  _i7.Future<String?> getTitle() =>
       (super.noSuchMethod(Invocation.method(#getTitle, []),
-          returnValue: Future<String?>.value()) as _i8.Future<String?>);
+          returnValue: Future<String?>.value()) as _i7.Future<String?>);
   @override
-  _i8.Future<void> setAllowsBackForwardNavigationGestures(bool? allow) =>
+  _i7.Future<void> setAllowsBackForwardNavigationGestures(bool? allow) =>
       (super.noSuchMethod(
           Invocation.method(#setAllowsBackForwardNavigationGestures, [allow]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setCustomUserAgent(String? userAgent) =>
+  _i7.Future<void> setCustomUserAgent(String? userAgent) =>
       (super.noSuchMethod(Invocation.method(#setCustomUserAgent, [userAgent]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<Object?> evaluateJavaScript(String? javaScriptString) => (super
+  _i7.Future<Object?> evaluateJavaScript(String? javaScriptString) => (super
       .noSuchMethod(Invocation.method(#evaluateJavaScript, [javaScriptString]),
-          returnValue: Future<Object?>.value()) as _i8.Future<Object?>);
+          returnValue: Future<Object?>.value()) as _i7.Future<Object?>);
   @override
-  _i8.Future<void> addObserver(_i9.NSObject? observer,
-          {String? keyPath, Set<_i9.NSKeyValueObservingOptions>? options}) =>
+  _i7.Future<void> addObserver(_i8.NSObject? observer,
+          {String? keyPath, Set<_i8.NSKeyValueObservingOptions>? options}) =>
       (super.noSuchMethod(
           Invocation.method(
               #addObserver, [observer], {#keyPath: keyPath, #options: options}),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> removeObserver(_i9.NSObject? observer, {String? keyPath}) =>
+  _i7.Future<void> removeObserver(_i8.NSObject? observer, {String? keyPath}) =>
       (super.noSuchMethod(
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> dispose() =>
+  _i7.Future<void> dispose() =>
       (super.noSuchMethod(Invocation.method(#dispose, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKWebViewConfiguration].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWKWebViewConfiguration extends _i1.Mock
-    implements _i6.WKWebViewConfiguration {
+    implements _i4.WKWebViewConfiguration {
   MockWKWebViewConfiguration() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKWebViewConfigurationHostApiImpl get webViewConfigurationApi =>
-      (super.noSuchMethod(Invocation.getter(#webViewConfigurationApi),
-              returnValue: _FakeWKWebViewConfigurationHostApiImpl_8())
-          as _i4.WKWebViewConfigurationHostApiImpl);
-  @override
-  _i6.WKUserContentController get userContentController =>
+  _i4.WKUserContentController get userContentController =>
       (super.noSuchMethod(Invocation.getter(#userContentController),
-              returnValue: _FakeWKUserContentController_9())
-          as _i6.WKUserContentController);
+              returnValue: _FakeWKUserContentController_5())
+          as _i4.WKUserContentController);
   @override
-  _i6.WKWebsiteDataStore get websiteDataStore =>
+  _i4.WKWebsiteDataStore get websiteDataStore =>
       (super.noSuchMethod(Invocation.getter(#websiteDataStore),
-          returnValue: _FakeWKWebsiteDataStore_10()) as _i6.WKWebsiteDataStore);
+          returnValue: _FakeWKWebsiteDataStore_6()) as _i4.WKWebsiteDataStore);
   @override
-  _i5.NSObjectHostApiImpl get objectApi => (super.noSuchMethod(
-      Invocation.getter(#objectApi),
-      returnValue: _FakeNSObjectHostApiImpl_3()) as _i5.NSObjectHostApiImpl);
-  @override
-  set observeValue(
-          void Function(
-                  String, _i9.NSObject, Map<_i9.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
-          returnValueForMissingStub: null);
-  @override
-  _i8.Future<void> setAllowsInlineMediaPlayback(bool? allow) => (super
+  _i7.Future<void> setAllowsInlineMediaPlayback(bool? allow) => (super
       .noSuchMethod(Invocation.method(#setAllowsInlineMediaPlayback, [allow]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> setMediaTypesRequiringUserActionForPlayback(
-          Set<_i6.WKAudiovisualMediaType>? types) =>
+  _i7.Future<void> setMediaTypesRequiringUserActionForPlayback(
+          Set<_i4.WKAudiovisualMediaType>? types) =>
       (super.noSuchMethod(
           Invocation.method(
               #setMediaTypesRequiringUserActionForPlayback, [types]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> addObserver(_i9.NSObject? observer,
-          {String? keyPath, Set<_i9.NSKeyValueObservingOptions>? options}) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> removeObserver(_i9.NSObject? observer, {String? keyPath}) =>
-      (super.noSuchMethod(
-          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> dispose() =>
-      (super.noSuchMethod(Invocation.method(#dispose, []),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKWebsiteDataStore].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWKWebsiteDataStore extends _i1.Mock
-    implements _i6.WKWebsiteDataStore {
+    implements _i4.WKWebsiteDataStore {
   MockWKWebsiteDataStore() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKWebsiteDataStoreHostApiImpl get websiteDataStoreHostApi =>
-      (super.noSuchMethod(Invocation.getter(#websiteDataStoreHostApi),
-              returnValue: _FakeWKWebsiteDataStoreHostApiImpl_11())
-          as _i4.WKWebsiteDataStoreHostApiImpl);
-  @override
-  _i8.Future<void> removeDataOfTypes(
-          Set<_i6.WKWebsiteDataTypes>? dataTypes, DateTime? since) =>
+  _i7.Future<void> removeDataOfTypes(
+          Set<_i4.WKWebsiteDataTypes>? dataTypes, DateTime? since) =>
       (super.noSuchMethod(
           Invocation.method(#removeDataOfTypes, [dataTypes, since]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKUIDelegate].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockWKUIDelegate extends _i1.Mock implements _i6.WKUIDelegate {
+class MockWKUIDelegate extends _i1.Mock implements _i4.WKUIDelegate {
   MockWKUIDelegate() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKUIDelegateHostApiImpl get uiDelegateApi =>
-      (super.noSuchMethod(Invocation.getter(#uiDelegateApi),
-              returnValue: _FakeWKUIDelegateHostApiImpl_12())
-          as _i4.WKUIDelegateHostApiImpl);
-  @override
-  _i5.NSObjectHostApiImpl get objectApi => (super.noSuchMethod(
-      Invocation.getter(#objectApi),
-      returnValue: _FakeNSObjectHostApiImpl_3()) as _i5.NSObjectHostApiImpl);
-  @override
-  set observeValue(
-          void Function(
-                  String, _i9.NSObject, Map<_i9.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      super.noSuchMethod(Invocation.setter(#observeValue, observeValue),
-          returnValueForMissingStub: null);
-  @override
-  _i8.Future<void> setOnCreateWebView(
-          void Function(_i6.WKWebViewConfiguration, _i6.WKNavigationAction)?
+  _i7.Future<void> setOnCreateWebView(
+          void Function(_i4.WKWebViewConfiguration, _i4.WKNavigationAction)?
               onCreateWebView) =>
       (super.noSuchMethod(
           Invocation.method(#setOnCreateWebView, [onCreateWebView]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> addObserver(_i9.NSObject? observer,
-          {String? keyPath, Set<_i9.NSKeyValueObservingOptions>? options}) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> removeObserver(_i9.NSObject? observer, {String? keyPath}) =>
-      (super.noSuchMethod(
-          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
-  @override
-  _i8.Future<void> dispose() =>
-      (super.noSuchMethod(Invocation.method(#dispose, []),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [WKUserContentController].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWKUserContentController extends _i1.Mock
-    implements _i6.WKUserContentController {
+    implements _i4.WKUserContentController {
   MockWKUserContentController() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.WKUserContentControllerHostApiImpl get userContentControllerApi =>
-      (super.noSuchMethod(Invocation.getter(#userContentControllerApi),
-              returnValue: _FakeWKUserContentControllerHostApiImpl_13())
-          as _i4.WKUserContentControllerHostApiImpl);
-  @override
-  _i8.Future<void> addScriptMessageHandler(
-          _i6.WKScriptMessageHandler? handler, String? name) =>
+  _i7.Future<void> addScriptMessageHandler(
+          _i4.WKScriptMessageHandler? handler, String? name) =>
       (super.noSuchMethod(
           Invocation.method(#addScriptMessageHandler, [handler, name]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> removeScriptMessageHandler(String? name) => (super
+  _i7.Future<void> removeScriptMessageHandler(String? name) => (super
       .noSuchMethod(Invocation.method(#removeScriptMessageHandler, [name]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> removeAllScriptMessageHandlers() => (super.noSuchMethod(
+  _i7.Future<void> removeAllScriptMessageHandlers() => (super.noSuchMethod(
       Invocation.method(#removeAllScriptMessageHandlers, []),
       returnValue: Future<void>.value(),
-      returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+      returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> addUserScript(_i6.WKUserScript? userScript) =>
+  _i7.Future<void> addUserScript(_i4.WKUserScript? userScript) =>
       (super.noSuchMethod(Invocation.method(#addUserScript, [userScript]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> removeAllUserScripts() =>
+  _i7.Future<void> removeAllUserScripts() =>
       (super.noSuchMethod(Invocation.method(#removeAllUserScripts, []),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i7.Future<void>);
 }
 
 /// A class which mocks [JavascriptChannelRegistry].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockJavascriptChannelRegistry extends _i1.Mock
-    implements _i10.JavascriptChannelRegistry {
+    implements _i9.JavascriptChannelRegistry {
   MockJavascriptChannelRegistry() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  Map<String, _i11.JavascriptChannel> get channels =>
+  Map<String, _i10.JavascriptChannel> get channels =>
       (super.noSuchMethod(Invocation.getter(#channels),
-              returnValue: <String, _i11.JavascriptChannel>{})
-          as Map<String, _i11.JavascriptChannel>);
+              returnValue: <String, _i10.JavascriptChannel>{})
+          as Map<String, _i10.JavascriptChannel>);
   @override
   void onJavascriptChannelMessage(String? channel, String? message) =>
       super.noSuchMethod(
           Invocation.method(#onJavascriptChannelMessage, [channel, message]),
           returnValueForMissingStub: null);
   @override
-  void updateJavascriptChannelsFromSet(Set<_i11.JavascriptChannel>? channels) =>
+  void updateJavascriptChannelsFromSet(Set<_i10.JavascriptChannel>? channels) =>
       super.noSuchMethod(
           Invocation.method(#updateJavascriptChannelsFromSet, [channels]),
           returnValueForMissingStub: null);
@@ -589,17 +442,17 @@ class MockJavascriptChannelRegistry extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebViewPlatformCallbacksHandler extends _i1.Mock
-    implements _i10.WebViewPlatformCallbacksHandler {
+    implements _i9.WebViewPlatformCallbacksHandler {
   MockWebViewPlatformCallbacksHandler() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.FutureOr<bool> onNavigationRequest({String? url, bool? isForMainFrame}) =>
+  _i7.FutureOr<bool> onNavigationRequest({String? url, bool? isForMainFrame}) =>
       (super.noSuchMethod(
           Invocation.method(#onNavigationRequest, [],
               {#url: url, #isForMainFrame: isForMainFrame}),
-          returnValue: Future<bool>.value(false)) as _i8.FutureOr<bool>);
+          returnValue: Future<bool>.value(false)) as _i7.FutureOr<bool>);
   @override
   void onPageStarted(String? url) =>
       super.noSuchMethod(Invocation.method(#onPageStarted, [url]),
@@ -613,7 +466,7 @@ class MockWebViewPlatformCallbacksHandler extends _i1.Mock
       super.noSuchMethod(Invocation.method(#onProgress, [progress]),
           returnValueForMissingStub: null);
   @override
-  void onWebResourceError(_i12.WebResourceError? error) =>
+  void onWebResourceError(_i11.WebResourceError? error) =>
       super.noSuchMethod(Invocation.method(#onWebResourceError, [error]),
           returnValueForMissingStub: null);
 }
@@ -622,26 +475,26 @@ class MockWebViewPlatformCallbacksHandler extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWebViewWidgetProxy extends _i1.Mock
-    implements _i13.WebViewWidgetProxy {
+    implements _i12.WebViewWidgetProxy {
   MockWebViewWidgetProxy() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.WKWebView createWebView(_i6.WKWebViewConfiguration? configuration) =>
+  _i4.WKWebView createWebView(_i4.WKWebViewConfiguration? configuration) =>
       (super.noSuchMethod(Invocation.method(#createWebView, [configuration]),
-          returnValue: _FakeWKWebView_14()) as _i6.WKWebView);
+          returnValue: _FakeWKWebView_7()) as _i4.WKWebView);
   @override
-  _i6.WKScriptMessageHandler createScriptMessageHandler() =>
+  _i4.WKScriptMessageHandler createScriptMessageHandler() =>
       (super.noSuchMethod(Invocation.method(#createScriptMessageHandler, []),
-              returnValue: _FakeWKScriptMessageHandler_15())
-          as _i6.WKScriptMessageHandler);
+              returnValue: _FakeWKScriptMessageHandler_8())
+          as _i4.WKScriptMessageHandler);
   @override
-  _i6.WKUIDelegate createUIDelgate() =>
+  _i4.WKUIDelegate createUIDelgate() =>
       (super.noSuchMethod(Invocation.method(#createUIDelgate, []),
-          returnValue: _FakeWKUIDelegate_16()) as _i6.WKUIDelegate);
+          returnValue: _FakeWKUIDelegate_9()) as _i4.WKUIDelegate);
   @override
-  _i6.WKNavigationDelegate createNavigationDelegate() => (super.noSuchMethod(
+  _i4.WKNavigationDelegate createNavigationDelegate() => (super.noSuchMethod(
       Invocation.method(#createNavigationDelegate, []),
-      returnValue: _FakeWKNavigationDelegate_17()) as _i6.WKNavigationDelegate);
+      returnValue: _FakeWKNavigationDelegate_10()) as _i4.WKNavigationDelegate);
 }
