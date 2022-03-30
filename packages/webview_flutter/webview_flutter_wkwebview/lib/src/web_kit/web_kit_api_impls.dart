@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 
 import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
+import '../foundation/foundation.dart';
 import 'web_kit.dart';
 
 Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(

@@ -4,11 +4,11 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart';
 
 import '../common/instance_manager.dart';
 import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
+import 'web_kit_api_impls.dart';
 
 /// Times at which to inject script content into a webpage.
 ///

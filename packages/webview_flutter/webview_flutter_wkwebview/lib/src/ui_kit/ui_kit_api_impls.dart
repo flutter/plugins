@@ -6,10 +6,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
 import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
+import '../web_kit/web_kit.dart';
 import 'ui_kit.dart';
 
 /// Host api implementation for [UIScrollView].
