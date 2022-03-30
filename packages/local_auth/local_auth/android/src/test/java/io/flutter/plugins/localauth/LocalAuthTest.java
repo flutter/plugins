@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
 import androidx.biometric.BiometricManager;
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -24,16 +23,14 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-
 import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
 public class LocalAuthTest {
 
-  private LocalAuthPlugin plugin;
+  private LocalAuthPlugin plugin = new LocalAuthPlugin();
   @Mock private Context mockContext;
   @Mock private Activity mockActivity;
   @Mock private Lifecycle mockLifecycle;
@@ -45,7 +42,6 @@ public class LocalAuthTest {
 
   @Before
   public void setUp() {
-    plugin = new LocalAuthPlugin();
     mockContext = mock(Context.class);
     mockActivity = mock(Activity.class);
     mockLifecycle = mock(Lifecycle.class);
@@ -86,16 +82,7 @@ public class LocalAuthTest {
   }
 
   @Test
-  public void getAvailableBiometrics_ShouldReturnUndefinedBiometrics() {
-    plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
-    verify(mockResult).success(Collections.singletonList("undefined"));
-  }
-
-  @Test
-  public void getAvailableBiometrics_ShouldReturnEmptyBiometrics() {
-    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate()).thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
-    plugin.overrideBiometricManager(mockBiometricManager);
+  public void getAvailableBiometrics_withHardwareButNothingEnrolled_ShouldReturnEmpty() {
     plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
     verify(mockResult).success(Collections.emptyList());
   }

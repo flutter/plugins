@@ -273,7 +273,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
 
     if (!canAuthenticateWithBiometrics()) {
-      biometrics.add("undefined");
       return biometrics;
     }
 
