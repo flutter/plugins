@@ -4,7 +4,7 @@
 
 // This header is available in the Test module. Import via "@import webview_flutter_wkwebview.Test;"
 
-#import <webview_flutter_wkwebview/FLTCookieManager.h>
+#import <webview_pro_wkwebview/FLTCookieManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
