@@ -467,14 +467,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) {
     if (hasProgressTracking) {
-      webView.observeValue = (
+      webView.setObserveValue((
         String keyPath,
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
         final double progress = change[NSKeyValueChangeKey.newValue]! as double;
         callbacksHandler.onProgress((progress * 100).round());
-      };
+      });
       return webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
@@ -483,7 +483,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         },
       );
     } else {
-      webView.observeValue = null;
+      webView.setObserveValue(null);
       return webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
