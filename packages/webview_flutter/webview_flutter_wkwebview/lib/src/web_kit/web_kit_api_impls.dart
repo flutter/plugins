@@ -9,10 +9,11 @@ import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
 import 'web_kit.dart';
 
-extension _WKWebsiteDataTypesConverter on WKWebsiteDataTypes {
-  WKWebsiteDataTypesEnumData toWKWebsiteDataTypesEnumData() {
+Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
+    Iterable<WKWebsiteDataTypes> types) {
+  return types.map<WKWebsiteDataTypesEnumData>((WKWebsiteDataTypes type) {
     late final WKWebsiteDataTypesEnum value;
-    switch (this) {
+    switch (type) {
       case WKWebsiteDataTypes.cookies:
         value = WKWebsiteDataTypesEnum.cookies;
         break;
@@ -40,7 +41,7 @@ extension _WKWebsiteDataTypesConverter on WKWebsiteDataTypes {
     }
 
     return WKWebsiteDataTypesEnumData(value: value);
-  }
+  });
 }
 
 extension _WKUserScriptInjectionTimeConverter on WKUserScriptInjectionTime {
@@ -59,10 +60,13 @@ extension _WKUserScriptInjectionTimeConverter on WKUserScriptInjectionTime {
   }
 }
 
-extension _WKAudiovisualMediaTypeConverter on WKAudiovisualMediaType {
-  WKAudiovisualMediaTypeEnumData toWKAudiovisualMediaTypeEnumData() {
+Iterable<WKAudiovisualMediaTypeEnumData> _toWKAudiovisualMediaTypeEnumData(
+  Iterable<WKAudiovisualMediaType> types,
+) {
+  return types
+      .map<WKAudiovisualMediaTypeEnumData>((WKAudiovisualMediaType type) {
     late final WKAudiovisualMediaTypeEnum value;
-    switch (this) {
+    switch (type) {
       case WKAudiovisualMediaType.none:
         value = WKAudiovisualMediaTypeEnum.none;
         break;
@@ -78,7 +82,7 @@ extension _WKAudiovisualMediaTypeConverter on WKAudiovisualMediaType {
     }
 
     return WKAudiovisualMediaTypeEnumData(value: value);
-  }
+  });
 }
 
 extension _WKUserScriptConverter on WKUserScript {
@@ -136,10 +140,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   }) {
     return removeDataOfTypes(
       instanceManager.getInstanceId(instance)!,
-      dataTypes
-          .map<WKWebsiteDataTypesEnumData>(
-              (WKWebsiteDataTypes type) => type.toWKWebsiteDataTypesEnumData())
-          .toList(),
+      _toWKWebsiteDataTypesEnumData(dataTypes).toList(),
       secondsModifiedSinceEpoch,
     );
   }
@@ -273,7 +274,9 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       await createFromWebView(
-          instanceId, instanceManager.getInstanceId(webView)!,);
+        instanceId,
+        instanceManager.getInstanceId(webView)!,
+      );
     }
   }
 
@@ -295,10 +298,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   ) {
     return setMediaTypesRequiringUserActionForPlayback(
       instanceManager.getInstanceId(instance)!,
-      types
-          .map<WKAudiovisualMediaTypeEnumData>((WKAudiovisualMediaType type) =>
-              type.toWKAudiovisualMediaTypeEnumData())
-          .toList(),
+      _toWKAudiovisualMediaTypeEnumData(types).toList(),
     );
   }
 }
