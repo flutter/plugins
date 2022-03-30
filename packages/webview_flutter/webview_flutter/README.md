@@ -29,7 +29,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  flutter_webview_pro: ^3.0.1+1
+  flutter_webview_pro: ^3.0.1+2
 ```
 
 ### 2.Import
