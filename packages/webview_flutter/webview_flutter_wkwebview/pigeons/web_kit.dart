@@ -23,7 +23,8 @@ enum NSKeyValueObservingOptionsEnum {
 }
 
 class NSKeyValueObservingOptionsEnumData {
-  late NSKeyValueObservingOptionsEnum value;
+  // TODO(bparrishMines): Fails when marked as nonnull. This is true for all enums in Data.
+  late NSKeyValueObservingOptionsEnum? value;
 }
 
 enum NSKeyValueChangeEnum {
@@ -34,7 +35,7 @@ enum NSKeyValueChangeEnum {
 }
 
 class NSKeyValueChangeEnumData {
-  late NSKeyValueChangeEnum value;
+  late NSKeyValueChangeEnum? value;
 }
 
 enum NSKeyValueChangeKeyEnum {
@@ -46,7 +47,7 @@ enum NSKeyValueChangeKeyEnum {
 }
 
 class NSKeyValueChangeKeyEnumData {
-  late NSKeyValueChangeKeyEnum value;
+  late NSKeyValueChangeKeyEnum? value;
 }
 
 enum WKUserScriptInjectionTimeEnum {
@@ -55,7 +56,7 @@ enum WKUserScriptInjectionTimeEnum {
 }
 
 class WKUserScriptInjectionTimeEnumData {
-  late WKUserScriptInjectionTimeEnum value;
+  late WKUserScriptInjectionTimeEnum? value;
 }
 
 /// Mirror of WKAudiovisualMediaTypes.
@@ -69,7 +70,7 @@ enum WKAudiovisualMediaTypeEnum {
 }
 
 class WKAudiovisualMediaTypeEnumData {
-  late WKAudiovisualMediaTypeEnum value;
+  late WKAudiovisualMediaTypeEnum? value;
 }
 
 /// Mirror of WKWebsiteDataTypes.
@@ -87,7 +88,7 @@ enum WKWebsiteDataTypesEnum {
 }
 
 class WKWebsiteDataTypesEnumData {
-  late WKWebsiteDataTypesEnum value;
+  late WKWebsiteDataTypesEnum? value;
 }
 
 enum WKNavigationActionPolicyEnum {
@@ -96,7 +97,7 @@ enum WKNavigationActionPolicyEnum {
 }
 
 class WKNavigationActionPolicyEnumData {
-  late WKNavigationActionPolicyEnum value;
+  late WKNavigationActionPolicyEnum? value;
 }
 
 /// Mirror of NSURLRequest.
@@ -114,7 +115,7 @@ class NSUrlRequestData {
 /// See https://developer.apple.com/documentation/webkit/wkuserscript?language=objc.
 class WKUserScriptData {
   late String source;
-  late WKUserScriptInjectionTimeEnumData injectionTime;
+  late WKUserScriptInjectionTimeEnumData? injectionTime;
   late bool isMainFrameOnly;
 }
 

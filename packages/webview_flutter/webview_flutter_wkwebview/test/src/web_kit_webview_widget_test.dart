@@ -71,7 +71,7 @@ void main() {
 
       when(mockWebView.scrollView).thenReturn(mockScrollView);
 
-      when(mockWebViewConfiguration.webSiteDataStore).thenReturn(
+      when(mockWebViewConfiguration.websiteDataStore).thenReturn(
         mockWebsiteDataStore,
       );
 

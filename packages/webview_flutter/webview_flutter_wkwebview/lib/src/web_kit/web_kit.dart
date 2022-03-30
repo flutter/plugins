@@ -197,7 +197,9 @@ class WKScriptMessage {
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
 class WKWebsiteDataStore {
-  WKWebsiteDataStore._fromWebViewConfiguration(
+  /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
+  @visibleForTesting
+  WKWebsiteDataStore.fromWebViewConfiguration(
     WKWebViewConfiguration configuration, {
     @visibleForTesting WKWebsiteDataStoreHostApiImpl? websiteDataStoreHostApi,
   }) : websiteDataStoreHostApi =
@@ -367,7 +369,7 @@ class WKWebViewConfiguration extends NSObject {
   ///
   /// Represents [WKWebViewConfiguration.webSiteDataStore](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1395661-websitedatastore?language=objc).
   late final WKWebsiteDataStore websiteDataStore =
-      WKWebsiteDataStore._fromWebViewConfiguration(this);
+      WKWebsiteDataStore.fromWebViewConfiguration(this);
 
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   ///
