@@ -28,8 +28,7 @@ enum NSKeyValueObservingOptionsEnum {
 
 class NSKeyValueObservingOptionsEnumData {
   // TODO(bparrishMines): Generated code fails when enums are marked as nonnull.
-  // This is true for all enums in a data class. Change to nonnull once this is
-  // fixed: https://github.com/flutter/flutter/issues/100594
+  // Change to nonnull once this is fixed: https://github.com/flutter/flutter/issues/100594
   late NSKeyValueObservingOptionsEnum? value;
 }
 
