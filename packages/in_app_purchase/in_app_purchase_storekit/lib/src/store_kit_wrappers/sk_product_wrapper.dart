@@ -171,8 +171,9 @@ enum SKProductDiscountPaymentMode {
 /// Dart wrapper around StoreKit's [SKProductDiscountType](https://developer.apple.com/documentation/storekit/skproductdiscounttype?language=objc)
 ///
 /// This is used as a property in the [SKProductDiscountWrapper].
-// The values of the enum options are matching the [SKProductDiscountType]'s values. Should there be an update or addition
-// in the [SKProductDiscountType], this need to be updated to match.
+/// The values of the enum options are matching the [SKProductDiscountType]'s
+/// values. Should there be an update or addition
+/// in the [SKProductDiscountType], this need to be updated to match.
 enum SKProductDiscountType {
   /// A constant indicating the discount type is an introductory offer.
   @JsonValue(0)
@@ -233,8 +234,8 @@ class SKProductDiscountWrapper {
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 
   /// A string used to uniquely identify a discount offer for a product.
-  @JsonKey(defaultValue: '')
-  final String identifier;
+  @JsonKey(defaultValue: null)
+  final String? identifier;
 
   /// Values representing the types of discount offers an app can present.
   @SKProductDiscountTypeConverter()
