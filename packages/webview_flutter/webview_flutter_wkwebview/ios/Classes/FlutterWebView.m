@@ -572,10 +572,10 @@
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
       } else if (@available(iOS 9.0, *)) {
-        configuration.requiresUserActionForMediaPlayback = true;
-      } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        configuration.requiresUserActionForMediaPlayback = true;
+      } else {
         configuration.mediaPlaybackRequiresUserAction = true;
 #pragma clang diagnostic pop
       }
@@ -584,10 +584,10 @@
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
       } else if (@available(iOS 9.0, *)) {
-        configuration.requiresUserActionForMediaPlayback = false;
-      } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        configuration.requiresUserActionForMediaPlayback = false;
+      } else {
         configuration.mediaPlaybackRequiresUserAction = false;
 #pragma clang diagnostic pop
       }
