@@ -63,6 +63,12 @@ abstract class WebViewPlatform extends PlatformInterface {
         'createNavigationCallbackHandlerDelegate is not implemented on the current platform.');
   }
 
+  /// Create a new [WebResourceErrorDelegate].
+  WebResourceErrorDelegate createWebResourceErrorDelegate() {
+    throw UnimplementedError(
+        'createWebResourceErrorDelegate is not implemented on the current platform.');
+  }
+
   /// Create a new [WebSettingsDelegate].
   WebSettingsDelegate createWebSettingsDelegate({
     bool? allowsInlineMediaPlayback,
