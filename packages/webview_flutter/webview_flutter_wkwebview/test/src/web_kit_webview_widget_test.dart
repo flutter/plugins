@@ -165,9 +165,9 @@ void main() {
           ),
         );
 
-        verify(mockScrollView.setBackgroundColor(Colors.transparent));
-        verify(mockWebView.setBackgroundColor(Colors.red));
         verify(mockWebView.setOpaque(false));
+        verify(mockWebView.setBackgroundColor(Colors.transparent));
+        verify(mockScrollView.setBackgroundColor(Colors.red));
       });
 
       testWidgets('userAgent', (WidgetTester tester) async {
