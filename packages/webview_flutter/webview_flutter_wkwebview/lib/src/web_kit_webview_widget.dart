@@ -176,8 +176,8 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     if (params.backgroundColor != null) {
       webView.setOpaque(false);
-      webView.scrollView.setBackgroundColor(Colors.transparent);
-      webView.setBackgroundColor(params.backgroundColor!);
+      webView.setBackgroundColor(Colors.transparent);
+      webView.scrollView.setBackgroundColor(params.backgroundColor!);
     }
 
     if (params.initialUrl != null) {
