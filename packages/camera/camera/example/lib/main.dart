@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -121,13 +122,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-      key: _scaffoldKey,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Camera example'),
         ),
@@ -167,7 +164,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ],
         ),
-      ),
+
     );
   }
 
@@ -585,7 +582,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     };
 
     if (cameras.isEmpty) {
-      return const Text('No camera found');
+      SchedulerBinding.instance.addPostFrameCallback((_) async {
+        showInSnackBar('No camera found.');
+      });
+      return const Text('None');
     } else {
       for (final CameraDescription cameraDescription in cameras) {
         toggles.add(
@@ -610,8 +610,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-  void showInSnackBar(String message) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+  void showInSnackBar(String message) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
