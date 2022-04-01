@@ -4,8 +4,6 @@
 
 package io.flutter.plugins.imagepicker;
 
-
-
 public class ImagePickerCacheTest {
   //  private static final int IMAGE_QUALITY = 90;
   //
