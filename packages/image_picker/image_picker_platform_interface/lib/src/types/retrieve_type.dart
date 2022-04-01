@@ -14,6 +14,7 @@ enum RetrieveType {
   media,
 }
 
+/// Serializes a [RetrieveType] value into a String value.
 String serializeRetrieveType(RetrieveType type) {
   switch (type) {
     case RetrieveType.image:
