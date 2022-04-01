@@ -247,16 +247,20 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     };
     List<String>? paths;
     if (options.allowMultiple) {
-      paths = await _channel.invokeMethod<List<dynamic>?>(
-        'pickMedia',
-        args,
-      ).then((List<dynamic>? paths) =>
-          paths?.map((dynamic path) => path as String).toList());
+      paths = await _channel
+          .invokeMethod<List<dynamic>?>(
+            'pickMedia',
+            args,
+          )
+          .then((List<dynamic>? paths) =>
+              paths?.map((dynamic path) => path as String).toList());
     } else {
-      paths = await _channel.invokeMethod<String>(
-        'pickMedia',
-        args,
-      ).then((String? path) => path != null ? <String>[path] : null);
+      paths = await _channel
+          .invokeMethod<String>(
+            'pickMedia',
+            args,
+          )
+          .then((String? path) => path != null ? <String>[path] : null);
     }
 
     return paths?.map((String path) => XFile(path)).toList();
