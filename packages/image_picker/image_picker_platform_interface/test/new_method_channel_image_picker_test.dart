@@ -980,226 +980,169 @@ void main() {
       });
     });
 
-    group('#getImageOrVideo', () {
-      test('passes the width and height arguments correctly', () async {
-        await picker.getImageOrVideo();
-        await picker.getImageOrVideo(
-          maxImageWidth: 10.0,
-        );
-        await picker.getImageOrVideo(
-          maxImageHeight: 10.0,
-        );
-        await picker.getImageOrVideo(
-          maxImageWidth: 10.0,
-          maxImageHeight: 20.0,
-        );
-        await picker.getImageOrVideo(
-          maxImageWidth: 10.0,
-          imageQuality: 70,
-        );
-        await picker.getImageOrVideo(
-          maxImageHeight: 10.0,
-          imageQuality: 70,
-        );
-        await picker.getImageOrVideo(
-          maxImageWidth: 10.0,
-          maxImageHeight: 20.0,
-          imageQuality: 70,
-        );
-
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': null,
-              'imageQuality': null,
-            }),
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': null,
-              'imageQuality': null,
-            }),
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': 10.0,
-              'imageQuality': null,
-            }),
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': 20.0,
-              'imageQuality': null,
-            }),
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': null,
-              'imageQuality': 70,
-            }),
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': 10.0,
-              'imageQuality': 70,
-            }),
-            isMethodCall('pickImageOrVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': 20.0,
-              'imageQuality': 70,
-            }),
-          ],
-        );
-      });
-
-      test('does not accept a invalid imageQuality argument', () {
-        expect(
-          () => picker.getImageOrVideo(imageQuality: -1),
-          throwsArgumentError,
-        );
-
-        expect(
-          () => picker.getImageOrVideo(imageQuality: 101),
-          throwsArgumentError,
-        );
-
-        expect(
-          () => picker.getImageOrVideo(imageQuality: -1),
-          throwsArgumentError,
-        );
-
-        expect(
-          () => picker.getImageOrVideo(imageQuality: 101),
-          throwsArgumentError,
-        );
-      });
-
-      test('does not accept a negative width or height argument', () {
-        expect(
-          () => picker.getImageOrVideo(maxImageWidth: -1.0),
-          throwsArgumentError,
-        );
-
-        expect(
-          () => picker.getImageOrVideo(maxImageHeight: -1.0),
-          throwsArgumentError,
-        );
-      });
-
-      test('handles a null path response gracefully', () async {
-        picker.channel
-            .setMockMethodCallHandler((MethodCall methodCall) => null);
-
-        expect(await picker.getImageOrVideo(), isNull);
-        expect(await picker.getImageOrVideo(), isNull);
-      });
-    });
-
-    group('#getMultiImageAndVideo', () {
+    group('#getMedia', () {
       test('calls the method correctly', () async {
-        returnValue = ['0', '1'];
-        await picker.getMultiImageAndVideo();
+        returnValue = <String>['0', '1'];
+        await picker.getMedia();
 
         expect(
           log,
           <Matcher>[
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': null,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': null,
+              'maxImageHeight': null,
               'imageQuality': null,
+              'allowMultiple': false,
+              'types': <String>[
+                'image',
+                'video',
+              ],
             }),
           ],
         );
       });
 
-      test('passes the width and height arguments correctly', () async {
-        returnValue = ['0', '1'];
-        await picker.getMultiImageAndVideo();
-        await picker.getMultiImageAndVideo(
-          maxImageWidth: 10.0,
+      test('passes the selection options correctly', () async {
+        returnValue = <String>['0', '1'];
+        // Default options
+        await picker.getMedia();
+        // Various image options
+        await picker.getMedia(
+          options: MediaSelectionOptions(
+            maxImageWidth: 10.0,
+          ),
         );
-        await picker.getMultiImageAndVideo(
-          maxImageHeight: 10.0,
+        await picker.getMedia(
+          options: MediaSelectionOptions(
+            maxImageHeight: 10.0,
+          ),
         );
-        await picker.getMultiImageAndVideo(
-          maxImageWidth: 10.0,
-          maxImageHeight: 20.0,
+        await picker.getMedia(
+          options: MediaSelectionOptions(
+            imageQuality: 70,
+          ),
         );
-        await picker.getMultiImageAndVideo(
-          maxImageWidth: 10.0,
-          imageQuality: 70,
+        // General options
+        await picker.getMedia(
+          options: MediaSelectionOptions(
+            allowMultiple: true,
+          ),
         );
-        await picker.getMultiImageAndVideo(
-          maxImageHeight: 10.0,
-          imageQuality: 70,
+        await picker.getMedia(
+          options:
+              MediaSelectionOptions(types: <RetrieveType>[RetrieveType.image]),
         );
-        await picker.getMultiImageAndVideo(
-          maxImageWidth: 10.0,
-          maxImageHeight: 20.0,
-          imageQuality: 70,
+        // Combinations
+        await picker.getMedia(
+          options: MediaSelectionOptions(
+              maxImageWidth: 10.0,
+              maxImageHeight: 20.0,
+              imageQuality: 70,
+              allowMultiple: true,
+              types: <RetrieveType>[RetrieveType.video]),
         );
 
         expect(
           log,
           <Matcher>[
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': null,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': null,
+              'maxImageHeight': null,
               'imageQuality': null,
+              'allowMultiple': false,
+              'types': <String>[
+                'image',
+                'video',
+              ],
             }),
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': null,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': 10.0,
+              'maxImageHeight': null,
               'imageQuality': null,
+              'allowMultiple': false,
+              'types': <String>[
+                'image',
+                'video',
+              ],
             }),
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': 10.0,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': null,
+              'maxImageHeight': 10.0,
               'imageQuality': null,
+              'allowMultiple': false,
+              'types': <String>[
+                'image',
+                'video',
+              ],
             }),
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': 20.0,
-              'imageQuality': null,
-            }),
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': null,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': null,
+              'maxImageHeight': null,
               'imageQuality': 70,
+              'allowMultiple': false,
+              'types': <String>[
+                'image',
+                'video',
+              ],
             }),
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': null,
-              'maxHeight': 10.0,
-              'imageQuality': 70,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': null,
+              'maxImageHeight': null,
+              'imageQuality': null,
+              'allowMultiple': true,
+              'types': <String>[
+                'image',
+                'video',
+              ],
             }),
-            isMethodCall('pickMultiImageAndVideo', arguments: <String, dynamic>{
-              'maxWidth': 10.0,
-              'maxHeight': 20.0,
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': null,
+              'maxImageHeight': null,
+              'imageQuality': null,
+              'allowMultiple': false,
+              'types': <String>[
+                'image',
+              ],
+            }),
+            isMethodCall('pickMedia', arguments: <String, dynamic>{
+              'maxImageWidth': 10.0,
+              'maxImageHeight': 20.0,
               'imageQuality': 70,
+              'allowMultiple': true,
+              'types': <String>[
+                'video',
+              ],
             }),
           ],
         );
       });
 
       test('does not accept a negative width or height argument', () {
-        returnValue = ['0', '1'];
+        returnValue = <String>['0', '1'];
         expect(
-          () => picker.getMultiImageAndVideo(maxImageWidth: -1.0),
+          () => picker.getMedia(
+              options: MediaSelectionOptions(maxImageWidth: -1.0)),
           throwsArgumentError,
         );
 
         expect(
-          () => picker.getMultiImageAndVideo(maxImageHeight: -1.0),
+          () => picker.getMedia(
+              options: MediaSelectionOptions(maxImageHeight: -1.0)),
           throwsArgumentError,
         );
       });
 
       test('does not accept a invalid imageQuality argument', () {
-        returnValue = ['0', '1'];
+        returnValue = <String>['0', '1'];
         expect(
-          () => picker.getMultiImageAndVideo(imageQuality: -1),
+          () =>
+              picker.getMedia(options: MediaSelectionOptions(imageQuality: -1)),
           throwsArgumentError,
         );
 
         expect(
-          () => picker.getMultiImageAndVideo(imageQuality: 101),
+          () => picker.getMedia(
+              options: MediaSelectionOptions(imageQuality: 101)),
           throwsArgumentError,
         );
       });
@@ -1208,8 +1151,8 @@ void main() {
         picker.channel
             .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(await picker.getMultiImageAndVideo(), isNull);
-        expect(await picker.getMultiImageAndVideo(), isNull);
+        expect(await picker.getMedia(), isNull);
+        expect(await picker.getMedia(), isNull);
       });
     });
   });
