@@ -78,7 +78,7 @@ class LoadRequestParamsDelegate extends PlatformInterface {
   factory LoadRequestParamsDelegate({
     required Uri uri,
     required LoadRequestMethod method,
-    Map<String, String> headers = const <String, String> { },
+    Map<String, String> headers = const <String, String>{},
     Uint8List? body,
   }) {
     final LoadRequestParamsDelegate loadRequestParamsDelegate =
