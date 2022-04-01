@@ -1,3 +1,7 @@
+## 2.3.3
+
+* Rate limited `seekTo` calls for ExoPlayer.
+
 ## 2.3.2
 
 * Updates ExoPlayer to 2.17.0.
