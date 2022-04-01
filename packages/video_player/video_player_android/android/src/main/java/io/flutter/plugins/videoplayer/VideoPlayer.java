@@ -152,7 +152,8 @@ final class VideoPlayer {
         }
     }
   }
-
+  
+  boolean readyToSeek = false;
   private void setupVideoPlayer(
       EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
     eventChannel.setStreamHandler(
@@ -191,6 +192,10 @@ final class VideoPlayer {
               setBuffering(true);
               sendBufferingUpdate();
             } else if (playbackState == Player.STATE_READY) {
+              readyToSeek = true; // indicate that seeking the video is now possible
+              if(futureLoation != -1){
+                seekTo(futureLoation);
+              }
               if (!isInitialized) {
                 isInitialized = true;
                 sendInitialized();
@@ -255,8 +260,19 @@ final class VideoPlayer {
     exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
+  int futureLoation = -1;
   void seekTo(int location) {
-    exoPlayer.seekTo(location);
+    // Try to set the location, if the player is currently buffering because
+    // of a previous seekTo, save the futureLocation to be seeked when the
+    // player will be readyToSeek
+    if(readyToSeek) {
+      readyToSeek = false;
+      futureLoation = -1;
+      exoPlayer.seekTo(location);
+    }
+    else{
+      futureLoation = location;
+    }
   }
 
   long getPosition() {
