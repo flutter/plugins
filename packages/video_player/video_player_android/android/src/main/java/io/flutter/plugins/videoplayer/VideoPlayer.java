@@ -61,25 +61,6 @@ final class VideoPlayer {
   private final VideoPlayerOptions options;
 
   VideoPlayer(
-          Context context,
-          EventChannel eventChannel,
-          TextureRegistry.SurfaceTextureEntry textureEntry,
-          String dataSource,
-          String formatHint,
-          Map<String, String> httpHeaders,
-          VideoPlayerOptions options) {
-    this(
-            context,
-            eventChannel,
-            textureEntry,
-            dataSource,
-            formatHint,
-            httpHeaders,
-            options,
-            null);
-  }
-
-  VideoPlayer(
       Context context,
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
