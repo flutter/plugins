@@ -1003,7 +1003,6 @@ void main() {
       });
 
       test('passes the selection options correctly', () async {
-
         // Default options
         await picker.getMedia();
         // Various image options
