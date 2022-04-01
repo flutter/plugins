@@ -581,7 +581,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     };
 
     if (cameras.isEmpty) {
-      SchedulerBinding.instance.addPostFrameCallback((_) async {
+      SchedulerBinding.instance?.addPostFrameCallback((_) async {
         showInSnackBar('No camera found.');
       });
       return const Text('None');

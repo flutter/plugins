@@ -1,5 +1,4 @@
-## NEXT
-
+## 0.9.4+19
 
 * Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
 
