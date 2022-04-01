@@ -773,8 +773,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 
   Widget videoPlayerWidgetWithCorrectRotation() {
-    var playerWidget = _videoPlayerPlatform.buildView(_textureId);
-    var rotation = widget.controller.value.rotationCorrection;
+    final Widget playerWidget = _videoPlayerPlatform.buildView(_textureId);
+    final int rotation = widget.controller.value.rotationCorrection;
     return rotation == 0
         ? playerWidget
         : Transform.rotate(
