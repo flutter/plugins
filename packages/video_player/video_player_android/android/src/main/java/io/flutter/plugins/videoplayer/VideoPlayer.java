@@ -56,7 +56,7 @@ final class VideoPlayer {
 
   private final EventChannel eventChannel;
 
-  @VisibleForTesting boolean isInitialized = false;
+  private boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -112,19 +112,6 @@ final class VideoPlayer {
     this.options = options;
 
     setUpVideoPlayer(exoPlayer, eventSink);
-  }
-
-  @VisibleForTesting
-  /** Constructor for mock VideoPlayer in tests. Only sets field values (no additional set up). */
-  VideoPlayer(
-      EventChannel eventChannel,
-      TextureRegistry.SurfaceTextureEntry textureEntry,
-      VideoPlayerOptions options,
-      SimpleExoPlayer exoPlayer) {
-    this.eventChannel = eventChannel;
-    this.textureEntry = textureEntry;
-    this.options = options;
-    this.exoPlayer = exoPlayer;
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -296,8 +283,7 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
-  @VisibleForTesting
-  void sendInitialized() {
+  private void sendInitialized() {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
