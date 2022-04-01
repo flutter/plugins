@@ -60,6 +60,17 @@ final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
   identifier: 'id',
+  type: SKProductDiscountType.subscription,
+);
+
+final SKProductDiscountWrapper dummyDiscountMissingIdentifierAndType =
+    SKProductDiscountWrapper(
+  price: '1.0',
+  priceLocale: dollarLocale,
+  numberOfPeriods: 1,
+  paymentMode: SKProductDiscountPaymentMode.payUpFront,
+  subscriptionPeriod: dummySubscription,
+  identifier: null,
   type: SKProductDiscountType.introductory,
 );
 
@@ -111,6 +122,19 @@ Map<String, dynamic> buildDiscountMap(SKProductDiscountWrapper discount) {
         buildSubscriptionPeriodMap(discount.subscriptionPeriod),
     'identifier': discount.identifier,
     'type': SKProductDiscountType.values.indexOf(discount.type)
+  };
+}
+
+Map<String, dynamic> buildDiscountMapMissingIdentifierAndType(
+    SKProductDiscountWrapper discount) {
+  return <String, dynamic>{
+    'price': discount.price,
+    'priceLocale': buildLocaleMap(discount.priceLocale),
+    'numberOfPeriods': discount.numberOfPeriods,
+    'paymentMode':
+        SKProductDiscountPaymentMode.values.indexOf(discount.paymentMode),
+    'subscriptionPeriod':
+        buildSubscriptionPeriodMap(discount.subscriptionPeriod)
   };
 }
 

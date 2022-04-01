@@ -1,6 +1,6 @@
 ## 0.3.0+4
 
-Adds the `identifier` and `type` fields to the `SKProductDiscountWrapper` to reflect the changes in the [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc) in iOS 12.2.
+* Adds the `identifier` and `type` fields to the `SKProductDiscountWrapper` to reflect the changes in the [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc) in iOS 12.2.
 
 ## 0.3.0+3
 
