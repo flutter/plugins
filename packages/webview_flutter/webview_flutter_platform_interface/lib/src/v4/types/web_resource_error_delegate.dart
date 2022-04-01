@@ -6,7 +6,73 @@ import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../webview_platform.dart';
-import 'web_resource_error_type.dart';
+
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/// Possible error type categorizations used by [WebResourceError].
+enum WebResourceErrorType {
+  /// User authentication failed on server.
+  authentication,
+
+  /// Malformed URL.
+  badUrl,
+
+  /// Failed to connect to the server.
+  connect,
+
+  /// Failed to perform SSL handshake.
+  failedSslHandshake,
+
+  /// Generic file error.
+  file,
+
+  /// File not found.
+  fileNotFound,
+
+  /// Server or proxy hostname lookup failed.
+  hostLookup,
+
+  /// Failed to read or write to the server.
+  io,
+
+  /// User authentication failed on proxy.
+  proxyAuthentication,
+
+  /// Too many redirects.
+  redirectLoop,
+
+  /// Connection timed out.
+  timeout,
+
+  /// Too many requests during this load.
+  tooManyRequests,
+
+  /// Generic error.
+  unknown,
+
+  /// Resource load was canceled by Safe Browsing.
+  unsafeResource,
+
+  /// Unsupported authentication scheme (not basic or digest).
+  unsupportedAuthScheme,
+
+  /// Unsupported URI scheme.
+  unsupportedScheme,
+
+  /// The web content process was terminated.
+  webContentProcessTerminated,
+
+  /// The web view was invalidated.
+  webViewInvalidated,
+
+  /// A JavaScript exception occurred.
+  javaScriptExceptionOccurred,
+
+  /// The result of JavaScript execution could not be returned.
+  javaScriptResultTypeIsUnsupported,
+}
 
 /// Error returned in `WebView.onWebResourceError` when a web resource loading
 /// error has occurred.
@@ -53,7 +119,7 @@ class WebResourceErrorDelegate extends PlatformInterface {
   /// A user should not need to instantiate this class, but will receive one in
   /// [WebResourceErrorCallback].
   factory WebResourceErrorDelegate({
-    required String errorCode,
+    required int errorCode,
     required String description,
     WebResourceErrorType? errorType,
   }) {
@@ -82,16 +148,6 @@ class WebResourceErrorDelegate extends PlatformInterface {
   static final Object _token = Object();
 
   /// Raw code of the error from the respective platform.
-  ///
-  /// On Android, the error code will be a constant from a
-  /// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary) and
-  /// will have a corresponding [errorType].
-  ///
-  /// On iOS, the error code will be a constant from `NSError.code` in
-  /// Objective-C. See
-  /// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
-  /// for more information on error handling on iOS. Some possible error codes
-  /// can be found at https://developer.apple.com/documentation/webkit/wkerrorcode?language=objc.
   final int errorCode;
 
   /// Description of the error that can be used to communicate the problem to the user.

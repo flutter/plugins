@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 export 'javascript_mode.dart';
-export 'load_request_params.dart';
-export 'web_resource_error.dart';
-export 'web_resource_error_type.dart';
-export 'web_settings.dart';
+export 'load_request_params_delegate.dart';
+export 'web_resource_error_delegate.dart';
+export 'web_settings_delegate.dart';
 export 'webview_cookie.dart';

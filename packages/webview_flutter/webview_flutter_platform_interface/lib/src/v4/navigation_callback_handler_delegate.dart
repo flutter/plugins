@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'types/types.dart';
 import 'webview_platform.dart';
 
 /// Interface for callbacks made by [NavigationCallbackHandlerDelegate].
@@ -35,26 +34,50 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
 
   static final Object _token = Object();
 
-  /// Invoked by [WebViewPlatformControllerDelegate] when a navigation request
-  /// is pending.
-  ///
-  /// If true is returned the navigation is allowed, otherwise it is blocked.
-  FutureOr<bool> onNavigationRequest(
-      {required String url, required bool isForMainFrame});
+  /// Sets the callback method that is invoked by the
+  /// [WebViewPlatformControllerDelegate] when a navigation request is pending.
+  Future<void> setOnNavigationRequest(
+    void Function({required String url, required bool isForMainFrame})
+        onNavigationRequest,
+  ) {
+    throw UnimplementedError(
+        'setOnNavigationRequest is not implemented on the current platform.');
+  }
 
-  /// Invoked by [WebViewPlatformControllerDelegate] when a page has started
-  /// loading.
-  void onPageStarted(String url);
+  /// Sets the callback method that is invoked by [WebViewControllerDelegate]
+  /// when a page has started loading.
+  Future<void> setOnPageStarted(
+    void Function(String url) onPageStarted,
+  ) {
+    throw UnimplementedError(
+        'setOnPageStarted is not implemented on the current platform.');
+  }
 
-  /// Invoked by [WebViewPlatformControllerDelegate] when a page has finished
-  /// loading.
-  void onPageFinished(String url);
+  /// Sets the callback method that is invoked by [WebViewControllerDelegate]
+  /// when a page has finished loading.
+  Future<void> setOnPageFinished(
+    void Function(String url) onPageFinished,
+  ) {
+    throw UnimplementedError(
+        'setOnPageFinished is not implemented on the current platform.');
+  }
 
-  /// Invoked by [WebViewPlatformControllerDelegate] when a page is loading.
+  /// Sets the callback method that is invoked by [WebViewControllerDelegate]
+  /// when a page is loading.
   ///
   /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
-  void onProgress(int progress);
+  Future<void> setOnProgress(
+    void Function(int progress) onProgress,
+  ) {
+    throw UnimplementedError(
+        'setOnProgress is not implemented on the current platform.');
+  }
 
-  /// Report web resource loading error to the host application.
-  void onWebResourceError(WebResourceError error);
+  /// Sets the callback that is invoked when a resource loading error occurred..
+  Future<void> setOnWebResourceError(
+    void Function(WebResourceErrorDelegate error) onWebResourceError,
+  ) {
+    throw UnimplementedError(
+        'setOnWebResourceError is not implemented on the current platform.');
+  }
 }

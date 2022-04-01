@@ -39,6 +39,73 @@ void main() {
 
     expect(NavigationCallbackHandlerDelegate(), isNotNull);
   });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setOnNavigationRequest should throw unimplemented error',
+      () {
+    final NavigationCallbackHandlerDelegate callbackHandler =
+        ExtendsNavigationCallbackHandlerDelegate();
+
+    expect(
+      () => callbackHandler.setOnNavigationRequest(
+          ({required bool isForMainFrame, required String url}) {}),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setOnPageStarted should throw unimplemented error',
+      () {
+    final NavigationCallbackHandlerDelegate callbackHandler =
+        ExtendsNavigationCallbackHandlerDelegate();
+
+    expect(
+      () => callbackHandler.setOnPageStarted((String url) {}),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setOnPageFinished should throw unimplemented error',
+      () {
+    final NavigationCallbackHandlerDelegate callbackHandler =
+        ExtendsNavigationCallbackHandlerDelegate();
+
+    expect(
+      () => callbackHandler.setOnPageFinished((String url) {}),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setOnProgress should throw unimplemented error',
+      () {
+    final NavigationCallbackHandlerDelegate callbackHandler =
+        ExtendsNavigationCallbackHandlerDelegate();
+
+    expect(
+      () => callbackHandler.setOnProgress((int progress) {}),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setOnWebResourceError should throw unimplemented error',
+      () {
+    final NavigationCallbackHandlerDelegate callbackHandler =
+        ExtendsNavigationCallbackHandlerDelegate();
+
+    expect(
+      () => callbackHandler
+          .setOnWebResourceError((WebResourceErrorDelegate error) {}),
+      throwsUnimplementedError,
+    );
+  });
 }
 
 class MockWebViewPlatformWithMixin extends MockWebViewPlatform
@@ -62,22 +129,4 @@ class MockNavigationCallbackHandlerDelegate extends Mock
 class ExtendsNavigationCallbackHandlerDelegate
     extends NavigationCallbackHandlerDelegate {
   ExtendsNavigationCallbackHandlerDelegate() : super.implementation();
-
-  @override
-  FutureOr<bool> onNavigationRequest(
-      {required String url, required bool isForMainFrame}) {
-    throw UnimplementedError();
-  }
-
-  @override
-  void onPageFinished(String url) {}
-
-  @override
-  void onPageStarted(String url) {}
-
-  @override
-  void onProgress(int progress) {}
-
-  @override
-  void onWebResourceError(WebResourceError error) {}
 }

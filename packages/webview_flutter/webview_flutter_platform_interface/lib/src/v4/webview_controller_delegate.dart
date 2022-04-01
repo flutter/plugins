@@ -4,7 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params.dart';
+import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params_delegate.dart';
 
 import 'types/types.dart';
 import 'webview_platform.dart';

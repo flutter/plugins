@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params.dart';
+import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/types/types.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart';
 
@@ -65,7 +65,11 @@ abstract class WebViewPlatform extends PlatformInterface {
   }
 
   /// Create a new [WebResourceErrorDelegate].
-  WebResourceErrorDelegate createWebResourceErrorDelegate() {
+  WebResourceErrorDelegate createWebResourceErrorDelegate({
+    required int errorCode,
+    required String description,
+    WebResourceErrorType? errorType,
+  }) {
     throw UnimplementedError(
         'createWebResourceErrorDelegate is not implemented on the current platform.');
   }
