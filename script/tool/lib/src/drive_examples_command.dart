@@ -25,19 +25,19 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
   }) : super(packagesDir, processRunner: processRunner, platform: platform) {
-    argParser.addFlag(kPlatformAndroid,
+    argParser.addFlag(platformAndroid,
         help: 'Runs the Android implementation of the examples');
-    argParser.addFlag(kPlatformIos,
+    argParser.addFlag(platformIOS,
         help: 'Runs the iOS implementation of the examples');
-    argParser.addFlag(kPlatformLinux,
+    argParser.addFlag(platformLinux,
         help: 'Runs the Linux implementation of the examples');
-    argParser.addFlag(kPlatformMacos,
+    argParser.addFlag(platformMacOS,
         help: 'Runs the macOS implementation of the examples');
-    argParser.addFlag(kPlatformWeb,
+    argParser.addFlag(platformWeb,
         help: 'Runs the web implementation of the examples');
-    argParser.addFlag(kPlatformWindows,
+    argParser.addFlag(platformWindows,
         help: 'Runs the Windows (Win32) implementation of the examples');
-    argParser.addFlag(kPlatformWinUwp,
+    argParser.addFlag(platformWinUwp,
         help:
             'Runs the UWP implementation of the examples [currently a no-op]');
     argParser.addOption(
@@ -64,13 +64,13 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   @override
   Future<void> initializeRun() async {
     final List<String> platformSwitches = <String>[
-      kPlatformAndroid,
-      kPlatformIos,
-      kPlatformLinux,
-      kPlatformMacos,
-      kPlatformWeb,
-      kPlatformWindows,
-      kPlatformWinUwp,
+      platformAndroid,
+      platformIOS,
+      platformLinux,
+      platformMacOS,
+      platformWeb,
+      platformWindows,
+      platformWinUwp,
     ];
     final int platformCount = platformSwitches
         .where((String platform) => getBoolArg(platform))
@@ -85,12 +85,12 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       throw ToolExit(_exitNoPlatformFlags);
     }
 
-    if (getBoolArg(kPlatformWinUwp)) {
+    if (getBoolArg(platformWinUwp)) {
       logWarning('Driving UWP applications is not yet supported');
     }
 
     String? androidDevice;
-    if (getBoolArg(kPlatformAndroid)) {
+    if (getBoolArg(platformAndroid)) {
       final List<String> devices = await _getDevicesForPlatform('android');
       if (devices.isEmpty) {
         printError('No Android devices available');
@@ -99,24 +99,24 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       androidDevice = devices.first;
     }
 
-    String? iosDevice;
-    if (getBoolArg(kPlatformIos)) {
+    String? iOSDevice;
+    if (getBoolArg(platformIOS)) {
       final List<String> devices = await _getDevicesForPlatform('ios');
       if (devices.isEmpty) {
         printError('No iOS devices available');
         throw ToolExit(_exitNoAvailableDevice);
       }
-      iosDevice = devices.first;
+      iOSDevice = devices.first;
     }
 
     _targetDeviceFlags = <String, List<String>>{
-      if (getBoolArg(kPlatformAndroid))
-        kPlatformAndroid: <String>['-d', androidDevice!],
-      if (getBoolArg(kPlatformIos)) kPlatformIos: <String>['-d', iosDevice!],
-      if (getBoolArg(kPlatformLinux)) kPlatformLinux: <String>['-d', 'linux'],
-      if (getBoolArg(kPlatformMacos)) kPlatformMacos: <String>['-d', 'macos'],
-      if (getBoolArg(kPlatformWeb))
-        kPlatformWeb: <String>[
+      if (getBoolArg(platformAndroid))
+        platformAndroid: <String>['-d', androidDevice!],
+      if (getBoolArg(platformIOS)) platformIOS: <String>['-d', iOSDevice!],
+      if (getBoolArg(platformLinux)) platformLinux: <String>['-d', 'linux'],
+      if (getBoolArg(platformMacOS)) platformMacOS: <String>['-d', 'macos'],
+      if (getBoolArg(platformWeb))
+        platformWeb: <String>[
           '-d',
           'web-server',
           '--web-port=7357',
@@ -124,12 +124,11 @@ class DriveExamplesCommand extends PackageLoopingCommand {
           if (platform.environment.containsKey('CHROME_EXECUTABLE'))
             '--chrome-binary=${platform.environment['CHROME_EXECUTABLE']}',
         ],
-      if (getBoolArg(kPlatformWindows))
-        kPlatformWindows: <String>['-d', 'windows'],
+      if (getBoolArg(platformWindows))
+        platformWindows: <String>['-d', 'windows'],
       // TODO(stuartmorgan): Check these flags once drive supports UWP:
       // https://github.com/flutter/flutter/issues/82821
-      if (getBoolArg(kPlatformWinUwp))
-        kPlatformWinUwp: <String>['-d', 'winuwp'],
+      if (getBoolArg(platformWinUwp)) platformWinUwp: <String>['-d', 'winuwp'],
     };
   }
 
@@ -148,9 +147,9 @@ class DriveExamplesCommand extends PackageLoopingCommand {
         in _targetDeviceFlags.entries) {
       final String platform = entry.key;
       String? variant;
-      if (platform == kPlatformWindows) {
+      if (platform == platformWindows) {
         variant = platformVariantWin32;
-      } else if (platform == kPlatformWinUwp) {
+      } else if (platform == platformWinUwp) {
         variant = platformVariantWinUwp;
         // TODO(stuartmorgan): Remove this once drive supports UWP.
         // https://github.com/flutter/flutter/issues/82821

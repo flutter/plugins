@@ -126,6 +126,38 @@ void main() {
         );
       });
 
+      test(
+        'Should throw CameraException when initialize throws a PlatformException',
+        () {
+          // Arrange
+          MethodChannelMock(
+            channelName: 'plugins.flutter.io/camera',
+            methods: <String, dynamic>{
+              'initialize': PlatformException(
+                code: 'TESTING_ERROR_CODE',
+                message: 'Mock error message used during testing.',
+              )
+            },
+          );
+          final MethodChannelCamera camera = MethodChannelCamera();
+
+          // Act
+          expect(
+            () => camera.initializeCamera(0),
+            throwsA(
+              isA<CameraException>()
+                  .having((CameraException e) => e.code, 'code',
+                      'TESTING_ERROR_CODE')
+                  .having(
+                    (CameraException e) => e.description,
+                    'description',
+                    'Mock error message used during testing.',
+                  ),
+            ),
+          );
+        },
+      );
+
       test('Should send initialization data', () async {
         // Arrange
         final MethodChannelMock cameraMockChannel = MethodChannelMock(

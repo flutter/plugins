@@ -55,7 +55,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @visibleForTesting
   Future<void> get initialized {
     _assertIsInitCalled();
-    return Future.wait([_isGapiInitialized, _isAuthInitialized]);
+    return Future.wait(<Future<void>>[_isGapiInitialized, _isAuthInitialized]);
   }
 
   String? _autoDetectedClientId;
@@ -94,14 +94,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       client_id: appClientId!,
     ));
 
-    Completer<void> isAuthInitialized = Completer<void>();
+    final Completer<void> isAuthInitialized = Completer<void>();
     _isAuthInitialized = isAuthInitialized.future;
     _isInitCalled = true;
 
     auth.then(allowInterop((auth2.GoogleAuth initializedAuth) {
       // onSuccess
 
-      // TODO: https://github.com/flutter/flutter/issues/48528
+      // TODO(ditman): https://github.com/flutter/flutter/issues/48528
       // This plugin doesn't notify the app of external changes to the
       // state of the authentication, i.e: if you logout elsewhere...
 
@@ -124,7 +124,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     await initialized;
 
     return gapiUserToPluginUserData(
-        await auth2.getAuthInstance()?.currentUser?.get());
+        auth2.getAuthInstance()?.currentUser?.get());
   }
 
   @override
@@ -169,7 +169,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
 
-    if (currentUser == null) return;
+    if (currentUser == null) {
+      return;
+    }
 
     return currentUser.disconnect();
   }
@@ -181,7 +183,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
 
-    if (currentUser == null) return false;
+    if (currentUser == null) {
+      return false;
+    }
 
     return currentUser.isSignedIn();
   }
@@ -197,17 +201,22 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<bool> requestScopes(List<String> scopes) async {
     await initialized;
 
-    final currentUser = auth2.getAuthInstance()?.currentUser?.get();
+    final auth2.GoogleUser? currentUser =
+        auth2.getAuthInstance()?.currentUser?.get();
 
-    if (currentUser == null) return false;
+    if (currentUser == null) {
+      return false;
+    }
 
-    final grantedScopes = currentUser.getGrantedScopes() ?? '';
-    final missingScopes =
-        scopes.where((scope) => !grantedScopes.contains(scope));
+    final String grantedScopes = currentUser.getGrantedScopes() ?? '';
+    final Iterable<String> missingScopes =
+        scopes.where((String scope) => !grantedScopes.contains(scope));
 
-    if (missingScopes.isEmpty) return true;
+    if (missingScopes.isEmpty) {
+      return true;
+    }
 
-    final response = await currentUser
+    final Object? response = await currentUser
         .grant(auth2.SigninOptions(scope: missingScopes.join(' ')));
 
     return response != null;

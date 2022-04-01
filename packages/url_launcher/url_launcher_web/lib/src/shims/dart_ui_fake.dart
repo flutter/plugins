@@ -16,7 +16,8 @@ class platformViewRegistry {
   /// Shim for registerViewFactory
   /// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/ui.dart#L72
   static bool registerViewFactory(
-      String viewTypeId, html.Element Function(int viewId) viewFactory) {
+      String viewTypeId, html.Element Function(int viewId) viewFactory,
+      {bool isVisible = true}) {
     return false;
   }
 }

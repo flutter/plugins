@@ -14,6 +14,7 @@ export 'package:image_picker_platform_interface/image_picker_platform_interface.
         CameraDevice,
         LostData,
         LostDataResponse,
+        MediaSelectionOptions,
         PickedFile,
         XFile,
         RetrieveType;
@@ -252,53 +253,8 @@ class ImagePicker {
     );
   }
 
-  /// Returns an [XFile] object wrapping the image or video that was picked.
-  ///
-  /// The returned [XFile] is intended to be used within a single APP session.
-  /// Do not save the file path and use it across sessions.
-  ///
-  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained below.
-  ///
-  /// For when an image is picked:
-  ///
-  ///   If specified, the image will be at most [maxImageWidth] wide and
-  ///   [maxHeight] tall. Otherwise the image will be returned at it's original
-  ///   width and height.
-  ///
-  ///   The [imageQuality] argument modifies the quality of the image, ranging
-  ///   from 0-100 where 100 is the original/max quality. If `imageQuality` is
-  ///   null, the image with the original quality will be returned. Compression
-  ///   is only supported for certain image types such as JPEG and on Android
-  ///   PNG and WebP. If compression is not supported for the image that is
-  ///   picked, a warning message will be logged.
-  ///
-  /// In Android, the MainActivity can be destroyed for various reasons. If that
-  /// happens, the result will be lost in this call. You can then call
-  /// [retrieveLostData] when your app relaunches to retrieve the lost data.
-  ///
-  /// See also [pickMultiImageAndVideo] to allow users to select multiple images
-  /// and videos at once.
-  ///
-  /// The method could throw [PlatformException] if the app does not have
-  /// permission to access the camera or photos gallery, no camera is available,
-  /// plugin is already in use, temporary file could not be created (iOS only),
-  /// plugin activity could not be allocated (Android only) or due to an unknown
-  /// error.
-  Future<XFile?> pickImageOrVideo({
-    double? maxImageWidth,
-    double? maxImageHeight,
-    int? imageQuality,
-  }) {
-    return platform.getImageOrVideo(
-      maxImageWidth: maxImageWidth,
-      maxImageHeight: maxImageHeight,
-      imageQuality: imageQuality,
-    );
-  }
-
   /// Returns a [List<XFile>] object wrapping the images and videos that were
-  /// picked.
+  /// picked from the gallery.
   ///
   /// The returned [List<XFile>] is intended to be used within a single APP
   /// session. Do not save the file path and use it across sessions.
@@ -309,37 +265,15 @@ class ImagePicker {
   ///
   /// This method is not supported in iOS versions lower than 14.
   ///
-  /// For every image picked:
-  ///
-  ///   If specified, the image will be at most [maxImageWidth] wide and
-  ///   [maxImageHeight] tall. Otherwise the image will be returned at its
-  ///   original width and height.
-  ///
-  ///   The [imageQuality] argument modifies the quality of the image, ranging
-  ///   from 0-100 where 100 is the original/max quality. If `imageQuality` is
-  ///   null, the image with the original quality will be returned. Compression
-  ///   is only supported for certain image types such as JPEG and on Android
-  ///   PNG and WebP. If compression is not supported for the image that is
-  ///   picked, a warning message will be logged.
-  ///
   /// The method could throw [PlatformException] if the app does not have
-  /// permission to access the camera or photos gallery, no camera is available,
-  /// plugin is already in use, temporary file could not be created (iOS only),
+  /// permission to access the gallery, plugin is already in use, if the
+  /// temporary file could not be created (iOS only),
   /// plugin activity could not be allocated (Android only) or due to an unknown
   /// error.
-  ///
-  /// See also [pickImageOrVideo] to allow users to only pick a single image or
-  /// video.
-  Future<List<XFile>?> pickMultiImageAndVideo({
-    double? maxImageWidth,
-    double? maxImageHeight,
-    int? imageQuality,
+  Future<List<XFile>?> pickMedia({
+    MediaSelectionOptions? options,
   }) {
-    return platform.getMultiImageAndVideo(
-      maxImageWidth: maxImageWidth,
-      maxImageHeight: maxImageHeight,
-      imageQuality: imageQuality,
-    );
+    return platform.getMedia(options: options);
   }
 
   /// Returns an [XFile] object wrapping the video that was picked.

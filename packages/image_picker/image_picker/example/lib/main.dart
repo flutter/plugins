@@ -39,7 +39,7 @@ class MyHomePage extends StatefulWidget {
 enum PickType {
   image,
   video,
-  imageOrVideo,
+  media,
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -116,45 +116,28 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         }
         break;
-      case PickType.imageOrVideo:
-        if (isMulti) {
-          await _displayPickImageDialog(context!,
-              (double? maxWidth, double? maxHeight, int? quality) async {
-            try {
-              final pickedFileList = await _picker.pickMultiImageAndVideo(
+      case PickType.media:
+        await _displayPickImageDialog(context!,
+            (double? maxWidth, double? maxHeight, int? quality) async {
+          try {
+            final pickedFileList = await _picker.pickMedia(
+              options: MediaSelectionOptions(
                 maxImageWidth: maxWidth,
                 maxImageHeight: maxHeight,
                 imageQuality: quality,
-              );
-              setState(() {
-                _fileList = pickedFileList;
-                _refreshFileMimeTypes();
-              });
-            } catch (e) {
-              setState(() {
-                _pickError = e;
-              });
-            }
-          });
-        } else {
-          await _displayPickImageDialog(context!,
-              (double? maxWidth, double? maxHeight, int? quality) async {
-            try {
-              final pickedFile = await _picker.pickImageOrVideo(
-                maxImageWidth: maxWidth,
-                maxImageHeight: maxHeight,
-                imageQuality: quality,
-              );
-              setState(() {
-                _file = pickedFile;
-              });
-            } catch (e) {
-              setState(() {
-                _pickError = e;
-              });
-            }
-          });
-        }
+                allowMultiple: false,
+              ),
+            );
+            setState(() {
+              _fileList = pickedFileList;
+              _refreshFileMimeTypes();
+            });
+          } catch (e) {
+            setState(() {
+              _pickError = e;
+            });
+          }
+        });
         break;
       case PickType.video:
         final XFile? file = await _picker.pickVideo(
@@ -324,22 +307,12 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               backgroundColor: Colors.purple,
               onPressed: () {
-                pickType = PickType.imageOrVideo;
-                _onPickButtonPressed(ImageSource.gallery, context: context);
-              },
-              heroTag: 'imagevideo0',
-              tooltip: 'Pick image or video from gallery',
-              child: const Icon(Icons.perm_media),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: FloatingActionButton(
-              backgroundColor: Colors.purple,
-              onPressed: () {
-                pickType = PickType.imageOrVideo;
-                _onPickButtonPressed(ImageSource.gallery,
-                    isMulti: true, context: context);
+                pickType = PickType.media;
+                _onPickButtonPressed(
+                  ImageSource.gallery,
+                  isMulti: true,
+                  context: context,
+                );
               },
               heroTag: 'imagevideo1',
               tooltip: 'Pick multiple images and videos from gallery',

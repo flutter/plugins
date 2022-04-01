@@ -26,8 +26,10 @@ import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 enum CameraDevice {
@@ -330,23 +332,31 @@ public class ImagePickerDelegate
     launchPickFromGalleryIntent(new String[] {"image/*"}, true);
   }
 
-  public void chooseImageOrVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+  public void chooseMediaFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
       return;
     }
 
-    launchPickFromGalleryIntent(new String[] {"image/*", "video/*"}, false);
-  }
+    Boolean allowMultiple = methodCall.argument("allowMultiple");
+    if (allowMultiple == null) allowMultiple = false;
 
-  public void chooseMultiImageAndVideoFromGallery(
-      MethodCall methodCall, MethodChannel.Result result) {
-    if (!setPendingMethodCallAndResult(methodCall, result)) {
-      finishWithAlreadyActiveError(result);
-      return;
+    List<String> types = methodCall.argument("types");
+    Set<String> mimeTypes = new HashSet<>();
+
+    if (types == null) {
+      mimeTypes.add("image/*");
+      mimeTypes.add("video/*");
+    } else {
+      if (types.contains("image") || types.contains("media")) {
+        mimeTypes.add("image/*");
+      }
+      if (types.contains("video") || types.contains("media")) {
+        mimeTypes.add("video/*");
+      }
     }
 
-    launchPickFromGalleryIntent(new String[] {"image/*", "video/*"}, true);
+    launchPickFromGalleryIntent(mimeTypes.toArray(new String[0]), allowMultiple);
   }
 
   private void launchPickFromGalleryIntent(@Nullable String[] mimeTypes, boolean multiple) {
@@ -640,8 +650,16 @@ public class ImagePickerDelegate
   }
 
   private String getResizedImagePath(String path) {
-    Double maxWidth = methodCall.argument("maxWidth");
-    Double maxHeight = methodCall.argument("maxHeight");
+    Double maxWidth = methodCall.argument("maxImageWidth");
+    if (maxWidth == null) {
+      maxWidth = methodCall.argument("maxWidth");
+    }
+
+    Double maxHeight = methodCall.argument("maxImageHeight");
+    if (maxHeight == null) {
+      maxHeight = methodCall.argument("maxHeight");
+    }
+
     Integer imageQuality = methodCall.argument("imageQuality");
 
     return imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);

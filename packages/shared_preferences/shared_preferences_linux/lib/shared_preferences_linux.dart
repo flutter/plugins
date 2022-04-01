@@ -16,14 +16,14 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 ///
 /// This class implements the `package:shared_preferences` functionality for Linux.
 class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
-  /// The default instance of [SharedPreferencesLinux] to use.
-  // TODO(egarciad): Remove when the Dart plugin registrant lands on Flutter stable.
-  // https://github.com/flutter/flutter/issues/81421
+  /// Deprecated instance of [SharedPreferencesLinux].
+  /// Use [SharedPreferencesStorePlatform.instance] instead.
+  @Deprecated('Use `SharedPreferencesStorePlatform.instance` instead.')
   static SharedPreferencesLinux instance = SharedPreferencesLinux();
 
   /// Registers the Linux implementation.
   static void registerWith() {
-    SharedPreferencesStorePlatform.instance = instance;
+    SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
   }
 
   /// Local copy of preferences
@@ -33,9 +33,12 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   @visibleForTesting
   FileSystem fs = const LocalFileSystem();
 
+  /// The path_provider_linux instance used to find the support directory.
+  @visibleForTesting
+  PathProviderLinux pathProvider = PathProviderLinux();
+
   /// Gets the file where the preferences are stored.
   Future<File?> _getLocalDataFile() async {
-    final PathProviderLinux pathProvider = PathProviderLinux();
     final String? directory = await pathProvider.getApplicationSupportPath();
     if (directory == null) {
       return null;

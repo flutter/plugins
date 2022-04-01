@@ -70,12 +70,27 @@ environment:
 String _flutterSection({
   bool isPlugin = false,
   String? implementedPackage,
+  Map<String, Map<String, String>> pluginPlatformDetails =
+      const <String, Map<String, String>>{},
 }) {
-  final String pluginEntry = '''
+  String pluginEntry = '''
   plugin:
 ${implementedPackage == null ? '' : '    implements: $implementedPackage'}
     platforms:
 ''';
+
+  for (final MapEntry<String, Map<String, String>> platform
+      in pluginPlatformDetails.entries) {
+    pluginEntry += '''
+      ${platform.key}:
+''';
+    for (final MapEntry<String, String> detail in platform.value.entries) {
+      pluginEntry += '''
+        ${detail.key}: ${detail.value}
+''';
+    }
+  }
+
   return '''
 flutter:
 ${isPlugin ? pluginEntry : ''}
@@ -643,6 +658,82 @@ ${_devDependenciesSection()}
         containsAllInOrder(<Matcher>[
           contains('Running for plugin_a_foo...'),
           contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails when a "default_package" looks incorrect', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin_a', packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${_headerSection(
+        'plugin_a',
+        isPlugin: true,
+        repositoryPackagesDirRelativePath: 'plugin_a/plugin_a',
+      )}
+${_environmentSection()}
+${_flutterSection(
+        isPlugin: true,
+        pluginPlatformDetails: <String, Map<String, String>>{
+          'android': <String, String>{'default_package': 'plugin_b_android'}
+        },
+      )}
+${_dependenciesSection()}
+${_devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              '"plugin_b_android" is not an expected implementation name for "plugin_a"'),
+        ]),
+      );
+    });
+
+    test(
+        'fails when a "default_package" does not have a corresponding dependency',
+        () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin_a', packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${_headerSection(
+        'plugin_a',
+        isPlugin: true,
+        repositoryPackagesDirRelativePath: 'plugin_a/plugin_a',
+      )}
+${_environmentSection()}
+${_flutterSection(
+        isPlugin: true,
+        pluginPlatformDetails: <String, Map<String, String>>{
+          'android': <String, String>{'default_package': 'plugin_a_android'}
+        },
+      )}
+${_dependenciesSection()}
+${_devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('The following default_packages are missing corresponding '
+              'dependencies:\n  plugin_a_android'),
         ]),
       );
     });

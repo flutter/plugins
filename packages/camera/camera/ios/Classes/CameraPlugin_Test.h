@@ -5,10 +5,17 @@
 // This header is available in the Test module. Import via "@import camera.Test;"
 
 #import <camera/CameraPlugin.h>
+#import <camera/FLTCam.h>
 #import <camera/FLTThreadSafeFlutterResult.h>
 
 /// Methods exposed for unit testing.
 @interface CameraPlugin ()
+
+/// All FLTCam's state access and capture session related operations should be on run on this queue.
+@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
+
+/// An internal camera object that manages camera's state and performs camera operations.
+@property(nonatomic, strong) FLTCam *camera;
 
 /// Inject @p FlutterTextureRegistry and @p FlutterBinaryMessenger for unit testing.
 - (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry> *)registry

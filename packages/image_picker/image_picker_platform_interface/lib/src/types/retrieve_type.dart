@@ -10,6 +10,20 @@ enum RetrieveType {
   /// A video. See [ImagePicker.pickVideo].
   video,
 
-  /// A static picture or a video. See [ImagePicker.pickImageOrVideo].
-  imageOrVideo,
+  /// Either a video or a static picture. See [ImagePicker.pickMedia].
+  media,
+}
+
+String serializeRetrieveType(RetrieveType type) {
+  switch (type) {
+    case RetrieveType.image:
+      return 'image';
+    case RetrieveType.video:
+      return 'video';
+    case RetrieveType.media:
+      return 'media';
+    default:
+      throw UnimplementedError(
+          'No serialized value has yet been implemented for RetrieveType "$type"');
+  }
 }

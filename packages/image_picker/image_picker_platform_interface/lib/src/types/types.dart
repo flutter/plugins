@@ -4,9 +4,10 @@
 
 export 'camera_device.dart';
 export 'image_source.dart';
-export 'retrieve_type.dart';
-export 'picked_file/picked_file.dart';
 export 'lost_data_response.dart';
+export 'picked_file/picked_file.dart';
+export 'retrieve_type.dart';
+export 'media_selection_options.dart';
 
 /// Denotes that an image is being picked.
 const String kTypeImage = 'image';
@@ -14,5 +15,5 @@ const String kTypeImage = 'image';
 /// Denotes that a video is being picked.
 const String kTypeVideo = 'video';
 
-/// Denotes that an image or video is being picked.
-const String kTypeImageOrVideo = 'imageOrVideo';
+/// Denotes that either a video or image is being picked.
+const String kTypeMedia = 'media';

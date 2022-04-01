@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -81,6 +82,7 @@ public class ImagePickerDelegateTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    reset(mockActivity);
 
     mockStaticFile = Mockito.mockStatic(File.class);
     mockStaticFile
@@ -207,46 +209,22 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void chooseImageOrVideoFromGallery_launchesCorrectIntent() {
+  public void chooseMediaFromGallery_launchesCorrectIntent_multiple() {
     ImagePickerDelegate delegate;
     Intent expectedIntent;
 
-    // On API 19 and up
-    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.KITKAT);
-    delegate = createDelegate();
-    expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
-    expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-    expectedIntent.setType("*/*");
-    expectedIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
-
-    delegate.chooseImageOrVideoFromGallery(mockMethodCall, mockResult);
-
-    verify(mockActivity)
-        .startActivityForResult(
-            argThat(new IntentMatcher(expectedIntent)),
-            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY));
-
-    // On API 18 and below
-    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.JELLY_BEAN_MR2);
-    delegate = createDelegate();
-    expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
-    expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-    expectedIntent.setType("image/* video/*");
-
-    delegate.chooseImageOrVideoFromGallery(mockMethodCall, mockResult);
-
-    verify(mockActivity)
-        .startActivityForResult(
-            argThat(new IntentMatcher(expectedIntent)),
-            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY));
-  }
-
-  @Test
-  public void chooseMultiImageAndVideoFromGallery_launchesCorrectIntent() {
-    ImagePickerDelegate delegate;
-    Intent expectedIntent;
+    when(mockMethodCall.argument("allowMultiple")).thenReturn(true);
+    when(mockMethodCall.argument("types"))
+        .thenReturn(
+            new ArrayList<String>() {
+              {
+                add("image");
+                add("video");
+              }
+            });
 
     // On API 19 and up
+    reset(mockActivity);
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.KITKAT);
     delegate = createDelegate();
     expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -254,7 +232,7 @@ public class ImagePickerDelegateTest {
     expectedIntent.setType("*/*");
     expectedIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
 
-    delegate.chooseMultiImageAndVideoFromGallery(mockMethodCall, mockResult);
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
 
     verify(mockActivity)
         .startActivityForResult(
@@ -262,14 +240,14 @@ public class ImagePickerDelegateTest {
             eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_FROM_GALLERY));
 
     // On API 18 and up
+    reset(mockActivity);
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.JELLY_BEAN_MR2);
     delegate = createDelegate();
     expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
     expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-    expectedIntent.setType("*/*");
-    expectedIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
+    expectedIntent.setType("image/* video/*");
 
-    delegate.chooseMultiImageAndVideoFromGallery(mockMethodCall, mockResult);
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
 
     verify(mockActivity)
         .startActivityForResult(
@@ -277,18 +255,81 @@ public class ImagePickerDelegateTest {
             eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_FROM_GALLERY));
 
     // On API 17 and below
+    reset(mockActivity);
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.JELLY_BEAN_MR1);
     delegate = createDelegate();
     expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
     expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
     expectedIntent.setType("image/* video/*");
 
-    delegate.chooseMultiImageAndVideoFromGallery(mockMethodCall, mockResult);
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
 
     verify(mockActivity)
         .startActivityForResult(
             argThat(new IntentMatcher(expectedIntent)),
             eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_FROM_GALLERY));
+  }
+
+  @Test
+  public void chooseMediaFromGallery_launchesCorrectIntent_single() {
+    ImagePickerDelegate delegate;
+    Intent expectedIntent;
+
+    when(mockMethodCall.argument("allowMultiple")).thenReturn(false);
+    when(mockMethodCall.argument("types"))
+        .thenReturn(
+            new ArrayList<String>() {
+              {
+                add("image");
+                add("video");
+              }
+            });
+
+    // On API 19 and up
+    reset(mockActivity);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.KITKAT);
+    delegate = createDelegate();
+    expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+    expectedIntent.setType("*/*");
+    expectedIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
+
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
+
+    verify(mockActivity)
+        .startActivityForResult(
+            argThat(new IntentMatcher(expectedIntent)),
+            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY));
+
+    // On API 18 and up
+    reset(mockActivity);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.JELLY_BEAN_MR2);
+    delegate = createDelegate();
+    expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+    expectedIntent.setType("image/* video/*");
+
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
+
+    verify(mockActivity)
+        .startActivityForResult(
+            argThat(new IntentMatcher(expectedIntent)),
+            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY));
+
+    // On API 17 and below
+    reset(mockActivity);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.JELLY_BEAN_MR1);
+    delegate = createDelegate();
+    expectedIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    expectedIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+    expectedIntent.setType("image/* video/*");
+
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
+
+    verify(mockActivity)
+        .startActivityForResult(
+            argThat(new IntentMatcher(expectedIntent)),
+            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_FROM_GALLERY));
   }
 
   @Test
@@ -312,22 +353,10 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void
-      chooseImageOrVideoFromGallery_WhenPendingResultExists_FinishesWithAlreadyActiveError() {
+  public void chooseMediaFromGallery_WhenPendingResultExists_FinishesWithAlreadyActiveError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
-    delegate.chooseImageOrVideoFromGallery(mockMethodCall, mockResult);
-
-    verifyFinishedWithAlreadyActiveError();
-    verifyNoMoreInteractions(mockResult);
-  }
-
-  @Test
-  public void
-      chooseMultiImageAndVideoFromGallery_WhenPendingResultExists_FinishesWithAlreadyActiveError() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.chooseMultiImageAndVideoFromGallery(mockMethodCall, mockResult);
+    delegate.chooseMediaFromGallery(mockMethodCall, mockResult);
 
     verifyFinishedWithAlreadyActiveError();
     verifyNoMoreInteractions(mockResult);

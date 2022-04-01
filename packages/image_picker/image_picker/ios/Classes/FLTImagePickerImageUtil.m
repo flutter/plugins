@@ -35,8 +35,8 @@
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
 
-  bool hasMaxWidth = maxWidth != (id)[NSNull null];
-  bool hasMaxHeight = maxHeight != (id)[NSNull null];
+  bool hasMaxWidth = maxWidth != nil;
+  bool hasMaxHeight = maxHeight != nil;
 
   double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
   double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;

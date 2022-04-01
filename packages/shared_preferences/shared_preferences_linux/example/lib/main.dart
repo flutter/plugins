@@ -31,7 +31,7 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  final SharedPreferencesLinux prefs = SharedPreferencesLinux.instance;
+  final SharedPreferencesLinux prefs = SharedPreferencesLinux();
   late Future<int> _counter;
 
   Future<void> _incrementCounter() async {

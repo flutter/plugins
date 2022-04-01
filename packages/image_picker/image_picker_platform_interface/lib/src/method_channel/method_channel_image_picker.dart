@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-final MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
 
 /// An implementation of [ImagePickerPlatform] that uses method channels.
 class MethodChannelImagePicker extends ImagePickerPlatform {
@@ -25,7 +25,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String? path = await _getImagePath(
+    final String? path = await _getImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -46,9 +46,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
     );
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
-    return paths.map((path) => PickedFile(path)).toList();
+    return paths.map((dynamic path) => PickedFile(path as String)).toList();
   }
 
   Future<List<dynamic>?> _getMultiImagePath({
@@ -111,66 +113,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     );
   }
 
-  Future<String?> _getImageOrVideoPath({
-    double? maxImageWidth,
-    double? maxImageHeight,
-    int? imageQuality,
-  }) {
-    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
-      throw ArgumentError.value(
-          imageQuality, 'imageQuality', 'must be between 0 and 100');
-    }
-
-    if (maxImageWidth != null && maxImageWidth < 0) {
-      throw ArgumentError.value(
-          maxImageWidth, 'maxImageWidth', 'cannot be negative');
-    }
-
-    if (maxImageHeight != null && maxImageHeight < 0) {
-      throw ArgumentError.value(
-          maxImageHeight, 'maxImageHeight', 'cannot be negative');
-    }
-
-    return _channel.invokeMethod<String>(
-      'pickImageOrVideo',
-      <String, dynamic>{
-        'maxWidth': maxImageWidth,
-        'maxHeight': maxImageHeight,
-        'imageQuality': imageQuality,
-      },
-    );
-  }
-
-  Future<List<dynamic>?> _getMultiImageAndVideoPath({
-    double? maxImageWidth,
-    double? maxImageHeight,
-    int? imageQuality,
-  }) {
-    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
-      throw ArgumentError.value(
-          imageQuality, 'imageQuality', 'must be between 0 and 100');
-    }
-
-    if (maxImageWidth != null && maxImageWidth < 0) {
-      throw ArgumentError.value(
-          maxImageWidth, 'maxImageWidth', 'cannot be negative');
-    }
-
-    if (maxImageHeight != null && maxImageHeight < 0) {
-      throw ArgumentError.value(
-          maxImageHeight, 'maxImageHeight', 'cannot be negative');
-    }
-
-    return _channel.invokeMethod<List<dynamic>?>(
-      'pickMultiImageAndVideo',
-      <String, dynamic>{
-        'maxWidth': maxImageWidth,
-        'maxHeight': maxImageHeight,
-        'imageQuality': imageQuality,
-      },
-    );
-  }
-
   @override
   Future<PickedFile?> pickVideo({
     required ImageSource source,
@@ -211,7 +153,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     assert(result.containsKey('path') != result.containsKey('errorCode'));
 
-    final String? type = result['type'];
+    final String? type = result['type'] as String?;
     assert(type == kTypeImage || type == kTypeVideo);
 
     RetrieveType? retrieveType;
@@ -224,10 +166,11 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     PlatformException? exception;
     if (result.containsKey('errorCode')) {
       exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
+          code: result['errorCode']! as String,
+          message: result['errorMessage'] as String?);
     }
 
-    final String? path = result['path'];
+    final String? path = result['path'] as String?;
 
     return LostData(
       file: path != null ? PickedFile(path) : null,
@@ -244,7 +187,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String? path = await _getImagePath(
+    final String? path = await _getImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -265,39 +208,58 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
     );
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
-    return paths.map((path) => XFile(path)).toList();
+    return paths.map((dynamic path) => XFile(path as String)).toList();
   }
 
   @override
-  Future<XFile?> getImageOrVideo({
-    double? maxImageWidth,
-    double? maxImageHeight,
-    int? imageQuality,
+  Future<List<XFile>?> getMedia({
+    MediaSelectionOptions? options,
   }) async {
-    String? path = await _getImageOrVideoPath(
-      maxImageWidth: maxImageWidth,
-      maxImageHeight: maxImageHeight,
-      imageQuality: imageQuality,
-    );
-    return path != null ? XFile(path) : null;
-  }
+    options ??= MediaSelectionOptions();
+    final int? imageQuality = options.imageQuality;
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
 
-  @override
-  Future<List<XFile>?> getMultiImageAndVideo({
-    double? maxImageWidth,
-    double? maxImageHeight,
-    int? imageQuality,
-  }) async {
-    final List<dynamic>? paths = await _getMultiImageAndVideoPath(
-      maxImageWidth: maxImageWidth,
-      maxImageHeight: maxImageHeight,
-      imageQuality: imageQuality,
-    );
-    if (paths == null) return null;
+    final double? maxImageWidth = options.maxImageWidth;
+    if (maxImageWidth != null && maxImageWidth < 0) {
+      throw ArgumentError.value(
+          maxImageWidth, 'maxImageWidth', 'cannot be negative');
+    }
 
-    return paths.map((path) => XFile(path)).toList();
+    final double? maxImageHeight = options.maxImageHeight;
+    if (maxImageHeight != null && maxImageHeight < 0) {
+      throw ArgumentError.value(
+          maxImageHeight, 'maxImageHeight', 'cannot be negative');
+    }
+
+    final Map<String, dynamic> args = <String, dynamic>{
+      'types': options.types.map(serializeRetrieveType).toList(),
+      'maxImageWidth': maxImageWidth,
+      'maxImageHeight': maxImageHeight,
+      'imageQuality': imageQuality,
+      'allowMultiple': options.allowMultiple,
+    };
+    List<String>? paths;
+    if (options.allowMultiple) {
+      paths = await _channel.invokeMethod<List<dynamic>?>(
+        'pickMedia',
+        args,
+      ).then((List<dynamic>? paths) =>
+          paths?.map((dynamic path) => path as String).toList());
+    } else {
+      paths = await _channel.invokeMethod<String>(
+        'pickMedia',
+        args,
+      ).then((String? path) => path != null ? <String>[path] : null);
+    }
+
+    return paths?.map((String path) => XFile(path)).toList();
   }
 
   @override
@@ -318,7 +280,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   Future<LostDataResponse> getLostData() async {
     List<XFile>? pickedFileList;
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
 
     if (result == null) {
@@ -327,9 +289,9 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     assert(result.containsKey('path') != result.containsKey('errorCode'));
 
-    final String? type = result['type'];
+    final String? type = result['type'] as String?;
     assert(
-      type == kTypeImage || type == kTypeVideo || type == kTypeImageOrVideo,
+      type == kTypeImage || type == kTypeVideo || type == kTypeMedia,
     );
 
     RetrieveType? retrieveType;
@@ -337,22 +299,24 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       retrieveType = RetrieveType.image;
     } else if (type == kTypeVideo) {
       retrieveType = RetrieveType.video;
-    } else if (type == kTypeImageOrVideo) {
-      retrieveType = RetrieveType.imageOrVideo;
+    } else if (type == kTypeMedia) {
+      retrieveType = RetrieveType.media;
     }
 
     PlatformException? exception;
     if (result.containsKey('errorCode')) {
       exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
+          code: result['errorCode']! as String,
+          message: result['errorMessage'] as String?);
     }
 
-    final String? path = result['path'];
+    final String? path = result['path'] as String?;
 
-    final pathList = result['pathList'];
+    final List<String>? pathList =
+        (result['pathList'] as List<dynamic>?)?.cast<String>();
     if (pathList != null) {
-      pickedFileList = [];
-      for (String path in pathList) {
+      pickedFileList = <XFile>[];
+      for (final String path in pathList) {
         pickedFileList.add(XFile(path));
       }
     }

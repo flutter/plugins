@@ -10,14 +10,14 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraMetadata', () {
-    testWidgets('supports value equality', (tester) async {
+    testWidgets('supports value equality', (WidgetTester tester) async {
       expect(
-        CameraMetadata(
+        const CameraMetadata(
           deviceId: 'deviceId',
           facingMode: 'environment',
         ),
         equals(
-          CameraMetadata(
+          const CameraMetadata(
             deviceId: 'deviceId',
             facingMode: 'environment',
           ),

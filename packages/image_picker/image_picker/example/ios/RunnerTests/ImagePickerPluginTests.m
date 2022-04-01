@@ -5,6 +5,7 @@
 #import "ImagePickerTestImages.h"
 
 @import image_picker;
+@import image_picker.Test;
 @import XCTest;
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <OCMock/OCMock.h>
@@ -22,37 +23,27 @@
 
 @end
 
-@interface FLTImagePickerPlugin (Test)
-@property(copy, nonatomic) FlutterResult result;
-- (void)handleSavedPathList:(NSMutableArray *)pathList;
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
-@end
-
 @interface ImagePickerPluginTests : XCTestCase
-@property(readonly, nonatomic) id mockUIImagePicker;
-@property(readonly, nonatomic) id mockAVCaptureDevice;
+
 @end
 
 @implementation ImagePickerPluginTests
 
-- (void)setUp {
-  _mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
-  _mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
-}
-
 - (void)testPluginPickImageDeviceBack {
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
-              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+              [mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceRear is supported
   OCMStub(ClassMethod(
-              [_mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
+              [mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+  OCMStub([mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
@@ -60,27 +51,30 @@
   FlutterMethodCall *call =
       [FlutterMethodCall methodCallWithMethodName:@"pickImage"
                                         arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
+  UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+  [plugin setImagePickerControllerOverrides:@[ controller ]];
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
 
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
-                 UIImagePickerControllerCameraDeviceRear);
+  XCTAssertEqual(controller.cameraDevice, UIImagePickerControllerCameraDeviceRear);
 }
 
 - (void)testPluginPickImageDeviceFront {
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
-              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+              [mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceFront is supported
-  OCMStub(ClassMethod([_mockUIImagePicker
-              isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
+  OCMStub(ClassMethod(
+              [mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+  OCMStub([mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
@@ -88,27 +82,30 @@
   FlutterMethodCall *call =
       [FlutterMethodCall methodCallWithMethodName:@"pickImage"
                                         arguments:@{@"source" : @(0), @"cameraDevice" : @(1)}];
+  UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+  [plugin setImagePickerControllerOverrides:@[ controller ]];
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
 
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
-                 UIImagePickerControllerCameraDeviceFront);
+  XCTAssertEqual(controller.cameraDevice, UIImagePickerControllerCameraDeviceFront);
 }
 
 - (void)testPluginPickVideoDeviceBack {
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
-              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+              [mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceRear is supported
   OCMStub(ClassMethod(
-              [_mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
+              [mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+  OCMStub([mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
@@ -116,27 +113,31 @@
   FlutterMethodCall *call =
       [FlutterMethodCall methodCallWithMethodName:@"pickVideo"
                                         arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
+  UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+  [plugin setImagePickerControllerOverrides:@[ controller ]];
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
 
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
-                 UIImagePickerControllerCameraDeviceRear);
+  XCTAssertEqual(controller.cameraDevice, UIImagePickerControllerCameraDeviceRear);
 }
 
 - (void)testPluginPickVideoDeviceFront {
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
+
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
-              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+              [mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceFront is supported
-  OCMStub(ClassMethod([_mockUIImagePicker
-              isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
+  OCMStub(ClassMethod(
+              [mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+  OCMStub([mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
@@ -144,12 +145,40 @@
   FlutterMethodCall *call =
       [FlutterMethodCall methodCallWithMethodName:@"pickVideo"
                                         arguments:@{@"source" : @(0), @"cameraDevice" : @(1)}];
+  UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+  [plugin setImagePickerControllerOverrides:@[ controller ]];
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
 
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
-                 UIImagePickerControllerCameraDeviceFront);
+  XCTAssertEqual(controller.cameraDevice, UIImagePickerControllerCameraDeviceFront);
+}
+
+- (void)testPickMultiImageShouldUseUIImagePickerControllerOnPreiOS14 {
+  if (@available(iOS 14, *)) {
+    return;
+  }
+
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
+  OCMStub(ClassMethod([photoLibrary authorizationStatus]))
+      .andReturn(PHAuthorizationStatusAuthorized);
+
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImage"
+                                                              arguments:@{
+                                                                @"maxWidth" : @(100),
+                                                                @"maxHeight" : @(200),
+                                                                @"imageQuality" : @(50),
+                                                              }];
+
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+
+  OCMVerify(times(1),
+            [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
 #pragma mark - Test camera devices, no op on simulators
@@ -162,15 +191,18 @@
   FlutterMethodCall *call =
       [FlutterMethodCall methodCallWithMethodName:@"pickImage"
                                         arguments:@{@"source" : @(0), @"cameraDevice" : @(1)}];
+  UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+  plugin.imagePickerControllerOverrides = @[ controller ];
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
   plugin.result = ^(id result) {
 
   };
+
   // To ensure the flow does not crash by multiple cancel call
-  [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
-  [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
+  [plugin imagePickerControllerDidCancel:controller];
+  [plugin imagePickerControllerDidCancel:controller];
 }
 
 #pragma mark - Test video duration
@@ -180,10 +212,12 @@
   FlutterMethodCall *call = [FlutterMethodCall
       methodCallWithMethodName:@"pickVideo"
                      arguments:@{@"source" : @(0), @"cameraDevice" : @(0), @"maxDuration" : @95}];
+  UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+  [plugin setImagePickerControllerOverrides:@[ controller ]];
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
-  XCTAssertEqual([plugin getImagePickerController].videoMaximumDuration, 95);
+  XCTAssertEqual(controller.videoMaximumDuration, 95);
 }
 
 - (void)testViewController {
@@ -256,16 +290,19 @@
   XCTAssertEqual(pickImageResult, pathList);
 }
 
-- (void)testPickingImageOrVideo {
+- (void)testPickingMediaMultipleAllTypes {
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImageOrVideo"
-                                                              arguments:@{}];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMedia"
+                                                              arguments:@{
+                                                                @"types" : @[
+                                                                  @"image",
+                                                                  @"video",
+                                                                ],
+                                                                @"allowMultiple" : @YES,
+                                                              }];
   if (@available(iOS 14, *)) {
     XCTAssertNil([plugin getPickerViewController]);
-  } else {
-    XCTAssertNil([plugin getImagePickerController]);
   }
-
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
@@ -273,16 +310,16 @@
   if (@available(iOS 14, *)) {
     PHPickerViewController *controller = [plugin getPickerViewController];
     XCTAssertNotNil(controller);
-    // Check if PHPickerView has been configured to selecting 1 item of either type.
-    XCTAssertEqual(controller.configuration.selectionLimit, 1);
+    // Check if PHPickerView has been configured to select multiple items of either type.
+    XCTAssertEqual(controller.configuration.selectionLimit, 0);
     PHPickerFilter *expectedFilter = [PHPickerFilter anyFilterMatchingSubfilters:@[
       [PHPickerFilter imagesFilter], [PHPickerFilter videosFilter]
     ]];
     XCTAssertEqualObjects(controller.configuration.filter, expectedFilter);
   } else {
-    UIImagePickerController *controller = [plugin getImagePickerController];
-    XCTAssertNotNil(controller);
-    // Check if UIImagePickerView has been configured to selecting an item of either type.
+    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+    [plugin setImagePickerControllerOverrides:@[ controller ]];
+    // Check if UIImagePickerView has been configured to select an item of either type.
     NSArray<NSString *> *expectedMediaTypes = @[
       (NSString *)kUTTypeImage,
       (NSString *)kUTTypeMovie,
@@ -291,16 +328,18 @@
   }
 }
 
-- (void)testPickingMultiImageAndVideo {
+- (void)testPickingMediaSingleOneType {
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMultiImageAndVideo"
-                                                              arguments:@{}];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickMedia"
+                                                              arguments:@{
+                                                                @"types" : @[
+                                                                  @"video",
+                                                                ],
+                                                                @"allowMultiple" : @NO,
+                                                              }];
   if (@available(iOS 14, *)) {
     XCTAssertNil([plugin getPickerViewController]);
-  } else {
-    XCTAssertNil([plugin getImagePickerController]);
   }
-
   [plugin handleMethodCall:call
                     result:^(id _Nullable r){
                     }];
@@ -308,18 +347,16 @@
   if (@available(iOS 14, *)) {
     PHPickerViewController *controller = [plugin getPickerViewController];
     XCTAssertNotNil(controller);
-    // Check if PHPickerView has been configured to selecting multiple items of either type.
-    XCTAssertEqual(controller.configuration.selectionLimit, 0);
-    PHPickerFilter *expectedFilter = [PHPickerFilter anyFilterMatchingSubfilters:@[
-      [PHPickerFilter imagesFilter], [PHPickerFilter videosFilter]
-    ]];
+    // Check if PHPickerView has been configured to select one video.
+    XCTAssertEqual(controller.configuration.selectionLimit, 1);
+    PHPickerFilter *expectedFilter =
+        [PHPickerFilter anyFilterMatchingSubfilters:@[ [PHPickerFilter videosFilter] ]];
     XCTAssertEqualObjects(controller.configuration.filter, expectedFilter);
   } else {
-    UIImagePickerController *controller = [plugin getImagePickerController];
-    XCTAssertNotNil(controller);
-    // Check if UIImagePickerView has been configured to selecting an item of either type.
+    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+    [plugin setImagePickerControllerOverrides:@[ controller ]];
+    // Check if UIImagePickerView has been configured to select one video.
     NSArray<NSString *> *expectedMediaTypes = @[
-      (NSString *)kUTTypeImage,
       (NSString *)kUTTypeMovie,
     ];
     XCTAssertEqualObjects(controller.mediaTypes, expectedMediaTypes);

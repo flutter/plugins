@@ -32,6 +32,10 @@ your app with each store. Both stores have extensive guides:
 * [App Store documentation](https://developer.apple.com/in-app-purchase/)
 * [Google Play documentation](https://developer.android.com/google/play/billing/billing_overview)
 
+> NOTE: Further in this document the App Store and Google Play will be referred 
+> to as "the store" or "the underlying store", except when a feature is specific
+> to a particular store.
+
 For a list of steps for configuring in-app purchases in both stores, see the
 [example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/example/README.md).
 
@@ -190,11 +194,15 @@ if (_isConsumable(productDetails)) {
 
 ### Completing a purchase
 
-The `InAppPurchase.purchaseStream` will send purchase updates after
-you initiate the purchase flow using `InAppPurchase.buyConsumable`
-or `InAppPurchase.buyNonConsumable`. After delivering the content to
-the user, call `InAppPurchase.completePurchase` to tell the App Store
-and Google Play that the purchase has been finished.
+The `InAppPurchase.purchaseStream` will send purchase updates after initiating
+the purchase flow using `InAppPurchase.buyConsumable` or 
+`InAppPurchase.buyNonConsumable`. After verifying the purchase receipt and the 
+delivering the content to the user it is important to call 
+`InAppPurchase.completePurchase` to tell the underlying store that the
+purchase has been completed. Calling `InAppPurchase.completePurchase` will 
+inform the underlying store that the app verified and processed the 
+purchase and the store can proceed to finalize the transaction and bill
+the end user's payment account.
 
 > **Warning:** Failure to call `InAppPurchase.completePurchase` and
 > get a successful response within 3 days of the purchase will result a refund.
@@ -229,7 +237,7 @@ InAppPurchase.instance
 
 When the price of a subscription is changed the consumer will need to confirm that price change. If the consumer does not
 confirm the price change the subscription will not be auto-renewed. By default on both iOS and Android the consumer will
-automatically get a popup to confirm the price change, but App developers can override this mechanism and show the popup on a later moment so it doesn't interrupt the critical flow of the App. This works different on the Apple App Store and on the Google Play Store.
+automatically get a popup to confirm the price change, but App developers can override this mechanism and show the popup on a later moment so it doesn't interrupt the critical flow of the App. This works different for each of the stores.
 
 #### Google Play Store (Android)
 When the subscription price is raised, the consumer should approve the price change within 7 days. The official
