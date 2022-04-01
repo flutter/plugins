@@ -982,7 +982,7 @@ void main() {
 
     group('#getMedia', () {
       test('calls the method correctly', () async {
-        returnValue = <String>['0', '1'];
+        returnValue = '0';
         await picker.getMedia();
 
         expect(
@@ -1003,10 +1003,11 @@ void main() {
       });
 
       test('passes the selection options correctly', () async {
-        returnValue = <String>['0', '1'];
+
         // Default options
         await picker.getMedia();
         // Various image options
+        returnValue = '0';
         await picker.getMedia(
           options: MediaSelectionOptions(
             maxImageWidth: 10.0,
@@ -1023,16 +1024,19 @@ void main() {
           ),
         );
         // General options
+        returnValue = <String>['0', '1'];
         await picker.getMedia(
           options: MediaSelectionOptions(
             allowMultiple: true,
           ),
         );
+        returnValue = '0';
         await picker.getMedia(
           options:
               MediaSelectionOptions(types: <RetrieveType>[RetrieveType.image]),
         );
         // Combinations
+        returnValue = <String>['0', '1'];
         await picker.getMedia(
           options: MediaSelectionOptions(
               maxImageWidth: 10.0,
