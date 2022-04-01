@@ -609,7 +609,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-  void showInSnackBar(String message) async {
+  void showInSnackBar(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
