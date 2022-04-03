@@ -1,3 +1,7 @@
+## 2.1.6
+
+* Equality operator on `MapsObjectId` preserves inheritance instead of checking for `runtimeType`.
+
 ## 2.1.5
 
 Removes dependency on `meta`.

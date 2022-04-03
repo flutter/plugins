@@ -42,4 +42,11 @@ void main() {
           {'id': '3'}
         ]);
   });
+
+  test('MarkerId equality should preserve inheritance and only check value', () async {
+    const String value = 'id123';
+    const MarkerId markerId = MarkerId(value);
+    const TestMapsObjectId<Marker> customMarkerId = TestMapsObjectId<Marker>(value);
+    expect(customMarkerId, equals(markerId));
+  });
 }

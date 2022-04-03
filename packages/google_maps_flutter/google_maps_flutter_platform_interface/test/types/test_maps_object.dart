@@ -45,3 +45,7 @@ class TestMapsObjectUpdate extends MapsObjectUpdates<TestMapsObject> {
       Set<TestMapsObject> previous, Set<TestMapsObject> current)
       : super.from(previous, current, objectName: 'testObject');
 }
+
+class TestMapsObjectId<T> extends MapsObjectId<T> {
+  const TestMapsObjectId(String value) : super(value);
+}
