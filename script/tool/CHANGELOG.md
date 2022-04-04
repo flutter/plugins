@@ -1,3 +1,7 @@
+## NEXT
+
+- Updates `publish-plugin` command documentation.
+
 ## 0.8.2
 
 - Adds a new `custom-test` command.

@@ -20,7 +20,9 @@ dependencies:
   video_player: ^2.1.4
 
 dev_dependencies:
-  espresso: ^0.1.0+2
+  # TODO(bparrishMines): Change version to `0.2.0` once published.
+  espresso:
+    path: ../../../espresso
   flutter_driver:
     sdk: flutter
   integration_test:
