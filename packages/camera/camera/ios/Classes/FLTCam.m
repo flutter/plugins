@@ -10,14 +10,6 @@
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
 
-@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
-// The queue on which `eventSink` property should be accessed
-@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
-// `eventSink` property should be accessed on `captureSessionQueue`.
-// The block itself should be invoked on the main queue.
-@property FlutterEventSink eventSink;
-@end
-
 @implementation FLTImageStreamHandler
 
 - (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
@@ -68,7 +60,13 @@
 @property(assign, nonatomic) BOOL videoIsDisconnected;
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
-@property(assign, nonatomic) BOOL isStreamingImages;
+
+/// Number of frames currently pending processing.
+@property(assign, nonatomic) int streamingPendingFramesCount;
+
+/// Maximum number of frames pending processing.
+@property(assign, nonatomic) int maxStreamingPendingFramesCount;
+
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -134,6 +132,11 @@ NSString *const errorMethod = @"error";
   _deviceOrientation = orientation;
   _videoFormat = kCVPixelFormatType_32BGRA;
   _inProgressSavePhotoDelegates = [NSMutableDictionary dictionary];
+
+  // To limit memory consumption, limit the number of frames pending processing.
+  // After some testing, 4 was determined to be the best maximum value.
+  // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
+  _maxStreamingPendingFramesCount = 4;
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -401,7 +404,8 @@ NSString *const errorMethod = @"error";
   }
   if (_isStreamingImages) {
     FlutterEventSink eventSink = _imageStreamHandler.eventSink;
-    if (eventSink) {
+    if (eventSink && (self.streamingPendingFramesCount < self.maxStreamingPendingFramesCount)) {
+      self.streamingPendingFramesCount++;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       // Must lock base address before accessing the pixel data
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
@@ -898,6 +902,13 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+  [self startImageStreamWithMessenger:messenger
+                   imageStreamHandler:[[FLTImageStreamHandler alloc]
+                                          initWithCaptureSessionQueue:_captureSessionQueue]];
+}
+
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                   imageStreamHandler:(FLTImageStreamHandler *)imageStreamHandler {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
@@ -905,12 +916,12 @@ NSString *const errorMethod = @"error";
     FLTThreadSafeEventChannel *threadSafeEventChannel =
         [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
-    _imageStreamHandler =
-        [[FLTImageStreamHandler alloc] initWithCaptureSessionQueue:_captureSessionQueue];
+    _imageStreamHandler = imageStreamHandler;
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
                                     dispatch_async(self->_captureSessionQueue, ^{
                                       self.isStreamingImages = YES;
+                                      self.streamingPendingFramesCount = 0;
                                     });
                                   }];
   } else {
@@ -926,6 +937,10 @@ NSString *const errorMethod = @"error";
   } else {
     [_methodChannel invokeMethod:errorMethod arguments:@"Images from camera are not streaming!"];
   }
+}
+
+- (void)receivedImageStreamData {
+  self.streamingPendingFramesCount--;
 }
 
 - (void)getMaxZoomLevelWithResult:(FLTThreadSafeFlutterResult *)result {

@@ -23,6 +23,7 @@ import 'webview_android_widget_test.mocks.dart';
 @GenerateMocks(<Type>[
   android_webview.FlutterAssetManager,
   android_webview.WebSettings,
+  android_webview.WebStorage,
   android_webview.WebView,
   WebViewAndroidDownloadListener,
   WebViewAndroidJavaScriptChannel,
@@ -39,6 +40,7 @@ void main() {
     late MockFlutterAssetManager mockFlutterAssetManager;
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
+    late MockWebStorage mockWebStorage;
     late MockWebViewProxy mockWebViewProxy;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
@@ -54,6 +56,7 @@ void main() {
       mockFlutterAssetManager = MockFlutterAssetManager();
       mockWebView = MockWebView();
       mockWebSettings = MockWebSettings();
+      mockWebStorage = MockWebStorage();
       when(mockWebView.settings).thenReturn(mockWebSettings);
 
       mockWebViewProxy = MockWebViewProxy();
@@ -86,6 +89,7 @@ void main() {
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
         flutterAssetManager: mockFlutterAssetManager,
+        webStorage: mockWebStorage,
         onBuildWidget: (WebViewAndroidPlatformController controller) {
           testController = controller;
           return Container();
@@ -590,6 +594,7 @@ void main() {
 
         await testController.clearCache();
         verify(mockWebView.clearCache(true));
+        verify(mockWebStorage.deleteAllData());
       });
 
       testWidgets('evaluateJavascript', (WidgetTester tester) async {
