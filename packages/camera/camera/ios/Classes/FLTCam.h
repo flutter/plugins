@@ -62,6 +62,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applyFocusMode;
 
 /**
+ * Acknowledges the receipt of one image stream frame.
+ *
+ * This should be called each time a frame is received. Failing to call it may
+ * cause later frames to be dropped instead of streamed.
+ */
+- (void)receivedImageStreamData;
+
+/**
  * Applies FocusMode on the AVCaptureDevice.
  *
  * If the @c focusMode is set to FocusModeAuto the AVCaptureDevice is configured to use

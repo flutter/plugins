@@ -17,7 +17,9 @@ class UIScrollView {
   UIScrollView.fromWebView(WKWebView webView);
 
   /// Point at which the origin of the content view is offset from the origin of the scroll view.
-  Future<Point<double>> get contentOffset {
+  ///
+  /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
+  Future<Point<double>> getContentOffset() {
     throw UnimplementedError();
   }
 
@@ -32,7 +34,9 @@ class UIScrollView {
   /// Set point at which the origin of the content view is offset from the origin of the scroll view.
   ///
   /// The default value is `Point<double>(0.0, 0.0)`.
-  set contentOffset(FutureOr<Point<double>> offset) {
+  ///
+  /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
+  Future<void> setContentOffset(FutureOr<Point<double>> offset) {
     throw UnimplementedError();
   }
 }

@@ -220,7 +220,7 @@ class WKScriptMessageHandler {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
-  set didReceiveScriptMessage(
+  Future<void> setDidReceiveScriptMessage(
     void Function(
       WKUserContentController userContentController,
       WKScriptMessage message,
@@ -324,13 +324,17 @@ class WKWebViewConfiguration {
   WKWebsiteDataStore get webSiteDataStore => _websiteDataStore;
 
   /// Used to get and set the site’s cookies and to track the cached data objects.
-  set webSiteDataStore(WKWebsiteDataStore websiteDataStore) {
+  ///
+  /// Sets [WKWebViewConfiguration.webSiteDataStore](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1395661-websitedatastore?language=objc).
+  Future<void> setWebSiteDataStore(WKWebsiteDataStore websiteDataStore) {
     _websiteDataStore = websiteDataStore;
     throw UnimplementedError();
   }
 
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
-  set allowsInlineMediaPlayback(bool allow) {
+  ///
+  /// Sets [WKWebViewConfiguration.allowsInlineMediaPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1614793-allowsinlinemediaplayback?language=objc).
+  Future<void> setAllowsInlineMediaPlayback(bool allow) {
     throw UnimplementedError();
   }
 
@@ -338,7 +342,9 @@ class WKWebViewConfiguration {
   ///
   /// Use [WKAudiovisualMediaType.none] to indicate that no user gestures are
   /// required to begin playing media.
-  set mediaTypesRequiringUserActionForPlayback(
+  ///
+  /// Sets [WKWebViewConfiguration.mediaTypesRequiringUserActionForPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1851524-mediatypesrequiringuseractionfor?language=objc).
+  Future<void> setMediaTypesRequiringUserActionForPlayback(
     Set<WKAudiovisualMediaType> types,
   ) {
     assert(types.isNotEmpty);
@@ -351,12 +357,12 @@ class WKWebViewConfiguration {
 /// Wraps [WKUIDelegate](https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc).
 class WKUIDelegate {
   /// Indicates a new [WebView] was requested to be created with [configuration].
-  set onCreateWebView(
+  Future<void> setOnCreateWebView(
     void Function(
       WKWebViewConfiguration configuration,
       WKNavigationAction navigationAction,
     )?
-        onCreateeWebView,
+        onCreateWebView,
   ) {
     throw UnimplementedError();
   }
@@ -370,7 +376,7 @@ class WKUIDelegate {
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
 class WKNavigationDelegate {
   /// Called when navigation from the main frame has started.
-  set didStartProvisionalNavigation(
+  Future<void> setDidStartProvisionalNavigation(
     void Function(
       WKWebView webView,
       String? url,
@@ -381,14 +387,14 @@ class WKNavigationDelegate {
   }
 
   /// Called when navigation is complete.
-  set didFinishNavigation(
+  Future<void> setDidFinishNavigation(
     void Function(WKWebView webView, String? url)? didFinishNavigation,
   ) {
     throw UnimplementedError();
   }
 
   /// Called when permission is needed to navigate to new content.
-  set decidePolicyForNavigationAction(
+  Future<void> setDecidePolicyForNavigationAction(
       Future<WKNavigationActionPolicy> Function(
     WKWebView webView,
     WKNavigationAction navigationAction,
@@ -398,14 +404,14 @@ class WKNavigationDelegate {
   }
 
   /// Called when an error occurred during navigation.
-  set didFailNavigation(
+  Future<void> setDidFailNavigation(
     void Function(WKWebView webView, NSError error)? didFailNavigation,
   ) {
     throw UnimplementedError();
   }
 
   /// Called when an error occurred during the early navigation process.
-  set didFailProvisionalNavigation(
+  Future<void> setDidFailProvisionalNavigation(
     void Function(WKWebView webView, NSError error)?
         didFailProvisionalNavigation,
   ) {
@@ -413,7 +419,7 @@ class WKNavigationDelegate {
   }
 
   /// Called when the web view’s content process was terminated.
-  set webViewWebContentProcessDidTerminate(
+  Future<void> setWebViewWebContentProcessDidTerminate(
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   ) {
     throw UnimplementedError();
@@ -455,17 +461,23 @@ class WKWebView extends NSObject {
   late final UIScrollView scrollView = UIScrollView.fromWebView(this);
 
   /// Used to integrate custom user interface elements into web view interactions.
-  set uiDelegate(WKUIDelegate? delegate) {
+  ///
+  /// Sets [WKWebView.UIDelegate](https://developer.apple.com/documentation/webkit/wkwebview/1415009-uidelegate?language=objc).
+  Future<void> setUIDelegate(WKUIDelegate? delegate) {
     throw UnimplementedError();
   }
 
   /// The object you use to manage navigation behavior for the web view.
-  set navigationDelegate(WKNavigationDelegate? delegate) {
+  ///
+  /// Sets [WKWebView.navigationDelegate](https://developer.apple.com/documentation/webkit/wkwebview/1414971-navigationdelegate?language=objc).
+  Future<void> setNavigationDelegate(WKNavigationDelegate? delegate) {
     throw UnimplementedError();
   }
 
   /// The URL for the current webpage.
-  Future<String?> get url {
+  ///
+  /// Represents [WKWebView.URL](https://developer.apple.com/documentation/webkit/wkwebview/1415005-url?language=objc).
+  Future<String?> getUrl() {
     throw UnimplementedError();
   }
 
@@ -473,8 +485,7 @@ class WKWebView extends NSObject {
   ///
   /// This value ranges from 0.0 to 1.0.
   ///
-  /// This method represents
-  /// [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
+  /// Represents [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
   Future<double> getEstimatedProgress() {
     throw UnimplementedError();
   }
@@ -506,12 +517,12 @@ class WKWebView extends NSObject {
   }
 
   /// Indicates whether there is a valid back item in the back-forward list.
-  Future<bool> get canGoBack {
+  Future<bool> canGoBack() {
     throw UnimplementedError();
   }
 
   /// Indicates whether there is a valid forward item in the back-forward list.
-  Future<bool> get canGoForward {
+  Future<bool> canGoForward() {
     throw UnimplementedError();
   }
 
@@ -531,26 +542,27 @@ class WKWebView extends NSObject {
   }
 
   /// The page title.
-  Future<String?> get title {
-    throw UnimplementedError();
-  }
-
-  /// An estimate of what fraction of the current navigation has been loaded.
-  Future<double> get estimatedProgress {
+  ///
+  /// Represents [WKWebView.title](https://developer.apple.com/documentation/webkit/wkwebview/1415015-title?language=objc).
+  Future<String?> getTitle() {
     throw UnimplementedError();
   }
 
   /// Indicates whether horizontal swipe gestures trigger page navigation.
   ///
   /// The default value is false.
-  set allowsBackForwardNavigationGestures(bool allow) {
+  ///
+  /// Sets [WKWebView.allowsBackForwardNavigationGestures](https://developer.apple.com/documentation/webkit/wkwebview/1414995-allowsbackforwardnavigationgestu?language=objc).
+  Future<void> setAllowsBackForwardNavigationGestures(bool allow) {
     throw UnimplementedError();
   }
 
   /// The custom user agent string.
   ///
   /// The default value of this property is null.
-  set customUserAgent(String? userAgent) {
+  ///
+  /// Sets [WKWebView.customUserAgent](https://developer.apple.com/documentation/webkit/wkwebview/1414950-customuseragent?language=objc).
+  Future<void> setCustomUserAgent(String? userAgent) {
     throw UnimplementedError();
   }
 
