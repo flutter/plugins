@@ -1,3 +1,8 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+* Adds OS version support information to README.
+
 ## 0.8.4+11
 
 * Fixes Activity leak.

@@ -1,6 +1,7 @@
 ## 3.0.2
 
 * Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
+* Adds OS version support information to README.
 
 ## 3.0.1
 

@@ -23,6 +23,7 @@ class WebViewAndroidWidget extends StatefulWidget {
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
     @visibleForTesting
         this.flutterAssetManager = const android_webview.FlutterAssetManager(),
+    @visibleForTesting this.webStorage,
   });
 
   /// Initial parameters used to setup the WebView.
@@ -59,6 +60,9 @@ class WebViewAndroidWidget extends StatefulWidget {
   final Widget Function(WebViewAndroidPlatformController controller)
       onBuildWidget;
 
+  /// Manages the JavaScript storage APIs.
+  final android_webview.WebStorage? webStorage;
+
   @override
   State<StatefulWidget> createState() => _WebViewAndroidWidgetState();
 }
@@ -76,6 +80,7 @@ class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
       javascriptChannelRegistry: widget.javascriptChannelRegistry,
       webViewProxy: widget.webViewProxy,
       flutterAssetManager: widget.flutterAssetManager,
+      webStorage: widget.webStorage,
     );
   }
 
@@ -102,7 +107,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
     @visibleForTesting
         this.flutterAssetManager = const android_webview.FlutterAssetManager(),
-  })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
+    @visibleForTesting android_webview.WebStorage? webStorage,
+  })  : webStorage = webStorage ?? android_webview.WebStorage.instance,
+        assert(creationParams.webSettings?.hasNavigationDelegate != null),
         super(callbacksHandler) {
     webView = webViewProxy.createWebView(
       useHybridComposition: useHybridComposition,
@@ -159,6 +166,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WebViewAndroidWebChromeClient webChromeClient =
       WebViewAndroidWebChromeClient();
+
+  /// Manages the JavaScript storage APIs.
+  final android_webview.WebStorage webStorage;
 
   /// Receive various notifications and requests for [android_webview.WebView].
   @visibleForTesting
@@ -254,7 +264,10 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<void> reload() => webView.reload();
 
   @override
-  Future<void> clearCache() => webView.clearCache(true);
+  Future<void> clearCache() {
+    webView.clearCache(true);
+    return webStorage.deleteAllData();
+  }
 
   @override
   Future<void> updateSettings(WebSettings setting) async {

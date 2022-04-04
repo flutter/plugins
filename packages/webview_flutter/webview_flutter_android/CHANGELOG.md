@@ -1,7 +1,12 @@
+## 2.8.5
+
+* Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
+
 ## 2.8.4
 
 * Fixes bug preventing `mockito` code generation for tests.
-* Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
+* Fixes regression where local storage wasn't cleared when `WebViewController.clearCache` was
+  called.
 
 ## 2.8.3
 
