@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 3.0.1
 
 * Removes a duplicate Android-specific integration test.

@@ -101,6 +101,7 @@ task:
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
         pubspec_script: ./script/tool_runner.sh pubspec-check
+        readme_script: ./script/tool_runner.sh readme-check
         license_script: dart $PLUGIN_TOOL license-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes

@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 0.2.0+4
 
 * Internal code cleanup for stricter analysis options.
