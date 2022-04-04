@@ -1,3 +1,7 @@
+## 0.9.4+19
+
+* Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
+
 ## 0.9.4+18
 
 * Fixes a crash in iOS when streaming on low-performance devices.
