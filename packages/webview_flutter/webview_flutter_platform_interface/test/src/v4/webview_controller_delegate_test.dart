@@ -79,18 +79,6 @@ void main() {
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of loadUrl should throw unimplemented error', () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate();
-
-    expect(
-      () => controller.loadUrl('', <String, String>{}),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
       'Default implementation of loadRequest should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
@@ -205,17 +193,17 @@ void main() {
   });
 
   test(
-      // ignore: lines_longer_than_80_chars
-      'Default implementation of evaluateJavaScript should throw unimplemented error',
-      () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate();
+    'Default implementation of the setNavigationCallback should throw unimplemented error',
+    () {
+      final WebViewControllerDelegate controller =
+          ExtendsWebViewControllerDelegate();
 
-    expect(
-      () => controller.evaluateJavaScript('javaScript'),
-      throwsUnimplementedError,
-    );
-  });
+      expect(
+        () => controller.setNavigationCallbackHandler(),
+        throwsUnimplementedError,
+      );
+    },
+  );
 
   test(
       // ignore: lines_longer_than_80_chars
@@ -245,26 +233,31 @@ void main() {
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of addJavaScriptChannels should throw unimplemented error',
+      'Default implementation of addJavaScriptChannel should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
         ExtendsWebViewControllerDelegate();
 
     expect(
-      () => controller.addJavaScriptChannels(<String>{}),
+      () => controller.addJavaScriptChannel(
+        JavaScriptChannelParams(
+          name: 'test',
+          onMessageReceived: (_) {},
+        ),
+      ),
       throwsUnimplementedError,
     );
   });
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of removeJavaScriptChannels should throw unimplemented error',
+      'Default implementation of removeJavaScriptChannel should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
         ExtendsWebViewControllerDelegate();
 
     expect(
-      () => controller.removeJavaScriptChannels(<String>{}),
+      () => controller.removeJavaScriptChannel('test'),
       throwsUnimplementedError,
     );
   });
@@ -310,26 +303,13 @@ void main() {
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of getScrollX should throw unimplemented error',
+      'Default implementation of getScrollPosition should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
         ExtendsWebViewControllerDelegate();
 
     expect(
-      () => controller.getScrollX(),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
-      'Default implementation of getScrollY should throw unimplemented error',
-      () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate();
-
-    expect(
-      () => controller.getScrollY(),
+      () => controller.getScrollPosition(),
       throwsUnimplementedError,
     );
   });
