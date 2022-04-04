@@ -1,4 +1,4 @@
-## NEXT
+## 2.8.4
 
 * Fixes bug preventing `mockito` code generation for tests.
 * Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.

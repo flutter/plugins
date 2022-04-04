@@ -110,37 +110,33 @@ class _WebViewExampleState extends State<_WebViewExample> {
           _SampleMenu(_controller.future),
         ],
       ),
-      // We're using a Builder here so we have a context that is below the Scaffold
-      // to allow calling Scaffold.of(context) so we can show a snackbar.
-      body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl: 'https://flutter.dev',
-          onWebViewCreated: (WebViewController controller) {
-            _controller.complete(controller);
-          },
-          onProgress: (int progress) {
-            print('WebView is loading (progress : $progress%)');
-          },
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageStarted: (String url) {
-            print('Page started loading: $url');
-          },
-          onPageFinished: (String url) {
-            print('Page finished loading: $url');
-          },
-          javascriptChannels: _createJavascriptChannels(context),
-          javascriptMode: JavascriptMode.unrestricted,
-          userAgent: 'Custom_User_Agent',
-          backgroundColor: const Color(0x80000000),
-        );
-      }),
+      body: WebView(
+        initialUrl: 'https://flutter.dev',
+        onWebViewCreated: (WebViewController controller) {
+          _controller.complete(controller);
+        },
+        onProgress: (int progress) {
+          print('WebView is loading (progress : $progress%)');
+        },
+        navigationDelegate: (NavigationRequest request) {
+          if (request.url.startsWith('https://www.youtube.com/')) {
+            print('blocking navigation to $request}');
+            return NavigationDecision.prevent;
+          }
+          print('allowing navigation to $request');
+          return NavigationDecision.navigate;
+        },
+        onPageStarted: (String url) {
+          print('Page started loading: $url');
+        },
+        onPageFinished: (String url) {
+          print('Page finished loading: $url');
+        },
+        javascriptChannels: _createJavascriptChannels(context),
+        javascriptMode: JavascriptMode.unrestricted,
+        userAgent: 'Custom_User_Agent',
+        backgroundColor: const Color(0x80000000),
+      ),
       floatingActionButton: favoriteButton(),
     );
   }
