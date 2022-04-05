@@ -221,6 +221,9 @@ abstract class WebChromeClientFlutterApi {
   void dispose(int instanceId);
 
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+
+  @async
+  List<String> onShowFileChooser(int instanceId, int webViewInstanceId);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebStorageHostApi')

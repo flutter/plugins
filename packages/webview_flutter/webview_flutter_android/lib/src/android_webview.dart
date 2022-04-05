@@ -781,6 +781,10 @@ abstract class WebChromeClient {
 
   /// Notify the host application that a file should be downloaded.
   void onProgressChanged(WebView webView, int progress) {}
+
+  Future<List<String>> onShowFileChooser(WebView webView) async {
+    return [];
+  }
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.

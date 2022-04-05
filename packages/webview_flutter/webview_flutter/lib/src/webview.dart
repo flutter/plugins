@@ -63,6 +63,8 @@ typedef PageFinishedCallback = void Function(String url);
 /// Signature for when a [WebView] is loading a page.
 typedef PageLoadingCallback = void Function(int progress);
 
+typedef ShowFileChooserCallBack = Future<List<String>> Function();
+
 /// Signature for when a [WebView] has failed to load a resource.
 typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
@@ -90,6 +92,7 @@ class WebView extends StatefulWidget {
     this.onPageStarted,
     this.onPageFinished,
     this.onProgress,
+    this.onShowFileChooser,
     this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
@@ -237,6 +240,9 @@ class WebView extends StatefulWidget {
 
   /// Invoked when a page is loading.
   final PageLoadingCallback? onProgress;
+
+  /// Invoked when a page is loading.
+  final ShowFileChooserCallBack? onShowFileChooser;
 
   /// Invoked when a web resource has failed to load.
   ///
@@ -482,6 +488,14 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     if (_widget.onProgress != null) {
       _widget.onProgress!(progress);
     }
+  }
+
+  @override
+  Future<List<String>> onShowFileChooser() async {
+    if (_widget.onShowFileChooser != null) {
+      return await _widget.onShowFileChooser!();
+    }
+    return [];
   }
 
   @override
