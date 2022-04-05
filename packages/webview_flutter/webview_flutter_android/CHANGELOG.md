@@ -1,3 +1,7 @@
+## 2.8.5
+
+* Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.
+
 ## 2.8.4
 
 * Fixes bug preventing `mockito` code generation for tests.
