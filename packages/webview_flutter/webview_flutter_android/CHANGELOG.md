@@ -1,6 +1,6 @@
 ## 2.8.5
 
-* Migrate deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger`.
+* Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.
 
 ## 2.8.4
 

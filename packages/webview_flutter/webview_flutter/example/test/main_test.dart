@@ -11,7 +11,10 @@ void main() {
   testWidgets('Test snackbar from ScaffoldMessenger',
       (WidgetTester tester) async {
     await tester.pumpWidget(
-        MaterialApp(home: WebViewExample(cookieManager: FakeCookieManager())));
+      MaterialApp(
+        home: WebViewExample(cookieManager: FakeCookieManager()),
+      ),
+    );
     expect(find.byIcon(Icons.favorite), findsOneWidget);
     await tester.tap(find.byIcon(Icons.favorite));
     await tester.pump();

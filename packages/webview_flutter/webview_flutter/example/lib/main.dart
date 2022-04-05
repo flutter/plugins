@@ -159,9 +159,12 @@ class _WebViewExampleState extends State<WebViewExample> {
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                    content: Text(
-                  controller.hasData ? 'Favorited $url' : 'Unable to favorite',
-                )),
+                  content: Text(
+                    controller.hasData
+                        ? 'Favorited $url'
+                        : 'Unable to favorite',
+                  ),
+                ),
               );
             },
             child: const Icon(Icons.favorite),
