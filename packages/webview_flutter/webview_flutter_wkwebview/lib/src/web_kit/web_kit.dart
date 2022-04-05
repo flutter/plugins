@@ -201,7 +201,7 @@ class WKPreferences {
   WKPreferences();
 
   // A WKPreferences that is owned by configuration.
-  WKPreferences._fromWebViewConfiguretion(
+  WKPreferences._fromWebViewConfiguration(
     // TODO(bparrishMines): Remove ignore once constructor is implemented.
     // ignore: avoid_unused_constructor_parameters
     WKWebViewConfiguration configuration,
@@ -269,7 +269,7 @@ class WKUserContentController {
   WKUserContentController();
 
   // A WKUserContentController that is owned by configuration.
-  WKUserContentController._fromWebViewConfiguretion(
+  WKUserContentController._fromWebViewConfiguration(
     // TODO(bparrishMines): Remove ignore once constructor is implemented.
     // ignore: avoid_unused_constructor_parameters
     WKWebViewConfiguration configuration,
@@ -339,10 +339,10 @@ class WKWebViewConfiguration {
       WKWebsiteDataStore._fromWebViewConfiguration(this);
 
   late final WKUserContentController _userContentController =
-      WKUserContentController._fromWebViewConfiguretion(this);
+      WKUserContentController._fromWebViewConfiguration(this);
 
   late final WKPreferences _preferences =
-      WKPreferences._fromWebViewConfiguretion(this);
+      WKPreferences._fromWebViewConfiguration(this);
 
   /// Used to get and set the site’s cookies and to track the cached data objects.
   WKWebsiteDataStore get webSiteDataStore => _websiteDataStore;
@@ -459,7 +459,7 @@ class WKNavigationDelegate {
 /// Object that displays interactive web content, such as for an in-app browser.
 ///
 /// Wraps [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview?language=objc).
-class WKWebView extends NSObject {
+class WKWebView extends UIView {
   /// Constructs a [WKWebView].
   ///
   /// [configuration] contains the configuration details for the web view. This
@@ -601,15 +601,6 @@ class WKWebView extends NSObject {
   /// Throws a `PlatformException` if an error occurs or return value is not
   /// supported.
   Future<Object?> evaluateJavaScript(String javaScriptString) {
-    throw UnimplementedError();
-  }
-
-  /// The view’s background color.
-  ///
-  /// The default value is null, which results in a transparent background color.
-  ///
-  /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
-  Future<void> setBackgroundColor(Color? color) {
     throw UnimplementedError();
   }
 

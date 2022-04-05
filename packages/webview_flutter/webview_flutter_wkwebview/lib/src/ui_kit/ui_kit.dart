@@ -7,12 +7,13 @@ import 'dart:math';
 
 import 'package:flutter/painting.dart';
 
+import '../foundation/foundation.dart';
 import '../web_kit/web_kit.dart';
 
 /// A view that allows the scrolling and zooming of its contained views.
 ///
 /// Wraps [UIScrollView](https://developer.apple.com/documentation/uikit/uiscrollview?language=objc).
-class UIScrollView {
+class UIScrollView extends UIView {
   /// Constructs a [UIScrollView] that is owned by [webView].
   // TODO(bparrishMines): Remove ignore once constructor is implemented.
   // ignore: avoid_unused_constructor_parameters
@@ -22,15 +23,6 @@ class UIScrollView {
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<Point<double>> getContentOffset() {
-    throw UnimplementedError();
-  }
-
-  /// The view’s background color.
-  ///
-  /// The default value is null, which results in a transparent background color.
-  ///
-  /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
-  Future<void> setBackgroundColor(Color? color) {
     throw UnimplementedError();
   }
 
@@ -48,6 +40,20 @@ class UIScrollView {
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<void> setContentOffset(FutureOr<Point<double>> offset) {
+    throw UnimplementedError();
+  }
+}
+
+/// Manages the content for a rectangular area on the screen.
+///
+/// Wraps [UIView](https://developer.apple.com/documentation/uikit/uiview?language=objc).
+class UIView extends NSObject {
+  /// The view’s background color.
+  ///
+  /// The default value is null, which results in a transparent background color.
+  ///
+  /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
+  Future<void> setBackgroundColor(Color? color) {
     throw UnimplementedError();
   }
 }

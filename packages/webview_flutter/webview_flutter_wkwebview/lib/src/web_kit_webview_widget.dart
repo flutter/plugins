@@ -357,24 +357,20 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> updateSettings(WebSettings setting) async {
-    _setUserAgent(setting.userAgent);
-    if (setting.hasNavigationDelegate != null) {
-      _setHasNavigationDelegate(setting.hasNavigationDelegate!);
-    }
-    if (setting.hasProgressTracking != null) {
-      _setHasProgressTracking(setting.hasProgressTracking!);
-    }
-    if (setting.javascriptMode != null) {
-      _setJavaScriptMode(setting.javascriptMode!);
-    }
-    if (setting.zoomEnabled != null) {
-      _setZoomEnabled(setting.zoomEnabled!);
-    }
-    if (setting.gestureNavigationEnabled != null) {
-      webView.setAllowsBackForwardNavigationGestures(
-        setting.gestureNavigationEnabled!,
-      );
-    }
+    await Future.wait(<Future<void>>[
+      _setUserAgent(setting.userAgent),
+      if (setting.hasNavigationDelegate != null)
+        _setHasNavigationDelegate(setting.hasNavigationDelegate!),
+      if (setting.hasProgressTracking != null)
+        _setHasProgressTracking(setting.hasProgressTracking!),
+      if (setting.javascriptMode != null)
+        _setJavaScriptMode(setting.javascriptMode!),
+      if (setting.zoomEnabled != null) _setZoomEnabled(setting.zoomEnabled!),
+      if (setting.gestureNavigationEnabled != null)
+        webView.setAllowsBackForwardNavigationGestures(
+          setting.gestureNavigationEnabled!,
+        ),
+    ]);
   }
 
   @override
@@ -426,30 +422,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       return;
     }
 
-    // WKWebView does not support removing a single user script, so this removes
-    // all user scripts and all message handlers and re-registers channels that
-    // shouldn't be removed. Note that this workaround could interfere with
-    // exposing support for custom scripts from applications.
-    webView.configuration.userContentController.removeAllUserScripts();
-    webView.configuration.userContentController
-        .removeAllScriptMessageHandlers();
-
-    javascriptChannelNames.forEach(_scriptMessageHandlers.remove);
-    final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
-    _scriptMessageHandlers.clear();
-
-    // Zoom is disabled with a WKUserScript, so this adds it back if it was
-    // removed above.
-    if (!_zoomEnabled) {
-      _disableZoom();
-    }
-
-    await addJavascriptChannels(remainingNames);
+    await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  void _setHasNavigationDelegate(bool hasNavigationDelegate) {
+  Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
     if (hasNavigationDelegate) {
-      navigationDelegate.setDecidePolicyForNavigationAction(
+      return navigationDelegate.setDecidePolicyForNavigationAction(
           (WKWebView webView, WKNavigationAction action) async {
         final bool allow = await callbacksHandler.onNavigationRequest(
           url: action.request.url,
@@ -461,7 +439,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             : WKNavigationActionPolicy.cancel;
       });
     } else {
-      navigationDelegate.setDecidePolicyForNavigationAction(null);
+      return navigationDelegate.setDecidePolicyForNavigationAction(null);
     }
   }
 
@@ -488,20 +466,18 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     }
   }
 
-  void _setJavaScriptMode(JavascriptMode mode) {
+  Future<void> _setJavaScriptMode(JavascriptMode mode) {
     switch (mode) {
       case JavascriptMode.disabled:
-        webView.configuration.preferences.setJavaScriptEnabled(false);
-        break;
+        return webView.configuration.preferences.setJavaScriptEnabled(false);
       case JavascriptMode.unrestricted:
-        webView.configuration.preferences.setJavaScriptEnabled(true);
-        break;
+        return webView.configuration.preferences.setJavaScriptEnabled(true);
     }
   }
 
-  void _setUserAgent(WebSetting<String?> userAgent) {
+  Future<void> _setUserAgent(WebSetting<String?> userAgent) async {
     if (userAgent.isPresent) {
-      webView.setCustomUserAgent(userAgent.value);
+      await webView.setCustomUserAgent(userAgent.value);
     }
   }
 
@@ -512,22 +488,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     _zoomEnabled = zoomEnabled;
     if (!zoomEnabled) {
-      await _disableZoom();
-    } else {
-      // WkWebView does not support removing a single user script, so instead we
-      // remove all user scripts, all message handlers, and re-register channels
-      // that shouldn't be removed. Note that this workaround could interfere
-      // with exposing support for custom scripts from applications.
-      webView.configuration.userContentController.removeAllUserScripts();
-      webView.configuration.userContentController
-          .removeAllScriptMessageHandlers();
-
-      final Set<String> javaScriptChannelNames =
-          _scriptMessageHandlers.keys.toSet();
-      _scriptMessageHandlers.clear();
-
-      await addJavascriptChannels(javaScriptChannelNames);
+      return _disableZoom();
     }
+
+    return _resetUserScripts();
   }
 
   Future<void> _disableZoom() {
@@ -542,6 +506,30 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     );
     return webView.configuration.userContentController
         .addUserScript(userScript);
+  }
+
+  // WkWebView does not support removing a single user script, so all user
+  // scripts and all message handlers are removed instead. And the JavaScript
+  // channels that shouldn't be removed are re-registered. Note that this
+  // workaround could interfere with exposing support for custom scripts from
+  // applications.
+  Future<void> _resetUserScripts({
+    Set<String> removedJavaScriptChannels = const <String>{},
+  }) async {
+    webView.configuration.userContentController.removeAllUserScripts();
+    webView.configuration.userContentController
+        .removeAllScriptMessageHandlers();
+
+    removedJavaScriptChannels.forEach(_scriptMessageHandlers.remove);
+    final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
+    _scriptMessageHandlers.clear();
+
+    await Future.wait(<Future<void>>[
+      addJavascriptChannels(remainingNames),
+      // Zoom is disabled with a WKUserScript, so this adds it back if it was
+      // removed above.
+      if (!_zoomEnabled) _disableZoom(),
+    ]);
   }
 
   static WebResourceError _toWebResourceError(NSError error) {

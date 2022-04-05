@@ -303,7 +303,47 @@ void main() {
           verify(mockWebView.setCustomUserAgent('myUserAgent'));
         });
 
-        testWidgets('zoomEnabled', (WidgetTester tester) async {
+        testWidgets('change zoomEnabled to true', (WidgetTester tester) async {
+          when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+            MockWKScriptMessageHandler(),
+          );
+
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                zoomEnabled: false,
+                hasNavigationDelegate: false,
+              ),
+              javascriptChannelNames: <String>{'myChannel'},
+            ),
+          );
+
+          clearInteractions(mockUserContentController);
+
+          await testController.updateSettings(WebSettings(
+            userAgent: const WebSetting<String?>.absent(),
+            zoomEnabled: true,
+          ));
+
+          final List<dynamic> javaScriptChannels = verifyInOrder(<Object>[
+            mockUserContentController.removeAllUserScripts(),
+            mockUserContentController.removeAllScriptMessageHandlers(),
+            mockUserContentController.addScriptMessageHandler(
+              captureAny,
+              captureAny,
+            ),
+          ]).captured[2];
+
+          expect(
+            javaScriptChannels[0],
+            isA<WKScriptMessageHandler>(),
+          );
+          expect(javaScriptChannels[1], 'myChannel');
+        });
+
+        testWidgets('zoomEnabled is false', (WidgetTester tester) async {
           await buildWidget(
             tester,
             creationParams: CreationParams(
