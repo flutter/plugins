@@ -52,7 +52,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         _platformCallbacksHandler.onProgress(call.arguments['progress'] as int);
         return null;
       //case 'onShowFileChooser':
-        //return await _platformCallbacksHandler.onShowFileChooser();
+      //return await _platformCallbacksHandler.onShowFileChooser();
       case 'onPageStarted':
         _platformCallbacksHandler
             .onPageStarted(call.arguments['url']! as String);

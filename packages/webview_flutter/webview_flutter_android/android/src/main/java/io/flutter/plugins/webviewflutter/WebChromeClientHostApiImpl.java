@@ -4,9 +4,9 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
-import android.net.Uri;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -16,11 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-import java.io.File;
-import java.util.concurrent.SynchronousQueue;
-import java.util.List;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
+import java.io.File;
+import java.util.List;
 
 /**
  * Host api implementation for {@link WebChromeClient}.
@@ -107,18 +106,24 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     }
 
     @Override
-    public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
+    public boolean onShowFileChooser(
+        WebView view,
+        ValueCallback<Uri[]> filePathCallback,
+        WebChromeClient.FileChooserParams fileChooserParams) {
       if (flutterApi != null) {
-          flutterApi.onShowFileChooser(this, view, new WebChromeClientFlutterApi.Reply<List<String>>() {
-                  public void reply(List<String> paths) {
-                      final Uri[] uris = new Uri[paths.size()];
-                      for (int i = 0; i < uris.length; i++) {
-                          uris[i] = Uri.fromFile(new File(paths.get(i)));
-                      }
-                      filePathCallback.onReceiveValue(uris);
-                  }
-              });
-          return true;
+        flutterApi.onShowFileChooser(
+            this,
+            view,
+            new WebChromeClientFlutterApi.Reply<List<String>>() {
+              public void reply(List<String> paths) {
+                final Uri[] uris = new Uri[paths.size()];
+                for (int i = 0; i < uris.length; i++) {
+                  uris[i] = Uri.fromFile(new File(paths.get(i)));
+                }
+                filePathCallback.onReceiveValue(uris);
+              }
+            });
+        return true;
       }
       filePathCallback.onReceiveValue(null);
       return true;
