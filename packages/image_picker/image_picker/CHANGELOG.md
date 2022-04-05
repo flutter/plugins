@@ -1,4 +1,4 @@
-## NEXT
+## 0.8.5
 
 * Moves Android and iOS implementations to federated packages.
 * Adds OS version support information to README.
