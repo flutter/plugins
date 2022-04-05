@@ -341,6 +341,12 @@ void main() {
             isA<WKScriptMessageHandler>(),
           );
           expect(javaScriptChannels[1], 'myChannel');
+
+          // verifies the zoom script was not re-added.
+          verifyNever(mockUserContentController.addScriptMessageHandler(
+            any,
+            any,
+          ));
         });
 
         testWidgets('zoomEnabled is false', (WidgetTester tester) async {
