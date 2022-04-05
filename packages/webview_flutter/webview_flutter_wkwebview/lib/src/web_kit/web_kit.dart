@@ -603,9 +603,4 @@ class WKWebView extends UIView {
   Future<Object?> evaluateJavaScript(String javaScriptString) {
     throw UnimplementedError();
   }
-
-  /// Determines whether the view is opaque.
-  Future<void> setOpaque(bool opaque) {
-    throw UnimplementedError();
-  }
 }

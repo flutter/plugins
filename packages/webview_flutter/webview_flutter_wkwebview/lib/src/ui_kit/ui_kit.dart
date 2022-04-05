@@ -56,4 +56,11 @@ class UIView extends NSObject {
   Future<void> setBackgroundColor(Color? color) {
     throw UnimplementedError();
   }
+
+  /// Determines whether the view is opaque.
+  ///
+  /// Sets [UIView.opaque](https://developer.apple.com/documentation/uikit/uiview?language=objc).
+  Future<void> setOpaque(bool opaque) {
+    throw UnimplementedError();
+  }
 }
