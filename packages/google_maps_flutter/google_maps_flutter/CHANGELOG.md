@@ -1,7 +1,7 @@
-
 ## 2.2.0
 
 * Adds options for gesture handling and tilt controls on web.
+* Adds OS version support information to README.
 
 ## 2.1.3
 
