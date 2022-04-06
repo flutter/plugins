@@ -25,7 +25,7 @@ class UIScrollView extends UIView {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _scrollViewApi.createFromWebViewFromInstance(this, webView);
+    _scrollViewApi.createFromWebViewForInstances(this, webView);
   }
 
   final UIScrollViewHostApiImpl _scrollViewApi;
@@ -34,7 +34,7 @@ class UIScrollView extends UIView {
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<Point<double>> getContentOffset() {
-    return _scrollViewApi.getContentOffsetFromInstance(this);
+    return _scrollViewApi.getContentOffsetForInstances(this);
   }
 
   /// Move the scrolled position of this view.
@@ -42,7 +42,7 @@ class UIScrollView extends UIView {
   /// This method is not a part of UIKit and is only a helper method to make
   /// scrollBy atomic.
   Future<void> scrollBy(Point<double> offset) {
-    return _scrollViewApi.scrollByFromInstance(this, offset);
+    return _scrollViewApi.scrollByForInstances(this, offset);
   }
 
   /// Set point at which the origin of the content view is offset from the origin of the scroll view.
@@ -51,7 +51,7 @@ class UIScrollView extends UIView {
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<void> setContentOffset(Point<double> offset) {
-    return _scrollViewApi.setContentOffsetFromInstance(this, offset);
+    return _scrollViewApi.setContentOffsetForInstances(this, offset);
   }
 }
 
@@ -74,13 +74,13 @@ class UIView extends NSObject {
   ///
   /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
   Future<void> setBackgroundColor(Color? color) {
-    return _viewApi.setBackgroundColorFromInstance(this, color);
+    return _viewApi.setBackgroundColorForInstances(this, color);
   }
 
   /// Determines whether the view is opaque.
   ///
   /// Sets [UIView.opaque](https://developer.apple.com/documentation/uikit/uiview?language=objc).
   Future<void> setOpaque(bool opaque) {
-    return _viewApi.setOpaqueFromInstance(this, opaque);
+    return _viewApi.setOpaqueForInstances(this, opaque);
   }
 }

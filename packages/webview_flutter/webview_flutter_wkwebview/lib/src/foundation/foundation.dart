@@ -160,7 +160,7 @@ class NSObject {
     required Set<NSKeyValueObservingOptions> options,
   }) {
     assert(options.isNotEmpty);
-    return _api.addObserverFromInstance(
+    return _api.addObserverForInstances(
       this,
       observer,
       keyPath,
@@ -170,12 +170,12 @@ class NSObject {
 
   /// Stops the observer object from receiving change notifications for the property.
   Future<void> removeObserver(NSObject observer, {required String keyPath}) {
-    return _api.removeObserverFromInstance(this, observer, keyPath);
+    return _api.removeObserverForInstances(this, observer, keyPath);
   }
 
   /// Release the reference to the Objective-C object.
   Future<void> dispose() {
-    return _api.disposeFromInstance(this);
+    return _api.disposeForInstances(this);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.

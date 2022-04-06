@@ -209,7 +209,7 @@ class WKPreferences {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _preferencesApi.createFromWebViewConfigurationFromInstance(
+    _preferencesApi.createFromWebViewConfigurationForInstances(
       this,
       configuration,
     );
@@ -222,7 +222,7 @@ class WKPreferences {
   ///
   /// The default value is true.
   Future<void> setJavaScriptEnabled(bool enabled) {
-    return _preferencesApi.setJavaScriptEnabledFromInstance(this, enabled);
+    return _preferencesApi.setJavaScriptEnabledForInstances(this, enabled);
   }
 }
 
@@ -240,7 +240,7 @@ class WKWebsiteDataStore {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _websiteDataStoreApi.createFromWebViewConfigurationFromInstance(
+    _websiteDataStoreApi.createFromWebViewConfigurationForInstances(
       this,
       configuration,
     );
@@ -253,7 +253,7 @@ class WKWebsiteDataStore {
     Set<WKWebsiteDataTypes> dataTypes,
     DateTime since,
   ) {
-    return _websiteDataStoreApi.removeDataOfTypesFromInstance(
+    return _websiteDataStoreApi.removeDataOfTypesForInstances(
       this,
       dataTypes,
       secondsModifiedSinceEpoch: since.millisecondsSinceEpoch / 1000,
@@ -273,7 +273,7 @@ class WKScriptMessageHandler {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _scriptMessageHandlerApi.createFromInstance(this);
+    _scriptMessageHandlerApi.createForInstances(this);
   }
 
   final WKScriptMessageHandlerHostApiImpl _scriptMessageHandlerApi;
@@ -314,7 +314,7 @@ class WKUserContentController {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _userContentControllerApi.createFromWebViewConfigurationFromInstance(
+    _userContentControllerApi.createFromWebViewConfigurationForInstances(
       this,
       configuration,
     );
@@ -338,7 +338,7 @@ class WKUserContentController {
     String name,
   ) {
     assert(name.isNotEmpty);
-    return _userContentControllerApi.addScriptMessageHandlerFromInstance(
+    return _userContentControllerApi.addScriptMessageHandlerForInstances(
       this,
       handler,
       name,
@@ -355,7 +355,7 @@ class WKUserContentController {
   /// message handler from the page content world. If you installed the message
   /// handler in a different content world, this method doesn’t remove it.
   Future<void> removeScriptMessageHandler(String name) {
-    return _userContentControllerApi.removeScriptMessageHandlerFromInstance(
+    return _userContentControllerApi.removeScriptMessageHandlerForInstances(
       this,
       name,
     );
@@ -363,20 +363,20 @@ class WKUserContentController {
 
   /// Uninstalls all custom message handlers associated with the user content controller.
   Future<void> removeAllScriptMessageHandlers() {
-    return _userContentControllerApi.removeAllScriptMessageHandlersFromInstance(
+    return _userContentControllerApi.removeAllScriptMessageHandlersForInstances(
       this,
     );
   }
 
   /// Injects the specified script into the webpage’s content.
   Future<void> addUserScript(WKUserScript userScript) {
-    return _userContentControllerApi.addUserScriptFromInstance(
+    return _userContentControllerApi.addUserScriptForInstances(
         this, userScript);
   }
 
   /// Removes all user scripts from the web view.
   Future<void> removeAllUserScripts() {
-    return _userContentControllerApi.removeAllUserScriptsFromInstance(this);
+    return _userContentControllerApi.removeAllUserScriptsForInstances(this);
   }
 }
 
@@ -393,7 +393,7 @@ class WKWebViewConfiguration {
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
-    configuration._webViewConfigurationApi.createFromInstance(configuration);
+    configuration._webViewConfigurationApi.createForInstances(configuration);
     return configuration;
   }
 
@@ -408,7 +408,7 @@ class WKWebViewConfiguration {
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
-    configuration._webViewConfigurationApi.createFromWebViewFromInstance(
+    configuration._webViewConfigurationApi.createFromWebViewForInstances(
       configuration,
       webView,
     );
@@ -456,7 +456,7 @@ class WKWebViewConfiguration {
   ///
   /// Sets [WKWebViewConfiguration.allowsInlineMediaPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1614793-allowsinlinemediaplayback?language=objc).
   Future<void> setAllowsInlineMediaPlayback(bool allow) {
-    return _webViewConfigurationApi.setAllowsInlineMediaPlaybackFromInstance(
+    return _webViewConfigurationApi.setAllowsInlineMediaPlaybackForInstances(
       this,
       allow,
     );
@@ -473,7 +473,7 @@ class WKWebViewConfiguration {
   ) {
     assert(types.isNotEmpty);
     return _webViewConfigurationApi
-        .setMediaTypesRequiringUserActionForPlaybackFromInstance(
+        .setMediaTypesRequiringUserActionForPlaybackForInstances(
       this,
       types,
     );
@@ -492,7 +492,7 @@ class WKUIDelegate {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _uiDelegateApi.createFromInstance(this);
+    _uiDelegateApi.createForInstances(this);
   }
 
   final WKUIDelegateHostApiImpl _uiDelegateApi;
@@ -524,7 +524,7 @@ class WKNavigationDelegate {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _navigationDelegateApi.createFromInstance(this);
+    _navigationDelegateApi.createForInstances(this);
   }
 
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
@@ -607,7 +607,7 @@ class WKWebView extends UIView {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _webViewApi.createFromInstance(this, configuration);
+    _webViewApi.createForInstances(this, configuration);
   }
 
   final BinaryMessenger? _binaryMessenger;
@@ -642,21 +642,21 @@ class WKWebView extends UIView {
   ///
   /// Sets [WKWebView.UIDelegate](https://developer.apple.com/documentation/webkit/wkwebview/1415009-uidelegate?language=objc).
   Future<void> setUIDelegate(WKUIDelegate? delegate) {
-    return _webViewApi.setUIDelegateFromInstance(this, delegate);
+    return _webViewApi.setUIDelegateForInstances(this, delegate);
   }
 
   /// The object you use to manage navigation behavior for the web view.
   ///
   /// Sets [WKWebView.navigationDelegate](https://developer.apple.com/documentation/webkit/wkwebview/1414971-navigationdelegate?language=objc).
   Future<void> setNavigationDelegate(WKNavigationDelegate? delegate) {
-    return _webViewApi.setNavigationDelegateFromInstance(this, delegate);
+    return _webViewApi.setNavigationDelegateForInstances(this, delegate);
   }
 
   /// The URL for the current webpage.
   ///
   /// Represents [WKWebView.URL](https://developer.apple.com/documentation/webkit/wkwebview/1415005-url?language=objc).
   Future<String?> getUrl() {
-    return _webViewApi.getUrlFromInstance(this);
+    return _webViewApi.getUrlForInstances(this);
   }
 
   /// An estimate of what fraction of the current navigation has been loaded.
@@ -665,7 +665,7 @@ class WKWebView extends UIView {
   ///
   /// Represents [WKWebView.estimatedProgress](https://developer.apple.com/documentation/webkit/wkwebview/1415007-estimatedprogress?language=objc).
   Future<double> getEstimatedProgress() {
-    return _webViewApi.getEstimatedProgressFromInstance(this);
+    return _webViewApi.getEstimatedProgressForInstances(this);
   }
 
   /// Loads the web content referenced by the specified URL request object and navigates to it.
@@ -673,17 +673,17 @@ class WKWebView extends UIView {
   /// Use this method to load a page from a local or network-based URL. For
   /// example, you might use it to navigate to a network-based webpage.
   Future<void> loadRequest(NSUrlRequest request) {
-    return _webViewApi.loadRequestFromInstance(this, request);
+    return _webViewApi.loadRequestForInstances(this, request);
   }
 
   /// Loads the contents of the specified HTML string and navigates to it.
   Future<void> loadHtmlString(String string, {String? baseUrl}) {
-    return _webViewApi.loadHtmlStringFromInstance(this, string, baseUrl);
+    return _webViewApi.loadHtmlStringForInstances(this, string, baseUrl);
   }
 
   /// Loads the web content from the specified file and navigates to it.
   Future<void> loadFileUrl(String url, {required String readAccessUrl}) {
-    return _webViewApi.loadFileUrlFromInstance(this, url, readAccessUrl);
+    return _webViewApi.loadFileUrlForInstances(this, url, readAccessUrl);
   }
 
   /// Loads the Flutter asset specified in the pubspec.yaml file.
@@ -691,39 +691,39 @@ class WKWebView extends UIView {
   /// This method is not a part of WebKit and is only a Flutter specific helper
   /// method.
   Future<void> loadFlutterAsset(String key) {
-    return _webViewApi.loadFlutterAssetFromInstance(this, key);
+    return _webViewApi.loadFlutterAssetForInstances(this, key);
   }
 
   /// Indicates whether there is a valid back item in the back-forward list.
   Future<bool> canGoBack() {
-    return _webViewApi.canGoBackFromInstance(this);
+    return _webViewApi.canGoBackForInstances(this);
   }
 
   /// Indicates whether there is a valid forward item in the back-forward list.
   Future<bool> canGoForward() {
-    return _webViewApi.canGoForwardFromInstance(this);
+    return _webViewApi.canGoForwardForInstances(this);
   }
 
   /// Navigates to the back item in the back-forward list.
   Future<void> goBack() {
-    return _webViewApi.goBackFromInstance(this);
+    return _webViewApi.goBackForInstances(this);
   }
 
   /// Navigates to the forward item in the back-forward list.
   Future<void> goForward() {
-    return _webViewApi.goForwardFromInstance(this);
+    return _webViewApi.goForwardForInstances(this);
   }
 
   /// Reloads the current webpage.
   Future<void> reload() {
-    return _webViewApi.reloadFromInstance(this);
+    return _webViewApi.reloadForInstances(this);
   }
 
   /// The page title.
   ///
   /// Represents [WKWebView.title](https://developer.apple.com/documentation/webkit/wkwebview/1415015-title?language=objc).
   Future<String?> getTitle() {
-    return _webViewApi.getTitleFromInstance(this);
+    return _webViewApi.getTitleForInstances(this);
   }
 
   /// Indicates whether horizontal swipe gestures trigger page navigation.
@@ -732,7 +732,7 @@ class WKWebView extends UIView {
   ///
   /// Sets [WKWebView.allowsBackForwardNavigationGestures](https://developer.apple.com/documentation/webkit/wkwebview/1414995-allowsbackforwardnavigationgestu?language=objc).
   Future<void> setAllowsBackForwardNavigationGestures(bool allow) {
-    return _webViewApi.setAllowsBackForwardNavigationGesturesFromInstance(
+    return _webViewApi.setAllowsBackForwardNavigationGesturesForInstances(
       this,
       allow,
     );
@@ -744,7 +744,7 @@ class WKWebView extends UIView {
   ///
   /// Sets [WKWebView.customUserAgent](https://developer.apple.com/documentation/webkit/wkwebview/1414950-customuseragent?language=objc).
   Future<void> setCustomUserAgent(String? userAgent) {
-    return _webViewApi.setCustomUserAgentFromInstance(this, userAgent);
+    return _webViewApi.setCustomUserAgentForInstances(this, userAgent);
   }
 
   /// Evaluates the specified JavaScript string.
@@ -752,7 +752,7 @@ class WKWebView extends UIView {
   /// Throws a `PlatformException` if an error occurs or return value is not
   /// supported.
   Future<Object?> evaluateJavaScript(String javaScriptString) {
-    return _webViewApi.evaluateJavaScriptFromInstance(
+    return _webViewApi.evaluateJavaScriptForInstances(
       this,
       javaScriptString,
     );

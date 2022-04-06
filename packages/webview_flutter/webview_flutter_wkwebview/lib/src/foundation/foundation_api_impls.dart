@@ -47,8 +47,8 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [addObserver].
-  Future<void> addObserverFromInstance(
+  /// Calls [addObserver] with the ids of the provided object instances.
+  Future<void> addObserverForInstances(
     NSObject instance,
     NSObject observer,
     String keyPath,
@@ -62,8 +62,8 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [removeObserver].
-  Future<void> removeObserverFromInstance(
+  /// Calls [removeObserver] with the ids of the provided object instances.
+  Future<void> removeObserverForInstances(
     NSObject instance,
     NSObject observer,
     String keyPath,
@@ -75,8 +75,8 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [dispose].
-  Future<void> disposeFromInstance(NSObject instance) async {
+  /// Calls [dispose] with the ids of the provided object instances.
+  Future<void> disposeForInstances(NSObject instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
       await dispose(instanceId);

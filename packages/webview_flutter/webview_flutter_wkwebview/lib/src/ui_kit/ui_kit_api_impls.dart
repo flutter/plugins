@@ -25,8 +25,8 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [createFromWebViewFromInstance].
-  Future<void> createFromWebViewFromInstance(
+  /// Calls [createFromWebView] with the ids of the provided object instances.
+  Future<void> createFromWebViewForInstances(
     UIScrollView instance,
     WKWebView webView,
   ) async {
@@ -39,8 +39,8 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     }
   }
 
-  /// Converts objects to instances ids for [getContentOffset].
-  Future<Point<double>> getContentOffsetFromInstance(
+  /// Calls [getContentOffset] with the ids of the provided object instances.
+  Future<Point<double>> getContentOffsetForInstances(
     UIScrollView instance,
   ) async {
     final List<double?> point = await getContentOffset(
@@ -49,8 +49,8 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     return Point<double>(point[0]!, point[1]!);
   }
 
-  /// Converts objects to instances ids for [scrollByFromInstance].
-  Future<void> scrollByFromInstance(
+  /// Calls [scrollBy] with the ids of the provided object instances.
+  Future<void> scrollByForInstances(
     UIScrollView instance,
     Point<double> offset,
   ) {
@@ -61,8 +61,8 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [setContentOffset].
-  Future<void> setContentOffsetFromInstance(
+  /// Calls [setContentOffset] with the ids of the provided object instances.
+  Future<void> setContentOffsetForInstances(
     UIScrollView instance,
     Point<double> offset,
   ) async {
@@ -86,8 +86,8 @@ class UIViewHostApiImpl extends UIViewHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [setBackgroundColor].
-  Future<void> setBackgroundColorFromInstance(
+  /// Calls [setBackgroundColor] with the ids of the provided object instances.
+  Future<void> setBackgroundColorForInstances(
     UIView instance,
     Color? color,
   ) async {
@@ -97,8 +97,8 @@ class UIViewHostApiImpl extends UIViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [setOpaqueFromInstance].
-  Future<void> setOpaqueFromInstance(
+  /// Calls [setOpaque] with the ids of the provided object instances.
+  Future<void> setOpaqueForInstances(
     UIView instance,
     bool opaque,
   ) async {

@@ -118,8 +118,8 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [createFromWebViewConfiguration].
-  Future<void> createFromWebViewConfigurationFromInstance(
+  /// Calls [createFromWebViewConfiguration] with the ids of the provided object instances.
+  Future<void> createFromWebViewConfigurationForInstances(
     WKWebsiteDataStore instance,
     WKWebViewConfiguration configuration,
   ) async {
@@ -132,8 +132,8 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
     }
   }
 
-  /// Converts objects to instances ids for [removeDataOfTypes].
-  Future<void> removeDataOfTypesFromInstance(
+  /// Calls [removeDataOfTypes] with the ids of the provided object instances.
+  Future<void> removeDataOfTypesForInstances(
     WKWebsiteDataStore instance,
     Set<WKWebsiteDataTypes> dataTypes, {
     required double secondsModifiedSinceEpoch,
@@ -158,8 +158,8 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [create].
-  Future<void> createFromInstance(WKScriptMessageHandler instance) async {
+  /// Calls [create] with the ids of the provided object instances.
+  Future<void> createForInstances(WKScriptMessageHandler instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       await create(instanceId);
@@ -179,8 +179,8 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [createFromWebViewConfiguration].
-  Future<void> createFromWebViewConfigurationFromInstance(
+  /// Calls [createFromWebViewConfiguration] with the ids of the provided object instances.
+  Future<void> createFromWebViewConfigurationForInstances(
     WKPreferences instance,
     WKWebViewConfiguration configuration,
   ) async {
@@ -193,8 +193,8 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
     }
   }
 
-  /// Converts objects to instances ids for [setJavaScriptEnabled].
-  Future<void> setJavaScriptEnabledFromInstance(
+  /// Calls [setJavaScriptEnabled] with the ids of the provided object instances.
+  Future<void> setJavaScriptEnabledForInstances(
     WKPreferences instance,
     bool enabled,
   ) {
@@ -218,8 +218,8 @@ class WKUserContentControllerHostApiImpl
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [createFromWebViewConfiguration].
-  Future<void> createFromWebViewConfigurationFromInstance(
+  /// Calls [createFromWebViewConfiguration] with the ids of the provided object instances.
+  Future<void> createFromWebViewConfigurationForInstances(
     WKUserContentController instance,
     WKWebViewConfiguration configuration,
   ) async {
@@ -232,8 +232,8 @@ class WKUserContentControllerHostApiImpl
     }
   }
 
-  /// Converts objects to instances ids for [addScriptMessageHandler].
-  Future<void> addScriptMessageHandlerFromInstance(
+  /// Calls [addScriptMessageHandler] with the ids of the provided object instances.
+  Future<void> addScriptMessageHandlerForInstances(
     WKUserContentController instance,
     WKScriptMessageHandler handler,
     String name,
@@ -245,8 +245,8 @@ class WKUserContentControllerHostApiImpl
     );
   }
 
-  /// Converts objects to instances ids for [removeScriptMessageHandler].
-  Future<void> removeScriptMessageHandlerFromInstance(
+  /// Calls [removeScriptMessageHandler] with the ids of the provided object instances.
+  Future<void> removeScriptMessageHandlerForInstances(
     WKUserContentController instance,
     String name,
   ) {
@@ -256,8 +256,8 @@ class WKUserContentControllerHostApiImpl
     );
   }
 
-  /// Converts objects to instances ids for [removeAllScriptMessageHandlers].
-  Future<void> removeAllScriptMessageHandlersFromInstance(
+  /// Calls [removeAllScriptMessageHandlers] with the ids of the provided object instances.
+  Future<void> removeAllScriptMessageHandlersForInstances(
     WKUserContentController instance,
   ) {
     return removeAllScriptMessageHandlers(
@@ -265,8 +265,8 @@ class WKUserContentControllerHostApiImpl
     );
   }
 
-  /// Converts objects to instances ids for [addUserScript].
-  Future<void> addUserScriptFromInstance(
+  /// Calls [addUserScript] with the ids of the provided object instances.
+  Future<void> addUserScriptForInstances(
     WKUserContentController instance,
     WKUserScript userScript,
   ) {
@@ -276,8 +276,8 @@ class WKUserContentControllerHostApiImpl
     );
   }
 
-  /// Converts objects to instances ids for [removeAllUserScripts].
-  Future<void> removeAllUserScriptsFromInstance(
+  /// Calls [removeAllUserScripts] with the ids of the provided object instances.
+  Future<void> removeAllUserScriptsForInstances(
     WKUserContentController instance,
   ) {
     return removeAllUserScripts(instanceManager.getInstanceId(instance)!);
@@ -296,16 +296,16 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [create].
-  Future<void> createFromInstance(WKWebViewConfiguration instance) async {
+  /// Calls [create] with the ids of the provided object instances.
+  Future<void> createForInstances(WKWebViewConfiguration instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       await create(instanceId);
     }
   }
 
-  /// Converts objects to instances ids for [createFromWebView].
-  Future<void> createFromWebViewFromInstance(
+  /// Calls [createFromWebView] with the ids of the provided object instances.
+  Future<void> createFromWebViewForInstances(
     WKWebViewConfiguration instance,
     WKWebView webView,
   ) async {
@@ -318,8 +318,8 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     }
   }
 
-  /// Converts objects to instances ids for [setAllowsInlineMediaPlayback].
-  Future<void> setAllowsInlineMediaPlaybackFromInstance(
+  /// Calls [setAllowsInlineMediaPlayback] with the ids of the provided object instances.
+  Future<void> setAllowsInlineMediaPlaybackForInstances(
     WKWebViewConfiguration instance,
     bool allow,
   ) {
@@ -329,8 +329,8 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [setMediaTypesRequiringUserActionForPlayback].
-  Future<void> setMediaTypesRequiringUserActionForPlaybackFromInstance(
+  /// Calls [setMediaTypesRequiringUserActionForPlayback] with the ids of the provided object instances.
+  Future<void> setMediaTypesRequiringUserActionForPlaybackForInstances(
     WKWebViewConfiguration instance,
     Set<WKAudiovisualMediaType> types,
   ) {
@@ -353,8 +353,8 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [create].
-  Future<void> createFromInstance(WKUIDelegate instance) async {
+  /// Calls [create] with the ids of the provided object instances.
+  Future<void> createForInstances(WKUIDelegate instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       await create(instanceId);
@@ -374,8 +374,8 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [create].
-  Future<void> createFromInstance(WKNavigationDelegate instance) async {
+  /// Calls [create] with the ids of the provided object instances.
+  Future<void> createForInstances(WKNavigationDelegate instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       await create(instanceId);
@@ -395,8 +395,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
-  /// Converts objects to instances ids for [create].
-  Future<void> createFromInstance(
+  /// Calls [create] with the ids of the provided object instances.
+  Future<void> createForInstances(
     WKWebView instance,
     WKWebViewConfiguration configuration,
   ) async {
@@ -409,8 +409,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     }
   }
 
-  /// Converts objects to instances ids for [loadRequest].
-  Future<void> loadRequestFromInstance(
+  /// Calls [loadRequest] with the ids of the provided object instances.
+  Future<void> loadRequestForInstances(
       WKWebView webView, NSUrlRequest request) {
     return loadRequest(
       instanceManager.getInstanceId(webView)!,
@@ -418,8 +418,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [loadHtmlString].
-  Future<void> loadHtmlStringFromInstance(
+  /// Calls [loadHtmlString] with the ids of the provided object instances.
+  Future<void> loadHtmlStringForInstances(
     WKWebView instance,
     String string,
     String? baseUrl,
@@ -431,8 +431,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [loadFileUrl].
-  Future<void> loadFileUrlFromInstance(
+  /// Calls [loadFileUrl] with the ids of the provided object instances.
+  Future<void> loadFileUrlForInstances(
     WKWebView instance,
     String url,
     String readAccessUrl,
@@ -444,56 +444,56 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [loadFlutterAsset].
-  Future<void> loadFlutterAssetFromInstance(WKWebView instance, String key) {
+  /// Calls [loadFlutterAsset] with the ids of the provided object instances.
+  Future<void> loadFlutterAssetForInstances(WKWebView instance, String key) {
     return loadFlutterAsset(
       instanceManager.getInstanceId(instance)!,
       key,
     );
   }
 
-  /// Converts objects to instances ids for [canGoBack].
-  Future<bool> canGoBackFromInstance(WKWebView instance) {
+  /// Calls [canGoBack] with the ids of the provided object instances.
+  Future<bool> canGoBackForInstances(WKWebView instance) {
     return canGoBack(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [canGoForward].
-  Future<bool> canGoForwardFromInstance(WKWebView instance) {
+  /// Calls [canGoForward] with the ids of the provided object instances.
+  Future<bool> canGoForwardForInstances(WKWebView instance) {
     return canGoForward(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [goBack].
-  Future<void> goBackFromInstance(WKWebView instance) {
+  /// Calls [goBack] with the ids of the provided object instances.
+  Future<void> goBackForInstances(WKWebView instance) {
     return goBack(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [goForward].
-  Future<void> goForwardFromInstance(WKWebView instance) {
+  /// Calls [goForward] with the ids of the provided object instances.
+  Future<void> goForwardForInstances(WKWebView instance) {
     return goForward(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [reload].
-  Future<void> reloadFromInstance(WKWebView instance) {
+  /// Calls [reload] with the ids of the provided object instances.
+  Future<void> reloadForInstances(WKWebView instance) {
     return reload(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [getUrl].
-  Future<String?> getUrlFromInstance(WKWebView instance) {
+  /// Calls [getUrl] with the ids of the provided object instances.
+  Future<String?> getUrlForInstances(WKWebView instance) {
     return getUrl(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [getTitle].
-  Future<String?> getTitleFromInstance(WKWebView instance) {
+  /// Calls [getTitle] with the ids of the provided object instances.
+  Future<String?> getTitleForInstances(WKWebView instance) {
     return getTitle(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [getEstimatedProgress].
-  Future<double> getEstimatedProgressFromInstance(WKWebView instance) {
+  /// Calls [getEstimatedProgress] with the ids of the provided object instances.
+  Future<double> getEstimatedProgressForInstances(WKWebView instance) {
     return getEstimatedProgress(instanceManager.getInstanceId(instance)!);
   }
 
-  /// Converts objects to instances ids for [setAllowsBackForwardNavigationGestures].
-  Future<void> setAllowsBackForwardNavigationGesturesFromInstance(
+  /// Calls [setAllowsBackForwardNavigationGestures] with the ids of the provided object instances.
+  Future<void> setAllowsBackForwardNavigationGesturesForInstances(
     WKWebView instance,
     bool allow,
   ) {
@@ -503,8 +503,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [setCustomUserAgent].
-  Future<void> setCustomUserAgentFromInstance(
+  /// Calls [setCustomUserAgent] with the ids of the provided object instances.
+  Future<void> setCustomUserAgentForInstances(
     WKWebView instance,
     String? userAgent,
   ) {
@@ -514,8 +514,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [evaluateJavaScript].
-  Future<Object?> evaluateJavaScriptFromInstance(
+  /// Calls [evaluateJavaScript] with the ids of the provided object instances.
+  Future<Object?> evaluateJavaScriptForInstances(
     WKWebView instance,
     String javaScriptString,
   ) {
@@ -525,8 +525,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [setNavigationDelegate].
-  Future<void> setNavigationDelegateFromInstance(
+  /// Calls [setNavigationDelegate] with the ids of the provided object instances.
+  Future<void> setNavigationDelegateForInstances(
     WKWebView instance,
     WKNavigationDelegate? delegate,
   ) {
@@ -536,8 +536,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     );
   }
 
-  /// Converts objects to instances ids for [setUIDelegate].
-  Future<void> setUIDelegateFromInstance(
+  /// Calls [setUIDelegate] with the ids of the provided object instances.
+  Future<void> setUIDelegateForInstances(
     WKWebView instance,
     WKUIDelegate? delegate,
   ) {
