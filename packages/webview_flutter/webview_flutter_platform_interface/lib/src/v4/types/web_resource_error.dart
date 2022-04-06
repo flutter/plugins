@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import '../webview_platform.dart';
-
 /// Possible error type categorizations used by [WebResourceError].
 enum WebResourceErrorType {
   /// User authentication failed on server.
@@ -74,8 +69,7 @@ enum WebResourceErrorType {
 /// error has occurred.
 ///
 /// Platform specific implementations can add additional fields by extending
-/// this class and provide a factory method that takes the
-/// [WebResourceError] as a parameter.
+/// this class.
 ///
 /// {@tool sample}
 /// This example demonstrates how to extend the [WebResourceError] to
@@ -86,58 +80,28 @@ enum WebResourceErrorType {
 ///
 /// ```dart
 /// class IOSWebResourceError extends WebResourceError {
-///   IOSWebResourceError._(
-///     WebResourceError webResourceError,
+///   IOSWebResourceError({
+///     required int errorCode,
+///     required String description,
+///     WebResourceErrorType? errorType,
 ///     this.domain,
-///   ) : super(
-///     errorCode: webResourceError.errorCode,
-///     description: webResourceError.description,
-///     errorType: webResourceError.errorType,
+///   }) : super(
+///     errorCode: errorCode,
+///     description: description,
+///     errorType: errorType,
 ///   );
-///
-///   factory IOSWebResourceError.fromWebResourceError(
-///     WebResourceError webResourceError, {
-///     String? domain,
-///   }) {
-///     return IOSWebResourceError._(
-///       webResourceError: webResourceError,
-///       domain: domain,
-///     );
-///   }
 ///
 ///   final String? domain;
 /// }
 /// ```
 /// {@end-tool}
-class WebResourceError extends PlatformInterface {
-  /// Creates a new [WebResourceError]
-  ///
-  /// A user should not need to instantiate this class, but will receive one in
-  /// [WebResourceErrorCallback].
-  factory WebResourceError({
-    required int errorCode,
-    required String description,
-    WebResourceErrorType? errorType,
-  }) {
-    final WebResourceError webResourceError = WebResourceError.implementation(
-        errorCode: errorCode, description: description, errorType: errorType);
-    PlatformInterface.verify(webResourceError, _token);
-    return webResourceError;
-  }
-
-  /// Used by the platform implementation to create a new
-  /// [WebResourceError].
-  ///
-  /// Should only be used by platform implementations because they can't extend
-  /// a class that only contains a factory constructor.
-  @protected
-  WebResourceError.implementation({
+class WebResourceError {
+  /// Used by the platform implementation to create a new [WebResourceError].
+  WebResourceError({
     required this.errorCode,
     required this.description,
     this.errorType,
-  }) : super(token: _token);
-
-  static final Object _token = Object();
+  });
 
   /// Raw code of the error from the respective platform.
   final int errorCode;

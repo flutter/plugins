@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params.dart';
 import 'package:webview_flutter_platform_interface/src/v4/types/types.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart';
 

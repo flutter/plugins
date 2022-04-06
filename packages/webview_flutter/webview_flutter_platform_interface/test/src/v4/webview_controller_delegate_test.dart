@@ -3,39 +3,48 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_handler_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
 
+import 'navigation_callback_handler_delegate_test.dart';
 import 'webview_platform_test.mocks.dart';
 
+@GenerateMocks(<Type>[NavigationCallbackHandlerDelegate])
 void main() {
   setUp(() {
     WebViewPlatform.instance = MockWebViewPlatformWithMixin();
   });
 
   test('Cannot be implemented with `implements`', () {
-    when(WebViewPlatform.instance!.createWebViewControllerDelegate())
+    when((WebViewPlatform.instance! as MockWebViewPlatform)
+            .createWebViewControllerDelegate(any))
         .thenReturn(ImplementsWebViewControllerDelegate());
 
     expect(() {
-      WebViewControllerDelegate();
+      WebViewControllerDelegate(WebViewControllerCreationParams());
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
-    when(WebViewPlatform.instance!.createWebViewControllerDelegate())
+    when((WebViewPlatform.instance! as MockWebViewPlatform)
+            .createWebViewControllerDelegate(any))
         .thenReturn(ExtendsWebViewControllerDelegate());
 
-    expect(WebViewControllerDelegate(), isNotNull);
+    expect(WebViewControllerDelegate(WebViewControllerCreationParams()),
+        isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
-    when(WebViewPlatform.instance!.createWebViewControllerDelegate())
+    when((WebViewPlatform.instance! as MockWebViewPlatform)
+            .createWebViewControllerDelegate(any))
         .thenReturn(MockWebViewControllerDelegate());
 
-    expect(WebViewControllerDelegate(), isNotNull);
+    expect(WebViewControllerDelegate(WebViewControllerCreationParams()),
+        isNotNull);
   });
 
   test(
@@ -199,7 +208,8 @@ void main() {
           ExtendsWebViewControllerDelegate();
 
       expect(
-        () => controller.setNavigationCallbackHandler(),
+        () => controller.setNavigationCallbackHandler(
+            MockNavigationCallbackHandlerDelegate()),
         throwsUnimplementedError,
       );
     },

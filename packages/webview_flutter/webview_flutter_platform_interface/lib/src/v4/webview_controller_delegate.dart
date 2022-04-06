@@ -243,6 +243,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'getScrollPosition is not implemented on the current platform');
   }
 
+  /// Set the current background color of this view.
   Future<void> setBackgroundColor(Color color) {
     throw UnimplementedError(
         'setBackgroundColor is not implemented on the current platform');

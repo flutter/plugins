@@ -3,12 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
-
-import 'package:flutter/foundation.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
-
-import '../webview_platform.dart';
 
 /// Defines the supported HTTP methods for loading a page in
 /// [WebViewControllerDelegate].
@@ -72,39 +67,42 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
 /// }
 /// ```
 /// {@end-tool}
-class LoadRequestParams extends PlatformInterface {
-  /// Creates a new [LoadRequestParams].
-  factory LoadRequestParams({
-    required Uri uri,
-    required LoadRequestMethod method,
-    Map<String, String> headers = const <String, String>{},
-    Uint8List? body,
-  }) {
-    final LoadRequestParams loadRequestParams =
-        LoadRequestParams.implementation(
-      uri: uri,
-      method: method,
-      headers: headers,
-      body: body,
-    );
-    PlatformInterface.verify(loadRequestParams, _token);
-    return loadRequestParams;
-  }
-
-  /// Used by the platform implementation to create a new
-  /// [LoadRequestParams].
-  ///
-  /// Should only be used by platform implementations because they can't extend
-  /// a class that only contains a factory constructor.
-  @protected
-  LoadRequestParams.implementation({
+/// Platform specific implementations can add additional fields by extending
+/// this class.
+///
+/// {@tool sample}
+/// This example demonstrates how to extend the [LoadRequestParams] to
+/// provide additional platform specific parameters.
+///
+/// Note that the additional parameters should always accept `null` or have a
+/// default value to prevent breaking changes.
+///
+/// ```dart
+/// class AndroidLoadRequestParamsDelegate extends LoadRequestParamsDelegate {
+///   AndroidLoadRequestParamsDelegate({
+///     required Uri uri,
+///     required LoadRequestMethod method,
+///     required Map<String, String> headers,
+///     Uint8List? body,
+///     this.historyUrl,
+///   }) : super(
+///     uri: uri,
+///     method: method,
+///     body: body,
+///   );
+///
+///   final Uri? historyUrl;
+/// }
+/// ```
+/// {@end-tool}
+class LoadRequestParams {
+  /// Used by the platform implementation to create a new [LoadRequestParams].
+  LoadRequestParams({
     required this.uri,
     required this.method,
     required this.headers,
     this.body,
-  }) : super(token: _token);
-
-  static final Object _token = Object();
+  });
 
   /// URI for the request.
   final Uri uri;

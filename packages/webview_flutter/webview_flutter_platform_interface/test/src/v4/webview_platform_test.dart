@@ -46,27 +46,24 @@ void main() {
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of createLoadRequestParamsDelegate should throw unimplemented error',
-      () {
-    final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
-
-    expect(
-      () => webViewPlatform.createLoadRequestParamsDelegate(
-          uri: Uri(path: 'https://flutter.dev'),
-          method: LoadRequestMethod.get,
-          headers: <String, String>{}),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
       'Default implementation of createNavigationCallbackHandlerDelegate should throw unimplemented error',
       () {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
       () => webViewPlatform.createNavigationCallbackHandlerDelegate(),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of createJavaScriptMessage should throw unimplemented error',
+      () {
+    final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
+
+    expect(
+      () => webViewPlatform.createJavaScriptMessage('0'),
       throwsUnimplementedError,
     );
   });
@@ -91,7 +88,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      webViewPlatform.createWebViewControllerDelegate,
+      () => webViewPlatform
+          .createWebViewControllerDelegate(WebViewControllerCreationParams()),
       throwsUnimplementedError,
     );
   });
