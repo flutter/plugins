@@ -26,6 +26,9 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 * `NSCameraUsageDescription` - describe why your app needs access to the camera. This is called _Privacy - Camera Usage Description_ in the visual editor.
 * `NSMicrophoneUsageDescription` - describe why your app needs access to the microphone, if you intend to record videos. This is called _Privacy - Microphone Usage Description_ in the visual editor.
 
+**Known issue:** ([#65995](https://github.com/flutter/flutter/issues/65995)) 
+When accessing the gallery for the first time, a Permission dialog will be presented to the user asking if they grant access. The user will be presented with three choices: (1) *"Select Photos..."*, (2) *"Allow Access to All Photos"* (3) *"Don't Allow"*. By selecting (1), and choosing which photos to be accessed from your app, not only the user will be later presented with all the pictures, even with the non-chosen ones, but, by going to pick images for the second time, the app will crash. As a **temporary workaround**, you may handle this specific case with third party plugins such as [permission_handler](https://pub.dev/packages/permission_handler). For instance, you could recognize when the user choose (1) *"Select Photos..."* as gallery access permission, and then present them with a specific message that let them knows that this permission mode, at the moment, is not supported. You might also want to invite them to go into the privacy settings and grant full access to the gallery as to prevent any future app crash.
+
 ### Android
 
 Starting with version **0.8.1** the Android implementation support to pick (multiple) images on Android 4.3 or higher.
@@ -75,7 +78,7 @@ application. Since the data is never returned to the original call use the
 ```dart
 Future<void> getLostData() async {
   final LostDataResponse response =
-      await picker.retrieveLostData();
+  await picker.retrieveLostData();
   if (response.isEmpty) {
     return;
   }
