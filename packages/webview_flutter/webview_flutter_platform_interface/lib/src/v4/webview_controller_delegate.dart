@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_handler_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params.dart';
 
 import 'types/types.dart';
 import 'webview_platform.dart';
@@ -21,9 +23,9 @@ import 'webview_platform.dart';
 /// [WebViewCookieManagerDelegate] methods.
 abstract class WebViewControllerDelegate extends PlatformInterface {
   /// Creates a new [WebViewControllerDelegate]
-  factory WebViewControllerDelegate() {
+  factory WebViewControllerDelegate(WebViewControllerCreationParams params) {
     final WebViewControllerDelegate webViewControllerDelegate =
-        WebViewPlatform.instance!.createWebViewControllerDelegate();
+        WebViewPlatform.instance!.createWebViewControllerDelegate(params);
     PlatformInterface.verify(webViewControllerDelegate, _token);
     return webViewControllerDelegate;
   }
@@ -88,7 +90,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   ///
   /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
   Future<void> loadRequest(
-    LoadRequestParamsDelegate params,
+    LoadRequestParams params,
   ) {
     throw UnimplementedError(
         'loadRequest is not implemented on the current platform');
@@ -160,7 +162,8 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
 
   /// Sets the [NavigationCallbackHandler] containing the callback methods that
   /// are called during navigation events.
-  Future<void> setNavigationCallbackHandler() {
+  Future<void> setNavigationCallbackHandler(
+      NavigationCallbackHandlerDelegate handler) {
     throw UnimplementedError(
         'setNavigationCallbackHandler is not implemented on the current platform');
   }
@@ -238,6 +241,11 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   Future<Point<int>> getScrollPosition() {
     throw UnimplementedError(
         'getScrollPosition is not implemented on the current platform');
+  }
+
+  Future<void> setBackgroundColor(Color color) {
+    throw UnimplementedError(
+        'setBackgroundColor is not implemented on the current platform');
   }
 }
 

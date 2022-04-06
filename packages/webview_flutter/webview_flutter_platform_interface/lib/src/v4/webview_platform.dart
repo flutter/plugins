@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params.dart';
 import 'package:webview_flutter_platform_interface/src/v4/types/types.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart';
 
@@ -47,31 +47,16 @@ abstract class WebViewPlatform extends PlatformInterface {
         'createCookieManagerDelegate is not implemented on the current platform.');
   }
 
-  /// Create a new [LoadRequestParamsDelegate].
-  LoadRequestParamsDelegate createLoadRequestParamsDelegate({
-    required Uri uri,
-    required LoadRequestMethod method,
-    required Map<String, String> headers,
-    Uint8List? body,
-  }) {
-    throw UnimplementedError(
-        'createLoadRequestParamsDelegate is not implemented on the current platform.');
-  }
-
   /// Creates a new [NavigationCallbackHandlerDelegate].
   NavigationCallbackHandlerDelegate createNavigationCallbackHandlerDelegate() {
     throw UnimplementedError(
         'createNavigationCallbackHandlerDelegate is not implemented on the current platform.');
   }
 
-  /// Create a new [WebResourceErrorDelegate].
-  WebResourceErrorDelegate createWebResourceErrorDelegate({
-    required int errorCode,
-    required String description,
-    WebResourceErrorType? errorType,
-  }) {
+  /// Create a new [JavaScriptMessage].
+  JavaScriptMessage createJavaScriptMessage(String message) {
     throw UnimplementedError(
-        'createWebResourceErrorDelegate is not implemented on the current platform.');
+        'createJavaScriptMessage is not implemented on the current platform.');
   }
 
   /// Create a new [WebSettingsDelegate].
@@ -89,8 +74,9 @@ abstract class WebViewPlatform extends PlatformInterface {
         'createWebSettingsDelegate is not implemented on the current platform.');
   }
 
-  /// Create a new  [WebViewControllerDelegate].
-  WebViewControllerDelegate createWebViewControllerDelegate() {
+  /// Create a new [WebViewControllerDelegate].
+  WebViewControllerDelegate createWebViewControllerDelegate(
+      WebViewControllerCreationParams params) {
     throw UnimplementedError(
         'createWebViewControllerDelegate is not implemented on the current platform.');
   }

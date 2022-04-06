@@ -123,8 +123,6 @@ class WebSettingsDelegate extends PlatformInterface {
     bool? allowsInlineMediaPlayback,
     bool? debuggingEnabled,
     bool? gestureNavigationEnabled,
-    bool? hasNavigationDelegate,
-    bool? hasProgressTracking,
     JavaScriptMode? javaScriptMode,
     required WebSetting<String> userAgent,
     bool? zoomEnabled,
@@ -134,8 +132,6 @@ class WebSettingsDelegate extends PlatformInterface {
       allowsInlineMediaPlayback: allowsInlineMediaPlayback,
       debuggingEnabled: debuggingEnabled,
       gestureNavigationEnabled: gestureNavigationEnabled,
-      hasNavigationDelegate: hasNavigationDelegate,
-      hasProgressTracking: hasProgressTracking,
       javaScriptMode: javaScriptMode,
       userAgent: userAgent,
       zoomEnabled: zoomEnabled,
@@ -154,8 +150,6 @@ class WebSettingsDelegate extends PlatformInterface {
     this.allowsInlineMediaPlayback,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
-    this.hasNavigationDelegate,
-    this.hasProgressTracking,
     this.javascriptMode,
     required this.userAgent,
     this.zoomEnabled,
@@ -178,13 +172,6 @@ class WebSettingsDelegate extends PlatformInterface {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
-  /// Whether the [WebView] has a [NavigationDelegate] set.
-  final bool? hasNavigationDelegate;
-
-  /// Whether the [WebView] should track page loading progress.
-  /// See also: [WebViewPlatformCallbacksHandler.onProgress] to get the progress.
-  final bool? hasProgressTracking;
-
   /// The JavaScript execution mode to be used by the webview.
   final JavaScriptMode? javascriptMode;
 
@@ -203,6 +190,6 @@ class WebSettingsDelegate extends PlatformInterface {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
   }
 }

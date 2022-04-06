@@ -99,8 +99,7 @@ void main() {
         ExtendsNavigationCallbackHandlerDelegate();
 
     expect(
-      () => callbackHandler
-          .setOnWebResourceError((WebResourceErrorDelegate error) {}),
+      () => callbackHandler.setOnWebResourceError((WebResourceError error) {}),
       throwsUnimplementedError,
     );
   });

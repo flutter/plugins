@@ -27,7 +27,7 @@ void main() {
     )).thenReturn(ImplementsLoadRequestParamsDelegate());
 
     expect(() {
-      LoadRequestParamsDelegate(
+      LoadRequestParams(
         uri: testUri,
         method: testMethod,
         headers: testHeaders,
@@ -83,7 +83,7 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ImplementsLoadRequestParamsDelegate implements LoadRequestParamsDelegate {
+class ImplementsLoadRequestParamsDelegate implements LoadRequestParams {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -93,9 +93,9 @@ class MockLoadRequestParamsDelegate extends Mock
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        LoadRequestParamsDelegate {}
+        LoadRequestParams {}
 
-class ExtendsLoadRequestParamsDelegate extends LoadRequestParamsDelegate {
+class ExtendsLoadRequestParamsDelegate extends LoadRequestParams {
   ExtendsLoadRequestParamsDelegate({
     required Uri uri,
     required LoadRequestMethod method,

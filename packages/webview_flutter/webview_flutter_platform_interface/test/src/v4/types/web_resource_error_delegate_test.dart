@@ -11,7 +11,7 @@ import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart'
 import '../webview_platform_test.mocks.dart';
 import 'web_resource_error_delegate_test.mocks.dart';
 
-@GenerateMocks(<Type>[WebResourceErrorDelegate])
+@GenerateMocks(<Type>[WebResourceError])
 void main() {
   setUp(() {
     WebViewPlatform.instance = MockWebViewPlatformWithMixin();
@@ -21,13 +21,13 @@ void main() {
     const int errorCode = 401;
     const String description =
         'Error used to test the WebResourceErrorDelegate';
-    when(WebViewPlatform.instance!.createWebResourceErrorDelegate(
+    when(WebViewPlatform.instance!.createWebResourceError(
       errorCode: errorCode,
       description: description,
     )).thenReturn(ImplementsWebResourceErrorDelegate());
 
     expect(() {
-      WebResourceErrorDelegate(
+      WebResourceError(
         errorCode: errorCode,
         description: description,
       );
@@ -38,7 +38,7 @@ void main() {
     const int errorCode = 401;
     const String description =
         'Error used to test the WebResourceErrorDelegate';
-    when(WebViewPlatform.instance!.createWebResourceErrorDelegate(
+    when(WebViewPlatform.instance!.createWebResourceError(
       errorCode: errorCode,
       description: description,
     )).thenReturn(ExtendsWebResourceErrorDelegate(
@@ -47,7 +47,7 @@ void main() {
     ));
 
     expect(() {
-      WebResourceErrorDelegate(
+      WebResourceError(
         errorCode: errorCode,
         description: description,
       );
@@ -58,13 +58,13 @@ void main() {
     const int errorCode = 401;
     const String description =
         'Error used to test the WebResourceErrorDelegate';
-    when(WebViewPlatform.instance!.createWebResourceErrorDelegate(
+    when(WebViewPlatform.instance!.createWebResourceError(
       errorCode: errorCode,
       description: description,
     )).thenReturn(MockWebResourceErrorDelegateWithMixin());
 
     expect(() {
-      WebResourceErrorDelegate(
+      WebResourceError(
         errorCode: errorCode,
         description: description,
       );
@@ -77,7 +77,7 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ImplementsWebResourceErrorDelegate implements WebResourceErrorDelegate {
+class ImplementsWebResourceErrorDelegate implements WebResourceError {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -87,7 +87,7 @@ class MockWebResourceErrorDelegateWithMixin extends MockWebResourceErrorDelegate
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ExtendsWebResourceErrorDelegate extends WebResourceErrorDelegate {
+class ExtendsWebResourceErrorDelegate extends WebResourceError {
   ExtendsWebResourceErrorDelegate({
     required int errorCode,
     required String description,

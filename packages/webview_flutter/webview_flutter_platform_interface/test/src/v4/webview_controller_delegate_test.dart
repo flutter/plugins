@@ -341,7 +341,7 @@ class MockLoadRequestParamsDelegate extends Mock
         //ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        LoadRequestParamsDelegate {}
+        LoadRequestParams {}
 
 class MockWebSettingsDelegate extends Mock
     with

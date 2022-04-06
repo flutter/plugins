@@ -33,15 +33,14 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
   }
 }
 
-/// Defines the parameters that can be used to load a page with the
-/// [WebViewControllerDelegate].
+/// Defines the parameters that can be used to load a page with the [WebViewControllerDelegate].
 ///
 /// Platform specific implementations can add additional fields by extending this
 /// class and provide a factory method that takes the
-/// [LoadRequestParamsDelegate] as a parameter.
+/// [LoadRequestParams] as a parameter.
 ///
 /// {@tool sample}
-/// This example demonstrates how to extend the [LoadRequestParamsDelegate] to
+/// This example demonstrates how to extend the [LoadRequestParams] to
 /// provide additional platform specific parameters.
 ///
 /// Note that the additional parameters should always accept `null` or have a
@@ -73,32 +72,32 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
 /// }
 /// ```
 /// {@end-tool}
-class LoadRequestParamsDelegate extends PlatformInterface {
-  /// Creates a new [LoadRequestParamsDelegate].
-  factory LoadRequestParamsDelegate({
+class LoadRequestParams extends PlatformInterface {
+  /// Creates a new [LoadRequestParams].
+  factory LoadRequestParams({
     required Uri uri,
     required LoadRequestMethod method,
     Map<String, String> headers = const <String, String>{},
     Uint8List? body,
   }) {
-    final LoadRequestParamsDelegate loadRequestParamsDelegate =
-        WebViewPlatform.instance!.createLoadRequestParamsDelegate(
+    final LoadRequestParams loadRequestParams =
+        LoadRequestParams.implementation(
       uri: uri,
       method: method,
       headers: headers,
       body: body,
     );
-    PlatformInterface.verify(loadRequestParamsDelegate, _token);
-    return loadRequestParamsDelegate;
+    PlatformInterface.verify(loadRequestParams, _token);
+    return loadRequestParams;
   }
 
   /// Used by the platform implementation to create a new
-  /// [LoadRequestParamsDelegate].
+  /// [LoadRequestParams].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  LoadRequestParamsDelegate.implementation({
+  LoadRequestParams.implementation({
     required this.uri,
     required this.method,
     required this.headers,

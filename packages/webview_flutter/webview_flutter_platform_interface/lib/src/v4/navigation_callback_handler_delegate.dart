@@ -24,8 +24,7 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
     return callbackHandlerDelegate;
   }
 
-  /// Used by the platform implementation to create a new
-  /// [NavigationCallbackHandlerDelegate].
+  /// Used by the platform implementation to create a new [NavigationCallbackHandlerDelegate].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
@@ -34,8 +33,9 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
 
   static final Object _token = Object();
 
-  /// Sets the callback method that is invoked by the
-  /// [WebViewPlatformControllerDelegate] when a navigation request is pending.
+  /// Invoked when a navigation request is pending.
+  ///
+  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
   Future<void> setOnNavigationRequest(
     void Function({required String url, required bool isForMainFrame})
         onNavigationRequest,
@@ -44,8 +44,9 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
         'setOnNavigationRequest is not implemented on the current platform.');
   }
 
-  /// Sets the callback method that is invoked by [WebViewControllerDelegate]
-  /// when a page has started loading.
+  /// Invoked when a page has started loading.
+  ///
+  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
   Future<void> setOnPageStarted(
     void Function(String url) onPageStarted,
   ) {
@@ -53,8 +54,9 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
         'setOnPageStarted is not implemented on the current platform.');
   }
 
-  /// Sets the callback method that is invoked by [WebViewControllerDelegate]
-  /// when a page has finished loading.
+  /// Invoked when a page has finished loading.
+  ///
+  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
   Future<void> setOnPageFinished(
     void Function(String url) onPageFinished,
   ) {
@@ -62,10 +64,10 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
         'setOnPageFinished is not implemented on the current platform.');
   }
 
-  /// Sets the callback method that is invoked by [WebViewControllerDelegate]
-  /// when a page is loading.
+  /// Invoked when a page is loading to report the progress.
   ///
   /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
+  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
   Future<void> setOnProgress(
     void Function(int progress) onProgress,
   ) {
@@ -73,9 +75,11 @@ abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
         'setOnProgress is not implemented on the current platform.');
   }
 
-  /// Sets the callback that is invoked when a resource loading error occurred..
+  /// Invoked when a resource loading error occurred.
+  ///
+  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
   Future<void> setOnWebResourceError(
-    void Function(WebResourceErrorDelegate error) onWebResourceError,
+    void Function(WebResourceError error) onWebResourceError,
   ) {
     throw UnimplementedError(
         'setOnWebResourceError is not implemented on the current platform.');
