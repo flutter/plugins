@@ -21,20 +21,20 @@ class UIScrollView extends UIView {
     WKWebView webView, {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _api = UIScrollViewHostApiImpl(
+  }) : _scrollViewApi = UIScrollViewHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    _api.createFromWebViewFromInstance(this, webView);
+    _scrollViewApi.createFromWebViewFromInstance(this, webView);
   }
 
-  final UIScrollViewHostApiImpl _api;
+  final UIScrollViewHostApiImpl _scrollViewApi;
 
   /// Point at which the origin of the content view is offset from the origin of the scroll view.
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<Point<double>> getContentOffset() {
-    return _api.getContentOffsetFromInstance(this);
+    return _scrollViewApi.getContentOffsetFromInstance(this);
   }
 
   /// Move the scrolled position of this view.
@@ -42,7 +42,7 @@ class UIScrollView extends UIView {
   /// This method is not a part of UIKit and is only a helper method to make
   /// scrollBy atomic.
   Future<void> scrollBy(Point<double> offset) {
-    return _api.scrollByFromInstance(this, offset);
+    return _scrollViewApi.scrollByFromInstance(this, offset);
   }
 
   /// Set point at which the origin of the content view is offset from the origin of the scroll view.
@@ -51,7 +51,7 @@ class UIScrollView extends UIView {
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
   Future<void> setContentOffset(Point<double> offset) {
-    return _api.setContentOffsetFromInstance(this, offset);
+    return _scrollViewApi.setContentOffsetFromInstance(this, offset);
   }
 }
 
@@ -61,12 +61,12 @@ class UIScrollView extends UIView {
 class UIView extends NSObject {
   /// Constructs an [NSObject].
   UIView({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : _api = UIViewHostApiImpl(
+      : _viewApi = UIViewHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         );
 
-  final UIViewHostApiImpl _api;
+  final UIViewHostApiImpl _viewApi;
 
   /// The view’s background color.
   ///
@@ -74,13 +74,13 @@ class UIView extends NSObject {
   ///
   /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
   Future<void> setBackgroundColor(Color? color) {
-    throw UnimplementedError();
+    return _viewApi.setBackgroundColorFromInstance(this, color);
   }
 
   /// Determines whether the view is opaque.
   ///
   /// Sets [UIView.opaque](https://developer.apple.com/documentation/uikit/uiview?language=objc).
   Future<void> setOpaque(bool opaque) {
-    throw UnimplementedError();
+    return _viewApi.setOpaqueFromInstance(this, opaque);
   }
 }

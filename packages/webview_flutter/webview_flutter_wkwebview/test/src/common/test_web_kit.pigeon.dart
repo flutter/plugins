@@ -105,6 +105,84 @@ abstract class TestWKWebsiteDataStoreHostApi {
   }
 }
 
+class _TestUIViewHostApiCodec extends StandardMessageCodec {
+  const _TestUIViewHostApiCodec();
+}
+
+abstract class TestUIViewHostApi {
+  static const MessageCodec<Object?> codec = _TestUIViewHostApiCodec();
+
+  List<double?> getContentOffset(int instanceId);
+  void setBackgroundColor(int instanceId, int? value);
+  void setOpaque(int instanceId, bool opaque);
+  static void setup(TestUIViewHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.UIViewHostApi.getContentOffset', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.getContentOffset was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.getContentOffset was null, expected non-null int.');
+          final List<double?> output = api.getContentOffset(arg_instanceId!);
+          return <Object?, Object?>{'result': output};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.UIViewHostApi.setBackgroundColor', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.setBackgroundColor was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.setBackgroundColor was null, expected non-null int.');
+          final int? arg_value = (args[1] as int?);
+          assert(arg_value != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.setBackgroundColor was null, expected non-null int.');
+          api.setBackgroundColor(arg_instanceId!, arg_value!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.UIViewHostApi.setOpaque', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.setOpaque was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.setOpaque was null, expected non-null int.');
+          final bool? arg_opaque = (args[1] as bool?);
+          assert(arg_opaque != null,
+              'Argument for dev.flutter.pigeon.UIViewHostApi.setOpaque was null, expected non-null bool.');
+          api.setOpaque(arg_instanceId!, arg_opaque!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
 class _TestUIScrollViewHostApiCodec extends StandardMessageCodec {
   const _TestUIScrollViewHostApiCodec();
 }
@@ -519,6 +597,67 @@ abstract class TestWKUserContentControllerHostApi {
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WKUserContentControllerHostApi.removeAllUserScripts was null, expected non-null int.');
           api.removeAllUserScripts(arg_instanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestWKPreferencesHostApiCodec extends StandardMessageCodec {
+  const _TestWKPreferencesHostApiCodec();
+}
+
+abstract class TestWKPreferencesHostApi {
+  static const MessageCodec<Object?> codec = _TestWKPreferencesHostApiCodec();
+
+  void createFromWebViewConfiguration(
+      int instanceId, int configurationInstanceId);
+  void setJavaScriptEnabled(int instanceId, bool enabled);
+  static void setup(TestWKPreferencesHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKPreferencesHostApi.createFromWebViewConfiguration',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKPreferencesHostApi.createFromWebViewConfiguration was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WKPreferencesHostApi.createFromWebViewConfiguration was null, expected non-null int.');
+          final int? arg_configurationInstanceId = (args[1] as int?);
+          assert(arg_configurationInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKPreferencesHostApi.createFromWebViewConfiguration was null, expected non-null int.');
+          api.createFromWebViewConfiguration(
+              arg_instanceId!, arg_configurationInstanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKPreferencesHostApi.setJavaScriptEnabled', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKPreferencesHostApi.setJavaScriptEnabled was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WKPreferencesHostApi.setJavaScriptEnabled was null, expected non-null int.');
+          final bool? arg_enabled = (args[1] as bool?);
+          assert(arg_enabled != null,
+              'Argument for dev.flutter.pigeon.WKPreferencesHostApi.setJavaScriptEnabled was null, expected non-null bool.');
+          api.setJavaScriptEnabled(arg_instanceId!, arg_enabled!);
           return <Object?, Object?>{};
         });
       }

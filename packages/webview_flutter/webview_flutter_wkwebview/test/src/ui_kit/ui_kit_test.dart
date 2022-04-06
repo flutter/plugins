@@ -4,6 +4,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -18,6 +19,7 @@ import 'ui_kit_test.mocks.dart';
   TestWKWebViewConfigurationHostApi,
   TestWKWebViewHostApi,
   TestUIScrollViewHostApi,
+  TestUIViewHostApi,
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -82,6 +84,38 @@ void main() {
           4.0,
           10.0,
         ));
+      });
+    });
+
+    group('$UIView', () {
+      late MockTestUIViewHostApi mockPlatformHostApi;
+
+      late UIView view;
+      late int viewInstanceId;
+
+      setUp(() {
+        mockPlatformHostApi = MockTestUIViewHostApi();
+        TestUIViewHostApi.setup(mockPlatformHostApi);
+
+        view = UIView(instanceManager: instanceManager);
+        viewInstanceId = instanceManager.tryAddInstance(view)!;
+      });
+
+      tearDown(() {
+        TestUIViewHostApi.setup(null);
+      });
+
+      test('setBackgroundColor', () async {
+        await view.setBackgroundColor(Colors.red);
+        verify(mockPlatformHostApi.setBackgroundColor(
+          viewInstanceId,
+          Colors.red.value,
+        ));
+      });
+
+      test('setOpaque', () async {
+        await view.setOpaque(false);
+        verify(mockPlatformHostApi.setOpaque(viewInstanceId, false));
       });
     });
   });

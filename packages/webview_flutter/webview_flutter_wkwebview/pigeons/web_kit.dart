@@ -186,6 +186,18 @@ abstract class WKWebsiteDataStoreHostApi {
   );
 }
 
+/// Mirror of UIView.
+///
+/// See https://developer.apple.com/documentation/uikit/uiview?language=objc.
+@HostApi(dartHostTestHandler: 'TestUIViewHostApi')
+abstract class UIViewHostApi {
+  List<double?> getContentOffset(int instanceId);
+
+  void setBackgroundColor(int instanceId, int? value);
+
+  void setOpaque(int instanceId, bool opaque);
+}
+
 /// Mirror of UIScrollView.
 ///
 /// See https://developer.apple.com/documentation/uikit/uiscrollview?language=objc.
@@ -240,6 +252,19 @@ abstract class WKUserContentControllerHostApi {
   void addUserScript(int instanceId, WKUserScriptData userScript);
 
   void removeAllUserScripts(int instanceId);
+}
+
+/// Mirror of WKUserPreferences.
+///
+/// See https://developer.apple.com/documentation/webkit/wkpreferences?language=objc.
+@HostApi(dartHostTestHandler: 'TestWKPreferencesHostApi')
+abstract class WKPreferencesHostApi {
+  void createFromWebViewConfiguration(
+    int instanceId,
+    int configurationInstanceId,
+  );
+
+  void setJavaScriptEnabled(int instanceId, bool enabled);
 }
 
 /// Mirror of WKScriptMessageHandler.

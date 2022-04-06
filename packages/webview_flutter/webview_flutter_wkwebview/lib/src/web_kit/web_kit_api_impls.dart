@@ -167,10 +167,48 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   }
 }
 
+/// Host api implementation for [WKPreferences].
+class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
+  /// Constructs a [WKPreferencesHostApiImpl].
+  WKPreferencesHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  })  : instanceManager = instanceManager ?? InstanceManager.instance,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Maintains instances stored to communicate with Objective-C objects.
+  final InstanceManager instanceManager;
+
+  /// Converts objects to instances ids for [createFromWebViewConfiguration].
+  Future<void> createFromWebViewConfigurationFromInstance(
+    WKPreferences instance,
+    WKWebViewConfiguration configuration,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      await createFromWebViewConfiguration(
+        instanceId,
+        instanceManager.getInstanceId(configuration)!,
+      );
+    }
+  }
+
+  /// Converts objects to instances ids for [setJavaScriptEnabled].
+  Future<void> setJavaScriptEnabledFromInstance(
+    WKPreferences instance,
+    bool enabled,
+  ) {
+    return setJavaScriptEnabled(
+      instanceManager.getInstanceId(instance)!,
+      enabled,
+    );
+  }
+}
+
 /// Host api implementation for [WKUserContentController].
 class WKUserContentControllerHostApiImpl
     extends WKUserContentControllerHostApi {
-  /// Constructs a [UserContentControllerHostApiImpl].
+  /// Constructs a [WKUserContentControllerHostApiImpl].
   WKUserContentControllerHostApiImpl({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,

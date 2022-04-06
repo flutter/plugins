@@ -15,6 +15,7 @@ import 'web_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[
   TestWKNavigationDelegateHostApi,
+  TestWKPreferencesHostApi,
   TestWKScriptMessageHandlerHostApi,
   TestWKUIDelegateHostApi,
   TestWKUserContentControllerHostApi,
@@ -110,6 +111,51 @@ void main() {
       });
     });
 
+    group('$WKPreferences', () {
+      late MockTestWKPreferencesHostApi mockPlatformHostApi;
+
+      late WKPreferences preferences;
+
+      late WKWebViewConfiguration webViewConfiguration;
+
+      setUp(() {
+        mockPlatformHostApi = MockTestWKPreferencesHostApi();
+        TestWKPreferencesHostApi.setup(mockPlatformHostApi);
+
+        TestWKWebViewConfigurationHostApi.setup(
+          MockTestWKWebViewConfigurationHostApi(),
+        );
+        webViewConfiguration = WKWebViewConfiguration(
+          instanceManager: instanceManager,
+        );
+
+        preferences = WKPreferences.fromWebViewConfiguration(
+          webViewConfiguration,
+          instanceManager: instanceManager,
+        );
+      });
+
+      tearDown(() {
+        TestWKPreferencesHostApi.setup(null);
+        TestWKWebViewConfigurationHostApi.setup(null);
+      });
+
+      test('createFromWebViewConfiguration', () async {
+        verify(mockPlatformHostApi.createFromWebViewConfiguration(
+          instanceManager.getInstanceId(preferences),
+          instanceManager.getInstanceId(webViewConfiguration),
+        ));
+      });
+
+      test('setJavaScriptEnabled', () async {
+        await preferences.setJavaScriptEnabled(true);
+        verify(mockPlatformHostApi.setJavaScriptEnabled(
+          instanceManager.getInstanceId(preferences),
+          true,
+        ));
+      });
+    });
+
     group('$WKUserContentController', () {
       late MockTestWKUserContentControllerHostApi mockPlatformHostApi;
 
@@ -129,7 +175,7 @@ void main() {
         );
 
         userContentController =
-            WKUserContentController.fromWebViewConfiguretion(
+            WKUserContentController.fromWebViewConfiguration(
           webViewConfiguration,
           instanceManager: instanceManager,
         );

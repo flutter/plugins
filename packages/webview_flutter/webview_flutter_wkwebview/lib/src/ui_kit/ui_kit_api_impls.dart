@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/painting.dart' show Color;
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
@@ -70,5 +71,37 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
       offset.x,
       offset.y,
     );
+  }
+}
+
+/// Host api implementation for [UIView].
+class UIViewHostApiImpl extends UIViewHostApi {
+  /// Constructs a [UIViewHostApiImpl].
+  UIViewHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  })  : instanceManager = instanceManager ?? InstanceManager.instance,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Maintains instances stored to communicate with Objective-C objects.
+  final InstanceManager instanceManager;
+
+  /// Converts objects to instances ids for [setBackgroundColor].
+  Future<void> setBackgroundColorFromInstance(
+    UIView instance,
+    Color? color,
+  ) async {
+    return setBackgroundColor(
+      instanceManager.getInstanceId(instance)!,
+      color?.value,
+    );
+  }
+
+  /// Converts objects to instances ids for [setOpaqueFromInstance].
+  Future<void> setOpaqueFromInstance(
+    UIView instance,
+    bool opaque,
+  ) async {
+    return setOpaque(instanceManager.getInstanceId(instance)!, opaque);
   }
 }

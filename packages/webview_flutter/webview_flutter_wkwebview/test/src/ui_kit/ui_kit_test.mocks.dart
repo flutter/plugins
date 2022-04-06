@@ -176,3 +176,25 @@ class MockTestUIScrollViewHostApi extends _i1.Mock
       .noSuchMethod(Invocation.method(#setContentOffset, [instanceId, x, y]),
           returnValueForMissingStub: null);
 }
+
+/// A class which mocks [TestUIViewHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestUIViewHostApi extends _i1.Mock implements _i2.TestUIViewHostApi {
+  MockTestUIViewHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  List<double?> getContentOffset(int? instanceId) =>
+      (super.noSuchMethod(Invocation.method(#getContentOffset, [instanceId]),
+          returnValue: <double?>[]) as List<double?>);
+  @override
+  void setBackgroundColor(int? instanceId, int? value) => super.noSuchMethod(
+      Invocation.method(#setBackgroundColor, [instanceId, value]),
+      returnValueForMissingStub: null);
+  @override
+  void setOpaque(int? instanceId, bool? opaque) =>
+      super.noSuchMethod(Invocation.method(#setOpaque, [instanceId, opaque]),
+          returnValueForMissingStub: null);
+}

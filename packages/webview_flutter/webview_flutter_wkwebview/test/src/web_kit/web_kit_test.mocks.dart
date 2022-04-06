@@ -35,6 +35,29 @@ class MockTestWKNavigationDelegateHostApi extends _i1.Mock
           returnValueForMissingStub: null);
 }
 
+/// A class which mocks [TestWKPreferencesHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestWKPreferencesHostApi extends _i1.Mock
+    implements _i2.TestWKPreferencesHostApi {
+  MockTestWKPreferencesHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void createFromWebViewConfiguration(
+          int? instanceId, int? configurationInstanceId) =>
+      super.noSuchMethod(
+          Invocation.method(#createFromWebViewConfiguration,
+              [instanceId, configurationInstanceId]),
+          returnValueForMissingStub: null);
+  @override
+  void setJavaScriptEnabled(int? instanceId, bool? enabled) =>
+      super.noSuchMethod(
+          Invocation.method(#setJavaScriptEnabled, [instanceId, enabled]),
+          returnValueForMissingStub: null);
+}
+
 /// A class which mocks [TestWKScriptMessageHandlerHostApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
