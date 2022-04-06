@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path;
@@ -86,22 +87,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
-      configuration: configuration ??
-          WKWebViewConfiguration(
-            userContentController: WKUserContentController(),
-          ),
+      configuration: configuration ?? WKWebViewConfiguration(),
     );
-
-    webView.setUIDelegate(uiDelegate);
-    uiDelegate.setOnCreateWebView((
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    ) {
-      if (!navigationAction.targetFrame.isMainFrame) {
-        webView.loadRequest(navigationAction.request);
-      }
-    });
   }
+
+  bool _zoomEnabled = true;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -162,12 +152,36 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     webView = webViewProxy.createWebView(configuration);
 
+    webView.setUIDelegate(uiDelegate);
+    uiDelegate.setOnCreateWebView((
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    ) {
+      if (!navigationAction.targetFrame.isMainFrame) {
+        webView.loadRequest(navigationAction.request);
+      }
+    });
+
     await addJavascriptChannels(params.javascriptChannelNames);
 
     webView.setNavigationDelegate(navigationDelegate);
 
+    if (params.userAgent != null) {
+      webView.setCustomUserAgent(params.userAgent!);
+    }
+
     if (params.webSettings != null) {
       updateSettings(params.webSettings!);
+    }
+
+    if (params.backgroundColor != null) {
+      webView.setOpaque(false);
+      webView.setBackgroundColor(Colors.transparent);
+      webView.scrollView.setBackgroundColor(params.backgroundColor!);
+    }
+
+    if (params.initialUrl != null) {
+      await loadUrl(params.initialUrl!, null);
     }
   }
 
@@ -343,12 +357,20 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> updateSettings(WebSettings setting) async {
-    if (setting.hasNavigationDelegate != null) {
-      _setHasNavigationDelegate(setting.hasNavigationDelegate!);
-    }
-    if (setting.hasProgressTracking != null) {
-      _setHasProgressTracking(setting.hasProgressTracking!);
-    }
+    await Future.wait(<Future<void>>[
+      _setUserAgent(setting.userAgent),
+      if (setting.hasNavigationDelegate != null)
+        _setHasNavigationDelegate(setting.hasNavigationDelegate!),
+      if (setting.hasProgressTracking != null)
+        _setHasProgressTracking(setting.hasProgressTracking!),
+      if (setting.javascriptMode != null)
+        _setJavaScriptMode(setting.javascriptMode!),
+      if (setting.zoomEnabled != null) _setZoomEnabled(setting.zoomEnabled!),
+      if (setting.gestureNavigationEnabled != null)
+        webView.setAllowsBackForwardNavigationGestures(
+          setting.gestureNavigationEnabled!,
+        ),
+    ]);
   }
 
   @override
@@ -400,24 +422,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       return;
     }
 
-    // WKWebView does not support removing a single user script, so this removes
-    // all user scripts and all message handlers and re-registers channels that
-    // shouldn't be removed. Note that this workaround could interfere with
-    // exposing support for custom scripts from applications.
-    webView.configuration.userContentController.removeAllUserScripts();
-    webView.configuration.userContentController
-        .removeAllScriptMessageHandlers();
-
-    javascriptChannelNames.forEach(_scriptMessageHandlers.remove);
-    final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
-    _scriptMessageHandlers.clear();
-
-    await addJavascriptChannels(remainingNames);
+    await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  void _setHasNavigationDelegate(bool hasNavigationDelegate) {
+  Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
     if (hasNavigationDelegate) {
-      navigationDelegate.setDecidePolicyForNavigationAction(
+      return navigationDelegate.setDecidePolicyForNavigationAction(
           (WKWebView webView, WKNavigationAction action) async {
         final bool allow = await callbacksHandler.onNavigationRequest(
           url: action.request.url,
@@ -429,20 +439,20 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             : WKNavigationActionPolicy.cancel;
       });
     } else {
-      navigationDelegate.setDecidePolicyForNavigationAction(null);
+      return navigationDelegate.setDecidePolicyForNavigationAction(null);
     }
   }
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) {
     if (hasProgressTracking) {
-      webView.observeValue = (
+      webView.setObserveValue((
         String keyPath,
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
         final double progress = change[NSKeyValueChangeKey.newValue]! as double;
         callbacksHandler.onProgress((progress * 100).round());
-      };
+      });
       return webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
@@ -451,9 +461,75 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         },
       );
     } else {
-      webView.observeValue = null;
+      webView.setObserveValue(null);
       return webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
+  }
+
+  Future<void> _setJavaScriptMode(JavascriptMode mode) {
+    switch (mode) {
+      case JavascriptMode.disabled:
+        return webView.configuration.preferences.setJavaScriptEnabled(false);
+      case JavascriptMode.unrestricted:
+        return webView.configuration.preferences.setJavaScriptEnabled(true);
+    }
+  }
+
+  Future<void> _setUserAgent(WebSetting<String?> userAgent) async {
+    if (userAgent.isPresent) {
+      await webView.setCustomUserAgent(userAgent.value);
+    }
+  }
+
+  Future<void> _setZoomEnabled(bool zoomEnabled) async {
+    if (_zoomEnabled == zoomEnabled) {
+      return;
+    }
+
+    _zoomEnabled = zoomEnabled;
+    if (!zoomEnabled) {
+      return _disableZoom();
+    }
+
+    return _resetUserScripts();
+  }
+
+  Future<void> _disableZoom() {
+    const WKUserScript userScript = WKUserScript(
+      "var meta = document.createElement('meta');"
+      "meta.name = 'viewport';"
+      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
+      "user-scalable=no';"
+      "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+      WKUserScriptInjectionTime.atDocumentEnd,
+      isMainFrameOnly: true,
+    );
+    return webView.configuration.userContentController
+        .addUserScript(userScript);
+  }
+
+  // WkWebView does not support removing a single user script, so all user
+  // scripts and all message handlers are removed instead. And the JavaScript
+  // channels that shouldn't be removed are re-registered. Note that this
+  // workaround could interfere with exposing support for custom scripts from
+  // applications.
+  Future<void> _resetUserScripts({
+    Set<String> removedJavaScriptChannels = const <String>{},
+  }) async {
+    webView.configuration.userContentController.removeAllUserScripts();
+    webView.configuration.userContentController
+        .removeAllScriptMessageHandlers();
+
+    removedJavaScriptChannels.forEach(_scriptMessageHandlers.remove);
+    final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
+    _scriptMessageHandlers.clear();
+
+    await Future.wait(<Future<void>>[
+      addJavascriptChannels(remainingNames),
+      // Zoom is disabled with a WKUserScript, so this adds it back if it was
+      // removed above.
+      if (!_zoomEnabled) _disableZoom(),
+    ]);
   }
 
   static WebResourceError _toWebResourceError(NSError error) {
