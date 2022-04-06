@@ -11,11 +11,6 @@ import 'package:flutter/widgets.dart' show AndroidViewSurface;
 import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 
-// TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
-// Workaround to represent null Strings since pigeon doesn't support null
-// values.
-const String _nullStringIdentifier = '<null-value>';
-
 /// An Android View that displays web pages.
 ///
 /// **Basic usage**
@@ -102,8 +97,8 @@ class WebView {
     return api.loadDataFromInstance(
       this,
       data,
-      mimeType ?? _nullStringIdentifier,
-      encoding ?? _nullStringIdentifier,
+      mimeType,
+      encoding,
     );
   }
 
@@ -151,11 +146,11 @@ class WebView {
   }) {
     return api.loadDataWithBaseUrlFromInstance(
       this,
-      baseUrl ?? _nullStringIdentifier,
+      baseUrl,
       data,
-      mimeType ?? _nullStringIdentifier,
-      encoding ?? _nullStringIdentifier,
-      historyUrl ?? _nullStringIdentifier,
+      mimeType,
+      encoding,
+      historyUrl,
     );
   }
 
@@ -184,12 +179,8 @@ class WebView {
   /// begun, the current page may not have changed.
   ///
   /// Returns null if no page has been loaded.
-  Future<String?> getUrl() async {
-    final String result = await api.getUrlFromInstance(this);
-    if (result == _nullStringIdentifier) {
-      return null;
-    }
-    return result;
+  Future<String?> getUrl() {
+    return api.getUrlFromInstance(this);
   }
 
   /// Whether this WebView has a back history item.
@@ -235,27 +226,19 @@ class WebView {
   /// JavaScript state from an empty WebView is no longer persisted across
   /// navigations like [loadUrl]. For example, global variables and functions
   /// defined before calling [loadUrl]) will not exist in the loaded page.
-  Future<String?> evaluateJavascript(String javascriptString) async {
-    final String result = await api.evaluateJavascriptFromInstance(
+  Future<String?> evaluateJavascript(String javascriptString) {
+    return api.evaluateJavascriptFromInstance(
       this,
       javascriptString,
     );
-    if (result == _nullStringIdentifier) {
-      return null;
-    }
-    return result;
   }
 
   // TODO(bparrishMines): Update documentation when WebViewClient.onReceivedTitle is added.
   /// Gets the title for the current page.
   ///
   /// Returns null if no page has been loaded.
-  Future<String?> getTitle() async {
-    final String result = await api.getTitleFromInstance(this);
-    if (result == _nullStringIdentifier) {
-      return null;
-    }
-    return result;
+  Future<String?> getTitle() {
+    return api.getTitleFromInstance(this);
   }
 
   // TODO(bparrishMines): Update documentation when onScrollChanged is added.

@@ -4,18 +4,40 @@
 
 import 'package:pigeon/pigeon.dart';
 
+@ConfigurePigeon(
+  PigeonOptions(
+    dartOut: 'lib/src/android_webview.pigeon.dart',
+    dartTestOut: 'test/test_android_webview.pigeon.dart',
+    dartOptions: DartOptions(isNullSafe: true, copyrightHeader: <String>[
+      'Copyright 2013 The Flutter Authors. All rights reserved.',
+      'Use of this source code is governed by a BSD-style license that can be',
+      'found in the LICENSE file.',
+    ]),
+    javaOut:
+        'android/src/main/java/io/flutter/plugins/webviewflutter/GeneratedAndroidWebView.java',
+    javaOptions: JavaOptions(
+      package: 'io.flutter.plugins.webviewflutter',
+      className: 'GeneratedAndroidWebView.java',
+      copyrightHeader: <String>[
+        'Copyright 2013 The Flutter Authors. All rights reserved.',
+        'Use of this source code is governed by a BSD-style license that can be',
+        'found in the LICENSE file.',
+      ],
+    ),
+  ),
+)
 class WebResourceRequestData {
-  String? url;
-  bool? isForMainFrame;
-  bool? isRedirect;
-  bool? hasGesture;
-  String? method;
-  Map<String?, String?>? requestHeaders;
+  late String url;
+  late bool isForMainFrame;
+  late bool isRedirect;
+  late bool hasGesture;
+  late String method;
+  late Map<String?, String?> requestHeaders;
 }
 
 class WebResourceErrorData {
-  int? errorCode;
-  String? description;
+  late int errorCode;
+  late String description;
 }
 
 @HostApi()
@@ -35,17 +57,17 @@ abstract class WebViewHostApi {
   void loadData(
     int instanceId,
     String data,
-    String mimeType,
-    String encoding,
+    String? mimeType,
+    String? encoding,
   );
 
   void loadDataWithBaseUrl(
     int instanceId,
-    String baseUrl,
+    String? baseUrl,
     String data,
-    String mimeType,
-    String encoding,
-    String historyUrl,
+    String? mimeType,
+    String? encoding,
+    String? historyUrl,
   );
 
   void loadUrl(
@@ -60,7 +82,7 @@ abstract class WebViewHostApi {
     Uint8List data,
   );
 
-  String getUrl(int instanceId);
+  String? getUrl(int instanceId);
 
   bool canGoBack(int instanceId);
 
@@ -75,12 +97,12 @@ abstract class WebViewHostApi {
   void clearCache(int instanceId, bool includeDiskFiles);
 
   @async
-  String evaluateJavascript(
+  String? evaluateJavascript(
     int instanceId,
     String javascriptString,
   );
 
-  String getTitle(int instanceId);
+  String? getTitle(int instanceId);
 
   void scrollTo(int instanceId, int x, int y);
 

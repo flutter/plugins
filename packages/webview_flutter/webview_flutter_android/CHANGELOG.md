@@ -1,3 +1,7 @@
+## NEXT
+
+* Update pigeon api with null safety.
+
 ## 2.8.5
 
 * Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.

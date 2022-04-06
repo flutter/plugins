@@ -85,8 +85,8 @@ void main() {
         verify(mockPlatformHostApi.loadData(
           webViewInstanceId,
           'hello',
-          '<null-value>',
-          '<null-value>',
+          null,
+          null,
         ));
       });
 
@@ -113,11 +113,11 @@ void main() {
         webView.loadDataWithBaseUrl(data: 'hello');
         verify(mockPlatformHostApi.loadDataWithBaseUrl(
           webViewInstanceId,
-          '<null-value>',
+          null,
           'hello',
-          '<null-value>',
-          '<null-value>',
-          '<null-value>',
+          null,
+          null,
+          null,
         ));
       });
 
@@ -527,14 +527,15 @@ void main() {
         flutterApi.onReceivedRequestError(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
-          WebResourceRequestData()
-            ..url = 'https://www.google.com'
-            ..isForMainFrame = true
-            ..hasGesture = true
-            ..method = 'POST',
-          WebResourceErrorData()
-            ..errorCode = 34
-            ..description = 'error description',
+          WebResourceRequestData(
+            url: 'https://www.google.com',
+            isForMainFrame: true,
+            hasGesture: true,
+            method: 'POST',
+            isRedirect: false,
+            requestHeaders: <String?, String?>{},
+          ),
+          WebResourceErrorData(errorCode: 34, description: 'error description'),
         );
 
         verify(mockWebViewClient.onReceivedRequestError(
@@ -565,11 +566,14 @@ void main() {
         flutterApi.requestLoading(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
-          WebResourceRequestData()
-            ..url = 'https://www.google.com'
-            ..isForMainFrame = true
-            ..hasGesture = true
-            ..method = 'POST',
+          WebResourceRequestData(
+            url: 'https://www.google.com',
+            isForMainFrame: true,
+            hasGesture: true,
+            method: 'POST',
+            isRedirect: true,
+            requestHeaders: <String?, String?>{},
+          ),
         );
 
         verify(mockWebViewClient.requestLoading(
