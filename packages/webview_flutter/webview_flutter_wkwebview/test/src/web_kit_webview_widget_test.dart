@@ -303,51 +303,84 @@ void main() {
           verify(mockWebView.setCustomUserAgent('myUserAgent'));
         });
 
-        testWidgets('change zoomEnabled to true', (WidgetTester tester) async {
-          when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
-            MockWKScriptMessageHandler(),
-          );
+        testWidgets(
+          'enabling zoom re-adds JavaScript channels',
+          (WidgetTester tester) async {
+            when(mockWebViewWidgetProxy.createScriptMessageHandler())
+                .thenReturn(
+              MockWKScriptMessageHandler(),
+            );
 
-          await buildWidget(
-            tester,
-            creationParams: CreationParams(
-              webSettings: WebSettings(
-                userAgent: const WebSetting<String?>.absent(),
-                zoomEnabled: false,
-                hasNavigationDelegate: false,
+            await buildWidget(
+              tester,
+              creationParams: CreationParams(
+                webSettings: WebSettings(
+                  userAgent: const WebSetting<String?>.absent(),
+                  zoomEnabled: false,
+                  hasNavigationDelegate: false,
+                ),
+                javascriptChannelNames: <String>{'myChannel'},
               ),
-              javascriptChannelNames: <String>{'myChannel'},
-            ),
-          );
+            );
 
-          clearInteractions(mockUserContentController);
+            clearInteractions(mockUserContentController);
 
-          await testController.updateSettings(WebSettings(
-            userAgent: const WebSetting<String?>.absent(),
-            zoomEnabled: true,
-          ));
+            await testController.updateSettings(WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              zoomEnabled: true,
+            ));
 
-          final List<dynamic> javaScriptChannels = verifyInOrder(<Object>[
-            mockUserContentController.removeAllUserScripts(),
-            mockUserContentController.removeAllScriptMessageHandlers(),
-            mockUserContentController.addScriptMessageHandler(
-              captureAny,
-              captureAny,
-            ),
-          ]).captured[2];
+            final List<dynamic> javaScriptChannels = verifyInOrder(<Object>[
+              mockUserContentController.removeAllUserScripts(),
+              mockUserContentController.removeAllScriptMessageHandlers(),
+              mockUserContentController.addScriptMessageHandler(
+                captureAny,
+                captureAny,
+              ),
+            ]).captured[2];
 
-          expect(
-            javaScriptChannels[0],
-            isA<WKScriptMessageHandler>(),
-          );
-          expect(javaScriptChannels[1], 'myChannel');
+            expect(
+              javaScriptChannels[0],
+              isA<WKScriptMessageHandler>(),
+            );
+            expect(javaScriptChannels[1], 'myChannel');
+          },
+        );
 
-          // verifies the zoom script was not re-added.
-          verifyNever(mockUserContentController.addScriptMessageHandler(
-            any,
-            any,
-          ));
-        });
+        testWidgets(
+          'enabling zoom removes script',
+          (WidgetTester tester) async {
+            when(mockWebViewWidgetProxy.createScriptMessageHandler())
+                .thenReturn(
+              MockWKScriptMessageHandler(),
+            );
+
+            await buildWidget(
+              tester,
+              creationParams: CreationParams(
+                webSettings: WebSettings(
+                  userAgent: const WebSetting<String?>.absent(),
+                  zoomEnabled: false,
+                  hasNavigationDelegate: false,
+                ),
+              ),
+            );
+
+            clearInteractions(mockUserContentController);
+
+            await testController.updateSettings(WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              zoomEnabled: true,
+            ));
+
+            verify(mockUserContentController.removeAllUserScripts());
+            verify(mockUserContentController.removeAllScriptMessageHandlers());
+            verifyNever(mockUserContentController.addScriptMessageHandler(
+              any,
+              any,
+            ));
+          },
+        );
 
         testWidgets('zoomEnabled is false', (WidgetTester tester) async {
           await buildWidget(
