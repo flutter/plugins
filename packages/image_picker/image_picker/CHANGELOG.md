@@ -1,3 +1,7 @@
+## 0.8.5+1
+
+* Added [#65995](https://github.com/flutter/flutter/issues/65995) to iOS known issues
+
 ## 0.8.5
 
 * Moves Android and iOS implementations to federated packages.
