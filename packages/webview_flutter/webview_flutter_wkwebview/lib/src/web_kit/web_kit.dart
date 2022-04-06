@@ -195,6 +195,29 @@ class WKScriptMessage {
   final Object? body;
 }
 
+/// Encapsulates the standard behaviors to apply to websites.
+///
+/// Wraps [WKPreferences](https://developer.apple.com/documentation/webkit/wkpreferences?language=objc).
+class WKPreferences {
+  /// Constructs a [WKPreferences].
+  WKPreferences();
+
+  // A WKPreferences that is owned by configuration.
+  WKPreferences._fromWebViewConfiguration(
+    // TODO(bparrishMines): Remove ignore once constructor is implemented.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebViewConfiguration configuration,
+  );
+
+  // TODO(bparrishMines): Deprecated for iOS 14.0+. Add support for alternative.
+  /// Sets whether JavaScript is enabled.
+  ///
+  /// The default value is true.
+  Future<void> setJavaScriptEnabled(bool enabled) {
+    throw UnimplementedError();
+  }
+}
+
 /// Manages cookies, disk and memory caches, and other types of data for a web view.
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
@@ -406,6 +429,10 @@ class WKWebViewConfiguration {
     instanceManager: _instanceManager,
   );
 
+  /// Manages the preference-related settings for the web view.
+  late final WKPreferences preferences =
+      WKPreferences._fromWebViewConfiguration(this);
+
   /// Used to get and set the site’s cookies and to track the cached data objects.
   ///
   /// Represents [WKWebViewConfiguration.webSiteDataStore](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1395661-websitedatastore?language=objc).
@@ -546,7 +573,7 @@ class WKNavigationDelegate {
 /// Object that displays interactive web content, such as for an in-app browser.
 ///
 /// Wraps [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview?language=objc).
-class WKWebView extends NSObject {
+class WKWebView extends UIView {
   /// Constructs a [WKWebView].
   ///
   /// [configuration] contains the configuration details for the web view. This
