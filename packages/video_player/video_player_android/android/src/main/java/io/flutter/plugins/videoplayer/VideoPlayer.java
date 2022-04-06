@@ -194,8 +194,8 @@ final class VideoPlayer {
               sendBufferingUpdate();
             } else if (playbackState == Player.STATE_READY) {
               readyToSeek = true; // indicate that seeking the video is now possible
-              if (futureLoation != -1) {
-                seekTo(futureLoation);
+              if (futureLocation != -1) {
+                seekTo(futureLocation);
               }
               if (!isInitialized) {
                 isInitialized = true;
@@ -261,7 +261,7 @@ final class VideoPlayer {
     exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
-  int futureLoation = -1;
+  int futureLocation = -1;
 
   void seekTo(int location) {
     // Try to set the location, if the player is currently buffering because
@@ -269,10 +269,10 @@ final class VideoPlayer {
     // player will be readyToSeek
     if (readyToSeek) {
       readyToSeek = false;
-      futureLoation = -1;
+      futureLocation = -1;
       exoPlayer.seekTo(location);
     } else {
-      futureLoation = location;
+      futureLocation = location;
     }
   }
 
