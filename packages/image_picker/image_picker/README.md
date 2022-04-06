@@ -78,7 +78,7 @@ application. Since the data is never returned to the original call use the
 ```dart
 Future<void> getLostData() async {
   final LostDataResponse response =
-  await picker.retrieveLostData();
+    await picker.retrieveLostData();
   if (response.isEmpty) {
     return;
   }
