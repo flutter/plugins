@@ -33,6 +33,12 @@ class MockTestWKNavigationDelegateHostApi extends _i1.Mock
   void create(int? instanceId) =>
       super.noSuchMethod(Invocation.method(#create, [instanceId]),
           returnValueForMissingStub: null);
+  @override
+  void setDidFinishNavigation(int? instanceId, int? functionInstanceId) =>
+      super.noSuchMethod(
+          Invocation.method(
+              #setDidFinishNavigation, [instanceId, functionInstanceId]),
+          returnValueForMissingStub: null);
 }
 
 /// A class which mocks [TestWKPreferencesHostApi].

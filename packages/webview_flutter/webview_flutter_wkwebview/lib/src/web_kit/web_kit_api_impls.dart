@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
@@ -103,6 +104,44 @@ extension _NSUrlRequestConverter on NSUrlRequest {
       httpBody: httpBody,
       allHttpHeaderFields: allHttpHeaderFields,
     );
+  }
+}
+
+/// Handles initialization of Flutter APIs for WebKit.
+class WebKitFlutterApis {
+  /// Constructs a [WebKitFlutterApis].
+  ///
+  /// This should only be changed for testing purposes.
+  @visibleForTesting
+  WebKitFlutterApis({this.binaryMessenger, InstanceManager? instanceManager}) {
+    navigationDelegateFlutterApi = WKNavigationDelegateFlutterApiImpl(
+      instanceManager: instanceManager,
+    );
+  }
+
+  /// Mutable instance containing all Flutter Apis for WebKit.
+  ///
+  /// This should only be changed for testing purposes.
+  static WebKitFlutterApis instance = WebKitFlutterApis();
+
+  /// Sends binary data across the Flutter platform barrier.
+  final BinaryMessenger? binaryMessenger;
+
+  bool _hasBeenSetUp = false;
+
+  /// Flutter Api for [WKNavigationDelegate].
+  @visibleForTesting
+  late final WKNavigationDelegateFlutterApiImpl navigationDelegateFlutterApi;
+
+  /// Ensures all the Flutter APIs have been setup to receive calls from native code.
+  void ensureSetUp() {
+    if (!_hasBeenSetUp) {
+      WKNavigationDelegateFlutterApi.setup(
+        navigationDelegateFlutterApi,
+        binaryMessenger: binaryMessenger,
+      );
+      _hasBeenSetUp = true;
+    }
   }
 }
 
@@ -380,6 +419,61 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
     if (instanceId != null) {
       await create(instanceId);
     }
+  }
+
+  /// Calls [setDidFinishNavigation] with the ids of the provided object instances.
+  Future<void> setDidFinishNavigationFromInstance(
+    WKNavigationDelegate instance,
+    void Function(WKWebView, String?)? didFinishNavigation,
+  ) {
+    int? functionInstanceId;
+    if (didFinishNavigation != null) {
+      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation);
+      functionInstanceId ??=
+          instanceManager.tryAddInstance(didFinishNavigation);
+    }
+    return setDidFinishNavigation(
+      instanceManager.getInstanceId(instance)!,
+      functionInstanceId,
+    );
+  }
+}
+
+/// Flutter api implementation for [WKNavigationDelegate].
+class WKNavigationDelegateFlutterApiImpl
+    extends WKNavigationDelegateFlutterApi {
+  /// Constructs a [WKNavigationDelegateFlutterApiImpl].
+  WKNavigationDelegateFlutterApiImpl({InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? InstanceManager.instance;
+  }
+
+  /// Maintains instances stored to communicate with native language objects.
+  late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int functionInstanceId) {
+    final Function? function = instanceManager.getInstance(functionInstanceId);
+    if (function != null) {
+      instanceManager.removeInstance(function);
+    }
+  }
+
+  @override
+  void didFinishNavigation(
+    int functionInstanceId,
+    int webViewInstanceId,
+    String? url,
+  ) {
+    final void Function(
+      WKWebView webView,
+      String? url,
+    ) function =
+        instanceManager.getInstance(functionInstanceId)! as void Function(
+      WKWebView webView,
+      String? url,
+    );
+
+    function(instanceManager.getInstance(webViewInstanceId)!, url);
   }
 }
 

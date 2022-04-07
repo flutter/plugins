@@ -524,6 +524,7 @@ class WKNavigationDelegate {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
+    WebKitFlutterApis.instance.ensureSetUp();
     _navigationDelegateApi.createForInstances(this);
   }
 
@@ -531,10 +532,7 @@ class WKNavigationDelegate {
 
   /// Called when navigation from the main frame has started.
   Future<void> setDidStartProvisionalNavigation(
-    void Function(
-      WKWebView webView,
-      String? url,
-    )?
+    void Function(WKWebView webView, String? url)?
         didStartProvisionalNavigation,
   ) {
     throw UnimplementedError();
@@ -542,9 +540,12 @@ class WKNavigationDelegate {
 
   /// Called when navigation is complete.
   Future<void> setDidFinishNavigation(
-    void Function(WKWebView webView, String? url)? didFinishNavigation,
+    void Function(WKWebView, String?)? didFinishNavigation,
   ) {
-    throw UnimplementedError();
+    return _navigationDelegateApi.setDidFinishNavigationFromInstance(
+      this,
+      didFinishNavigation,
+    );
   }
 
   /// Called when permission is needed to navigate to new content.
