@@ -180,9 +180,11 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
-- (void)testPickImageWithoutFullMetadata {
+- (void)testPickImageWithoutFullMetadataPreiOS14 {
+  if (@available(iOS 14, *)) {
+      return;
+  }
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
-
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
   [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
