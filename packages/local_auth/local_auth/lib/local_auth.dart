@@ -91,7 +91,6 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
-  @Deprecated('Use `requestAuthentication` instead.')
   Future<bool> authenticate({
     required String localizedReason,
     bool useErrorDialogs = true,
