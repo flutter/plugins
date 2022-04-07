@@ -3,6 +3,10 @@
 * Re-adds `requestFullMetadata` option, but as a parameter of a new `pickImageFromSource` 
   method.
 
+## 2.4.4
+
+* Internal code cleanup for stricter analysis options.
+
 ## 2.4.3
 
 * Removes dependency on `meta`.

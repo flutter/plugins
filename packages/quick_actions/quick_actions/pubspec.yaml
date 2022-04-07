@@ -3,15 +3,11 @@ description: Flutter plugin for creating shortcuts on home screen, also known as
   Quick Actions on iOS and App Shortcuts on Android.
 repository: https://github.com/flutter/plugins/tree/main/packages/quick_actions/quick_actions
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+quick_actions%22
-version: 0.6.0+9
-
-# Temporarily disable publishing to allow moving Android and iOS
-# implementations.
-publish_to: none
+version: 0.6.0+10
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=2.8.0"
 
 flutter:
   plugin:
@@ -24,11 +20,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  # Temporary path dependencies to allow moving Android and iOS implementations.
-  quick_actions_android:
-    path: ../quick_actions_android
-  quick_actions_ios:
-    path: ../quick_actions_ios
+  quick_actions_android: ^0.6.0+9
+  quick_actions_ios: ^0.6.0+9
   quick_actions_platform_interface: ^1.0.0
 
 dev_dependencies:
@@ -36,6 +29,5 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  mockito: ^5.0.0-nullsafety.7
-  pedantic: ^1.11.0
+  mockito: ^5.0.0
   plugin_platform_interface: ^2.0.0

@@ -1,3 +1,11 @@
+## NEXT
+
+* Adds OS version support information to README.
+
+## 1.1.11
+
+* Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
+
 ## 1.1.10
 
 * Removes dependency on `meta`.

@@ -31,6 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 // Format used for video and image streaming.
 @property(assign, nonatomic) FourCharCode videoFormat;
 
+/// Initializes an `FLTCam` instance.
+/// @param cameraName a name used to uniquely identify the camera.
+/// @param resolutionPreset the resolution preset
+/// @param enableAudio YES if audio should be enabled for video capturing; NO otherwise.
+/// @param orientation the orientation of camera
+/// @param captureSessionQueue the queue on which camera's capture session operations happen.
+/// @param error report to the caller if any error happened creating the camera.
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
@@ -53,6 +60,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)applyFocusMode;
+
+/**
+ * Acknowledges the receipt of one image stream frame.
+ *
+ * This should be called each time a frame is received. Failing to call it may
+ * cause later frames to be dropped instead of streamed.
+ */
+- (void)receivedImageStreamData;
 
 /**
  * Applies FocusMode on the AVCaptureDevice.

@@ -11,13 +11,12 @@ environment:
   flutter: ">=2.0.0"
 
 dependencies:
+  cross_file: ^0.3.1+1
   flutter:
     sdk: flutter
   http: ^0.13.0
   plugin_platform_interface: ^2.1.0
-  cross_file: ^0.3.1+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.10.0

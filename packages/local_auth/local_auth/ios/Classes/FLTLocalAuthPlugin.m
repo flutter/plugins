@@ -122,7 +122,9 @@
   NSError *authError = nil;
   self.lastCallArgs = nil;
   self.lastResult = nil;
-  context.localizedFallbackTitle = @"";
+  context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"] == [NSNull null]
+                                       ? nil
+                                       : arguments[@"localizedFallbackTitle"];
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
@@ -146,7 +148,9 @@
   NSError *authError = nil;
   _lastCallArgs = nil;
   _lastResult = nil;
-  context.localizedFallbackTitle = @"";
+  context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"] == [NSNull null]
+                                       ? nil
+                                       : arguments[@"localizedFallbackTitle"];
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
     [context evaluatePolicy:kLAPolicyDeviceOwnerAuthentication
@@ -176,6 +180,7 @@
       case LAErrorPasscodeNotSet:
       case LAErrorTouchIDNotAvailable:
       case LAErrorTouchIDNotEnrolled:
+      case LAErrorUserFallback:
       case LAErrorTouchIDLockout:
         [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
         return;

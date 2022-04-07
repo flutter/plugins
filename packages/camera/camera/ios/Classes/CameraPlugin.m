@@ -13,6 +13,7 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
+#import "QueueUtils.h"
 
 @interface CameraPlugin ()
 @property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
@@ -38,6 +39,9 @@
   _registry = [[FLTThreadSafeTextureRegistry alloc] initWithTextureRegistry:registry];
   _messenger = messenger;
   _captureSessionQueue = dispatch_queue_create("io.flutter.camera.captureSessionQueue", NULL);
+  dispatch_queue_set_specific(_captureSessionQueue, FLTCaptureSessionQueueSpecific,
+                              (void *)FLTCaptureSessionQueueSpecific, NULL);
+
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
   return self;
@@ -157,6 +161,9 @@
     [result sendSuccess];
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
+    [result sendSuccess];
+  } else if ([@"receivedImageStreamData" isEqualToString:call.method]) {
+    [_camera receivedImageStreamData];
     [result sendSuccess];
   } else {
     NSDictionary *argsMap = call.arguments;

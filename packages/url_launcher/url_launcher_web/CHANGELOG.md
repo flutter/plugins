@@ -1,3 +1,7 @@
+## 2.0.9
+
+- Fixes invalid routes when opening a `Link` in a new tab
+
 ## 2.0.8
 
 * Updates the minimum Flutter version to 2.10, which is required by the change
@@ -17,7 +21,7 @@
 
 ## 2.0.4
 
-* Add `implements` to pubspec.
+- Add `implements` to pubspec.
 
 ## 2.0.3
 

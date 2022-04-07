@@ -9,8 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.0.0
-
   in_app_purchase:
     # When depending on this package from a real application you should use:
     #   in_app_purchase: ^x.y.z
@@ -18,6 +16,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  shared_preferences: ^2.0.0
 
 dev_dependencies:
   flutter_driver:
@@ -25,7 +24,6 @@ dev_dependencies:
 
   integration_test:
     sdk: flutter
-  pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true

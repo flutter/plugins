@@ -18,7 +18,7 @@ void main() {
 
     final List<MethodCall> log = <MethodCall>[];
 
-    final picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
 
     test('ImagePicker platform instance overrides the actual platform used',
         () {
@@ -351,7 +351,7 @@ void main() {
             return <String, dynamic>{
               'type': 'image',
               'path': '/example/path1',
-              'pathList': ['/example/path0', '/example/path1'],
+              'pathList': <dynamic>['/example/path0', '/example/path1'],
             };
           });
 
@@ -402,7 +402,7 @@ void main() {
       setUp(() {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
-          return [];
+          return <dynamic>[];
         });
         log.clear();
       });

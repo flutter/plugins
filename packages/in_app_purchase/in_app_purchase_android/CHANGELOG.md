@@ -1,3 +1,7 @@
+## 0.2.2+2
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.2.2+1
 
 * Removes the dependency on `meta`.

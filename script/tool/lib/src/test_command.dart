@@ -62,7 +62,7 @@ class TestCommand extends PackageLoopingCommand {
         '--color',
         if (experiment.isNotEmpty) '--enable-experiment=$experiment',
         // TODO(ditman): Remove this once all plugins are migrated to 'drive'.
-        if (pluginSupportsPlatform(kPlatformWeb, package)) '--platform=chrome',
+        if (pluginSupportsPlatform(platformWeb, package)) '--platform=chrome',
       ],
       workingDir: package.directory,
     );

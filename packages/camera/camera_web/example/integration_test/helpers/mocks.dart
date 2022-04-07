@@ -160,12 +160,12 @@ class FakeErrorEvent extends Fake implements ErrorEvent {
 /// final videoStream = videoElement.captureStream();
 /// ```
 VideoElement getVideoElementWithBlankStream(Size videoSize) {
-  final canvasElement = CanvasElement(
+  final CanvasElement canvasElement = CanvasElement(
     width: videoSize.width.toInt(),
     height: videoSize.height.toInt(),
   )..context2D.fillRect(0, 0, videoSize.width, videoSize.height);
 
-  final videoElement = VideoElement()
+  final VideoElement videoElement = VideoElement()
     ..srcObject = canvasElement.captureStream();
 
   return videoElement;

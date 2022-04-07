@@ -13,25 +13,24 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.flutter.plugins.imagepicker
-        pluginClass: ImagePickerPlugin
+        default_package: image_picker_android
       ios:
-        pluginClass: FLTImagePickerPlugin
+        default_package: image_picker_ios
       web:
         default_package: image_picker_for_web
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_plugin_android_lifecycle: ^2.0.1
+  image_picker_android: ^0.8.4+11
   image_picker_for_web: ^2.1.0
+  image_picker_ios: ^0.8.4+11
   image_picker_platform_interface: ^2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.0.0
-  pedantic: ^1.10.0
   plugin_platform_interface: ^2.0.0
 
 # FOR TESTING ONLY. DO NOT MERGE.

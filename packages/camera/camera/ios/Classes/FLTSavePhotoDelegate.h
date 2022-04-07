@@ -4,34 +4,35 @@
 
 @import AVFoundation;
 @import Foundation;
-@import Flutter;
 
 #import "FLTThreadSafeFlutterResult.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// The completion handler block for save photo operations.
+/// Can be called from either main queue or IO queue.
+/// If success, `error` will be present and `path` will be nil. Otherewise, `error` will be nil and
+/// `path` will be present.
+/// @param path the path for successfully saved photo file.
+/// @param error photo capture error or IO error.
+typedef void (^FLTSavePhotoDelegateCompletionHandler)(NSString *_Nullable path,
+                                                      NSError *_Nullable error);
+
 /**
  Delegate object that handles photo capture results.
  */
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
-/// The file path for the captured photo.
-@property(readonly, nonatomic) NSString *path;
-/// The thread safe flutter result wrapper to report the result.
-@property(readonly, nonatomic) FLTThreadSafeFlutterResult *result;
-/// The queue on which captured photos are wrote to disk.
-@property(strong, nonatomic) dispatch_queue_t ioQueue;
-/// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
-@property(strong, nonatomic, nullable) FLTSavePhotoDelegate *selfReference;
 
 /**
  * Initialize a photo capture delegate.
  * @param path the path for captured photo file.
- * @param result the thread safe flutter result wrapper to report the result.
- * @param ioQueue the queue on which captured photos are wrote to disk.
+ * @param ioQueue the queue on which captured photos are written to disk.
+ * @param completionHandler The completion handler block for save photo operations. Can
+ * be called from either main queue or IO queue.
  */
 - (instancetype)initWithPath:(NSString *)path
-                      result:(FLTThreadSafeFlutterResult *)result
-                     ioQueue:(dispatch_queue_t)ioQueue;
+                     ioQueue:(dispatch_queue_t)ioQueue
+           completionHandler:(FLTSavePhotoDelegateCompletionHandler)completionHandler;
 @end
 
 NS_ASSUME_NONNULL_END

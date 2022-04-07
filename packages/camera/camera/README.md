@@ -4,7 +4,9 @@
 
 A Flutter plugin for iOS, Android and Web allowing access to the device cameras.
 
-*Note*: This plugin is still under development, and some APIs might not be available yet. We are working on a refactor which can be followed here: [issue](https://github.com/flutter/flutter/issues/31225)
+|                | Android | iOS      | Web                    |
+|----------------|---------|----------|------------------------|
+| **Support**    | SDK 21+ | iOS 10+* | [See `camera_web `][1] |
 
 ## Features
 
@@ -19,8 +21,9 @@ First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ### iOS
 
-The camera plugin functionality works on iOS 10.0 or higher. If compiling for any version lower than 10.0,
-make sure to programmatically check the version of iOS running on the device before using any camera plugin features.
+\* The camera plugin compiles for any version of iOS, but its functionality
+requires iOS 10 or higher. If compiling for iOS 9, make sure to programmatically
+check the version of iOS running on the device before using any camera plugin features.
 The [device_info_plus](https://pub.dev/packages/device_info_plus) plugin, for example, can be used to check the iOS version.
 
 Add two rows to the `ios/Runner/Info.plist`:
@@ -28,13 +31,13 @@ Add two rows to the `ios/Runner/Info.plist`:
 * one with the key `Privacy - Camera Usage Description` and a usage description.
 * and one with the key `Privacy - Microphone Usage Description` and a usage description.
 
-Or in text format add the key:
+If editing `Info.plist` as text, add:
 
 ```xml
 <key>NSCameraUsageDescription</key>
-<string>Can I use the camera please?</string>
+<string>your usage description here</string>
 <key>NSMicrophoneUsageDescription</key>
-<string>Can I use the mic please?</string>
+<string>your usage description here</string>
 ```
 
 ### Android
@@ -132,6 +135,4 @@ class _CameraAppState extends State<CameraApp> {
 
 For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/main/packages/camera/camera/example).
 
-*Note*: This plugin is still under development, and some APIs might not be available yet.
-[Feedback welcome](https://github.com/flutter/flutter/issues) and
-[Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+[1]: https://pub.dev/packages/camera_web#limitations-on-the-web-platform

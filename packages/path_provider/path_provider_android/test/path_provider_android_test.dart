@@ -52,14 +52,6 @@ void main() {
       log.clear();
     });
 
-    // TODO(stuartmorgan): Change this to a test that it uses a different name,
-    // to avoid potential confusion, once the SDK is changed to 2.8+. See
-    // https://github.com/flutter/plugins/pull/4617#discussion_r774673962
-    test('channel name is compatible with shared method channel', () async {
-      expect(
-          pathProvider.methodChannel.name, 'plugins.flutter.io/path_provider');
-    });
-
     test('getTemporaryPath', () async {
       final String? path = await pathProvider.getTemporaryPath();
       expect(
