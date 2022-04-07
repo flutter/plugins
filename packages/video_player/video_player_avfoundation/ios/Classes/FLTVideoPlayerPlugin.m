@@ -7,12 +7,58 @@
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
 
-#import "AVAssetTrack+Utils.h"
 #import "messages.g.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
 #endif
+
+/**
+ * Note: https://stackoverflow.com/questions/64161544
+ * `AVAssetTrack.preferredTransform` can have wrong `tx` and `ty`
+ * on iOS 14 and above. This method provide a corrected transform
+ * according to the orientation state of the track.
+ */
+static CGAffineTransform FLTGetStandardizedTransformForTrack(AVAssetTrack *track) {
+  CGAffineTransform t = track.preferredTransform;
+  CGSize size = track.naturalSize;
+  // Each case of control flows corresponding to
+  // a specific `UIImageOrientation`, with 8 cases in total.
+  if (t.a == 1 && t.b == 0 && t.c == 0 && t.d == 1) {
+    // UIImageOrientationUp
+    t.tx = 0;
+    t.ty = 0;
+  } else if (t.a == -1 && t.b == 0 && t.c == 0 && t.d == -1) {
+    // UIImageOrientationDown
+    t.tx = size.width;
+    t.ty = size.height;
+  } else if (t.a == 0 && t.b == -1 && t.c == 1 && t.d == 0) {
+    // UIImageOrientationLeft
+    t.tx = 0;
+    t.ty = size.width;
+  } else if (t.a == 0 && t.b == 1 && t.c == -1 && t.d == 0) {
+    // UIImageOrientationRight
+    t.tx = size.height;
+    t.ty = 0;
+  } else if (t.a == -1 && t.b == 0 && t.c == 0 && t.d == 1) {
+    // UIImageOrientationUpMirrored
+    t.tx = size.width;
+    t.ty = 0;
+  } else if (t.a == 1 && t.b == 0 && t.c == 0 && t.d == -1) {
+    // UIImageOrientationDownMirrored
+    t.tx = 0;
+    t.ty = size.height;
+  } else if (t.a == 0 && t.b == -1 && t.c == -1 && t.d == 0) {
+    // UIImageOrientationLeftMirrored
+    t.tx = size.height;
+    t.ty = size.width;
+  } else if (t.a == 0 && t.b == 1 && t.c == 1 && t.d == 0) {
+    // UIImageOrientationRightMirrored
+    t.tx = 0;
+    t.ty = 0;
+  }
+  return t;
+}
 
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
@@ -206,7 +252,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
             // Rotate the video by using a videoComposition and the preferredTransform
-            self->_preferredTransform = [videoTrack fixTransform];
+            self->_preferredTransform = FLTGetStandardizedTransformForTrack(videoTrack);
             // Note:
             // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
             // Video composition can only be used with file-based media and is not supported for

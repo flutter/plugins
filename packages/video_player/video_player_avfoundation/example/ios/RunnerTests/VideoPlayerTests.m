@@ -7,7 +7,6 @@
 @import XCTest;
 
 #import <OCMock/OCMock.h>
-#import <video_player_avfoundation/AVAssetTrack+Utils.h>
 
 @interface FLTVideoPlayer : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
@@ -227,7 +226,7 @@
 
 - (void)validateTransformFixForOrientation:(UIImageOrientation)orientation {
   AVAssetTrack *track = [[FakeAVAssetTrack alloc] initWithOrientation:orientation];
-  CGAffineTransform t = [track fixTransform];
+  CGAffineTransform t = FLTGetStandardizedTransformForTrack(track);
   CGSize size = track.naturalSize;
   CGFloat expectX, expectY;
   switch (orientation) {
