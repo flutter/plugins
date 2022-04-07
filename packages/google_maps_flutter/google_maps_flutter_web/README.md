@@ -1,13 +1,15 @@
 # google_maps_flutter_web
 
-This is an implementation of the [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) plugin for web. Behind the scenes, it uses a14n's [google_maps](https://pub.dev/packages/google_maps) dart JS interop layer.
+This is an implementation of the [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) plugin for web. Just by addind this library to the pubspec.yaml will make [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) work on web.
+
+Behind the scenes, it uses a14n's [google_maps](https://pub.dev/packages/google_maps) dart JS interop layer.
 
 ## Usage
 
 ### Depend on the package
 
 This package is not an endorsed implementation of the google_maps_flutter plugin yet, so you'll need to 
-[add it explicitly](https://pub.dev/packages/google_maps_flutter_web/install).
+[add it explicitly](https://pub.dev/packages/google_maps_flutter_web/install). 
 
 ### Modify web/index.html
 
