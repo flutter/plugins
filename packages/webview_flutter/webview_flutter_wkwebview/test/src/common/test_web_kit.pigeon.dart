@@ -44,7 +44,7 @@ abstract class TestWKWebsiteDataStoreHostApi {
 
   void createFromWebViewConfiguration(
       int instanceId, int configurationInstanceId);
-  Future<void> removeDataOfTypes(
+  Future<bool> removeDataOfTypes(
       int instanceId,
       List<WKWebsiteDataTypesEnumData?> dataTypes,
       double secondsModifiedSinceEpoch);
@@ -96,9 +96,9 @@ abstract class TestWKWebsiteDataStoreHostApi {
           final double? arg_secondsModifiedSinceEpoch = (args[2] as double?);
           assert(arg_secondsModifiedSinceEpoch != null,
               'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes was null, expected non-null double.');
-          await api.removeDataOfTypes(
+          final bool output = await api.removeDataOfTypes(
               arg_instanceId!, arg_dataTypes!, arg_secondsModifiedSinceEpoch!);
-          return <Object?, Object?>{};
+          return <Object?, Object?>{'result': output};
         });
       }
     }
