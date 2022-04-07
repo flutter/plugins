@@ -27,7 +27,10 @@ dependencies:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
   intl: ^0.17.0
-  local_auth_platform_interface: ^1.0.0
+  # TODO(BeMacized): Change back to 1.0.1 once published.
+#  local_auth_platform_interface: ^1.0.1
+  local_auth_platform_interface:
+    path: ../local_auth_platform_interface
   platform: ^3.0.0
 
 dev_dependencies:
