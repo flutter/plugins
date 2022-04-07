@@ -208,7 +208,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     bool requestFullMetadata = true,
   }) async {
-    String? path = await _getImagePath(
+    final String? path = await _getImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
