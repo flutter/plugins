@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -85,6 +86,7 @@ class WebView extends StatefulWidget {
     this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
+    this.javascriptBridgeName,
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageStarted,
@@ -153,6 +155,14 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The name of the JavaScript Bridge.
+  /// adds a bridge object to the JavaScript window object's property named `javascriptBridgeName`.
+  ///
+  /// Note that any JavaScript existing `window` property with this name will be overriden.
+  ///
+  /// The default value is 'flutter_bridge'.
+  final String? javascriptBridgeName;
 
   /// The initial cookies to set.
   final List<WebViewCookie> initialCookies;
@@ -328,8 +338,9 @@ class _WebViewState extends State<WebView> {
     super.initState();
     _assertJavascriptChannelNamesAreUnique();
     _platformCallbacksHandler = _PlatformCallbacksHandler(widget);
-    _javascriptChannelRegistry =
-        JavascriptChannelRegistry(widget.javascriptChannels);
+    _javascriptChannelRegistry = JavascriptChannelRegistry(
+        widget.javascriptChannels,
+        bridgeName: widget.javascriptBridgeName);
   }
 
   @override
@@ -679,6 +690,26 @@ class WebViewController {
     _settings = newSettings;
     return _webViewPlatformController.updateSettings(update);
   }
+
+  /// Creates a CustomEvent with a given name and info and posts it to the JavaScript code.
+  ///
+  /// For example for the following WebView:
+  ///
+  /// ```dart
+  /// WebView(
+  ///   javascriptBridgeName: 'flutter_bridge',
+  ///   ...
+  ///
+  /// controller.postNotification('Flutter_Notification', info: <String, dynamic>{'content': 'Hello Web'});
+  /// ```
+  ///
+  /// JavaScript code can call:
+  ///
+  /// ```javascript
+  /// flutter_bridge.addEventListener('Flutter_Notification', (info) => {console.log(info)});
+  /// ```
+  Future<void>? postNotification(String name, {Map<String, dynamic>? info}) =>
+      _javascriptChannelRegistry.postNotification(name, info: info);
 
   /// Evaluates a JavaScript expression in the context of the current page.
   ///

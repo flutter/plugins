@@ -45,6 +45,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
           isForMainFrame: call.arguments['isForMainFrame']! as bool,
         );
       case 'onPageFinished':
+        _javascriptChannelRegistry.buildBridge(this);
         _platformCallbacksHandler
             .onPageFinished(call.arguments['url']! as String);
         return null;
