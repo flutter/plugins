@@ -1,6 +1,7 @@
 ## NEXT
 
 * Adds OS version support information to README.
+* Switched over to default method implementation in new platform interface.
 
 ## 1.1.11
 
