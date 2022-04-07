@@ -6,10 +6,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Fix the transform for the track.
-// Each fix case corresponding to `UIImage.Orientation`, with 8 cases in total.
 @interface AVAssetTrack (Utils)
+
+/**
+ * Note: https://stackoverflow.com/questions/64161544
+ * `AVAssetTrack.preferredTransform` can have wrong `tx` and `ty`
+ * on iOS 14 and above. This method provide a corrected transform
+ * according to the orientation state of the track.
+ */
 - (CGAffineTransform)fixTransform;
+
 @end
 
 NS_ASSUME_NONNULL_END

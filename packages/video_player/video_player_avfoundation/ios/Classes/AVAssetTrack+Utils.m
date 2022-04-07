@@ -6,6 +6,8 @@
 
 @implementation AVAssetTrack (Utils)
 
+// Each case of control flows corresponding to
+// a specific `UIImageOrientation`, with 8 cases in total.
 - (CGAffineTransform)fixTransform {
   CGAffineTransform t = self.preferredTransform;
   CGSize size = self.naturalSize;
