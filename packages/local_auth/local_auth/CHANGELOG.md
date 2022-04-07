@@ -1,10 +1,7 @@
-## 1.2.0
-
-* Added Windows support.
-
 ## NEXT
 
 * Adds OS version support information to README.
+* Added Windows support.
 
 ## 1.1.11
 
