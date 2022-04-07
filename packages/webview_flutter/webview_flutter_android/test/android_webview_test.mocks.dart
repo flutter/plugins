@@ -201,6 +201,25 @@ class MockTestWebSettingsHostApi extends _i1.Mock
       returnValueForMissingStub: null);
 }
 
+/// A class which mocks [TestWebStorageHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestWebStorageHostApi extends _i1.Mock
+    implements _i5.TestWebStorageHostApi {
+  MockTestWebStorageHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void create(int? instanceId) =>
+      super.noSuchMethod(Invocation.method(#create, [instanceId]),
+          returnValueForMissingStub: null);
+  @override
+  void deleteAllData(int? instanceId) =>
+      super.noSuchMethod(Invocation.method(#deleteAllData, [instanceId]),
+          returnValueForMissingStub: null);
+}
+
 /// A class which mocks [TestWebViewClientHostApi].
 ///
 /// See the documentation for Mockito's code generation for more information.

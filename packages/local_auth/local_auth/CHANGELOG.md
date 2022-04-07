@@ -1,5 +1,6 @@
 ## 1.1.12
 
+* Adds OS version support information to README.
 * Fixes `getAvailableBiometrics` behavior on Android. Now it returns an empty
 list when device has the biometric hardware but doesn't have any biometric
 enrolled. For more information check [this](https://github.com/flutter/flutter/issues/45497#issuecomment-1007310214).

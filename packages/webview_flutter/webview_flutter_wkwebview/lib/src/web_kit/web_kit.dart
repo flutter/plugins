@@ -192,6 +192,29 @@ class WKScriptMessage {
   final Object? body;
 }
 
+/// Encapsulates the standard behaviors to apply to websites.
+///
+/// Wraps [WKPreferences](https://developer.apple.com/documentation/webkit/wkpreferences?language=objc).
+class WKPreferences {
+  /// Constructs a [WKPreferences].
+  WKPreferences();
+
+  // A WKPreferences that is owned by configuration.
+  WKPreferences._fromWebViewConfiguration(
+    // TODO(bparrishMines): Remove ignore once constructor is implemented.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebViewConfiguration configuration,
+  );
+
+  // TODO(bparrishMines): Deprecated for iOS 14.0+. Add support for alternative.
+  /// Sets whether JavaScript is enabled.
+  ///
+  /// The default value is true.
+  Future<void> setJavaScriptEnabled(bool enabled) {
+    throw UnimplementedError();
+  }
+}
+
 /// Manages cookies, disk and memory caches, and other types of data for a web view.
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
@@ -245,7 +268,7 @@ class WKUserContentController {
   WKUserContentController();
 
   // A WKUserContentController that is owned by configuration.
-  WKUserContentController._fromWebViewConfiguretion(
+  WKUserContentController._fromWebViewConfiguration(
     // TODO(bparrishMines): Remove ignore once constructor is implemented.
     // ignore: avoid_unused_constructor_parameters
     WKWebViewConfiguration configuration,
@@ -304,24 +327,30 @@ class WKUserContentController {
 /// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc).
 class WKWebViewConfiguration {
   /// Constructs a [WKWebViewConfiguration].
-  WKWebViewConfiguration({required this.userContentController});
+  WKWebViewConfiguration();
 
   // A WKWebViewConfiguration that is owned by webView.
   // TODO(bparrishMines): Remove ignore once constructor is implemented.
   // ignore: avoid_unused_constructor_parameters
-  WKWebViewConfiguration._fromWebView(WKWebView webView) {
-    userContentController =
-        WKUserContentController._fromWebViewConfiguretion(this);
-  }
-
-  /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
-  late final WKUserContentController userContentController;
+  WKWebViewConfiguration._fromWebView(WKWebView webView);
 
   late WKWebsiteDataStore _websiteDataStore =
       WKWebsiteDataStore._fromWebViewConfiguration(this);
 
+  late final WKUserContentController _userContentController =
+      WKUserContentController._fromWebViewConfiguration(this);
+
+  late final WKPreferences _preferences =
+      WKPreferences._fromWebViewConfiguration(this);
+
   /// Used to get and set the site’s cookies and to track the cached data objects.
   WKWebsiteDataStore get webSiteDataStore => _websiteDataStore;
+
+  /// Coordinates interactions between your app’s code and the webpage’s scripts and other content.
+  WKUserContentController get userContentController => _userContentController;
+
+  /// Manages the preference-related settings for the web view.
+  WKPreferences get preferences => _preferences;
 
   /// Used to get and set the site’s cookies and to track the cached data objects.
   ///
@@ -429,7 +458,7 @@ class WKNavigationDelegate {
 /// Object that displays interactive web content, such as for an in-app browser.
 ///
 /// Wraps [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview?language=objc).
-class WKWebView extends NSObject {
+class WKWebView extends UIView {
   /// Constructs a [WKWebView].
   ///
   /// [configuration] contains the configuration details for the web view. This

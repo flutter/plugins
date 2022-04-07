@@ -1,3 +1,7 @@
+## 0.3.0+4
+
+* Ensures that `NSError` instances with an unexpected value for the `userInfo` field don't crash the app, but send an explanatory message instead.
+
 ## 0.3.0+3
 
 * Implements transaction caching for StoreKit ensuring transactions are delivered to the Flutter client.
