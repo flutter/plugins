@@ -16,8 +16,8 @@
 /**
  * Note: https://stackoverflow.com/questions/64161544
  * `AVAssetTrack.preferredTransform` can have wrong `tx` and `ty`
- * on iOS 14 and above. This method provide a corrected transform
- * according to the orientation state of the track.
+ * on iOS 14 and above. This method provide a standardized transform
+ * according to the orientation of the track.
  */
 static CGAffineTransform FLTGetStandardizedTransformForTrack(AVAssetTrack *track) {
   CGAffineTransform t = track.preferredTransform;
