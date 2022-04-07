@@ -182,7 +182,7 @@
 
 - (void)testPickImageWithoutFullMetadataPreiOS14 {
   if (@available(iOS 14, *)) {
-      return;
+    return;
   }
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
