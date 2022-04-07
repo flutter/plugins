@@ -155,10 +155,15 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self checkCameraAuthorizationWithImagePicker:imagePickerController];
       break;
     case SOURCE_GALLERY:
-      if (usePHAsset) {
-        [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+      if (@available(iOS 11, *)) {
+        if (usePHAsset) {
+          [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+        } else {
+          [self showPhotoLibraryWithImagePicker:imagePickerController];
+        }
       } else {
-        [self showPhotoLibraryWithImagePicker:imagePickerController];
+        // Prior to iOS 11, accessing gallery requires authorization
+        [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       }
       break;
     default:
@@ -179,11 +184,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   self.result = result;
   _arguments = call.arguments;
-  BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
 
   if ([@"pickImage" isEqualToString:call.method]) {
     int imageSource = [call.arguments[@"source"] intValue];
-    if (usePHAsset && imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
+    if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
         [self pickImageWithPHPicker:1];
@@ -216,6 +220,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       imagePickerController.videoMaximumDuration = max;
     }
 
+    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
     switch (imageSource) {
       case SOURCE_CAMERA:
         [self checkCameraAuthorizationWithImagePicker:imagePickerController];
