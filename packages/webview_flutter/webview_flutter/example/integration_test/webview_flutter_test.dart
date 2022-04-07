@@ -1217,6 +1217,52 @@ Future<void> main() async {
     },
     skip: _skipDueToIssue86757,
   );
+
+  testWidgets(
+    'clearCache should clear local storage',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> onPageFinished = Completer<void>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: (_) => onPageFinished.complete(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
+        ),
+      );
+
+      final WebViewController controller = await controllerCompleter.future;
+      await onPageFinished.future;
+
+      await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
+
+      expect(
+        controller.runJavascriptReturningResult(
+          'localStorage.getItem("myCat");',
+        ),
+        completion(_webviewString('Tom')),
+      );
+
+      await controller.clearCache();
+
+      expect(
+        controller.runJavascriptReturningResult(
+          'localStorage.getItem("myCat");',
+        ),
+        completion(_webviewNull()),
+      );
+    },
+    // TODO(bparrishMines): Unskip once https://github.com/flutter/plugins/pull/5086 lands and is published.
+    skip: Platform.isAndroid,
+  );
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
@@ -1226,6 +1272,24 @@ String _webviewBool(bool value) {
     return value ? '1' : '0';
   }
   return value ? 'true' : 'false';
+}
+
+// JavaScript `null` evaluate to different string values on Android and iOS.
+// This utility method returns the string boolean value of the current platform.
+String _webviewNull() {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return '<null>';
+  }
+  return 'null';
+}
+
+// JavaScript String evaluate to different string values on Android and iOS.
+// This utility method returns the string boolean value of the current platform.
+String _webviewString(String value) {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return value;
+  }
+  return '"$value"';
 }
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.

@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues, hashList;
-
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
@@ -129,10 +126,10 @@ void main() {
           TestMapsObjectUpdate.from(previous, current);
       expect(
           updates.hashCode,
-          hashValues(
-              hashList(updates.objectsToAdd),
-              hashList(updates.objectIdsToRemove),
-              hashList(updates.objectsToChange)));
+          Object.hash(
+              Object.hashAll(updates.objectsToAdd),
+              Object.hashAll(updates.objectIdsToRemove),
+              Object.hashAll(updates.objectsToChange)));
     });
 
     test('toString', () async {

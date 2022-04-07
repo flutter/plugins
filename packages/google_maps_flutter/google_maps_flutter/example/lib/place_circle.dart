@@ -10,7 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlaceCirclePage extends GoogleMapExampleAppPage {
-  PlaceCirclePage() : super(const Icon(Icons.linear_scale), 'Place circle');
+  const PlaceCirclePage()
+      : super(const Icon(Icons.linear_scale), 'Place circle');
 
   @override
   Widget build(BuildContext context) {

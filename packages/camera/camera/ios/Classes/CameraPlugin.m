@@ -13,7 +13,7 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import "FLTThreadSafeMethodChannel.h"
 #import "FLTThreadSafeTextureRegistry.h"
-#import "QueueHelper.h"
+#import "QueueUtils.h"
 
 @interface CameraPlugin ()
 @property(readonly, nonatomic) FLTThreadSafeTextureRegistry *registry;
@@ -161,6 +161,9 @@
     [result sendSuccess];
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
+    [result sendSuccess];
+  } else if ([@"receivedImageStreamData" isEqualToString:call.method]) {
+    [_camera receivedImageStreamData];
     [result sendSuccess];
   } else {
     NSDictionary *argsMap = call.arguments;

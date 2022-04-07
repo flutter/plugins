@@ -13,7 +13,7 @@ const CameraPosition _kInitialPosition =
     CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
 
 class MapClickPage extends GoogleMapExampleAppPage {
-  MapClickPage() : super(const Icon(Icons.mouse), 'Map click');
+  const MapClickPage() : super(const Icon(Icons.mouse), 'Map click');
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class _MapClickBodyState extends State<_MapClickBody> {
     );
   }
 
-  void onMapCreated(GoogleMapController controller) async {
+  Future<void> onMapCreated(GoogleMapController controller) async {
     setState(() {
       mapController = controller;
     });

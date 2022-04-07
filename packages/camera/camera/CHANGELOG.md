@@ -1,3 +1,25 @@
+## 0.9.4+19
+
+* Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
+
+## 0.9.4+18
+
+* Fixes a crash in iOS when streaming on low-performance devices.
+
+## 0.9.4+17
+
+* Removes obsolete information from README, and adds OS support table.
+
+## 0.9.4+16
+
+* Fixes a bug resulting in a `CameraAccessException` that prevents image
+  capture on some Android devices.
+
+## 0.9.4+15
+
+* Uses dispatch queue for pixel buffer synchronization on iOS.
+* Minor iOS internal code cleanup related to queue helper functions.
+
 ## 0.9.4+14
 
 * Restores compatibility with Flutter 2.5 and 2.8.

@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
 /// A [Widget] that displays a [WKWebView].
@@ -82,22 +87,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }) : super(callbacksHandler) {
     _setCreationParams(
       creationParams,
-      configuration: configuration ??
-          WKWebViewConfiguration(
-            userContentController: WKUserContentController(),
-          ),
+      configuration: configuration ?? WKWebViewConfiguration(),
     );
-
-    webView.uiDelegate = uiDelegate;
-    uiDelegate.onCreateWebView = (
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    ) {
-      if (!navigationAction.targetFrame.isMainFrame) {
-        webView.loadRequest(navigationAction.request);
-      }
-    };
   }
+
+  bool _zoomEnabled = true;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -120,6 +114,32 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate();
 
+  /// Methods for handling navigation changes and tracking navigation requests.
+  @visibleForTesting
+  late final WKNavigationDelegate navigationDelegate =
+      webViewProxy.createNavigationDelegate()
+        ..setDidStartProvisionalNavigation((WKWebView webView, String? url) {
+          callbacksHandler.onPageStarted(url ?? '');
+        })
+        ..setDidFinishNavigation((WKWebView webView, String? url) {
+          callbacksHandler.onPageFinished(url ?? '');
+        })
+        ..setDidFailNavigation((WKWebView webView, NSError error) {
+          callbacksHandler.onWebResourceError(_toWebResourceError(error));
+        })
+        ..setDidFailProvisionalNavigation((WKWebView webView, NSError error) {
+          callbacksHandler.onWebResourceError(_toWebResourceError(error));
+        })
+        ..setWebViewWebContentProcessDidTerminate((WKWebView webView) {
+          callbacksHandler.onWebResourceError(WebResourceError(
+            errorCode: WKErrorCode.webContentProcessTerminated,
+            // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+            domain: 'WKErrorDomain',
+            description: '',
+            errorType: WebResourceErrorType.webContentProcessTerminated,
+          ));
+        });
+
   Future<void> _setCreationParams(
     CreationParams params, {
     required WKWebViewConfiguration configuration,
@@ -132,7 +152,37 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
     webView = webViewProxy.createWebView(configuration);
 
+    webView.setUIDelegate(uiDelegate);
+    uiDelegate.setOnCreateWebView((
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    ) {
+      if (!navigationAction.targetFrame.isMainFrame) {
+        webView.loadRequest(navigationAction.request);
+      }
+    });
+
     await addJavascriptChannels(params.javascriptChannelNames);
+
+    webView.setNavigationDelegate(navigationDelegate);
+
+    if (params.userAgent != null) {
+      webView.setCustomUserAgent(params.userAgent!);
+    }
+
+    if (params.webSettings != null) {
+      updateSettings(params.webSettings!);
+    }
+
+    if (params.backgroundColor != null) {
+      webView.setOpaque(false);
+      webView.setBackgroundColor(Colors.transparent);
+      webView.scrollView.setBackgroundColor(params.backgroundColor!);
+    }
+
+    if (params.initialUrl != null) {
+      await loadUrl(params.initialUrl!, null);
+    }
   }
 
   void _setWebViewConfiguration(
@@ -141,7 +191,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     required AutoMediaPlaybackPolicy autoMediaPlaybackPolicy,
   }) {
     if (allowsInlineMediaPlayback != null) {
-      configuration.allowsInlineMediaPlayback = allowsInlineMediaPlayback;
+      configuration.setAllowsInlineMediaPlayback(allowsInlineMediaPlayback);
     }
 
     late final bool requiresUserAction;
@@ -154,11 +204,173 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         break;
     }
 
-    configuration.mediaTypesRequiringUserActionForPlayback =
-        <WKAudiovisualMediaType>{
+    configuration
+        .setMediaTypesRequiringUserActionForPlayback(<WKAudiovisualMediaType>{
       if (requiresUserAction) WKAudiovisualMediaType.all,
       if (!requiresUserAction) WKAudiovisualMediaType.none,
-    };
+    });
+  }
+
+  @override
+  Future<void> loadHtmlString(String html, {String? baseUrl}) {
+    return webView.loadHtmlString(html, baseUrl: baseUrl);
+  }
+
+  @override
+  Future<void> loadFile(String absoluteFilePath) async {
+    await webView.loadFileUrl(
+      absoluteFilePath,
+      readAccessUrl: path.dirname(absoluteFilePath),
+    );
+  }
+
+  @override
+  Future<void> clearCache() {
+    return webView.configuration.websiteDataStore.removeDataOfTypes(
+      <WKWebsiteDataTypes>{
+        WKWebsiteDataTypes.memoryCache,
+        WKWebsiteDataTypes.diskCache,
+        WKWebsiteDataTypes.offlineWebApplicationCache,
+        WKWebsiteDataTypes.localStroage,
+      },
+      DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
+  @override
+  Future<void> loadFlutterAsset(String key) async {
+    assert(key.isNotEmpty);
+    return webView.loadFlutterAsset(key);
+  }
+
+  @override
+  Future<void> loadUrl(String url, Map<String, String>? headers) async {
+    final NSUrlRequest request = NSUrlRequest(
+      url: url,
+      allHttpHeaderFields: headers ?? <String, String>{},
+    );
+    return webView.loadRequest(request);
+  }
+
+  @override
+  Future<void> loadRequest(WebViewRequest request) async {
+    if (!request.uri.hasScheme) {
+      throw ArgumentError('WebViewRequest#uri is required to have a scheme.');
+    }
+
+    final NSUrlRequest urlRequest = NSUrlRequest(
+      url: request.uri.toString(),
+      allHttpHeaderFields: request.headers,
+      httpMethod: describeEnum(request.method),
+      httpBody: request.body,
+    );
+
+    return webView.loadRequest(urlRequest);
+  }
+
+  @override
+  Future<bool> canGoBack() => webView.canGoBack();
+
+  @override
+  Future<bool> canGoForward() => webView.canGoForward();
+
+  @override
+  Future<void> goBack() => webView.goBack();
+
+  @override
+  Future<void> goForward() => webView.goForward();
+
+  @override
+  Future<void> reload() => webView.reload();
+
+  @override
+  Future<String> evaluateJavascript(String javascript) async {
+    final Object? result = await webView.evaluateJavaScript(javascript);
+    // The legacy implementation of webview_flutter_wkwebview would convert
+    // objects to strings before returning them to Dart. This method attempts
+    // to converts Dart objects to Strings the way it is done in Objective-C
+    // to avoid breaking users expecting the same String format.
+    return _asObjectiveCString(result);
+  }
+
+  @override
+  Future<void> runJavascript(String javascript) async {
+    try {
+      await webView.evaluateJavaScript(javascript);
+    } on PlatformException catch (exception) {
+      // WebKit will throw an error when the type of the evaluated value is
+      // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
+      // example, when running a void function. For ease of use, this specific
+      // error is ignored when no return value is expected.
+      // TODO(bparrishMines): Ensure the platform code includes the NSError in
+      // the FlutterError.details.
+      if (exception.details is! NSError ||
+          exception.details.code !=
+              WKErrorCode.javaScriptResultTypeIsUnsupported) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<String> runJavascriptReturningResult(String javascript) async {
+    final Object? result = await webView.evaluateJavaScript(javascript);
+    if (result == null) {
+      throw ArgumentError(
+        'Result of JavaScript execution returned a `null` value. '
+        'Use `runJavascript` when expecting a null return value.',
+      );
+    }
+    return result.toString();
+  }
+
+  @override
+  Future<String?> getTitle() => webView.getTitle();
+
+  @override
+  Future<void> scrollTo(int x, int y) async {
+    webView.scrollView.setContentOffset(Point<double>(
+      x.toDouble(),
+      y.toDouble(),
+    ));
+  }
+
+  @override
+  Future<void> scrollBy(int x, int y) async {
+    await webView.scrollView.scrollBy(Point<double>(
+      x.toDouble(),
+      y.toDouble(),
+    ));
+  }
+
+  @override
+  Future<int> getScrollX() async {
+    final Point<double> offset = await webView.scrollView.getContentOffset();
+    return offset.x.toInt();
+  }
+
+  @override
+  Future<int> getScrollY() async {
+    final Point<double> offset = await webView.scrollView.getContentOffset();
+    return offset.y.toInt();
+  }
+
+  @override
+  Future<void> updateSettings(WebSettings setting) async {
+    await Future.wait(<Future<void>>[
+      _setUserAgent(setting.userAgent),
+      if (setting.hasNavigationDelegate != null)
+        _setHasNavigationDelegate(setting.hasNavigationDelegate!),
+      if (setting.hasProgressTracking != null)
+        _setHasProgressTracking(setting.hasProgressTracking!),
+      if (setting.javascriptMode != null)
+        _setJavaScriptMode(setting.javascriptMode!),
+      if (setting.zoomEnabled != null) _setZoomEnabled(setting.zoomEnabled!),
+      if (setting.gestureNavigationEnabled != null)
+        webView.setAllowsBackForwardNavigationGestures(
+          setting.gestureNavigationEnabled!,
+        ),
+    ]);
   }
 
   @override
@@ -172,7 +384,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         (String channelName) {
           final WKScriptMessageHandler handler =
               webViewProxy.createScriptMessageHandler()
-                ..didReceiveScriptMessage = (
+                ..setDidReceiveScriptMessage((
                   WKUserContentController userContentController,
                   WKScriptMessage message,
                 ) {
@@ -180,7 +392,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
                     message.name,
                     message.body!.toString(),
                   );
-                };
+                });
           _scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
@@ -210,19 +422,172 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       return;
     }
 
-    // WKWebView does not support removing a single user script, so this removes
-    // all user scripts and all message handlers and re-registers channels that
-    // shouldn't be removed. Note that this workaround could interfere with
-    // exposing support for custom scripts from applications.
+    await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
+  }
+
+  Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
+    if (hasNavigationDelegate) {
+      return navigationDelegate.setDecidePolicyForNavigationAction(
+          (WKWebView webView, WKNavigationAction action) async {
+        final bool allow = await callbacksHandler.onNavigationRequest(
+          url: action.request.url,
+          isForMainFrame: action.targetFrame.isMainFrame,
+        );
+
+        return allow
+            ? WKNavigationActionPolicy.allow
+            : WKNavigationActionPolicy.cancel;
+      });
+    } else {
+      return navigationDelegate.setDecidePolicyForNavigationAction(null);
+    }
+  }
+
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) {
+    if (hasProgressTracking) {
+      webView.setObserveValue((
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) {
+        final double progress = change[NSKeyValueChangeKey.newValue]! as double;
+        callbacksHandler.onProgress((progress * 100).round());
+      });
+      return webView.addObserver(
+        webView,
+        keyPath: 'estimatedProgress',
+        options: <NSKeyValueObservingOptions>{
+          NSKeyValueObservingOptions.newValue,
+        },
+      );
+    } else {
+      webView.setObserveValue(null);
+      return webView.removeObserver(webView, keyPath: 'estimatedProgress');
+    }
+  }
+
+  Future<void> _setJavaScriptMode(JavascriptMode mode) {
+    switch (mode) {
+      case JavascriptMode.disabled:
+        return webView.configuration.preferences.setJavaScriptEnabled(false);
+      case JavascriptMode.unrestricted:
+        return webView.configuration.preferences.setJavaScriptEnabled(true);
+    }
+  }
+
+  Future<void> _setUserAgent(WebSetting<String?> userAgent) async {
+    if (userAgent.isPresent) {
+      await webView.setCustomUserAgent(userAgent.value);
+    }
+  }
+
+  Future<void> _setZoomEnabled(bool zoomEnabled) async {
+    if (_zoomEnabled == zoomEnabled) {
+      return;
+    }
+
+    _zoomEnabled = zoomEnabled;
+    if (!zoomEnabled) {
+      return _disableZoom();
+    }
+
+    return _resetUserScripts();
+  }
+
+  Future<void> _disableZoom() {
+    const WKUserScript userScript = WKUserScript(
+      "var meta = document.createElement('meta');"
+      "meta.name = 'viewport';"
+      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
+      "user-scalable=no';"
+      "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+      WKUserScriptInjectionTime.atDocumentEnd,
+      isMainFrameOnly: true,
+    );
+    return webView.configuration.userContentController
+        .addUserScript(userScript);
+  }
+
+  // WkWebView does not support removing a single user script, so all user
+  // scripts and all message handlers are removed instead. And the JavaScript
+  // channels that shouldn't be removed are re-registered. Note that this
+  // workaround could interfere with exposing support for custom scripts from
+  // applications.
+  Future<void> _resetUserScripts({
+    Set<String> removedJavaScriptChannels = const <String>{},
+  }) async {
     webView.configuration.userContentController.removeAllUserScripts();
     webView.configuration.userContentController
         .removeAllScriptMessageHandlers();
 
-    javascriptChannelNames.forEach(_scriptMessageHandlers.remove);
+    removedJavaScriptChannels.forEach(_scriptMessageHandlers.remove);
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
     _scriptMessageHandlers.clear();
 
-    await addJavascriptChannels(remainingNames);
+    await Future.wait(<Future<void>>[
+      addJavascriptChannels(remainingNames),
+      // Zoom is disabled with a WKUserScript, so this adds it back if it was
+      // removed above.
+      if (!_zoomEnabled) _disableZoom(),
+    ]);
+  }
+
+  static WebResourceError _toWebResourceError(NSError error) {
+    WebResourceErrorType? errorType;
+
+    switch (error.code) {
+      case WKErrorCode.unknown:
+        errorType = WebResourceErrorType.unknown;
+        break;
+      case WKErrorCode.webContentProcessTerminated:
+        errorType = WebResourceErrorType.webContentProcessTerminated;
+        break;
+      case WKErrorCode.webViewInvalidated:
+        errorType = WebResourceErrorType.webViewInvalidated;
+        break;
+      case WKErrorCode.javaScriptExceptionOccurred:
+        errorType = WebResourceErrorType.javaScriptExceptionOccurred;
+        break;
+      case WKErrorCode.javaScriptResultTypeIsUnsupported:
+        errorType = WebResourceErrorType.javaScriptResultTypeIsUnsupported;
+        break;
+    }
+
+    return WebResourceError(
+      errorCode: error.code,
+      domain: error.domain,
+      description: error.localizedDescription,
+      errorType: errorType,
+    );
+  }
+
+  String _asObjectiveCString(Object? value, {bool inContainer = false}) {
+    if (value == null) {
+      // An NSNull inside an NSArray or NSDictionary is represented as a String
+      // differently than a nil.
+      if (inContainer) {
+        return '"<null>"';
+      }
+      return '(null)';
+    } else if (value is List) {
+      final List<String> stringValues = <String>[];
+      for (final Object? listValue in value) {
+        stringValues.add(_asObjectiveCString(listValue, inContainer: true));
+      }
+      return '(${stringValues.join(',')})';
+    } else if (value is Map) {
+      final List<String> stringValues = <String>[];
+      for (final MapEntry<Object?, Object?> entry in value.entries) {
+        stringValues.add(
+          '${_asObjectiveCString(entry.key, inContainer: true)} '
+          '= '
+          '${_asObjectiveCString(entry.value, inContainer: true)}',
+        );
+      }
+      return '{${stringValues.join(';')}}';
+    }
+
+    return value.toString();
   }
 }
 
@@ -247,5 +612,10 @@ class WebViewWidgetProxy {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate createUIDelgate() {
     return WKUIDelegate();
+  }
+
+  /// Constructs a [WKNavigationDelegate].
+  WKNavigationDelegate createNavigationDelegate() {
+    return WKNavigationDelegate();
   }
 }

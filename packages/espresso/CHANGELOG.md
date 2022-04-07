@@ -1,6 +1,13 @@
-## NEXT
+## 0.2.0+1
+
+* Adds OS version support information to README.
+* Updates `androidx.test.ext:junit` and `androidx.test.ext:truth` for
+  compatibilty with updated Flutter template.
+
+## 0.2.0
 
 * Updates compileSdkVersion to 31.
+* **Breaking Change** Update guava version to latest stable: `com.google.guava:guava:31.1-android`.
 
 ## 0.1.0+4
 

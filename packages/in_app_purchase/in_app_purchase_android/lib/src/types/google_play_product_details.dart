@@ -29,10 +29,6 @@ class GooglePlayProductDetails extends ProductDetails {
           currencySymbol: currencySymbol,
         );
 
-  /// Points back to the [SkuDetailsWrapper] object that was used to generate
-  /// this [GooglePlayProductDetails] object.
-  final SkuDetailsWrapper skuDetails;
-
   /// Generate a [GooglePlayProductDetails] object based on an Android
   /// [SkuDetailsWrapper] object.
   factory GooglePlayProductDetails.fromSkuDetails(
@@ -49,4 +45,8 @@ class GooglePlayProductDetails extends ProductDetails {
       skuDetails: skuDetails,
     );
   }
+
+  /// Points back to the [SkuDetailsWrapper] object that was used to generate
+  /// this [GooglePlayProductDetails] object.
+  final SkuDetailsWrapper skuDetails;
 }
