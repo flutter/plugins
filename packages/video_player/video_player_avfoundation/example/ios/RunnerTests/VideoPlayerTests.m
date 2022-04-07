@@ -161,14 +161,14 @@
 }
 
 - (void)testTransformFix {
-  [self testTransformFixByOrientation:UIImageOrientationUp];
-  [self testTransformFixByOrientation:UIImageOrientationDown];
-  [self testTransformFixByOrientation:UIImageOrientationLeft];
-  [self testTransformFixByOrientation:UIImageOrientationRight];
-  [self testTransformFixByOrientation:UIImageOrientationUpMirrored];
-  [self testTransformFixByOrientation:UIImageOrientationDownMirrored];
-  [self testTransformFixByOrientation:UIImageOrientationLeftMirrored];
-  [self testTransformFixByOrientation:UIImageOrientationRightMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationUp];
+  [self validateTransformFixForOrientation:UIImageOrientationDown];
+  [self validateTransformFixForOrientation:UIImageOrientationLeft];
+  [self validateTransformFixForOrientation:UIImageOrientationRight];
+  [self validateTransformFixForOrientation:UIImageOrientationUpMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationDownMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationLeftMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationRightMirrored];
 }
 
 - (NSDictionary<NSString *, id> *)testPlugin:(FLTVideoPlayerPlugin *)videoPlayerPlugin
@@ -225,7 +225,7 @@
   return initializationEvent;
 }
 
-- (void)testTransformFixByOrientation:(UIImageOrientation)orientation {
+- (void)validateTransformFixForOrientation:(UIImageOrientation)orientation {
   AVAssetTrack *track = [[FakeAVAssetTrack alloc] initWithOrientation:orientation];
   CGAffineTransform t = [track fixTransform];
   CGSize size = track.naturalSize;
