@@ -61,7 +61,7 @@ class FoundationFlutterApis {
 
   bool _hasBeenSetUp = false;
 
-  /// Flutter Api for [NSObject].
+  /// Flutter Api for disposing functions.
   @visibleForTesting
   late final FunctionFlutterApiImpl functionFlutterApi;
 

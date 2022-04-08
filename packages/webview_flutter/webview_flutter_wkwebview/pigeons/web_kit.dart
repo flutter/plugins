@@ -314,6 +314,7 @@ abstract class NSObjectHostApi {
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
 }
 
+/// Disposes references to functions.
 @FlutterApi()
 abstract class FunctionFlutterApi {
   void dispose(int instanceId);

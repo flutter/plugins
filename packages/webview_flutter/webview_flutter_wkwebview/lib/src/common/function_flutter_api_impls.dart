@@ -5,7 +5,7 @@
 import 'instance_manager.dart';
 import 'web_kit.pigeon.dart';
 
-/// Flutter api implementation for [NSObject].
+/// Flutter api to dispose functions.
 class FunctionFlutterApiImpl extends FunctionFlutterApi {
   /// Constructs a [FunctionFlutterApiImpl].
   FunctionFlutterApiImpl({InstanceManager? instanceManager}) {
