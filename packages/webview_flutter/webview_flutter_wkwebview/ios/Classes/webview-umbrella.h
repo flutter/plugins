@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#import <webview_flutter_wkwebview/FLTCookieManager.h>
-#import <webview_flutter_wkwebview/FLTWKNavigationDelegate.h>
-#import <webview_flutter_wkwebview/FLTWKProgressionDelegate.h>
-#import <webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>
-#import <webview_flutter_wkwebview/FlutterWebView.h>
-#import <webview_flutter_wkwebview/JavaScriptChannelHandler.h>
+#import <webview_pro_wkwebview/FLTCookieManager.h>
+#import <webview_pro_wkwebview/FLTWKNavigationDelegate.h>
+#import <webview_pro_wkwebview/FLTWKProgressionDelegate.h>
+#import <webview_pro_wkwebview/FLTWebViewFlutterPlugin.h>
+#import <webview_pro_wkwebview/FlutterWebView.h>
+#import <webview_pro_wkwebview/JavaScriptChannelHandler.h>
