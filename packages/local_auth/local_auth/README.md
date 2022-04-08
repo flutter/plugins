@@ -6,9 +6,9 @@ the user.
 This means referring to biometric authentication on iOS (Touch ID or lock code)
 and the fingerprint APIs on Android (introduced in Android 6.0).
 
-|             | Android   | iOS  |
-|-------------|-----------|------|
-| **Support** | SDK 16+\* | 9.0+ |
+|             | Android   | iOS  | Windows     |
+|-------------|-----------|------|-------------|
+| **Support** | SDK 16+\* | 9.0+ | Windows 10+ |
 
 ## Usage
 
