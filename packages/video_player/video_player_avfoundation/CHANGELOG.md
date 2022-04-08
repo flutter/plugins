@@ -1,6 +1,6 @@
 ## 2.3.2
 
-* Apply the correct transform for videos with different orientations.
+* Apply the standardized transform for videos with different orientations.
 
 ## 2.3.1
 
