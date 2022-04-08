@@ -6,14 +6,14 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
-/// Handles all cookie operations for the current platform.
+/// Handles all cookie operations for the WebView platform.
 class WebKitCookieManager extends WebViewCookieManagerPlatform {
   /// Constructs a [WebKitCookieManager].
   WebKitCookieManager({WKWebsiteDataStore? websiteDataStore})
       : websiteDataStore =
             websiteDataStore ?? WKWebsiteDataStore.defaultDataStore;
 
-  /// Manages cookies for [WKWebView]s.
+  /// Manages stored data for [WKWebView]s.
   final WKWebsiteDataStore websiteDataStore;
 
   @override

@@ -284,6 +284,8 @@ class WKWebsiteDataStore {
       WKHttpCookieStore.fromWebsiteDataStore(this);
 
   /// Removes website data that changed after the specified date.
+  ///
+  /// Returns whether any data was removed.
   Future<bool> removeDataOfTypes(
     Set<WKWebsiteDataTypes> dataTypes,
     DateTime since,
@@ -300,8 +302,6 @@ class WKWebsiteDataStore {
 ///
 /// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
 class WKHttpCookieStore {
-  /// Constructs a [WKHttpCookieStore] that is owned by [dataStore].
-
   /// Constructs a [WKHttpCookieStore] that is owned by [dataStore].
   @visibleForTesting
   WKHttpCookieStore.fromWebsiteDataStore(
