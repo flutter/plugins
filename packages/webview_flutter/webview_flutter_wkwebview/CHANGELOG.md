@@ -1,3 +1,7 @@
+## 2.7.1+2
+
+* fixed some imports on webview-umbrella
+
 ## 2.7.1+1
 
 * dependency webview_pro_platform_interface
