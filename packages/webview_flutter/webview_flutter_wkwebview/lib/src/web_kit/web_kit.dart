@@ -544,7 +544,7 @@ class WKNavigationDelegate extends NSObject {
 
   /// Called when navigation is complete.
   Future<void> setDidFinishNavigation(
-    void Function(WKWebView, String?)? didFinishNavigation,
+    void Function(WKWebView webView, String? url)? didFinishNavigation,
   ) {
     return _navigationDelegateApi.setDidFinishNavigationFromInstance(
       this,
