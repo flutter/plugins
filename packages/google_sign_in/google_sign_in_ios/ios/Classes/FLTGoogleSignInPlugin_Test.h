@@ -4,7 +4,7 @@
 
 // This header is available in the Test module. Import via "@import google_sign_in.Test;"
 
-#import <google_sign_in/FLTGoogleSignInPlugin.h>
+#import <google_sign_in_ios/FLTGoogleSignInPlugin.h>
 
 @class GIDSignIn;
 
