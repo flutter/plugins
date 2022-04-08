@@ -1034,32 +1034,40 @@ void main() {
         await picker.getImageFromSource(source: ImageSource.camera);
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          maxWidth: 10.0,
+          options: ImagePickerOptions(maxWidth: 10.0),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          maxHeight: 10.0,
+          options: ImagePickerOptions(maxHeight: 10.0),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          maxWidth: 10.0,
-          maxHeight: 20.0,
+          options: ImagePickerOptions(
+            maxWidth: 10.0,
+            maxHeight: 20.0,
+          ),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          maxWidth: 10.0,
-          imageQuality: 70,
+          options: ImagePickerOptions(
+            maxWidth: 10.0,
+            imageQuality: 70,
+          ),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          maxHeight: 10.0,
-          imageQuality: 70,
+          options: ImagePickerOptions(
+            maxHeight: 10.0,
+            imageQuality: 70,
+          ),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          maxWidth: 10.0,
-          maxHeight: 20.0,
-          imageQuality: 70,
+          options: ImagePickerOptions(
+            maxWidth: 10.0,
+            maxHeight: 20.0,
+            imageQuality: 70,
+          ),
         );
 
         expect(
@@ -1128,25 +1136,33 @@ void main() {
       test('does not accept a invalid imageQuality argument', () {
         expect(
           () => picker.getImageFromSource(
-              imageQuality: -1, source: ImageSource.gallery),
+            source: ImageSource.gallery,
+            options: ImagePickerOptions(imageQuality: -1),
+          ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getImageFromSource(
-              imageQuality: 101, source: ImageSource.gallery),
+            source: ImageSource.gallery,
+            options: ImagePickerOptions(imageQuality: 101),
+          ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getImageFromSource(
-              imageQuality: -1, source: ImageSource.camera),
+            source: ImageSource.camera,
+            options: ImagePickerOptions(imageQuality: -1),
+          ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getImageFromSource(
-              imageQuality: 101, source: ImageSource.camera),
+            source: ImageSource.camera,
+            options: ImagePickerOptions(imageQuality: 101),
+          ),
           throwsArgumentError,
         );
       });
@@ -1154,13 +1170,17 @@ void main() {
       test('does not accept a negative width or height argument', () {
         expect(
           () => picker.getImageFromSource(
-              source: ImageSource.camera, maxWidth: -1.0),
+            source: ImageSource.camera,
+            options: ImagePickerOptions(maxWidth: -1.0),
+          ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getImageFromSource(
-              source: ImageSource.camera, maxHeight: -1.0),
+            source: ImageSource.camera,
+            options: ImagePickerOptions(maxHeight: -1.0),
+          ),
           throwsArgumentError,
         );
       });
@@ -1195,8 +1215,11 @@ void main() {
 
       test('camera position can set to front', () async {
         await picker.getImageFromSource(
-            source: ImageSource.camera,
-            preferredCameraDevice: CameraDevice.front);
+          source: ImageSource.camera,
+          options: ImagePickerOptions(
+            preferredCameraDevice: CameraDevice.front,
+          ),
+        );
 
         expect(
           log,
@@ -1215,7 +1238,9 @@ void main() {
 
       test('passes the full metadata argument correctly', () async {
         await picker.getImageFromSource(
-            source: ImageSource.camera, requestFullMetadata: false);
+          source: ImageSource.camera,
+          options: ImagePickerOptions(requestFullMetadata: false),
+        );
 
         expect(
           log,

@@ -259,29 +259,11 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// The `options` argument controls additional settings that can be used when picking an image. See [ImagePickerOptions]
+  /// for more details.
+  ///
   /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained below.
-  ///
-  /// If specified, the image will be at most `maxWidth` wide and
-  /// `maxHeight` tall. Otherwise the image will be returned at it's
-  /// original width and height.
-  ///
-  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
-  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
-  /// the original quality will be returned. Compression is only supported for certain
-  /// image types such as JPEG. If compression is not supported for the image that is picked,
-  /// a warning message will be logged.
-  ///
-  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
-  /// the front or rear camera should be opened, this function is not guaranteed
-  /// to work on an Android device.
-  ///
-  /// `requestFullMetadata` defaults to `true`, so the plugin tries to get the full image metadata which may require
-  /// extra permission requests on certain platforms.
-  /// If `requestFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces permission requests
-  /// from the platform (e.g. on iOS the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
+  /// in addition to a size modification, of which the usage is explained in [ImagePickerOptions].
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
@@ -289,18 +271,15 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// If no images were picked, the return value is null.
   Future<XFile?> getImageFromSource({
     required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool requestFullMetadata = true,
+    ImagePickerOptions? options,
   }) {
     return getImage(
       source: source,
-      maxHeight: maxHeight,
-      maxWidth: maxWidth,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
+      maxHeight: options?.maxHeight,
+      maxWidth: options?.maxWidth,
+      imageQuality: options?.imageQuality,
+      preferredCameraDevice:
+          options?.preferredCameraDevice ?? CameraDevice.rear,
     );
   }
 }

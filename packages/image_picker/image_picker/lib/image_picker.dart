@@ -214,11 +214,13 @@ class ImagePicker {
   }) {
     return platform.getImageFromSource(
       source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
-      requestFullMetadata: requestFullMetadata,
+      options: ImagePickerOptions(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+        requestFullMetadata: requestFullMetadata,
+      ),
     );
   }
 
