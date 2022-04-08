@@ -8,17 +8,9 @@ import 'dart:async';
 import 'dart:convert' show json;
 
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:http/http.dart' as http;
-
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  // Optional clientId
-  // clientId: '479882132969-9i9aqik3jfjd7qhci1nqf0bm2g71rm1u.apps.googleusercontent.com',
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
 
 void main() {
   runApp(
@@ -35,31 +27,72 @@ class SignInDemo extends StatefulWidget {
 }
 
 class SignInDemoState extends State<SignInDemo> {
-  GoogleSignInAccount? _currentUser;
+  GoogleSignInUserData? _currentUser;
   String _contactText = '';
+  // Future that completes when `init` has completed on the sign in instance.
+  Future<void>? _initialization;
 
   @override
   void initState() {
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      setState(() {
-        _currentUser = account;
-      });
-      if (_currentUser != null) {
-        _handleGetContact(_currentUser!);
-      }
-    });
-    _googleSignIn.signInSilently();
+    _signIn();
   }
 
-  Future<void> _handleGetContact(GoogleSignInAccount user) async {
+  Future<void> _ensureInitialized() {
+    return _initialization ??= GoogleSignInPlatform.instance.init(
+      scopes: <String>[
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    )..catchError((dynamic _) {
+        _initialization = null;
+      });
+  }
+
+  void _setUser(GoogleSignInUserData? user) {
+    setState(() {
+      _currentUser = user;
+      if (user != null) {
+        _handleGetContact(user);
+      }
+    });
+  }
+
+  Future<void> _signIn() async {
+    await _ensureInitialized();
+    final GoogleSignInUserData? newUser =
+        await GoogleSignInPlatform.instance.signInSilently();
+    _setUser(newUser);
+  }
+
+  Future<Map<String, String>> _getAuthHeaders() async {
+    final GoogleSignInUserData? user = _currentUser;
+    if (user == null) {
+      throw StateError('No user signed in');
+    }
+
+    final GoogleSignInTokenData response =
+        await GoogleSignInPlatform.instance.getTokens(
+      email: user.email,
+      shouldRecoverAuth: true,
+    );
+
+    return <String, String>{
+      'Authorization': 'Bearer ${response.accessToken}',
+      // TODO(kevmoo): Use the correct value once it's available.
+      // See https://github.com/flutter/flutter/issues/80905
+      'X-Goog-AuthUser': '0',
+    };
+  }
+
+  Future<void> _handleGetContact(GoogleSignInUserData user) async {
     setState(() {
       _contactText = 'Loading contact info...';
     });
     final http.Response response = await http.get(
       Uri.parse('https://people.googleapis.com/v1/people/me/connections'
           '?requestMask.includeField=person.names'),
-      headers: await user.authHeaders,
+      headers: await _getAuthHeaders(),
     );
     if (response.statusCode != 200) {
       setState(() {
@@ -71,54 +104,38 @@ class SignInDemoState extends State<SignInDemo> {
     }
     final Map<String, dynamic> data =
         json.decode(response.body) as Map<String, dynamic>;
-    final String? namedContact = _pickFirstNamedContact(data);
+    final int contactCount =
+        (data['connections'] as List<dynamic>?)?.length ?? 0;
     setState(() {
-      if (namedContact != null) {
-        _contactText = 'I see you know $namedContact!';
-      } else {
-        _contactText = 'No contacts to display.';
-      }
+      _contactText = '$contactCount contacts found';
     });
-  }
-
-  String? _pickFirstNamedContact(Map<String, dynamic> data) {
-    final List<dynamic>? connections = data['connections'] as List<dynamic>?;
-    final Map<String, dynamic>? contact = connections?.firstWhere(
-      (dynamic contact) => contact['names'] != null,
-      orElse: () => null,
-    ) as Map<String, dynamic>?;
-    if (contact != null) {
-      final Map<String, dynamic>? name = contact['names'].firstWhere(
-        (dynamic name) => name['displayName'] != null,
-        orElse: () => null,
-      ) as Map<String, dynamic>?;
-      if (name != null) {
-        return name['displayName'] as String?;
-      }
-    }
-    return null;
   }
 
   Future<void> _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      await _ensureInitialized();
+      _setUser(await GoogleSignInPlatform.instance.signIn());
     } catch (error) {
-      print(error);
+      final bool canceled =
+          error is PlatformException && error.code == 'sign_in_canceled';
+      if (!canceled) {
+        print(error);
+      }
     }
   }
 
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
+  Future<void> _handleSignOut() async {
+    await _ensureInitialized();
+    await GoogleSignInPlatform.instance.disconnect();
+  }
 
   Widget _buildBody() {
-    final GoogleSignInAccount? user = _currentUser;
+    final GoogleSignInUserData? user = _currentUser;
     if (user != null) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: user,
-            ),
             title: Text(user.displayName ?? ''),
             subtitle: Text(user.email),
           ),
