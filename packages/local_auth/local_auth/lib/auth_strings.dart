@@ -39,6 +39,7 @@ class AndroidAuthMessages extends AuthMessages {
   final String? goToSettingsDescription;
   final String? signInTitle;
 
+  @override
   Map<String, String> get args {
     return <String, String>{
       'biometricHint': biometricHint ?? androidBiometricHint,
@@ -78,6 +79,7 @@ class IOSAuthMessages extends AuthMessages {
   final String? cancelButton;
   final String? localizedFallbackTitle;
 
+  @override
   Map<String, String> get args {
     return <String, String>{
       'lockOut': lockOut ?? iOSLockOut,
