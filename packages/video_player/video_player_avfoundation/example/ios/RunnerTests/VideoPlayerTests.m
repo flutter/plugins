@@ -7,6 +7,7 @@
 @import XCTest;
 
 #import <OCMock/OCMock.h>
+#import <video_player_avfoundation/AVAssetTrackUtils.h>
 
 @interface FLTVideoPlayer : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
