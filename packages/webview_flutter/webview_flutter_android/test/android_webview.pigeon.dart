@@ -1157,3 +1157,55 @@ abstract class TestAssetManagerHostApi {
     }
   }
 }
+
+class _TestWebStorageHostApiCodec extends StandardMessageCodec {
+  const _TestWebStorageHostApiCodec();
+}
+
+abstract class TestWebStorageHostApi {
+  static const MessageCodec<Object?> codec = _TestWebStorageHostApiCodec();
+
+  void create(int instanceId);
+  void deleteAllData(int instanceId);
+  static void setup(TestWebStorageHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebStorageHostApi.create', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebStorageHostApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebStorageHostApi.create was null, expected non-null int.');
+          api.create(arg_instanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebStorageHostApi.deleteAllData', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebStorageHostApi.deleteAllData was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebStorageHostApi.deleteAllData was null, expected non-null int.');
+          api.deleteAllData(arg_instanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}

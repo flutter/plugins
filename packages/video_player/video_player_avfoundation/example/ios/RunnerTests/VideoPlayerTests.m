@@ -12,7 +12,7 @@
 @property(readonly, nonatomic) AVPlayer *player;
 @end
 
-@interface FLTVideoPlayerPlugin (Test) <FLTVideoPlayerApi>
+@interface FLTVideoPlayerPlugin (Test) <FLTAVFoundationVideoPlayerApi>
 @property(readonly, strong, nonatomic)
     NSMutableDictionary<NSNumber *, FLTVideoPlayer *> *playersByTextureId;
 @end
