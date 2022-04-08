@@ -1054,30 +1054,10 @@ abstract class WKNavigationDelegateFlutterApi {
   static const MessageCodec<Object?> codec =
       _WKNavigationDelegateFlutterApiCodec();
 
-  void dispose(int functionInstanceId);
   void didFinishNavigation(
       int functionInstanceId, int webViewInstanceId, String? url);
   static void setup(WKNavigationDelegateFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WKNavigationDelegateFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_functionInstanceId = (args[0] as int?);
-          assert(arg_functionInstanceId != null,
-              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_functionInstanceId!);
-          return;
-        });
-      }
-    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation',
@@ -1222,6 +1202,38 @@ class NSObjectHostApi {
       );
     } else {
       return;
+    }
+  }
+}
+
+class _FunctionFlutterApiCodec extends StandardMessageCodec {
+  const _FunctionFlutterApiCodec();
+}
+
+abstract class FunctionFlutterApi {
+  static const MessageCodec<Object?> codec = _FunctionFlutterApiCodec();
+
+  void dispose(int instanceId);
+  static void setup(FunctionFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.FunctionFlutterApi.dispose', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null, expected non-null int.');
+          api.dispose(arg_instanceId!);
+          return;
+        });
+      }
     }
   }
 }

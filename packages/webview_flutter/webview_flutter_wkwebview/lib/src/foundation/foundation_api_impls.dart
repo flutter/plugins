@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../common/function_flutter_api_impls.dart';
 import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
 import 'foundation.dart';
@@ -35,6 +37,46 @@ Iterable<NSKeyValueObservingOptionsEnumData>
   });
 }
 
+/// Handles initialization of Flutter APIs for the Foundation library.
+class FoundationFlutterApis {
+  /// Constructs a [FoundationFlutterApis].
+  ///
+  /// This should only be changed for testing purposes.
+  @visibleForTesting
+  FoundationFlutterApis({
+    this.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    functionFlutterApi =
+        FunctionFlutterApiImpl(instanceManager: instanceManager);
+  }
+
+  /// Mutable instance containing all Flutter Apis for the Foundation library.
+  ///
+  /// This should only be changed for testing purposes.
+  static FoundationFlutterApis instance = FoundationFlutterApis();
+
+  /// Sends binary data across the Flutter platform barrier.
+  final BinaryMessenger? binaryMessenger;
+
+  bool _hasBeenSetUp = false;
+
+  /// Flutter Api for [NSObject].
+  @visibleForTesting
+  late final FunctionFlutterApiImpl functionFlutterApi;
+
+  /// Ensures all the Flutter APIs have been setup to receive calls from native code.
+  void ensureSetUp() {
+    if (!_hasBeenSetUp) {
+      FunctionFlutterApi.setup(
+        functionFlutterApi,
+        binaryMessenger: binaryMessenger,
+      );
+      _hasBeenSetUp = true;
+    }
+  }
+}
+
 /// Host api implementation for [NSObject].
 class NSObjectHostApiImpl extends NSObjectHostApi {
   /// Constructs an [NSObjectHostApiImpl].
@@ -42,7 +84,9 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+        super(binaryMessenger: binaryMessenger) {
+    FoundationFlutterApis.instance.ensureSetUp();
+  }
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;

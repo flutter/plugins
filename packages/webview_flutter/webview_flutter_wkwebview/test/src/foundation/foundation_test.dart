@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
+import 'package:webview_flutter_wkwebview/src/foundation/foundation_api_impls.dart';
 
 import '../common/test_web_kit.pigeon.dart';
 import 'foundation_test.mocks.dart';
@@ -23,6 +24,19 @@ void main() {
 
     setUp(() {
       instanceManager = InstanceManager();
+    });
+
+    test('$FunctionFlutterApi dispose', () {
+      final Function function = () {};
+      final int functionInstanceId = instanceManager.tryAddInstance(function)!;
+
+      FoundationFlutterApis.instance = FoundationFlutterApis(
+        instanceManager: instanceManager,
+      )..ensureSetUp();
+
+      FoundationFlutterApis.instance.functionFlutterApi
+          .dispose(functionInstanceId);
+      expect(instanceManager.getInstanceId(function), isNull);
     });
 
     group('$NSObject', () {

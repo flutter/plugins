@@ -290,8 +290,6 @@ abstract class WKNavigationDelegateHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @FlutterApi()
 abstract class WKNavigationDelegateFlutterApi {
-  void dispose(int functionInstanceId);
-
   void didFinishNavigation(
     int functionInstanceId,
     int webViewInstanceId,
@@ -314,6 +312,11 @@ abstract class NSObjectHostApi {
   );
 
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
+}
+
+@FlutterApi()
+abstract class FunctionFlutterApi {
+  void dispose(int instanceId);
 }
 
 /// Mirror of WKWebView.

@@ -515,12 +515,16 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
-class WKNavigationDelegate {
+class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+  })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {

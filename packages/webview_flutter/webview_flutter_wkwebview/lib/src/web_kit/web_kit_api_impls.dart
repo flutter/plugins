@@ -451,14 +451,6 @@ class WKNavigationDelegateFlutterApiImpl
   late final InstanceManager instanceManager;
 
   @override
-  void dispose(int functionInstanceId) {
-    final Function? function = instanceManager.getInstance(functionInstanceId);
-    if (function != null) {
-      instanceManager.removeInstance(function);
-    }
-  }
-
-  @override
   void didFinishNavigation(
     int functionInstanceId,
     int webViewInstanceId,
