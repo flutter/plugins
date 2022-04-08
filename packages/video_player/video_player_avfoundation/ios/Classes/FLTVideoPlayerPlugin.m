@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "AVAssetTrackUtils.h"
 #import "FLTVideoPlayerPlugin.h"
+#import "AVAssetTrackUtils.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>

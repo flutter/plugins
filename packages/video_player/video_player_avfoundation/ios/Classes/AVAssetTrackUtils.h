@@ -10,4 +10,4 @@
  * on iOS 14 and above. This function provides a standardized transform
  * according to the orientation of the track.
  */
-CGAffineTransform FLTGetStandardizedTransformForTrack(AVAssetTrack *track);
+CGAffineTransform FLTGetStandardizedTransformForTrack(AVAssetTrack* track);
