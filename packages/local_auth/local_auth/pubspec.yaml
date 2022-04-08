@@ -30,6 +30,7 @@ dependencies:
   # Temporary path dependencies to allow moving Android and iOS implementations.
   local_auth_ios:
     path: ../local_auth_ios
+  local_auth_platform_interface: ^1.0.1
   platform: ^3.0.0
 
 dev_dependencies:
@@ -39,4 +40,4 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  pedantic: ^1.10.0
+  mockito: ^5.1.0

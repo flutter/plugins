@@ -5,6 +5,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
+import '../common/instance_manager.dart';
+import 'foundation_api_impls.dart';
 
 /// The values that can be returned in a change map.
 ///
@@ -140,6 +144,15 @@ class NSError {
 
 /// The root class of most Objective-C class hierarchies.
 class NSObject {
+  /// Constructs an [NSObject].
+  NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
+      : _api = NSObjectHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
+  final NSObjectHostApiImpl _api;
+
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
     NSObject observer, {
@@ -147,12 +160,22 @@ class NSObject {
     required Set<NSKeyValueObservingOptions> options,
   }) {
     assert(options.isNotEmpty);
-    throw UnimplementedError();
+    return _api.addObserverForInstances(
+      this,
+      observer,
+      keyPath,
+      options,
+    );
   }
 
   /// Stops the observer object from receiving change notifications for the property.
   Future<void> removeObserver(NSObject observer, {required String keyPath}) {
-    throw UnimplementedError();
+    return _api.removeObserverForInstances(this, observer, keyPath);
+  }
+
+  /// Release the reference to the Objective-C object.
+  Future<void> dispose() {
+    return _api.disposeForInstances(this);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.
