@@ -1,6 +1,6 @@
-# google_sign_in_example
+# google_sign_in_android example
 
-Demonstrates how to use the google_sign_in plugin.
+Exercises the Android implementation of `GoogleSignInPlatform`.
 
 ## Getting Started
 
