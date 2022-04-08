@@ -1,3 +1,7 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 5.2.5
 
 * Migrates from `ui.hash*` to `Object.hash*`.
