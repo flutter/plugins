@@ -359,8 +359,8 @@ class CameraController extends ValueNotifier<CameraValue> {
       await CameraPlatform.instance.pausePreview(_cameraId);
       value = value.copyWith(
           isPreviewPaused: true,
-          previewPauseOrientation:
-              Optional<DeviceOrientation>.of(value.deviceOrientation));
+          previewPauseOrientation: Optional<DeviceOrientation>.fromNullable(
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

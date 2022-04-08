@@ -1,3 +1,7 @@
+## 0.9.4+20
+
+* * Fix `lockedCaptureOrientation` not affecting preview orientation when paused.
+
 ## 0.9.4+19
 
 * Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
