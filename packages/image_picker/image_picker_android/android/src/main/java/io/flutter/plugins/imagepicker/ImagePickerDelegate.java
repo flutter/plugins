@@ -23,6 +23,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -215,6 +216,11 @@ public class ImagePickerDelegate
     }
   }
 
+  boolean isVideoFile(String path) {
+    String mimeType = URLConnection.guessContentTypeFromName(path);
+    return mimeType != null && mimeType.startsWith("video");
+  }
+
   void retrieveLostImage(MethodChannel.Result result) {
     Map<String, Object> resultMap = cache.getCacheMap();
     @SuppressWarnings("unchecked")
@@ -229,7 +235,12 @@ public class ImagePickerDelegate
                 ? 100
                 : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
 
-        newPathList.add(imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
+        if(isVideoFile(path)) {
+          newPathList.add(path);
+        }
+        else {
+          newPathList.add(imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
+        }
       }
       resultMap.put(cache.MAP_KEY_PATH_LIST, newPathList);
       resultMap.put(cache.MAP_KEY_PATH, newPathList.get(newPathList.size() - 1));
