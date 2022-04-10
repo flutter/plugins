@@ -14,6 +14,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:quiver/core.dart';
 
 List<CameraDescription> get mockAvailableCameras => <CameraDescription>[
       const CameraDescription(
@@ -1172,16 +1173,19 @@ void main() {
               sensorOrientation: 90),
           ResolutionPreset.max);
       await cameraController.initialize();
-      await cameraController
-          .lockCaptureOrientation(DeviceOrientation.landscapeLeft);
+      cameraController.value = cameraController.value.copyWith(
+          deviceOrientation: DeviceOrientation.portraitUp,
+          lockedCaptureOrientation:
+              const Optional<DeviceOrientation>.fromNullable(
+                  DeviceOrientation.landscapeRight));
 
       await cameraController.pausePreview();
 
       expect(cameraController.value.isPreviewPaused, equals(true));
       expect(cameraController.value.deviceOrientation,
-          DeviceOrientation.portraitUp);
+          equals(DeviceOrientation.portraitUp));
       expect(cameraController.value.previewPauseOrientation,
-          DeviceOrientation.landscapeLeft);
+          equals(DeviceOrientation.landscapeRight));
     });
 
     test('pausePreview() does not call $CameraPlatform when already paused',
