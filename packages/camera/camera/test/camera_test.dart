@@ -1162,6 +1162,28 @@ void main() {
           DeviceOrientation.portraitUp);
     });
 
+    test(
+        'pausePreview() sets previewPauseOrientation according to locked orientation',
+        () async {
+      final CameraController cameraController = CameraController(
+          const CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      await cameraController
+          .lockCaptureOrientation(DeviceOrientation.landscapeLeft);
+
+      await cameraController.pausePreview();
+
+      expect(cameraController.value.isPreviewPaused, equals(true));
+      expect(cameraController.value.deviceOrientation,
+          DeviceOrientation.portraitUp);
+      expect(cameraController.value.previewPauseOrientation,
+          DeviceOrientation.landscapeLeft);
+    });
+
     test('pausePreview() does not call $CameraPlatform when already paused',
         () async {
       final CameraController cameraController = CameraController(
