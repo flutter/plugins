@@ -1163,31 +1163,6 @@ void main() {
           DeviceOrientation.portraitUp);
     });
 
-    test(
-        'pausePreview() sets previewPauseOrientation according to locked orientation',
-        () async {
-      final CameraController cameraController = CameraController(
-          const CameraDescription(
-              name: 'cam',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 90),
-          ResolutionPreset.max);
-      await cameraController.initialize();
-      cameraController.value = cameraController.value.copyWith(
-          deviceOrientation: DeviceOrientation.portraitUp,
-          lockedCaptureOrientation:
-              const Optional<DeviceOrientation>.fromNullable(
-                  DeviceOrientation.landscapeRight));
-
-      await cameraController.pausePreview();
-
-      expect(cameraController.value.isPreviewPaused, equals(true));
-      expect(cameraController.value.deviceOrientation,
-          equals(DeviceOrientation.portraitUp));
-      expect(cameraController.value.previewPauseOrientation,
-          equals(DeviceOrientation.landscapeRight));
-    });
-
     test('pausePreview() does not call $CameraPlatform when already paused',
         () async {
       final CameraController cameraController = CameraController(
@@ -1205,6 +1180,31 @@ void main() {
       verifyNever(
           CameraPlatform.instance.pausePreview(cameraController.cameraId));
       expect(cameraController.value.isPreviewPaused, equals(true));
+    });
+
+    test(
+        'pausePreview() sets previewPauseOrientation according to locked orientation',
+        () async {
+      final CameraController cameraController = CameraController(
+          const CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value = cameraController.value.copyWith(
+          isPreviewPaused: false,
+          deviceOrientation: DeviceOrientation.portraitUp,
+          lockedCaptureOrientation:
+              const Optional<DeviceOrientation>.fromNullable(
+                  DeviceOrientation.landscapeRight));
+
+      await cameraController.pausePreview();
+
+      expect(cameraController.value.deviceOrientation,
+          equals(DeviceOrientation.portraitUp));
+      expect(cameraController.value.previewPauseOrientation,
+          equals(DeviceOrientation.landscapeRight));
     });
 
     test('pausePreview() throws $CameraException on $PlatformException',
