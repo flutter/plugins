@@ -20,13 +20,16 @@ flutter:
         package: io.flutter.plugins.localauth
         pluginClass: LocalAuthPlugin
       ios:
-        pluginClass: FLTLocalAuthPlugin
+        default_package: local_auth_ios
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
   intl: ^0.17.0
+  # Temporary path dependencies to allow moving Android and iOS implementations.
+  local_auth_ios:
+    path: ../local_auth_ios
   local_auth_platform_interface: ^1.0.1
   platform: ^3.0.0
 

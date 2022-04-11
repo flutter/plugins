@@ -2,7 +2,7 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 Pod::Spec.new do |s|
-  s.name             = 'local_auth'
+  s.name             = 'local_auth_ios'
   s.version          = '0.0.1'
   s.summary          = 'Flutter Local Auth'
   s.description      = <<-DESC
@@ -13,7 +13,7 @@ Downloaded by pub (not CocoaPods).
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/local_auth' }
-  s.documentation_url = 'https://pub.dev/packages/local_auth'
+  s.documentation_url = 'https://pub.dev/packages/local_auth_ios'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
