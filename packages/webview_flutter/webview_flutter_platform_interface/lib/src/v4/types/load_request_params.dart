@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
 
 /// Defines the supported HTTP methods for loading a page in
@@ -30,43 +31,6 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
 
 /// Defines the parameters that can be used to load a page with the [WebViewControllerDelegate].
 ///
-/// Platform specific implementations can add additional fields by extending this
-/// class and provide a factory method that takes the
-/// [LoadRequestParams] as a parameter.
-///
-/// {@tool sample}
-/// This example demonstrates how to extend the [LoadRequestParams] to
-/// provide additional platform specific parameters.
-///
-/// Note that the additional parameters should always accept `null` or have a
-/// default value to prevent breaking changes.
-///
-/// ```dart
-/// class AndroidLoadRequestParamsDelegate extends LoadRequestParamsDelegate {
-///   AndroidLoadRequestParamsDelegate._(
-///     LoadRequestParamsDelegate loadRequestParams,
-///     this.historyUrl,
-///   ) : super(
-///     uri: loadRequestParams.uri,
-///     method: loadRequestParams.method,
-///     headers: loadRequestParams.headers,
-///     body: loadRequestParams.body,
-///   );
-///
-///   factory AndroidLoadRequestParamsDelegate.fromLoadRequestParamsDelegate(
-///     LoadRequestParamsDelegate loadRequestParams, {
-///     Uri? historyUrl,
-///   }) {
-///     return AndroidLoadRequestParamsDelegate._(
-///       loadRequestParams: loadRequestParams,
-///       historyUrl: historyUrl,
-///     );
-///   }
-///
-///   final Uri? historyUrl;
-/// }
-/// ```
-/// {@end-tool}
 /// Platform specific implementations can add additional fields by extending
 /// this class.
 ///
@@ -95,9 +59,10 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
 /// }
 /// ```
 /// {@end-tool}
+@immutable
 class LoadRequestParams {
   /// Used by the platform implementation to create a new [LoadRequestParams].
-  LoadRequestParams({
+  const LoadRequestParams({
     required this.uri,
     required this.method,
     required this.headers,

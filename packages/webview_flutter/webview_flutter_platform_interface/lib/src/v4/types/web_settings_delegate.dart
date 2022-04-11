@@ -65,7 +65,7 @@ class WebSetting<T> {
   }
 
   @override
-  int get hashCode => hashValues(_value, isPresent);
+  int get hashCode => Object.hash(_value, isPresent);
 }
 
 /// Defines the parameters to configure a [WebViewPlatform].
@@ -147,9 +147,9 @@ class WebSettingsDelegate extends PlatformInterface {
 
   static final Object _token = Object();
 
-  /// Whether to play HTML5 videos inline or use the native full-screen controller on iOS.
+  /// Whether to play HTML5 videos inline or use the native full-screen controller on platforms that provide this functionality.
   ///
-  /// This will have no effect on Android.
+  /// This will be ignored on platforms that don't support it (such as Android).
   final bool? allowsInlineMediaPlayback;
 
   /// Whether to enable the platform's webview content debugging tools.

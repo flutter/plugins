@@ -346,6 +346,7 @@ class ExtendsWebViewControllerDelegate extends WebViewControllerDelegate {
   ExtendsWebViewControllerDelegate() : super.implementation();
 }
 
+// ignore: must_be_immutable
 class MockLoadRequestParamsDelegate extends Mock
     with
         //ignore: prefer_mixin

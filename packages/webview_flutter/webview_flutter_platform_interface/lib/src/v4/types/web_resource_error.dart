@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
+
 /// Possible error type categorizations used by [WebResourceError].
 enum WebResourceErrorType {
   /// User authentication failed on server.
@@ -95,9 +97,10 @@ enum WebResourceErrorType {
 /// }
 /// ```
 /// {@end-tool}
+@immutable
 class WebResourceError {
   /// Used by the platform implementation to create a new [WebResourceError].
-  WebResourceError({
+  const WebResourceError({
     required this.errorCode,
     required this.description,
     this.errorType,
