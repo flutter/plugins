@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @SuppressWarnings("deprecation")
 public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
-  private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
+  private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth_android";
   private static final int LOCK_REQUEST_CODE = 221;
   private Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
