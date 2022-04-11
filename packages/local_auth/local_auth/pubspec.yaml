@@ -5,9 +5,13 @@ repository: https://github.com/flutter/plugins/tree/main/packages/local_auth/loc
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+local_auth%22
 version: 1.1.11
 
+# Temporarily disable publishing to allow moving Android and iOS
+# implementations.
+publish_to: none
+
 environment:
   sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=2.8.0"
 
 flutter:
   plugin:
@@ -23,6 +27,7 @@ dependencies:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
   intl: ^0.17.0
+  local_auth_platform_interface: ^1.0.1
   platform: ^3.0.0
 
 dev_dependencies:
@@ -32,4 +37,4 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  pedantic: ^1.10.0
+  mockito: ^5.1.0

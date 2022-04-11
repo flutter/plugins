@@ -9,11 +9,12 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:intl/intl.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
 
 /// Android side authentication messages.
 ///
 /// Provides default values for all messages.
-class AndroidAuthMessages {
+class AndroidAuthMessages extends AuthMessages {
   const AndroidAuthMessages({
     this.biometricHint,
     this.biometricNotRecognized,
@@ -38,6 +39,7 @@ class AndroidAuthMessages {
   final String? goToSettingsDescription;
   final String? signInTitle;
 
+  @override
   Map<String, String> get args {
     return <String, String>{
       'biometricHint': biometricHint ?? androidBiometricHint,
@@ -62,7 +64,7 @@ class AndroidAuthMessages {
 /// iOS side authentication messages.
 ///
 /// Provides default values for all messages.
-class IOSAuthMessages {
+class IOSAuthMessages extends AuthMessages {
   const IOSAuthMessages({
     this.lockOut,
     this.goToSettingsButton,
@@ -77,6 +79,7 @@ class IOSAuthMessages {
   final String? cancelButton;
   final String? localizedFallbackTitle;
 
+  @override
   Map<String, String> get args {
     return <String, String>{
       'lockOut': lockOut ?? iOSLockOut,
