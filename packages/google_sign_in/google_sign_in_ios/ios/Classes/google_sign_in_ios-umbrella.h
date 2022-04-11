@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#import <google_sign_in/FLTGoogleSignInPlugin.h>
+#import <google_sign_in_ios/FLTGoogleSignInPlugin.h>
 
 FOUNDATION_EXPORT double google_sign_inVersionNumber;
 FOUNDATION_EXPORT const unsigned char google_sign_inVersionString[];
