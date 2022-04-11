@@ -76,7 +76,9 @@ void main() {
 
     expect(
       () => webViewPlatform.createWebSettingsDelegate(
-          userAgent: const WebSetting<String>.absent()),
+        options: const WebSettingsDelegateCreationParams(
+            userAgent: WebSetting<String>.absent()),
+      ),
       throwsUnimplementedError,
     );
   });

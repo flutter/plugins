@@ -168,19 +168,10 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'setNavigationCallbackHandler is not implemented on the current platform');
   }
 
-  /// Evaluates a JavaScript expression in the context of the current page.
-  ///
-  /// The Future completes with an error if a JavaScript error occurred, or if the type of the
-  /// evaluated expression is not supported (e.g on iOS not all non-primitive types can be evaluated).
-  Future<String> evaluateJavaScript(String javascript) {
-    throw UnimplementedError(
-        'evaluateJavaScript is not implemented on the current platform');
-  }
-
   /// Runs the given JavaScript in the context of the current page.
   ///
   /// The Future completes with an error if a JavaScript error occurred.
-  Future<void> runJavaScript(String javascript) {
+  Future<void> runJavaScript(String javaScript) {
     throw UnimplementedError(
         'runJavaScript is not implemented on the current platform');
   }
@@ -190,7 +181,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   /// The Future completes with an error if a JavaScript error occurred, or if the
   /// type the given expression evaluates to is unsupported. Unsupported values include
   /// certain non-primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
-  Future<String> runJavaScriptReturningResult(String javascript) {
+  Future<String> runJavaScriptReturningResult(String javaScript) {
     throw UnimplementedError(
         'runJavaScriptReturningResult is not implemented on the current platform');
   }
@@ -207,7 +198,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   /// enabled channels.
   ///
   /// This disables the channel with the matching name if it was previously
-  /// enabled through the [addJavascriptChannel].
+  /// enabled through the [addJavaScriptChannel].
   Future<void> removeJavaScriptChannel(String javaScriptChannelName) {
     throw UnimplementedError(
         'removeJavaScriptChannel is not implemented on the current platform');

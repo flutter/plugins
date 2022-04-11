@@ -58,14 +58,7 @@ abstract class WebViewPlatform extends PlatformInterface {
 
   /// Create a new [WebSettingsDelegate].
   WebSettingsDelegate createWebSettingsDelegate({
-    bool? allowsInlineMediaPlayback,
-    bool? debuggingEnabled,
-    bool? gestureNavigationEnabled,
-    bool? hasNavigationDelegate,
-    bool? hasProgressTracking,
-    JavaScriptMode? javaScriptMode,
-    required WebSetting<String> userAgent,
-    bool? zoomEnabled,
+    required WebSettingsDelegateCreationParams options,
   }) {
     throw UnimplementedError(
         'createWebSettingsDelegate is not implemented on the current platform.');

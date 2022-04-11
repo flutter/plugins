@@ -7,6 +7,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../webview_platform.dart';
 import 'javascript_mode.dart';
+import 'web_settings_delegate_creation_params.dart';
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
 @immutable
@@ -117,24 +118,12 @@ class WebSettingsDelegate extends PlatformInterface {
   /// Construct an instance with initial settings.
   ///
   /// Future setting changes can be sent with [WebViewPlatformController#updateSettings].
-  ///
-  /// The `userAgent` parameter cannot be null.
   factory WebSettingsDelegate({
-    bool? allowsInlineMediaPlayback,
-    bool? debuggingEnabled,
-    bool? gestureNavigationEnabled,
-    JavaScriptMode? javaScriptMode,
-    required WebSetting<String> userAgent,
-    bool? zoomEnabled,
+    required WebSettingsDelegateCreationParams options,
   }) {
     final WebSettingsDelegate webSettingsDelegate =
         WebViewPlatform.instance!.createWebSettingsDelegate(
-      allowsInlineMediaPlayback: allowsInlineMediaPlayback,
-      debuggingEnabled: debuggingEnabled,
-      gestureNavigationEnabled: gestureNavigationEnabled,
-      javaScriptMode: javaScriptMode,
-      userAgent: userAgent,
-      zoomEnabled: zoomEnabled,
+      options: options,
     );
     PlatformInterface.verify(webSettingsDelegate, _token);
     return webSettingsDelegate;
@@ -147,13 +136,14 @@ class WebSettingsDelegate extends PlatformInterface {
   /// a class that only contains a factory constructor.
   @protected
   WebSettingsDelegate.implementation({
-    this.allowsInlineMediaPlayback,
-    this.debuggingEnabled,
-    this.gestureNavigationEnabled,
-    this.javascriptMode,
-    required this.userAgent,
-    this.zoomEnabled,
-  }) : super(token: _token);
+    required WebSettingsDelegateCreationParams options,
+  })  : allowsInlineMediaPlayback = options.allowsInlineMediaPlayback,
+        userAgent = options.userAgent,
+        debuggingEnabled = options.debuggingEnabled,
+        gestureNavigationEnabled = options.gestureNavigationEnabled,
+        javaScriptMode = options.javaScriptMode,
+        zoomEnabled = options.zoomEnabled,
+        super(token: _token);
 
   static final Object _token = Object();
 
@@ -167,13 +157,13 @@ class WebSettingsDelegate extends PlatformInterface {
   /// See also: [WebView.debuggingEnabled].
   final bool? debuggingEnabled;
 
-  /// Whether to allow swipe based navigation in iOS.
+  /// Whether to allow swipe based navigation on supported platforms.
   ///
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
   /// The JavaScript execution mode to be used by the webview.
-  final JavaScriptMode? javascriptMode;
+  final JavaScriptMode? javaScriptMode;
 
   /// The value used for the HTTP `User-Agent:` request header.
   ///
@@ -190,6 +180,6 @@ class WebSettingsDelegate extends PlatformInterface {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javaScriptMode: $javaScriptMode, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
   }
 }

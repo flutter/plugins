@@ -41,10 +41,9 @@ import '../webview_platform.dart';
 /// }
 /// ```
 /// {@end-tool}
+@immutable
 class JavaScriptMessage extends PlatformInterface {
   /// Creates a new JavaScript message object.
-  ///
-  /// The `message` parameter must not be null.
   factory JavaScriptMessage(String message) {
     final JavaScriptMessage javaScriptMessage =
         WebViewPlatform.instance!.createJavaScriptMessage(message);

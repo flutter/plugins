@@ -37,31 +37,45 @@ void main() {
 
     test('Cannot be implemented with `implements`', () {
       const WebSetting<String> absentSetting = WebSetting<String>.absent();
-      when(WebViewPlatform.instance!
-              .createWebSettingsDelegate(userAgent: absentSetting))
-          .thenReturn(ImplementsWebSettingsDelegate());
+      when(WebViewPlatform.instance!.createWebSettingsDelegate(
+        options: const WebSettingsDelegateCreationParams(
+          userAgent: absentSetting,
+        ),
+      )).thenReturn(ImplementsWebSettingsDelegate());
 
       expect(() {
-        WebSettingsDelegate(userAgent: absentSetting);
+        WebSettingsDelegate(
+          options: const WebSettingsDelegateCreationParams(
+            userAgent: absentSetting,
+          ),
+        );
       }, throwsNoSuchMethodError);
     });
 
     test('Can be extended', () {
       const WebSetting<String> absentSetting = WebSetting<String>.absent();
-      when(WebViewPlatform.instance!
-              .createWebSettingsDelegate(userAgent: absentSetting))
-          .thenReturn(ExtendsWebSettingsDelegate(userAgent: absentSetting));
+      const WebSettingsDelegateCreationParams options =
+          WebSettingsDelegateCreationParams(
+        userAgent: absentSetting,
+      );
+      when(WebViewPlatform.instance!.createWebSettingsDelegate(
+        options: options,
+      )).thenReturn(ExtendsWebSettingsDelegate(options: options));
 
-      expect(WebSettingsDelegate(userAgent: absentSetting), isNotNull);
+      expect(WebSettingsDelegate(options: options), isNotNull);
     });
 
     test('Can be mocked with `implements`', () {
       const WebSetting<String> absentSetting = WebSetting<String>.absent();
+      const WebSettingsDelegateCreationParams options =
+          WebSettingsDelegateCreationParams(
+        userAgent: absentSetting,
+      );
       when(WebViewPlatform.instance!
-              .createWebSettingsDelegate(userAgent: absentSetting))
+              .createWebSettingsDelegate(options: options))
           .thenReturn(MockWebSettingsDelegate());
 
-      expect(WebSettingsDelegate(userAgent: absentSetting), isNotNull);
+      expect(WebSettingsDelegate(options: options), isNotNull);
     });
   });
 }
@@ -85,6 +99,6 @@ class MockWebSettingsDelegate extends Mock
 
 class ExtendsWebSettingsDelegate extends WebSettingsDelegate {
   ExtendsWebSettingsDelegate({
-    required WebSetting<String> userAgent,
-  }) : super.implementation(userAgent: userAgent);
+    required WebSettingsDelegateCreationParams options,
+  }) : super.implementation(options: options);
 }

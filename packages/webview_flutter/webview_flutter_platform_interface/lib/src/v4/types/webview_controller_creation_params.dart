@@ -5,33 +5,6 @@
 /// Object specifying creation parameters for creating a [WebViewControllerDelegate].
 ///
 /// Platform specific implementations can add additional fields by extending
-/// this class and provide a factory method that takes the
-/// [WebViewControllerCreationParams] as a parameter.
-///
-/// {@tool sample}
-/// This example demonstrates how to extend the [WebViewControllerCreationParams] to
-/// provide additional platform specific parameters.
-///
-/// Note that the additional parameters should always accept `null` or have a
-/// default value to prevent breaking changes.
-///
-/// ```dart
-/// class IOSWebViewControllerCreationParams extends WebViewControllerCreationParams {
-///   IOSWebViewControllerCreationParams._(this.iosParameter) : super();
-///
-///   factory IOSWebViewControllerCreationParams.fromWebViewControllerCreationParams({
-///     String? iosParameter,
-///   }) {
-///     return IOSWebViewControllerCreationParams._(
-///       iosParameter: iosParameter,
-///     );
-///   }
-///
-///   final String? iosParameter;
-/// }
-/// ```
-/// {@end-tool}
-/// Platform specific implementations can add additional fields by extending
 /// this class.
 ///
 /// {@tool sample}

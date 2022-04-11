@@ -71,25 +71,10 @@ class MockWebViewPlatform extends _i1.Mock implements _i7.WebViewPlatform {
           returnValue: _FakeJavaScriptMessage_2()) as _i4.JavaScriptMessage);
   @override
   _i4.WebSettingsDelegate createWebSettingsDelegate(
-          {bool? allowsInlineMediaPlayback,
-          bool? debuggingEnabled,
-          bool? gestureNavigationEnabled,
-          bool? hasNavigationDelegate,
-          bool? hasProgressTracking,
-          _i4.JavaScriptMode? javaScriptMode,
-          _i4.WebSetting<String>? userAgent,
-          bool? zoomEnabled}) =>
+          {_i4.WebSettingsDelegateCreationParams? options}) =>
       (super.noSuchMethod(
-              Invocation.method(#createWebSettingsDelegate, [], {
-                #allowsInlineMediaPlayback: allowsInlineMediaPlayback,
-                #debuggingEnabled: debuggingEnabled,
-                #gestureNavigationEnabled: gestureNavigationEnabled,
-                #hasNavigationDelegate: hasNavigationDelegate,
-                #hasProgressTracking: hasProgressTracking,
-                #javaScriptMode: javaScriptMode,
-                #userAgent: userAgent,
-                #zoomEnabled: zoomEnabled
-              }),
+              Invocation.method(
+                  #createWebSettingsDelegate, [], {#options: options}),
               returnValue: _FakeWebSettingsDelegate_3())
           as _i4.WebSettingsDelegate);
   @override

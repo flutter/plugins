@@ -7,9 +7,10 @@ import 'package:meta/meta.dart';
 /// A cookie that can be set globally for all web views
 /// using [WebViewCookieManagerPlatform].
 @sealed
+@immutable
 class WebViewCookie {
   /// Creates a new [WebViewCookieDelegate]
-  WebViewCookie({
+  const WebViewCookie({
     required this.name,
     required this.value,
     required this.domain,
