@@ -99,7 +99,7 @@ enum NSHttpCookiePropertyKey {
   /// See https://developer.apple.com/documentation/foundation/nshttpcookiecomment.
   comment,
 
-  /// An [NSUrl] object or String object containing the comment URL for the cookie.
+  /// A String object containing the comment URL for the cookie.
   ///
   /// See https://developer.apple.com/documentation/foundation/nshttpcookiecommenturl.
   commentUrl,
@@ -109,12 +109,12 @@ enum NSHttpCookiePropertyKey {
   /// See https://developer.apple.com/documentation/foundation/nshttpcookiediscard.
   discard,
 
-  /// An NSDate object or String object specifying the expiration date for the cookie.
+  /// A String object specifying the expiration date for the cookie.
   ///
   /// See https://developer.apple.com/documentation/foundation/nshttpcookiedomain.
   domain,
 
-  /// An NSDate object or String object specifying the expiration date for the cookie.
+  /// A String object specifying the expiration date for the cookie.
   ///
   /// See https://developer.apple.com/documentation/foundation/nshttpcookieexpires.
   expires,
@@ -129,7 +129,7 @@ enum NSHttpCookiePropertyKey {
   /// See https://developer.apple.com/documentation/foundation/nshttpcookiename.
   name,
 
-  /// An [NSUrl] or String object containing the URL that set this cookie.
+  /// A String object containing the URL that set this cookie.
   ///
   /// See https://developer.apple.com/documentation/foundation/nshttpcookieoriginurl.
   originUrl,
