@@ -1,6 +1,6 @@
 ## 0.9.4+20
 
-* * Fix `lockedCaptureOrientation` not affecting preview orientation when paused.
+* Fixes orientation when pausing preview with orientation locked.
 
 ## 0.9.4+19
 
