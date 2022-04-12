@@ -10,6 +10,11 @@ import '../common/web_kit.pigeon.dart';
 import '../foundation/foundation.dart';
 import 'web_kit.dart';
 
+typedef _NavigationCallback = void Function(
+  WKWebView webView,
+  String? url,
+);
+
 Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
     Iterable<WKWebsiteDataTypes> types) {
   return types.map<WKWebsiteDataTypesEnumData>((WKWebsiteDataTypes type) {
@@ -110,35 +115,42 @@ extension _NSUrlRequestConverter on NSUrlRequest {
 /// Handles initialization of Flutter APIs for WebKit.
 class WebKitFlutterApis {
   /// Constructs a [WebKitFlutterApis].
-  ///
-  /// This should only be changed for testing purposes.
   @visibleForTesting
-  WebKitFlutterApis({this.binaryMessenger, InstanceManager? instanceManager}) {
+  WebKitFlutterApis({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _binaryMessenger = binaryMessenger {
     navigationDelegateFlutterApi = WKNavigationDelegateFlutterApiImpl(
       instanceManager: instanceManager,
     );
   }
 
-  /// Mutable instance containing all Flutter Apis for WebKit.
-  ///
-  /// This should only be changed for testing purposes.
-  static WebKitFlutterApis instance = WebKitFlutterApis();
+  static WebKitFlutterApis _instance = WebKitFlutterApis();
 
-  /// Sends binary data across the Flutter platform barrier.
-  final BinaryMessenger? binaryMessenger;
+  /// Sets the global instance containing the Flutter Apis for the WebKit library.
+  @visibleForTesting
+  static set instance(WebKitFlutterApis instance) {
+    _instance = instance;
+  }
 
+  /// Global instance containing the Flutter Apis for the WebKit library.
+  static WebKitFlutterApis get instance {
+    return _instance;
+  }
+
+  final BinaryMessenger? _binaryMessenger;
   bool _hasBeenSetUp = false;
 
   /// Flutter Api for [WKNavigationDelegate].
   @visibleForTesting
   late final WKNavigationDelegateFlutterApiImpl navigationDelegateFlutterApi;
 
-  /// Ensures all the Flutter APIs have been setup to receive calls from native code.
+  /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
     if (!_hasBeenSetUp) {
       WKNavigationDelegateFlutterApi.setup(
         navigationDelegateFlutterApi,
-        binaryMessenger: binaryMessenger,
+        binaryMessenger: _binaryMessenger,
       );
       _hasBeenSetUp = true;
     }
@@ -428,9 +440,8 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   ) {
     int? functionInstanceId;
     if (didFinishNavigation != null) {
-      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation);
-      functionInstanceId ??=
-          instanceManager.tryAddInstance(didFinishNavigation);
+      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation) ??
+          instanceManager.tryAddInstance(didFinishNavigation)!;
     }
     return setDidFinishNavigation(
       instanceManager.getInstanceId(instance)!,
@@ -456,15 +467,8 @@ class WKNavigationDelegateFlutterApiImpl
     int webViewInstanceId,
     String? url,
   ) {
-    final void Function(
-      WKWebView webView,
-      String? url,
-    ) function =
-        instanceManager.getInstance(functionInstanceId)! as void Function(
-      WKWebView webView,
-      String? url,
-    );
-
+    final _NavigationCallback function =
+        instanceManager.getInstance(functionInstanceId)! as _NavigationCallback;
     function(instanceManager.getInstance(webViewInstanceId)!, url);
   }
 }

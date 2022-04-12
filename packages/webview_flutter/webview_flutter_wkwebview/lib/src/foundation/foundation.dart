@@ -150,6 +150,8 @@ class NSObject {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
+    // Ensures FlutterApis for the Foundation library and FunctionFlutterApi are
+    // setup.
     FoundationFlutterApis.instance.ensureSetUp();
   }
 

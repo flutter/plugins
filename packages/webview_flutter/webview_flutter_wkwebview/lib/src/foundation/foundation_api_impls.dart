@@ -40,37 +40,45 @@ Iterable<NSKeyValueObservingOptionsEnumData>
 /// Handles initialization of Flutter APIs for the Foundation library.
 class FoundationFlutterApis {
   /// Constructs a [FoundationFlutterApis].
-  ///
-  /// This should only be changed for testing purposes.
   @visibleForTesting
   FoundationFlutterApis({
-    this.binaryMessenger,
+    BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) {
+  }) : _binaryMessenger = binaryMessenger {
     functionFlutterApi =
         FunctionFlutterApiImpl(instanceManager: instanceManager);
   }
 
-  /// Mutable instance containing all Flutter Apis for the Foundation library.
-  ///
-  /// This should only be changed for testing purposes.
-  static FoundationFlutterApis instance = FoundationFlutterApis();
+  static FoundationFlutterApis _instance = FoundationFlutterApis();
 
-  /// Sends binary data across the Flutter platform barrier.
-  final BinaryMessenger? binaryMessenger;
+  /// Sets the global instance containing the Flutter Apis for the Foundation library.
+  @visibleForTesting
+  static set instance(FoundationFlutterApis instance) {
+    _instance = instance;
+  }
 
+  /// Global instance containing the Flutter Apis for the Foundation library.
+  static FoundationFlutterApis get instance {
+    return _instance;
+  }
+
+  final BinaryMessenger? _binaryMessenger;
   bool _hasBeenSetUp = false;
 
   /// Flutter Api for disposing functions.
+  ///
+  /// This FlutterApi is placed here because [FoundationFlutterApis.ensureSetUp]
+  /// is called inside [NSObject] and [NSObject] is the parent class of all
+  /// objects.
   @visibleForTesting
   late final FunctionFlutterApiImpl functionFlutterApi;
 
-  /// Ensures all the Flutter APIs have been setup to receive calls from native code.
+  /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
     if (!_hasBeenSetUp) {
       FunctionFlutterApi.setup(
         functionFlutterApi,
-        binaryMessenger: binaryMessenger,
+        binaryMessenger: _binaryMessenger,
       );
       _hasBeenSetUp = true;
     }
