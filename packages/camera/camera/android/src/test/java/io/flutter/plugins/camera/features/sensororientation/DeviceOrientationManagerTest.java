@@ -68,7 +68,7 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getVideoOrientationBackFacing_whenNaturalScreenOrientationEqualsLandscapeLeft() {
+  public void getVideoOrientation_whenNaturalScreenOrientationEqualsLandscapeLeft() {
     DeviceOrientationManager orientationManager =
         DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 90);
 
@@ -87,25 +87,6 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getVideoOrientationFrontFacing_whenNaturalScreenOrientationEqualsLandscapeLeft() {
-    DeviceOrientationManager orientationManager =
-        DeviceOrientationManager.create(mockActivity, mockDartMessenger, true, 90);
-
-    int degreesPortraitUp = orientationManager.getVideoOrientation(DeviceOrientation.PORTRAIT_UP);
-    int degreesPortraitDown =
-        orientationManager.getVideoOrientation(DeviceOrientation.PORTRAIT_DOWN);
-    int degreesLandscapeLeft =
-        orientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_LEFT);
-    int degreesLandscapeRight =
-        orientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
-
-    assertEquals(90, degreesPortraitUp);
-    assertEquals(180, degreesLandscapeLeft);
-    assertEquals(270, degreesPortraitDown);
-    assertEquals(0, degreesLandscapeRight);
-  }
-
-  @Test
   public void getVideoOrientation_fallbackToPortraitSensorOrientationWhenOrientationIsNull() {
     setUpUIOrientationMocks(Configuration.ORIENTATION_PORTRAIT, Surface.ROTATION_0);
 
@@ -115,8 +96,7 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void
-      getVideoOrientationBackFacing_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
+  public void getVideoOrientation_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
     setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
 
     DeviceOrientationManager orientationManager =
@@ -125,19 +105,6 @@ public class DeviceOrientationManagerTest {
     int degrees = orientationManager.getVideoOrientation(null);
 
     assertEquals(0, degrees);
-  }
-
-  @Test
-  public void
-      getVideoOrientationFrontFacing_fallbackToLandscapeSensorOrientationWhenOrientationIsNull() {
-    setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
-
-    DeviceOrientationManager orientationManager =
-        DeviceOrientationManager.create(mockActivity, mockDartMessenger, true, 90);
-
-    int degrees = orientationManager.getVideoOrientation(null);
-
-    assertEquals(180, degrees);
   }
 
   @Test
