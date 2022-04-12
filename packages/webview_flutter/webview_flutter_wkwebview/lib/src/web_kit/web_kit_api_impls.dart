@@ -133,7 +133,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   }
 
   /// Calls [removeDataOfTypes] with the ids of the provided object instances.
-  Future<void> removeDataOfTypesForInstances(
+  Future<bool> removeDataOfTypesForInstances(
     WKWebsiteDataStore instance,
     Set<WKWebsiteDataTypes> dataTypes, {
     required double secondsModifiedSinceEpoch,
