@@ -95,7 +95,7 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 
   /// See [ImageProvider.hashCode].
   @override
-  int get hashCode => hashValues(_futureBytes.hashCode, _futureScale);
+  int get hashCode => Object.hash(_futureBytes.hashCode, _futureScale);
 
   /// See [ImageProvider.toString].
   @override

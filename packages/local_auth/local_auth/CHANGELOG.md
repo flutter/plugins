@@ -1,3 +1,8 @@
+## 2.0.0
+
+* Migrated plugin to federated architecture.
+* Adds OS version support information to README.
+
 ## 1.1.11
 
 * Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.

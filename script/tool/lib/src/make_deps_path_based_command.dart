@@ -207,6 +207,10 @@ dependency_overrides:
           allComponents.contains('example')) {
         continue;
       }
+      if (!allComponents.contains(packagesDir.basename)) {
+        print('  Skipping $changedPath; not in packages directory.');
+        continue;
+      }
       final RepositoryPackage package =
           RepositoryPackage(packagesDir.fileSystem.file(changedPath).parent);
       // Ignored deleted packages, as they won't be published.

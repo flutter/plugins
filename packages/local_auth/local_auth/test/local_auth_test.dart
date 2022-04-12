@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:local_auth/src/local_auth.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:local_auth_platform_interface/types/auth_messages.dart';
+import 'package:local_auth_platform_interface/types/auth_options.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -48,23 +49,6 @@ void main() {
       options: anyNamed('options'),
     )).thenAnswer((_) async => true);
     localAuthentication.authenticate(localizedReason: 'Test Reason');
-    verify(mockLocalAuthPlatform.authenticate(
-      localizedReason: 'Test Reason',
-      authMessages: <AuthMessages>[
-        const IOSAuthMessages(),
-        const AndroidAuthMessages(),
-      ],
-      options: const AuthenticationOptions(),
-    )).called(1);
-  });
-
-  test('requestAuthentication calls platform implementation', () {
-    when(mockLocalAuthPlatform.authenticate(
-      localizedReason: anyNamed('localizedReason'),
-      authMessages: anyNamed('authMessages'),
-      options: anyNamed('options'),
-    )).thenAnswer((_) async => true);
-    localAuthentication.requestAuthentication(localizedReason: 'Test Reason');
     verify(mockLocalAuthPlatform.authenticate(
       localizedReason: 'Test Reason',
       authMessages: <AuthMessages>[
