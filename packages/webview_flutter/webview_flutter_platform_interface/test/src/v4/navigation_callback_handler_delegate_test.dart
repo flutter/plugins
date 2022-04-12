@@ -5,7 +5,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_handler_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
 
 import 'webview_platform_test.mocks.dart';
@@ -20,7 +20,7 @@ void main() {
         .thenReturn(ImplementsNavigationCallbackHandlerDelegate());
 
     expect(() {
-      NavigationCallbackHandlerDelegate();
+      NavigationCallbackDelegate();
     }, throwsNoSuchMethodError);
   });
 
@@ -28,21 +28,21 @@ void main() {
     when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
         .thenReturn(ExtendsNavigationCallbackHandlerDelegate());
 
-    expect(NavigationCallbackHandlerDelegate(), isNotNull);
+    expect(NavigationCallbackDelegate(), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
     when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
         .thenReturn(MockNavigationCallbackHandlerDelegate());
 
-    expect(NavigationCallbackHandlerDelegate(), isNotNull);
+    expect(NavigationCallbackDelegate(), isNotNull);
   });
 
   test(
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnNavigationRequest should throw unimplemented error',
       () {
-    final NavigationCallbackHandlerDelegate callbackHandler =
+    final NavigationCallbackDelegate callbackHandler =
         ExtendsNavigationCallbackHandlerDelegate();
 
     expect(
@@ -56,7 +56,7 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnPageStarted should throw unimplemented error',
       () {
-    final NavigationCallbackHandlerDelegate callbackHandler =
+    final NavigationCallbackDelegate callbackHandler =
         ExtendsNavigationCallbackHandlerDelegate();
 
     expect(
@@ -69,7 +69,7 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnPageFinished should throw unimplemented error',
       () {
-    final NavigationCallbackHandlerDelegate callbackHandler =
+    final NavigationCallbackDelegate callbackHandler =
         ExtendsNavigationCallbackHandlerDelegate();
 
     expect(
@@ -82,7 +82,7 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnProgress should throw unimplemented error',
       () {
-    final NavigationCallbackHandlerDelegate callbackHandler =
+    final NavigationCallbackDelegate callbackHandler =
         ExtendsNavigationCallbackHandlerDelegate();
 
     expect(
@@ -95,7 +95,7 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnWebResourceError should throw unimplemented error',
       () {
-    final NavigationCallbackHandlerDelegate callbackHandler =
+    final NavigationCallbackDelegate callbackHandler =
         ExtendsNavigationCallbackHandlerDelegate();
 
     expect(
@@ -111,7 +111,7 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         MockPlatformInterfaceMixin {}
 
 class ImplementsNavigationCallbackHandlerDelegate
-    implements NavigationCallbackHandlerDelegate {
+    implements NavigationCallbackDelegate {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -121,9 +121,9 @@ class MockNavigationCallbackHandlerDelegate extends Mock
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        NavigationCallbackHandlerDelegate {}
+        NavigationCallbackDelegate {}
 
 class ExtendsNavigationCallbackHandlerDelegate
-    extends NavigationCallbackHandlerDelegate {
+    extends NavigationCallbackDelegate {
   ExtendsNavigationCallbackHandlerDelegate() : super.implementation();
 }

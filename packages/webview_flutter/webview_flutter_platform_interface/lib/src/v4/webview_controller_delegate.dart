@@ -7,7 +7,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_handler_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/types/load_request_params.dart';
 
 import 'types/types.dart';
@@ -163,7 +163,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   /// Sets the [NavigationCallbackHandler] containing the callback methods that
   /// are called during navigation events.
   Future<void> setNavigationCallbackHandler(
-      NavigationCallbackHandlerDelegate handler) {
+      NavigationCallbackDelegate handler) {
     throw UnimplementedError(
         'setNavigationCallbackHandler is not implemented on the current platform');
   }

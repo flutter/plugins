@@ -38,8 +38,8 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
 /// This example demonstrates how to extend the [LoadRequestParams] to
 /// provide additional platform specific parameters.
 ///
-/// Note that the additional parameters should always accept `null` or have a
-/// default value to prevent breaking changes.
+/// When extending [LoadRequestParams] additional parameters should always 
+/// accept `null` or have a default value to prevent breaking changes.
 ///
 /// ```dart
 /// class AndroidLoadRequestParamsDelegate extends LoadRequestParamsDelegate {

@@ -9,27 +9,26 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'webview_platform.dart';
 
-/// Interface for callbacks made by [NavigationCallbackHandlerDelegate].
+/// An interface defining navigation events that occur on the native platform.
 ///
-/// The webview plugin implements this class, and passes an instance to the
-/// [NavigationCallbackHandlerDelegate].
-/// [NavigationCallbackHandlerDelegate] is notifying this handler on events that
-/// happened on the platform's webview.
-abstract class NavigationCallbackHandlerDelegate extends PlatformInterface {
+/// The [WebViewControllerDelegate] is notifying this handler on events that
+/// happened on the platform's webview. Platform implementations should
+/// implement this class and pass an instance to the[WebViewControllerDelegate].
+abstract class NavigationCallbackDelegate extends PlatformInterface {
   /// Creates a new [NavigationCallbacksHandlerDelegate]
-  factory NavigationCallbackHandlerDelegate() {
-    final NavigationCallbackHandlerDelegate callbackHandlerDelegate =
+  factory NavigationCallbackDelegate() {
+    final NavigationCallbackDelegate callbackHandlerDelegate =
         WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate();
     PlatformInterface.verify(callbackHandlerDelegate, _token);
     return callbackHandlerDelegate;
   }
 
-  /// Used by the platform implementation to create a new [NavigationCallbackHandlerDelegate].
+  /// Used by the platform implementation to create a new [NavigationCallbackDelegate].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  NavigationCallbackHandlerDelegate.implementation() : super(token: _token);
+  NavigationCallbackDelegate.implementation() : super(token: _token);
 
   static final Object _token = Object();
 

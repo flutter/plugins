@@ -11,8 +11,9 @@
 /// This example demonstrates how to extend the [WebViewControllerCreationParams] to
 /// provide additional platform specific parameters.
 ///
-/// Note that the additional parameters should always accept `null` or have a
-/// default value to prevent breaking changes.
+/// When extending [WebViewControllerCreationParams] additional parameters
+/// should always accept `null` or have a default value to prevent breaking
+/// changes.
 ///
 /// ```dart
 /// class IOSWebViewControllerCreationParams extends WebViewControllerCreationParams {

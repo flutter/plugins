@@ -77,8 +77,8 @@ enum WebResourceErrorType {
 /// This example demonstrates how to extend the [WebResourceError] to
 /// provide additional platform specific parameters.
 ///
-/// Note that the additional parameters should always accept `null` or have a
-/// default value to prevent breaking changes.
+/// When extending [WebResourceError] additional parameters should always 
+/// accept `null` or have a default value to prevent breaking changes.
 ///
 /// ```dart
 /// class IOSWebResourceError extends WebResourceError {

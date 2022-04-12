@@ -6,14 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_handler_delegate.dart';
+import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
 
 import 'navigation_callback_handler_delegate_test.dart';
 import 'webview_platform_test.mocks.dart';
 
-@GenerateMocks(<Type>[NavigationCallbackHandlerDelegate])
+@GenerateMocks(<Type>[NavigationCallbackDelegate])
 void main() {
   setUp(() {
     WebViewPlatform.instance = MockWebViewPlatformWithMixin();

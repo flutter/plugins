@@ -17,8 +17,8 @@ import '../webview_platform.dart';
 /// This example demonstrates how to extend the [JavaScriptMessage] to
 /// provide additional platform specific parameters.
 ///
-/// Note that the additional parameters should always accept `null` or have a
-/// default value to prevent breaking changes.
+/// When extending [JavaScriptMessage] additional parameters should always 
+/// accept `null` or have a default value to prevent breaking changes.
 ///
 /// ```dart
 /// class WKScriptMessage extends JavaScriptMessage {

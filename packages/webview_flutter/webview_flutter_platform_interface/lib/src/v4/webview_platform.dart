@@ -8,7 +8,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:webview_flutter_platform_interface/src/v4/types/types.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart';
 
-import 'navigation_callback_handler_delegate.dart';
+import 'navigation_callback_delegate.dart';
 import 'webview_controller_delegate.dart';
 import 'webview_cookie_manager_delegate.dart';
 
@@ -47,11 +47,11 @@ abstract class WebViewPlatform extends PlatformInterface {
         'createCookieManagerDelegate is not implemented on the current platform.');
   }
 
-  /// Creates a new [NavigationCallbackHandlerDelegate].
+  /// Creates a new [NavigationCallbackDelegate].
   ///
   /// This function should only be called by the app-facing plugin.
   /// Look at using [NavigationCallbackHandler] in `webview_flutter` instead.
-  NavigationCallbackHandlerDelegate createNavigationCallbackHandlerDelegate() {
+  NavigationCallbackDelegate createNavigationCallbackHandlerDelegate() {
     throw UnimplementedError(
         'createNavigationCallbackHandlerDelegate is not implemented on the current platform.');
   }
