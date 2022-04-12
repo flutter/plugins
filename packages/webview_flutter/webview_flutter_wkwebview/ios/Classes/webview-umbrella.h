@@ -9,3 +9,4 @@
 #import <webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>
 #import <webview_flutter_wkwebview/FlutterWebView.h>
 #import <webview_flutter_wkwebview/JavaScriptChannelHandler.h>
+#import <webview_flutter_wkwebview/FLTWFInstancemanager.h>
