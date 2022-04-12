@@ -1,6 +1,14 @@
+## 0.9.4+20
+
+* Fixes an issue with the orientation of video's recorded in landscape on Android.
+
+## 0.9.4+19
+
+* Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
+
 ## 0.9.4+18
 
-* Fixes an issue with the orientation of video's recorded in landscape on Android. 
+* Fixes a crash in iOS when streaming on low-performance devices.
 
 ## 0.9.4+17
 

@@ -21,6 +21,7 @@ import 'android_webview_test.mocks.dart';
   TestJavaScriptChannelHostApi,
   TestWebChromeClientHostApi,
   TestWebSettingsHostApi,
+  TestWebStorageHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
   TestAssetManagerHostApi,
@@ -675,6 +676,31 @@ void main() {
           .thenAnswer((_) => Future<bool>.value(true));
       CookieManager.instance.clearCookies();
       verify(CookieManager.api.clearCookies());
+    });
+  });
+
+  group('WebStorage', () {
+    late MockTestWebStorageHostApi mockPlatformHostApi;
+
+    late WebStorage webStorage;
+    late int webStorageInstanceId;
+
+    setUp(() {
+      mockPlatformHostApi = MockTestWebStorageHostApi();
+      TestWebStorageHostApi.setup(mockPlatformHostApi);
+
+      webStorage = WebStorage();
+      webStorageInstanceId =
+          WebStorage.api.instanceManager.getInstanceId(webStorage)!;
+    });
+
+    test('create', () {
+      verify(mockPlatformHostApi.create(webStorageInstanceId));
+    });
+
+    test('deleteAllData', () {
+      webStorage.deleteAllData();
+      verify(mockPlatformHostApi.deleteAllData(webStorageInstanceId));
     });
   });
 }

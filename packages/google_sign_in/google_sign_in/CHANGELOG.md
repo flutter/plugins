@@ -1,3 +1,8 @@
+## 5.2.5
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+* Adds OS version support information to README.
+
 ## 5.2.4
 
 * Internal code cleanup for stricter analysis options.

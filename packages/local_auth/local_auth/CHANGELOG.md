@@ -1,3 +1,8 @@
+## NEXT
+
+* Adds OS version support information to README.
+* Switches over to default method implementation in new platform interface.
+
 ## 1.1.11
 
 * Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
