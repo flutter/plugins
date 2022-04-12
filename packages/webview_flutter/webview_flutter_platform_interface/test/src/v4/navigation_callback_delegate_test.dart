@@ -123,7 +123,6 @@ class MockNavigationCallbackDelegate extends Mock
     implements
         NavigationCallbackDelegate {}
 
-class ExtendsNavigationCallbackDelegate
-    extends NavigationCallbackDelegate {
+class ExtendsNavigationCallbackDelegate extends NavigationCallbackDelegate {
   ExtendsNavigationCallbackDelegate() : super.implementation();
 }

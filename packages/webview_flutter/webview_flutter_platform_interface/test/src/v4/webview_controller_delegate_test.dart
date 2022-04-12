@@ -208,8 +208,8 @@ void main() {
           ExtendsWebViewControllerDelegate();
 
       expect(
-        () => controller.setNavigationCallbackHandler(
-            MockNavigationCallbackDelegate()),
+        () => controller
+            .setNavigationCallbackHandler(MockNavigationCallbackDelegate()),
         throwsUnimplementedError,
       );
     },
