@@ -252,7 +252,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     }
     String[] selectPicTypeStr = {WebViewFlutterPlugin.activity.getString(R.string.take_photo),
             WebViewFlutterPlugin.activity.getString(R.string.photo_library)};
-    new AlertDialog.Builder(WebViewFlutterPlugin.activity)
+    new AlertDialog.Builder(WebViewFlutterPlugin.activity, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
             .setOnCancelListener(new ReOnCancelListener())
             .setItems(selectPicTypeStr,
                     new DialogInterface.OnClickListener() {
