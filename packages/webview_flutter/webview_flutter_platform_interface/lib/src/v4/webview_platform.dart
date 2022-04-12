@@ -39,12 +39,18 @@ abstract class WebViewPlatform extends PlatformInterface {
   }
 
   /// Creates a new [WebViewCookieManagerDelegate].
+  ///
+  /// This function should only be called by the app-facing plugin.
+  /// Look at using [WebViewCookieManager] in `webview_flutter` instead.
   WebViewCookieManagerDelegate createCookieManagerDelegate() {
     throw UnimplementedError(
         'createCookieManagerDelegate is not implemented on the current platform.');
   }
 
   /// Creates a new [NavigationCallbackHandlerDelegate].
+  ///
+  /// This function should only be called by the app-facing plugin.
+  /// Look at using [NavigationCallbackHandler] in `webview_flutter` instead.
   NavigationCallbackHandlerDelegate createNavigationCallbackHandlerDelegate() {
     throw UnimplementedError(
         'createNavigationCallbackHandlerDelegate is not implemented on the current platform.');
@@ -57,6 +63,9 @@ abstract class WebViewPlatform extends PlatformInterface {
   }
 
   /// Create a new [WebSettingsDelegate].
+  ///
+  /// This function should only be called by the app-facing plugin.
+  /// Look at using [WebSettings] in `webview_flutter` instead.
   WebSettingsDelegate createWebSettingsDelegate({
     required WebSettingsDelegateCreationParams options,
   }) {
@@ -65,6 +74,9 @@ abstract class WebViewPlatform extends PlatformInterface {
   }
 
   /// Create a new [WebViewControllerDelegate].
+  ///
+  /// This function should only be called by the app-facing plugin.
+  /// Look at using [WebViewController] in `webview_flutter` instead.
   WebViewControllerDelegate createWebViewControllerDelegate(
       WebViewControllerCreationParams params) {
     throw UnimplementedError(
@@ -72,6 +84,9 @@ abstract class WebViewPlatform extends PlatformInterface {
   }
 
   /// Create a new [WebViewWidgetDelegate].
+  ///
+  /// This function should only be called by the app-facing plugin.
+  /// Look at using [WebViewWidget] in `webview_flutter` instead.
   WebViewWidgetDelegate createWebViewWidgetDelegate({
     Key? key,
     required WebViewControllerDelegate controller,
