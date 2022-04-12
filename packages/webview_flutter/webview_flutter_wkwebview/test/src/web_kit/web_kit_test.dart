@@ -70,19 +70,29 @@ void main() {
       });
 
       test('removeDataOfTypes', () {
-        websiteDataStore.removeDataOfTypes(
-          <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies},
-          DateTime.fromMillisecondsSinceEpoch(5000),
+        when(mockPlatformHostApi.removeDataOfTypes(
+          any,
+          any,
+          any,
+        )).thenAnswer((_) => Future<bool>.value(true));
+
+        expect(
+          websiteDataStore.removeDataOfTypes(
+            <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies},
+            DateTime.fromMillisecondsSinceEpoch(5000),
+          ),
+          completion(true),
         );
 
-        final WKWebsiteDataTypesEnumData typeData =
+        final List<WKWebsiteDataTypesEnumData> typeData =
             verify(mockPlatformHostApi.removeDataOfTypes(
           instanceManager.getInstanceId(websiteDataStore),
           captureAny,
           5.0,
-        )).captured.single.single as WKWebsiteDataTypesEnumData;
+        )).captured.single.cast<WKWebsiteDataTypesEnumData>()
+                as List<WKWebsiteDataTypesEnumData>;
 
-        expect(typeData.value, WKWebsiteDataTypesEnum.cookies);
+        expect(typeData.single.value, WKWebsiteDataTypesEnum.cookies);
       });
     });
 
