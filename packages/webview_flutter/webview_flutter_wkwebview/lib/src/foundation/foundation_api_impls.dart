@@ -84,9 +84,7 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger) {
-    FoundationFlutterApis.instance.ensureSetUp();
-  }
+        super(binaryMessenger: binaryMessenger);
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;

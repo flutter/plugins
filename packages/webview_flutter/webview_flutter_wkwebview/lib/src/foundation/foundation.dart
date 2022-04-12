@@ -149,7 +149,9 @@ class NSObject {
       : _api = NSObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        );
+        ) {
+    FoundationFlutterApis.instance.ensureSetUp();
+  }
 
   final NSObjectHostApiImpl _api;
 
