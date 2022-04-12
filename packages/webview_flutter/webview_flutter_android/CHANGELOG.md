@@ -1,3 +1,6 @@
+## 2.8.3+3
+
+* Fixes file chooser AlertDialog.Builder displays blank on certain devices.
 ## 2.8.3+2
 
 * fix flutter analyze issues
