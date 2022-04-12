@@ -45,11 +45,10 @@ class WebKitCookieManager extends WebViewCookieManagerPlatform {
 
   bool _isValidPath(String path) {
     // Permitted ranges based on RFC6265bis: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.1
-    for (final int char in path.codeUnits) {
-      if ((char < 0x20 || char > 0x3A) && (char < 0x3C || char > 0x7E)) {
-        return false;
-      }
-    }
-    return true;
+    return !path.codeUnits.any(
+      (int char) {
+        return (char < 0x20 || char > 0x3A) && (char < 0x3C || char > 0x7E);
+      },
+    );
   }
 }
