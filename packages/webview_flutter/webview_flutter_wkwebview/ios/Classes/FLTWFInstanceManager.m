@@ -67,8 +67,7 @@
   return self;
 }
 
-- (void)addInstance:(nonnull NSObject *)instance
-         instanceID:(long)instanceID {
+- (void)addInstance:(nonnull NSObject *)instance instanceID:(long)instanceID {
   [_instancesToInstanceIDs setObject:@(instanceID) forKey:instance];
   [_instanceIDsToInstances setObject:instance forKey:@(instanceID)];
 }

@@ -7,8 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTWFInstanceManager : NSObject
-- (void)addInstance:(nonnull NSObject *)instance
-         instanceID:(long)instanceID;
+- (void)addInstance:(nonnull NSObject *)instance instanceID:(long)instanceID;
 
 - (nullable NSObject *)removeInstanceWithID:(long)instanceId;
 
