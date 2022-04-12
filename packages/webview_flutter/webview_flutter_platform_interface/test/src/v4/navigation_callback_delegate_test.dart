@@ -17,7 +17,7 @@ void main() {
 
   test('Cannot be implemented with `implements`', () {
     when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
-        .thenReturn(ImplementsNavigationCallbackHandlerDelegate());
+        .thenReturn(ImplementsNavigationCallbackDelegate());
 
     expect(() {
       NavigationCallbackDelegate();
@@ -26,14 +26,14 @@ void main() {
 
   test('Can be extended', () {
     when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
-        .thenReturn(ExtendsNavigationCallbackHandlerDelegate());
+        .thenReturn(ExtendsNavigationCallbackDelegate());
 
     expect(NavigationCallbackDelegate(), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
     when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
-        .thenReturn(MockNavigationCallbackHandlerDelegate());
+        .thenReturn(MockNavigationCallbackDelegate());
 
     expect(NavigationCallbackDelegate(), isNotNull);
   });
@@ -43,7 +43,7 @@ void main() {
       'Default implementation of setOnNavigationRequest should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackHandlerDelegate();
+        ExtendsNavigationCallbackDelegate();
 
     expect(
       () => callbackHandler.setOnNavigationRequest(
@@ -57,7 +57,7 @@ void main() {
       'Default implementation of setOnPageStarted should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackHandlerDelegate();
+        ExtendsNavigationCallbackDelegate();
 
     expect(
       () => callbackHandler.setOnPageStarted((String url) {}),
@@ -70,7 +70,7 @@ void main() {
       'Default implementation of setOnPageFinished should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackHandlerDelegate();
+        ExtendsNavigationCallbackDelegate();
 
     expect(
       () => callbackHandler.setOnPageFinished((String url) {}),
@@ -83,7 +83,7 @@ void main() {
       'Default implementation of setOnProgress should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackHandlerDelegate();
+        ExtendsNavigationCallbackDelegate();
 
     expect(
       () => callbackHandler.setOnProgress((int progress) {}),
@@ -96,7 +96,7 @@ void main() {
       'Default implementation of setOnWebResourceError should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackHandlerDelegate();
+        ExtendsNavigationCallbackDelegate();
 
     expect(
       () => callbackHandler.setOnWebResourceError((WebResourceError error) {}),
@@ -110,20 +110,20 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ImplementsNavigationCallbackHandlerDelegate
+class ImplementsNavigationCallbackDelegate
     implements NavigationCallbackDelegate {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class MockNavigationCallbackHandlerDelegate extends Mock
+class MockNavigationCallbackDelegate extends Mock
     with
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
         NavigationCallbackDelegate {}
 
-class ExtendsNavigationCallbackHandlerDelegate
+class ExtendsNavigationCallbackDelegate
     extends NavigationCallbackDelegate {
-  ExtendsNavigationCallbackHandlerDelegate() : super.implementation();
+  ExtendsNavigationCallbackDelegate() : super.implementation();
 }

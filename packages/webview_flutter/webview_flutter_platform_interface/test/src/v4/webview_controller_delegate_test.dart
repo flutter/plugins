@@ -10,7 +10,7 @@ import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_de
 import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
 
-import 'navigation_callback_handler_delegate_test.dart';
+import 'navigation_callback_delegate_test.dart';
 import 'webview_platform_test.mocks.dart';
 
 @GenerateMocks(<Type>[NavigationCallbackDelegate])
@@ -209,7 +209,7 @@ void main() {
 
       expect(
         () => controller.setNavigationCallbackHandler(
-            MockNavigationCallbackHandlerDelegate()),
+            MockNavigationCallbackDelegate()),
         throwsUnimplementedError,
       );
     },
