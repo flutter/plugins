@@ -10,11 +10,6 @@ import '../common/web_kit.pigeon.dart';
 import '../foundation/foundation.dart';
 import 'web_kit.dart';
 
-typedef _NavigationCallback = void Function(
-  WKWebView webView,
-  String? url,
-);
-
 Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
     Iterable<WKWebsiteDataTypes> types) {
   return types.map<WKWebsiteDataTypesEnumData>((WKWebsiteDataTypes type) {
@@ -467,8 +462,10 @@ class WKNavigationDelegateFlutterApiImpl
     int webViewInstanceId,
     String? url,
   ) {
-    final _NavigationCallback function =
-        instanceManager.getInstance(functionInstanceId)! as _NavigationCallback;
+    final void Function(
+      WKWebView webView,
+      String? url,
+    ) function = instanceManager.getInstance(functionInstanceId)!;
     function(instanceManager.getInstance(webViewInstanceId)!, url);
   }
 }
