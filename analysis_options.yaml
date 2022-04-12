@@ -28,9 +28,9 @@
 # Android Studio, and the `flutter analyze` command.
 
 analyzer:
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: false
+  language:
+    strict-casts: true
+    strict-inference: true
   errors:
     # treat missing required parameters as a warning (not a hint)
     missing_required_param: warning
