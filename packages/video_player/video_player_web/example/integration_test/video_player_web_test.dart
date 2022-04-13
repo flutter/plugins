@@ -24,7 +24,7 @@ String getUrlForAssetAsNetworkSource(String assetKey) {
       '?raw=true';
 }
 
-// Use WebM for web to allow CI to use Chromium.
+// Use WebM to allow CI to run tests in Chromium.
 const String _videoAssetKey = 'assets/Butterfly-209.webm';
 
 void main() {
@@ -128,7 +128,7 @@ void main() {
       await VideoPlayerPlatform.instance.play(videoPlayerId);
 
       expect(() async {
-        await eventStream.last;
+        await eventStream.timeout(const Duration(seconds: 5)).last;
       }, throwsA(isA<PlatformException>()));
     });
 
