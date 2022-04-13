@@ -81,8 +81,9 @@ class LocalAuthIOS extends LocalAuthPlatform {
   Future<bool> isDeviceSupported() async =>
       (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
 
+  /// Always returns false as this method is not supported on iOS.
   @override
   Future<bool> stopAuthentication() async {
-    throw UnimplementedError('stopAuthentication() is not supported on iOS.');
+    return false;
   }
 }
