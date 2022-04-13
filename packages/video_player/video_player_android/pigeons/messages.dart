@@ -57,7 +57,7 @@ class MixWithOthersMessage {
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
-abstract class VideoPlayerApi {
+abstract class AndroidVideoPlayerApi {
   void initialize();
   TextureMessage create(CreateMessage msg);
   void dispose(TextureMessage msg);

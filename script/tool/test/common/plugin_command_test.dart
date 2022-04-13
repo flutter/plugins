@@ -253,6 +253,29 @@ packages/plugin1/plugin1/plugin1.dart
           unorderedEquals(<String>[platformInterfacePackage.path]));
     });
 
+    test('returns subpackages after the enclosing package', () async {
+      final SamplePluginCommand localCommand = SamplePluginCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+        gitDir: MockGitDir(),
+        includeSubpackages: true,
+      );
+      final CommandRunner<void> localRunner =
+          CommandRunner<void>('common_command', 'subpackage testing');
+      localRunner.addCommand(localCommand);
+
+      final Directory package = createFakePackage('apackage', packagesDir);
+
+      await runCapturingPrint(localRunner, <String>['sample']);
+      expect(
+          localCommand.plugins,
+          containsAllInOrder(<String>[
+            package.path,
+            package.childDirectory('example').path,
+          ]));
+    });
+
     group('conflicting package selection', () {
       test('does not allow --packages with --run-on-changed-packages',
           () async {
@@ -893,10 +916,13 @@ class SamplePluginCommand extends PluginCommand {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
     GitDir? gitDir,
+    this.includeSubpackages = false,
   }) : super(packagesDir,
             processRunner: processRunner, platform: platform, gitDir: gitDir);
 
   final List<String> plugins = <String>[];
+
+  final bool includeSubpackages;
 
   @override
   final String name = 'sample';
@@ -906,7 +932,10 @@ class SamplePluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    await for (final PackageEnumerationEntry entry in getTargetPackages()) {
+    final Stream<PackageEnumerationEntry> packages = includeSubpackages
+        ? getTargetPackagesAndSubpackages()
+        : getTargetPackages();
+    await for (final PackageEnumerationEntry entry in packages) {
       plugins.add(entry.package.path);
     }
   }
