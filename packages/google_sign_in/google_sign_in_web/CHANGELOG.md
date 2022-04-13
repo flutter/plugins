@@ -1,8 +1,8 @@
 ## 0.10.1
 
 * Updates minimum Flutter version to 2.8.
-* Pass `plugin_name` to Google Sign In's `init` method so new applications can
-  continue using this plugin after April 30th 2022. [Issue](https://github.com/flutter/flutter/issues/88084).
+* Passes `plugin_name` to Google Sign-In's `init` method so new applications can
+  continue using this plugin after April 30th 2022. Issue [#88084](https://github.com/flutter/flutter/issues/88084).
 
 ## 0.10.0+5
 
