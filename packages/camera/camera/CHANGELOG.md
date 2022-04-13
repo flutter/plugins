@@ -1,3 +1,7 @@
+## 0.9.5
+
+* Adds camera access permission handling logic on iOS to fix a related crash when first time using the camera.
+
 ## 0.9.4+24
 
 * Fixes preview orientation when pausing preview with locked orientation.
@@ -22,7 +26,7 @@
 
 ## 0.9.4+19
 
-* Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
+* Migrates deprecated Scaffold SnackBar methods to ScaffoldMessenger.
 
 ## 0.9.4+18
 

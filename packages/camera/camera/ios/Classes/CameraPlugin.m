@@ -7,6 +7,7 @@
 
 @import AVFoundation;
 
+#import "CameraPermissionUtils.h"
 #import "CameraProperties.h"
 #import "FLTCam.h"
 #import "FLTThreadSafeEventChannel.h"
@@ -131,31 +132,14 @@
       [result sendNotImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
-    NSString *cameraName = call.arguments[@"cameraName"];
-    NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
-    NSNumber *enableAudio = call.arguments[@"enableAudio"];
-    NSError *error;
-    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
-                                    resolutionPreset:resolutionPreset
-                                         enableAudio:[enableAudio boolValue]
-                                         orientation:[[UIDevice currentDevice] orientation]
-                                 captureSessionQueue:_captureSessionQueue
-                                               error:&error];
-
-    if (error) {
-      [result sendError:error];
-    } else {
-      if (_camera) {
-        [_camera close];
+    FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
+      // Create FLTCam only if granted camera access.
+      if (error) {
+        [result sendFlutterError:error];
+      } else {
+        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
       }
-      _camera = cam;
-      [self.registry registerTexture:cam
-                          completion:^(int64_t textureId) {
-                            [result sendSuccessWithData:@{
-                              @"cameraId" : @(textureId),
-                            }];
-                          }];
-    }
+    });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
     [result sendSuccess];
@@ -272,6 +256,37 @@
       [result sendNotImplemented];
     }
   }
+}
+
+- (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
+                                                result:(FLTThreadSafeFlutterResult *)result {
+  dispatch_async(self.captureSessionQueue, ^{
+    NSString *cameraName = createMethodCall.arguments[@"cameraName"];
+    NSString *resolutionPreset = createMethodCall.arguments[@"resolutionPreset"];
+    NSNumber *enableAudio = createMethodCall.arguments[@"enableAudio"];
+    NSError *error;
+    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
+                                    resolutionPreset:resolutionPreset
+                                         enableAudio:[enableAudio boolValue]
+                                         orientation:[[UIDevice currentDevice] orientation]
+                                 captureSessionQueue:self.captureSessionQueue
+                                               error:&error];
+
+    if (error) {
+      [result sendError:error];
+    } else {
+      if (self.camera) {
+        [self.camera close];
+      }
+      self.camera = cam;
+      [self.registry registerTexture:cam
+                          completion:^(int64_t textureId) {
+                            [result sendSuccessWithData:@{
+                              @"cameraId" : @(textureId),
+                            }];
+                          }];
+    }
+  });
 }
 
 @end

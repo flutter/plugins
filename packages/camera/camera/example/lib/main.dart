@@ -633,8 +633,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
-    if (controller != null) {
-      await controller!.dispose();
+    final CameraController? oldController = controller;
+    if (oldController != null) {
+      // `controller` needs to be set to null before getting disposed,
+      // to avoid a race condition when we use the controller that is being
+      // disposed. This happens when camera permission dialog shows up,
+      // which triggers `didChangeAppLifecycleState`, which disposes and
+      // re-creates the controller.
+      controller = null;
+      await oldController.dispose();
     }
 
     final CameraController cameraController = CameraController(
