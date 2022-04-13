@@ -96,15 +96,6 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'loadRequest is not implemented on the current platform');
   }
 
-  /// Updates the webview settings.
-  ///
-  /// Any non null field in `settings` will be set as the new setting value.
-  /// All null fields in `settings` are ignored.
-  Future<void> updateSettings(WebSettingsDelegate setting) {
-    throw UnimplementedError(
-        'updateSettings is not implemented on the current platform');
-  }
-
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If no URL was ever loaded, returns `null`.
@@ -234,10 +225,46 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'getScrollPosition is not implemented on the current platform');
   }
 
+  /// Wether to enable the platform's webview content debugging tools.
+  Future<void> enableDebugging(bool enabled) {
+    throw UnimplementedError(
+        'enableDebugging is not implemented on the current platform');
+  }
+
+  /// Wether to allow swipe based navigation on supported platforms.
+  Future<void> enableGestureNavigation(bool enabled) {
+    throw UnimplementedError(
+        'enableGestureNavigation is not implemented on the current platform');
+  }
+
+  /// Whether to support zooming using its on-screen zoom controls and gestures.
+  Future<void> enableZoom(bool enabled) {
+    throw UnimplementedError(
+        'enableZoom is not implemented on the current platform');
+  }
+
   /// Set the current background color of this view.
   Future<void> setBackgroundColor(Color color) {
     throw UnimplementedError(
         'setBackgroundColor is not implemented on the current platform');
+  }
+
+  /// Sets the JavaScript execution mode to be used by the webview.
+  Future<void> setJavaScriptMode(JavaScriptMode javaScriptMode) {
+    throw UnimplementedError(
+        'setJavaScriptMode is not implemented on the current platform');
+  }
+
+  /// Sets the value used for the HTTP `User-Agent:` request header.
+  ///
+  /// If [userAgent.value] is null the platform's default user agent should be
+  /// used.
+  ///
+  /// An absent value ([userAgent.isPresent] is false) represents no change to
+  /// this setting from the last time it was set.
+  Future<void> setUserAgent(WebSetting<String?> userAgent) {
+    throw UnimplementedError(
+        'setUserAgent is not implemented on the current platform');
   }
 }
 

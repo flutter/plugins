@@ -70,21 +70,6 @@ void main() {
 
   test(
       // ignore: lines_longer_than_80_chars
-      'Default implementation of createWebSettingsDelegate should throw unimplemented error',
-      () {
-    final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
-
-    expect(
-      () => webViewPlatform.createWebSettingsDelegate(
-        options: const WebSettingsDelegateCreationParams(
-            userAgent: WebSetting<String>.absent()),
-      ),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
       'Default implementation of createWebViewControllerDelegate should throw unimplemented error',
       () {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();

@@ -62,17 +62,6 @@ abstract class WebViewPlatform extends PlatformInterface {
         'createJavaScriptMessage is not implemented on the current platform.');
   }
 
-  /// Create a new [WebSettingsDelegate].
-  ///
-  /// This function should only be called by the app-facing plugin.
-  /// Look at using [WebSettings] in `webview_flutter` instead.
-  WebSettingsDelegate createWebSettingsDelegate({
-    required WebSettingsDelegateCreationParams options,
-  }) {
-    throw UnimplementedError(
-        'createWebSettingsDelegate is not implemented on the current platform.');
-  }
-
   /// Create a new [WebViewControllerDelegate].
   ///
   /// This function should only be called by the app-facing plugin.

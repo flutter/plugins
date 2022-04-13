@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -95,19 +96,6 @@ void main() {
 
     expect(
       () => controller.loadRequest(MockLoadRequestParamsDelegate()),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
-      'Default implementation of updateSettings should throw unimplemented error',
-      () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate();
-
-    expect(
-      () => controller.updateSettings(MockWebSettingsDelegate()),
       throwsUnimplementedError,
     );
   });
@@ -323,6 +311,84 @@ void main() {
       throwsUnimplementedError,
     );
   });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of enableDebugging should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate();
+
+    expect(
+      () => controller.enableDebugging(true),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of enableGestureNavigation should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate();
+
+    expect(
+      () => controller.enableGestureNavigation(true),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of enableZoom should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate();
+
+    expect(
+      () => controller.enableZoom(true),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setBackgroundColor should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate();
+
+    expect(
+      () => controller.setBackgroundColor(Colors.blue),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setJavaScriptMode should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate();
+
+    expect(
+      () => controller.setJavaScriptMode(JavaScriptMode.disabled),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of setUserAgent should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate();
+
+    expect(
+      () => controller.setUserAgent(const WebSetting<String>.absent()),
+      throwsUnimplementedError,
+    );
+  });
 }
 
 class MockWebViewPlatformWithMixin extends MockWebViewPlatform
@@ -353,10 +419,3 @@ class MockLoadRequestParamsDelegate extends Mock
         MockPlatformInterfaceMixin
     implements
         LoadRequestParams {}
-
-class MockWebSettingsDelegate extends Mock
-    with
-        //ignore: prefer_mixin
-        MockPlatformInterfaceMixin
-    implements
-        WebSettingsDelegate {}

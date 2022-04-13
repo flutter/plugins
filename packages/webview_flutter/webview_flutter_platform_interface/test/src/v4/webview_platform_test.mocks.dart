@@ -36,13 +36,10 @@ class _FakeNavigationCallbackDelegate_1 extends _i1.Fake
 class _FakeJavaScriptMessage_2 extends _i1.Fake
     implements _i4.JavaScriptMessage {}
 
-class _FakeWebSettingsDelegate_3 extends _i1.Fake
-    implements _i4.WebSettingsDelegate {}
-
-class _FakeWebViewControllerDelegate_4 extends _i1.Fake
+class _FakeWebViewControllerDelegate_3 extends _i1.Fake
     implements _i5.WebViewControllerDelegate {}
 
-class _FakeWebViewWidgetDelegate_5 extends _i1.Fake
+class _FakeWebViewWidgetDelegate_4 extends _i1.Fake
     implements _i6.WebViewWidgetDelegate {}
 
 /// A class which mocks [WebViewPlatform].
@@ -69,19 +66,11 @@ class MockWebViewPlatform extends _i1.Mock implements _i7.WebViewPlatform {
       .noSuchMethod(Invocation.method(#createJavaScriptMessage, [message]),
           returnValue: _FakeJavaScriptMessage_2()) as _i4.JavaScriptMessage);
   @override
-  _i4.WebSettingsDelegate createWebSettingsDelegate(
-          {_i4.WebSettingsDelegateCreationParams? options}) =>
-      (super.noSuchMethod(
-              Invocation.method(
-                  #createWebSettingsDelegate, [], {#options: options}),
-              returnValue: _FakeWebSettingsDelegate_3())
-          as _i4.WebSettingsDelegate);
-  @override
   _i5.WebViewControllerDelegate createWebViewControllerDelegate(
           _i4.WebViewControllerCreationParams? params) =>
       (super.noSuchMethod(
               Invocation.method(#createWebViewControllerDelegate, [params]),
-              returnValue: _FakeWebViewControllerDelegate_4())
+              returnValue: _FakeWebViewControllerDelegate_3())
           as _i5.WebViewControllerDelegate);
   @override
   _i6.WebViewWidgetDelegate createWebViewWidgetDelegate(
@@ -95,7 +84,7 @@ class MockWebViewPlatform extends _i1.Mock implements _i7.WebViewPlatform {
                 #controller: controller,
                 #gestureRecognizers: gestureRecognizers
               }),
-              returnValue: _FakeWebViewWidgetDelegate_5())
+              returnValue: _FakeWebViewWidgetDelegate_4())
           as _i6.WebViewWidgetDelegate);
   @override
   String toString() => super.toString();
