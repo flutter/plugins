@@ -769,17 +769,19 @@ void main() {
 
       testWidgets('clearCache', (WidgetTester tester) async {
         await buildWidget(tester);
+        when(
+          mockWebsiteDataStore.removeDataOfTypes(
+            <WKWebsiteDataTypes>{
+              WKWebsiteDataTypes.memoryCache,
+              WKWebsiteDataTypes.diskCache,
+              WKWebsiteDataTypes.offlineWebApplicationCache,
+              WKWebsiteDataTypes.localStroage,
+            },
+            DateTime.fromMillisecondsSinceEpoch(0),
+          ),
+        ).thenAnswer((_) => Future<bool>.value(false));
 
-        await testController.clearCache();
-        verify(mockWebsiteDataStore.removeDataOfTypes(
-          <WKWebsiteDataTypes>{
-            WKWebsiteDataTypes.memoryCache,
-            WKWebsiteDataTypes.diskCache,
-            WKWebsiteDataTypes.offlineWebApplicationCache,
-            WKWebsiteDataTypes.localStroage,
-          },
-          DateTime.fromMillisecondsSinceEpoch(0),
-        ));
+        expect(testController.clearCache(), completes);
       });
 
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
