@@ -1,5 +1,6 @@
-## NEXT
+## 0.2.0+5
 
+* Migrates from `ui.hash*` to `Object.hash*`.
 * Adds OS version support information to README.
 
 ## 0.2.0+4
