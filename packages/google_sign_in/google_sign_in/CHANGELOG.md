@@ -1,4 +1,4 @@
-## NEXT
+## 5.3.0
 
 * Moves Android and iOS implementations to federated packages.
 
