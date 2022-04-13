@@ -1,6 +1,6 @@
 ## 1.0.1
 
-* Changes `stopAuthentication` to always return false instead of throwing an error.
+* BREAKING CHANGE: Changes `stopAuthentication` to always return false instead of throwing an error.
 
 ## 1.0.0
 
