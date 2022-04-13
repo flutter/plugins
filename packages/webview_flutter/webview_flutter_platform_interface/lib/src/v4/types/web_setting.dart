@@ -4,7 +4,6 @@
 
 import 'package:flutter/widgets.dart';
 
-
 /// A single setting for configuring a WebViewPlatform which may be absent.
 @immutable
 class WebSetting<T> {
