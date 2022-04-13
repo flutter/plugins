@@ -143,43 +143,6 @@ class ImagePickerIOS extends ImagePickerPlatform {
   }
 
   @override
-  Future<LostData> retrieveLostData() async {
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod<String, dynamic>('retrieve');
-
-    if (result == null) {
-      return LostData.empty();
-    }
-
-    assert(result.containsKey('path') != result.containsKey('errorCode'));
-
-    final String? type = result['type'] as String?;
-    assert(type == kTypeImage || type == kTypeVideo);
-
-    RetrieveType? retrieveType;
-    if (type == kTypeImage) {
-      retrieveType = RetrieveType.image;
-    } else if (type == kTypeVideo) {
-      retrieveType = RetrieveType.video;
-    }
-
-    PlatformException? exception;
-    if (result.containsKey('errorCode')) {
-      exception = PlatformException(
-          code: result['errorCode']! as String,
-          message: result['errorMessage'] as String?);
-    }
-
-    final String? path = result['path'] as String?;
-
-    return LostData(
-      file: path != null ? PickedFile(path) : null,
-      exception: exception,
-      type: retrieveType,
-    );
-  }
-
-  @override
   Future<XFile?> getImage({
     required ImageSource source,
     double? maxWidth,
@@ -227,54 +190,5 @@ class ImagePickerIOS extends ImagePickerPlatform {
       preferredCameraDevice: preferredCameraDevice,
     );
     return path != null ? XFile(path) : null;
-  }
-
-  @override
-  Future<LostDataResponse> getLostData() async {
-    List<XFile>? pickedFileList;
-
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod<String, dynamic>('retrieve');
-
-    if (result == null) {
-      return LostDataResponse.empty();
-    }
-
-    assert(result.containsKey('path') != result.containsKey('errorCode'));
-
-    final String? type = result['type'] as String?;
-    assert(type == kTypeImage || type == kTypeVideo);
-
-    RetrieveType? retrieveType;
-    if (type == kTypeImage) {
-      retrieveType = RetrieveType.image;
-    } else if (type == kTypeVideo) {
-      retrieveType = RetrieveType.video;
-    }
-
-    PlatformException? exception;
-    if (result.containsKey('errorCode')) {
-      exception = PlatformException(
-          code: result['errorCode']! as String,
-          message: result['errorMessage'] as String?);
-    }
-
-    final String? path = result['path'] as String?;
-
-    final List<String>? pathList =
-        (result['pathList'] as List<dynamic>?)?.cast<String>();
-    if (pathList != null) {
-      pickedFileList = <XFile>[];
-      for (final String path in pathList) {
-        pickedFileList.add(XFile(path));
-      }
-    }
-
-    return LostDataResponse(
-      file: path != null ? XFile(path) : null,
-      exception: exception,
-      type: retrieveType,
-      files: pickedFileList,
-    );
   }
 }
