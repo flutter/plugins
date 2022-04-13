@@ -132,3 +132,45 @@ class LatLngBounds {
   @override
   int get hashCode => Object.hash(southwest, northeast);
 }
+
+/// A data point entry for a heatmap.
+/// This is a geographical data point with a weight attribute.
+class WeightedLatLng {
+  /// The location of the data point.
+  final LatLng location;
+
+  /// The weighting value of the data point.
+  final double weight;
+
+  /// Creates a [WeightedLatLng] with the specified [weight]
+  WeightedLatLng(this.location, {this.weight = 1.0});
+
+  /// Converts this object to something serializable in JSON.
+  Object toJson() {
+    return <Object>[location.toJson(), weight];
+  }
+
+  /// Initialize a [WeightedLatLng] from an \[location, weight\] array.
+  static WeightedLatLng? fromJson(Object? json) {
+    if (json == null) {
+      return null;
+    }
+    assert(json is List && json.length == 2);
+    final list = json as List;
+    return WeightedLatLng(
+      LatLng.fromJson(list[0])!,
+      weight: list[1],
+    );
+  }
+
+  @override
+  String toString() => '$runtimeType($location, $weight)';
+
+  @override
+  bool operator ==(Object o) {
+    return o is WeightedLatLng && o.location == location && o.weight == weight;
+  }
+
+  @override
+  int get hashCode => Object.hash(location, weight);
+}
