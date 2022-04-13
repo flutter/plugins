@@ -1,3 +1,7 @@
+## 1.9.0
+
+* Adds the first iteration of the v4 webview_flutter interface implementation.
+
 ## 1.8.1
 
 * Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.
