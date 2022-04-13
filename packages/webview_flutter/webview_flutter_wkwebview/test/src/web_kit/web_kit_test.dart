@@ -14,6 +14,7 @@ import '../common/test_web_kit.pigeon.dart';
 import 'web_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  TestWKHttpCookieStoreHostApi,
   TestWKNavigationDelegateHostApi,
   TestWKPreferencesHostApi,
   TestWKScriptMessageHandlerHostApi,
@@ -69,6 +70,16 @@ void main() {
         ));
       });
 
+      test('createDefaultDataStore', () {
+        final WKWebsiteDataStore defaultDataStore =
+            WKWebsiteDataStore.defaultDataStore;
+        verify(
+          mockPlatformHostApi.createDefaultDataStore(
+            InstanceManager.instance.getInstanceId(defaultDataStore),
+          ),
+        );
+      });
+
       test('removeDataOfTypes', () {
         when(mockPlatformHostApi.removeDataOfTypes(
           any,
@@ -93,6 +104,69 @@ void main() {
                 as List<WKWebsiteDataTypesEnumData>;
 
         expect(typeData.single.value, WKWebsiteDataTypesEnum.cookies);
+      });
+    });
+
+    group('$WKHttpCookieStore', () {
+      late MockTestWKHttpCookieStoreHostApi mockPlatformHostApi;
+
+      late WKHttpCookieStore httpCookieStore;
+
+      late WKWebsiteDataStore websiteDataStore;
+
+      setUp(() {
+        mockPlatformHostApi = MockTestWKHttpCookieStoreHostApi();
+        TestWKHttpCookieStoreHostApi.setup(mockPlatformHostApi);
+
+        TestWKWebViewConfigurationHostApi.setup(
+          MockTestWKWebViewConfigurationHostApi(),
+        );
+        TestWKWebsiteDataStoreHostApi.setup(
+          MockTestWKWebsiteDataStoreHostApi(),
+        );
+
+        websiteDataStore = WKWebsiteDataStore.fromWebViewConfiguration(
+          WKWebViewConfiguration(instanceManager: instanceManager),
+          instanceManager: instanceManager,
+        );
+
+        httpCookieStore = WKHttpCookieStore.fromWebsiteDataStore(
+          websiteDataStore,
+          instanceManager: instanceManager,
+        );
+      });
+
+      tearDown(() {
+        TestWKHttpCookieStoreHostApi.setup(null);
+        TestWKWebsiteDataStoreHostApi.setup(null);
+        TestWKWebViewConfigurationHostApi.setup(null);
+      });
+
+      test('createFromWebsiteDataStore', () {
+        verify(mockPlatformHostApi.createFromWebsiteDataStore(
+          instanceManager.getInstanceId(httpCookieStore),
+          instanceManager.getInstanceId(websiteDataStore),
+        ));
+      });
+
+      test('setCookie', () async {
+        await httpCookieStore.setCookie(
+            const NSHttpCookie.withProperties(<NSHttpCookiePropertyKey, Object>{
+          NSHttpCookiePropertyKey.comment: 'aComment',
+        }));
+
+        final NSHttpCookieData cookie = verify(
+          mockPlatformHostApi.setCookie(
+            instanceManager.getInstanceId(httpCookieStore)!,
+            captureAny,
+          ),
+        ).captured.single as NSHttpCookieData;
+
+        expect(
+          cookie.properties.entries.single.key!.value,
+          NSHttpCookiePropertyKeyEnum.comment,
+        );
+        expect(cookie.properties.entries.single.value, 'aComment');
       });
     });
 

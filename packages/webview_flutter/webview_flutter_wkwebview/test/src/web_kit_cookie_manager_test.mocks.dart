@@ -35,6 +35,33 @@ class MockWKHttpCookieStore extends _i1.Mock implements _i2.WKHttpCookieStore {
       (super.noSuchMethod(Invocation.method(#setCookie, [cookie]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<void> addObserver(_i4.NSObject? observer,
+          {String? keyPath, Set<_i4.NSKeyValueObservingOptions>? options}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<void> removeObserver(_i4.NSObject? observer, {String? keyPath}) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<void> dispose() =>
+      (super.noSuchMethod(Invocation.method(#dispose, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<void> setObserveValue(
+          void Function(
+                  String, _i4.NSObject, Map<_i4.NSKeyValueChangeKey, Object?>)?
+              observeValue) =>
+      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
 }
 
 /// A class which mocks [WKWebsiteDataStore].
