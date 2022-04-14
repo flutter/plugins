@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/material.dart';
+
 /// Object specifying creation parameters for creating a [WebViewCookieManagerDelegate].
 ///
 /// Platform specific implementations can add additional fields by extending
@@ -19,6 +21,8 @@
 /// class WKWebViewCookieManagerCreationParams
 ///     extends WebViewCookieManagerCreationParams {
 ///   WKWebViewCookieManagerCreationParams._(
+///     // This parameter prevents breaking changes later.
+///     // ignore: avoid_unused_constructor_parameters
 ///     WebViewCookieManagerCreationParams params, {
 ///     this.uri,
 ///   }) : super();
@@ -34,7 +38,8 @@
 /// }
 /// ```
 /// {@end-tool}
+@immutable
 class WebViewCookieManagerCreationParams {
   /// Used by the platform implementation to create a new [WebViewCookieManagerDelegate].
-  WebViewCookieManagerCreationParams();
+  const WebViewCookieManagerCreationParams();
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/material.dart';
+
 /// Object specifying creation parameters for creating a [NavigationCallbackDelegate].
 ///
 /// Platform specific implementations can add additional fields by extending
@@ -18,6 +20,7 @@
 /// ```dart
 /// class AndroidNavigationCallbackCreationParams extends NavigationCallbackCreationParams {
 ///   AndroidNavigationCallbackCreationParams._(
+///     // This parameter prevents breaking changes later.
 ///     // ignore: avoid_unused_constructor_parameters
 ///     NavigationCallbackCreationParams params, {
 ///     this.filter,
@@ -34,7 +37,8 @@
 /// }
 /// ```
 /// {@end-tool}
+@immutable
 class NavigationCallbackCreationParams {
   /// Used by the platform implementation to create a new [NavigationCallbackDelegate].
-  NavigationCallbackCreationParams();
+  const NavigationCallbackCreationParams();
 }

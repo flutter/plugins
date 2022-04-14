@@ -41,8 +41,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform
-          .createCookieManagerDelegate(WebViewCookieManagerCreationParams()),
+      () => webViewPlatform.createCookieManagerDelegate(
+          const WebViewCookieManagerCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -54,8 +54,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform
-          .createNavigationCallbackDelegate(NavigationCallbackCreationParams()),
+      () => webViewPlatform.createNavigationCallbackDelegate(
+          const NavigationCallbackCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -67,8 +67,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform
-          .createWebViewControllerDelegate(WebViewControllerCreationParams()),
+      () => webViewPlatform.createWebViewControllerDelegate(
+          const WebViewControllerCreationParams()),
       throwsUnimplementedError,
     );
   });

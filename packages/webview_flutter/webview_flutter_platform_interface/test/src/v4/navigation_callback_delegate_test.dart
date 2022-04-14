@@ -16,7 +16,7 @@ void main() {
   });
 
   test('Cannot be implemented with `implements`', () {
-    final NavigationCallbackCreationParams params =
+    const NavigationCallbackCreationParams params =
         NavigationCallbackCreationParams();
     when(WebViewPlatform.instance!.createNavigationCallbackDelegate(params))
         .thenReturn(ImplementsNavigationCallbackDelegate());
@@ -27,7 +27,7 @@ void main() {
   });
 
   test('Can be extended', () {
-    final NavigationCallbackCreationParams params =
+    const NavigationCallbackCreationParams params =
         NavigationCallbackCreationParams();
     when(WebViewPlatform.instance!.createNavigationCallbackDelegate(params))
         .thenReturn(ExtendsNavigationCallbackDelegate(params));
@@ -36,7 +36,7 @@ void main() {
   });
 
   test('Can be mocked with `implements`', () {
-    final NavigationCallbackCreationParams params =
+    const NavigationCallbackCreationParams params =
         NavigationCallbackCreationParams();
     when(WebViewPlatform.instance!.createNavigationCallbackDelegate(params))
         .thenReturn(MockNavigationCallbackDelegate());
@@ -49,7 +49,8 @@ void main() {
       'Default implementation of setOnNavigationRequest should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackDelegate =
-        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
+        ExtendsNavigationCallbackDelegate(
+            const NavigationCallbackCreationParams());
 
     expect(
       () => callbackDelegate.setOnNavigationRequest(
@@ -63,7 +64,8 @@ void main() {
       'Default implementation of setOnPageStarted should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackDelegate =
-        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
+        ExtendsNavigationCallbackDelegate(
+            const NavigationCallbackCreationParams());
 
     expect(
       () => callbackDelegate.setOnPageStarted((String url) {}),
@@ -76,7 +78,8 @@ void main() {
       'Default implementation of setOnPageFinished should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackDelegate =
-        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
+        ExtendsNavigationCallbackDelegate(
+            const NavigationCallbackCreationParams());
 
     expect(
       () => callbackDelegate.setOnPageFinished((String url) {}),
@@ -89,7 +92,8 @@ void main() {
       'Default implementation of setOnProgress should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackDelegate =
-        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
+        ExtendsNavigationCallbackDelegate(
+            const NavigationCallbackCreationParams());
 
     expect(
       () => callbackDelegate.setOnProgress((int progress) {}),
@@ -102,7 +106,8 @@ void main() {
       'Default implementation of setOnWebResourceError should throw unimplemented error',
       () {
     final NavigationCallbackDelegate callbackDelegate =
-        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
+        ExtendsNavigationCallbackDelegate(
+            const NavigationCallbackCreationParams());
 
     expect(
       () => callbackDelegate.setOnWebResourceError((WebResourceError error) {}),

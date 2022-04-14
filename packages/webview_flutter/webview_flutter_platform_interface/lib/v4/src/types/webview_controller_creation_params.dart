@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/material.dart';
+
 /// Object specifying creation parameters for creating a [WebViewControllerDelegate].
 ///
 /// Platform specific implementations can add additional fields by extending
@@ -19,6 +21,8 @@
 /// class WKWebViewControllerCreationParams
 ///     extends WebViewControllerCreationParams {
 ///   WKWebViewControllerCreationParams._(
+///     // This parameter prevents breaking changes later.
+///     // ignore: avoid_unused_constructor_parameters
 ///     WebViewControllerCreationParams params, {
 ///     this.domain,
 ///   }) : super();
@@ -34,7 +38,8 @@
 /// }
 /// ```
 /// {@end-tool}
+@immutable
 class WebViewControllerCreationParams {
   /// Used by the platform implementation to create a new [WebViewControllerCreationParams].
-  WebViewControllerCreationParams();
+  const WebViewControllerCreationParams();
 }

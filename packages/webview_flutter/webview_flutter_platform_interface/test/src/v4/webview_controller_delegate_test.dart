@@ -26,12 +26,12 @@ void main() {
         .thenReturn(ImplementsWebViewControllerDelegate());
 
     expect(() {
-      WebViewControllerDelegate(WebViewControllerCreationParams());
+      WebViewControllerDelegate(const WebViewControllerCreationParams());
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
-    final WebViewControllerCreationParams params =
+    const WebViewControllerCreationParams params =
         WebViewControllerCreationParams();
     when((WebViewPlatform.instance! as MockWebViewPlatform)
             .createWebViewControllerDelegate(any))
@@ -45,7 +45,7 @@ void main() {
             .createWebViewControllerDelegate(any))
         .thenReturn(MockWebViewControllerDelegate());
 
-    expect(WebViewControllerDelegate(WebViewControllerCreationParams()),
+    expect(WebViewControllerDelegate(const WebViewControllerCreationParams()),
         isNotNull);
   });
 
@@ -54,7 +54,8 @@ void main() {
       'Default implementation of loadFile should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.loadFile(''),
@@ -67,7 +68,8 @@ void main() {
       'Default implementation of loadFlutterAsset should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.loadFlutterAsset(''),
@@ -80,7 +82,8 @@ void main() {
       'Default implementation of loadHtmlString should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.loadHtmlString(''),
@@ -93,7 +96,8 @@ void main() {
       'Default implementation of loadRequest should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.loadRequest(MockLoadRequestParamsDelegate()),
@@ -106,7 +110,8 @@ void main() {
       'Default implementation of currentUrl should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.currentUrl(),
@@ -119,7 +124,8 @@ void main() {
       'Default implementation of canGoBack should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.canGoBack(),
@@ -132,7 +138,8 @@ void main() {
       'Default implementation of canGoForward should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.canGoForward(),
@@ -144,7 +151,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of goBack should throw unimplemented error', () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.goBack(),
@@ -157,7 +165,8 @@ void main() {
       'Default implementation of goForward should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.goForward(),
@@ -169,7 +178,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of reload should throw unimplemented error', () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.reload(),
@@ -182,7 +192,8 @@ void main() {
       'Default implementation of clearCache should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.clearCache(),
@@ -194,7 +205,8 @@ void main() {
     'Default implementation of the setNavigationCallback should throw unimplemented error',
     () {
       final WebViewControllerDelegate controller =
-          ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+          ExtendsWebViewControllerDelegate(
+              const WebViewControllerCreationParams());
 
       expect(
         () => controller
@@ -209,7 +221,8 @@ void main() {
       'Default implementation of runJavaScript should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.runJavaScript('javaScript'),
@@ -222,7 +235,8 @@ void main() {
       'Default implementation of runJavaScriptReturningResult should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.runJavaScriptReturningResult('javaScript'),
@@ -235,7 +249,8 @@ void main() {
       'Default implementation of addJavaScriptChannel should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.addJavaScriptChannel(
@@ -253,7 +268,8 @@ void main() {
       'Default implementation of removeJavaScriptChannel should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.removeJavaScriptChannel('test'),
@@ -266,7 +282,8 @@ void main() {
       'Default implementation of getTitle should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.getTitle(),
@@ -279,7 +296,8 @@ void main() {
       'Default implementation of scrollTo should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.scrollTo(0, 0),
@@ -292,7 +310,8 @@ void main() {
       'Default implementation of scrollBy should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.scrollBy(0, 0),
@@ -305,7 +324,8 @@ void main() {
       'Default implementation of getScrollPosition should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.getScrollPosition(),
@@ -318,7 +338,8 @@ void main() {
       'Default implementation of enableDebugging should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.enableDebugging(true),
@@ -331,7 +352,8 @@ void main() {
       'Default implementation of enableGestureNavigation should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.enableGestureNavigation(true),
@@ -344,7 +366,8 @@ void main() {
       'Default implementation of enableZoom should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.enableZoom(true),
@@ -357,7 +380,8 @@ void main() {
       'Default implementation of setBackgroundColor should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.setBackgroundColor(Colors.blue),
@@ -370,7 +394,8 @@ void main() {
       'Default implementation of setJavaScriptMode should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.setJavaScriptMode(JavaScriptMode.disabled),
@@ -383,7 +408,8 @@ void main() {
       'Default implementation of setUserAgent should throw unimplemented error',
       () {
     final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(WebViewControllerCreationParams());
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
 
     expect(
       () => controller.setUserAgent(null),

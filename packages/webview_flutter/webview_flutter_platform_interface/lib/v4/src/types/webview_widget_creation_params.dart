@@ -23,6 +23,8 @@ import '../webview_controller_delegate.dart';
 /// ```dart
 /// class WKWebViewWidgetCreationParams extends WebViewWidgetCreationParams {
 ///   WKWebViewWidgetCreationParams._(
+///     // This parameter prevents breaking changes later.
+///     // ignore: avoid_unused_constructor_parameters
 ///     WebViewWidgetCreationParams params, {
 ///     this.domain,
 ///   }) : super(
