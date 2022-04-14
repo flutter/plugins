@@ -2,27 +2,92 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_ios/image_picker_ios.dart';
+import 'package:image_picker_ios/src/messages.g.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+
+import 'test_api.dart';
+
+@immutable
+class _LoggedMethodCall {
+  const _LoggedMethodCall(this.name, {required this.arguments});
+  final String name;
+  final Map<String, Object?> arguments;
+
+  @override
+  bool operator ==(Object other) {
+    return other is _LoggedMethodCall &&
+        name == other.name &&
+        mapEquals(arguments, other.arguments);
+  }
+
+  @override
+  int get hashCode => Object.hash(name, arguments);
+
+  @override
+  String toString() {
+    return 'MethodCall: $name $arguments';
+  }
+}
+
+class _ApiLogger implements TestHostImagePickerApi {
+  // The value to return from future calls.
+  dynamic returnValue = '';
+  final List<_LoggedMethodCall> calls = <_LoggedMethodCall>[];
+
+  @override
+  Future<String?> pickImage(
+      SourceSpecification source, MaxSize maxSize, int? imageQuality) async {
+    // Flatten arguments for easy comparison.
+    calls.add(_LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+      'source': source.type,
+      'cameraDevice': source.camera,
+      'maxWidth': maxSize.width,
+      'maxHeight': maxSize.height,
+      'imageQuality': imageQuality,
+    }));
+    return returnValue as String?;
+  }
+
+  @override
+  Future<List<String?>?> pickMultiImage(
+      MaxSize maxSize, int? imageQuality) async {
+    calls.add(_LoggedMethodCall('pickMultiImage', arguments: <String, dynamic>{
+      'maxWidth': maxSize.width,
+      'maxHeight': maxSize.height,
+      'imageQuality': imageQuality,
+    }));
+    return returnValue as List<String?>?;
+  }
+
+  @override
+  Future<String?> pickVideo(
+      SourceSpecification source, int? maxDurationSeconds) async {
+    calls.add(_LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+      'source': source.type,
+      'cameraDevice': source.camera,
+      'maxDuration': maxDurationSeconds,
+    }));
+    return returnValue as String?;
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final ImagePickerIOS picker = ImagePickerIOS();
-
-  final List<MethodCall> log = <MethodCall>[];
-  dynamic returnValue = '';
+  late _ApiLogger log;
 
   setUp(() {
-    returnValue = '';
-    picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-      return returnValue;
-    });
+    log = _ApiLogger();
+    TestHostImagePickerApi.setup(log);
+  });
 
-    log.clear();
+  test('registration', () async {
+    ImagePickerIOS.registerWith();
+    expect(ImagePickerPlatform.instance, isA<ImagePickerIOS>());
   });
 
   group('#pickImage', () {
@@ -31,21 +96,21 @@ void main() {
       await picker.pickImage(source: ImageSource.gallery);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 1,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
         ],
       );
@@ -84,56 +149,56 @@ void main() {
       );
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': 70,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': 70,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': 70,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
         ],
       );
@@ -174,7 +239,7 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      log.returnValue = null;
 
       expect(await picker.pickImage(source: ImageSource.gallery), isNull);
       expect(await picker.pickImage(source: ImageSource.camera), isNull);
@@ -184,14 +249,14 @@ void main() {
       await picker.pickImage(source: ImageSource.camera);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
         ],
       );
@@ -203,14 +268,14 @@ void main() {
           preferredCameraDevice: CameraDevice.front);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 1,
+            'cameraDevice': SourceCamera.front,
           }),
         ],
       );
@@ -219,23 +284,24 @@ void main() {
 
   group('#pickMultiImage', () {
     test('calls the method correctly', () async {
-      returnValue = <dynamic>['0', '1'];
+      log.returnValue = <String>['0', '1'];
       await picker.pickMultiImage();
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': null,
-            'imageQuality': null,
-          }),
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
         ],
       );
     });
 
     test('passes the width and height arguments correctly', () async {
-      returnValue = <dynamic>['0', '1'];
+      log.returnValue = <String>['0', '1'];
       await picker.pickMultiImage();
       await picker.pickMultiImage(
         maxWidth: 10.0,
@@ -262,49 +328,55 @@ void main() {
       );
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': null,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': null,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': 10.0,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': 20.0,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': null,
-            'imageQuality': 70,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': 10.0,
-            'imageQuality': 70,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': 20.0,
-            'imageQuality': 70,
-          }),
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': 70,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': 70,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': 70,
+              }),
         ],
       );
     });
 
     test('does not accept a negative width or height argument', () {
-      returnValue = <dynamic>['0', '1'];
       expect(
         () => picker.pickMultiImage(maxWidth: -1.0),
         throwsArgumentError,
@@ -317,7 +389,6 @@ void main() {
     });
 
     test('does not accept a invalid imageQuality argument', () {
-      returnValue = <dynamic>['0', '1'];
       expect(
         () => picker.pickMultiImage(imageQuality: -1),
         throwsArgumentError,
@@ -330,9 +401,8 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      log.returnValue = null;
 
-      expect(await picker.pickMultiImage(), isNull);
       expect(await picker.pickMultiImage(), isNull);
     });
   });
@@ -343,16 +413,16 @@ void main() {
       await picker.pickVideo(source: ImageSource.gallery);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
-            'cameraDevice': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'cameraDevice': SourceCamera.rear,
             'maxDuration': null,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 1,
-            'cameraDevice': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
+            'cameraDevice': SourceCamera.rear,
             'maxDuration': null,
           }),
         ],
@@ -374,34 +444,34 @@ void main() {
         maxDuration: const Duration(hours: 1),
       );
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': null,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': 10,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': 60,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': 3600,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
         ],
       );
     });
 
     test('handles a null video path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      log.returnValue = null;
 
       expect(await picker.pickVideo(source: ImageSource.gallery), isNull);
       expect(await picker.pickVideo(source: ImageSource.camera), isNull);
@@ -411,11 +481,11 @@ void main() {
       await picker.pickVideo(source: ImageSource.camera);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
-            'cameraDevice': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'cameraDevice': SourceCamera.rear,
             'maxDuration': null,
           }),
         ],
@@ -429,64 +499,15 @@ void main() {
       );
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': null,
-            'cameraDevice': 1,
+            'cameraDevice': SourceCamera.front,
           }),
         ],
       );
-    });
-  });
-
-  group('#retrieveLostData', () {
-    test('retrieveLostData get success response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, String>{
-          'type': 'image',
-          'path': '/example/path',
-        };
-      });
-      final LostData response = await picker.retrieveLostData();
-      expect(response.type, RetrieveType.image);
-      expect(response.file, isNotNull);
-      expect(response.file!.path, '/example/path');
-    });
-
-    test('retrieveLostData get error response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, String>{
-          'type': 'video',
-          'errorCode': 'test_error_code',
-          'errorMessage': 'test_error_message',
-        };
-      });
-      final LostData response = await picker.retrieveLostData();
-      expect(response.type, RetrieveType.video);
-      expect(response.exception, isNotNull);
-      expect(response.exception!.code, 'test_error_code');
-      expect(response.exception!.message, 'test_error_message');
-    });
-
-    test('retrieveLostData get null response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return null;
-      });
-      expect((await picker.retrieveLostData()).isEmpty, true);
-    });
-
-    test('retrieveLostData get both path and error should throw', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, String>{
-          'type': 'video',
-          'errorCode': 'test_error_code',
-          'errorMessage': 'test_error_message',
-          'path': '/example/path',
-        };
-      });
-      expect(picker.retrieveLostData(), throwsAssertionError);
     });
   });
 
@@ -496,21 +517,21 @@ void main() {
       await picker.getImage(source: ImageSource.gallery);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 1,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
         ],
       );
@@ -549,56 +570,56 @@ void main() {
       );
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': null,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': 70,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': 70,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': 70,
-            'cameraDevice': 0
+            'cameraDevice': SourceCamera.rear
           }),
         ],
       );
@@ -639,7 +660,7 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      log.returnValue = null;
 
       expect(await picker.getImage(source: ImageSource.gallery), isNull);
       expect(await picker.getImage(source: ImageSource.camera), isNull);
@@ -649,14 +670,14 @@ void main() {
       await picker.getImage(source: ImageSource.camera);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
         ],
       );
@@ -668,14 +689,14 @@ void main() {
           preferredCameraDevice: CameraDevice.front);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickImage', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': 1,
+            'cameraDevice': SourceCamera.front,
           }),
         ],
       );
@@ -684,23 +705,24 @@ void main() {
 
   group('#getMultiImage', () {
     test('calls the method correctly', () async {
-      returnValue = <dynamic>['0', '1'];
+      log.returnValue = <String>['0', '1'];
       await picker.getMultiImage();
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': null,
-            'imageQuality': null,
-          }),
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
         ],
       );
     });
 
     test('passes the width and height arguments correctly', () async {
-      returnValue = <dynamic>['0', '1'];
+      log.returnValue = <String>['0', '1'];
       await picker.getMultiImage();
       await picker.getMultiImage(
         maxWidth: 10.0,
@@ -727,49 +749,56 @@ void main() {
       );
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': null,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': null,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': 10.0,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': 20.0,
-            'imageQuality': null,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': null,
-            'imageQuality': 70,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': null,
-            'maxHeight': 10.0,
-            'imageQuality': 70,
-          }),
-          isMethodCall('pickMultiImage', arguments: <String, dynamic>{
-            'maxWidth': 10.0,
-            'maxHeight': 20.0,
-            'imageQuality': 70,
-          }),
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': 70,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': 70,
+              }),
+          const _LoggedMethodCall('pickMultiImage',
+              arguments: <String, dynamic>{
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': 70,
+              }),
         ],
       );
     });
 
     test('does not accept a negative width or height argument', () {
-      returnValue = <dynamic>['0', '1'];
+      log.returnValue = <String>['0', '1'];
       expect(
         () => picker.getMultiImage(maxWidth: -1.0),
         throwsArgumentError,
@@ -782,7 +811,7 @@ void main() {
     });
 
     test('does not accept a invalid imageQuality argument', () {
-      returnValue = <dynamic>['0', '1'];
+      log.returnValue = <String>['0', '1'];
       expect(
         () => picker.getMultiImage(imageQuality: -1),
         throwsArgumentError,
@@ -795,7 +824,7 @@ void main() {
     });
 
     test('handles a null image path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      log.returnValue = null;
 
       expect(await picker.getMultiImage(), isNull);
       expect(await picker.getMultiImage(), isNull);
@@ -808,16 +837,16 @@ void main() {
       await picker.getVideo(source: ImageSource.gallery);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
-            'cameraDevice': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'cameraDevice': SourceCamera.rear,
             'maxDuration': null,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 1,
-            'cameraDevice': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
+            'cameraDevice': SourceCamera.rear,
             'maxDuration': null,
           }),
         ],
@@ -839,34 +868,34 @@ void main() {
         maxDuration: const Duration(hours: 1),
       );
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': null,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': 10,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': 60,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': 3600,
-            'cameraDevice': 0,
+            'cameraDevice': SourceCamera.rear,
           }),
         ],
       );
     });
 
     test('handles a null video path response gracefully', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+      log.returnValue = null;
 
       expect(await picker.getVideo(source: ImageSource.gallery), isNull);
       expect(await picker.getVideo(source: ImageSource.camera), isNull);
@@ -876,11 +905,11 @@ void main() {
       await picker.getVideo(source: ImageSource.camera);
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
-            'cameraDevice': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'cameraDevice': SourceCamera.rear,
             'maxDuration': null,
           }),
         ],
@@ -894,80 +923,15 @@ void main() {
       );
 
       expect(
-        log,
-        <Matcher>[
-          isMethodCall('pickVideo', arguments: <String, dynamic>{
-            'source': 0,
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickVideo', arguments: <String, dynamic>{
+            'source': SourceType.camera,
             'maxDuration': null,
-            'cameraDevice': 1,
+            'cameraDevice': SourceCamera.front,
           }),
         ],
       );
-    });
-  });
-
-  group('#getLostData', () {
-    test('getLostData get success response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, String>{
-          'type': 'image',
-          'path': '/example/path',
-        };
-      });
-      final LostDataResponse response = await picker.getLostData();
-      expect(response.type, RetrieveType.image);
-      expect(response.file, isNotNull);
-      expect(response.file!.path, '/example/path');
-    });
-
-    test('getLostData should successfully retrieve multiple files', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, dynamic>{
-          'type': 'image',
-          'path': '/example/path1',
-          'pathList': <dynamic>['/example/path0', '/example/path1'],
-        };
-      });
-      final LostDataResponse response = await picker.getLostData();
-      expect(response.type, RetrieveType.image);
-      expect(response.file, isNotNull);
-      expect(response.file!.path, '/example/path1');
-      expect(response.files!.first.path, '/example/path0');
-      expect(response.files!.length, 2);
-    });
-
-    test('getLostData get error response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, String>{
-          'type': 'video',
-          'errorCode': 'test_error_code',
-          'errorMessage': 'test_error_message',
-        };
-      });
-      final LostDataResponse response = await picker.getLostData();
-      expect(response.type, RetrieveType.video);
-      expect(response.exception, isNotNull);
-      expect(response.exception!.code, 'test_error_code');
-      expect(response.exception!.message, 'test_error_message');
-    });
-
-    test('getLostData get null response', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return null;
-      });
-      expect((await picker.getLostData()).isEmpty, true);
-    });
-
-    test('getLostData get both path and error should throw', () async {
-      picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-        return <String, String>{
-          'type': 'video',
-          'errorCode': 'test_error_code',
-          'errorMessage': 'test_error_message',
-          'path': '/example/path',
-        };
-      });
-      expect(picker.getLostData(), throwsAssertionError);
     });
   });
 }

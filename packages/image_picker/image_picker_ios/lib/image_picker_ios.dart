@@ -4,18 +4,42 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
+import 'src/messages.g.dart';
+
+// Converts an [ImageSource] to the corresponding Pigeon API enum value.
+SourceType _convertSource(ImageSource source) {
+  switch (source) {
+    case ImageSource.camera:
+      return SourceType.camera;
+    case ImageSource.gallery:
+      return SourceType.gallery;
+    default:
+      throw UnimplementedError('Unknown source: $source');
+  }
+}
+
+// Converts a [CameraDevice] to the corresponding Pigeon API enum value.
+SourceCamera _convertCamera(CameraDevice camera) {
+  switch (camera) {
+    case CameraDevice.front:
+      return SourceCamera.front;
+    case CameraDevice.rear:
+      return SourceCamera.rear;
+    default:
+      throw UnimplementedError('Unknown camera: $camera');
+  }
+}
 
 /// An implementation of [ImagePickerPlatform] for iOS.
 class ImagePickerIOS extends ImagePickerPlatform {
-  /// The MethodChannel that is being used by this implementation of the plugin.
-  @visibleForTesting
-  MethodChannel get channel => _channel;
+  final ImagePickerApi _hostApi = ImagePickerApi();
+
+  /// Registers this class as the default platform implementation.
+  static void registerWith() {
+    ImagePickerPlatform.instance = ImagePickerIOS();
+  }
 
   @override
   Future<PickedFile?> pickImage({
@@ -53,11 +77,11 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return paths.map((dynamic path) => PickedFile(path as String)).toList();
   }
 
-  Future<List<dynamic>?> _getMultiImagePath({
+  Future<List<String>?> _getMultiImagePath({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-  }) {
+  }) async {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
@@ -71,14 +95,11 @@ class ImagePickerIOS extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return _channel.invokeMethod<List<dynamic>?>(
-      'pickMultiImage',
-      <String, dynamic>{
-        'maxWidth': maxWidth,
-        'maxHeight': maxHeight,
-        'imageQuality': imageQuality,
-      },
-    );
+    // TODO(stuartmorgan): Remove the cast once Pigeon supports non-nullable
+    //  generics, https://github.com/flutter/flutter/issues/97848
+    return (await _hostApi.pickMultiImage(
+            MaxSize(width: maxWidth, height: maxHeight), imageQuality))
+        ?.cast<String>();
   }
 
   Future<String?> _getImagePath({
@@ -101,15 +122,12 @@ class ImagePickerIOS extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return _channel.invokeMethod<String>(
-      'pickImage',
-      <String, dynamic>{
-        'source': source.index,
-        'maxWidth': maxWidth,
-        'maxHeight': maxHeight,
-        'imageQuality': imageQuality,
-        'cameraDevice': preferredCameraDevice.index
-      },
+    return _hostApi.pickImage(
+      SourceSpecification(
+          type: _convertSource(source),
+          camera: _convertCamera(preferredCameraDevice)),
+      MaxSize(width: maxWidth, height: maxHeight),
+      imageQuality,
     );
   }
 
@@ -132,14 +150,11 @@ class ImagePickerIOS extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) {
-    return _channel.invokeMethod<String>(
-      'pickVideo',
-      <String, dynamic>{
-        'source': source.index,
-        'maxDuration': maxDuration?.inSeconds,
-        'cameraDevice': preferredCameraDevice.index
-      },
-    );
+    return _hostApi.pickVideo(
+        SourceSpecification(
+            type: _convertSource(source),
+            camera: _convertCamera(preferredCameraDevice)),
+        maxDuration?.inSeconds);
   }
 
   @override
@@ -166,7 +181,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    final List<dynamic>? paths = await _getMultiImagePath(
+    final List<String>? paths = await _getMultiImagePath(
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
@@ -175,7 +190,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
       return null;
     }
 
-    return paths.map((dynamic path) => XFile(path as String)).toList();
+    return paths.map((String path) => XFile(path)).toList();
   }
 
   @override
