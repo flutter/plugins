@@ -104,7 +104,7 @@ class Heatmap implements MapsObject<Heatmap> {
     }
 
     addIfPresent('heatmapId', heatmapId.value);
-    addIfPresent('data', data.map((e) => e.toJson()));
+    addIfPresent('data', data.map((e) => e.toJson()).toList());
     addIfPresent('dissipating', dissipating);
     addIfPresent('gradient', gradient?.map((e) => e.value));
     addIfPresent('maxIntensity', maxIntensity);

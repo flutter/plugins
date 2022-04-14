@@ -23,7 +23,7 @@ class HeatmapBody extends StatefulWidget {
 class HeatmapBodyState extends State<HeatmapBody> {
   static const LatLng sanFrancisco = LatLng(37.774546, -122.433523);
 
-  List<WeightedLatLng> disabledPoints = <WeightedLatLng>[
+  List<WeightedLatLng> enabledPoints = <WeightedLatLng>[
     WeightedLatLng(37.782, -122.447),
     WeightedLatLng(37.782, -122.445),
     WeightedLatLng(37.782, -122.443),
@@ -40,7 +40,7 @@ class HeatmapBodyState extends State<HeatmapBody> {
     WeightedLatLng(37.785, -122.435)
   ];
 
-  List<WeightedLatLng> enabledPoints = <WeightedLatLng>[];
+  List<WeightedLatLng> disabledPoints = <WeightedLatLng>[];
 
   void _addPoint() {
     if (disabledPoints.isEmpty) {
