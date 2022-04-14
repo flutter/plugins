@@ -10,8 +10,8 @@ import 'package:webview_flutter_android/src/android_webview.pigeon.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
-import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart';
+import 'test_android_webview.pigeon.dart';
 
 @GenerateMocks(<Type>[
   CookieManagerHostApi,

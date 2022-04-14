@@ -10,7 +10,7 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
 import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
 
-import 'android_webview.pigeon.dart' as _i5;
+import 'test_android_webview.pigeon.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

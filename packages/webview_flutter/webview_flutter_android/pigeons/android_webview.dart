@@ -120,9 +120,9 @@ abstract class WebViewHostApi {
 
   void removeJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
 
-  void setDownloadListener(int instanceId, int listenerInstanceId);
+  void setDownloadListener(int instanceId, int? listenerInstanceId);
 
-  void setWebChromeClient(int instanceId, int clientInstanceId);
+  void setWebChromeClient(int instanceId, int? clientInstanceId);
 
   void setBackgroundColor(int instanceId, int color);
 }
@@ -141,7 +141,7 @@ abstract class WebSettingsHostApi {
 
   void setJavaScriptEnabled(int instanceId, bool flag);
 
-  void setUserAgentString(int instanceId, String userAgentString);
+  void setUserAgentString(int instanceId, String? userAgentString);
 
   void setMediaPlaybackRequiresUserGesture(int instanceId, bool require);
 

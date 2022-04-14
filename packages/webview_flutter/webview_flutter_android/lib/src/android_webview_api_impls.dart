@@ -272,22 +272,22 @@ class WebViewHostApiImpl extends WebViewHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> setDownloadListenerFromInstance(
     WebView instance,
-    DownloadListener listener,
+    DownloadListener? listener,
   ) {
     return setDownloadListener(
       instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(listener)!,
+      listener != null ? instanceManager.getInstanceId(listener) : null,
     );
   }
 
   /// Helper method to convert instances ids to objects.
   Future<void> setWebChromeClientFromInstance(
     WebView instance,
-    WebChromeClient client,
+    WebChromeClient? client,
   ) {
     return setWebChromeClient(
       instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(client)!,
+      client != null ? instanceManager.getInstanceId(client) : null,
     );
   }
 
@@ -371,7 +371,7 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> setUserAgentStringFromInstance(
     WebSettings instance,
-    String userAgentString,
+    String? userAgentString,
   ) {
     return setUserAgentString(
       instanceManager.getInstanceId(instance)!,

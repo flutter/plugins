@@ -320,9 +320,11 @@ class WebView {
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
   ///
   /// This will replace the current handler.
-  Future<void> setDownloadListener(DownloadListener listener) {
-    DownloadListener.api.createFromInstance(listener);
-    return api.setDownloadListenerFromInstance(this, listener);
+  Future<void> setDownloadListener(DownloadListener? listener) async {
+    await Future.wait(<Future<void>>[
+      if (listener != null) DownloadListener.api.createFromInstance(listener),
+      api.setDownloadListenerFromInstance(this, listener)
+    ]);
   }
 
   /// Sets the chrome handler.
@@ -330,7 +332,7 @@ class WebView {
   /// This is an implementation of [WebChromeClient] for use in handling
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
-  Future<void> setWebChromeClient(WebChromeClient client) {
+  Future<void> setWebChromeClient(WebChromeClient? client) async {
     // WebView requires a WebViewClient because of a bug fix that makes
     // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
     // window is opened. This is to make sure a url opened by `Window.open` has
@@ -339,8 +341,11 @@ class WebView {
       _currentWebViewClient != null,
       "Can't set a WebChromeClient without setting a WebViewClient first.",
     );
-    WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
-    return api.setWebChromeClientFromInstance(this, client);
+    await Future.wait(<Future<void>>[
+      if (client != null)
+        WebChromeClient.api.createFromInstance(client, _currentWebViewClient!),
+      api.setWebChromeClientFromInstance(this, client),
+    ]);
   }
 
   /// Sets the background color of this WebView.
@@ -460,7 +465,7 @@ class WebSettings {
   /// If the string is empty, the system default value will be used. Note that
   /// starting from KITKAT Android version, changing the user-agent while
   /// loading a web page causes WebView to initiate loading once again.
-  Future<void> setUserAgentString(String userAgentString) {
+  Future<void> setUserAgentString(String? userAgentString) {
     return api.setUserAgentStringFromInstance(this, userAgentString);
   }
 
