@@ -178,6 +178,7 @@
 
   OCMVerify(times(1),
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
+  XCTAssertEqual([plugin getMaxImagesAllowed], 0);
 }
 
 #pragma mark - Test camera devices, no op on simulators

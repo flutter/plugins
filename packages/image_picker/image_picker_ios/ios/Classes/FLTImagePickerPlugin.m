@@ -73,6 +73,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
+- (int) getMaxImagesAllowed {
+    return self.maxImagesAllowed;
+}
+
 - (UIImagePickerController *)createImagePickerController {
   if ([self.imagePickerControllerOverrides count] > 0) {
     UIImagePickerController *controller = [self.imagePickerControllerOverrides firstObject];
@@ -136,13 +140,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [self checkPhotoAuthorizationForAccessLevel];
 }
 
-- (void)launchUIImagePickerWithSource:(int)imageSource {
+- (void)launchUIImagePickerWithSource:(int)imageSource multiImage:(BOOL)multiImage {
   UIImagePickerController *imagePickerController = [self createImagePickerController];
   imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   imagePickerController.delegate = self;
   imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-  self.maxImagesAllowed = 1;
+  // Picking multiple images is unsupported on iOS 13 and below,
+  // but this still has to be set as it determines the correct
+  // return type (list or single item).
+  self.maxImagesAllowed = multiImage ? 0 : 1;
 
   switch (imageSource) {
     case SOURCE_CAMERA:
@@ -179,16 +186,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         [self pickImageWithPHPicker:1];
       } else {
         // UIImagePicker is used
-        [self launchUIImagePickerWithSource:imageSource];
+        [self launchUIImagePickerWithSource:imageSource multiImage:false];
       }
     } else {
-      [self launchUIImagePickerWithSource:imageSource];
+        [self launchUIImagePickerWithSource:imageSource multiImage:false];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
       [self pickImageWithPHPicker:0];
     } else {
-      [self launchUIImagePickerWithSource:SOURCE_GALLERY];
+        [self launchUIImagePickerWithSource:SOURCE_GALLERY multiImage:true];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     UIImagePickerController *imagePickerController = [self createImagePickerController];
