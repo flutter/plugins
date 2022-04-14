@@ -8,22 +8,22 @@ import 'package:flutter/foundation.dart' show immutable;
 
 import 'types.dart';
 
-/// Uniquely identifies a [HeatmapLayer] among [GoogleMap] heatmap layers.
+/// Uniquely identifies a [Heatmap] among [GoogleMap] heatmaps.
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class HeatmapLayerId extends MapsObjectId<HeatmapLayer> {
-  /// Creates an immutable identifier for a [HeatmapLayer].
-  const HeatmapLayerId(String value) : super(value);
+class HeatmapId extends MapsObjectId<Heatmap> {
+  /// Creates an immutable identifier for a [Heatmap].
+  const HeatmapId(String value) : super(value);
 }
 
-/// Draws a heatmap layer on the map.
+/// Draws a heatmap on the map.
 @immutable
-class HeatmapLayer implements MapsObject<HeatmapLayer> {
-  /// Creates an immutable representation of a [HeatmapLayer] to draw on
+class Heatmap implements MapsObject<Heatmap> {
+  /// Creates an immutable representation of a [Heatmap] to draw on
   /// [GoogleMap].
-  const HeatmapLayer({
-    required this.heatmapLayerId,
+  const Heatmap({
+    required this.heatmapId,
     this.data = const [],
     this.dissipating = true,
     this.gradient,
@@ -32,11 +32,11 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
     this.radius,
   });
 
-  /// Uniquely identifies a [HeatmapLayer].
-  final HeatmapLayerId heatmapLayerId;
+  /// Uniquely identifies a [Heatmap].
+  final HeatmapId heatmapId;
 
   @override
-  HeatmapLayerId get mapsId => heatmapLayerId;
+  HeatmapId get mapsId => heatmapId;
 
   /// The data points to display.
   final List<WeightedLatLng> data;
@@ -45,7 +45,7 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
   /// influence of a data point is specified by the radius option only. When
   /// dissipating is disabled, the radius option is interpreted as a radius at
   /// zoom level 0.
-  /// 
+  ///
   /// TODO: Not on android
   final bool dissipating;
 
@@ -65,9 +65,9 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
   /// The radius of influence for each data point, in pixels.
   final int? radius;
 
-  /// Creates a new [HeatmapLayer] object whose values are the same as this
+  /// Creates a new [Heatmap] object whose values are the same as this
   /// instance, unless overwritten by the specified parameters.
-  HeatmapLayer copyWith({
+  Heatmap copyWith({
     List<WeightedLatLng>? dataParam,
     bool? dissipatingParam,
     List<Color>? gradientParam,
@@ -75,8 +75,8 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
     double? opacityParam,
     int? radiusParam,
   }) {
-    return HeatmapLayer(
-      heatmapLayerId: heatmapLayerId,
+    return Heatmap(
+      heatmapId: heatmapId,
       data: dataParam ?? data,
       dissipating: dissipatingParam ?? dissipating,
       gradient: gradientParam ?? gradient,
@@ -86,9 +86,9 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
     );
   }
 
-  /// Creates a new [HeatmapLayer] object whose values are the same as this
+  /// Creates a new [Heatmap] object whose values are the same as this
   /// instance.
-  HeatmapLayer clone() => copyWith(
+  Heatmap clone() => copyWith(
         dataParam: List.of(data),
         gradientParam: gradient != null ? List.of(gradient!) : null,
       );
@@ -103,7 +103,7 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
       }
     }
 
-    addIfPresent('heatmapLayerId', heatmapLayerId.value);
+    addIfPresent('heatmapId', heatmapId.value);
     addIfPresent('data', data.map((e) => e.toJson()));
     addIfPresent('dissipating', dissipating);
     addIfPresent('gradient', gradient?.map((e) => e.value));
@@ -118,8 +118,8 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final HeatmapLayer typedOther = other as HeatmapLayer;
-    return heatmapLayerId == typedOther.heatmapLayerId &&
+    final Heatmap typedOther = other as Heatmap;
+    return heatmapId == typedOther.heatmapId &&
         listEquals(data, typedOther.data) &&
         dissipating == typedOther.dissipating &&
         listEquals(gradient, typedOther.gradient) &&
@@ -129,5 +129,5 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
   }
 
   @override
-  int get hashCode => heatmapLayerId.hashCode;
+  int get hashCode => heatmapId.hashCode;
 }

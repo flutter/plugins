@@ -21,7 +21,7 @@ class FakePlatformGoogleMap {
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
-    updateHeatmapLayers(params);
+    updateHeatmaps(params);
     updateTileOverlays(Map.castFrom<dynamic, dynamic, String, dynamic>(params));
   }
 
@@ -87,11 +87,11 @@ class FakePlatformGoogleMap {
 
   Set<Circle> circlesToChange = <Circle>{};
 
-  Set<HeatmapLayerId> heatmapLayerIdsToRemove = <HeatmapLayerId>{};
+  Set<HeatmapId> heatmapIdsToRemove = <HeatmapId>{};
 
-  Set<HeatmapLayer> heatmapLayersToAdd = <HeatmapLayer>{};
+  Set<Heatmap> heatmapsToAdd = <Heatmap>{};
 
-  Set<HeatmapLayer> heatmapLayersToChange = <HeatmapLayer>{};
+  Set<Heatmap> heatmapsToChange = <Heatmap>{};
 
   Set<TileOverlayId> tileOverlayIdsToRemove = <TileOverlayId>{};
 
@@ -120,8 +120,8 @@ class FakePlatformGoogleMap {
       case 'circles#update':
         updateCircles(call.arguments as Map<dynamic, dynamic>?);
         return Future<void>.sync(() {});
-      case 'heatmapLayers#update':
-        updateHeatmapLayers(call.arguments as Map<dynamic, dynamic>?);
+      case 'heatmaps#update':
+        updateHeatmaps(call.arguments as Map<dynamic, dynamic>?);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -299,16 +299,14 @@ class FakePlatformGoogleMap {
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
-  void updateHeatmapLayers(Map<dynamic, dynamic>? heatmapLayerUpdates) {
-    if (heatmapLayerUpdates == null) {
+  void updateHeatmaps(Map<dynamic, dynamic>? heatmapUpdates) {
+    if (heatmapUpdates == null) {
       return;
     }
-    heatmapLayersToAdd =
-        _deserializeHeatmapLayers(heatmapLayerUpdates['heatmapLayersToAdd']);
-    heatmapLayerIdsToRemove = _deserializeHeatmapLayerIds(
-        heatmapLayerUpdates['heatmapLayerIdsToRemove'] as List<dynamic>?);
-    heatmapLayersToChange =
-        _deserializeHeatmapLayers(heatmapLayerUpdates['heatmapLayersToChange']);
+    heatmapsToAdd = _deserializeHeatmaps(heatmapUpdates['heatmapsToAdd']);
+    heatmapIdsToRemove = _deserializeHeatmapIds(
+        heatmapUpdates['heatmapIdsToRemove'] as List<dynamic>?);
+    heatmapsToChange = _deserializeHeatmaps(heatmapUpdates['heatmapsToChange']);
   }
 
   void updateTileOverlays(Map<String, dynamic> updateTileOverlayUpdates) {
@@ -369,46 +367,44 @@ class FakePlatformGoogleMap {
     return result;
   }
 
-  Set<HeatmapLayerId> _deserializeHeatmapLayerIds(
-      List<dynamic>? heatmapLayerIds) {
-    if (heatmapLayerIds == null) {
-      return <HeatmapLayerId>{};
+  Set<HeatmapId> _deserializeHeatmapIds(List<dynamic>? heatmapIds) {
+    if (heatmapIds == null) {
+      return <HeatmapId>{};
     }
-    return heatmapLayerIds
+    return heatmapIds
         .map(
-          (dynamic heatmapLayerId) => HeatmapLayerId(heatmapLayerId as String),
+          (dynamic heatmapId) => HeatmapId(heatmapId as String),
         )
         .toSet();
   }
 
-  Set<HeatmapLayer> _deserializeHeatmapLayers(dynamic heatmapLayers) {
-    if (heatmapLayers == null) {
-      return <HeatmapLayer>{};
+  Set<Heatmap> _deserializeHeatmaps(dynamic heatmaps) {
+    if (heatmaps == null) {
+      return <Heatmap>{};
     }
-    final List<dynamic> heatmapLayersData = heatmapLayers as List<dynamic>;
-    final Set<HeatmapLayer> result = <HeatmapLayer>{};
-    for (final Map<dynamic, dynamic> heatmapLayerData
-        in heatmapLayersData.cast<Map<dynamic, dynamic>>()) {
-      final String heatmapLayerId =
-          heatmapLayerData['heatmapLayerId'] as String;
+    final List<dynamic> heatmapsData = heatmaps as List<dynamic>;
+    final Set<Heatmap> result = <Heatmap>{};
+    for (final Map<dynamic, dynamic> heatmapData
+        in heatmapsData.cast<Map<dynamic, dynamic>>()) {
+      final String heatmapId = heatmapData['heatmapId'] as String;
 
-      final List<dynamic> dataData = heatmapLayerData['data'] as List<dynamic>;
+      final List<dynamic> dataData = heatmapData['data'] as List<dynamic>;
       final List<WeightedLatLng> data =
           dataData.map((dynamic e) => WeightedLatLng.fromJson(e)!).toList();
 
-      final bool dissipating = heatmapLayerData['dissipating'] as bool;
+      final bool dissipating = heatmapData['dissipating'] as bool;
 
       final List<dynamic>? gradientData =
-          heatmapLayerData['gradient'] as List<dynamic>?;
+          heatmapData['gradient'] as List<dynamic>?;
       final List<Color>? gradient =
           gradientData?.cast<int>().map((int e) => Color(e)).toList();
 
-      final double? maxIntensity = heatmapLayerData['maxIntensity'] as double?;
-      final double opacity = heatmapLayerData['opacity'] as double;
-      final int? radius = heatmapLayerData['radius'] as int?;
+      final double? maxIntensity = heatmapData['maxIntensity'] as double?;
+      final double opacity = heatmapData['opacity'] as double;
+      final int? radius = heatmapData['radius'] as int?;
 
-      result.add(HeatmapLayer(
-        heatmapLayerId: HeatmapLayerId(heatmapLayerId),
+      result.add(Heatmap(
+        heatmapId: HeatmapId(heatmapId),
         data: data,
         dissipating: dissipating,
         gradient: gradient,

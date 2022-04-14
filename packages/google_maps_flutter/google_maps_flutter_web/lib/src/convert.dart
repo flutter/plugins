@@ -277,23 +277,23 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
   return circleOptions;
 }
 
-gmaps_visualization.HeatmapLayerOptions _heatmapLayerOptionsFromHeatmapLayer(
-  HeatmapLayer heatmapLayer,
+gmaps_visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
+  Heatmap heatmap,
 ) {
-  final heatmapLayerOptions = gmaps_visualization.HeatmapLayerOptions()
-    ..data = heatmapLayer.data
+  final heatmapOptions = gmaps_visualization.HeatmapLayerOptions()
+    ..data = heatmap.data
         .map(
           (e) => gmaps_visualization.WeightedLocation()
             ..location = gmaps.LatLng(e.location.latitude, e.location.longitude)
             ..weight = e.weight,
         )
         .toList()
-    ..dissipating = heatmapLayer.dissipating
-    ..gradient = heatmapLayer.gradient?.map(_getCssColor).toList()
-    ..maxIntensity = heatmapLayer.maxIntensity
-    ..opacity = heatmapLayer.opacity
-    ..radius = heatmapLayer.radius;
-  return heatmapLayerOptions;
+    ..dissipating = heatmap.dissipating
+    ..gradient = heatmap.gradient?.map(_getCssColor).toList()
+    ..maxIntensity = heatmap.maxIntensity
+    ..opacity = heatmap.opacity
+    ..radius = heatmap.radius;
+  return heatmapOptions;
 }
 
 gmaps.PolygonOptions _polygonOptionsFromPolygon(

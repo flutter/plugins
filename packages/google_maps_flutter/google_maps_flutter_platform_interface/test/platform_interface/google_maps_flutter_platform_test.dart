@@ -80,7 +80,7 @@ class BuildViewGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
-    Set<HeatmapLayer> heatmapLayers = const <HeatmapLayer>{},
+    Set<Heatmap> heatmaps = const <Heatmap>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},

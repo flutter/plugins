@@ -9,8 +9,8 @@ export 'camera.dart';
 export 'cap.dart';
 export 'circle_updates.dart';
 export 'circle.dart';
-export 'heatmap_layer_updates.dart';
-export 'heatmap_layer.dart';
+export 'heatmap_updates.dart';
+export 'heatmap.dart';
 export 'joint_type.dart';
 export 'location.dart';
 export 'maps_object_updates.dart';
@@ -30,7 +30,7 @@ export 'ui.dart';
 
 // Export the utils, they're used by the Widget
 export 'utils/circle.dart';
-export 'utils/heatmap_layer.dart';
+export 'utils/heatmap.dart';
 export 'utils/marker.dart';
 export 'utils/polygon.dart';
 export 'utils/polyline.dart';

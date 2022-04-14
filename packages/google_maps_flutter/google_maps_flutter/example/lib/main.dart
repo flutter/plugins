@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_example/lite_mode.dart';
 import 'animate_camera.dart';
-import 'heatmap_layer.dart';
+import 'heatmap.dart';
 import 'map_click.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
@@ -42,7 +42,7 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   const SnapshotPage(),
   const LiteModePage(),
   const TileOverlayPage(),
-  const HeatmapLayerPage(),
+  const HeatmapPage(),
 ];
 
 class MapsDemo extends StatelessWidget {

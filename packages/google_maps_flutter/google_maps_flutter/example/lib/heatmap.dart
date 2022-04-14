@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_example/page.dart';
 
-class HeatmapLayerPage extends GoogleMapExampleAppPage {
-  const HeatmapLayerPage() : super(const Icon(Icons.map), 'Heatmap layer');
+class HeatmapPage extends GoogleMapExampleAppPage {
+  const HeatmapPage() : super(const Icon(Icons.map), 'Heatmaps');
 
   @override
   Widget build(BuildContext context) {
-    return const HeatmapLayerBody();
+    return const HeatmapBody();
   }
 }
 
-class HeatmapLayerBody extends StatefulWidget {
-  const HeatmapLayerBody();
+class HeatmapBody extends StatefulWidget {
+  const HeatmapBody();
 
   @override
-  State<StatefulWidget> createState() => HeatmapLayerBodyState();
+  State<StatefulWidget> createState() => HeatmapBodyState();
 }
 
-class HeatmapLayerBodyState extends State<HeatmapLayerBody> {
+class HeatmapBodyState extends State<HeatmapBody> {
   static const LatLng sanFrancisco = LatLng(37.774546, -122.433523);
 
   List<WeightedLatLng> disabledPoints = <WeightedLatLng>[
@@ -79,9 +79,9 @@ class HeatmapLayerBodyState extends State<HeatmapLayerBody> {
                   target: sanFrancisco,
                   zoom: 13,
                 ),
-                heatmapLayers: <HeatmapLayer>{
-                  HeatmapLayer(
-                    heatmapLayerId: const HeatmapLayerId('test'),
+                heatmaps: <Heatmap>{
+                  Heatmap(
+                    heatmapId: const HeatmapId('test'),
                     data: enabledPoints,
                   )
                 }),

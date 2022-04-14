@@ -325,14 +325,14 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   @override
-  Future<void> updateHeatmapLayers(
-    HeatmapLayerUpdates heatmapLayerUpdates, {
+  Future<void> updateHeatmaps(
+    HeatmapUpdates heatmapUpdates, {
     required int mapId,
   }) {
-    assert(heatmapLayerUpdates != null);
+    assert(heatmapUpdates != null);
     return channel(mapId).invokeMethod<void>(
-      'heatmapLayers#update',
-      heatmapLayerUpdates.toJson(),
+      'heatmaps#update',
+      heatmapUpdates.toJson(),
     );
   }
 
@@ -502,7 +502,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
-    Set<HeatmapLayer> heatmapLayers = const <HeatmapLayer>{},
+    Set<Heatmap> heatmaps = const <Heatmap>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
@@ -514,7 +514,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       'polygonsToAdd': serializePolygonSet(polygons),
       'polylinesToAdd': serializePolylineSet(polylines),
       'circlesToAdd': serializeCircleSet(circles),
-      'heatmapLayersToAdd': serializeHeatmapLayerSet(heatmapLayers),
+      'heatmapsToAdd': serializeHeatmapSet(heatmaps),
       'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
     };
 
@@ -586,7 +586,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
-    Set<HeatmapLayer> heatmapLayers = const <HeatmapLayer>{},
+    Set<Heatmap> heatmaps = const <Heatmap>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
@@ -600,7 +600,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       polygons: polygons,
       polylines: polylines,
       circles: circles,
-      heatmapLayers: heatmapLayers,
+      heatmaps: heatmaps,
       tileOverlays: tileOverlays,
       gestureRecognizers: gestureRecognizers,
       mapOptions: mapOptions,

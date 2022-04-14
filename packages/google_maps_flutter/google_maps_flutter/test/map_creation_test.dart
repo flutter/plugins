@@ -118,8 +118,8 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   }) async {}
 
   @override
-  Future<void> updateHeatmapLayers(
-    HeatmapLayerUpdates heatmapLayerUpdates, {
+  Future<void> updateHeatmaps(
+    HeatmapUpdates heatmapUpdates, {
     required int mapId,
   }) async {}
 
@@ -290,7 +290,7 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
-    Set<HeatmapLayer> heatmapLayers = const <HeatmapLayer>{},
+    Set<Heatmap> heatmaps = const <Heatmap>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},
