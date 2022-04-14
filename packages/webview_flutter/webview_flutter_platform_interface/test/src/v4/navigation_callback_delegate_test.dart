@@ -5,8 +5,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart';
-import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
+import 'package:webview_flutter_platform_interface/v4/src/navigation_callback_delegate.dart';
+import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
 
 import 'webview_platform_test.mocks.dart';
 

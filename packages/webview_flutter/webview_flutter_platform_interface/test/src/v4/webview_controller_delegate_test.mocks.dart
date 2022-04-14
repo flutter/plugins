@@ -5,9 +5,9 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/navigation_callback_delegate.dart'
     as _i3;
-import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart'
+import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
     as _i2;
 
 // ignore_for_file: avoid_redundant_argument_values

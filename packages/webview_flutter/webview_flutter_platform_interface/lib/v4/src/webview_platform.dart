@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/types.dart';
-import 'package:webview_flutter_platform_interface/src/v4/types/webview_widget_creation_params.dart';
-import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart';
 
 import 'navigation_callback_delegate.dart';
+import 'types/types.dart';
 import 'webview_controller_delegate.dart';
 import 'webview_cookie_manager_delegate.dart';
+import 'webview_widget_delegate.dart';
 
 export 'types/types.dart';
 

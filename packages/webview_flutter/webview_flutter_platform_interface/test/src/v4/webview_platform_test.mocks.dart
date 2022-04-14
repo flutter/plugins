@@ -3,19 +3,17 @@
 // Do not manually edit this file.
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/navigation_callback_delegate.dart'
     as _i3;
-import 'package:webview_flutter_platform_interface/src/v4/types/types.dart'
+import 'package:webview_flutter_platform_interface/v4/src/types/types.dart'
     as _i7;
-import 'package:webview_flutter_platform_interface/src/v4/types/webview_widget_creation_params.dart'
-    as _i8;
-import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/webview_controller_delegate.dart'
     as _i4;
-import 'package:webview_flutter_platform_interface/src/v4/webview_cookie_manager_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/webview_cookie_manager_delegate.dart'
     as _i2;
-import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart'
+import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
     as _i6;
-import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/webview_widget_delegate.dart'
     as _i5;
 
 // ignore_for_file: avoid_redundant_argument_values
@@ -70,7 +68,7 @@ class MockWebViewPlatform extends _i1.Mock implements _i6.WebViewPlatform {
           as _i4.WebViewControllerDelegate);
   @override
   _i5.WebViewWidgetDelegate createWebViewWidgetDelegate(
-          _i8.WebViewWidgetCreationParams? params) =>
+          _i7.WebViewWidgetCreationParams? params) =>
       (super.noSuchMethod(
               Invocation.method(#createWebViewWidgetDelegate, [params]),
               returnValue: _FakeWebViewWidgetDelegate_3())

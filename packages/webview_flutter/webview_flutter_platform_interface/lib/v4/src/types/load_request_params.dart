@@ -4,7 +4,8 @@
 
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
+
+import '../webview_controller_delegate.dart';
 
 /// Defines the supported HTTP methods for loading a page in [WebViewControllerDelegate].
 enum LoadRequestMethod {
