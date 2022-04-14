@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes typing build warning.
+
 ## 2.0.12
 
 * Returns to using a different platform channel name, undoing the revert in
