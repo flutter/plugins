@@ -26,8 +26,8 @@ class LocalAuthentication {
   /// Returns true if the user successfully authenticated, false otherwise.
   ///
   /// [localizedReason] is the message to show to user while prompting them
-  /// for authentication. This is typically along the lines of: 'Please scan
-  /// your finger to access MyApp.'. This must not be empty.
+  /// for authentication. This is typically along the lines of: 'Authenticate
+  /// to access MyApp.'. This must not be empty.
   ///
   /// Provide [authMessages] if you want to
   /// customize messages in the dialogs.
@@ -52,35 +52,26 @@ class LocalAuthentication {
     );
   }
 
-  /// Returns true if auth was cancelled successfully.
-  /// This api only works for Android.
+  /// Cancels any in-progress authentication, returning true if auth was
+  /// cancelled successfully.
+  ///
+  /// This API is not supported by all platforms.
   /// Returns false if there was some error, no authentication in progress,
   /// or the current platform lacks support.
-  ///
-  /// Returns [Future] bool true or false:
   Future<bool> stopAuthentication() async {
     return LocalAuthPlatform.instance.stopAuthentication();
   }
 
-  /// Returns true if device is capable of checking biometrics
-  ///
-  /// Returns a [Future] bool true or false:
+  /// Returns true if device is capable of checking biometrics.
   Future<bool> get canCheckBiometrics =>
       LocalAuthPlatform.instance.deviceSupportsBiometrics();
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
-  ///
-  /// Returns a [Future] bool true or false:
   Future<bool> isDeviceSupported() async =>
       LocalAuthPlatform.instance.isDeviceSupported();
 
-  /// Returns a list of enrolled biometrics
-  ///
-  /// Returns a [Future] List<BiometricType> with the following possibilities:
-  /// - BiometricType.face
-  /// - BiometricType.fingerprint
-  /// - BiometricType.iris (not yet implemented)
+  /// Returns a list of enrolled biometrics.
   Future<List<BiometricType>> getAvailableBiometrics() =>
       LocalAuthPlatform.instance.getEnrolledBiometrics();
 }
