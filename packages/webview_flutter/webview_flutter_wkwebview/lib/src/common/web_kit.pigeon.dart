@@ -283,7 +283,7 @@ class WKWebsiteDataStoreHostApi {
     }
   }
 
-  Future<void> removeDataOfTypes(
+  Future<bool> removeDataOfTypes(
       int arg_instanceId,
       List<WKWebsiteDataTypesEnumData?> arg_dataTypes,
       double arg_secondsModifiedSinceEpoch) async {
@@ -308,8 +308,13 @@ class WKWebsiteDataStoreHostApi {
         message: error['message'] as String?,
         details: error['details'],
       );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
     } else {
-      return;
+      return (replyMap['result'] as bool?)!;
     }
   }
 }

@@ -179,7 +179,7 @@ abstract class WKWebsiteDataStoreHostApi {
   );
 
   @async
-  void removeDataOfTypes(
+  bool removeDataOfTypes(
     int instanceId,
     List<WKWebsiteDataTypesEnumData> dataTypes,
     double secondsModifiedSinceEpoch,

@@ -75,9 +75,9 @@ void main() {
       );
     });
 
-    test('stopAuthentication throws UnimplementedError', () async {
-      expect(() async => await localAuthentication.stopAuthentication(),
-          throwsUnimplementedError);
+    test('stopAuthentication returns false', () async {
+      final bool result = await localAuthentication.stopAuthentication();
+      expect(result, false);
     });
 
     group('With device auth fail over', () {

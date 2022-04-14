@@ -86,8 +86,83 @@ enum NSKeyValueChangeKey {
 
   /// Indicates the value of this key is the value before the attribute was changed.
   ///
-  /// https://developer.apple.com/documentation/foundation/nskeyvaluechangeoldkey?language=objc.
+  /// See https://developer.apple.com/documentation/foundation/nskeyvaluechangeoldkey?language=objc.
   oldValue,
+}
+
+/// The supported keys in a cookie attributes dictionary.
+///
+/// Wraps [NSHTTPCookiePropertyKey](https://developer.apple.com/documentation/foundation/nshttpcookiepropertykey).
+enum NSHttpCookiePropertyKey {
+  /// A String object containing the comment for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiecomment.
+  comment,
+
+  /// A String object containing the comment URL for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiecommenturl.
+  commentUrl,
+
+  /// A String object stating whether the cookie should be discarded at the end of the session.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiediscard.
+  discard,
+
+  /// A String object specifying the expiration date for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiedomain.
+  domain,
+
+  /// A String object specifying the expiration date for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookieexpires.
+  expires,
+
+  /// A String object containing an integer value stating how long in seconds the cookie should be kept, at most.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiemaximumage.
+  maximumAge,
+
+  /// A String object containing the name of the cookie (required).
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiename.
+  name,
+
+  /// A String object containing the URL that set this cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookieoriginurl.
+  originUrl,
+
+  /// A String object containing the path for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiepath.
+  path,
+
+  /// A String object containing comma-separated integer values specifying the ports for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookieport.
+  port,
+
+  /// A String indicating the same-site policy for the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiesamesitepolicy.
+  sameSitePolicy,
+
+  /// A String object indicating that the cookie should be transmitted only over secure channels.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookiesecure.
+  secure,
+
+  /// A String object containing the value of the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookievalue.
+  value,
+
+  /// A String object that specifies the version of the cookie.
+  ///
+  /// See https://developer.apple.com/documentation/foundation/nshttpcookieversion.
+  version,
 }
 
 /// A URL load request that is independent of protocol or URL scheme.
@@ -140,6 +215,18 @@ class NSError {
 
   /// A string containing the localized description of the error.
   final String localizedDescription;
+}
+
+/// A representation of an HTTP cookie.
+///
+/// Wraps [NSHTTPCookie](https://developer.apple.com/documentation/foundation/nshttpcookie).
+@immutable
+class NSHttpCookie {
+  /// Initializes an HTTP cookie object using the provided properties.
+  const NSHttpCookie.withProperties(this.properties);
+
+  /// Properties of the new cookie object.
+  final Map<NSHttpCookiePropertyKey, Object> properties;
 }
 
 /// The root class of most Objective-C class hierarchies.

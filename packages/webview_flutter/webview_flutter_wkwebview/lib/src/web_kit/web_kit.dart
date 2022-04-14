@@ -126,6 +126,18 @@ class WKErrorCode {
   static const int javaScriptResultTypeIsUnsupported = 5;
 }
 
+/// A record of the data that a particular website stores persistently.
+///
+/// Wraps [WKWebsiteDataRecord](https://developer.apple.com/documentation/webkit/wkwebsitedatarecord?language=objc).
+@immutable
+class WKWebsiteDataRecord {
+  /// Constructs a [WKWebsiteDataRecord].
+  const WKWebsiteDataRecord({required this.displayName});
+
+  /// Identifying information that you display to users.
+  final String displayName;
+}
+
 /// An object that contains information about an action that causes navigation to occur.
 ///
 /// Wraps [WKNavigationAction](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
@@ -230,26 +242,51 @@ class WKPreferences {
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
 class WKWebsiteDataStore {
-  /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
-  @visibleForTesting
-  WKWebsiteDataStore.fromWebViewConfiguration(
-    WKWebViewConfiguration configuration, {
+  WKWebsiteDataStore._({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _websiteDataStoreApi = WKWebsiteDataStoreHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        ) {
-    _websiteDataStoreApi.createFromWebViewConfigurationForInstances(
-      this,
+        );
+
+  factory WKWebsiteDataStore._defaultDataStore() {
+    throw UnimplementedError();
+  }
+
+  /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
+  @visibleForTesting
+  factory WKWebsiteDataStore.fromWebViewConfiguration(
+    WKWebViewConfiguration configuration, {
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    final WKWebsiteDataStore websiteDataStore = WKWebsiteDataStore._(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    websiteDataStore._websiteDataStoreApi
+        .createFromWebViewConfigurationForInstances(
+      websiteDataStore,
       configuration,
     );
+    return websiteDataStore;
   }
+
+  /// Default data store that stores data persistently to disk.
+  static final WKWebsiteDataStore defaultDataStore =
+      WKWebsiteDataStore._defaultDataStore();
 
   final WKWebsiteDataStoreHostApiImpl _websiteDataStoreApi;
 
+  /// Manages the HTTP cookies associated with a particular web view.
+  late final WKHttpCookieStore httpCookieStore =
+      WKHttpCookieStore.fromWebsiteDataStore(this);
+
   /// Removes website data that changed after the specified date.
-  Future<void> removeDataOfTypes(
+  ///
+  /// Returns whether any data was removed.
+  Future<bool> removeDataOfTypes(
     Set<WKWebsiteDataTypes> dataTypes,
     DateTime since,
   ) {
@@ -258,6 +295,26 @@ class WKWebsiteDataStore {
       dataTypes,
       secondsModifiedSinceEpoch: since.millisecondsSinceEpoch / 1000,
     );
+  }
+}
+
+/// An object that manages the HTTP cookies associated with a particular web view.
+///
+/// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
+class WKHttpCookieStore {
+  /// Constructs a [WKHttpCookieStore] that is owned by [dataStore].
+  @visibleForTesting
+  WKHttpCookieStore.fromWebsiteDataStore(
+    // TODO(bparrishMines): Remove ignore on implementation.
+    // ignore: avoid_unused_constructor_parameters
+    WKWebsiteDataStore dataStore,
+  ) {
+    throw UnimplementedError();
+  }
+
+  /// Adds a cookie to the cookie store.
+  Future<void> setCookie(NSHttpCookie cookie) {
+    throw UnimplementedError();
   }
 }
 
@@ -471,7 +528,6 @@ class WKWebViewConfiguration {
   Future<void> setMediaTypesRequiringUserActionForPlayback(
     Set<WKAudiovisualMediaType> types,
   ) {
-    assert(types.isNotEmpty);
     return _webViewConfigurationApi
         .setMediaTypesRequiringUserActionForPlaybackForInstances(
       this,
