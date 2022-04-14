@@ -26,6 +26,8 @@ Modify the `<head>` tag of your `web/index.html` to load the Google Maps JavaScr
 
 Now you should be able to use the Google Maps plugin normally.
 
+To use heatmap layers, add `&libraries=visualization` to the end of the URL.
+
 ## Limitations of the web version
 
 The following map options are not available in web, because the map doesn't rotate there:

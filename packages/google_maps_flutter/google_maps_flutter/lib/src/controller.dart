@@ -154,6 +154,18 @@ class GoogleMapController {
         .updateCircles(circleUpdates, mapId: mapId);
   }
 
+  /// Updates heatmap layer configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateHeatmapLayers(HeatmapLayerUpdates heatmapLayerUpdates) {
+    assert(heatmapLayerUpdates != null);
+    return GoogleMapsFlutterPlatform.instance
+        .updateHeatmapLayers(heatmapLayerUpdates, mapId: mapId);
+  }
+
   /// Updates tile overlays configuration.
   ///
   /// Change listeners are notified once the update has been made on the

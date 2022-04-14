@@ -86,7 +86,10 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
 
   /// Creates a new [HeatmapLayer] object whose values are the same as this
   /// instance.
-  HeatmapLayer clone() => copyWith();
+  HeatmapLayer clone() => copyWith(
+        dataParam: List.of(data),
+        gradientParam: gradient != null ? List.of(gradient!) : null,
+      );
 
   /// Converts this object to something serializable in JSON.
   Object toJson() {

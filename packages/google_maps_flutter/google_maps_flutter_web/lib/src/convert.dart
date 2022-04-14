@@ -282,6 +282,12 @@ gmaps_visualization.HeatmapLayerOptions _heatmapLayerOptionsFromHeatmapLayer(
 ) {
   final heatmapLayerOptions = gmaps_visualization.HeatmapLayerOptions()
     ..data = heatmapLayer.data
+        .map(
+          (e) => gmaps_visualization.WeightedLocation()
+            ..location = gmaps.LatLng(e.location.latitude, e.location.longitude)
+            ..weight = e.weight,
+        )
+        .toList()
     ..dissipating = heatmapLayer.dissipating
     ..gradient = heatmapLayer.gradient?.map(_getCssColor).toList()
     ..maxIntensity = heatmapLayer.maxIntensity

@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -20,6 +21,7 @@ class FakePlatformGoogleMap {
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
+    updateHeatmapLayers(params);
     updateTileOverlays(Map.castFrom<dynamic, dynamic, String, dynamic>(params));
   }
 
@@ -85,6 +87,12 @@ class FakePlatformGoogleMap {
 
   Set<Circle> circlesToChange = <Circle>{};
 
+  Set<HeatmapLayerId> heatmapLayerIdsToRemove = <HeatmapLayerId>{};
+
+  Set<HeatmapLayer> heatmapLayersToAdd = <HeatmapLayer>{};
+
+  Set<HeatmapLayer> heatmapLayersToChange = <HeatmapLayer>{};
+
   Set<TileOverlayId> tileOverlayIdsToRemove = <TileOverlayId>{};
 
   Set<TileOverlay> tileOverlaysToAdd = <TileOverlay>{};
@@ -111,6 +119,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'circles#update':
         updateCircles(call.arguments as Map<dynamic, dynamic>?);
+        return Future<void>.sync(() {});
+      case 'heatmapLayers#update':
+        updateHeatmapLayers(call.arguments as Map<dynamic, dynamic>?);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -288,6 +299,18 @@ class FakePlatformGoogleMap {
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
+  void updateHeatmapLayers(Map<dynamic, dynamic>? heatmapLayerUpdates) {
+    if (heatmapLayerUpdates == null) {
+      return;
+    }
+    heatmapLayersToAdd =
+        _deserializeHeatmapLayers(heatmapLayerUpdates['heatmapLayersToAdd']);
+    heatmapLayerIdsToRemove = _deserializeHeatmapLayerIds(
+        heatmapLayerUpdates['heatmapLayerIdsToRemove'] as List<dynamic>?);
+    heatmapLayersToChange =
+        _deserializeHeatmapLayers(heatmapLayerUpdates['heatmapLayersToChange']);
+  }
+
   void updateTileOverlays(Map<String, dynamic> updateTileOverlayUpdates) {
     if (updateTileOverlayUpdates == null) {
       return;
@@ -339,6 +362,58 @@ class FakePlatformGoogleMap {
       result.add(Circle(
         circleId: CircleId(circleId),
         visible: visible,
+        radius: radius,
+      ));
+    }
+
+    return result;
+  }
+
+  Set<HeatmapLayerId> _deserializeHeatmapLayerIds(
+      List<dynamic>? heatmapLayerIds) {
+    if (heatmapLayerIds == null) {
+      return <HeatmapLayerId>{};
+    }
+    return heatmapLayerIds
+        .map(
+          (dynamic heatmapLayerId) => HeatmapLayerId(heatmapLayerId as String),
+        )
+        .toSet();
+  }
+
+  Set<HeatmapLayer> _deserializeHeatmapLayers(dynamic heatmapLayers) {
+    if (heatmapLayers == null) {
+      return <HeatmapLayer>{};
+    }
+    final List<dynamic> heatmapLayersData = heatmapLayers as List<dynamic>;
+    final Set<HeatmapLayer> result = <HeatmapLayer>{};
+    for (final Map<dynamic, dynamic> heatmapLayerData
+        in heatmapLayersData.cast<Map<dynamic, dynamic>>()) {
+      final String heatmapLayerId =
+          heatmapLayerData['heatmapLayerId'] as String;
+
+      final List<dynamic> dataData = heatmapLayerData['data'] as List<dynamic>;
+      final List<WeightedLatLng> data =
+          dataData.map((dynamic e) => WeightedLatLng.fromJson(e)!).toList();
+
+      final bool dissipating = heatmapLayerData['dissipating'] as bool;
+
+      final List<dynamic>? gradientData =
+          heatmapLayerData['gradient'] as List<dynamic>?;
+      final List<Color>? gradient =
+          gradientData?.cast<int>().map((int e) => Color(e)).toList();
+
+      final double? maxIntensity = heatmapLayerData['maxIntensity'] as double?;
+      final double opacity = heatmapLayerData['opacity'] as double;
+      final double? radius = heatmapLayerData['radius'] as double?;
+
+      result.add(HeatmapLayer(
+        heatmapLayerId: HeatmapLayerId(heatmapLayerId),
+        data: data,
+        dissipating: dissipating,
+        gradient: gradient,
+        maxIntensity: maxIntensity,
+        opacity: opacity,
         radius: radius,
       ));
     }

@@ -113,6 +113,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons = const <Polygon>{},
     this.polylines = const <Polyline>{},
     this.circles = const <Circle>{},
+    this.heatmapLayers = const <HeatmapLayer>{},
     this.onCameraMoveStarted,
     this.tileOverlays = const <TileOverlay>{},
     this.onCameraMove,
@@ -190,6 +191,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  /// Heatmap layers to show on the map.
+  final Set<HeatmapLayer> heatmapLayers;
 
   /// Tile overlays to be placed on the map.
   final Set<TileOverlay> tileOverlays;
@@ -294,6 +298,8 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
+  Map<HeatmapLayerId, HeatmapLayer> _heatmapLayers =
+      <HeatmapLayerId, HeatmapLayer>{};
   late _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -309,6 +315,7 @@ class _GoogleMapState extends State<GoogleMap> {
       polygons: widget.polygons,
       polylines: widget.polylines,
       circles: widget.circles,
+      heatmapLayers: widget.heatmapLayers,
       gestureRecognizers: widget.gestureRecognizers,
       mapOptions: _googleMapOptions.toMap(),
     );
@@ -322,6 +329,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
     _circles = keyByCircleId(widget.circles);
+    _heatmapLayers = keyByHeatmapLayerId(widget.heatmapLayers);
   }
 
   @override
@@ -343,6 +351,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
+    _updateHeatmapLayers();
     _updateTileOverlays();
   }
 
@@ -389,6 +398,16 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateCircles(
         CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = keyByCircleId(widget.circles);
+  }
+
+  Future<void> _updateHeatmapLayers() async {
+    final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateHeatmapLayers(
+      HeatmapLayerUpdates.from(
+          _heatmapLayers.values.toSet(), widget.heatmapLayers),
+    );
+    _heatmapLayers = keyByHeatmapLayerId(widget.heatmapLayers);
   }
 
   Future<void> _updateTileOverlays() async {

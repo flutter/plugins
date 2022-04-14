@@ -143,7 +143,8 @@ class WeightedLatLng {
   final double weight;
 
   /// Creates a [WeightedLatLng] with the specified [weight]
-  WeightedLatLng(this.location, {this.weight = 1.0});
+  WeightedLatLng(double latitude, double longitude, {this.weight = 1.0})
+      : location = LatLng(latitude, longitude);
 
   /// Converts this object to something serializable in JSON.
   Object toJson() {
@@ -157,8 +158,10 @@ class WeightedLatLng {
     }
     assert(json is List && json.length == 2);
     final list = json as List;
+    final latLng = LatLng.fromJson(list[0])!;
     return WeightedLatLng(
-      LatLng.fromJson(list[0])!,
+      latLng.latitude,
+      latLng.longitude,
       weight: list[1],
     );
   }
