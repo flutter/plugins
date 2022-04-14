@@ -16,10 +16,19 @@
 /// changes.
 ///
 /// ```dart
-/// class IOSWebViewControllerCreationParams extends WebViewControllerCreationParams {
-///   IOSWebViewControllerCreationParams({
+/// class WKWebViewControllerCreationParams
+///     extends WebViewControllerCreationParams {
+///   WKWebViewControllerCreationParams._(
+///     WebViewControllerCreationParams params, {
 ///     this.domain,
 ///   }) : super();
+///
+///   factory WKWebViewControllerCreationParams.fromWebViewControllerCreationParams(
+///     WebViewControllerCreationParams params, {
+///     String? domain,
+///   }) {
+///     return WKWebViewControllerCreationParams._(params, domain: domain);
+///   }
 ///
 ///   final String? domain;
 /// }

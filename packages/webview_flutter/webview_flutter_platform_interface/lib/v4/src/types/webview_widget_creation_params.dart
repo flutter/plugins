@@ -22,9 +22,21 @@ import '../webview_controller_delegate.dart';
 ///
 /// ```dart
 /// class WKWebViewWidgetCreationParams extends WebViewWidgetCreationParams {
-///   WKWebViewWidgetCreationParams({
+///   WKWebViewWidgetCreationParams._(
+///     WebViewWidgetCreationParams params, {
 ///     this.domain,
-///   }) : super();
+///   }) : super(
+///           key: params.key,
+///           controller: params.controller,
+///           gestureRecognizers: params.gestureRecognizers,
+///         );
+///
+///   factory WKWebViewWidgetCreationParams.fromWebViewWidgetCreationParams(
+///     WebViewWidgetCreationParams params, {
+///     String? domain,
+///   }) {
+///     return WKWebViewWidgetCreationParams._(params, domain: domain);
+///   }
 ///
 ///   final String? domain;
 /// }

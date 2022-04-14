@@ -16,10 +16,19 @@
 /// breaking changes.
 ///
 /// ```dart
-/// class WKWebViewCookieManagerCreationParams extends WebViewCookieManagerCreationParams {
-///   WKWebViewCookieManagerCreationParams({
+/// class WKWebViewCookieManagerCreationParams
+///     extends WebViewCookieManagerCreationParams {
+///   WKWebViewCookieManagerCreationParams._(
+///     WebViewCookieManagerCreationParams params, {
 ///     this.uri,
 ///   }) : super();
+///
+///   factory WKWebViewCookieManagerCreationParams.fromWebViewCookieManagerCreationParams(
+///     WebViewCookieManagerCreationParams params, {
+///     Uri? uri,
+///   }) {
+///     return WKWebViewCookieManagerCreationParams._(params, uri: uri);
+///   }
 ///
 ///   final Uri? uri;
 /// }

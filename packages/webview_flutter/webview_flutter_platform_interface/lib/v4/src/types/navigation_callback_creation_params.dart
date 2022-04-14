@@ -17,9 +17,18 @@
 ///
 /// ```dart
 /// class AndroidNavigationCallbackCreationParams extends NavigationCallbackCreationParams {
-///   AndroidNavigationCallbackCreationParams({
+///   AndroidNavigationCallbackCreationParams._(
+///     // ignore: avoid_unused_constructor_parameters
+///     NavigationCallbackCreationParams params, {
 ///     this.filter,
 ///   }) : super();
+///
+///   factory AndroidNavigationCallbackCreationParams.fromNavigationCallbackCreationParams(
+///       NavigationCallbackCreationParams params, {
+///       String? filter,
+///   }) {
+///     return AndroidNavigationCallbackCreationParams._(params, filter: filter);
+///   }
 ///
 ///   final String? filter;
 /// }
