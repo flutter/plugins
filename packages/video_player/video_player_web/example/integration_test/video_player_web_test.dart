@@ -11,18 +11,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
-// Returns the URL to load an asset from this example app as a network source.
-//
-// TODO(stuartmorgan): Convert this to a local `HttpServer` that vends the
-// assets directly, https://github.com/flutter/flutter/issues/95420
-String getUrlForAssetAsNetworkSource(String assetKey) {
-  return 'https://github.com/flutter/plugins/blob/'
-      // This hash can be rolled forward to pick up newly-added assets.
-      'cb381ced070d356799dddf24aca38ce0579d3d7b'
-      '/packages/video_player/video_player/example/'
-      '$assetKey'
-      '?raw=true';
-}
+import 'utils.dart';
 
 // Use WebM to allow CI to run tests in Chromium.
 const String _videoAssetKey = 'assets/Butterfly-209.webm';
@@ -30,7 +19,7 @@ const String _videoAssetKey = 'assets/Butterfly-209.webm';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('VideoPlayer for Web', () {
+  group('VideoPlayerWeb plugin (hits network)', () {
     late Future<int> textureId;
 
     setUp(() {
@@ -132,40 +121,6 @@ void main() {
       }, throwsA(isA<PlatformException>()));
     });
 
-    testWidgets('signals bufferingEnd onCanPlayThrough',
-        (WidgetTester tester) async {
-      final int videoPlayerId = await textureId;
-      final Stream<VideoEvent> eventStream =
-          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
-
-      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
-      await VideoPlayerPlatform.instance.play(videoPlayerId);
-
-      // Let the video play, until we see a "bufferingStop" event (will be excluded!)
-      final List<VideoEvent> events = await eventStream
-          .timeout(const Duration(seconds: 5))
-          .takeWhile(
-              (VideoEvent e) => e.eventType != VideoEventType.bufferingEnd)
-          .toList();
-
-      await VideoPlayerPlatform.instance.pause(videoPlayerId);
-
-      // The expected list of event types should look like this:
-      // 1. bufferingStart,
-      // 2. bufferingUpdate (videoElement.onWaiting),
-      // 3. initialized (videoElement.onCanPlay),
-      //   The next one is excluded from the stream by takeWhile:
-      // 4. bufferingEnd (videoElement.onCanPlayThrough),
-      expect(
-          events.map((VideoEvent e) => e.eventType),
-          equals(<VideoEventType>[
-            VideoEventType.bufferingStart,
-            VideoEventType.bufferingUpdate,
-            VideoEventType.initialized,
-            // VideoEventType.bufferingEnd
-          ]));
-    });
-
     testWidgets('can pause', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.pause(await textureId), completes);
     });
@@ -212,6 +167,41 @@ void main() {
     testWidgets('ignores setting mixWithOthers', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.setMixWithOthers(true), completes);
       expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
+    });
+
+    testWidgets('video playback lifecycle', (WidgetTester tester) async {
+      final int videoPlayerId = await textureId;
+      final Stream<VideoEvent> eventStream =
+          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
+
+      final Future<List<VideoEvent>> stream = eventStream.timeout(
+        const Duration(seconds: 1),
+        onTimeout: (EventSink<VideoEvent> sink) {
+          sink.close();
+        },
+      ).toList();
+
+      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+
+      // Let the video play, until we stop seeing events for a second
+      final List<VideoEvent> events = await stream;
+
+      await VideoPlayerPlatform.instance.pause(videoPlayerId);
+
+      // The expected list of event types should look like this:
+      // 1. bufferingStart,
+      // 2. bufferingUpdate (videoElement.onWaiting),
+      // 3. initialized (videoElement.onCanPlay),
+      // 4. bufferingEnd (videoElement.onCanPlayThrough),
+      expect(
+          events.map((VideoEvent e) => e.eventType),
+          equals(<VideoEventType>[
+            VideoEventType.bufferingStart,
+            VideoEventType.bufferingUpdate,
+            VideoEventType.initialized,
+            VideoEventType.bufferingEnd
+          ]));
     });
   });
 }
