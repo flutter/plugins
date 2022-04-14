@@ -25,4 +25,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.0.0
-  pigeon: ^2.0.3
+  #pigeon: ^3.0.1
+  pigeon:
+    path: ../../../../packages/packages/pigeon
