@@ -21,7 +21,8 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  google_maps_flutter_platform_interface: ^2.1.2
+  google_maps_flutter_platform_interface:
+    path: ../google_maps_flutter_platform_interface
   google_maps: ^5.2.0
   pedantic: ^1.10.0
   sanitize_html: ^2.0.0

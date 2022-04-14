@@ -89,6 +89,15 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     _map(mapId).updateCircles(circleUpdates);
   }
 
+  /// Applies the passed in `heatmapLayerUpdates` to the `mapId`.
+  @override
+  Future<void> updateHeatmapLayers(
+    HeatmapLayerUpdates heatmapLayerUpdates, {
+    required int mapId,
+  }) async {
+    _map(mapId).updateHeatmapLayers(heatmapLayerUpdates);
+  }
+
   @override
   Future<void> updateTileOverlays({
     required Set<TileOverlay> newTileOverlays,
@@ -296,6 +305,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
+    Set<HeatmapLayer> heatmapLayers = const <HeatmapLayer>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},
@@ -317,6 +327,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       polygons: polygons,
       polylines: polylines,
       circles: circles,
+      heatmapLayers: heatmapLayers,
       mapOptions: mapOptions,
     )..init(); // Initialize the controller
 

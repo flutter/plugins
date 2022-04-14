@@ -277,6 +277,19 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
   return circleOptions;
 }
 
+gmaps_visualization.HeatmapLayerOptions _heatmapLayerOptionsFromHeatmapLayer(
+  HeatmapLayer heatmapLayer,
+) {
+  final heatmapLayerOptions = gmaps_visualization.HeatmapLayerOptions()
+    ..data = heatmapLayer.data
+    ..dissipating = heatmapLayer.dissipating
+    ..gradient = heatmapLayer.gradient?.map(_getCssColor).toList()
+    ..maxIntensity = heatmapLayer.maxIntensity
+    ..opacity = heatmapLayer.opacity
+    ..radius = heatmapLayer.radius;
+  return heatmapLayerOptions;
+}
+
 gmaps.PolygonOptions _polygonOptionsFromPolygon(
     gmaps.GMap googleMap, Polygon polygon) {
   List<gmaps.LatLng> path = [];

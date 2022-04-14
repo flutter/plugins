@@ -24,6 +24,7 @@ import 'package:stream_transform/stream_transform.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
+import 'package:google_maps/google_maps_visualization.dart' as gmaps_visualization;
 
 import 'src/third_party/to_screen_location/to_screen_location.dart';
 import 'src/types.dart';
@@ -32,6 +33,8 @@ part 'src/google_maps_flutter_web.dart';
 part 'src/google_maps_controller.dart';
 part 'src/circle.dart';
 part 'src/circles.dart';
+part 'src/heatmap_layer.dart';
+part 'src/heatmap_layers.dart';
 part 'src/polygon.dart';
 part 'src/polygons.dart';
 part 'src/polyline.dart';
