@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:webview_flutter_platform_interface/src/v4/types/types.dart';
+import 'package:webview_flutter_platform_interface/src/v4/types/webview_widget_creation_params.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_widget_delegate.dart';
 
 import 'navigation_callback_delegate.dart';
@@ -42,7 +41,9 @@ abstract class WebViewPlatform extends PlatformInterface {
   ///
   /// This function should only be called by the app-facing plugin.
   /// Look at using [WebViewCookieManager] in `webview_flutter` instead.
-  WebViewCookieManagerDelegate createCookieManagerDelegate() {
+  WebViewCookieManagerDelegate createCookieManagerDelegate(
+    WebViewCookieManagerCreationParams params,
+  ) {
     throw UnimplementedError(
         'createCookieManagerDelegate is not implemented on the current platform.');
   }
@@ -51,15 +52,11 @@ abstract class WebViewPlatform extends PlatformInterface {
   ///
   /// This function should only be called by the app-facing plugin.
   /// Look at using [NavigationCallbackHandler] in `webview_flutter` instead.
-  NavigationCallbackDelegate createNavigationCallbackHandlerDelegate() {
+  NavigationCallbackDelegate createNavigationCallbackDelegate(
+    NavigationCallbackCreationParams params,
+  ) {
     throw UnimplementedError(
-        'createNavigationCallbackHandlerDelegate is not implemented on the current platform.');
-  }
-
-  /// Create a new [JavaScriptMessage].
-  JavaScriptMessage createJavaScriptMessage(String message) {
-    throw UnimplementedError(
-        'createJavaScriptMessage is not implemented on the current platform.');
+        'createNavigationCallbackDelegate is not implemented on the current platform.');
   }
 
   /// Create a new [WebViewControllerDelegate].
@@ -67,7 +64,8 @@ abstract class WebViewPlatform extends PlatformInterface {
   /// This function should only be called by the app-facing plugin.
   /// Look at using [WebViewController] in `webview_flutter` instead.
   WebViewControllerDelegate createWebViewControllerDelegate(
-      WebViewControllerCreationParams params) {
+    WebViewControllerCreationParams params,
+  ) {
     throw UnimplementedError(
         'createWebViewControllerDelegate is not implemented on the current platform.');
   }
@@ -76,11 +74,9 @@ abstract class WebViewPlatform extends PlatformInterface {
   ///
   /// This function should only be called by the app-facing plugin.
   /// Look at using [WebViewWidget] in `webview_flutter` instead.
-  WebViewWidgetDelegate createWebViewWidgetDelegate({
-    Key? key,
-    required WebViewControllerDelegate controller,
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-  }) {
+  WebViewWidgetDelegate createWebViewWidgetDelegate(
+    WebViewWidgetCreationParams params,
+  ) {
     throw UnimplementedError(
         'createWebViewWidgetDelegate is not implemented on the current platform.');
   }

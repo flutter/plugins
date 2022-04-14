@@ -20,33 +20,36 @@ void main() {
   test('Cannot be implemented with `implements`', () {
     final MockWebViewControllerDelegate controller =
         MockWebViewControllerDelegate();
-    when(WebViewPlatform.instance!
-            .createWebViewWidgetDelegate(controller: controller))
+    final WebViewWidgetCreationParams params =
+        WebViewWidgetCreationParams(controller: controller);
+    when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
         .thenReturn(ImplementsWebViewWidgetDelegate());
 
     expect(() {
-      WebViewWidgetDelegate(controller: controller);
+      WebViewWidgetDelegate(params);
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
     final MockWebViewControllerDelegate controller =
         MockWebViewControllerDelegate();
-    when(WebViewPlatform.instance!
-            .createWebViewWidgetDelegate(controller: controller))
-        .thenReturn(ExtendsWebViewWidgetDelegate(controller: controller));
+    final WebViewWidgetCreationParams params =
+        WebViewWidgetCreationParams(controller: controller);
+    when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
+        .thenReturn(ExtendsWebViewWidgetDelegate(params));
 
-    expect(WebViewWidgetDelegate(controller: controller), isNotNull);
+    expect(WebViewWidgetDelegate(params), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
     final MockWebViewControllerDelegate controller =
         MockWebViewControllerDelegate();
-    when(WebViewPlatform.instance!
-            .createWebViewWidgetDelegate(controller: controller))
+    final WebViewWidgetCreationParams params =
+        WebViewWidgetCreationParams(controller: controller);
+    when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
         .thenReturn(MockWebViewWidgetDelegate());
 
-    expect(WebViewWidgetDelegate(controller: controller), isNotNull);
+    expect(WebViewWidgetDelegate(params), isNotNull);
   });
 }
 
@@ -68,9 +71,8 @@ class MockWebViewWidgetDelegate extends Mock
         WebViewWidgetDelegate {}
 
 class ExtendsWebViewWidgetDelegate extends WebViewWidgetDelegate {
-  ExtendsWebViewWidgetDelegate({
-    required MockWebViewControllerDelegate controller,
-  }) : super.implementation(controller: controller);
+  ExtendsWebViewWidgetDelegate(WebViewWidgetCreationParams params)
+      : super.implementation(params);
 
   @override
   Widget build(BuildContext context) {

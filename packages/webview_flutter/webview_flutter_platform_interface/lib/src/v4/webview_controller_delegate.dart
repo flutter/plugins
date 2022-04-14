@@ -30,15 +30,17 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
     return webViewControllerDelegate;
   }
 
-  /// Used by the platform implementation to create a new
-  /// [WebViewControllerDelegate].
+  /// Used by the platform implementation to create a new [WebViewControllerDelegate].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  WebViewControllerDelegate.implementation() : super(token: _token);
+  WebViewControllerDelegate.implementation(this.params) : super(token: _token);
 
   static final Object _token = Object();
+
+  /// The parameters used to initialize the [WebViewControllerDelegate].
+  final WebViewControllerCreationParams params;
 
   /// Loads the file located on the specified [absoluteFilePath].
   ///
@@ -151,12 +153,12 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'clearCache is not implemented on the current platform');
   }
 
-  /// Sets the [NavigationCallbackHandler] containing the callback methods that
+  /// Sets the [NavigationCallbackDelegate] containing the callback methods that
   /// are called during navigation events.
-  Future<void> setNavigationCallbackHandler(
+  Future<void> setNavigationCallbackDelegate(
       NavigationCallbackDelegate handler) {
     throw UnimplementedError(
-        'setNavigationCallbackHandler is not implemented on the current platform');
+        'setNavigationCallbackDelegate is not implemented on the current platform');
   }
 
   /// Runs the given JavaScript in the context of the current page.
@@ -225,19 +227,19 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'getScrollPosition is not implemented on the current platform');
   }
 
-  /// Wether to enable the platform's webview content debugging tools.
+  /// Whether to enable the platform's webview content debugging tools.
   Future<void> enableDebugging(bool enabled) {
     throw UnimplementedError(
         'enableDebugging is not implemented on the current platform');
   }
 
-  /// Wether to allow swipe based navigation on supported platforms.
+  /// Whether to allow swipe based navigation on supported platforms.
   Future<void> enableGestureNavigation(bool enabled) {
     throw UnimplementedError(
         'enableGestureNavigation is not implemented on the current platform');
   }
 
-  /// Whether to support zooming using its on-screen zoom controls and gestures.
+  /// Whhether to support zooming using its on-screen zoom controls and gestures.
   Future<void> enableZoom(bool enabled) {
     throw UnimplementedError(
         'enableZoom is not implemented on the current platform');
@@ -262,7 +264,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   ///
   /// An absent value ([userAgent.isPresent] is false) represents no change to
   /// this setting from the last time it was set.
-  Future<void> setUserAgent(WebSetting<String?> userAgent) {
+  Future<void> setUserAgent(String? userAgent) {
     throw UnimplementedError(
         'setUserAgent is not implemented on the current platform');
   }

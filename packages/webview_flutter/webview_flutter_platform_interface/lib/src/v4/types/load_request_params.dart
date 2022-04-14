@@ -6,8 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
 
-/// Defines the supported HTTP methods for loading a page in
-/// [WebViewControllerDelegate].
+/// Defines the supported HTTP methods for loading a page in [WebViewControllerDelegate].
 enum LoadRequestMethod {
   /// HTTP GET method.
   get,
@@ -42,18 +41,23 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
 /// accept `null` or have a default value to prevent breaking changes.
 ///
 /// ```dart
-/// class AndroidLoadRequestParamsDelegate extends LoadRequestParamsDelegate {
-///   AndroidLoadRequestParamsDelegate({
-///     required Uri uri,
-///     required LoadRequestMethod method,
-///     required Map<String, String> headers,
-///     Uint8List? body,
+/// class AndroidLoadRequestParams extends LoadRequestParams {
+///   AndroidLoadRequestParams._({
+///     required LoadRequestParams params,
 ///     this.historyUrl,
 ///   }) : super(
-///     uri: uri,
-///     method: method,
-///     body: body,
+///     uri: params.uri,
+///     method: params.method,
+///     body: params.body,
+///     headers: params.headers,
 ///   );
+///
+///   factory AndroidLoadRequestParams.fromLoadRequestParams(
+///     LoadRequestParams params, {
+///     Uri? historyUrl,
+///   }) {
+///     return AndroidLoadRequestParams._(params, historyUrl: historyUrl);
+///   }
 ///
 ///   final Uri? historyUrl;
 /// }
@@ -80,12 +84,4 @@ class LoadRequestParams {
 
   /// HTTP body for the request.
   final Uint8List? body;
-
-  /// Serializes the [WebViewRequest] to JSON.
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'uri': uri.toString(),
-        'method': method.serialize(),
-        'headers': headers,
-        'body': body,
-      };
 }

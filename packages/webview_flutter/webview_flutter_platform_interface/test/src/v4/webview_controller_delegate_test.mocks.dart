@@ -2,13 +2,13 @@
 // in webview_flutter_platform_interface/test/src/v4/webview_controller_delegate_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_platform_interface/src/v4/navigation_callback_delegate.dart'
-    as _i2;
+    as _i3;
 import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart'
-    as _i4;
+    as _i2;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -19,46 +19,54 @@ import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart'
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
+class _FakeNavigationCallbackCreationParams_0 extends _i1.Fake
+    implements _i2.NavigationCallbackCreationParams {}
+
 /// A class which mocks [NavigationCallbackDelegate].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockNavigationCallbackDelegate extends _i1.Mock
-    implements _i2.NavigationCallbackDelegate {
+    implements _i3.NavigationCallbackDelegate {
   MockNavigationCallbackDelegate() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<void> setOnNavigationRequest(
-          void Function({bool isForMainFrame, String url})?
+  _i2.NavigationCallbackCreationParams get params =>
+      (super.noSuchMethod(Invocation.getter(#params),
+              returnValue: _FakeNavigationCallbackCreationParams_0())
+          as _i2.NavigationCallbackCreationParams);
+  @override
+  _i4.Future<void> setOnNavigationRequest(
+          _i4.FutureOr<bool> Function({bool isForMainFrame, String url})?
               onNavigationRequest) =>
       (super.noSuchMethod(
           Invocation.method(#setOnNavigationRequest, [onNavigationRequest]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i3.Future<void> setOnPageStarted(void Function(String)? onPageStarted) =>
+  _i4.Future<void> setOnPageStarted(void Function(String)? onPageStarted) =>
       (super.noSuchMethod(Invocation.method(#setOnPageStarted, [onPageStarted]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i3.Future<void> setOnPageFinished(void Function(String)? onPageFinished) =>
+  _i4.Future<void> setOnPageFinished(void Function(String)? onPageFinished) =>
       (super.noSuchMethod(
           Invocation.method(#setOnPageFinished, [onPageFinished]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i3.Future<void> setOnProgress(void Function(int)? onProgress) =>
+  _i4.Future<void> setOnProgress(void Function(int)? onProgress) =>
       (super.noSuchMethod(Invocation.method(#setOnProgress, [onProgress]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i3.Future<void> setOnWebResourceError(
-          void Function(_i4.WebResourceError)? onWebResourceError) =>
+  _i4.Future<void> setOnWebResourceError(
+          void Function(_i2.WebResourceError)? onWebResourceError) =>
       (super.noSuchMethod(
           Invocation.method(#setOnWebResourceError, [onWebResourceError]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   String toString() => super.toString();
 }

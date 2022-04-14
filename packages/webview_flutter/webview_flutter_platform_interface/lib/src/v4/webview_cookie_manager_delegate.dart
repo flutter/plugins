@@ -18,9 +18,10 @@ import 'webview_platform.dart';
 /// [WebViewCookieManagerDelegate] methods.
 abstract class WebViewCookieManagerDelegate extends PlatformInterface {
   /// Creates a new [WebViewCookieManagerDelegate]
-  factory WebViewCookieManagerDelegate() {
+  factory WebViewCookieManagerDelegate(
+      WebViewCookieManagerCreationParams params) {
     final WebViewCookieManagerDelegate cookieManagerDelegate =
-        WebViewPlatform.instance!.createCookieManagerDelegate();
+        WebViewPlatform.instance!.createCookieManagerDelegate(params);
     PlatformInterface.verify(cookieManagerDelegate, _token);
     return cookieManagerDelegate;
   }
@@ -31,9 +32,13 @@ abstract class WebViewCookieManagerDelegate extends PlatformInterface {
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  WebViewCookieManagerDelegate.implementation() : super(token: _token);
+  WebViewCookieManagerDelegate.implementation(this.params)
+      : super(token: _token);
 
   static final Object _token = Object();
+
+  /// The parameters used to initialize the [WebViewCookieManagerDelegate].
+  final WebViewCookieManagerCreationParams params;
 
   /// Clears all cookies for all [WebView] instances.
   ///

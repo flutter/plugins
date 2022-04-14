@@ -67,8 +67,7 @@ enum WebResourceErrorType {
   javaScriptResultTypeIsUnsupported,
 }
 
-/// Error returned in `WebView.onWebResourceError` when a web resource loading
-/// error has occurred.
+/// Error returned in `WebView.onWebResourceError` when a web resource loading error has occurred.
 ///
 /// Platform specific implementations can add additional fields by extending
 /// this class.
@@ -82,16 +81,19 @@ enum WebResourceErrorType {
 ///
 /// ```dart
 /// class IOSWebResourceError extends WebResourceError {
-///   IOSWebResourceError({
-///     required int errorCode,
-///     required String description,
-///     WebResourceErrorType? errorType,
-///     this.domain,
-///   }) : super(
-///     errorCode: errorCode,
-///     description: description,
-///     errorType: errorType,
-///   );
+///   IOSWebResourceError._(WebResourceError error, {required this.domain})
+///       : super(
+///           errorCode: error.errorCode,
+///           description: error.description,
+///           errorType: error.errorType,
+///         );
+///
+///   factory IOSWebResourceError.fromWebResourceError(
+///     WebResourceError error, {
+///     required String? domain,
+///   }) {
+///     return IOSWebResourceError._(error, domain: domain);
+///   }
 ///
 ///   final String? domain;
 /// }

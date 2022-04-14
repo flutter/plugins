@@ -16,38 +16,44 @@ void main() {
   });
 
   test('Cannot be implemented with `implements`', () {
-    when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
+    final NavigationCallbackCreationParams params =
+        NavigationCallbackCreationParams();
+    when(WebViewPlatform.instance!.createNavigationCallbackDelegate(params))
         .thenReturn(ImplementsNavigationCallbackDelegate());
 
     expect(() {
-      NavigationCallbackDelegate();
+      NavigationCallbackDelegate(params);
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
-    when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
-        .thenReturn(ExtendsNavigationCallbackDelegate());
+    final NavigationCallbackCreationParams params =
+        NavigationCallbackCreationParams();
+    when(WebViewPlatform.instance!.createNavigationCallbackDelegate(params))
+        .thenReturn(ExtendsNavigationCallbackDelegate(params));
 
-    expect(NavigationCallbackDelegate(), isNotNull);
+    expect(NavigationCallbackDelegate(params), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
-    when(WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate())
+    final NavigationCallbackCreationParams params =
+        NavigationCallbackCreationParams();
+    when(WebViewPlatform.instance!.createNavigationCallbackDelegate(params))
         .thenReturn(MockNavigationCallbackDelegate());
 
-    expect(NavigationCallbackDelegate(), isNotNull);
+    expect(NavigationCallbackDelegate(params), isNotNull);
   });
 
   test(
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnNavigationRequest should throw unimplemented error',
       () {
-    final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackDelegate();
+    final NavigationCallbackDelegate callbackDelegate =
+        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
 
     expect(
-      () => callbackHandler.setOnNavigationRequest(
-          ({required bool isForMainFrame, required String url}) {}),
+      () => callbackDelegate.setOnNavigationRequest(
+          ({required bool isForMainFrame, required String url}) => true),
       throwsUnimplementedError,
     );
   });
@@ -56,11 +62,11 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnPageStarted should throw unimplemented error',
       () {
-    final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackDelegate();
+    final NavigationCallbackDelegate callbackDelegate =
+        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
 
     expect(
-      () => callbackHandler.setOnPageStarted((String url) {}),
+      () => callbackDelegate.setOnPageStarted((String url) {}),
       throwsUnimplementedError,
     );
   });
@@ -69,11 +75,11 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnPageFinished should throw unimplemented error',
       () {
-    final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackDelegate();
+    final NavigationCallbackDelegate callbackDelegate =
+        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
 
     expect(
-      () => callbackHandler.setOnPageFinished((String url) {}),
+      () => callbackDelegate.setOnPageFinished((String url) {}),
       throwsUnimplementedError,
     );
   });
@@ -82,11 +88,11 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnProgress should throw unimplemented error',
       () {
-    final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackDelegate();
+    final NavigationCallbackDelegate callbackDelegate =
+        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
 
     expect(
-      () => callbackHandler.setOnProgress((int progress) {}),
+      () => callbackDelegate.setOnProgress((int progress) {}),
       throwsUnimplementedError,
     );
   });
@@ -95,11 +101,11 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnWebResourceError should throw unimplemented error',
       () {
-    final NavigationCallbackDelegate callbackHandler =
-        ExtendsNavigationCallbackDelegate();
+    final NavigationCallbackDelegate callbackDelegate =
+        ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams());
 
     expect(
-      () => callbackHandler.setOnWebResourceError((WebResourceError error) {}),
+      () => callbackDelegate.setOnWebResourceError((WebResourceError error) {}),
       throwsUnimplementedError,
     );
   });
@@ -124,5 +130,6 @@ class MockNavigationCallbackDelegate extends Mock
         NavigationCallbackDelegate {}
 
 class ExtendsNavigationCallbackDelegate extends NavigationCallbackDelegate {
-  ExtendsNavigationCallbackDelegate() : super.implementation();
+  ExtendsNavigationCallbackDelegate(NavigationCallbackCreationParams params)
+      : super.implementation(params);
 }

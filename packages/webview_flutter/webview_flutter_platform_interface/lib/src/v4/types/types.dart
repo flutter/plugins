@@ -5,7 +5,9 @@
 export 'javascript_message.dart';
 export 'javascript_mode.dart';
 export 'load_request_params.dart';
+export 'navigation_callback_creation_params.dart';
 export 'web_resource_error.dart';
-export 'web_setting.dart';
 export 'webview_controller_creation_params.dart';
 export 'webview_cookie.dart';
+export 'webview_cookie_manager_creation_params.dart';
+export 'webview_widget_creation_params.dart';

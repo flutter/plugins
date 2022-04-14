@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
-/// A cookie that can be set globally for all web views
-/// using [WebViewCookieManagerPlatform].
-@sealed
+/// A cookie that can be set globally for all web views using [WebViewCookieManagerPlatform].
 @immutable
 class WebViewCookie {
   /// Creates a new [WebViewCookieDelegate]
@@ -40,14 +38,4 @@ class WebViewCookie {
   /// Its value should match "path-value" in RFC6265bis:
   /// https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.1
   final String path;
-
-  /// Serializes the [WebViewCookie] to a Map<String, String>.
-  Map<String, String> toJson() {
-    return <String, String>{
-      'name': name,
-      'value': value,
-      'domain': domain,
-      'path': path
-    };
-  }
 }

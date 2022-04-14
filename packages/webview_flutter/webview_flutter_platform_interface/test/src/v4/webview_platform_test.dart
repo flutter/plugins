@@ -4,7 +4,9 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:webview_flutter_platform_interface/src/v4/webview_controller_delegate.dart';
 import 'package:webview_flutter_platform_interface/src/v4/webview_platform.dart';
 
 import 'webview_platform_test.mocks.dart';
@@ -39,7 +41,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      webViewPlatform.createCookieManagerDelegate,
+      () => webViewPlatform
+          .createCookieManagerDelegate(WebViewCookieManagerCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -51,19 +54,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform.createNavigationCallbackHandlerDelegate(),
-      throwsUnimplementedError,
-    );
-  });
-
-  test(
-      // ignore: lines_longer_than_80_chars
-      'Default implementation of createJavaScriptMessage should throw unimplemented error',
-      () {
-    final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
-
-    expect(
-      () => webViewPlatform.createJavaScriptMessage('0'),
+      () => webViewPlatform
+          .createNavigationCallbackDelegate(NavigationCallbackCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -80,6 +72,21 @@ void main() {
       throwsUnimplementedError,
     );
   });
+
+  test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of createWebViewWidgetDelegate should throw unimplemented error',
+      () {
+    final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
+    final MockWebViewControllerDelegate controller =
+        MockWebViewControllerDelegate();
+
+    expect(
+      () => webViewPlatform.createWebViewWidgetDelegate(
+          WebViewWidgetCreationParams(controller: controller)),
+      throwsUnimplementedError,
+    );
+  });
 }
 
 class ImplementsWebViewPlatform implements WebViewPlatform {
@@ -93,3 +100,10 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         MockPlatformInterfaceMixin {}
 
 class ExtendsWebViewPlatform extends WebViewPlatform {}
+
+class MockWebViewControllerDelegate extends Mock
+    with
+        // ignore: prefer_mixin
+        MockPlatformInterfaceMixin
+    implements
+        WebViewControllerDelegate {}

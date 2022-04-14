@@ -11,16 +11,16 @@ import 'webview_platform.dart';
 
 /// An interface defining navigation events that occur on the native platform.
 ///
-/// The [WebViewControllerDelegate] is notifying this handler on events that
+/// The [WebViewControllerDelegate] is notifying this delegate on events that
 /// happened on the platform's webview. Platform implementations should
 /// implement this class and pass an instance to the[WebViewControllerDelegate].
 abstract class NavigationCallbackDelegate extends PlatformInterface {
-  /// Creates a new [NavigationCallbacksHandlerDelegate]
-  factory NavigationCallbackDelegate() {
-    final NavigationCallbackDelegate callbackHandlerDelegate =
-        WebViewPlatform.instance!.createNavigationCallbackHandlerDelegate();
-    PlatformInterface.verify(callbackHandlerDelegate, _token);
-    return callbackHandlerDelegate;
+  /// Creates a new [NavigationCallbackDelegate]
+  factory NavigationCallbackDelegate(NavigationCallbackCreationParams params) {
+    final NavigationCallbackDelegate callbackDelegate =
+        WebViewPlatform.instance!.createNavigationCallbackDelegate(params);
+    PlatformInterface.verify(callbackDelegate, _token);
+    return callbackDelegate;
   }
 
   /// Used by the platform implementation to create a new [NavigationCallbackDelegate].
@@ -28,15 +28,18 @@ abstract class NavigationCallbackDelegate extends PlatformInterface {
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  NavigationCallbackDelegate.implementation() : super(token: _token);
+  NavigationCallbackDelegate.implementation(this.params) : super(token: _token);
 
   static final Object _token = Object();
 
+  /// The parameters used to initialize the [NavigationCallbackDelegate].
+  final NavigationCallbackCreationParams params;
+
   /// Invoked when a navigation request is pending.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
+  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
   Future<void> setOnNavigationRequest(
-    void Function({required String url, required bool isForMainFrame})
+    FutureOr<bool> Function({required String url, required bool isForMainFrame})
         onNavigationRequest,
   ) {
     throw UnimplementedError(
@@ -45,7 +48,7 @@ abstract class NavigationCallbackDelegate extends PlatformInterface {
 
   /// Invoked when a page has started loading.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
+  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
   Future<void> setOnPageStarted(
     void Function(String url) onPageStarted,
   ) {
@@ -55,7 +58,7 @@ abstract class NavigationCallbackDelegate extends PlatformInterface {
 
   /// Invoked when a page has finished loading.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
+  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
   Future<void> setOnPageFinished(
     void Function(String url) onPageFinished,
   ) {
@@ -65,8 +68,7 @@ abstract class NavigationCallbackDelegate extends PlatformInterface {
 
   /// Invoked when a page is loading to report the progress.
   ///
-  /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
-  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
+  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
   Future<void> setOnProgress(
     void Function(int progress) onProgress,
   ) {
@@ -76,7 +78,7 @@ abstract class NavigationCallbackDelegate extends PlatformInterface {
 
   /// Invoked when a resource loading error occurred.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackHandler].
+  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
   Future<void> setOnWebResourceError(
     void Function(WebResourceError error) onWebResourceError,
   ) {
