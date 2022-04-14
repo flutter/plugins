@@ -92,6 +92,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       // The js lib wants a space-separated list of values
       scope: scopes.join(' '),
       client_id: appClientId!,
+      plugin_name: 'dart-google_sign_in_web',
     ));
 
     final Completer<void> isAuthInitialized = Completer<void>();
