@@ -31,7 +31,7 @@ void main() {
       instanceManager = InstanceManager();
     });
 
-    group('$UIScrollView', () {
+    group('UIScrollView', () {
       late MockTestUIScrollViewHostApi mockPlatformHostApi;
 
       late UIScrollView scrollView;
@@ -87,7 +87,7 @@ void main() {
       });
     });
 
-    group('$UIView', () {
+    group('UIView', () {
       late MockTestUIViewHostApi mockPlatformHostApi;
 
       late UIView view;

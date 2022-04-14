@@ -22,7 +22,7 @@ import 'web_kit_cookie_manager_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebKitWebViewWidget', () {
+  group('WebKitWebViewWidget', () {
     late MockWKWebsiteDataStore mockWebsiteDataStore;
     late MockWKHttpCookieStore mockWKHttpCookieStore;
 

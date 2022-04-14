@@ -34,7 +34,7 @@ void main() {
       instanceManager = InstanceManager();
     });
 
-    group('$WKWebsiteDataStore', () {
+    group('WKWebsiteDataStore', () {
       late MockTestWKWebsiteDataStoreHostApi mockPlatformHostApi;
 
       late WKWebsiteDataStore websiteDataStore;
@@ -107,7 +107,7 @@ void main() {
       });
     });
 
-    group('$WKHttpCookieStore', () {
+    group('WKHttpCookieStore', () {
       late MockTestWKHttpCookieStoreHostApi mockPlatformHostApi;
 
       late WKHttpCookieStore httpCookieStore;
@@ -170,7 +170,7 @@ void main() {
       });
     });
 
-    group('$WKScriptMessageHandler', () {
+    group('WKScriptMessageHandler', () {
       late MockTestWKScriptMessageHandlerHostApi mockPlatformHostApi;
 
       late WKScriptMessageHandler scriptMessageHandler;
@@ -195,7 +195,7 @@ void main() {
       });
     });
 
-    group('$WKPreferences', () {
+    group('WKPreferences', () {
       late MockTestWKPreferencesHostApi mockPlatformHostApi;
 
       late WKPreferences preferences;
@@ -240,7 +240,7 @@ void main() {
       });
     });
 
-    group('$WKUserContentController', () {
+    group('WKUserContentController', () {
       late MockTestWKUserContentControllerHostApi mockPlatformHostApi;
 
       late WKUserContentController userContentController;
@@ -328,7 +328,7 @@ void main() {
       });
     });
 
-    group('$WKWebViewConfiguration', () {
+    group('WKWebViewConfiguration', () {
       late MockTestWKWebViewConfigurationHostApi mockPlatformHostApi;
 
       late WKWebViewConfiguration webViewConfiguration;
@@ -400,7 +400,7 @@ void main() {
       });
     });
 
-    group('$WKNavigationDelegate', () {
+    group('WKNavigationDelegate', () {
       late MockTestWKNavigationDelegateHostApi mockPlatformHostApi;
 
       late WKNavigationDelegate navigationDelegate;
@@ -425,7 +425,7 @@ void main() {
       });
     });
 
-    group('$WKWebView', () {
+    group('WKWebView', () {
       late MockTestWKWebViewHostApi mockPlatformHostApi;
 
       late WKWebViewConfiguration webViewConfiguration;
@@ -588,7 +588,7 @@ void main() {
       });
     });
 
-    group('$WKUIDelegate', () {
+    group('WKUIDelegate', () {
       late MockTestWKUIDelegateHostApi mockPlatformHostApi;
 
       late WKUIDelegate uiDelegate;
