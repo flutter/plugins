@@ -45,6 +45,8 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
   /// influence of a data point is specified by the radius option only. When
   /// dissipating is disabled, the radius option is interpreted as a radius at
   /// zoom level 0.
+  /// 
+  /// TODO: Not on android
   final bool dissipating;
 
   /// The color gradient of the heatmap
@@ -61,7 +63,7 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
   final double opacity;
 
   /// The radius of influence for each data point, in pixels.
-  final double? radius;
+  final int? radius;
 
   /// Creates a new [HeatmapLayer] object whose values are the same as this
   /// instance, unless overwritten by the specified parameters.
@@ -71,7 +73,7 @@ class HeatmapLayer implements MapsObject<HeatmapLayer> {
     List<Color>? gradientParam,
     double? maxIntensityParam,
     double? opacityParam,
-    double? radiusParam,
+    int? radiusParam,
   }) {
     return HeatmapLayer(
       heatmapLayerId: heatmapLayerId,

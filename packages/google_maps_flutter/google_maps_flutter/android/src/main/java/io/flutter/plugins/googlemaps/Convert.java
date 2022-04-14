@@ -24,6 +24,9 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.maps.model.Tile;
+import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.WeightedLatLng;
+
 import io.flutter.view.FlutterMain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -223,6 +226,11 @@ class Convert {
   static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  static WeightedLatLng toWeightedLatLng(Object o) {
+    final List<?> data = toList(o);
+    return new WeightedLatLng(toLatLng(data.get(0)), toDouble(data.get(1)));
   }
 
   static Point toPoint(Object o) {
@@ -592,6 +600,36 @@ class Convert {
     }
   }
 
+  static String interpretHeatmapOptions(Object o, HeatmapOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object rawWeightedData = data.get("data");
+    if (rawWeightedData != null) {
+      sink.setWeightedData(toWeightedData(rawWeightedData));
+    }
+    final Object gradient = data.get("gradient");
+    if (gradient != null) {
+      sink.setGradient(toGradient(gradient));
+    }
+    final Object maxIntensity = data.get("maxIntensity");
+    if (maxIntensity != null) {
+      sink.setMaxIntensity(toDouble(maxIntensity));
+    }
+    final Object opacity = data.get("opacity");
+    if (opacity != null) {
+      sink.setOpacity(toDouble(opacity));
+    }
+    final Object radius = data.get("radius");
+    if (radius != null) {
+      sink.setRadius(toInt(radius));
+    }
+    final String heatmapId = (String) data.get("heatmapId");
+    if (heatmapId == null) {
+      throw new IllegalArgumentException("heatmapId was null");
+    } else {
+      return heatmapId;
+    }
+  }
+
   private static List<LatLng> toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
@@ -601,6 +639,38 @@ class Convert {
       points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
     }
     return points;
+  }
+
+  private static List<WeightedLatLng> toWeightedData(Object o) {
+    final List<?> data = toList(o);
+    final List<WeightedLatLng> weightedData = new ArrayList<>(data.size());
+
+    for (Object rawWeightedPoint : data) {
+      weightedData.add(toWeightedLatLng(rawWeightedPoint));
+    }
+    return weightedData;
+  }
+
+  private static Gradient toGradient(Object o) {
+    final List<?> data = toList(o);
+    final int[] colors = new int[data.size()];
+    final float[] startPoints = new float[data.size()];
+    final double startPointInterval = 1.0 / data.size();
+    float currentStartPoint = 0;
+
+    for (int i = 0; i < data.size(); i++) {
+      colors[i] = toInt(data.get(i));
+      startPoints[i] = currentStartPoint;
+
+      currentStartPoint += startPointInterval;
+
+      // Make sure the start point doesn't exceed the max value
+      if (currentStartPoint > 1) {
+        currentStartPoint = 1;
+      }
+    }
+
+    return new Gradient(colors, startPoints);
   }
 
   private static List<List<LatLng>> toHoles(Object o) {
