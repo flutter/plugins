@@ -28,7 +28,7 @@
 - (void)handleSavedPathList:(NSArray *)pathList;
 
 /** The property to keep track of how many images are allowed to be picked */
-- (int) getMaxImagesAllowed;
+- (int)getMaxImagesAllowed;
 
 /**
  * Tells the delegate that the user cancelled the pick operation.

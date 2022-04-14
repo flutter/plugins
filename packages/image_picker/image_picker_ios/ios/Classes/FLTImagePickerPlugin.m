@@ -73,8 +73,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (int) getMaxImagesAllowed {
-    return self.maxImagesAllowed;
+- (int)getMaxImagesAllowed {
+  return self.maxImagesAllowed;
 }
 
 - (UIImagePickerController *)createImagePickerController {
@@ -189,13 +189,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         [self launchUIImagePickerWithSource:imageSource multiImage:false];
       }
     } else {
-        [self launchUIImagePickerWithSource:imageSource multiImage:false];
+      [self launchUIImagePickerWithSource:imageSource multiImage:false];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
       [self pickImageWithPHPicker:0];
     } else {
-        [self launchUIImagePickerWithSource:SOURCE_GALLERY multiImage:true];
+      [self launchUIImagePickerWithSource:SOURCE_GALLERY multiImage:true];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     UIImagePickerController *imagePickerController = [self createImagePickerController];
