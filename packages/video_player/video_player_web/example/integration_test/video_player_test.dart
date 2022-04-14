@@ -149,7 +149,6 @@ void main() {
 
       testWidgets('canplaythrough event does change buffering state',
           (WidgetTester tester) async {
-
         // Take all the "buffering" events that we see during the next few seconds
         final Future<List<bool>> stream = timedStream
             .where(
