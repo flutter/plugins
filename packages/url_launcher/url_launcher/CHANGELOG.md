@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 6.0.20
 
 * Fixes a typo in `default_package` registration for Windows, macOS, and Linux.
