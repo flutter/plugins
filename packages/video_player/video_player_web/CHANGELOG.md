@@ -3,9 +3,8 @@
 * Ensures `buffering` state is only removed when the browser reports enough data
   has been buffered so that the video can likely play through without stopping
   (`onCanPlayThrough`). Issue [#94630](https://github.com/flutter/flutter/issues/94630).
-* Move the `VideoPlayer` "private" class to its own file, so it's directly testable
-  without having to go through the `VideoPlayerPlugin`.
-* Ensure tests that listen to the Event Stream fail "fast" (5 second timeout).
+* Improves testability of the `_VideoPlayer` private class.
+* Ensures that tests that listen to a Stream fail "fast" (1 second max timeout).
 
 ## 2.0.7
 
