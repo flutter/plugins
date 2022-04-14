@@ -684,10 +684,13 @@ void main() {
         );
 
         await controller.initialize();
-        await controller.setClosedCaptionFile(_loadClosedCaption());
+        expect(controller.closedCaptionFile, null);
 
-        await controller.seekTo(const Duration(milliseconds: 100));
-        expect(controller.value.caption.text, 'one');
+        await controller.setClosedCaptionFile(_loadClosedCaption());
+        expect(
+          (await controller.closedCaptionFile)!.captions,
+          (await _loadClosedCaption()).captions,
+        );
       });
 
       test('setClosedCapitonFile removes/changes caption file', () async {
@@ -695,13 +698,15 @@ void main() {
           'https://127.0.0.1',
           closedCaptionFile: _loadClosedCaption(),
         );
-        await controller.initialize();
 
-        await controller.seekTo(const Duration(milliseconds: 100));
-        expect(controller.value.caption.text, 'one');
+        await controller.initialize();
+        expect(
+          (await controller.closedCaptionFile)!.captions,
+          (await _loadClosedCaption()).captions,
+        );
 
         await controller.setClosedCaptionFile(null);
-        expect(controller.value.caption.text, '');
+        expect(controller.closedCaptionFile, null);
       });
     });
 
