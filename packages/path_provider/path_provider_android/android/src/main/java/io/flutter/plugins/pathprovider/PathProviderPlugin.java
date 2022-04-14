@@ -157,15 +157,16 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     // TODO(gaaclarke): Remove reflection guard when https://github.com/flutter/engine/pull/29147
     // becomes available on the stable branch.
     try {
-      Class methodChannelClass = Class.forName("io.flutter.plugin.common.MethodChannel");
-      Class taskQueueClass = Class.forName("io.flutter.plugin.common.BinaryMessenger$TaskQueue");
+      Class<?> methodChannelClass = Class.forName("io.flutter.plugin.common.MethodChannel");
+      Class<?> taskQueueClass = Class.forName("io.flutter.plugin.common.BinaryMessenger$TaskQueue");
       Method makeBackgroundTaskQueue = messenger.getClass().getMethod("makeBackgroundTaskQueue");
       Object taskQueue = makeBackgroundTaskQueue.invoke(messenger);
-      Constructor<MethodChannel> constructor =
+      Constructor<?> constructor =
           methodChannelClass.getConstructor(
               BinaryMessenger.class, String.class, MethodCodec.class, taskQueueClass);
-      channel =
+      Object obj =
           constructor.newInstance(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
+      channel = (MethodChannel) obj;
       impl = new PathProviderBackgroundThread();
       Log.d(TAG, "Use TaskQueues.");
     } catch (Exception ex) {
