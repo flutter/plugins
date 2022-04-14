@@ -75,21 +75,21 @@ class VideoPlayer {
     });
 
     _videoElement.onCanPlayThrough.listen((dynamic _) {
-      _setBuffering(false);
+      setBuffering(false);
     });
 
     _videoElement.onPlaying.listen((dynamic _) {
-      _setBuffering(false);
+      setBuffering(false);
     });
 
     _videoElement.onWaiting.listen((dynamic _) {
-      _setBuffering(true);
+      setBuffering(true);
       _sendBufferingRangesUpdate();
     });
 
     // The error event fires when some form of error occurs while attempting to load or perform the media.
     _videoElement.onError.listen((html.Event _) {
-      _setBuffering(false);
+      setBuffering(false);
       // The Event itself (_) doesn't contain info about the actual error.
       // We need to look at the HTMLMediaElement.error.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
@@ -102,7 +102,7 @@ class VideoPlayer {
     });
 
     _videoElement.onEnded.listen((dynamic _) {
-      _setBuffering(false);
+      setBuffering(false);
       _eventController.add(VideoEvent(eventType: VideoEventType.completed));
     });
   }
@@ -194,31 +194,41 @@ class VideoPlayer {
 
   // Sends an [VideoEventType.initialized] [VideoEvent] with info about the wrapped video.
   void _sendInitialized() {
+    final Duration? duration = !_videoElement.duration.isNaN
+        ? Duration(
+            milliseconds: (_videoElement.duration * 1000).round(),
+          )
+        : null;
+
+    final Size? size = !_videoElement.videoHeight.isNaN
+        ? Size(
+            _videoElement.videoWidth.toDouble(),
+            _videoElement.videoHeight.toDouble(),
+          )
+        : null;
+
     _eventController.add(
       VideoEvent(
         eventType: VideoEventType.initialized,
-        duration: Duration(
-          milliseconds: (_videoElement.duration * 1000).round(),
-        ),
-        size: Size(
-          _videoElement.videoWidth.toDouble(),
-          _videoElement.videoHeight.toDouble(),
-        ),
+        duration: duration,
+        size: size,
       ),
     );
   }
 
-  // Caches the current "buffering" state of the video.
-  //
-  // If the current buffering state is different from the previous one
-  // ([_isBuffering]), this dispatches a [VideoEvent].
-  void _setBuffering(bool buffering) {
+  /// Caches the current "buffering" state of the video.
+  ///
+  /// If the current buffering state is different from the previous one
+  /// ([_isBuffering]), this dispatches a [VideoEvent].
+  @visibleForTesting
+  void setBuffering(bool buffering) {
     if (_isBuffering != buffering) {
       _isBuffering = buffering;
       _eventController.add(VideoEvent(
-          eventType: _isBuffering
-              ? VideoEventType.bufferingStart
-              : VideoEventType.bufferingEnd));
+        eventType: _isBuffering
+            ? VideoEventType.bufferingStart
+            : VideoEventType.bufferingEnd,
+      ));
     }
   }
 
