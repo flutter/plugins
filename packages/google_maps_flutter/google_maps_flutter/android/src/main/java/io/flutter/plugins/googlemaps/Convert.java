@@ -26,7 +26,6 @@ import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.maps.model.Tile;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-
 import io.flutter.view.FlutterMain;
 import java.util.ArrayList;
 import java.util.Arrays;

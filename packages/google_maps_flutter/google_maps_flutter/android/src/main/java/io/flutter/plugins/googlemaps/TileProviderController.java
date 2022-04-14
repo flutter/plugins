@@ -56,7 +56,8 @@ class TileProviderController implements TileProvider {
                   Convert.tileOverlayArgumentsToJson(tileOverlayId, x, y, zoom),
                   this));
       try {
-        // Because `methodChannel.invokeMethod` is async, we use a `countDownLatch` make it synchronized.
+        // Because `methodChannel.invokeMethod` is async, we use a `countDownLatch` make it
+        // synchronized.
         countDownLatch.await();
       } catch (InterruptedException e) {
         Log.e(
