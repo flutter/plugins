@@ -398,7 +398,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     if (_closedCaptionFileFuture != null) {
-      await _updateClosedCaptionWithFuture(closedCaptionFile);
+      await _updateClosedCaptionWithFuture(_closedCaptionFileFuture);
     }
 
     void errorListener(Object obj) {
