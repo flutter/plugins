@@ -9,14 +9,9 @@ class HeatmapsController extends GeometryController {
   // A cache of [HeatmapController]s indexed by their [HeatmapId].
   final Map<HeatmapId, HeatmapController> _heatmapIdToController;
 
-  // The stream over which heatmaps broadcast their events
-  StreamController<MapEvent> _streamController;
-
-  /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
-  HeatmapsController({
-    required StreamController<MapEvent> stream,
-  })  : _streamController = stream,
-        _heatmapIdToController = Map<HeatmapId, HeatmapController>();
+  /// Initialize the cache
+  HeatmapsController()
+      : _heatmapIdToController = Map<HeatmapId, HeatmapController>();
 
   /// Returns the cache of [HeatmapController]s. Test only.
   @visibleForTesting

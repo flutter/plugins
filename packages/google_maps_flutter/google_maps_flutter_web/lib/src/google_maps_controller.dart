@@ -97,7 +97,7 @@ class GoogleMapController {
         _heatmaps = heatmaps,
         _rawMapOptions = mapOptions {
     _circlesController = CirclesController(stream: this._streamController);
-    _heatmapsController = HeatmapsController(stream: this._streamController);
+    _heatmapsController = HeatmapsController();
     _polygonsController = PolygonsController(stream: this._streamController);
     _polylinesController = PolylinesController(stream: this._streamController);
     _markersController = MarkersController(stream: this._streamController);
