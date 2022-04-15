@@ -76,14 +76,14 @@ void main() {
           ]));
     });
 
-    test('pubspec is compatible with null-safe app code', () async {
+    test('pubspec is compatible with super parameters in app code', () async {
       createFakePlugin('plugina', packagesDir);
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
       final String pubspec =
           command.appDirectory.childFile('pubspec.yaml').readAsStringSync();
 
-      expect(pubspec, contains(RegExp('sdk:\\s*(?:["\']>=|[^])2\\.12\\.')));
+      expect(pubspec, contains(RegExp('sdk:\\s*(?:["\']>=|[^])2\\.17\\.')));
     });
 
     test('handles --output-dir', () async {
