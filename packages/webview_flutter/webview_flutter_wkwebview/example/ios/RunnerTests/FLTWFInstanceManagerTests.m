@@ -6,39 +6,37 @@
 @import webview_flutter_wkwebview;
 
 @interface FLTWFInstanceManagerTests : XCTestCase
+@property FLTWFInstanceManager *instanceManager;
 @end
 
-@implementation FLTWFInstanceManagerTests {
-  FLTWFInstanceManager *_instanceManager;
-}
-
+@implementation FLTWFInstanceManagerTests
 - (void)setUp {
-  _instanceManager = [[FLTWFInstanceManager alloc] init];
+  self.instanceManager = [[FLTWFInstanceManager alloc] init];
 }
 
 - (void)testAddInstance {
   NSObject *object = [[NSObject alloc] init];
 
-  [_instanceManager addInstance:object instanceID:23];
-  XCTAssertEqualObjects([_instanceManager instanceForID:23], object);
-  XCTAssertEqualObjects([_instanceManager instanceIDForInstance:object], @(23));
+  [self.instanceManager addInstance:object withIdentifier:23];
+  XCTAssertEqualObjects([self.instanceManager instanceForIdentifier:23], object);
+  XCTAssertEqual([self.instanceManager identifierForInstance:object], 23);
 }
 
 - (void)testRemoveInstance {
   NSObject *object = [[NSObject alloc] init];
-  [_instanceManager addInstance:object instanceID:46];
+  [self.instanceManager addInstance:object withIdentifier:46];
 
-  [_instanceManager removeInstance:object];
-  XCTAssertNil([_instanceManager instanceForID:46]);
-  XCTAssertNil([_instanceManager instanceIDForInstance:object]);
+  [self.instanceManager removeInstance:object];
+  XCTAssertNil([self.instanceManager instanceForIdentifier:46]);
+  XCTAssertEqual([self.instanceManager identifierForInstance:object], -1);
 }
 
-- (void)testRemoveInstanceWithID {
+- (void)testRemoveInstanceWithIdentifier {
   NSObject *object = [[NSObject alloc] init];
-  [_instanceManager addInstance:object instanceID:69];
+  [self.instanceManager addInstance:object withIdentifier:69];
 
-  [_instanceManager removeInstanceWithID:69];
-  XCTAssertNil([_instanceManager instanceForID:69]);
-  XCTAssertNil([_instanceManager instanceIDForInstance:object]);
+  [self.instanceManager removeInstanceWithIdentifier:69];
+  XCTAssertNil([self.instanceManager instanceForIdentifier:69]);
+  XCTAssertEqual([self.instanceManager identifierForInstance:object], -1);
 }
 @end

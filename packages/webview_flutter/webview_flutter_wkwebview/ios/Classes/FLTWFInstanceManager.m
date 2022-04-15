@@ -4,97 +4,67 @@
 
 #import "FLTWFInstanceManager.h"
 
-@interface FLTThreadSafeMapTable<KeyType, ObjectType> : NSObject
-+ (nonnull FLTThreadSafeMapTable *)strongToStrongMapTable;
-- (void)setObject:(nonnull ObjectType)object forKey:(nonnull KeyType)key;
-- (void)removeObjectForKey:(nonnull KeyType)key;
-- (nullable ObjectType)objectForKey:(nonnull KeyType)key;
+@interface FLTWFInstanceManager ()
+@property dispatch_queue_t lockQueue;
+@property NSMapTable<NSNumber *, NSObject *> *identifiersToInstances;
+@property NSMapTable<NSObject *, NSNumber *> *instancesToIdentifiers;
 @end
 
-@implementation FLTThreadSafeMapTable {
-  NSMapTable<id, id> *_table;
-  dispatch_queue_t _lockQueue;
-}
-
-+ (FLTThreadSafeMapTable *)strongToStrongMapTable {
-  return [[FLTThreadSafeMapTable alloc] initWithTable:[NSMapTable strongToStrongObjectsMapTable]];
-}
-
-- (nonnull instancetype)initWithTable:(NSMapTable *)table {
-  self = [super init];
-  if (self) {
-    _lockQueue = dispatch_queue_create("FLTThreadSafeMapTable", DISPATCH_QUEUE_SERIAL);
-    _table = table;
-  }
-  return self;
-}
-
-- (void)setObject:(nonnull id)object forKey:(nonnull id)key {
-  if (key && object) {
-    dispatch_async(_lockQueue, ^{
-      [self->_table setObject:object forKey:key];
-    });
-  }
-}
-
-- (void)removeObjectForKey:(nonnull id)key {
-  if (key != nil) {
-    dispatch_async(_lockQueue, ^{
-      [self->_table removeObjectForKey:key];
-    });
-  }
-}
-
-- (nullable id)objectForKey:(nonnull id)key {
-  id __block object = nil;
-  dispatch_sync(_lockQueue, ^{
-    object = [self->_table objectForKey:key];
-  });
-  return object;
-}
-@end
-
-@implementation FLTWFInstanceManager {
-  FLTThreadSafeMapTable<NSNumber *, NSObject *> *_instanceIDsToInstances;
-  FLTThreadSafeMapTable<NSObject *, NSNumber *> *_instancesToInstanceIDs;
-}
-
+@implementation FLTWFInstanceManager
 - (instancetype)init {
   if (self) {
-    _instanceIDsToInstances = [FLTThreadSafeMapTable strongToStrongMapTable];
-    _instancesToInstanceIDs = [FLTThreadSafeMapTable strongToStrongMapTable];
+    self.lockQueue = dispatch_queue_create("FLTWFInstanceManager", DISPATCH_QUEUE_SERIAL);
+    self.identifiersToInstances = [NSMapTable strongToStrongObjectsMapTable];
+    self.instancesToIdentifiers = [NSMapTable strongToStrongObjectsMapTable];
   }
   return self;
 }
 
-- (void)addInstance:(nonnull NSObject *)instance instanceID:(long)instanceID {
-  [_instancesToInstanceIDs setObject:@(instanceID) forKey:instance];
-  [_instanceIDsToInstances setObject:instance forKey:@(instanceID)];
+- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)identifier {
+  NSAssert(!instance && identifier >= 0, @"");
+  dispatch_async(_lockQueue, ^{
+    [self.instancesToIdentifiers setObject:@(identifier) forKey:instance];
+    [self.identifiersToInstances setObject:instance forKey:@(identifier)];
+  });
 }
 
-- (nullable NSObject *)removeInstanceWithID:(long)instanceId {
-  NSObject *instance = [_instanceIDsToInstances objectForKey:@(instanceId)];
-  if (instance) {
-    [_instanceIDsToInstances removeObjectForKey:@(instanceId)];
-    [_instancesToInstanceIDs removeObjectForKey:instance];
-  }
+- (nullable NSObject *)removeInstanceWithIdentifier:(long)identifier {
+  NSObject *__block instance = nil;
+  dispatch_sync(_lockQueue, ^{
+    instance = [self.identifiersToInstances objectForKey:@(identifier)];
+    if (instance) {
+      [self.identifiersToInstances removeObjectForKey:@(identifier)];
+      [self.instancesToIdentifiers removeObjectForKey:instance];
+    }
+  });
   return instance;
 }
 
-- (nullable NSNumber *)removeInstance:(NSObject *)instance {
-  NSNumber *instanceID = [_instancesToInstanceIDs objectForKey:instance];
-  if (instanceID) {
-    [_instanceIDsToInstances removeObjectForKey:instanceID];
-    [_instancesToInstanceIDs removeObjectForKey:instance];
-  }
-  return instanceID;
+- (long)removeInstance:(NSObject *)instance {
+  NSNumber *__block identifierNumber = nil;
+  dispatch_sync(_lockQueue, ^{
+    identifierNumber = [self.instancesToIdentifiers objectForKey:instance];
+    if (identifierNumber) {
+      [self.identifiersToInstances removeObjectForKey:identifierNumber];
+      [self.instancesToIdentifiers removeObjectForKey:instance];
+    }
+  });
+  return identifierNumber ? identifierNumber.longValue : -1;
 }
 
-- (nullable NSObject *)instanceForID:(long)instanceID {
-  return [_instanceIDsToInstances objectForKey:@(instanceID)];
+- (nullable NSObject *)instanceForIdentifier:(long)identifier {
+  NSObject *__block instance = nil;
+  dispatch_sync(_lockQueue, ^{
+    instance = [self.identifiersToInstances objectForKey:@(identifier)];
+  });
+  return instance;
 }
 
-- (nullable NSNumber *)instanceIDForInstance:(nonnull NSObject *)instance {
-  return [_instancesToInstanceIDs objectForKey:instance];
+- (long)identifierForInstance:(nonnull NSObject *)instance {
+  NSNumber *__block identifierNumber = nil;
+  dispatch_sync(_lockQueue, ^{
+    identifierNumber = [self.instancesToIdentifiers objectForKey:instance];
+  });
+  return identifierNumber ? identifierNumber.longValue : -1;
 }
 @end

@@ -9,43 +9,51 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Maintains instances to intercommunicate with Dart objects.
  *
- * When an instance is added with an instanceId, either can be used to retrieve the other.
+ * When an instance is added with an identifier, either can be used to retrieve the other.
  */
 @interface FLTWFInstanceManager : NSObject
+// TODO(bparrishMines): Pairs should not be able to be overwritten and this feature
+// should be replaced with a call to clear the manager in the event of a hot restart
+// instead.
 /**
- * Add a new instance to the manager.
+ * Adds a new instance to the manager.
  *
- * If an instance or instanceID has already been added, it will be replaced by the new values.
+ * If an instance or identifier has already been added, it will be replaced by the new values. The
+ * Dart InstanceManager is considered the source of truth and has the capability to overwrite stores
+ * pairs in response to hot restarts.
  */
-- (void)addInstance:(nonnull NSObject *)instance instanceID:(long)instanceID;
+- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)identifier;
 
 /**
- * Remove the instance with instanceID from the manager.
+ * Removes the instance with identifier from the manager.
  *
- * Returns the removed instance if the manager contains the instanceId, otherwise nil.
+ * @returns the removed instance if the manager contains the given identifier, otherwise nil.
  */
-- (nullable NSObject *)removeInstanceWithID:(long)instanceId;
+- (nullable NSObject *)removeInstanceWithIdentifier:(long)identifier;
 
 /**
- * Remove the instance from the manager.
+ * Removes the instance from the manager.
  *
- * Returns the instanceID of the removed instance if the manager contains the value, otherwise nil.
+ * @returns the identifier of the removed instance if the manager contains the given instance,
+ * otherwise -1.
  */
-- (nullable NSNumber *)removeInstance:(NSObject *)instance;
+- (long)removeInstance:(NSObject *)instance;
 
 /**
- * Retrieve the Object paired with instanceId.
+ * Retrieves the instance paired with identifier.
  *
- * Returns the instance stored with the instanceID if the manager contains the value, otherwise nil.
+ * @returns the instance paired with identifier if the manager contains the given instance,
+ * otherwise nil.
  */
-- (nullable NSObject *)instanceForID:(long)instanceID;
+- (nullable NSObject *)instanceForIdentifier:(long)identifier;
 
 /**
- * Retrieve the instanceID paired with an instance.
+ * Retrieves the identifier paired with an instance.
  *
- * Returns the instanceID paired with instance if the manager contains the value, otherwise nil.
+ * @returns the identifier paired with instance if the manager contains the given identifer,
+ * otherwise -1.
  */
-- (nullable NSNumber *)instanceIDForInstance:(nonnull NSObject *)instance;
+- (long)identifierForInstance:(nonnull NSObject *)instance;
 @end
 
 NS_ASSUME_NONNULL_END
