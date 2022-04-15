@@ -154,8 +154,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   private void setup(BinaryMessenger messenger, Context context) {
     String channelName = "plugins.flutter.io/path_provider_android";
-    // TODO(gaaclarke): Remove reflection guard when https://github.com/flutter/engine/pull/29147
-    // becomes available on the stable branch.
+
     try {
       Class<?> methodChannelClass = Class.forName("io.flutter.plugin.common.MethodChannel");
       Class<?> taskQueueClass = Class.forName("io.flutter.plugin.common.BinaryMessenger$TaskQueue");
@@ -169,12 +168,10 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
               constructor.newInstance(
                   messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
       impl = new PathProviderBackgroundThread();
-      Log.d(TAG, "Use TaskQueues.");
     } catch (Exception ex) {
-      channel = new MethodChannel(messenger, channelName);
-      impl = new PathProviderPlatformThread();
-      Log.d(TAG, "Don't use TaskQueues.");
+      Log.e(TAG, "Received exception while setting up PathProviderPlugin", ex);
     }
+
     this.context = context;
     channel.setMethodCallHandler(this);
   }
