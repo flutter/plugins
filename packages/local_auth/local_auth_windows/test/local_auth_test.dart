@@ -74,14 +74,9 @@ void main() {
       );
     });
 
-    test('stopAuthentication calls platform', () async {
-      await localAuthentication.stopAuthentication();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('stopAuthentication', arguments: null),
-        ],
-      );
+    test('stopAuthentication returns false', () async {
+      final bool result = await localAuthentication.stopAuthentication();
+      expect(result, false);
     });
 
     group('With device auth fail over', () {

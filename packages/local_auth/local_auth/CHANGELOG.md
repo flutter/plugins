@@ -1,6 +1,3 @@
-## 2.1.0
-* Adds Windows support.
-
 ## 2.0.0
 
 * Migrates plugin to federated architecture.
