@@ -2,6 +2,9 @@
 
 - Adds a new `readme-check` command.
 - Updates `publish-plugin` command documentation.
+- Fixes `all-plugins-app` to preserve the original application's Dart SDK
+  version to avoid changing language feature opt-ins that the template may
+  rely on.
 
 ## 0.8.2
 
