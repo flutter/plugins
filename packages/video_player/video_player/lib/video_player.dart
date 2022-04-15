@@ -652,18 +652,18 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _closedCaptionFileFuture = closedCaptionFile;
   }
 
-  void _updatePosition(Duration position) {
-    value = value.copyWith(
-      position: position,
-      caption: _getCaptionAt(position),
-    );
-  }
-
   Future<void> _updateClosedCaptionWithFuture(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {
     _closedCaptionFile = await closedCaptionFile;
     value = value.copyWith(caption: _getCaptionAt(value.position));
+  }
+
+  void _updatePosition(Duration position) {
+    value = value.copyWith(
+      position: position,
+      caption: _getCaptionAt(position),
+    );
   }
 
   @override
