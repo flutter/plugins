@@ -290,16 +290,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final String? package;
 
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
-
-  /// Optional field to specify a file containing the closed
-  /// captioning.
-  ///
-  /// This future will be awaited and the file will be loaded when
-  /// [initialize()] is called.
-  Future<ClosedCaptionFile>? get closedCaptionFile {
-    return _closedCaptionFileFuture;
-  }
-
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
   bool _isDisposed = false;
@@ -408,7 +398,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     if (_closedCaptionFileFuture != null) {
-      await setClosedCaptionFile(_closedCaptionFileFuture);
+      await _updateClosedCaptionWithFuture(closedCaptionFile);
     }
 
     void errorListener(Object obj) {
@@ -643,15 +633,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return Caption.none;
   }
 
+  /// Optional field to specify a file containing the closed
+  /// captioning.
+  ///
+  /// This future will be awaited and the file will be loaded when
+  /// [initialize()] is called.
+  Future<ClosedCaptionFile>? get closedCaptionFile {
+    return _closedCaptionFileFuture;
+  }
+
   /// Sets a closed caption file.
   ///
   /// If [closedCaptionFile] is null, closed caption file will be removed.
   Future<void> setClosedCaptionFile(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {
-    _closedCaptionFile = await closedCaptionFile;
-    value = value.copyWith(caption: _getCaptionAt(value.position));
-
+    await _updateClosedCaptionWithFuture(closedCaptionFile);
     _closedCaptionFileFuture = closedCaptionFile;
   }
 
@@ -660,6 +657,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       position: position,
       caption: _getCaptionAt(position),
     );
+  }
+
+  Future<void> _updateClosedCaptionWithFuture(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {
+    _closedCaptionFile = await closedCaptionFile;
+    value = value.copyWith(caption: _getCaptionAt(value.position));
   }
 
   @override
