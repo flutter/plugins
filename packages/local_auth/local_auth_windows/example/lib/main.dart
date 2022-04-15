@@ -8,8 +8,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:local_auth_windows/local_auth_windows.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_windows/local_auth_windows.dart';
 
 void main() {
   runApp(MyApp());

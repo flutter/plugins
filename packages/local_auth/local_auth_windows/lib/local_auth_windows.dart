@@ -81,7 +81,9 @@ class LocalAuthWindows extends LocalAuthPlatform {
   Future<bool> isDeviceSupported() async =>
       (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
 
+  /// Always returns false as this method is not supported on Windows.
   @override
-  Future<bool> stopAuthentication() async =>
-      await _channel.invokeMethod<bool>('stopAuthentication') ?? false;
+  Future<bool> stopAuthentication() async {
+    return false;
+  }
 }

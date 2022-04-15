@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(example LANGUAGES CXX)
+project(local_auth_windows_example LANGUAGES CXX)
 
-set(BINARY_NAME "example")
+set(BINARY_NAME "local_auth_windows_example")
 
 cmake_policy(SET CMP0063 NEW)
 
@@ -45,6 +45,11 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 
 # Application build
 add_subdirectory("runner")
+
+# Enable the test target.
+set(local_auth_windows_tests TRUE)
+# Provide an alias for the test target using the name expected by repo tooling.
+add_custom_target(unit_tests DEPENDS local_auth_windows_test)
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
