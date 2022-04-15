@@ -126,6 +126,18 @@ class WKErrorCode {
   static const int javaScriptResultTypeIsUnsupported = 5;
 }
 
+/// A record of the data that a particular website stores persistently.
+///
+/// Wraps [WKWebsiteDataRecord](https://developer.apple.com/documentation/webkit/wkwebsitedatarecord?language=objc).
+@immutable
+class WKWebsiteDataRecord {
+  /// Constructs a [WKWebsiteDataRecord].
+  const WKWebsiteDataRecord({required this.displayName});
+
+  /// Identifying information that you display to users.
+  final String displayName;
+}
+
 /// An object that contains information about an action that causes navigation to occur.
 ///
 /// Wraps [WKNavigationAction](https://developer.apple.com/documentation/webkit/wknavigationaction?language=objc).
@@ -230,26 +242,55 @@ class WKPreferences {
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
 class WKWebsiteDataStore {
-  /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
-  @visibleForTesting
-  WKWebsiteDataStore.fromWebViewConfiguration(
-    WKWebViewConfiguration configuration, {
+  WKWebsiteDataStore._({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _websiteDataStoreApi = WKWebsiteDataStoreHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        ) {
-    _websiteDataStoreApi.createFromWebViewConfigurationForInstances(
-      this,
+        );
+
+  factory WKWebsiteDataStore._defaultDataStore() {
+    final WKWebsiteDataStore websiteDataStore = WKWebsiteDataStore._();
+    websiteDataStore._websiteDataStoreApi.createDefaultDataStoreForInstances(
+      websiteDataStore,
+    );
+    return websiteDataStore;
+  }
+
+  /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
+  @visibleForTesting
+  factory WKWebsiteDataStore.fromWebViewConfiguration(
+    WKWebViewConfiguration configuration, {
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    final WKWebsiteDataStore websiteDataStore = WKWebsiteDataStore._(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    websiteDataStore._websiteDataStoreApi
+        .createFromWebViewConfigurationForInstances(
+      websiteDataStore,
       configuration,
     );
+    return websiteDataStore;
   }
+
+  /// Default data store that stores data persistently to disk.
+  static final WKWebsiteDataStore defaultDataStore =
+      WKWebsiteDataStore._defaultDataStore();
 
   final WKWebsiteDataStoreHostApiImpl _websiteDataStoreApi;
 
+  /// Manages the HTTP cookies associated with a particular web view.
+  late final WKHttpCookieStore httpCookieStore =
+      WKHttpCookieStore.fromWebsiteDataStore(this);
+
   /// Removes website data that changed after the specified date.
-  Future<void> removeDataOfTypes(
+  ///
+  /// Returns whether any data was removed.
+  Future<bool> removeDataOfTypes(
     Set<WKWebsiteDataTypes> dataTypes,
     DateTime since,
   ) {
@@ -258,6 +299,44 @@ class WKWebsiteDataStore {
       dataTypes,
       secondsModifiedSinceEpoch: since.millisecondsSinceEpoch / 1000,
     );
+  }
+}
+
+/// An object that manages the HTTP cookies associated with a particular web view.
+///
+/// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
+class WKHttpCookieStore extends NSObject {
+  WKHttpCookieStore._({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _httpCookieStoreApi = WKHttpCookieStoreHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
+  /// Constructs a [WKHttpCookieStore] that is owned by [dataStore].
+  @visibleForTesting
+  factory WKHttpCookieStore.fromWebsiteDataStore(
+    WKWebsiteDataStore dataStore, {
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    final WKHttpCookieStore cookieStore = WKHttpCookieStore._(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    cookieStore._httpCookieStoreApi.createFromWebsiteDataStoreForInstances(
+      cookieStore,
+      dataStore,
+    );
+    return cookieStore;
+  }
+
+  final WKHttpCookieStoreHostApiImpl _httpCookieStoreApi;
+
+  /// Adds a cookie to the cookie store.
+  Future<void> setCookie(NSHttpCookie cookie) {
+    return _httpCookieStoreApi.setCookieForInsances(this, cookie);
   }
 }
 
@@ -471,7 +550,6 @@ class WKWebViewConfiguration {
   Future<void> setMediaTypesRequiringUserActionForPlayback(
     Set<WKAudiovisualMediaType> types,
   ) {
-    assert(types.isNotEmpty);
     return _webViewConfigurationApi
         .setMediaTypesRequiringUserActionForPlaybackForInstances(
       this,
@@ -515,15 +593,20 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
-class WKNavigationDelegate {
+class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+  })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
+    WebKitFlutterApis.instance.ensureSetUp();
     _navigationDelegateApi.createForInstances(this);
   }
 
@@ -531,10 +614,7 @@ class WKNavigationDelegate {
 
   /// Called when navigation from the main frame has started.
   Future<void> setDidStartProvisionalNavigation(
-    void Function(
-      WKWebView webView,
-      String? url,
-    )?
+    void Function(WKWebView webView, String? url)?
         didStartProvisionalNavigation,
   ) {
     throw UnimplementedError();
@@ -544,7 +624,10 @@ class WKNavigationDelegate {
   Future<void> setDidFinishNavigation(
     void Function(WKWebView webView, String? url)? didFinishNavigation,
   ) {
-    throw UnimplementedError();
+    return _navigationDelegateApi.setDidFinishNavigationFromInstance(
+      this,
+      didFinishNavigation,
+    );
   }
 
   /// Called when permission is needed to navigate to new content.
