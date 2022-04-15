@@ -280,9 +280,7 @@ abstract class WKScriptMessageHandlerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKNavigationDelegateHostApi')
 abstract class WKNavigationDelegateHostApi {
-  void create(int instanceId);
-
-  void setDidFinishNavigation(int instanceId, int? functionInstanceId);
+  void create(int instanceId, int? didFinishNavigationInstanceId);
 }
 
 /// Mirror of WKNavigationDelegate.

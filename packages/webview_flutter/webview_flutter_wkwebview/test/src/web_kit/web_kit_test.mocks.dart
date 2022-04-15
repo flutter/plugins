@@ -30,14 +30,10 @@ class MockTestWKNavigationDelegateHostApi extends _i1.Mock
   }
 
   @override
-  void create(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#create, [instanceId]),
-          returnValueForMissingStub: null);
-  @override
-  void setDidFinishNavigation(int? instanceId, int? functionInstanceId) =>
+  void create(int? instanceId, int? didFinishNavigationInstanceId) =>
       super.noSuchMethod(
           Invocation.method(
-              #setDidFinishNavigation, [instanceId, functionInstanceId]),
+              #create, [instanceId, didFinishNavigationInstanceId]),
           returnValueForMissingStub: null);
 }
 

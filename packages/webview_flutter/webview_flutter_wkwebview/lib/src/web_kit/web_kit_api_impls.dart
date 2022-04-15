@@ -10,6 +10,18 @@ import '../common/web_kit.pigeon.dart';
 import '../foundation/foundation.dart';
 import 'web_kit.dart';
 
+int? _tryGetFunctionInstanceId(
+  InstanceManager instanceManager,
+  Function? function,
+) {
+  int? functionInstanceId;
+  if (function != null) {
+    functionInstanceId = instanceManager.getInstanceId(function) ??
+        instanceManager.tryAddInstance(function)!;
+  }
+  return functionInstanceId;
+}
+
 Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
     Iterable<WKWebsiteDataTypes> types) {
   return types.map<WKWebsiteDataTypesEnumData>((WKWebsiteDataTypes type) {
@@ -421,27 +433,18 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKNavigationDelegate instance) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
-  }
-
-  /// Calls [setDidFinishNavigation] with the ids of the provided object instances.
-  Future<void> setDidFinishNavigationFromInstance(
+  Future<void> createForInstances(
     WKNavigationDelegate instance,
-    void Function(WKWebView, String?)? didFinishNavigation,
-  ) {
-    int? functionInstanceId;
-    if (didFinishNavigation != null) {
-      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation) ??
-          instanceManager.tryAddInstance(didFinishNavigation)!;
+    void Function(WKWebView webView, String? url)? didFinishNavigation,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+
+    if (instanceId != null) {
+      await create(
+        instanceId,
+        _tryGetFunctionInstanceId(instanceManager, didFinishNavigation),
+      );
     }
-    return setDidFinishNavigation(
-      instanceManager.getInstanceId(instance)!,
-      functionInstanceId,
-    );
   }
 }
 

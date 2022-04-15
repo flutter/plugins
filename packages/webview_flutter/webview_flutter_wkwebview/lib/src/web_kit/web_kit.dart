@@ -576,6 +576,7 @@ class WKNavigationDelegate extends NSObject {
   WKNavigationDelegate({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
+    this.didFinishNavigation,
   })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
@@ -585,10 +586,13 @@ class WKNavigationDelegate extends NSObject {
           instanceManager: instanceManager,
         ) {
     WebKitFlutterApis.instance.ensureSetUp();
-    _navigationDelegateApi.createForInstances(this);
+    _navigationDelegateApi.createForInstances(this, didFinishNavigation);
   }
 
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
+
+  /// Called when navigation is complete.
+  void Function(WKWebView webView, String? url)? didFinishNavigation;
 
   /// Called when navigation from the main frame has started.
   Future<void> setDidStartProvisionalNavigation(
@@ -596,16 +600,6 @@ class WKNavigationDelegate extends NSObject {
         didStartProvisionalNavigation,
   ) {
     throw UnimplementedError();
-  }
-
-  /// Called when navigation is complete.
-  Future<void> setDidFinishNavigation(
-    void Function(WKWebView webView, String? url)? didFinishNavigation,
-  ) {
-    return _navigationDelegateApi.setDidFinishNavigationFromInstance(
-      this,
-      didFinishNavigation,
-    );
   }
 
   /// Called when permission is needed to navigate to new content.
