@@ -44,6 +44,7 @@ abstract class TestWKWebsiteDataStoreHostApi {
 
   void createFromWebViewConfiguration(
       int instanceId, int configurationInstanceId);
+  void createDefaultDataStore(int instanceId);
   Future<bool> removeDataOfTypes(
       int instanceId,
       List<WKWebsiteDataTypesEnumData?> dataTypes,
@@ -70,6 +71,26 @@ abstract class TestWKWebsiteDataStoreHostApi {
               'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createFromWebViewConfiguration was null, expected non-null int.');
           api.createFromWebViewConfiguration(
               arg_instanceId!, arg_configurationInstanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createDefaultDataStore',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createDefaultDataStore was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createDefaultDataStore was null, expected non-null int.');
+          api.createDefaultDataStore(arg_instanceId!);
           return <Object?, Object?>{};
         });
       }
@@ -1324,6 +1345,94 @@ abstract class TestWKUIDelegateHostApi {
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WKUIDelegateHostApi.create was null, expected non-null int.');
           api.create(arg_instanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestWKHttpCookieStoreHostApiCodec extends StandardMessageCodec {
+  const _TestWKHttpCookieStoreHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is NSHttpCookieData) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is NSHttpCookiePropertyKeyEnumData) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return NSHttpCookieData.decode(readValue(buffer)!);
+
+      case 129:
+        return NSHttpCookiePropertyKeyEnumData.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class TestWKHttpCookieStoreHostApi {
+  static const MessageCodec<Object?> codec =
+      _TestWKHttpCookieStoreHostApiCodec();
+
+  void createFromWebsiteDataStore(
+      int instanceId, int websiteDataStoreInstanceId);
+  void setCookie(int instanceId, NSHttpCookieData cookie);
+  static void setup(TestWKHttpCookieStoreHostApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore was null, expected non-null int.');
+          final int? arg_websiteDataStoreInstanceId = (args[1] as int?);
+          assert(arg_websiteDataStoreInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore was null, expected non-null int.');
+          api.createFromWebsiteDataStore(
+              arg_instanceId!, arg_websiteDataStoreInstanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie was null, expected non-null int.');
+          final NSHttpCookieData? arg_cookie = (args[1] as NSHttpCookieData?);
+          assert(arg_cookie != null,
+              'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie was null, expected non-null NSHttpCookieData.');
+          api.setCookie(arg_instanceId!, arg_cookie!);
           return <Object?, Object?>{};
         });
       }

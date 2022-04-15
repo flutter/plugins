@@ -45,6 +45,73 @@ Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
   });
 }
 
+extension _NSHttpCookieConverter on NSHttpCookie {
+  NSHttpCookieData toNSHttpCookieData() {
+    return NSHttpCookieData(
+      properties: properties.map<NSHttpCookiePropertyKeyEnumData, String>(
+        (NSHttpCookiePropertyKey key, Object value) {
+          return MapEntry<NSHttpCookiePropertyKeyEnumData, String>(
+            key.toNSHttpCookiePropertyKeyEnumData(),
+            value.toString(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+extension _NSHttpCookiePropertyKeyConverter on NSHttpCookiePropertyKey {
+  NSHttpCookiePropertyKeyEnumData toNSHttpCookiePropertyKeyEnumData() {
+    late final NSHttpCookiePropertyKeyEnum value;
+    switch (this) {
+      case NSHttpCookiePropertyKey.comment:
+        value = NSHttpCookiePropertyKeyEnum.comment;
+        break;
+      case NSHttpCookiePropertyKey.commentUrl:
+        value = NSHttpCookiePropertyKeyEnum.commentUrl;
+        break;
+      case NSHttpCookiePropertyKey.discard:
+        value = NSHttpCookiePropertyKeyEnum.discard;
+        break;
+      case NSHttpCookiePropertyKey.domain:
+        value = NSHttpCookiePropertyKeyEnum.domain;
+        break;
+      case NSHttpCookiePropertyKey.expires:
+        value = NSHttpCookiePropertyKeyEnum.expires;
+        break;
+      case NSHttpCookiePropertyKey.maximumAge:
+        value = NSHttpCookiePropertyKeyEnum.maximumAge;
+        break;
+      case NSHttpCookiePropertyKey.name:
+        value = NSHttpCookiePropertyKeyEnum.name;
+        break;
+      case NSHttpCookiePropertyKey.originUrl:
+        value = NSHttpCookiePropertyKeyEnum.originUrl;
+        break;
+      case NSHttpCookiePropertyKey.path:
+        value = NSHttpCookiePropertyKeyEnum.path;
+        break;
+      case NSHttpCookiePropertyKey.port:
+        value = NSHttpCookiePropertyKeyEnum.port;
+        break;
+      case NSHttpCookiePropertyKey.sameSitePolicy:
+        value = NSHttpCookiePropertyKeyEnum.sameSitePolicy;
+        break;
+      case NSHttpCookiePropertyKey.secure:
+        value = NSHttpCookiePropertyKeyEnum.secure;
+        break;
+      case NSHttpCookiePropertyKey.value:
+        value = NSHttpCookiePropertyKeyEnum.value;
+        break;
+      case NSHttpCookiePropertyKey.version:
+        value = NSHttpCookiePropertyKeyEnum.version;
+        break;
+    }
+
+    return NSHttpCookiePropertyKeyEnumData(value: value);
+  }
+}
+
 extension _WKUserScriptInjectionTimeConverter on WKUserScriptInjectionTime {
   WKUserScriptInjectionTimeEnumData toWKUserScriptInjectionTimeEnumData() {
     late final WKUserScriptInjectionTimeEnum value;
@@ -178,6 +245,16 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
     }
   }
 
+  /// Calls [createDefaultDataStore] with the ids of the provided object instances.
+  Future<void> createDefaultDataStoreForInstances(
+    WKWebsiteDataStore instance,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      await createDefaultDataStore(instanceId);
+    }
+  }
+
   /// Calls [removeDataOfTypes] with the ids of the provided object instances.
   Future<bool> removeDataOfTypesForInstances(
     WKWebsiteDataStore instance,
@@ -247,6 +324,44 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
     return setJavaScriptEnabled(
       instanceManager.getInstanceId(instance)!,
       enabled,
+    );
+  }
+}
+
+/// Host api implementation for [WKHttpCookieStore].
+class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
+  /// Constructs a [WKHttpCookieStoreHostApiImpl].
+  WKHttpCookieStoreHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  })  : instanceManager = instanceManager ?? InstanceManager.instance,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Maintains instances stored to communicate with Objective-C objects.
+  final InstanceManager instanceManager;
+
+  /// Calls [createFromWebsiteDataStore] with the ids of the provided object instances.
+  Future<void> createFromWebsiteDataStoreForInstances(
+    WKHttpCookieStore instance,
+    WKWebsiteDataStore dataStore,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      await createFromWebsiteDataStore(
+        instanceId,
+        instanceManager.getInstanceId(dataStore)!,
+      );
+    }
+  }
+
+  /// Calls [setCookie] with the ids of the provided object instances.
+  Future<void> setCookieForInsances(
+    WKHttpCookieStore instance,
+    NSHttpCookie cookie,
+  ) {
+    return setCookie(
+      instanceManager.getInstanceId(instance)!,
+      cookie.toNSHttpCookieData(),
     );
   }
 }

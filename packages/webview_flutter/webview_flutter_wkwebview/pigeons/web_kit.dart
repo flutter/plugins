@@ -117,6 +117,30 @@ class WKNavigationActionPolicyEnumData {
   late WKNavigationActionPolicyEnum? value;
 }
 
+/// Mirror of NSHTTPCookiePropertyKey.
+///
+/// See https://developer.apple.com/documentation/foundation/nshttpcookiepropertykey.
+enum NSHttpCookiePropertyKeyEnum {
+  comment,
+  commentUrl,
+  discard,
+  domain,
+  expires,
+  maximumAge,
+  name,
+  originUrl,
+  path,
+  port,
+  sameSitePolicy,
+  secure,
+  value,
+  version,
+}
+
+class NSHttpCookiePropertyKeyEnumData {
+  late NSHttpCookiePropertyKeyEnum? value;
+}
+
 /// Mirror of NSURLRequest.
 ///
 /// See https://developer.apple.com/documentation/foundation/nsurlrequest?language=objc.
@@ -168,6 +192,13 @@ class WKScriptMessageData {
   late Object? body;
 }
 
+/// Mirror of NSHttpCookieData.
+///
+/// See https://developer.apple.com/documentation/foundation/nshttpcookie?language=objc.
+class NSHttpCookieData {
+  late Map<NSHttpCookiePropertyKeyEnumData?, String?> properties;
+}
+
 /// Mirror of WKWebsiteDataStore.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc.
@@ -177,6 +208,8 @@ abstract class WKWebsiteDataStoreHostApi {
     int instanceId,
     int configurationInstanceId,
   );
+
+  void createDefaultDataStore(int instanceId);
 
   @async
   bool removeDataOfTypes(
@@ -369,4 +402,17 @@ abstract class WKWebViewHostApi {
 @HostApi(dartHostTestHandler: 'TestWKUIDelegateHostApi')
 abstract class WKUIDelegateHostApi {
   void create(int instanceId);
+}
+
+/// Mirror of WKHttpCookieStore.
+///
+/// See https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc.
+@HostApi(dartHostTestHandler: 'TestWKHttpCookieStoreHostApi')
+abstract class WKHttpCookieStoreHostApi {
+  void createFromWebsiteDataStore(
+    int instanceId,
+    int websiteDataStoreInstanceId,
+  );
+
+  void setCookie(int instanceId, NSHttpCookieData cookie);
 }

@@ -251,7 +251,11 @@ class WKWebsiteDataStore {
         );
 
   factory WKWebsiteDataStore._defaultDataStore() {
-    throw UnimplementedError();
+    final WKWebsiteDataStore websiteDataStore = WKWebsiteDataStore._();
+    websiteDataStore._websiteDataStoreApi.createDefaultDataStoreForInstances(
+      websiteDataStore,
+    );
+    return websiteDataStore;
   }
 
   /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
@@ -301,20 +305,38 @@ class WKWebsiteDataStore {
 /// An object that manages the HTTP cookies associated with a particular web view.
 ///
 /// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
-class WKHttpCookieStore {
+class WKHttpCookieStore extends NSObject {
+  WKHttpCookieStore._({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _httpCookieStoreApi = WKHttpCookieStoreHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
   /// Constructs a [WKHttpCookieStore] that is owned by [dataStore].
   @visibleForTesting
-  WKHttpCookieStore.fromWebsiteDataStore(
-    // TODO(bparrishMines): Remove ignore on implementation.
-    // ignore: avoid_unused_constructor_parameters
-    WKWebsiteDataStore dataStore,
-  ) {
-    throw UnimplementedError();
+  factory WKHttpCookieStore.fromWebsiteDataStore(
+    WKWebsiteDataStore dataStore, {
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    final WKHttpCookieStore cookieStore = WKHttpCookieStore._(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    cookieStore._httpCookieStoreApi.createFromWebsiteDataStoreForInstances(
+      cookieStore,
+      dataStore,
+    );
+    return cookieStore;
   }
+
+  final WKHttpCookieStoreHostApiImpl _httpCookieStoreApi;
 
   /// Adds a cookie to the cookie store.
   Future<void> setCookie(NSHttpCookie cookie) {
-    throw UnimplementedError();
+    return _httpCookieStoreApi.setCookieForInsances(this, cookie);
   }
 }
 
