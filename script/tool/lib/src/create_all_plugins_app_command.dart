@@ -147,7 +147,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _genPubspecWithAllPlugins() async {
-    RepositoryPackage buildAllApp = RepositoryPackage(appDirectory);
+    final RepositoryPackage buildAllApp = RepositoryPackage(appDirectory);
     // Read the old pubspec file's Dart SDK version, in order to preserve it
     // in the new file. The template sometimes relies on having opted in to
     // specific language features via SDK version, so using a different one
