@@ -155,7 +155,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       version: Version.parse('1.0.0+1'),
       environment: <String, VersionConstraint>{
         'sdk': VersionConstraint.compatibleWith(
-          Version.parse('2.12.0'),
+          Version.parse('2.17.0'),
         ),
       },
       dependencies: <String, Dependency>{

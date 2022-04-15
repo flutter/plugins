@@ -1,7 +1,9 @@
-## NEXT
+## 0.8.3
 
 - Adds a new `readme-check` command.
 - Updates `publish-plugin` command documentation.
+- Bumps pubspec of `all-plugins-app` to `>=2.17.0` so super parameters work in
+  the generated app.
 
 ## 0.8.2
 
