@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -9,6 +11,7 @@ import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart';
 
 import '../common/test_web_kit.pigeon.dart';
 import 'web_kit_test.mocks.dart';
@@ -28,9 +31,12 @@ void main() {
 
   group('WebKit', () {
     late InstanceManager instanceManager;
+    late WebKitFlutterApis flutterApis;
 
     setUp(() {
       instanceManager = InstanceManager();
+      flutterApis = WebKitFlutterApis(instanceManager: instanceManager);
+      WebKitFlutterApis.instance = flutterApis;
     });
 
     group('$WKWebsiteDataStore', () {
@@ -329,11 +335,22 @@ void main() {
     group('$WKNavigationDelegate', () {
       late MockTestWKNavigationDelegateHostApi mockPlatformHostApi;
 
+      late WKWebView webView;
+
       late WKNavigationDelegate navigationDelegate;
 
       setUp(() async {
         mockPlatformHostApi = MockTestWKNavigationDelegateHostApi();
         TestWKNavigationDelegateHostApi.setup(mockPlatformHostApi);
+
+        TestWKWebViewConfigurationHostApi.setup(
+          MockTestWKWebViewConfigurationHostApi(),
+        );
+        TestWKWebViewHostApi.setup(MockTestWKWebViewHostApi());
+        webView = WKWebView(
+          WKWebViewConfiguration(instanceManager: instanceManager),
+          instanceManager: instanceManager,
+        );
 
         navigationDelegate = WKNavigationDelegate(
           instanceManager: instanceManager,
@@ -342,12 +359,39 @@ void main() {
 
       tearDown(() {
         TestWKNavigationDelegateHostApi.setup(null);
+        TestWKWebViewConfigurationHostApi.setup(null);
+        TestWKWebViewHostApi.setup(null);
       });
 
       test('create', () async {
         verify(mockPlatformHostApi.create(
           instanceManager.getInstanceId(navigationDelegate),
         ));
+      });
+
+      test('setDidFinishNavigation', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        navigationDelegate.setDidFinishNavigation(
+          (WKWebView webView, String? url) {
+            argsCompleter.complete(<Object?>[webView, url]);
+          },
+        );
+
+        final int functionInstanceId =
+            verify(mockPlatformHostApi.setDidFinishNavigation(
+          instanceManager.getInstanceId(navigationDelegate),
+          captureAny,
+        )).captured.single as int;
+
+        flutterApis.navigationDelegateFlutterApi.didFinishNavigation(
+          functionInstanceId,
+          instanceManager.getInstanceId(webView)!,
+          'url',
+        );
+
+        expect(argsCompleter.future, completion(<Object?>[webView, 'url']));
       });
     });
 

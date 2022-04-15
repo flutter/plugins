@@ -707,6 +707,7 @@ abstract class TestWKNavigationDelegateHostApi {
       _TestWKNavigationDelegateHostApiCodec();
 
   void create(int instanceId);
+  void setDidFinishNavigation(int instanceId, int? functionInstanceId);
   static void setup(TestWKNavigationDelegateHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -724,6 +725,29 @@ abstract class TestWKNavigationDelegateHostApi {
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateHostApi.create was null, expected non-null int.');
           api.create(arg_instanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation was null, expected non-null int.');
+          final int? arg_functionInstanceId = (args[1] as int?);
+          assert(arg_functionInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation was null, expected non-null int.');
+          api.setDidFinishNavigation(arg_instanceId!, arg_functionInstanceId!);
           return <Object?, Object?>{};
         });
       }

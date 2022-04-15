@@ -281,6 +281,20 @@ abstract class WKScriptMessageHandlerHostApi {
 @HostApi(dartHostTestHandler: 'TestWKNavigationDelegateHostApi')
 abstract class WKNavigationDelegateHostApi {
   void create(int instanceId);
+
+  void setDidFinishNavigation(int instanceId, int? functionInstanceId);
+}
+
+/// Mirror of WKNavigationDelegate.
+///
+/// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
+@FlutterApi()
+abstract class WKNavigationDelegateFlutterApi {
+  void didFinishNavigation(
+    int functionInstanceId,
+    int webViewInstanceId,
+    String? url,
+  );
 }
 
 /// Mirror of NSObject.
@@ -298,6 +312,12 @@ abstract class NSObjectHostApi {
   );
 
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
+}
+
+/// Disposes references to functions.
+@FlutterApi()
+abstract class FunctionFlutterApi {
+  void dispose(int instanceId);
 }
 
 /// Mirror of WKWebView.
