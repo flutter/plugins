@@ -262,9 +262,7 @@ class MethodCallHandlerImpl
           BillingFlowParams.SubscriptionUpdateParams.newBuilder()
               .setReplaceSkusProrationMode(prorationMode)
               .setOldSkuPurchaseToken(oldSku);
-      paramsBuilder.setSubscriptionUpdateParams(
-          subscriptionUpdateParamsBuilder.build());
-            
+      paramsBuilder.setSubscriptionUpdateParams(subscriptionUpdateParamsBuilder.build());
     }
 
     result.success(
