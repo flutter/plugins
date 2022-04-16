@@ -246,6 +246,13 @@ void main() {
 
         verify(controller.updateCircles(expectedUpdates));
       });
+      testWidgets('updateHeatmaps', (WidgetTester tester) async {
+        final expectedUpdates = HeatmapUpdates.from({}, {});
+
+        await plugin.updateHeatmaps(expectedUpdates, mapId: mapId);
+
+        verify(controller.updateHeatmaps(expectedUpdates));
+      });
       // Camera
       testWidgets('animateCamera', (WidgetTester tester) async {
         final expectedUpdates =

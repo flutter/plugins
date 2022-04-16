@@ -309,6 +309,8 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
       [_circlesController removeCircleIds:circleIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"heatmaps#update"]) {
+    // TODO
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
     id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {

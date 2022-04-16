@@ -54,6 +54,10 @@ class LatLng {
 
   @override
   int get hashCode => Object.hash(latitude, longitude);
+
+  /// Create a [WeightedLatLng] from this [LatLng] with the specified [weight].
+  WeightedLatLng weighted([double weight = 1.0]) =>
+      WeightedLatLng.fromLatLng(this, weight: weight);
 }
 
 /// A latitude/longitude aligned rectangle.
@@ -146,6 +150,9 @@ class WeightedLatLng {
   WeightedLatLng(double latitude, double longitude, {this.weight = 1.0})
       : location = LatLng(latitude, longitude);
 
+  /// Creates a [WeightedLatLng] with the specified [location] and [weight].
+  WeightedLatLng.fromLatLng(this.location, {this.weight = 1.0});
+
   /// Converts this object to something serializable in JSON.
   Object toJson() {
     return <Object>[location.toJson(), weight];
@@ -176,4 +183,12 @@ class WeightedLatLng {
 
   @override
   int get hashCode => Object.hash(location, weight);
+}
+
+/// Convenience extensions on [LatLng] iterables.
+extension LatLngIterableExtension on Iterable<LatLng> {
+  /// Converts a [LatLng] iterable to a [WeightedLatLng] iterable with each
+  /// [WeightedLatLng] having the specified [weight].
+  Iterable<WeightedLatLng> weighted([double weight = 1.0]) =>
+      map((latLng) => latLng.weighted(weight));
 }
