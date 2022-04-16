@@ -1,6 +1,7 @@
-## NEXT
+## 2.2.0
 
 * Adds OS version support information to README.
+* Adds support for heatmap layers.
 
 ## 2.1.3
 

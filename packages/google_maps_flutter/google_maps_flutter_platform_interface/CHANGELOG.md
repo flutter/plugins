@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Adds support for heatmap layers.
+
 ## 2.1.6
 
 * Migrates from `ui.hash*` to `Object.hash*`.

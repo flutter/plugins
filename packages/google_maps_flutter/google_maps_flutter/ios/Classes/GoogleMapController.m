@@ -311,6 +311,7 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     result(nil);
   } else if ([call.method isEqualToString:@"heatmaps#update"]) {
     // TODO
+    result(nil);
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
     id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {

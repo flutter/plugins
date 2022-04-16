@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Adds support for heatmap layers.
+
 ## 0.3.2+1
 
 * Removes dependency on `meta`.
