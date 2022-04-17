@@ -22,6 +22,7 @@ Downloaded by pub (not CocoaPods).
   s.dependency 'Google-Maps-iOS-Utils'
   s.static_framework = true
   s.platform = :ios, '9.0'
+  s.swift_version = '4.0'
   # GoogleMaps does not support arm64 simulators.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end

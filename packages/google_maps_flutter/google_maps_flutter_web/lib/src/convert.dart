@@ -39,6 +39,14 @@ double _getCssOpacity(Color color) {
   return color.opacity;
 }
 
+// Converts a [Color] into a valid CSS value rgba(R, G, B, A).
+String _getCssColorWithAlpha(Color color) {
+  if (color == null) {
+    return _defaultCssColor;
+  }
+  return 'rgba(${color.red}, ${color.green}, ${color.blue}, ${color.alpha / 255})';
+}
+
 // Converts options from the plugin into gmaps.MapOptions that can be used by the JS SDK.
 // The following options are not handled here, for various reasons:
 // The following are not available in web, because the map doesn't rotate there:
@@ -289,7 +297,7 @@ gmaps_visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
         )
         .toList()
     ..dissipating = heatmap.dissipating
-    ..gradient = heatmap.gradient?.map(_getCssColor).toList()
+    ..gradient = heatmap.gradient?.map(_getCssColorWithAlpha).toList()
     ..maxIntensity = heatmap.maxIntensity
     ..opacity = heatmap.opacity
     ..radius = heatmap.radius;

@@ -30,7 +30,7 @@ class Heatmap implements MapsObject<Heatmap> {
     this.maxIntensity,
     this.opacity = 0.6,
     this.radius,
-  });
+  }) : assert(gradient == null || gradient.length > 0);
 
   /// Uniquely identifies a [Heatmap].
   final HeatmapId heatmapId;
@@ -106,7 +106,7 @@ class Heatmap implements MapsObject<Heatmap> {
     addIfPresent('heatmapId', heatmapId.value);
     addIfPresent('data', data.map((e) => e.toJson()).toList());
     addIfPresent('dissipating', dissipating);
-    addIfPresent('gradient', gradient?.map((e) => e.value));
+    addIfPresent('gradient', gradient?.map((e) => e.value).toList());
     addIfPresent('maxIntensity', maxIntensity);
     addIfPresent('opacity', opacity);
     addIfPresent('radius', radius);
