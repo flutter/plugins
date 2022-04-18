@@ -442,7 +442,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setBitrate:(double)bitrate {
-    _player.currentItem.preferredPeakBitRate = 4070000;
+    _player.currentItem.preferredPeakBitRate = bitrate;
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
