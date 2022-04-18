@@ -633,11 +633,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return Caption.none;
   }
 
-  /// Optional field to specify a file containing the closed
-  /// captioning.
-  ///
-  /// This future will be awaited and the file will be loaded when
-  /// [initialize()] is called.
+  /// Returns the file containing closed captions for the video, if any.
   Future<ClosedCaptionFile>? get closedCaptionFile {
     return _closedCaptionFileFuture;
   }
