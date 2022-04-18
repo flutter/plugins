@@ -47,7 +47,7 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 add_subdirectory("runner")
 
 # Enable the test target.
-set(local_auth_windows_tests TRUE)
+set(include_local_auth_windows_tests TRUE)
 # Provide an alias for the test target using the name expected by repo tooling.
 add_custom_target(unit_tests DEPENDS local_auth_windows_test)
 

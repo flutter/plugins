@@ -104,10 +104,9 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    setState(
-        () {
-          _authorized = authenticated ? 'Authorized' : 'Not Authorized';
-        });
+    setState(() {
+      _authorized = authenticated ? 'Authorized' : 'Not Authorized';
+    });
   }
 
   Future<void> _authenticateWithBiometrics() async {

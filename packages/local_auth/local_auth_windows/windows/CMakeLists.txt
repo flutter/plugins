@@ -38,9 +38,14 @@ endif()
 
 include_directories(BEFORE SYSTEM ${CMAKE_BINARY_DIR}/include)
 
+list(APPEND PLUGIN_SOURCES
+  "local_auth_plugin.cpp"
+)
+
 add_library(${PLUGIN_NAME} SHARED
   "include/local_auth_windows/local_auth_plugin.h"
-  "local_auth_plugin.cpp"
+  "local_auth_windows.cpp"
+  "local_auth.h"
   ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${PLUGIN_NAME})
@@ -67,7 +72,6 @@ enable_testing()
 # TODO(stuartmorgan): Consider using a single shared, pre-checked-in googletest
 # instance rather than downloading for each plugin. This approach makes sense
 # for a template, but not for a monorepo with many plugins.
-include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/release-1.11.0.zip
@@ -84,11 +88,12 @@ FetchContent_MakeAvailable(googletest)
 add_executable(${TEST_RUNNER}
   test/mocks.h
   test/local_auth_plugin_test.cpp
-  test/local_auth_test.cpp
   ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${TEST_RUNNER})
 target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_compile_features(${TEST_RUNNER} PRIVATE cxx_std_20)
+target_compile_options(${TEST_RUNNER} PRIVATE /await)
 target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
 target_link_libraries(${TEST_RUNNER} PRIVATE windowsapp)
 target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)

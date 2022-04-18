@@ -1,26 +1,9 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "include/local_auth_windows/local_auth_plugin.h"
+#include "local_auth.h"
 
-// This must be included before many other Windows headers.
-#include <UserConsentVerifierInterop.h>
-#include <flutter/encodable_value.h>
-#include <flutter/method_channel.h>
-#include <flutter/plugin_registrar_windows.h>
-#include <flutter/standard_method_codec.h>
-#include <pplawait.h>
-#include <ppltasks.h>
-#include <windows.h>
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Security.Credentials.UI.h>
-#include <winstring.h>
-
-#include <map>
-#include <memory>
-#include <sstream>
-
-namespace {
+namespace local_auth_windows {
 
 using namespace flutter;
 using namespace winrt;
@@ -45,37 +28,77 @@ HWND GetRootWindow(flutter::FlutterView* view) {
 }
 
 // Converts the given UTF-8 string to UTF-16.
-std::wstring s2ws(const std::string& s) {
-  int len;
-  int slength = (int)s.length() + 1;
-  len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-  std::wstring r(len, L'\0');
-  MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, &r[0], len);
-  return r;
+std::wstring Utf16FromUtf8(const std::string& utf8_string) {
+  if (utf8_string.empty()) {
+    return std::wstring();
+  }
+  int target_length =
+      ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string.data(),
+                            static_cast<int>(utf8_string.length()), nullptr, 0);
+  if (target_length == 0) {
+    return std::wstring();
+  }
+  std::wstring utf16_string;
+  utf16_string.resize(target_length);
+  int converted_length =
+      ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string.data(),
+                            static_cast<int>(utf8_string.length()),
+                            utf16_string.data(), target_length);
+  if (converted_length == 0) {
+    return std::wstring();
+  }
+  return utf16_string;
 }
 
-class LocalAuthPlugin : public Plugin {
+class UserConsentVerifierImpl : public UserConsentVerifier {
  public:
-  static void RegisterWithRegistrar(PluginRegistrarWindows* registrar);
+  explicit UserConsentVerifierImpl(std::function<HWND()> window_provider)
+      : get_root_window_(std::move(window_provider)){};
+  virtual ~UserConsentVerifierImpl() = default;
 
-  LocalAuthPlugin(flutter::PluginRegistrarWindows* registrar);
+  Windows::Foundation::IAsyncOperation<
+      Windows::Security::Credentials::UI::UserConsentVerificationResult>
+  RequestVerificationForWindowAsync(std::wstring localizedReason) override {
+    auto userConsentVerifierInterop = winrt::get_activation_factory<
+        Windows::Security::Credentials::UI::UserConsentVerifier,
+        IUserConsentVerifierInterop>();
 
-  virtual ~LocalAuthPlugin();
+    auto hWnd = get_root_window_();
+
+    HSTRING hReason;
+    if (WindowsCreateString(localizedReason.c_str(),
+                            static_cast<uint32_t>(localizedReason.size()),
+                            &hReason) != S_OK) {
+      return Windows::Security::Credentials::UI::UserConsentVerificationResult::
+          Canceled;
+    }
+
+    auto consentResult =
+        co_await winrt::capture<Windows::Foundation::IAsyncOperation<
+            Windows::Security::Credentials::UI::UserConsentVerificationResult>>(
+            userConsentVerifierInterop,
+            &::IUserConsentVerifierInterop::RequestVerificationForWindowAsync,
+            hWnd, hReason);
+
+    WindowsDeleteString(hReason);
+
+    return consentResult;
+  }
+
+  Windows::Foundation::IAsyncOperation<
+      Windows::Security::Credentials::UI::UserConsentVerifierAvailability>
+  CheckAvailabilityAsync() override {
+    return Windows::Security::Credentials::UI::UserConsentVerifier::
+        CheckAvailabilityAsync();
+  }
+
+  // Disallow copy and move.
+  UserConsentVerifierImpl(const UserConsentVerifierImpl&) = delete;
+  UserConsentVerifierImpl& operator=(const UserConsentVerifierImpl&) = delete;
 
  private:
-  flutter::PluginRegistrarWindows* registrar_;
-
-  // Called when a method is called on this plugin's channel from Dart.
-  void HandleMethodCall(const MethodCall<EncodableValue>& method_call,
-                        std::unique_ptr<MethodResult<EncodableValue>> result);
-
-  winrt::fire_and_forget Authenticate(
-      const MethodCall<EncodableValue>& method_call,
-      std::unique_ptr<MethodResult<EncodableValue>> result);
-  winrt::fire_and_forget GetAvailableBiometrics(
-      std::unique_ptr<MethodResult<EncodableValue>> result);
-  winrt::fire_and_forget IsDeviceSupported(
-      std::unique_ptr<MethodResult<EncodableValue>> result);
+  // The provider for the root window to attach the dialog to.
+  std::function<HWND()> get_root_window_;
 };
 
 // static
@@ -84,7 +107,8 @@ void LocalAuthPlugin::RegisterWithRegistrar(PluginRegistrarWindows* registrar) {
       registrar->messenger(), "plugins.flutter.io/local_auth_windows",
       &StandardMethodCodec::GetInstance());
 
-  auto plugin = std::make_unique<LocalAuthPlugin>(registrar);
+  auto plugin = std::make_unique<LocalAuthPlugin>(
+      [registrar]() { return GetRootWindow(registrar->GetView()); });
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto& call, auto result) {
@@ -95,8 +119,13 @@ void LocalAuthPlugin::RegisterWithRegistrar(PluginRegistrarWindows* registrar) {
 }
 
 // Default constructor for LocalAuthPlugin
-LocalAuthPlugin::LocalAuthPlugin(flutter::PluginRegistrarWindows* registrar)
-    : registrar_(registrar) {}
+LocalAuthPlugin::LocalAuthPlugin(std::function<HWND()> window_provider)
+    : user_consent_verifier_(std::make_unique<UserConsentVerifierImpl>(
+          std::move(window_provider))) {}
+
+LocalAuthPlugin::LocalAuthPlugin(
+    std::unique_ptr<UserConsentVerifier> user_consent_verifier)
+    : user_consent_verifier_(std::move(user_consent_verifier)) {}
 
 LocalAuthPlugin::~LocalAuthPlugin() {}
 
@@ -118,7 +147,7 @@ void LocalAuthPlugin::HandleMethodCall(
 winrt::fire_and_forget LocalAuthPlugin::Authenticate(
     const MethodCall<EncodableValue>& method_call,
     std::unique_ptr<MethodResult<EncodableValue>> result) {
-  auto reasonW = s2ws(GetArgument<std::string>(
+  auto reasonW = Utf16FromUtf8(GetArgument<std::string>(
       "localizedReason", method_call.arguments(), std::string()));
 
   auto biometricOnly =
@@ -129,8 +158,8 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
     co_return;
   }
 
-  auto ucvAvailability = co_await Windows::Security::Credentials::UI::
-      UserConsentVerifier::CheckAvailabilityAsync();
+  auto ucvAvailability =
+      co_await user_consent_verifier_->CheckAvailabilityAsync();
 
   if (ucvAvailability ==
       Windows::Security::Credentials::UI::UserConsentVerifierAvailability::
@@ -149,22 +178,10 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
     co_return;
   }
 
-  auto userConsentVerifierInterop = winrt::get_activation_factory<
-      Windows::Security::Credentials::UI::UserConsentVerifier,
-      IUserConsentVerifierInterop>();
-
-  auto hWnd = GetRootWindow(registrar_->GetView());
-
-  HSTRING hReason;
-  WindowsCreateString(reasonW.c_str(), (uint32_t)reasonW.size(), &hReason);
-
   try {
     auto consentResult =
-        co_await winrt::capture<Windows::Foundation::IAsyncOperation<
-            Windows::Security::Credentials::UI::UserConsentVerificationResult>>(
-            userConsentVerifierInterop,
-            &::IUserConsentVerifierInterop::RequestVerificationForWindowAsync,
-            hWnd, hReason);
+        co_await user_consent_verifier_->RequestVerificationForWindowAsync(
+            reasonW);
 
     result->Success(EncodableValue(
         consentResult == Windows::Security::Credentials::UI::
@@ -172,7 +189,6 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
   } catch (...) {
     result->Success(EncodableValue(false));
   }
-  WindowsDeleteString(hReason);
 }
 
 // Returns biometric types available on device
@@ -180,8 +196,8 @@ winrt::fire_and_forget LocalAuthPlugin::GetAvailableBiometrics(
     std::unique_ptr<MethodResult<EncodableValue>> result) {
   try {
     flutter::EncodableList biometrics;
-    auto ucvAvailability = co_await Windows::Security::Credentials::UI::
-        UserConsentVerifier::CheckAvailabilityAsync();
+    auto ucvAvailability =
+        co_await user_consent_verifier_->CheckAvailabilityAsync();
     if (ucvAvailability == Windows::Security::Credentials::UI::
                                UserConsentVerifierAvailability::Available) {
       biometrics.push_back(EncodableValue("fingerprint"));
@@ -197,18 +213,11 @@ winrt::fire_and_forget LocalAuthPlugin::GetAvailableBiometrics(
 // Returns whether the device supports Windows Hello or not
 winrt::fire_and_forget LocalAuthPlugin::IsDeviceSupported(
     std::unique_ptr<MethodResult<EncodableValue>> result) {
-  auto ucvAvailability = co_await Windows::Security::Credentials::UI::
-      UserConsentVerifier::CheckAvailabilityAsync();
+  auto ucvAvailability =
+      co_await user_consent_verifier_->CheckAvailabilityAsync();
   result->Success(EncodableValue(
       ucvAvailability == Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability::Available));
 }
 
-}  // namespace
-
-void LocalAuthPluginRegisterWithRegistrar(
-    FlutterDesktopPluginRegistrarRef registrar) {
-  LocalAuthPlugin::RegisterWithRegistrar(
-      PluginRegistrarManager::GetInstance()
-          ->GetRegistrar<PluginRegistrarWindows>(registrar));
-}
+}  // namespace local_auth_windows
