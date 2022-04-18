@@ -1,3 +1,12 @@
+## NEXT
+
+* Updates minimum Flutter version to 2.8.
+* Adds OS version support information to README.
+
+## 0.6.0+10
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 0.6.0+9
 
 * Updates Android compileSdkVersion to 31.

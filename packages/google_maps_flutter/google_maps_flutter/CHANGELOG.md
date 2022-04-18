@@ -1,6 +1,14 @@
-## 2.1.3
+## NEXT
+
+* Adds OS version support information to README.
+
+## 2.1.4
 
 * Updates Android Google maps sdk version to `18.0.2`.
+
+## 2.1.3
+
+* Fixes iOS crash on `EXC_BAD_ACCESS KERN_PROTECTION_FAILURE` if the map frame changes long after creation.
 
 ## 2.1.2
 

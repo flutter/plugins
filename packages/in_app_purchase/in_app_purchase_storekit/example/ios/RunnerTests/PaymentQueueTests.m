@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <OCMock/OCMock.h>
 #import <XCTest/XCTest.h>
 #import "Stubs.h"
 
@@ -59,10 +60,11 @@
       shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
         return YES;
       }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
+      updatedDownloads:nil
+      transactionCache:OCMClassMock(FIATransactionCache.class)];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler startObservingPaymentQueue];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchased);
@@ -87,10 +89,12 @@
       shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
         return YES;
       }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
+      updatedDownloads:nil
+      transactionCache:OCMClassMock(FIATransactionCache.class)];
+
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler startObservingPaymentQueue];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateFailed);
@@ -115,10 +119,12 @@
       shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
         return YES;
       }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
+      updatedDownloads:nil
+      transactionCache:OCMClassMock(FIATransactionCache.class)];
+
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler startObservingPaymentQueue];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateRestored);
@@ -143,10 +149,12 @@
       shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
         return YES;
       }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
+      updatedDownloads:nil
+      transactionCache:OCMClassMock(FIATransactionCache.class)];
+
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler startObservingPaymentQueue];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchasing);
@@ -171,10 +179,11 @@
       shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
         return YES;
       }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
+      updatedDownloads:nil
+      transactionCache:OCMClassMock(FIATransactionCache.class)];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler startObservingPaymentQueue];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateDeferred);
@@ -201,12 +210,211 @@
       shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
         return YES;
       }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
+      updatedDownloads:nil
+      transactionCache:OCMClassMock(FIATransactionCache.class)];
   SKPayment *payment =
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler startObservingPaymentQueue];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
 }
 
+- (void)testStartObservingPaymentQueueShouldNotProcessTransactionsWhenCacheIsEmpty {
+  FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
+  FIAPaymentQueueHandler *handler =
+      [[FIAPaymentQueueHandler alloc] initWithQueue:[[SKPaymentQueueStub alloc] init]
+          transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTFail("transactionsUpdated callback should not be called when cache is empty.");
+          }
+          transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTFail("transactionRemoved callback should not be called when cache is empty.");
+          }
+          restoreTransactionFailed:nil
+          restoreCompletedTransactionsFinished:nil
+          shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+            return YES;
+          }
+          updatedDownloads:^(NSArray<SKDownload *> *_Nonnull downloads) {
+            XCTFail("updatedDownloads callback should not be called when cache is empty.");
+          }
+          transactionCache:mockCache];
+
+  [handler startObservingPaymentQueue];
+
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+}
+
+- (void)
+    testStartObservingPaymentQueueShouldNotProcessTransactionsWhenCacheContainsEmptyTransactionArrays {
+  FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
+  FIAPaymentQueueHandler *handler =
+      [[FIAPaymentQueueHandler alloc] initWithQueue:[[SKPaymentQueueStub alloc] init]
+          transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTFail("transactionsUpdated callback should not be called when cache is empty.");
+          }
+          transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTFail("transactionRemoved callback should not be called when cache is empty.");
+          }
+          restoreTransactionFailed:nil
+          restoreCompletedTransactionsFinished:nil
+          shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+            return YES;
+          }
+          updatedDownloads:^(NSArray<SKDownload *> *_Nonnull downloads) {
+            XCTFail("updatedDownloads callback should not be called when cache is empty.");
+          }
+          transactionCache:mockCache];
+
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]).andReturn(@[]);
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]).andReturn(@[]);
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]).andReturn(@[]);
+
+  [handler startObservingPaymentQueue];
+
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+}
+
+- (void)testStartObservingPaymentQueueShouldProcessTransactionsForItemsInCache {
+  XCTestExpectation *updateTransactionsExpectation =
+      [self expectationWithDescription:
+                @"transactionsUpdated callback should be called with one transaction."];
+  XCTestExpectation *removeTransactionsExpectation =
+      [self expectationWithDescription:
+                @"transactionsRemoved callback should be called with one transaction."];
+  XCTestExpectation *updateDownloadsExpectation =
+      [self expectationWithDescription:
+                @"downloadsUpdated callback should be called with one transaction."];
+  SKPaymentTransaction *mockTransaction = OCMClassMock(SKPaymentTransaction.class);
+  SKDownload *mockDownload = OCMClassMock(SKDownload.class);
+  FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
+  FIAPaymentQueueHandler *handler =
+      [[FIAPaymentQueueHandler alloc] initWithQueue:[[SKPaymentQueueStub alloc] init]
+          transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTAssertEqualObjects(transactions, @[ mockTransaction ]);
+            [updateTransactionsExpectation fulfill];
+          }
+          transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+            XCTAssertEqualObjects(transactions, @[ mockTransaction ]);
+            [removeTransactionsExpectation fulfill];
+          }
+          restoreTransactionFailed:nil
+          restoreCompletedTransactionsFinished:nil
+          shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+            return YES;
+          }
+          updatedDownloads:^(NSArray<SKDownload *> *_Nonnull downloads) {
+            XCTAssertEqualObjects(downloads, @[ mockDownload ]);
+            [updateDownloadsExpectation fulfill];
+          }
+          transactionCache:mockCache];
+
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]).andReturn(@[
+    mockTransaction
+  ]);
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]).andReturn(@[
+    mockDownload
+  ]);
+  OCMStub([mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]).andReturn(@[
+    mockTransaction
+  ]);
+
+  [handler startObservingPaymentQueue];
+
+  [self waitForExpectations:@[
+    updateTransactionsExpectation, removeTransactionsExpectation, updateDownloadsExpectation
+  ]
+                    timeout:5];
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(times(1), [mockCache getObjectsForKey:TransactionCacheKeyRemovedTransactions]);
+  OCMVerify(times(1), [mockCache clear]);
+}
+
+- (void)testTransactionsShouldBeCachedWhenNotObserving {
+  SKPaymentQueueStub *queue = [[SKPaymentQueueStub alloc] init];
+  FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
+  FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        XCTFail("transactionsUpdated callback should not be called when cache is empty.");
+      }
+      transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        XCTFail("transactionRemoved callback should not be called when cache is empty.");
+      }
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:^(NSArray<SKDownload *> *_Nonnull downloads) {
+        XCTFail("updatedDownloads callback should not be called when cache is empty.");
+      }
+      transactionCache:mockCache];
+
+  SKPayment *payment =
+      [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler addPayment:payment];
+
+  OCMVerify(times(1), [mockCache addObjects:[OCMArg any]
+                                     forKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(never(), [mockCache addObjects:[OCMArg any]
+                                    forKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(never(), [mockCache addObjects:[OCMArg any]
+                                    forKey:TransactionCacheKeyRemovedTransactions]);
+}
+
+- (void)testTransactionsShouldNotBeCachedWhenObserving {
+  XCTestExpectation *updateTransactionsExpectation =
+      [self expectationWithDescription:
+                @"transactionsUpdated callback should be called with one transaction."];
+  XCTestExpectation *removeTransactionsExpectation =
+      [self expectationWithDescription:
+                @"transactionsRemoved callback should be called with one transaction."];
+  XCTestExpectation *updateDownloadsExpectation =
+      [self expectationWithDescription:
+                @"downloadsUpdated callback should be called with one transaction."];
+  SKPaymentTransaction *mockTransaction = OCMClassMock(SKPaymentTransaction.class);
+  SKDownload *mockDownload = OCMClassMock(SKDownload.class);
+  SKPaymentQueueStub *queue = [[SKPaymentQueueStub alloc] init];
+  queue.testState = SKPaymentTransactionStatePurchased;
+  FIATransactionCache *mockCache = OCMClassMock(FIATransactionCache.class);
+  FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        XCTAssertEqualObjects(transactions, @[ mockTransaction ]);
+        [updateTransactionsExpectation fulfill];
+      }
+      transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        XCTAssertEqualObjects(transactions, @[ mockTransaction ]);
+        [removeTransactionsExpectation fulfill];
+      }
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:^(NSArray<SKDownload *> *_Nonnull downloads) {
+        XCTAssertEqualObjects(downloads, @[ mockDownload ]);
+        [updateDownloadsExpectation fulfill];
+      }
+      transactionCache:mockCache];
+
+  [handler startObservingPaymentQueue];
+  [handler paymentQueue:queue updatedTransactions:@[ mockTransaction ]];
+  [handler paymentQueue:queue removedTransactions:@[ mockTransaction ]];
+  [handler paymentQueue:queue updatedDownloads:@[ mockDownload ]];
+
+  [self waitForExpectations:@[
+    updateTransactionsExpectation, removeTransactionsExpectation, updateDownloadsExpectation
+  ]
+                    timeout:5];
+  OCMVerify(never(), [mockCache addObjects:[OCMArg any]
+                                    forKey:TransactionCacheKeyUpdatedTransactions]);
+  OCMVerify(never(), [mockCache addObjects:[OCMArg any]
+                                    forKey:TransactionCacheKeyUpdatedDownloads]);
+  OCMVerify(never(), [mockCache addObjects:[OCMArg any]
+                                    forKey:TransactionCacheKeyRemovedTransactions]);
+}
 @end
