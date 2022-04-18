@@ -30,7 +30,7 @@ using ::testing::Eq;
 using ::testing::Pointee;
 using ::testing::Return;
 
-TEST(LocalAuthPlugin, AvailableLocalAuthsHandlerSuccessIfNoLocalAuths) {
+TEST(LocalAuthPlugin, IsDeviceSupportedHandlerSuccessIfVerifierAvailable) {
   std::unique_ptr<MockMethodResult> result =
       std::make_unique<MockMethodResult>();
 
@@ -49,12 +49,203 @@ TEST(LocalAuthPlugin, AvailableLocalAuthsHandlerSuccessIfNoLocalAuths) {
   LocalAuthPlugin plugin(std::move(mockConsentVerifier));
 
   EXPECT_CALL(*result, ErrorInternal).Times(0);
-  EXPECT_CALL(*result, SuccessInternal).Times(1);
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(true))));
 
   plugin.HandleMethodCall(
       flutter::MethodCall("isDeviceSupported",
                           std::make_unique<EncodableValue>()),
       std::move(result));
+}
+
+TEST(LocalAuthPlugin, IsDeviceSupportedHandlerSuccessIfVerifierNotAvailable) {
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::unique_ptr<MockUserConsentVerifier> mockConsentVerifier =
+      std::make_unique<MockUserConsentVerifier>();
+
+  EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
+      .Times(1)
+      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+                         winrt::Windows::Security::Credentials::UI::
+                             UserConsentVerifierAvailability> {
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerifierAvailability::DeviceNotPresent;
+      });
+
+  LocalAuthPlugin plugin(std::move(mockConsentVerifier));
+
+  EXPECT_CALL(*result, ErrorInternal).Times(0);
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(false))));
+
+  plugin.HandleMethodCall(
+      flutter::MethodCall("isDeviceSupported",
+                          std::make_unique<EncodableValue>()),
+      std::move(result));
+}
+
+TEST(LocalAuthPlugin,
+     GetAvailableBiometricsHandlerReturnEmptyListIfVerifierNotAvailable) {
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::unique_ptr<MockUserConsentVerifier> mockConsentVerifier =
+      std::make_unique<MockUserConsentVerifier>();
+
+  EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
+      .Times(1)
+      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+                         winrt::Windows::Security::Credentials::UI::
+                             UserConsentVerifierAvailability> {
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerifierAvailability::DeviceNotPresent;
+      });
+
+  LocalAuthPlugin plugin(std::move(mockConsentVerifier));
+
+  EXPECT_CALL(*result, ErrorInternal).Times(0);
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableList())));
+
+  plugin.HandleMethodCall(
+      flutter::MethodCall("getAvailableBiometrics",
+                          std::make_unique<EncodableValue>()),
+      std::move(result));
+}
+
+TEST(LocalAuthPlugin,
+     GetAvailableBiometricsHandlerReturnNonEmptyListIfVerifierAvailable) {
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::unique_ptr<MockUserConsentVerifier> mockConsentVerifier =
+      std::make_unique<MockUserConsentVerifier>();
+
+  EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
+      .Times(1)
+      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+                         winrt::Windows::Security::Credentials::UI::
+                             UserConsentVerifierAvailability> {
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerifierAvailability::Available;
+      });
+
+  LocalAuthPlugin plugin(std::move(mockConsentVerifier));
+
+  EXPECT_CALL(*result, ErrorInternal).Times(0);
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableList(
+                           {EncodableValue("fingerprint"),
+                            EncodableValue("face"), EncodableValue("iris")}))));
+
+  plugin.HandleMethodCall(
+      flutter::MethodCall("getAvailableBiometrics",
+                          std::make_unique<EncodableValue>()),
+      std::move(result));
+}
+
+TEST(LocalAuthPlugin, AuthenticateHandlerDoesNotSupportBiometricOnly) {
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::unique_ptr<MockUserConsentVerifier> mockConsentVerifier =
+      std::make_unique<MockUserConsentVerifier>();
+
+  LocalAuthPlugin plugin(std::move(mockConsentVerifier));
+
+  EXPECT_CALL(*result, ErrorInternal).Times(1);
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+
+  std::unique_ptr<EncodableValue> args =
+      std::make_unique<EncodableValue>(EncodableMap({
+          {"localizedReason", EncodableValue("My Reason")},
+          {"biometricOnly", EncodableValue(true)},
+      }));
+
+  plugin.HandleMethodCall(flutter::MethodCall("authenticate", std::move(args)),
+                          std::move(result));
+}
+
+TEST(LocalAuthPlugin, AuthenticateHandlerWorksWhenAuthorized) {
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::unique_ptr<MockUserConsentVerifier> mockConsentVerifier =
+      std::make_unique<MockUserConsentVerifier>();
+
+  EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
+      .Times(1)
+      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+                         winrt::Windows::Security::Credentials::UI::
+                             UserConsentVerifierAvailability> {
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerifierAvailability::Available;
+      });
+
+  EXPECT_CALL(*mockConsentVerifier, RequestVerificationForWindowAsync)
+      .Times(1)
+      .WillOnce([](std::wstring localizedReason)
+                    -> Windows::Foundation::IAsyncOperation<
+                        winrt::Windows::Security::Credentials::UI::
+                            UserConsentVerificationResult> {
+        EXPECT_EQ(localizedReason, L"My Reason");
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerificationResult::Verified;
+      });
+
+  LocalAuthPlugin plugin(std::move(mockConsentVerifier));
+
+  EXPECT_CALL(*result, ErrorInternal).Times(0);
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(true))));
+
+  std::unique_ptr<EncodableValue> args =
+      std::make_unique<EncodableValue>(EncodableMap({
+          {"localizedReason", EncodableValue("My Reason")},
+          {"biometricOnly", EncodableValue(false)},
+      }));
+
+  plugin.HandleMethodCall(flutter::MethodCall("authenticate", std::move(args)),
+                          std::move(result));
+}
+
+TEST(LocalAuthPlugin, AuthenticateHandlerWorksWhenNotAuthorized) {
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::unique_ptr<MockUserConsentVerifier> mockConsentVerifier =
+      std::make_unique<MockUserConsentVerifier>();
+
+  EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
+      .Times(1)
+      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+                         winrt::Windows::Security::Credentials::UI::
+                             UserConsentVerifierAvailability> {
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerifierAvailability::Available;
+      });
+
+  EXPECT_CALL(*mockConsentVerifier, RequestVerificationForWindowAsync)
+      .Times(1)
+      .WillOnce([](std::wstring localizedReason)
+                    -> Windows::Foundation::IAsyncOperation<
+                        winrt::Windows::Security::Credentials::UI::
+                            UserConsentVerificationResult> {
+        EXPECT_EQ(localizedReason, L"My Reason");
+        co_return winrt::Windows::Security::Credentials::UI::
+            UserConsentVerificationResult::Canceled;
+      });
+
+  LocalAuthPlugin plugin(std::move(mockConsentVerifier));
+
+  EXPECT_CALL(*result, ErrorInternal).Times(0);
+  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(false))));
+
+  std::unique_ptr<EncodableValue> args =
+      std::make_unique<EncodableValue>(EncodableMap({
+          {"localizedReason", EncodableValue("My Reason")},
+          {"biometricOnly", EncodableValue(false)},
+      }));
+
+  plugin.HandleMethodCall(flutter::MethodCall("authenticate", std::move(args)),
+                          std::move(result));
 }
 
 }  // namespace test
