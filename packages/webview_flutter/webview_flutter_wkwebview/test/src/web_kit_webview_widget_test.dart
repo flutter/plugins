@@ -37,7 +37,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebKitWebViewWidget', () {
+  group('WebKitWebViewWidget', () {
     late MockWKWebView mockWebView;
     late MockWebViewWidgetProxy mockWebViewWidgetProxy;
     late MockWKUserContentController mockUserContentController;
@@ -135,7 +135,7 @@ void main() {
       verify(mockWebView.loadRequest(request));
     });
 
-    group('$CreationParams', () {
+    group('CreationParams', () {
       testWidgets('initialUrl', (WidgetTester tester) async {
         await buildWidget(
           tester,
@@ -258,7 +258,7 @@ void main() {
         expect(javaScriptChannels[3], 'b');
       });
 
-      group('$WebSettings', () {
+      group('WebSettings', () {
         testWidgets('javascriptMode', (WidgetTester tester) async {
           await buildWidget(
             tester,
@@ -427,7 +427,7 @@ void main() {
       });
     });
 
-    group('$WebKitWebViewPlatformController', () {
+    group('WebKitWebViewPlatformController', () {
       testWidgets('loadFile', (WidgetTester tester) async {
         await buildWidget(tester);
 
@@ -901,7 +901,7 @@ void main() {
       });
     });
 
-    group('$WebViewPlatformCallbacksHandler', () {
+    group('WebViewPlatformCallbacksHandler', () {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
 
@@ -1074,7 +1074,7 @@ void main() {
       });
     });
 
-    group('$JavascriptChannelRegistry', () {
+    group('JavascriptChannelRegistry', () {
       testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
         when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),

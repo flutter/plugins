@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -9,11 +11,13 @@ import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit/web_kit_api_impls.dart';
 
 import '../common/test_web_kit.pigeon.dart';
 import 'web_kit_test.mocks.dart';
 
 @GenerateMocks(<Type>[
+  TestWKHttpCookieStoreHostApi,
   TestWKNavigationDelegateHostApi,
   TestWKPreferencesHostApi,
   TestWKScriptMessageHandlerHostApi,
@@ -28,12 +32,15 @@ void main() {
 
   group('WebKit', () {
     late InstanceManager instanceManager;
+    late WebKitFlutterApis flutterApis;
 
     setUp(() {
       instanceManager = InstanceManager();
+      flutterApis = WebKitFlutterApis(instanceManager: instanceManager);
+      WebKitFlutterApis.instance = flutterApis;
     });
 
-    group('$WKWebsiteDataStore', () {
+    group('WKWebsiteDataStore', () {
       late MockTestWKWebsiteDataStoreHostApi mockPlatformHostApi;
 
       late WKWebsiteDataStore websiteDataStore;
@@ -69,6 +76,16 @@ void main() {
         ));
       });
 
+      test('createDefaultDataStore', () {
+        final WKWebsiteDataStore defaultDataStore =
+            WKWebsiteDataStore.defaultDataStore;
+        verify(
+          mockPlatformHostApi.createDefaultDataStore(
+            InstanceManager.instance.getInstanceId(defaultDataStore),
+          ),
+        );
+      });
+
       test('removeDataOfTypes', () {
         when(mockPlatformHostApi.removeDataOfTypes(
           any,
@@ -96,7 +113,70 @@ void main() {
       });
     });
 
-    group('$WKScriptMessageHandler', () {
+    group('WKHttpCookieStore', () {
+      late MockTestWKHttpCookieStoreHostApi mockPlatformHostApi;
+
+      late WKHttpCookieStore httpCookieStore;
+
+      late WKWebsiteDataStore websiteDataStore;
+
+      setUp(() {
+        mockPlatformHostApi = MockTestWKHttpCookieStoreHostApi();
+        TestWKHttpCookieStoreHostApi.setup(mockPlatformHostApi);
+
+        TestWKWebViewConfigurationHostApi.setup(
+          MockTestWKWebViewConfigurationHostApi(),
+        );
+        TestWKWebsiteDataStoreHostApi.setup(
+          MockTestWKWebsiteDataStoreHostApi(),
+        );
+
+        websiteDataStore = WKWebsiteDataStore.fromWebViewConfiguration(
+          WKWebViewConfiguration(instanceManager: instanceManager),
+          instanceManager: instanceManager,
+        );
+
+        httpCookieStore = WKHttpCookieStore.fromWebsiteDataStore(
+          websiteDataStore,
+          instanceManager: instanceManager,
+        );
+      });
+
+      tearDown(() {
+        TestWKHttpCookieStoreHostApi.setup(null);
+        TestWKWebsiteDataStoreHostApi.setup(null);
+        TestWKWebViewConfigurationHostApi.setup(null);
+      });
+
+      test('createFromWebsiteDataStore', () {
+        verify(mockPlatformHostApi.createFromWebsiteDataStore(
+          instanceManager.getInstanceId(httpCookieStore),
+          instanceManager.getInstanceId(websiteDataStore),
+        ));
+      });
+
+      test('setCookie', () async {
+        await httpCookieStore.setCookie(
+            const NSHttpCookie.withProperties(<NSHttpCookiePropertyKey, Object>{
+          NSHttpCookiePropertyKey.comment: 'aComment',
+        }));
+
+        final NSHttpCookieData cookie = verify(
+          mockPlatformHostApi.setCookie(
+            instanceManager.getInstanceId(httpCookieStore)!,
+            captureAny,
+          ),
+        ).captured.single as NSHttpCookieData;
+
+        expect(
+          cookie.properties.entries.single.key!.value,
+          NSHttpCookiePropertyKeyEnum.comment,
+        );
+        expect(cookie.properties.entries.single.value, 'aComment');
+      });
+    });
+
+    group('WKScriptMessageHandler', () {
       late MockTestWKScriptMessageHandlerHostApi mockPlatformHostApi;
 
       late WKScriptMessageHandler scriptMessageHandler;
@@ -121,7 +201,7 @@ void main() {
       });
     });
 
-    group('$WKPreferences', () {
+    group('WKPreferences', () {
       late MockTestWKPreferencesHostApi mockPlatformHostApi;
 
       late WKPreferences preferences;
@@ -166,7 +246,7 @@ void main() {
       });
     });
 
-    group('$WKUserContentController', () {
+    group('WKUserContentController', () {
       late MockTestWKUserContentControllerHostApi mockPlatformHostApi;
 
       late WKUserContentController userContentController;
@@ -254,7 +334,7 @@ void main() {
       });
     });
 
-    group('$WKWebViewConfiguration', () {
+    group('WKWebViewConfiguration', () {
       late MockTestWKWebViewConfigurationHostApi mockPlatformHostApi;
 
       late WKWebViewConfiguration webViewConfiguration;
@@ -326,14 +406,25 @@ void main() {
       });
     });
 
-    group('$WKNavigationDelegate', () {
+    group('WKNavigationDelegate', () {
       late MockTestWKNavigationDelegateHostApi mockPlatformHostApi;
+
+      late WKWebView webView;
 
       late WKNavigationDelegate navigationDelegate;
 
       setUp(() async {
         mockPlatformHostApi = MockTestWKNavigationDelegateHostApi();
         TestWKNavigationDelegateHostApi.setup(mockPlatformHostApi);
+
+        TestWKWebViewConfigurationHostApi.setup(
+          MockTestWKWebViewConfigurationHostApi(),
+        );
+        TestWKWebViewHostApi.setup(MockTestWKWebViewHostApi());
+        webView = WKWebView(
+          WKWebViewConfiguration(instanceManager: instanceManager),
+          instanceManager: instanceManager,
+        );
 
         navigationDelegate = WKNavigationDelegate(
           instanceManager: instanceManager,
@@ -342,6 +433,8 @@ void main() {
 
       tearDown(() {
         TestWKNavigationDelegateHostApi.setup(null);
+        TestWKWebViewConfigurationHostApi.setup(null);
+        TestWKWebViewHostApi.setup(null);
       });
 
       test('create', () async {
@@ -349,9 +442,34 @@ void main() {
           instanceManager.getInstanceId(navigationDelegate),
         ));
       });
+
+      test('setDidFinishNavigation', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        navigationDelegate.setDidFinishNavigation(
+          (WKWebView webView, String? url) {
+            argsCompleter.complete(<Object?>[webView, url]);
+          },
+        );
+
+        final int functionInstanceId =
+            verify(mockPlatformHostApi.setDidFinishNavigation(
+          instanceManager.getInstanceId(navigationDelegate),
+          captureAny,
+        )).captured.single as int;
+
+        flutterApis.navigationDelegateFlutterApi.didFinishNavigation(
+          functionInstanceId,
+          instanceManager.getInstanceId(webView)!,
+          'url',
+        );
+
+        expect(argsCompleter.future, completion(<Object?>[webView, 'url']));
+      });
     });
 
-    group('$WKWebView', () {
+    group('WKWebView', () {
       late MockTestWKWebViewHostApi mockPlatformHostApi;
 
       late WKWebViewConfiguration webViewConfiguration;
@@ -514,7 +632,7 @@ void main() {
       });
     });
 
-    group('$WKUIDelegate', () {
+    group('WKUIDelegate', () {
       late MockTestWKUIDelegateHostApi mockPlatformHostApi;
 
       late WKUIDelegate uiDelegate;
