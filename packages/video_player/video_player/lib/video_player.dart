@@ -639,6 +639,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       position: position,
       caption: _getCaptionAt(position),
     );
+    _applyPlaybackSpeed();
   }
 
   @override
