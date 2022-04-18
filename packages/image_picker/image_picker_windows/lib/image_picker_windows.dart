@@ -44,20 +44,20 @@ class ImagePickerWindows extends ImagePickerPlatform {
     'mpg'
   ];
 
-  /// The FileSelectorPlatform used by the ImagePickerWindows.
+  /// The file selector used to prompt the user to select images or videos.
   @visibleForTesting
-  static late FileSelectorPlatform fileSelectorInstance = FileSelectorWindows();
+  static late FileSelectorPlatform fileSelector = FileSelectorWindows();
 
   /// Registers this class as the default instance of [ImagePickerPlatform].
   static void registerWith() {
     ImagePickerPlatform.instance = ImagePickerWindows();
   }
 
-  // Note that the `maxWidth`, `maxHeight`, `imageQuality`
-  // and `preferredCameraDevice` arguments are not supported on Windows.
-  // If any of these arguments is supplied, it'll be silently ignored
-  // by the Windows version of the plugin. `source` is not implemented
-  // for `ImageSource.camera` and will throw an exception.
+  // `maxWidth`, `maxHeight`, `imageQuality` and `preferredCameraDevice`
+  // arguments are not supported on Windows. If any of these arguments
+  // is supplied, it'll be silently ignored  by the Windows version of
+  // the plugin. `source` is not implemented for `ImageSource.camera`
+  // and will throw an exception.
   @override
   Future<PickedFile?> pickImage({
     required ImageSource source,
@@ -78,11 +78,11 @@ class ImagePickerWindows extends ImagePickerPlatform {
     return null;
   }
 
-  // Note that the `preferredCameraDevice` and `maxDuration`
-  // arguments are not supported on Windows. If any of these arguments is
-  // supplied, it'll be silently ignored by the Windows version of the
-  // plugin. `source` is not implemented for `ImageSource.camera` and
-  // will throw an exception.
+  // `preferredCameraDevice` and `maxDuration` arguments are not
+  // supported on Windows. If any of these arguments is supplied,
+  // it'll be silently ignored by the Windows version of the plugin.
+  // `source` is not implemented for `ImageSource.camera` and will
+  // throw an exception.
   @override
   Future<PickedFile?> pickVideo({
     required ImageSource source,
@@ -99,11 +99,11 @@ class ImagePickerWindows extends ImagePickerPlatform {
     return null;
   }
 
-  // Note that the `maxWidth`, `maxHeight`, `imageQuality`, and
-  // `preferredCameraDevice` arguments are not supported on Windows. If
-  // any of these arguments is supplied, it'll be silently ignored by the
-  // Windows version of the plugin. `source` is not implemented for
-  // `ImageSource.camera` and will throw an exception.
+  // `maxWidth`, `maxHeight`, `imageQuality`, and `preferredCameraDevice`
+  // arguments are not supported on Windows. If any of these arguments
+  // is supplied, it'll be silently ignored by the Windows version
+  // of the plugin. `source` is not implemented for `ImageSource.camera`
+  // and will throw an exception.
   @override
   Future<XFile?> getImage({
     required ImageSource source,
@@ -113,21 +113,23 @@ class ImagePickerWindows extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
     if (source != ImageSource.gallery) {
+      // TODO(azchohfi): Support ImageSource.camera.
+      //                 See https://github.com/flutter/flutter/issues/102115
       throw UnimplementedError(
           'ImageSource.gallery is currently the only supported source on Windows');
     }
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: imageFormats);
-    final XFile? file = await fileSelectorInstance
+    final XFile? file = await fileSelector
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return file;
   }
 
-  // Note that the `preferredCameraDevice` and `maxDuration`
-  // arguments are not supported on Windows. If any of these arguments
-  // is supplied, it'll be silently ignored by the Windows version of
-  // the plugin. `source` is not implemented for `ImageSource.camera`
-  // and will throw an exception.
+  // `preferredCameraDevice` and `maxDuration` arguments are not
+  // supported on Windows. If any of these arguments is supplied,
+  // it'll be silently ignored by the Windows version of the plugin.
+  // `source` is not implemented for `ImageSource.camera` and will
+  // throw an exception.
   @override
   Future<XFile?> getVideo({
     required ImageSource source,
@@ -135,19 +137,21 @@ class ImagePickerWindows extends ImagePickerPlatform {
     Duration? maxDuration,
   }) async {
     if (source != ImageSource.gallery) {
+      // TODO(azchohfi): Support ImageSource.camera.
+      //                 See https://github.com/flutter/flutter/issues/102115
       throw UnimplementedError(
           'ImageSource.gallery is currently the only supported source on Windows');
     }
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'videos', extensions: videoFormats);
-    final XFile? file = await fileSelectorInstance
+    final XFile? file = await fileSelector
         .openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return file;
   }
 
-  // Note that the `maxWidth`, `maxHeight`, and `imageQuality` arguments are
-  // not supported on Windows. If any of these arguments is supplied, it'll
-  // be silently ignored by the Windows version of the plugin.
+  // `maxWidth`, `maxHeight`, and `imageQuality` arguments are not
+  // supported on Windows. If any of these arguments is supplied,
+  // it'll be silently ignored by the Windows version of the plugin.
   @override
   Future<List<XFile>> getMultiImage({
     double? maxWidth,
@@ -156,7 +160,7 @@ class ImagePickerWindows extends ImagePickerPlatform {
   }) async {
     final XTypeGroup typeGroup =
         XTypeGroup(label: 'images', extensions: imageFormats);
-    final List<XFile> files = await fileSelectorInstance
+    final List<XFile> files = await fileSelector
         .openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     return files;
   }

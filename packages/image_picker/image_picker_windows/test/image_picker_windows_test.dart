@@ -30,7 +30,7 @@ void main() {
               acceptedTypeGroups: anyNamed('acceptedTypeGroups')))
           .thenAnswer((_) async => List<XFile>.empty());
 
-      ImagePickerWindows.fileSelectorInstance = mockFileSelectorPlatform;
+      ImagePickerWindows.fileSelector = mockFileSelectorPlatform;
     });
 
     test('registered instance', () {

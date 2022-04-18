@@ -38,12 +38,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<PickedFile>? _imageFileList;
 
+  // This must be called from within a setState() callback
   set _imageFile(PickedFile? value) {
     _imageFileList = value == null ? null : <PickedFile>[value];
   }
 
   dynamic _pickImageError;
-  bool isVideo = false;
+  bool _isVideo = false;
 
   VideoPlayerController? _controller;
   VideoPlayerController? _toBeDisposed;
@@ -68,52 +69,61 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _handleMultiImagePicked(BuildContext? context) async {
+    await _displayPickImageDialog(context!,
+        (double? maxWidth, double? maxHeight, int? quality) async {
+      try {
+        final List<PickedFile>? pickedFileList = await _picker.pickMultiImage(
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: quality,
+        );
+        setState(() {
+          _imageFileList = pickedFileList;
+        });
+      } catch (e) {
+        setState(() {
+          _pickImageError = e;
+        });
+      }
+    });
+  }
+
+  Future<void> _handleSingleImagePicked(
+      BuildContext? context, ImageSource source) async {
+    await _displayPickImageDialog(context!,
+        (double? maxWidth, double? maxHeight, int? quality) async {
+      try {
+        final PickedFile? pickedFile = await _picker.pickImage(
+          source: source,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: quality,
+        );
+        setState(() {
+          _imageFile = pickedFile;
+        });
+      } catch (e) {
+        setState(() {
+          _pickImageError = e;
+        });
+      }
+    });
+  }
+
   Future<void> _onImageButtonPressed(ImageSource source,
       {BuildContext? context, bool isMultiImage = false}) async {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
     }
-    if (isVideo) {
+    if (_isVideo) {
       final PickedFile? file = await _picker.pickVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else if (isMultiImage) {
-      await _displayPickImageDialog(context!,
-          (double? maxWidth, double? maxHeight, int? quality) async {
-        try {
-          final List<PickedFile>? pickedFileList = await _picker.pickMultiImage(
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            imageQuality: quality,
-          );
-          setState(() {
-            _imageFileList = pickedFileList;
-          });
-        } catch (e) {
-          setState(() {
-            _pickImageError = e;
-          });
-        }
-      });
+      await _handleMultiImagePicked(context);
     } else {
-      await _displayPickImageDialog(context!,
-          (double? maxWidth, double? maxHeight, int? quality) async {
-        try {
-          final PickedFile? pickedFile = await _picker.pickImage(
-            source: source,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            imageQuality: quality,
-          );
-          setState(() {
-            _imageFile = pickedFile;
-          });
-        } catch (e) {
-          setState(() {
-            _pickImageError = e;
-          });
-        }
-      });
+      await _handleSingleImagePicked(context, source);
     }
   }
 
@@ -192,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _handlePreview() {
-    if (isVideo) {
+    if (_isVideo) {
       return _previewVideo();
     } else {
       return _previewImages();
@@ -215,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'image_picker_example_from_gallery',
             child: FloatingActionButton(
               onPressed: () {
-                isVideo = false;
+                _isVideo = false;
                 _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'image0',
@@ -227,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.only(top: 16.0),
             child: FloatingActionButton(
               onPressed: () {
-                isVideo = false;
+                _isVideo = false;
                 _onImageButtonPressed(
                   ImageSource.gallery,
                   context: context,
@@ -243,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.only(top: 16.0),
             child: FloatingActionButton(
               onPressed: () {
-                isVideo = false;
+                _isVideo = false;
                 _onImageButtonPressed(ImageSource.camera, context: context);
               },
               heroTag: 'image2',
@@ -256,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               backgroundColor: Colors.red,
               onPressed: () {
-                isVideo = true;
+                _isVideo = true;
                 _onImageButtonPressed(ImageSource.gallery);
               },
               heroTag: 'video0',
@@ -269,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               backgroundColor: Colors.red,
               onPressed: () {
-                isVideo = true;
+                _isVideo = true;
                 _onImageButtonPressed(ImageSource.camera);
               },
               heroTag: 'video1',
