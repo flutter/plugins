@@ -20,6 +20,28 @@ import '../common/test_web_kit.pigeon.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
+/// A class which mocks [TestWKHttpCookieStoreHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestWKHttpCookieStoreHostApi extends _i1.Mock
+    implements _i2.TestWKHttpCookieStoreHostApi {
+  MockTestWKHttpCookieStoreHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void createFromWebsiteDataStore(
+          int? instanceId, int? websiteDataStoreInstanceId) =>
+      super.noSuchMethod(
+          Invocation.method(#createFromWebsiteDataStore,
+              [instanceId, websiteDataStoreInstanceId]),
+          returnValueForMissingStub: null);
+  @override
+  void setCookie(int? instanceId, _i3.NSHttpCookieData? cookie) =>
+      super.noSuchMethod(Invocation.method(#setCookie, [instanceId, cookie]),
+          returnValueForMissingStub: null);
+}
+
 /// A class which mocks [TestWKNavigationDelegateHostApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -32,6 +54,12 @@ class MockTestWKNavigationDelegateHostApi extends _i1.Mock
   @override
   void create(int? instanceId) =>
       super.noSuchMethod(Invocation.method(#create, [instanceId]),
+          returnValueForMissingStub: null);
+  @override
+  void setDidFinishNavigation(int? instanceId, int? functionInstanceId) =>
+      super.noSuchMethod(
+          Invocation.method(
+              #setDidFinishNavigation, [instanceId, functionInstanceId]),
           returnValueForMissingStub: null);
 }
 
@@ -275,13 +303,16 @@ class MockTestWKWebsiteDataStoreHostApi extends _i1.Mock
               [instanceId, configurationInstanceId]),
           returnValueForMissingStub: null);
   @override
-  _i4.Future<void> removeDataOfTypes(
+  void createDefaultDataStore(int? instanceId) => super.noSuchMethod(
+      Invocation.method(#createDefaultDataStore, [instanceId]),
+      returnValueForMissingStub: null);
+  @override
+  _i4.Future<bool> removeDataOfTypes(
           int? instanceId,
           List<_i3.WKWebsiteDataTypesEnumData?>? dataTypes,
           double? secondsModifiedSinceEpoch) =>
       (super.noSuchMethod(
           Invocation.method(#removeDataOfTypes,
               [instanceId, dataTypes, secondsModifiedSinceEpoch]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
 }
