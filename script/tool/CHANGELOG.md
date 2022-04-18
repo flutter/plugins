@@ -1,5 +1,14 @@
 ## NEXT
 
+- Adds a new `readme-check` command.
+- Updates `publish-plugin` command documentation.
+- Fixes `all-plugins-app` to preserve the original application's Dart SDK
+  version to avoid changing language feature opt-ins that the template may
+  rely on.
+
+## 0.8.2
+
+- Adds a new `custom-test` command.
 - Switches from deprecated `flutter packages` alias to `flutter pub`.
 
 ## 0.8.1

@@ -2,8 +2,11 @@
 
 [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dev/packages/url_launcher)
 
-A Flutter plugin for launching a URL. Supports
-iOS, Android, web, Windows, macOS, and Linux.
+A Flutter plugin for launching a URL.
+
+|             | Android | iOS  | Linux | macOS  | Web | Windows     |
+|-------------|---------|------|-------|--------|-----|-------------|
+| **Support** | SDK 16+ | 9.0+ | Any   | 10.11+ | Any | Windows 10+ |
 
 ## Usage
 
@@ -186,5 +189,5 @@ if (await File(uri.toFilePath()).exists()) {
 
 ### macOS file access configuration
 
-If you need to access files outside of your application's sandbox, you will need to have the necessary 
+If you need to access files outside of your application's sandbox, you will need to have the necessary
 [entitlements](https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox).
