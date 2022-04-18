@@ -68,4 +68,43 @@
   return holes;
 }
 
++ (GMUWeightedLatLng *)toWeightedLatLng:(NSArray *)data {
+  return [[GMUWeightedLatLng alloc] initWithCoordinate:[FLTGoogleMapJsonConversions toLocation:data[0]]
+                                                  intensity:[FLTGoogleMapJsonConversions toDouble:data[1]]];
+}
+
++ (NSArray<GMUWeightedLatLng *> *)toWeightedData:(NSArray *)data {
+    NSMutableArray<GMUWeightedLatLng *> *weightedData = [[NSMutableArray alloc] init];
+    for (unsigned i = 0; i < [data count]; i++) {
+      GMUWeightedLatLng *weightedLatLng = [FLTGoogleMapJsonConversions toWeightedLatLng:data[i]];
+      [weightedData addObject:weightedLatLng];
+    }
+
+    return weightedData;
+}
+
++ (GMUGradient *)toGradient:(NSArray *)data {
+    NSMutableArray<UIColor *> *colors = [[NSMutableArray alloc] init];
+    NSMutableArray<NSNumber *> *startPoints = [[NSMutableArray alloc] init];
+    double startPointInterval = 1.0 / [data count];
+    double currentStartPoint = 0;
+    
+    for (unsigned i = 0; i < [data count]; i++) {
+      UIColor *color = [FLTGoogleMapJsonConversions toColor:data[i]];
+      [colors addObject:color];
+      [startPoints addObject:@(currentStartPoint)];
+
+      currentStartPoint += startPointInterval;
+
+      // Make sure the start point doesn't exceed the max value
+      if (currentStartPoint > 1.0) {
+        currentStartPoint = 1.0;
+      }
+    }
+    
+    return [[GMUGradient alloc] initWithColors:colors
+                                   startPoints:startPoints
+                                  colorMapSize:256];
+}
+
 @end

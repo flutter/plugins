@@ -4,6 +4,7 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+@import GoogleMapsUtils;
 
 @interface FLTGoogleMapJsonConversions : NSObject
 + (bool)toBool:(NSNumber *)data;
@@ -16,4 +17,7 @@
 + (UIColor *)toColor:(NSNumber *)data;
 + (NSArray<CLLocation *> *)toPoints:(NSArray *)data;
 + (NSArray<NSArray<CLLocation *> *> *)toHoles:(NSArray *)data;
++ (GMUWeightedLatLng *)toWeightedLatLng:(NSArray *)data;
++ (NSArray<GMUWeightedLatLng *> *)toWeightedData:(NSArray *)data;
++ (GMUGradient *)toGradient:(NSArray *)data;
 @end

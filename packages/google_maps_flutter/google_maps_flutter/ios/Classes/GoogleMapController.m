@@ -55,6 +55,7 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
   FLTPolygonsController *_polygonsController;
   FLTPolylinesController *_polylinesController;
   FLTCirclesController *_circlesController;
+  FLTHeatmapsController *_heatmapsController;
   FLTTileOverlaysController *_tileOverlaysController;
 }
 
@@ -102,6 +103,9 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     _circlesController = [[FLTCirclesController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _heatmapsController = [[FLTHeatmapsController alloc] init:_channel
+                                                      mapView:_mapView
+                                                    registrar:registrar];
     _tileOverlaysController = [[FLTTileOverlaysController alloc] init:_channel
                                                               mapView:_mapView
                                                             registrar:registrar];
@@ -120,6 +124,10 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     id circlesToAdd = args[@"circlesToAdd"];
     if ([circlesToAdd isKindOfClass:[NSArray class]]) {
       [_circlesController addCircles:circlesToAdd];
+    }
+    id heatmapsToAdd = args[@"heatmapsToAdd"];
+    if ([heatmapsToAdd isKindOfClass:[NSArray class]]) {
+      [_heatmapsController addHeatmaps:heatmapsToAdd];
     }
     id tileOverlaysToAdd = args[@"tileOverlaysToAdd"];
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
@@ -310,7 +318,18 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     }
     result(nil);
   } else if ([call.method isEqualToString:@"heatmaps#update"]) {
-    // TODO
+    id heatmapsToAdd = call.arguments[@"heatmapsToAdd"];
+    if ([heatmapsToAdd isKindOfClass:[NSArray class]]) {
+      [_heatmapsController addHeatmaps:heatmapsToAdd];
+    }
+    id heatmapsToChange = call.arguments[@"heatmapsToChange"];
+    if ([heatmapsToChange isKindOfClass:[NSArray class]]) {
+      [_heatmapsController changeHeatmaps:heatmapsToChange];
+    }
+    id heatmapIdsToRemove = call.arguments[@"heatmapIdsToRemove"];
+    if ([heatmapIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_heatmapsController removeHeatmapIds:heatmapIdsToRemove];
+    }
     result(nil);
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
     id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
