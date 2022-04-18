@@ -49,7 +49,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    final String? path = await _getImagePath(
+    final String? path = await _pickImageAsPath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -65,7 +65,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    final List<dynamic>? paths = await _getMultiImagePath(
+    final List<dynamic>? paths = await _pickMultiImageAsPath(
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
@@ -77,7 +77,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return paths.map((dynamic path) => PickedFile(path as String)).toList();
   }
 
-  Future<List<String>?> _getMultiImagePath({
+  Future<List<String>?> _pickMultiImageAsPath({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
@@ -102,7 +102,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
         ?.cast<String>();
   }
 
-  Future<String?> _getImagePath({
+  Future<String?> _pickImageAsPath({
     required ImageSource source,
     double? maxWidth,
     double? maxHeight,
@@ -137,7 +137,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) async {
-    final String? path = await _getVideoPath(
+    final String? path = await _pickVideoAsPath(
       source: source,
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
@@ -145,7 +145,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return path != null ? PickedFile(path) : null;
   }
 
-  Future<String?> _getVideoPath({
+  Future<String?> _pickVideoAsPath({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
@@ -165,7 +165,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    final String? path = await _getImagePath(
+    final String? path = await _pickImageAsPath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -181,7 +181,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    final List<String>? paths = await _getMultiImagePath(
+    final List<String>? paths = await _pickMultiImageAsPath(
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
@@ -199,7 +199,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) async {
-    final String? path = await _getVideoPath(
+    final String? path = await _pickVideoAsPath(
       source: source,
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
