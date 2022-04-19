@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-import 'mock_url_launcher_platform.dart';
+import '../mocks/mock_url_launcher_platform.dart';
 
 void main() {
   final MockUrlLauncher mock = MockUrlLauncher();

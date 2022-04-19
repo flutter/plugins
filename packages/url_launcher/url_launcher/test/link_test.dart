@@ -9,7 +9,7 @@ import 'package:url_launcher/link.dart';
 import 'package:url_launcher/src/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-import 'mock_url_launcher_platform.dart';
+import 'mocks/mock_url_launcher_platform.dart';
 
 void main() {
   late MockUrlLauncher mock;
