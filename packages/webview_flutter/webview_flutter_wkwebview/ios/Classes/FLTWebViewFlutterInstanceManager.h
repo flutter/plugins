@@ -19,15 +19,20 @@ NS_ASSUME_NONNULL_BEGIN
  * Adds a new instance to the manager.
  *
  * If an instance or identifier has already been added, it will be replaced by the new values. The
- * Dart InstanceManager is considered the source of truth and has the capability to overwrite stores
+ * Dart InstanceManager is considered the source of truth and has the capability to overwrite stored
  * pairs in response to hot restarts.
+ *
+ * @param instance The instance to be stored.
+ * @param instanceIdentifier The identifier to be paired with instance.
  */
 - (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
- * Removes the instance with identifier from the manager.
+ * Removes the instance paired with a given identifier from the manager.
  *
- * @returns the removed instance if the manager contains the given instanceIdentifier, otherwise
+ * @param instanceIdentifier The identifier paired to an instance.
+ *
+ * @return The removed instance if the manager contains the given instanceIdentifier, otherwise
  * nil.
  */
 - (nullable NSObject *)removeInstanceWithIdentifier:(long)instanceIdentifier;
@@ -35,7 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Removes the instance from the manager.
  *
- * @returns the identifier of the removed instance if the manager contains the given instance,
+ * @param instance The instance to be removed from the manager.
+ *
+ * @return The identifier of the removed instance if the manager contains the given instance,
  * otherwise -1.
  */
 - (long)removeInstance:(NSObject *)instance;
@@ -43,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Retrieves the instance paired with identifier.
  *
- * @returns the instance paired with instanceIdentifier if the manager contains the given instance,
+ * @param instanceIdentifier  The identifier paired to an instance.
+ *
+ * @return The paired instance if the manager contains the given instanceIdentifier,
  * otherwise nil.
  */
 - (nullable NSObject *)instanceForIdentifier:(long)instanceIdentifier;
@@ -51,8 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Retrieves the identifier paired with an instance.
  *
- * @returns the identifier paired with instance if the manager contains the given identifer,
- * otherwise -1.
+ * @param instance An instance that may be stored in the manager.
+ *
+ * @return The paired identifer if the manager contains the given instance, otherwise -1.
  */
 - (long)identifierForInstance:(nonnull NSObject *)instance;
 @end
