@@ -25,12 +25,15 @@ class Heatmap implements MapsObject<Heatmap> {
   const Heatmap({
     required this.heatmapId,
     this.data = const [],
-    this.dissipating = true,
+    this.dissipating = false,
     this.gradient,
     this.maxIntensity,
     this.opacity = 0.6,
-    this.radius,
-  }) : assert(gradient == null || gradient.length > 0);
+    this.radius = 20,
+  })  : assert(gradient == null || gradient.length > 0),
+        // Docs for iOS say [radius] must be between 10 and 50, but anything
+        // higher than 45 causes EXC_BAD_ACCESS.
+        assert(radius >= 10 && radius <= 45);
 
   /// Uniquely identifies a [Heatmap].
   final HeatmapId heatmapId;
@@ -46,7 +49,7 @@ class Heatmap implements MapsObject<Heatmap> {
   /// dissipating is disabled, the radius option is interpreted as a radius at
   /// zoom level 0.
   ///
-  /// TODO: Not on android
+  /// TODO: Not on android or ios
   final bool dissipating;
 
   /// The color gradient of the heatmap
@@ -56,6 +59,8 @@ class Heatmap implements MapsObject<Heatmap> {
   /// dynamically scaled according to the greatest concentration of points at
   /// any particular pixel on the map. This property allows you to specify a
   /// fixed maximum.
+  ///
+  /// TODO: Not on ios
   final double? maxIntensity;
 
   /// The opacity of the heatmap, expressed as a number between 0 and 1.
@@ -63,7 +68,7 @@ class Heatmap implements MapsObject<Heatmap> {
   final double opacity;
 
   /// The radius of influence for each data point, in pixels.
-  final int? radius;
+  final int radius;
 
   /// Creates a new [Heatmap] object whose values are the same as this
   /// instance, unless overwritten by the specified parameters.

@@ -37,17 +37,16 @@
   _heatmap.gradient = gradient;
 }
 
-- (void)setMaxIntensity:(double)maxIntensity {
-    // TODO: Is this right?
-  _heatmap.maximumZoomIntensity = maxIntensity;
-}
-
 - (void)setOpacity:(double)opacity {
   _heatmap.opacity = opacity;
 }
 
 - (void)setRadius:(int)radius {
   _heatmap.radius = radius;
+}
+
+-(void)setMap {
+  _heatmap.map = _mapView;
 }
 @end
 
@@ -71,11 +70,6 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
     [sink setGradient:ToGradient(gradient)];
   }
 
-  NSNumber *maxIntensity = data[@"maxIntensity"];
-  if (maxIntensity != nil) {
-    [sink setMaxIntensity:ToDouble(maxIntensity)];
-  }
-
   NSNumber *opacity = data[@"opacity"];
   if (opacity != nil) {
     [sink setOpacity:ToDouble(opacity)];
@@ -85,6 +79,9 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
   if (radius != nil) {
     [sink setRadius:ToInt(radius)];
   }
+
+  // The map must be set each time for options to update
+  [sink setMap];
 }
 
 @implementation FLTHeatmapsController {
@@ -108,9 +105,9 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
 - (void)addHeatmaps:(NSArray *)heatmapsToAdd {
   for (NSDictionary *heatmap in heatmapsToAdd) {
     NSString *heatmapId = [FLTHeatmapsController getHeatmapId:heatmap];
+    GMUHeatmapTileLayer *heatmapTileLayer = [[GMUHeatmapTileLayer alloc] init];
     FLTGoogleMapHeatmapController *controller =
-        [[FLTGoogleMapHeatmapController alloc] initWithHeatmap:[GMUHeatmapTileLayer alloc]
-                                                             mapView:_mapView];
+      [[FLTGoogleMapHeatmapController alloc] initWithHeatmap:heatmapTileLayer mapView: _mapView];
     InterpretHeatmapOptions(heatmap, controller, _registrar);
     _heatmapIdToController[heatmapId] = controller;
   }
@@ -123,6 +120,7 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
       continue;
     }
     InterpretHeatmapOptions(heatmap, controller, _registrar);
+    
     [controller clearTileCache];
   }
 }

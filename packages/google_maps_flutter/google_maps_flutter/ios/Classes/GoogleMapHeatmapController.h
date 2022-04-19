@@ -10,9 +10,9 @@
 @protocol FLTGoogleMapHeatmapOptionsSink
 - (void)setWeightedData:(NSArray<GMUWeightedLatLng *>*)weightedData;
 - (void)setGradient:(GMUGradient*)gradient;
-- (void)setMaxIntensity:(double)maxIntensity;
 - (void)setOpacity:(double)opacity;
 - (void)setRadius:(int)radius;
+- (void)setMap;
 @end
 
 // Defines heatmap controllable by Flutter.

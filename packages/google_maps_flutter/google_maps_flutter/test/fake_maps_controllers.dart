@@ -401,7 +401,7 @@ class FakePlatformGoogleMap {
 
       final double? maxIntensity = heatmapData['maxIntensity'] as double?;
       final double opacity = heatmapData['opacity'] as double;
-      final int? radius = heatmapData['radius'] as int?;
+      final int radius = heatmapData['radius'] as int;
 
       result.add(Heatmap(
         heatmapId: HeatmapId(heatmapId),
