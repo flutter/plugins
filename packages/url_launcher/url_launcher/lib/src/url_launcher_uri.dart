@@ -50,6 +50,10 @@ Future<bool> launchUrl(
     throw ArgumentError.value(url, 'url',
         'To use an in-app web view, you must provide an http(s) URL.');
   }
+  // TODO(stuartmorgan): Use UrlLauncherPlatform directly once a new API
+  // that better matches these parameters has been added. For now, delegate to
+  // launchUrlString so that there's only one copy of the parameter translation
+  // logic.
   return await launchUrlString(
     url.toString(),
     mode: mode,
@@ -67,7 +71,7 @@ Future<bool> launchUrl(
 /// [the README](https://pub.dev/packages/url_launcher#configuration) for
 /// details.
 Future<bool> canLaunchUrl(Uri url) async {
-  return await canLaunchUrlString(url.toString());
+  return await UrlLauncherPlatform.instance.canLaunch(url.toString());
 }
 
 /// Closes the current in-app web view, if one was previously opened by
