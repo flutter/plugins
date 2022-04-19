@@ -16,9 +16,6 @@ flutter:
         default_package: local_auth_android
       ios:
         default_package: local_auth_ios
-      # Uncomment once the PR #4806 is merged.
-      # windows:
-      #  default_package: local_auth_windows
 
 dependencies:
   flutter:
@@ -26,8 +23,6 @@ dependencies:
   intl: ^0.17.0
   local_auth_android: ^1.0.0
   local_auth_ios: ^1.0.1
-  # Uncomment once the PR #4806 is merged.
-  # local_auth_windows: ^1.0.0
   local_auth_platform_interface: ^1.0.1
 
 dev_dependencies:
