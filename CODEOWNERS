@@ -9,4 +9,18 @@ packages/webview_flutter/**                    @bparrishMines
 
 # Sub-package-level rules. These should stay last, since the last matching
 # entry takes precedence.
-packages/**/*_web/**                           @ditman
+
+# - Web
+packages/**/*_web/**                                     @ditman
+
+# - Android
+packages/camera/android/**                               @camsim99
+packages/google_maps_flutter/android/**                  @GaryQian
+packages/google_sign_in/google_sign_in_android/**        @camsim99
+packages/image_picker/image_picker_android/**            @GaryQian
+packages/in_app_purchase/in_app_purchase_android/**      @blasten
+packages/local_auth/local_auth_android/**                @blasten
+packages/path_provider/path_provider_android/**          @camsim99
+packages/quick_actions/quick_actions_android/**          @camsim99
+packages/url_launcher/url_launcher_android/**            @GaryQian
+packages/video_player/video_player_android/**            @blasten
