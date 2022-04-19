@@ -50,12 +50,10 @@ class Heatmap implements MapsObject<Heatmap> {
   /// dissipating is disabled, the radius option is interpreted as a radius at
   /// zoom level 0.
   ///
-  /// TODO: Not on android or ios
+  /// Web only.
   final bool dissipating;
 
   /// The color gradient of the heatmap
-  ///
-  /// TODO: Allow using start points for android/ios
   final List<Color>? gradient;
 
   /// The maximum intensity of the heatmap. By default, heatmap colors are
@@ -63,7 +61,7 @@ class Heatmap implements MapsObject<Heatmap> {
   /// any particular pixel on the map. This property allows you to specify a
   /// fixed maximum.
   ///
-  /// TODO: Not on ios
+  /// Web and Android only.
   final double? maxIntensity;
 
   /// The opacity of the heatmap, expressed as a number between 0 and 1.
