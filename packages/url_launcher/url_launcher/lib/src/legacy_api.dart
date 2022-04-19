@@ -60,6 +60,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 ///
 /// Returns true if launch url is successful; false is only returned when [universalLinksOnly]
 /// is set to true and the universal link failed to launch.
+@Deprecated('Use launchUrl instead')
 Future<bool> launch(
   String urlString, {
   bool? forceSafariVC,
@@ -127,6 +128,7 @@ Future<bool> launch(
 /// querying the system for launch support. See
 /// [the README](https://pub.dev/packages/url_launcher#configuration) for
 /// details.
+@Deprecated('Use canLaunchUrl instead')
 Future<bool> canLaunch(String urlString) async {
   return await UrlLauncherPlatform.instance.canLaunch(urlString);
 }
@@ -139,6 +141,7 @@ Future<bool> canLaunch(String urlString) async {
 /// Or on IOS systems, if [launch] was called without `forceSafariVC` being set to `true`,
 /// this call will not do anything either, simply because there is no
 /// WebView/SafariViewController available to be closed.
+@Deprecated('Use closeInAppWebView instead')
 Future<void> closeWebView() async {
   return await UrlLauncherPlatform.instance.closeWebView();
 }
