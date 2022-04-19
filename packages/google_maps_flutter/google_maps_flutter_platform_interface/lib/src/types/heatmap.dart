@@ -54,7 +54,7 @@ class Heatmap implements MapsObject<Heatmap> {
   final bool dissipating;
 
   /// The color gradient of the heatmap
-  /// 
+  ///
   /// TODO: Allow using start points for android/ios
   final List<Color>? gradient;
 
