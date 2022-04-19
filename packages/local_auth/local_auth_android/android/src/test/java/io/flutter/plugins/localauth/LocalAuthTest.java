@@ -94,10 +94,10 @@ public class LocalAuthTest {
     when(mockPackageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)).thenReturn(true);
 
     when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_STRONG |
-                    BiometricManager.Authenticators.BIOMETRIC_WEAK |
-                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
-    )).thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+            BiometricManager.Authenticators.BIOMETRIC_STRONG
+                | BiometricManager.Authenticators.BIOMETRIC_WEAK
+                | BiometricManager.Authenticators.DEVICE_CREDENTIAL))
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
 
     plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
     verify(mockResult).success(Collections.emptyList());
@@ -109,10 +109,10 @@ public class LocalAuthTest {
     final PackageManager mockPackageManager = mock(PackageManager.class);
 
     when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_STRONG |
-                    BiometricManager.Authenticators.BIOMETRIC_WEAK |
-                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
-    )).thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
+            BiometricManager.Authenticators.BIOMETRIC_STRONG
+                | BiometricManager.Authenticators.BIOMETRIC_WEAK
+                | BiometricManager.Authenticators.DEVICE_CREDENTIAL))
+        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     when(mockActivity.getPackageManager()).thenReturn(mockPackageManager);
     when(mockPackageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)).thenReturn(true);
     when(mockPackageManager.hasSystemFeature(PackageManager.FEATURE_FACE)).thenReturn(true);
