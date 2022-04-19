@@ -22,14 +22,15 @@ NS_ASSUME_NONNULL_BEGIN
  * Dart InstanceManager is considered the source of truth and has the capability to overwrite stores
  * pairs in response to hot restarts.
  */
-- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)identifier;
+- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
  * Removes the instance with identifier from the manager.
  *
- * @returns the removed instance if the manager contains the given identifier, otherwise nil.
+ * @returns the removed instance if the manager contains the given instanceIdentifier, otherwise
+ * nil.
  */
-- (nullable NSObject *)removeInstanceWithIdentifier:(long)identifier;
+- (nullable NSObject *)removeInstanceWithIdentifier:(long)instanceIdentifier;
 
 /**
  * Removes the instance from the manager.
@@ -42,10 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Retrieves the instance paired with identifier.
  *
- * @returns the instance paired with identifier if the manager contains the given instance,
+ * @returns the instance paired with instanceIdentifier if the manager contains the given instance,
  * otherwise nil.
  */
-- (nullable NSObject *)instanceForIdentifier:(long)identifier;
+- (nullable NSObject *)instanceForIdentifier:(long)instanceIdentifier;
 
 /**
  * Retrieves the identifier paired with an instance.

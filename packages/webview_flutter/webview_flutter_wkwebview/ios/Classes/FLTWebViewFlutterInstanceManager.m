@@ -21,20 +21,21 @@
   return self;
 }
 
-- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)identifier {
-  NSAssert(instance && identifier >= 0, @"Instance must be nonnull and identifier must be >- 0.");
+- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier {
+  NSAssert(instance && instanceIdentifier >= 0,
+           @"Instance must be nonnull and identifier must be >- 0.");
   dispatch_async(_lockQueue, ^{
-    [self.instancesToIdentifiers setObject:@(identifier) forKey:instance];
-    [self.identifiersToInstances setObject:instance forKey:@(identifier)];
+    [self.instancesToIdentifiers setObject:@(instanceIdentifier) forKey:instance];
+    [self.identifiersToInstances setObject:instance forKey:@(instanceIdentifier)];
   });
 }
 
-- (nullable NSObject *)removeInstanceWithIdentifier:(long)identifier {
+- (nullable NSObject *)removeInstanceWithIdentifier:(long)instanceIdentifier {
   NSObject *__block instance = nil;
   dispatch_sync(_lockQueue, ^{
-    instance = [self.identifiersToInstances objectForKey:@(identifier)];
+    instance = [self.identifiersToInstances objectForKey:@(instanceIdentifier)];
     if (instance) {
-      [self.identifiersToInstances removeObjectForKey:@(identifier)];
+      [self.identifiersToInstances removeObjectForKey:@(instanceIdentifier)];
       [self.instancesToIdentifiers removeObjectForKey:instance];
     }
   });
@@ -54,10 +55,10 @@
   return identifierNumber ? identifierNumber.longValue : -1;
 }
 
-- (nullable NSObject *)instanceForIdentifier:(long)identifier {
+- (nullable NSObject *)instanceForIdentifier:(long)instanceIdentifier {
   NSObject *__block instance = nil;
   dispatch_sync(_lockQueue, ^{
-    instance = [self.identifiersToInstances objectForKey:@(identifier)];
+    instance = [self.identifiersToInstances objectForKey:@(instanceIdentifier)];
   });
   return instance;
 }
