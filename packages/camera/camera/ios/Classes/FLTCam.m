@@ -15,7 +15,6 @@
 - (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  NSLog(@"Bibin initWithCaptureSessionQueue");
   _captureSessionQueue = captureSessionQueue;
   return self;
 }
@@ -140,7 +139,6 @@ NSString *const qrDetected = @"qrCodeDetected";
   // After some testing, 4 was determined to be the best maximum value.
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
   _maxStreamingPendingFramesCount = 4;
-  NSLog(@"bibin camera added output");
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
@@ -170,7 +168,6 @@ NSString *const qrDetected = @"qrCodeDetected";
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
     if ([_captureSession canAddOutput:metadataOutput]) {
-        NSLog(@"bibin capture added output");
         [_captureSession addOutput:metadataOutput];
     }
     metadataOutput.metadataObjectTypes = @[
@@ -195,11 +192,8 @@ NSString *const qrDetected = @"qrCodeDetected";
 didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
        fromConnection:(AVCaptureConnection *)connection {
     if(_isStreamingImages) {
-        NSLog(@"bibin captured output");
         AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
         if(metadata) {
-            NSLog(@"bibin QR %@", metadata.stringValue);
-            NSLog(@"bibin QR corners %@", metadata.corners);
             [_metadataMethodChannel invokeMethod:qrDetected
                                arguments:@{
                 @"qr_info" :
@@ -207,8 +201,6 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
                     @"string" : metadata.stringValue,
                     @"corners" : metadata.corners,
             }}];
-        } else {
-            NSLog(@"bibin muunji");
         }
     }
 }
@@ -489,19 +481,6 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
       // Lock the base address before accessing pixel data, and unlock it afterwards.
       // Done accessing the `pixelBuffer` at this point.
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
-//      CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
-//      CIDetector *qrDetector = [CIDetector detectorOfType:CIDetectorTypeFace
-//                                  context:nil
-//                                  options:@{CIDetectorTracking: @YES,
-//                                            CIDetectorAccuracy: CIDetectorAccuracyHigh}];
-//      NSArray *features = [qrDetector featuresInImage:ciImage];
-//      if (([features count] > 0)) {
-//            NSLog(@"Bibin success qr");
-//      } else {
-//           NSLog(@"Bibin no qr");
-//      }
-
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
       imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
       imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
