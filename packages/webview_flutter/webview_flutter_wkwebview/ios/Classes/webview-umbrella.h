@@ -6,7 +6,7 @@
 #import <webview_flutter_wkwebview/FLTCookieManager.h>
 #import <webview_flutter_wkwebview/FLTWKNavigationDelegate.h>
 #import <webview_flutter_wkwebview/FLTWKProgressionDelegate.h>
-#import <webview_flutter_wkwebview/FLTWebViewFlutterInstancemanager.h>
 #import <webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>
+#import <webview_flutter_wkwebview/FWFInstanceManager.h>
 #import <webview_flutter_wkwebview/FlutterWebView.h>
 #import <webview_flutter_wkwebview/JavaScriptChannelHandler.h>

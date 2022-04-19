@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTWebViewFlutterInstanceManager.h"
+#import "FWFInstanceManager.h"
 
-@interface FLTWebViewFlutterInstanceManager ()
+@interface FWFInstanceManager ()
 @property dispatch_queue_t lockQueue;
 @property NSMapTable<NSNumber *, NSObject *> *identifiersToInstances;
 @property NSMapTable<NSObject *, NSNumber *> *instancesToIdentifiers;
 @end
 
-@implementation FLTWebViewFlutterInstanceManager
+@implementation FWFInstanceManager
 - (instancetype)init {
   if (self) {
-    self.lockQueue =
-        dispatch_queue_create("FLTWebViewFlutterInstanceManager", DISPATCH_QUEUE_SERIAL);
+    self.lockQueue = dispatch_queue_create("FWFInstanceManager", DISPATCH_QUEUE_SERIAL);
     self.identifiersToInstances = [NSMapTable strongToStrongObjectsMapTable];
     self.instancesToIdentifiers = [NSMapTable strongToStrongObjectsMapTable];
   }
