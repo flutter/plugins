@@ -87,7 +87,7 @@ public class LocalAuthTest {
   public void getAvailableBiometrics_withHardwareButNothingEnrolled_ShouldReturnEmpty() {
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate())
-            .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
     plugin.overrideBiometricManager(mockBiometricManager);
 
     plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
@@ -98,7 +98,7 @@ public class LocalAuthTest {
   public void getAvailableBiometrics_withNoHardware_ShouldReturnUndefined() {
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate())
-            .thenReturn(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
     plugin.overrideBiometricManager(mockBiometricManager);
 
     plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
