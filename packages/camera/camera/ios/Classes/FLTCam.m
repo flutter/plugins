@@ -15,6 +15,7 @@
 - (instancetype)initWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  NSLog(@"Bibin initWithCaptureSessionQueue");
   _captureSessionQueue = captureSessionQueue;
   return self;
 }
@@ -36,7 +37,8 @@
 @end
 
 @interface FLTCam () <AVCaptureVideoDataOutputSampleBufferDelegate,
-                      AVCaptureAudioDataOutputSampleBufferDelegate>
+                      AVCaptureAudioDataOutputSampleBufferDelegate,
+                      AVCaptureMetadataOutputObjectsDelegate>
 
 @property(readonly, nonatomic) int64_t textureId;
 @property BOOL enableAudio;
@@ -137,7 +139,7 @@ NSString *const errorMethod = @"error";
   // After some testing, 4 was determined to be the best maximum value.
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
   _maxStreamingPendingFramesCount = 4;
-
+  NSLog(@"bibin camera added output");
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
@@ -161,9 +163,18 @@ NSString *const errorMethod = @"error";
     connection.videoMirrored = YES;
   }
 
+    AVCaptureMetadataOutput* metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+    [metadataOutput setMetadataObjectsDelegate:self queue:_captureSessionQueue];
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
+    if ([_captureSession canAddOutput:metadataOutput]) {
+        NSLog(@"bibin capture added output");
+        [_captureSession addOutput:metadataOutput];
+    }
+    metadataOutput.metadataObjectTypes = @[
+                                   AVMetadataObjectTypeQRCode
+                                   ];
 
   if (@available(iOS 10.0, *)) {
     _capturePhotoOutput = [AVCapturePhotoOutput new];
@@ -177,6 +188,18 @@ NSString *const errorMethod = @"error";
   [self updateOrientation];
 
   return self;
+}
+
+- (void)captureOutput:(AVCaptureOutput *)output
+didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
+       fromConnection:(AVCaptureConnection *)connection {
+    NSLog(@"bibin captured output");
+    AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
+    if(metadata) {
+        NSLog(@"bibin QR %@", metadata.stringValue);
+    } else {
+        NSLog(@"bibin muunji");
+    }
 }
 
 - (void)start {
@@ -455,6 +478,18 @@ NSString *const errorMethod = @"error";
       // Lock the base address before accessing pixel data, and unlock it afterwards.
       // Done accessing the `pixelBuffer` at this point.
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+//      CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+//      CIDetector *qrDetector = [CIDetector detectorOfType:CIDetectorTypeFace
+//                                  context:nil
+//                                  options:@{CIDetectorTracking: @YES,
+//                                            CIDetectorAccuracy: CIDetectorAccuracyHigh}];
+//      NSArray *features = [qrDetector featuresInImage:ciImage];
+//      if (([features count] > 0)) {
+//            NSLog(@"Bibin success qr");
+//      } else {
+//           NSLog(@"Bibin no qr");
+//      }
 
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
       imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
