@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * When an instance is added with an identifier, either can be used to retrieve the other.
  */
-@interface FLTWFInstanceManager : NSObject
+@interface FLTWebViewFlutterInstanceManager : NSObject
 // TODO(bparrishMines): Pairs should not be able to be overwritten and this feature
 // should be replaced with a call to clear the manager in the event of a hot restart
 // instead.
