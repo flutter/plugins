@@ -8,8 +8,8 @@
 
 // Defines heatmap UI options writable from Flutter.
 @protocol FLTGoogleMapHeatmapOptionsSink
-- (void)setWeightedData:(NSArray<GMUWeightedLatLng *>*)weightedData;
-- (void)setGradient:(GMUGradient*)gradient;
+- (void)setWeightedData:(NSArray<GMUWeightedLatLng *> *)weightedData;
+- (void)setGradient:(GMUGradient *)gradient;
 - (void)setOpacity:(double)opacity;
 - (void)setRadius:(int)radius;
 - (void)setMap;

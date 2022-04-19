@@ -29,11 +29,11 @@
 
 #pragma mark - FLTGoogleMapHeatmapOptionsSink methods
 
-- (void)setWeightedData:(NSArray<GMUWeightedLatLng *>*)weightedData {
+- (void)setWeightedData:(NSArray<GMUWeightedLatLng *> *)weightedData {
   _heatmap.weightedData = weightedData;
 }
 
-- (void)setGradient:(GMUGradient*)gradient {
+- (void)setGradient:(GMUGradient *)gradient {
   _heatmap.gradient = gradient;
 }
 
@@ -45,7 +45,7 @@
   _heatmap.radius = radius;
 }
 
--(void)setMap {
+- (void)setMap {
   _heatmap.map = _mapView;
 }
 @end
@@ -54,12 +54,16 @@ static int ToInt(NSNumber *data) { return [FLTGoogleMapJsonConversions toInt:dat
 
 static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
 
-static NSArray<GMUWeightedLatLng *> *ToWeightedData(NSArray *data) { return [FLTGoogleMapJsonConversions toWeightedData:data]; }
+static NSArray<GMUWeightedLatLng *> *ToWeightedData(NSArray *data) {
+  return [FLTGoogleMapJsonConversions toWeightedData:data];
+}
 
-static GMUGradient *ToGradient(NSArray *data) { return [FLTGoogleMapJsonConversions toGradient:data]; }
+static GMUGradient *ToGradient(NSArray *data) {
+  return [FLTGoogleMapJsonConversions toGradient:data];
+}
 
 static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar> *registrar) {
+                                    NSObject<FlutterPluginRegistrar> *registrar) {
   NSArray *weightedData = data[@"data"];
   if (weightedData != nil) {
     [sink setWeightedData:ToWeightedData(weightedData)];
@@ -107,7 +111,7 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
     NSString *heatmapId = [FLTHeatmapsController getHeatmapId:heatmap];
     GMUHeatmapTileLayer *heatmapTileLayer = [[GMUHeatmapTileLayer alloc] init];
     FLTGoogleMapHeatmapController *controller =
-      [[FLTGoogleMapHeatmapController alloc] initWithHeatmap:heatmapTileLayer mapView: _mapView];
+        [[FLTGoogleMapHeatmapController alloc] initWithHeatmap:heatmapTileLayer mapView:_mapView];
     InterpretHeatmapOptions(heatmap, controller, _registrar);
     _heatmapIdToController[heatmapId] = controller;
   }
@@ -120,7 +124,7 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
       continue;
     }
     InterpretHeatmapOptions(heatmap, controller, _registrar);
-    
+
     [controller clearTileCache];
   }
 }
