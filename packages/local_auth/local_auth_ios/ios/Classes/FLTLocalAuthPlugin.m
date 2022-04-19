@@ -180,6 +180,7 @@
       case LAErrorPasscodeNotSet:
       case LAErrorTouchIDNotAvailable:
       case LAErrorTouchIDNotEnrolled:
+      case LAErrorUserFallback:
       case LAErrorTouchIDLockout:
         [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
         return;
