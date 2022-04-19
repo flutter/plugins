@@ -21,7 +21,7 @@
 }
 
 - (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)identifier {
-  NSAssert(!instance && identifier >= 0, @"");
+  NSAssert(instance && identifier >= 0, @"Instance must be nonnull and identifier must be >- 0.");
   dispatch_async(_lockQueue, ^{
     [self.instancesToIdentifiers setObject:@(identifier) forKey:instance];
     [self.identifiersToInstances setObject:instance forKey:@(identifier)];
@@ -41,6 +41,7 @@
 }
 
 - (long)removeInstance:(NSObject *)instance {
+  NSAssert(instance, @"Instance must be nonnull.");
   NSNumber *__block identifierNumber = nil;
   dispatch_sync(_lockQueue, ^{
     identifierNumber = [self.instancesToIdentifiers objectForKey:instance];
