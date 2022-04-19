@@ -5,11 +5,11 @@
 #import <XCTest/XCTest.h>
 @import webview_flutter_wkwebview;
 
-@interface FLTWFInstanceManagerTests : XCTestCase
+@interface FLTWebViewFlutterInstanceManagerTests : XCTestCase
 @property FLTWebViewFlutterInstanceManager *instanceManager;
 @end
 
-@implementation FLTWFInstanceManagerTests
+@implementation FLTWebViewFlutterInstanceManagerTests
 - (void)setUp {
   self.instanceManager = [[FLTWebViewFlutterInstanceManager alloc] init];
 }
