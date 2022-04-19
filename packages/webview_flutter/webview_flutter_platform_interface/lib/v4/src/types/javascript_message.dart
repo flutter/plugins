@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 /// A message that was sent by JavaScript code running in a [WebView].
 ///
 /// Platform specific implementations can add additional fields by extending
-/// this class and provide a factory method that takes the
+/// this class and providing a factory method that takes the
 /// [JavaScriptMessage] as a parameter.
 ///
 /// {@tool sample}

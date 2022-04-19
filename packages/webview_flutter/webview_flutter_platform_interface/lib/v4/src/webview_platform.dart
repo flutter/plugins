@@ -38,7 +38,7 @@ abstract class WebViewPlatform extends PlatformInterface {
 
   /// Creates a new [WebViewCookieManagerDelegate].
   ///
-  /// This function should only be called by the app-facing plugin.
+  /// This function should only be called by the app-facing package.
   /// Look at using [WebViewCookieManager] in `webview_flutter` instead.
   WebViewCookieManagerDelegate createCookieManagerDelegate(
     WebViewCookieManagerCreationParams params,
@@ -49,7 +49,7 @@ abstract class WebViewPlatform extends PlatformInterface {
 
   /// Creates a new [NavigationCallbackDelegate].
   ///
-  /// This function should only be called by the app-facing plugin.
+  /// This function should only be called by the app-facing package.
   /// Look at using [NavigationCallbackHandler] in `webview_flutter` instead.
   NavigationCallbackDelegate createNavigationCallbackDelegate(
     NavigationCallbackCreationParams params,
@@ -60,7 +60,7 @@ abstract class WebViewPlatform extends PlatformInterface {
 
   /// Create a new [WebViewControllerDelegate].
   ///
-  /// This function should only be called by the app-facing plugin.
+  /// This function should only be called by the app-facing package.
   /// Look at using [WebViewController] in `webview_flutter` instead.
   WebViewControllerDelegate createWebViewControllerDelegate(
     WebViewControllerCreationParams params,
@@ -71,7 +71,7 @@ abstract class WebViewPlatform extends PlatformInterface {
 
   /// Create a new [WebViewWidgetDelegate].
   ///
-  /// This function should only be called by the app-facing plugin.
+  /// This function should only be called by the app-facing package.
   /// Look at using [WebViewWidget] in `webview_flutter` instead.
   WebViewWidgetDelegate createWebViewWidgetDelegate(
     WebViewWidgetCreationParams params,

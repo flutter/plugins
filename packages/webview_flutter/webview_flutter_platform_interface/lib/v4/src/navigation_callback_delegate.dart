@@ -13,7 +13,7 @@ import 'webview_platform.dart';
 ///
 /// The [WebViewControllerDelegate] is notifying this delegate on events that
 /// happened on the platform's webview. Platform implementations should
-/// implement this class and pass an instance to the[WebViewControllerDelegate].
+/// implement this class and pass an instance to the [WebViewControllerDelegate].
 abstract class NavigationCallbackDelegate extends PlatformInterface {
   /// Creates a new [NavigationCallbackDelegate]
   factory NavigationCallbackDelegate(NavigationCallbackCreationParams params) {

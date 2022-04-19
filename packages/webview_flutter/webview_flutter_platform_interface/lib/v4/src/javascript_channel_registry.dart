@@ -31,7 +31,7 @@ class JavaScriptChannelRegistry {
     javaScriptChannel.onMessageReceived(JavaScriptMessage(message: message));
   }
 
-  /// Updates the set of [JavaScriptChannel]s with the new set.
+  /// Replaces the set of [JavaScriptChannel]s with the new set.
   void updateJavaScriptChannelsFromSet(Set<JavaScriptChannel>? channels) {
     this.channels.clear();
     if (channels == null) {

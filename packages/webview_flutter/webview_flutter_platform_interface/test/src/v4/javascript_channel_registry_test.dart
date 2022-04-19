@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/v4/src/javaScript_channel_registry.dart';
+import 'package:webview_flutter_platform_interface/v4/src/javascript_channel_registry.dart';
 import 'package:webview_flutter_platform_interface/v4/src/types/types.dart';
 
 void main() {

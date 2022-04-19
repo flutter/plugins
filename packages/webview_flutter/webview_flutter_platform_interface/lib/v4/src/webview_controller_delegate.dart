@@ -146,7 +146,6 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   ///	2. [Cache API](https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api) caches.
   ///    These are not yet supported in iOS WkWebView. Service workers tend to use this cache.
   ///	3. Application cache.
-  ///	4. Local Storage.
   Future<void> clearCache() {
     throw UnimplementedError(
         'clearCache is not implemented on the current platform');

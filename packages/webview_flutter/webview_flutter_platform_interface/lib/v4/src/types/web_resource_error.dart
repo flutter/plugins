@@ -115,7 +115,5 @@ class WebResourceError {
   final String description;
 
   /// The type this error can be categorized as.
-  ///
-  /// This will never be `null` on Android, but can be `null` on iOS.
   final WebResourceErrorType? errorType;
 }

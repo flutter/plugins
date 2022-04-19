@@ -50,7 +50,7 @@ class WebViewWidgetCreationParams {
   const WebViewWidgetCreationParams({
     this.key,
     required this.controller,
-    this.gestureRecognizers,
+    this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
   });
 
   /// Controls how one widget replaces another widget in the tree.
@@ -72,8 +72,8 @@ class WebViewWidgetCreationParams {
   /// [ListView] will want to handle vertical drags. The web view will claim
   /// gestures that are recognized by any of the recognizers on this list.
   ///
-  /// When `gestureRecognizers` is empty or null, the web view will only handle
+  /// When `gestureRecognizers` is empty (default), the web view will only handle
   /// pointer events for gestures that were not claimed by any other gesture
   /// recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 }
