@@ -226,7 +226,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> clearCache() {
-    return webView.configuration.webSiteDataStore.removeDataOfTypes(
+    return webView.configuration.websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataTypes>{
         WKWebsiteDataTypes.memoryCache,
         WKWebsiteDataTypes.diskCache,
