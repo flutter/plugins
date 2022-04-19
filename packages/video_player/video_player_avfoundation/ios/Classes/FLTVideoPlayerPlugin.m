@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #import "FLTVideoPlayerPlugin.h"
-#import "AVAssetTrackUtils.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
 
+#import "AVAssetTrackUtils.h"
 #import "messages.g.h"
 
 #if !__has_feature(objc_arc)
