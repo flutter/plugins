@@ -88,6 +88,7 @@ public class LocalAuthTest {
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate())
             .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+    plugin.overrideBiometricManager(mockBiometricManager);
 
     plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
     verify(mockResult).success(Collections.emptyList());
@@ -98,6 +99,7 @@ public class LocalAuthTest {
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
     when(mockBiometricManager.canAuthenticate())
             .thenReturn(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
+    plugin.overrideBiometricManager(mockBiometricManager);
 
     plugin.onMethodCall(new MethodCall("getAvailableBiometrics", null), mockResult);
     verify(mockResult).success(Collections.singletonList("undefined"));
