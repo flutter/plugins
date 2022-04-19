@@ -25,10 +25,11 @@ class Heatmap implements MapsObject<Heatmap> {
   const Heatmap({
     required this.heatmapId,
     this.data = const [],
-    this.dissipating = false,
+    this.dissipating = true,
     this.gradient,
     this.maxIntensity,
-    this.opacity = 0.6,
+    // Default is 0.6 on web, 0.7 on Android and iOS.
+    this.opacity = 0.7,
     this.radius = 20,
   })  : assert(gradient == null || gradient.length > 0),
         // Docs for iOS say [radius] must be between 10 and 50, but anything
@@ -53,6 +54,8 @@ class Heatmap implements MapsObject<Heatmap> {
   final bool dissipating;
 
   /// The color gradient of the heatmap
+  /// 
+  /// TODO: Allow using start points for android/ios
   final List<Color>? gradient;
 
   /// The maximum intensity of the heatmap. By default, heatmap colors are

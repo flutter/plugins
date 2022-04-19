@@ -104,8 +104,8 @@ class HeatmapBodyState extends State<HeatmapBody> {
                       Color.fromARGB(255, 255, 0, 0),
                     ],
                     maxIntensity: 1,
-                    opacity: 0.6,
-                    radius: 10,
+                    opacity: 0.7,
+                    radius: 20,
                   )
                 }),
           ),

@@ -86,8 +86,9 @@
 + (GMUGradient *)toGradient:(NSArray *)data {
     NSMutableArray<UIColor *> *colors = [[NSMutableArray alloc] init];
     NSMutableArray<NSNumber *> *startPoints = [[NSMutableArray alloc] init];
-    double startPointInterval = 1.0 / [data count];
-    double currentStartPoint = 0;
+    // Starting at 0 causes rendering issues
+    double startPointInterval = 0.99 / [data count];
+    double currentStartPoint = 0.01;
     
     for (unsigned i = 0; i < [data count]; i++) {
       UIColor *color = [FLTGoogleMapJsonConversions toColor:data[i]];
@@ -104,7 +105,7 @@
     
     return [[GMUGradient alloc] initWithColors:colors
                                    startPoints:startPoints
-                                  colorMapSize:256];
+                                  colorMapSize:1000];
 }
 
 @end
