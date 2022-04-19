@@ -1,7 +1,3 @@
-## 2.0.1
-
-* Changed Android local_auth version to adapt `getAvailableBiometrics` behaviour.
-
 ## 2.0.0
 
 * Migrates plugin to federated architecture.
