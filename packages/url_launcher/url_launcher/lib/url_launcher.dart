@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 export 'src/legacy_api.dart';
+export 'src/types.dart';
+export 'src/url_launcher_uri.dart';
