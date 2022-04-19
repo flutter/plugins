@@ -640,7 +640,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Sets a closed caption file.
   ///
-  /// If [closedCaptionFile] is null, closed caption file will be removed.
+  /// If [closedCaptionFile] is null, closed captions will be removed.
   Future<void> setClosedCaptionFile(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {
