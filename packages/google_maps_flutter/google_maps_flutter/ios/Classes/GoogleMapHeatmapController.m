@@ -15,9 +15,10 @@
   if (self) {
     _heatmap = heatmap;
     _mapView = mapView;
-      
+
     // Workaround for weird heatmap rendering compared to other platforms
-    // Context: https://github.com/googlemaps/google-maps-ios-utils/issues/143#issuecomment-343850029
+    // Context:
+    // https://github.com/googlemaps/google-maps-ios-utils/issues/143#issuecomment-343850029
     _heatmap.minimumZoomIntensity = 0;
     _heatmap.maximumZoomIntensity = 21;
   }
