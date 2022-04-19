@@ -182,9 +182,15 @@
           methodChannelWithName:[NSString stringWithFormat:@"flutter.io/cameraPlugin/camera%lu",
                                                            (unsigned long)cameraId]
                 binaryMessenger:_messenger];
+        FlutterMethodChannel *methodChannel2 = [FlutterMethodChannel
+            methodChannelWithName: @"CameraMetadata"
+                  binaryMessenger:_messenger];
       FLTThreadSafeMethodChannel *threadSafeMethodChannel =
           [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
+        FLTThreadSafeMethodChannel *threadSafeMethodChannel2 =
+            [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel2];
       _camera.methodChannel = threadSafeMethodChannel;
+      _camera.metadataMethodChannel = threadSafeMethodChannel2;
       [threadSafeMethodChannel
           invokeMethod:@"initialized"
              arguments:@{

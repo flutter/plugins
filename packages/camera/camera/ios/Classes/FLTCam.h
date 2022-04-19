@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic) BOOL isPreviewPaused;
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
 @property(nonatomic) FLTThreadSafeMethodChannel *methodChannel;
+@property(nonatomic) FLTThreadSafeMethodChannel *metadataMethodChannel;
 @property(assign, nonatomic) FLTResolutionPreset resolutionPreset;
 @property(assign, nonatomic) FLTExposureMode exposureMode;
 @property(assign, nonatomic) FLTFocusMode focusMode;

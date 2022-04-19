@@ -90,6 +90,7 @@
 @implementation FLTCam
 
 NSString *const errorMethod = @"error";
+NSString *const qrDetected = @"qrCodeDetected";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -193,12 +194,22 @@ NSString *const errorMethod = @"error";
 - (void)captureOutput:(AVCaptureOutput *)output
 didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
        fromConnection:(AVCaptureConnection *)connection {
-    NSLog(@"bibin captured output");
-    AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
-    if(metadata) {
-        NSLog(@"bibin QR %@", metadata.stringValue);
-    } else {
-        NSLog(@"bibin muunji");
+    if(_isStreamingImages) {
+        NSLog(@"bibin captured output");
+        AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
+        if(metadata) {
+            NSLog(@"bibin QR %@", metadata.stringValue);
+            NSLog(@"bibin QR corners %@", metadata.corners);
+            [_metadataMethodChannel invokeMethod:qrDetected
+                               arguments:@{
+                @"qr_info" :
+                @{
+                    @"string" : metadata.stringValue,
+                    @"corners" : metadata.corners,
+            }}];
+        } else {
+            NSLog(@"bibin muunji");
+        }
     }
 }
 
