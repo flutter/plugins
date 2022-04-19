@@ -4,6 +4,7 @@
 
 // ignore_for_file: public_member_api_docs
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_example/page.dart';
@@ -88,7 +89,8 @@ class HeatmapBodyState extends State<HeatmapBody> {
                     heatmapId: const HeatmapId('test'),
                     data: enabledPoints,
                     gradient: const <Color>[
-                      Color.fromARGB(0, 0, 255, 255),
+                      // Web needs a first color with alpha 0
+                      if (kIsWeb) Color.fromARGB(0, 0, 255, 255),
                       Color.fromARGB(255, 0, 255, 255),
                       Color.fromARGB(255, 0, 191, 255),
                       Color.fromARGB(255, 0, 127, 255),
