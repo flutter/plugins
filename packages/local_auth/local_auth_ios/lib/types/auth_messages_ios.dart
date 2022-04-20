@@ -57,11 +57,13 @@ class IOSAuthMessages extends AuthMessages {
           cancelButton == other.cancelButton;
 
   @override
-  int get hashCode =>
-      lockOut.hashCode ^
-      goToSettingsButton.hashCode ^
-      goToSettingsDescription.hashCode ^
-      cancelButton.hashCode;
+  int get hashCode => Object.hash(
+        super,
+        lockOut,
+        goToSettingsButton,
+        goToSettingsDescription,
+        cancelButton,
+      );
 }
 
 // Default Strings for IOSAuthMessages plugin. Currently supports English.

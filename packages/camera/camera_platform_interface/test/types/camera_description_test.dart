@@ -103,9 +103,8 @@ void main() {
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 0,
       );
-      final int expectedHashCode = description.name.hashCode ^
-          description.lensDirection.hashCode ^
-          description.sensorOrientation.hashCode;
+      final int expectedHashCode = Object.hash(description.name,
+          description.lensDirection, description.sensorOrientation);
 
       expect(description.hashCode, expectedHashCode);
     });

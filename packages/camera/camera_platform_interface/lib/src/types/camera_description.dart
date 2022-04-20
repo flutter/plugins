@@ -50,7 +50,7 @@ class CameraDescription {
           lensDirection == other.lensDirection;
 
   @override
-  int get hashCode => name.hashCode ^ lensDirection.hashCode;
+  int get hashCode => Object.hash(name, lensDirection);
 
   @override
   String toString() {
