@@ -1,6 +1,6 @@
 ## 0.9.4+20
 
-* Fixes an issue with the orientation of video's recorded in landscape on Android.
+* Fixes an issue with the orientation of videos recorded in landscape on Android.
 
 ## 0.9.4+19
 
