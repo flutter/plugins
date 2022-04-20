@@ -152,7 +152,9 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     TaskQueue taskQueue = messenger.makeBackgroundTaskQueue();
 
     try {
-      channel = (MethodChannel) new MethodChannel(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
+      channel =
+          (MethodChannel)
+              new MethodChannel(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
       impl = new PathProviderBackgroundThread();
     } catch (Exception ex) {
       Log.e(TAG, "Received exception while setting up PathProviderPlugin", ex);
