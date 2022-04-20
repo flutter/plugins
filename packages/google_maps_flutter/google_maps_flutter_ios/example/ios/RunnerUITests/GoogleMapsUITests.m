@@ -18,8 +18,6 @@
   self.app = [[XCUIApplication alloc] init];
   [self.app launch];
 
-  // The location permission interception is currently not working.
-  // See: https://github.com/flutter/flutter/issues/93325.
   [self
       addUIInterruptionMonitorWithDescription:@"Permission popups"
                                       handler:^BOOL(XCUIElement *_Nonnull interruptingElement) {
@@ -45,8 +43,7 @@
                                       }];
 }
 
-// Temporarily disabled due to https://github.com/flutter/flutter/issues/93325
-- (void)skip_testUserInterface {
+- (void)testUserInterface {
   XCUIApplication *app = self.app;
   XCUIElement *userInteface = app.staticTexts[@"User interface"];
   if (![userInteface waitForExistenceWithTimeout:30.0]) {
@@ -54,6 +51,9 @@
     XCTFail(@"Failed due to not able to find User interface");
   }
   [userInteface tap];
+  // There is a known bug where the permission popups interruption won't get fired until a tap
+  // happened in the app. We expect a permission popup so we do a tap here.
+  [app tap];
   XCUIElement *platformView = app.otherElements[@"platform_view[0]"];
   if (![platformView waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
