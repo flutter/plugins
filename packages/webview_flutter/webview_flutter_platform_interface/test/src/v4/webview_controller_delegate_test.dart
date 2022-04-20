@@ -202,6 +202,20 @@ void main() {
   });
 
   test(
+      // ignore: lines_longer_than_80_chars
+      'Default implementation of clearLocalStorage should throw unimplemented error',
+      () {
+    final WebViewControllerDelegate controller =
+        ExtendsWebViewControllerDelegate(
+            const WebViewControllerCreationParams());
+
+    expect(
+      () => controller.clearLocalStorage(),
+      throwsUnimplementedError,
+    );
+  });
+
+  test(
     'Default implementation of the setNavigationCallback should throw unimplemented error',
     () {
       final WebViewControllerDelegate controller =

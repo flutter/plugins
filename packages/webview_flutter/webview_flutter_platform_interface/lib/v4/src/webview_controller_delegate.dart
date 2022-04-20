@@ -151,6 +151,12 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
         'clearCache is not implemented on the current platform');
   }
 
+  /// Clears the local storage used by the [WebView].
+  Future<void> clearLocalStorage() {
+    throw UnimplementedError(
+        'clearLocalStorage is not implemented on the current platform');
+  }
+
   /// Sets the [NavigationCallbackDelegate] containing the callback methods that
   /// are called during navigation events.
   Future<void> setNavigationCallbackDelegate(
