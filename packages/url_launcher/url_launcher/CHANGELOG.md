@@ -10,6 +10,8 @@
   * move web view configuration options into a new `WebViewConfiguration`
     object. The default behavior for JavaScript and DOM storage is now enabled
     rather than disabled.
+* Also deprecates `closeWebView` in favor of `closeInAppWebView` to clarify
+  that it is specific to the in-app web view launch option.
 * Adds OS version support information to README.
 * Reorganizes and clarifies README.
 
