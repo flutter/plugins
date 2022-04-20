@@ -65,11 +65,17 @@ Future<bool> launchUrl(
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
 ///
-/// On some systems, such as recent versions of Android and iOS, this will
-/// always return false unless the application has been configuration to allow
-/// querying the system for launch support. See
-/// [the README](https://pub.dev/packages/url_launcher#configuration) for
-/// details.
+/// Returns true if it is possible to verify that there is a handler available.
+/// A false return value can indicate either that there is no handler available,
+/// or that the application does not have permission to check. For example:
+/// - On recent versions of Android and iOS, this will always return false
+///   unless the application has been configuration to allow
+///   querying the system for launch support. See
+///   [the README](https://pub.dev/packages/url_launcher#configuration) for
+///   details.
+/// - On web, this will always return false except for a few specific schemes
+///   that are always assumed to be supported (such as http(s)), as web pages
+///   are never allowed to query installed applications.
 Future<bool> canLaunchUrl(Uri url) async {
   return await UrlLauncherPlatform.instance.canLaunch(url.toString());
 }

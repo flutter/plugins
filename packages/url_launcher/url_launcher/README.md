@@ -116,13 +116,17 @@ apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Checking supported schemes
 
-If you don't know that a particular scheme will be supported, you can check
-with [`canLaunchUrl`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunchUrl.html).
-If `canLaunchUrl` returns false, as a best practice we suggest adjusting the
-application UI so that the unsupported URL is never triggered; for example, if
-the `mailto` scheme is not supported, a UI button that would have sent feedback
-email could be changed to instead open a web-based feedback form using an
-`https` URL.
+If you need to know at runtime whether a scheme is guaranteed to work before
+using it (for instance, to adjust your UI based on what is available), you can
+check with [`canLaunchUrl`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunchUrl.html).
+
+However, `canLaunchUrl` can return false even if `launchUrl` would work in
+some circumstances (in web applicaitons, on mobile without the necessary
+configuration as described above, etc.), so in cases where you can provide
+fallback behavior it is better to use `launchUrl` directly and handle failure.
+For example, UI button that would have sent feedback email using a `mailto` URL
+might instead open a web-based feedback form using an `https` URL on failure,
+rather than disabling the button if `canLaunchUrl` returns false for `mailto`.
 
 ### Encoding URLs
 
