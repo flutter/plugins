@@ -135,6 +135,29 @@ void main() {
         );
       });
 
+      test('authenticate with `localizedFallbackTitle`', () async {
+        await localAuthentication.authenticate(
+          authMessages: <AuthMessages>[
+            const IOSAuthMessages(localizedFallbackTitle: 'Enter PIN'),
+          ],
+          localizedReason: 'Needs secure',
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate',
+                arguments: <String, dynamic>{
+                  'localizedReason': 'Needs secure',
+                  'useErrorDialogs': true,
+                  'stickyAuth': false,
+                  'sensitiveTransaction': true,
+                  'biometricOnly': false,
+                  'localizedFallbackTitle': 'Enter PIN',
+                }..addAll(const IOSAuthMessages().args)),
+          ],
+        );
+      });
+
       test('authenticate with no sensitive transaction.', () async {
         await localAuthentication.authenticate(
           authMessages: <AuthMessages>[const IOSAuthMessages()],
