@@ -1,6 +1,10 @@
-## 1.0.2
+## 1.0.3
 
 * Adopts `Object.hash`.
+
+## 1.0.2
+
+* Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
 
 ## 1.0.1
 

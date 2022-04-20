@@ -16,6 +16,7 @@ class IOSAuthMessages extends AuthMessages {
     this.goToSettingsButton,
     this.goToSettingsDescription,
     this.cancelButton,
+    this.localizedFallbackTitle,
   });
 
   /// Message advising the user to re-enable biometrics on their device.
@@ -35,6 +36,10 @@ class IOSAuthMessages extends AuthMessages {
   /// Maximum 30 characters.
   final String? cancelButton;
 
+  /// The localized title for the fallback button in the dialog presented to
+  /// the user during authentication.
+  final String? localizedFallbackTitle;
+
   @override
   Map<String, String> get args {
     return <String, String>{
@@ -43,6 +48,8 @@ class IOSAuthMessages extends AuthMessages {
       'goToSettingDescriptionIOS':
           goToSettingsDescription ?? iOSGoToSettingsDescription,
       'okButton': cancelButton ?? iOSOkButton,
+      if (localizedFallbackTitle != null)
+        'localizedFallbackTitle': localizedFallbackTitle!,
     };
   }
 
@@ -54,7 +61,8 @@ class IOSAuthMessages extends AuthMessages {
           lockOut == other.lockOut &&
           goToSettingsButton == other.goToSettingsButton &&
           goToSettingsDescription == other.goToSettingsDescription &&
-          cancelButton == other.cancelButton;
+          cancelButton == other.cancelButton &&
+          localizedFallbackTitle == other.localizedFallbackTitle;
 
   @override
   int get hashCode => Object.hash(
@@ -63,6 +71,7 @@ class IOSAuthMessages extends AuthMessages {
         goToSettingsButton,
         goToSettingsDescription,
         cancelButton,
+        localizedFallbackTitle,
       );
 }
 
