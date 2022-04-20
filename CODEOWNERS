@@ -14,8 +14,8 @@ packages/webview_flutter/**                    @bparrishMines
 packages/**/*_web/**                                     @ditman
 
 # - Android
-packages/camera/android/**                               @camsim99
-packages/google_maps_flutter/android/**                  @GaryQian
+packages/camera/camera/android/**                        @camsim99
+packages/google_maps_flutter/google_maps_flutter/android/**  @GaryQian
 packages/google_sign_in/google_sign_in_android/**        @camsim99
 packages/image_picker/image_picker_android/**            @GaryQian
 packages/in_app_purchase/in_app_purchase_android/**      @blasten
@@ -24,3 +24,18 @@ packages/path_provider/path_provider_android/**          @camsim99
 packages/quick_actions/quick_actions_android/**          @camsim99
 packages/url_launcher/url_launcher_android/**            @GaryQian
 packages/video_player/video_player_android/**            @blasten
+
+# - iOS
+packages/camera/camera/ios/**                            @hellohuanlin
+packages/google_maps_flutter/google_maps_flutter/ios/**  @cyanglaz
+packages/google_sign_in/google_sign_in_ios/**            @jmagman
+packages/image_picker/image_picker_ios/**                @cyanglaz
+packages/in_app_purchase/in_app_purchase_storekit/**     @cyanglaz
+packages/ios_platform_images/ios/**                      @jmagman
+packages/local_auth/local_auth_ios/**                    @hellohuanlin
+packages/path_provider/path_provider_ios/**              @jmagman
+packages/quick_actions/quick_actions_ios/**              @hellohuanlin
+packages/shared_preferences/shared_preferences_ios/**    @cyanglaz
+packages/url_launcher/url_launcher_ios/**                @jmagman
+packages/video_player/video_player_avfoundation/**       @hellohuanlin
+packages/webview_flutter/webview_flutter_wkwebview/**    @cyanglaz
