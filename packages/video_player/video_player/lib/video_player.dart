@@ -207,7 +207,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource,
-      {this.package, this.closedCaptionFile, this.videoPlayerOptions})
+      {this.package,
+      this.closedCaptionFile,
+      this.videoPlayerOptions,
+      this.updateDuration = const Duration(milliseconds: 500)})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const <String, String>{},
@@ -222,13 +225,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// the video format detection code.
   /// [httpHeaders] option allows to specify HTTP headers
   /// for the request to the [dataSource].
-  VideoPlayerController.network(
-    this.dataSource, {
-    this.formatHint,
-    this.closedCaptionFile,
-    this.videoPlayerOptions,
-    this.httpHeaders = const <String, String>{},
-  })  : dataSourceType = DataSourceType.network,
+  VideoPlayerController.network(this.dataSource,
+      {this.formatHint,
+      this.closedCaptionFile,
+      this.videoPlayerOptions,
+      this.httpHeaders = const <String, String>{},
+      this.updateDuration = const Duration(milliseconds: 500)})
+      : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
 
@@ -237,7 +240,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file,
-      {this.closedCaptionFile, this.videoPlayerOptions})
+      {this.closedCaptionFile,
+      this.videoPlayerOptions,
+      this.updateDuration = const Duration(milliseconds: 500)})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -250,7 +255,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the video from the input content-URI.
   /// This is supported on Android only.
   VideoPlayerController.contentUri(Uri contentUri,
-      {this.closedCaptionFile, this.videoPlayerOptions})
+      {this.closedCaptionFile,
+      this.videoPlayerOptions,
+      this.updateDuration = const Duration(milliseconds: 500)})
       : assert(defaultTargetPlatform == TargetPlatform.android,
             'VideoPlayerController.contentUri is only supported on Android.'),
         dataSource = contentUri.toString(),
@@ -289,6 +296,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This future will be awaited and the file will be loaded when
   /// [initialize()] is called.
   final Future<ClosedCaptionFile>? closedCaptionFile;
+
+  /// The duration between value update notifications.
+  ///
+  /// Defaults to 500 milliseconds
+  final Duration updateDuration;
 
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
@@ -365,6 +377,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
       switch (event.eventType) {
         case VideoEventType.initialized:
+          print('initialized2');
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
@@ -377,6 +390,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyPlayPause();
           break;
         case VideoEventType.completed:
+          print('completed');
           // In this case we need to stop _timer, set isPlaying=false, and
           // position=value.duration. Instead of setting the values directly,
           // we use pause() and seekTo() to ensure the platform stops playing
@@ -478,7 +492,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       // Cancel previous timer.
       _timer?.cancel();
       _timer = Timer.periodic(
-        const Duration(milliseconds: 500),
+        updateDuration,
         (Timer timer) async {
           if (_isDisposed) {
             return;
