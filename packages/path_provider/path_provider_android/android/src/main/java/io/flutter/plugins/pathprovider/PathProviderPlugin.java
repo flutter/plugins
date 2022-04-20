@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.pathprovider;
 
-import static io.flutter.plugin.common.MethodChannel.*;
 import static io.flutter.plugin.common.BinaryMessenger.*;
+import static io.flutter.plugin.common.MethodChannel.*;
 
 import android.content.Context;
 import android.os.Build.VERSION;
@@ -22,8 +22,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.*;
 import io.flutter.util.PathUtils;
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -154,8 +152,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     TaskQueue taskQueue = messenger.makeBackgroundTaskQueue();
 
     try {
-      channel =
-          (MethodChannel) new MethodChannel(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
+      channel = (MethodChannel) new MethodChannel(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
       impl = new PathProviderBackgroundThread();
     } catch (Exception ex) {
       Log.e(TAG, "Received exception while setting up PathProviderPlugin", ex);
