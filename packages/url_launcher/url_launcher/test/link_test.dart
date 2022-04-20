@@ -58,8 +58,8 @@ void main() {
           useSafariVC: false,
           useWebView: false,
           universalLinksOnly: false,
-          enableJavaScript: false,
-          enableDomStorage: false,
+          enableJavaScript: true,
+          enableDomStorage: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
         )
@@ -88,8 +88,8 @@ void main() {
           useSafariVC: true,
           useWebView: true,
           universalLinksOnly: false,
-          enableJavaScript: false,
-          enableDomStorage: false,
+          enableJavaScript: true,
+          enableDomStorage: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
         )
