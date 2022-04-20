@@ -1,3 +1,7 @@
+## 2.3.3
+
+ Adds optional updateDuration parameter.
+
 ## 2.3.2
 
 * Applies the standardized transform for videos with different orientations.
