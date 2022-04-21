@@ -4,9 +4,6 @@
 
 package io.flutter.plugins.pathprovider;
 
-import static io.flutter.plugin.common.BinaryMessenger.*;
-import static io.flutter.plugin.common.MethodChannel.*;
-
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -19,7 +16,14 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.*;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.BinaryMessenger.TaskQueue;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.MethodCodec;
+import io.flutter.plugin.common.StandardMethodCodec;
 import io.flutter.util.PathUtils;
 import java.io.File;
 import java.util.ArrayList;
