@@ -55,6 +55,7 @@
 @property(strong, nonatomic) AVAssetWriterInputPixelBufferAdaptor *assetWriterPixelBufferAdaptor;
 @property(strong, nonatomic) AVCaptureVideoDataOutput *videoOutput;
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
+@property(strong, nonatomic) AVCaptureMetadataOutput *metadataOutput;
 @property(strong, nonatomic) NSString *videoRecordingPath;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isRecordingPaused;
@@ -162,17 +163,12 @@ NSString *const qrDetected = @"qrCodeDetected";
     connection.videoMirrored = YES;
   }
 
-    AVCaptureMetadataOutput* metadataOutput = [[AVCaptureMetadataOutput alloc] init];
-    [metadataOutput setMetadataObjectsDelegate:self queue:_captureSessionQueue];
+    _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+    [_metadataOutput setMetadataObjectsDelegate:self queue:_captureSessionQueue];
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
-  [_captureSession addConnection:connection];
-    if ([_captureSession canAddOutput:metadataOutput]) {
-        [_captureSession addOutput:metadataOutput];
-    }
-    metadataOutput.metadataObjectTypes = @[
-                                   AVMetadataObjectTypeQRCode
-                                   ];
+    [_captureSession addConnection:connection];
+    [self enableQRDetection:YES];
 
   if (@available(iOS 10.0, *)) {
     _capturePhotoOutput = [AVCapturePhotoOutput new];
@@ -194,6 +190,7 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
     if(_isStreamingImages) {
         AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
         if(metadata) {
+            [self enableQRDetection:NO];
             [_metadataMethodChannel invokeMethod:qrDetected
                                arguments:@{
                 @"qr_info" :
@@ -202,6 +199,19 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
                     @"corners" : metadata.corners,
             }}];
         }
+    }
+}
+
+- (void)enableQRDetection:(BOOL)enable {
+    if(enable) {
+        if ([_captureSession canAddOutput:_metadataOutput]) {
+            [_captureSession addOutput:_metadataOutput];
+            _metadataOutput.metadataObjectTypes = @[
+                                           AVMetadataObjectTypeQRCode
+                                           ];
+        }
+    } else {
+        [_captureSession removeOutput:_metadataOutput];
     }
 }
 

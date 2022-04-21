@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)applyFocusMode;
+- (void)enableQRDetection:(BOOL)enable;
 
 /**
  * Acknowledges the receipt of one image stream frame.

@@ -274,6 +274,10 @@
       [_camera pausePreviewWithResult:result];
     } else if ([@"resumePreview" isEqualToString:call.method]) {
       [_camera resumePreviewWithResult:result];
+    } else if ([@"startQRDetection" isEqualToString:call.method]) {
+        [_camera enableQRDetection:YES];
+    } else if ([@"stopQRDetection" isEqualToString:call.method]) {
+        [_camera enableQRDetection:NO];
     } else {
       [result sendNotImplemented];
     }
