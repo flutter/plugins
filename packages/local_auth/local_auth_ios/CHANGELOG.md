@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Adopts `Object.hash`.
+
 ## 1.0.2
 
 * Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
@@ -8,4 +12,4 @@
 
 ## 1.0.0
 
-* Initial release from migration to federated architecture. 
+* Initial release from migration to federated architecture.
