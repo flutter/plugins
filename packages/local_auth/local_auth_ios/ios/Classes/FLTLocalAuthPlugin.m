@@ -181,6 +181,7 @@
       case LAErrorTouchIDNotAvailable:
       case LAErrorTouchIDNotEnrolled:
       case LAErrorTouchIDLockout:
+      case LAErrorUserFallback:
         [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
         return;
       case LAErrorSystemCancel:

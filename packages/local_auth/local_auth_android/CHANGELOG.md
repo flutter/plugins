@@ -4,7 +4,8 @@
   Present biometrics that are not enrolled are no longer returned.
 * `getEnrolledBiometrics` now only returns `weak` and `strong` biometric types.   
 * `deviceSupportsBiometrics` now returns the correct value regardless of enrollment state.
+* Adopts `Object.hash`.
 
 ## 1.0.0
 
-* Initial release from migration to federated architecture. 
+* Initial release from migration to federated architecture.
