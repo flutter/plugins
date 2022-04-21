@@ -22,7 +22,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCodec;
 import io.flutter.plugin.common.StandardMethodCodec;
 import io.flutter.util.PathUtils;
 import java.io.File;
