@@ -72,6 +72,11 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   void setCaptionOffset(Duration delay) {}
+
+  @override
+  Future<void> setClosedCaptionFile(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -671,6 +676,37 @@ void main() {
 
         await controller.seekTo(const Duration(milliseconds: 300));
         expect(controller.value.caption.text, 'one');
+      });
+
+      test('setClosedCapitonFile loads caption file', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+
+        await controller.initialize();
+        expect(controller.closedCaptionFile, null);
+
+        await controller.setClosedCaptionFile(_loadClosedCaption());
+        expect(
+          (await controller.closedCaptionFile)!.captions,
+          (await _loadClosedCaption()).captions,
+        );
+      });
+
+      test('setClosedCapitonFile removes/changes caption file', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          closedCaptionFile: _loadClosedCaption(),
+        );
+
+        await controller.initialize();
+        expect(
+          (await controller.closedCaptionFile)!.captions,
+          (await _loadClosedCaption()).captions,
+        );
+
+        await controller.setClosedCaptionFile(null);
+        expect(controller.closedCaptionFile, null);
       });
     });
 
