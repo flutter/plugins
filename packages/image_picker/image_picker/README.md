@@ -53,7 +53,7 @@ import 'package:image_picker/image_picker.dart';
     // Capture a photo
     final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
     // Pick a video
-    final XFile? image = await _picker.pickVideo(source: ImageSource.gallery);
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
     // Capture a video
     final XFile? video = await _picker.pickVideo(source: ImageSource.camera);
     // Pick multiple images
