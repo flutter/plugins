@@ -72,6 +72,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   void setCaptionOffset(Duration delay) {}
+
+  @override
+  Duration get updateDuration => const Duration(milliseconds: 500);
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
