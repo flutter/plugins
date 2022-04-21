@@ -251,7 +251,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   private void deviceSupportsBiometrics(final Result result) {
-      result.success(hasBiometricHardware());
+    result.success(hasBiometricHardware());
   }
 
   /*
