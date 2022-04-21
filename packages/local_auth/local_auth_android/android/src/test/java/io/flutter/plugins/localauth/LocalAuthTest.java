@@ -103,7 +103,7 @@ public class LocalAuthTest {
   }
 
   @Test
-  public void getEnrolledBiometrics_shouldReturnUndefined_withNoMethodsEnrolled() {
+  public void getEnrolledBiometrics_shouldReturnEmptyList_withNoMethodsEnrolled() {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     setPluginActivity(plugin, buildMockActivity());
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
@@ -113,13 +113,7 @@ public class LocalAuthTest {
     plugin.setBiometricManager(mockBiometricManager);
 
     plugin.onMethodCall(new MethodCall("getEnrolledBiometrics", null), mockResult);
-    verify(mockResult)
-        .success(
-            new ArrayList<String>() {
-              {
-                add("undefined");
-              }
-            });
+    verify(mockResult).success(Collections.emptyList());
   }
 
   @Test
