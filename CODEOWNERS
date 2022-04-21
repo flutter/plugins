@@ -5,7 +5,10 @@
 # reviewed by someone else.
 
 # Plugin-level rules.
-packages/webview_flutter/**                    @bparrishMines
+packages/path_provider/**                                @gaaclarke
+packages/shared_preferences/**                           @gaaclarke
+packages/video_player/**                                 @gaaclarke
+packages/webview_flutter/**                              @bparrishMines
 
 # Sub-package-level rules. These should stay last, since the last matching
 # entry takes precedence.
