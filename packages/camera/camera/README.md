@@ -85,7 +85,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
-List<CameraDescription> cameras;
+List<CameraDescription> cameras = <CameraDescription>[];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,7 +100,7 @@ class CameraApp extends StatefulWidget {
 }
 
 class _CameraAppState extends State<CameraApp> {
-  CameraController controller;
+  late CameraController controller;
 
   @override
   void initState() {
@@ -116,7 +116,7 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
