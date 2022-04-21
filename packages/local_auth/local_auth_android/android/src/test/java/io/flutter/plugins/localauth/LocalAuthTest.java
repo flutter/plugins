@@ -6,6 +6,7 @@ package io.flutter.plugins.localauth;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,50 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     plugin.onMethodCall(new MethodCall("isDeviceSupported", null), mockResult);
+    verify(mockResult).success(false);
+  }
+
+  @Test
+  public void deviceSupportsBiometrics_returnsTrueForPresentNonEnrolledBiometrics() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
+    when(mockBiometricManager.canAuthenticate())
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+    plugin.setBiometricManager(mockBiometricManager);
+    plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
+    verify(mockResult).success(true);
+  }
+
+  @Test
+  public void deviceSupportsBiometrics_returnsTrueForPresentEnrolledBiometrics() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
+    when(mockBiometricManager.canAuthenticate()).thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
+    plugin.setBiometricManager(mockBiometricManager);
+    plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
+    verify(mockResult).success(true);
+  }
+
+  @Test
+  public void deviceSupportsBiometrics_returnsFalseForNoBiometricHardware() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
+    when(mockBiometricManager.canAuthenticate())
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
+    plugin.setBiometricManager(mockBiometricManager);
+    plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
+    verify(mockResult).success(false);
+  }
+
+  @Test
+  public void deviceSupportsBiometrics_returnsFalseForNullBiometricManager() {
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    plugin.setBiometricManager(null);
+    plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
     verify(mockResult).success(false);
   }
 
@@ -94,7 +139,7 @@ public class LocalAuthTest {
     setPluginActivity(plugin, buildMockActivity());
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate())
+    when(mockBiometricManager.canAuthenticate(anyInt()))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
     plugin.setBiometricManager(mockBiometricManager);
 
@@ -108,7 +153,7 @@ public class LocalAuthTest {
     setPluginActivity(plugin, buildMockActivity());
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate())
+    when(mockBiometricManager.canAuthenticate(anyInt()))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
     plugin.setBiometricManager(mockBiometricManager);
 

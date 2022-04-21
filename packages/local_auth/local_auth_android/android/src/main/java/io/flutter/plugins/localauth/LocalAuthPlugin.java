@@ -275,11 +275,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     if (activity == null || activity.isFinishing()) {
       return biometrics;
     }
-    // If no hardware is present, or no biometrics are enrolled, an empty list is returned.
-    if (!canAuthenticateWithBiometrics()) {
-      return biometrics;
-    }
-    // If there are biometrics enrolled, the available ones are returned.
     if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
         == BiometricManager.BIOMETRIC_SUCCESS) {
       biometrics.add("weak");
