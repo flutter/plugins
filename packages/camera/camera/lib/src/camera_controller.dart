@@ -33,6 +33,24 @@ Future<List<CameraDescription>> availableCameras() async {
 // dart:async `unawaited` accepts a nullable future.
 void _unawaited(Future<void>? future) {}
 
+/// This will start the qr detection in camera plugin
+Future<void> startQRDetection() async {
+  try {
+    await _channel.invokeMethod<void>('startQRDetection');
+  } on PlatformException catch (e) {
+    throw CameraException(e.code, e.message);
+  }
+}
+
+/// This will stop the qr detection in camera plugin
+Future<void> stopQRDetection() async {
+  try {
+    await _channel.invokeMethod<void>('stopQRDetection');
+  } on PlatformException catch (e) {
+    throw CameraException(e.code, e.message);
+  }
+}
+
 /// The state of a [CameraController].
 class CameraValue {
   /// Creates a new camera controller state.

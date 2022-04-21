@@ -36,7 +36,8 @@
 @end
 
 @interface FLTCam () <AVCaptureVideoDataOutputSampleBufferDelegate,
-                      AVCaptureAudioDataOutputSampleBufferDelegate>
+                      AVCaptureAudioDataOutputSampleBufferDelegate,
+                      AVCaptureMetadataOutputObjectsDelegate>
 
 @property(readonly, nonatomic) int64_t textureId;
 @property BOOL enableAudio;
@@ -54,6 +55,7 @@
 @property(strong, nonatomic) AVAssetWriterInputPixelBufferAdaptor *assetWriterPixelBufferAdaptor;
 @property(strong, nonatomic) AVCaptureVideoDataOutput *videoOutput;
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
+@property(strong, nonatomic) AVCaptureMetadataOutput *metadataOutput;
 @property(strong, nonatomic) NSString *videoRecordingPath;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isRecordingPaused;
@@ -88,6 +90,7 @@
 @implementation FLTCam
 
 NSString *const errorMethod = @"error";
+NSString *const qrDetected = @"qrCodeDetected";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -137,7 +140,6 @@ NSString *const errorMethod = @"error";
   // After some testing, 4 was determined to be the best maximum value.
   // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
   _maxStreamingPendingFramesCount = 4;
-
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
@@ -161,10 +163,11 @@ NSString *const errorMethod = @"error";
     connection.videoMirrored = YES;
   }
 
+    _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+    [_metadataOutput setMetadataObjectsDelegate:self queue:_captureSessionQueue];
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
-  [_captureSession addConnection:connection];
-
+    [_captureSession addConnection:connection];
   if (@available(iOS 10.0, *)) {
     _capturePhotoOutput = [AVCapturePhotoOutput new];
     [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
@@ -177,6 +180,36 @@ NSString *const errorMethod = @"error";
   [self updateOrientation];
 
   return self;
+}
+
+- (void)captureOutput:(AVCaptureOutput *)output
+didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
+       fromConnection:(AVCaptureConnection *)connection {
+    if(_isStreamingImages) {
+        AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
+        if(metadata) {
+            [_metadataMethodChannel invokeMethod:qrDetected
+                               arguments:@{
+                @"qr_info" :
+                @{
+                    @"string" : metadata.stringValue,
+                    @"corners" : metadata.corners,
+            }}];
+        }
+    }
+}
+
+- (void)enableQRDetection:(BOOL)enable {
+    if(enable) {
+        if ([_captureSession canAddOutput:_metadataOutput]) {
+            [_captureSession addOutput:_metadataOutput];
+            _metadataOutput.metadataObjectTypes = @[
+                                           AVMetadataObjectTypeQRCode
+                                           ];
+        }
+    } else {
+        [_captureSession removeOutput:_metadataOutput];
+    }
 }
 
 - (void)start {
@@ -455,7 +488,6 @@ NSString *const errorMethod = @"error";
       // Lock the base address before accessing pixel data, and unlock it afterwards.
       // Done accessing the `pixelBuffer` at this point.
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
       imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
       imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];

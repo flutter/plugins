@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic) BOOL isPreviewPaused;
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
 @property(nonatomic) FLTThreadSafeMethodChannel *methodChannel;
+@property(nonatomic) FLTThreadSafeMethodChannel *metadataMethodChannel;
 @property(assign, nonatomic) FLTResolutionPreset resolutionPreset;
 @property(assign, nonatomic) FLTExposureMode exposureMode;
 @property(assign, nonatomic) FLTFocusMode focusMode;
@@ -60,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)setFocusModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr;
 - (void)applyFocusMode;
+- (void)enableQRDetection:(BOOL)enable;
 
 /**
  * Acknowledges the receipt of one image stream frame.
