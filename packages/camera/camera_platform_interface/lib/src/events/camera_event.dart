@@ -118,7 +118,7 @@ class CameraInitializedEvent extends CameraEvent {
 
   @override
   int get hashCode => Object.hash(
-        super,
+        super.hashCode,
         previewWidth,
         previewHeight,
         exposureMode,

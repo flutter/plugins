@@ -66,7 +66,7 @@ class IOSAuthMessages extends AuthMessages {
 
   @override
   int get hashCode => Object.hash(
-        super,
+        super.hashCode,
         lockOut,
         goToSettingsButton,
         goToSettingsDescription,

@@ -111,7 +111,7 @@ class AndroidAuthMessages extends AuthMessages {
 
   @override
   int get hashCode => Object.hash(
-      super,
+      super.hashCode,
       biometricHint,
       biometricNotRecognized,
       biometricRequiredTitle,
