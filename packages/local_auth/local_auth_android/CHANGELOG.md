@@ -1,7 +1,8 @@
 ## 1.0.1
 
-* Fix getEnrolledBiometrics to be in line with iOS implementation:
+* Fixes `getEnrolledBiometrics` to match documented behaviour: 
   Present biometrics that are not enrolled are no longer returned.
+* `getEnrolledBiometrics` now only returns `weak` and `strong` biometric types.   
 
 ## 1.0.0
 
