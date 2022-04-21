@@ -168,8 +168,6 @@ NSString *const qrDetected = @"qrCodeDetected";
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
     [_captureSession addConnection:connection];
-    [self enableQRDetection:YES];
-
   if (@available(iOS 10.0, *)) {
     _capturePhotoOutput = [AVCapturePhotoOutput new];
     [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
@@ -190,7 +188,6 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
     if(_isStreamingImages) {
         AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
         if(metadata) {
-            [self enableQRDetection:NO];
             [_metadataMethodChannel invokeMethod:qrDetected
                                arguments:@{
                 @"qr_info" :
