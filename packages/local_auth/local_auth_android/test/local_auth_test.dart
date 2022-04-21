@@ -34,13 +34,13 @@ void main() {
       log.clear();
     });
 
-    test('deviceSupportsBiometrics calls getEnrolledBiometrics', () async {
+    test('deviceSupportsBiometrics calls platform', () async {
       final bool result = await localAuthentication.deviceSupportsBiometrics();
 
       expect(
         log,
         <Matcher>[
-          isMethodCall('getEnrolledBiometrics', arguments: null),
+          isMethodCall('deviceSupportsBiometrics', arguments: null),
         ],
       );
       expect(result, true);

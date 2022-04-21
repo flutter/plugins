@@ -49,7 +49,7 @@ class LocalAuthAndroid extends LocalAuthPlatform {
 
   @override
   Future<bool> deviceSupportsBiometrics() async {
-    return (await getEnrolledBiometrics()).isNotEmpty;
+    return (await _channel.invokeMethod<bool>('deviceSupportsBiometrics')) ?? false;
   }
 
   @override
@@ -66,8 +66,6 @@ class LocalAuthAndroid extends LocalAuthPlatform {
           break;
         case 'strong':
           biometrics.add(BiometricType.strong);
-          break;
-        case 'undefined':
           break;
       }
     }

@@ -109,6 +109,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       case "stopAuthentication":
         stopAuthentication(result);
         break;
+      case "deviceSupportsBiometrics":
+        deviceSupportsBiometrics(result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -247,8 +250,12 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
   }
 
+  private void deviceSupportsBiometrics(final Result result) {
+      result.success(hasBiometricHardware());
+  }
+
   /*
-   * Returns biometric types available on device
+   * Returns enrolled biometric types available on device.
    */
   private void getEnrolledBiometrics(final Result result) {
     try {
@@ -268,13 +275,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     if (activity == null || activity.isFinishing()) {
       return biometrics;
     }
-    // If no hardware is present, an empty list is returned.
-    if (!hasBiometricHardware()) {
-      return biometrics;
-    }
-    // If no biometrics are enrolled, only "undefined" is returned.
+    // If no hardware is present, or no biometrics are enrolled, an empty list is returned.
     if (!canAuthenticateWithBiometrics()) {
-      biometrics.add("undefined");
       return biometrics;
     }
     // If there are biometrics enrolled, the available ones are returned.
