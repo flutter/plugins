@@ -1,0 +1,154 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:io' as io;
+
+import 'package:file/file.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:platform/platform.dart';
+
+import 'common/package_looping_command.dart';
+import 'common/process_runner.dart';
+import 'common/repository_package.dart';
+
+/// A command to update README code snippets from code files.
+class UpdateSnippetsCommand extends PackageLoopingCommand {
+  /// Creates a custom test command instance.
+  UpdateSnippetsCommand(
+    Directory packagesDir, {
+    ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
+    argParser.addFlag(_failOnChangeFlag, hide: true);
+  }
+
+  static const String _failOnChangeFlag = 'fail-on-change';
+
+  static const String _buildRunnerConfigName = 'excerpt';
+  // The name of the build_runner configuration file that will be in an example
+  // directory if the package is set up to use `code-excerpt`.
+  static const String _buildRunnerConfigFile =
+      'build.$_buildRunnerConfigName.yaml';
+
+  // The relative directory path to put the extracted snippet yaml files.
+  static const String _snippetOutputDir = 'snippets';
+
+  @override
+  final String name = 'update-snippets';
+
+  @override
+  final String description = 'Updates code snippets in README.md files, based '
+      'on code from code files, via code-excerpt';
+
+  @override
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
+    final Iterable<RepositoryPackage> configuredExamples = package
+        .getExamples()
+        .where((RepositoryPackage example) =>
+            example.directory.childFile(_buildRunnerConfigFile).existsSync());
+
+    if (configuredExamples.isEmpty) {
+      return PackageResult.skip(
+          'No $_buildRunnerConfigFile found in example(s).');
+    }
+
+    for (final RepositoryPackage example in configuredExamples) {
+      // Ensure that dependencies are available.
+      final int pubGetExitCode = await processRunner.runAndStream(
+          'dart', <String>['pub', 'get'],
+          workingDir: example.directory);
+      if (pubGetExitCode != 0) {
+        return PackageResult.fail(
+            <String>['Unable to get script dependencies']);
+      }
+
+      // Update the snippets.
+      if (!await _extractSnippets(example)) {
+        return PackageResult.fail(<String>['Unable to extract snippets']);
+      }
+      if (!await _injectSnippets(example, targetPackage: package)) {
+        return PackageResult.fail(<String>['Unable to inject snippets']);
+      }
+
+      // Clean up the extracted snippets directory.
+      final Directory snippetDirectory =
+          example.directory.childDirectory(_snippetOutputDir);
+      if (snippetDirectory.existsSync()) {
+        snippetDirectory.deleteSync(recursive: true);
+      }
+    }
+
+    if (getBoolArg(_failOnChangeFlag)) {
+      final String? stateError = await _validateRepositoryState();
+      if (stateError != null) {
+        printError('README.md is out of sync with its source snippets.\n\n'
+            'If you edited code in README.md directly, you should instead edit '
+            'the example source files. If you edited source files, run the '
+            'repository tooling\'s "$name" command on this package, and update '
+            'your PR with the resulting changes.');
+        return PackageResult.fail(<String>[stateError]);
+      }
+    }
+
+    return PackageResult.success();
+  }
+
+  /// Runs the extraction step to create the snippet files for the given
+  /// example, returning true on success.
+  Future<bool> _extractSnippets(RepositoryPackage example) async {
+    final int exitCode = await processRunner.runAndStream(
+        'dart',
+        <String>[
+          'run',
+          'build_runner',
+          'build',
+          '--config',
+          _buildRunnerConfigName,
+          '--output',
+          _snippetOutputDir,
+          '--delete-conflicting-outputs',
+        ],
+        workingDir: example.directory);
+    return exitCode == 0;
+  }
+
+  /// Runs the injection step to update [targetPackage]'s README with the latest
+  /// snippets from [example], returning true on success.
+  Future<bool> _injectSnippets(
+    RepositoryPackage example, {
+    required RepositoryPackage targetPackage,
+  }) async {
+    final String relativeReadmePath =
+        getRelativePosixPath(targetPackage.readmeFile, from: example.directory);
+    final int exitCode = await processRunner.runAndStream(
+        'dart',
+        <String>[
+          'run',
+          'code_excerpt_updater',
+          '--write-in-place',
+          '--yaml',
+          '--no-escape-ng-interpolation',
+          relativeReadmePath,
+        ],
+        workingDir: example.directory);
+    return exitCode == 0;
+  }
+
+  /// Checks the git state, returning an error string unless nothing has
+  /// changed.
+  Future<String?> _validateRepositoryState() async {
+    final io.ProcessResult modifiedFiles = await processRunner.run(
+      'git',
+      <String>['ls-files', '--modified'],
+      workingDir: packagesDir,
+      logOnError: true,
+    );
+    if (modifiedFiles.exitCode != 0) {
+      return 'Unable to determine local file state';
+    }
+
+    final String stdout = modifiedFiles.stdout as String;
+    return stdout.trim().isEmpty ? null : 'Snippets are out of sync';
+  }
+}
