@@ -181,7 +181,7 @@ class _MyAppState extends State<MyApp> {
                 const Divider(height: 100),
                 Text('Enrolled biometrics: $_enrolledBiometrics\n'),
                 ElevatedButton(
-                  child: const Text('Get available biometrics'),
+                  child: const Text('Get enrolled biometrics'),
                   onPressed: _getEnrolledBiometrics,
                 ),
                 const Divider(height: 100),
