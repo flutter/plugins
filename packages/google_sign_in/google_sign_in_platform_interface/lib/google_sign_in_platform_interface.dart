@@ -86,7 +86,27 @@ abstract class GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) async {
-    throw UnimplementedError('init() has not been implemented.');
+    await initWithParams(
+      SignInInitParameters(
+        scopes: scopes,
+        signInOption: signInOption,
+        hostedDomain: hostedDomain,
+        clientId: clientId,
+      ),
+    );
+  }
+
+  /// Initializes the plugin. You must call this method before calling other
+  /// methods.
+  ///
+  /// The [params] argument specifies the parameters that will be used to
+  /// initialize the plugin.
+  ///
+  /// See:
+  ///
+  /// * [SignInInitParameters]
+  Future<void> initWithParams(SignInInitParameters params) async {
+    throw UnimplementedError('initWithParams() has not been implemented');
   }
 
   /// Attempts to reuse pre-existing credentials to sign in again, without user interaction.

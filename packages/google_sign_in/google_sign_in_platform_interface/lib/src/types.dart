@@ -22,6 +22,55 @@ enum SignInOption {
   games
 }
 
+/// The parameters to use when initializing the sign in process.
+///
+/// The [hostedDomain] argument specifies a hosted domain restriction. By
+/// setting this, sign in will be restricted to accounts of the user in the
+/// specified domain. By default, the list of accounts will not be restricted.
+///
+/// The list of [scopes] are OAuth scope codes to request when signing in.
+/// These scope codes will determine the level of data access that is granted
+/// to your application by the user. The full list of available scopes can be
+/// found here: <https://developers.google.com/identity/protocols/googlescopes>
+///
+/// The [signInOption] determines the user experience. [SigninOption.games] is
+/// only supported on Android.
+///
+/// The [forceCodeForRefreshToken] is used on Android to ensure the authentication
+/// code can be exchanged for a refresh token after the first request.
+///
+/// See:
+/// https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams
+class SignInInitParameters {
+  /// The parameters to use when initializing the sign in process.
+  SignInInitParameters({
+    this.scopes = const <String>[],
+    this.signInOption = SignInOption.standard,
+    this.hostedDomain,
+    this.clientId,
+    this.forceCodeForRefreshToken = false,
+  });
+
+  /// The list of OAuth scope codes to request when signing in.
+  List<String> scopes;
+
+  /// The user experience to use when signing in. [SignInOption.games] is
+  /// only supported on Android.
+  SignInOption signInOption;
+
+  /// Restricted sign in to accounts of the user in the specified domain.
+  /// By default, the list of accounts will not be restricted.
+  String? hostedDomain;
+
+  /// The client ID to use when signing in.
+  String? clientId;
+
+  /// Ensure the authorization code can be exchanged for an access token.
+  ///
+  /// This is only used on Android.
+  bool forceCodeForRefreshToken;
+}
+
 /// Holds information about the signed in user.
 class GoogleSignInUserData {
   /// Uses the given data to construct an instance.
