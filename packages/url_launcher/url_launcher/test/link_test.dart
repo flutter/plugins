@@ -9,7 +9,7 @@ import 'package:url_launcher/link.dart';
 import 'package:url_launcher/src/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-import 'mock_url_launcher_platform.dart';
+import 'mocks/mock_url_launcher_platform.dart';
 
 void main() {
   late MockUrlLauncher mock;
@@ -58,8 +58,8 @@ void main() {
           useSafariVC: false,
           useWebView: false,
           universalLinksOnly: false,
-          enableJavaScript: false,
-          enableDomStorage: false,
+          enableJavaScript: true,
+          enableDomStorage: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
         )
@@ -88,8 +88,8 @@ void main() {
           useSafariVC: true,
           useWebView: true,
           universalLinksOnly: false,
-          enableJavaScript: false,
-          enableDomStorage: false,
+          enableJavaScript: true,
+          enableDomStorage: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
         )

@@ -1,6 +1,10 @@
+## 0.9.4+21
+
+* Fixes orientation when pausing preview with locked orientation.
+
 ## 0.9.4+20
 
-* Fixes orientation when pausing preview with orientation locked.
+* Fixes an issue with the orientation of videos recorded in landscape on Android.
 
 ## 0.9.4+19
 
