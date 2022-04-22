@@ -1,3 +1,8 @@
+## 0.8.3
+
+- Adds a new `update-snippets` command to maintain README files using the
+  `code-excerpter` package from flutter/site-shared.
+
 ## 0.8.2+1
 
 - Adds a new `readme-check` command.
