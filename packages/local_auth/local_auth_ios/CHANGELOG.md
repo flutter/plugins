@@ -1,6 +1,6 @@
 ## 1.0.4
 
-* Fix `deviceSupportsBiometrics` to return true when biometric hardware 
+* Fixes `deviceSupportsBiometrics` to return true when biometric hardware 
   is available but not enrolled.
 
 ## 1.0.3
