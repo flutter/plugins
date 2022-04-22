@@ -154,7 +154,7 @@ void main() {
           'clientId': 'fakeClientId',
           'forceCodeForRefreshToken': true,
         }),
-      ]); 
+      ]);
     });
   });
 }
