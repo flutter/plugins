@@ -6,9 +6,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+
+import 'types.dart';
+import 'url_launcher_uri.dart';
 
 /// The function used to push routes to the Flutter framework.
 @visibleForTesting
@@ -107,7 +109,8 @@ class DefaultLinkDelegate extends StatelessWidget {
   }
 
   Future<void> _followLink(BuildContext context) async {
-    if (!link.uri!.hasScheme) {
+    final Uri url = link.uri!;
+    if (!url.hasScheme) {
       // A uri that doesn't have a scheme is an internal route name. In this
       // case, we push it via Flutter's navigation system instead of letting the
       // browser handle it.
@@ -116,18 +119,18 @@ class DefaultLinkDelegate extends StatelessWidget {
       return;
     }
 
-    // At this point, we know that the link is external. So we use the `launch`
-    // API to open the link.
-    final String urlString = link.uri.toString();
-    if (await canLaunch(urlString)) {
-      await launch(
-        urlString,
-        forceSafariVC: _useWebView,
-        forceWebView: _useWebView,
+    // At this point, we know that the link is external. So we use the
+    // `launchUrl` API to open the link.
+    if (await canLaunchUrl(url)) {
+      await launchUrl(
+        url,
+        mode: _useWebView
+            ? LaunchMode.inAppWebView
+            : LaunchMode.externalApplication,
       );
     } else {
       FlutterError.reportError(FlutterErrorDetails(
-        exception: 'Could not launch link $urlString',
+        exception: 'Could not launch link ${url.toString()}',
         stack: StackTrace.current,
         library: 'url_launcher',
         context: ErrorDescription('during launching a link'),

@@ -1,8 +1,12 @@
-## 2.3.1 
+## 2.4.1 
+
+* Adds optional updateInterval parameter.
+
+## 2.4.0
 
 * Updates minimum Flutter version to 2.10.
 * Adds OS version support information to README.
-* Adds optional updateInterval parameter.
+* Adds `setClosedCaptionFile` method to `VideoPlayerController`.
 
 ## 2.3.0
 
