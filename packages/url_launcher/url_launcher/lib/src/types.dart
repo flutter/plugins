@@ -14,7 +14,7 @@ enum LaunchMode {
   /// implementation.
   platformDefault,
 
-  /// Loads the URL in an-in web view (e.g., Safari View Controller).
+  /// Loads the URL in an in-app web view (e.g., Safari View Controller).
   inAppWebView,
 
   /// Passes the URL to the OS to be handled by another application.
