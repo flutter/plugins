@@ -1,8 +1,8 @@
-## NEXT
+## 2.3.1 
 
 * Updates minimum Flutter version to 2.10.
 * Adds OS version support information to README.
-* Adds optional updateDuration parameter.
+* Adds optional updateInterval parameter.
 
 ## 2.3.0
 

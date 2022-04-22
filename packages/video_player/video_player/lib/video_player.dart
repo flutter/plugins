@@ -210,7 +210,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       {this.package,
       this.closedCaptionFile,
       this.videoPlayerOptions,
-      this.updateDuration = const Duration(milliseconds: 500)})
+      this.updateInterval = const Duration(milliseconds: 500)})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const <String, String>{},
@@ -230,7 +230,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       this.closedCaptionFile,
       this.videoPlayerOptions,
       this.httpHeaders = const <String, String>{},
-      this.updateDuration = const Duration(milliseconds: 500)})
+      this.updateInterval = const Duration(milliseconds: 500)})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
@@ -242,7 +242,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.file(File file,
       {this.closedCaptionFile,
       this.videoPlayerOptions,
-      this.updateDuration = const Duration(milliseconds: 500)})
+      this.updateInterval = const Duration(milliseconds: 500)})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -257,7 +257,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.contentUri(Uri contentUri,
       {this.closedCaptionFile,
       this.videoPlayerOptions,
-      this.updateDuration = const Duration(milliseconds: 500)})
+      this.updateInterval = const Duration(milliseconds: 500)})
       : assert(defaultTargetPlatform == TargetPlatform.android,
             'VideoPlayerController.contentUri is only supported on Android.'),
         dataSource = contentUri.toString(),
@@ -300,7 +300,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The duration between value update notifications.
   ///
   /// Defaults to 500 milliseconds
-  final Duration updateDuration;
+  final Duration updateInterval;
 
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
@@ -377,7 +377,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
       switch (event.eventType) {
         case VideoEventType.initialized:
-          print('initialized2');
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
@@ -390,7 +389,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyPlayPause();
           break;
         case VideoEventType.completed:
-          print('completed');
           // In this case we need to stop _timer, set isPlaying=false, and
           // position=value.duration. Instead of setting the values directly,
           // we use pause() and seekTo() to ensure the platform stops playing
@@ -492,7 +490,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       // Cancel previous timer.
       _timer?.cancel();
       _timer = Timer.periodic(
-        updateDuration,
+        updateInterval,
         (Timer timer) async {
           if (_isDisposed) {
             return;
