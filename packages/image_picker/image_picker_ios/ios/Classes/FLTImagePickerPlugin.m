@@ -139,9 +139,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       break;
     default:
-      [self returnError:[FlutterError errorWithCode:@"invalid_source"
-                                            message:@"Invalid image source."
-                                            details:nil]];
+      [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
+                                                        message:@"Invalid image source."
+                                                        details:nil]];
       break;
   }
 }
@@ -237,9 +237,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       break;
     default:
-      [self returnError:[FlutterError errorWithCode:@"invalid_source"
-                                            message:@"Invalid video source."
-                                            details:nil]];
+      [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
+                                                        message:@"Invalid video source."
+                                                        details:nil]];
       break;
   }
 }
@@ -254,9 +254,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  */
 - (void)cancelInProgressCall {
   if (self.callContext) {
-    [self returnError:[FlutterError errorWithCode:@"multiple_request"
-                                          message:@"Cancelled by a second request"
-                                          details:nil]];
+    [self sendCallResultWithError:[FlutterError errorWithCode:@"multiple_request"
+                                                      message:@"Cancelled by a second request"
+                                                      details:nil]];
     self.callContext = nil;
   }
 }
@@ -291,7 +291,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     [[self viewControllerWithWindow:nil] presentViewController:cameraErrorAlert
                                                       animated:YES
                                                     completion:nil];
-    [self returnSavedPathList:nil];
+    [self sendCallResultWithSavedPathList:nil];
   }
 }
 
@@ -388,15 +388,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)errorNoCameraAccess:(AVAuthorizationStatus)status {
   switch (status) {
     case AVAuthorizationStatusRestricted:
-      [self returnError:[FlutterError errorWithCode:@"camera_access_restricted"
-                                            message:@"The user is not allowed to use the camera."
-                                            details:nil]];
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"camera_access_restricted"
+                                              message:@"The user is not allowed to use the camera."
+                                              details:nil]];
       break;
     case AVAuthorizationStatusDenied:
     default:
-      [self returnError:[FlutterError errorWithCode:@"camera_access_denied"
-                                            message:@"The user did not allow camera access."
-                                            details:nil]];
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"camera_access_denied"
+                                              message:@"The user did not allow camera access."
+                                              details:nil]];
       break;
   }
 }
@@ -404,15 +406,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)errorNoPhotoAccess:(PHAuthorizationStatus)status {
   switch (status) {
     case PHAuthorizationStatusRestricted:
-      [self returnError:[FlutterError errorWithCode:@"photo_access_restricted"
-                                            message:@"The user is not allowed to use the photo."
-                                            details:nil]];
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"photo_access_restricted"
+                                              message:@"The user is not allowed to use the photo."
+                                              details:nil]];
       break;
     case PHAuthorizationStatusDenied:
     default:
-      [self returnError:[FlutterError errorWithCode:@"photo_access_denied"
-                                            message:@"The user did not allow photo access."
-                                            details:nil]];
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"photo_access_denied"
+                                              message:@"The user did not allow photo access."
+                                              details:nil]];
       break;
   }
 }
@@ -445,7 +449,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-  [self returnSavedPathList:nil];
+  [self sendCallResultWithSavedPathList:nil];
 }
 
 #pragma mark - PHPickerViewControllerDelegate
@@ -454,7 +458,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
   if (results.count == 0) {
-    [self returnSavedPathList:nil];
+    [self sendCallResultWithSavedPathList:nil];
     return;
   }
   dispatch_queue_t backgroundQueue =
@@ -481,7 +485,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     }
     [operationQueue waitUntilAllOperationsAreFinished];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self returnSavedPathList:pathList];
+      [self sendCallResultWithSavedPathList:pathList];
     });
   });
 }
@@ -529,16 +533,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
           [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:&error];
 
           if (error) {
-            [self returnError:[FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
-                                                  message:@"Could not cache the video file."
-                                                  details:nil]];
+            [self sendCallResultWithError:[FlutterError
+                                              errorWithCode:@"flutter_image_picker_copy_video_error"
+                                                    message:@"Could not cache the video file."
+                                                    details:nil]];
             return;
           }
         }
         videoURL = destination;
       }
     }
-    [self returnSavedPathList:@[ videoURL.path ]];
+    [self sendCallResultWithSavedPathList:@[ videoURL.path ]];
   } else {
     UIImage *image = info[UIImagePickerControllerEditedImage];
     if (image == nil) {
@@ -580,7 +585,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
   [picker dismissViewControllerAnimated:YES completion:nil];
-  [self returnSavedPathList:nil];
+  [self sendCallResultWithSavedPathList:nil];
 }
 
 #pragma mark -
@@ -596,7 +601,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxWidth:maxWidth
                                                          maxHeight:maxHeight
                                                       imageQuality:imageQuality];
-  [self returnSavedPathList:@[ savedPath ]];
+  [self sendCallResultWithSavedPathList:@[ savedPath ]];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
@@ -605,16 +610,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                         image:image
                                                                  imageQuality:imageQuality];
-  [self returnSavedPathList:@[ savedPath ]];
+  [self sendCallResultWithSavedPathList:@[ savedPath ]];
 }
 
-/**
- * Validates the provided paths list, then returns it as the result of the original method call,
- * clearing the in-progress call state.
- *
- * @param pathList The paths to return. nil indicates a cancelled operation.
- */
-- (void)returnSavedPathList:(nullable NSArray *)pathList {
+- (void)sendCallResultWithSavedPathList:(nullable NSArray *)pathList {
   if (!self.callContext) {
     return;
   }
@@ -630,12 +629,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Returns the given error as the result of the original method call, clearing the in-progress
- * call state.
+ * Sends the given error via `callContext.result` as the result of the original platform channel
+ * method call, clearing the in-progress call state.
  *
  * @param error The error to return.
  */
-- (void)returnError:(FlutterError *)error {
+- (void)sendCallResultWithError:(FlutterError *)error {
   if (!self.callContext) {
     return;
   }

@@ -59,12 +59,12 @@ typedef void (^FlutterResultAdapter)(NSArray<NSString *> *_Nullable, FlutterErro
 @property(strong, nonatomic, nullable) FLTImagePickerMethodCallContext *callContext;
 
 /**
- * Validates the provided paths list, then returns it as the result of the original method call,
- * clearing the in-progress call state.
+ * Validates the provided paths list, then sends it via `callContext.result` as the result of the
+ * original platform channel method call, clearing the in-progress call state.
  *
- * @param pathList The paths to return. Nil is allowed to indicated a cancelled operation.
+ * @param pathList The paths to return. nil indicates a cancelled operation.
  */
-- (void)returnSavedPathList:(nullable NSArray *)pathList;
+- (void)sendCallResultWithSavedPathList:(nullable NSArray *)pathList;
 
 /**
  * Tells the delegate that the user cancelled the pick operation.

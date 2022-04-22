@@ -237,7 +237,7 @@
         pickImageResult = error;
         dispatch_semaphore_signal(resultSemaphore);
       }];
-  [plugin returnSavedPathList:@[ [NSNull null] ]];
+  [plugin sendCallResultWithSavedPathList:@[ [NSNull null] ]];
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
@@ -256,7 +256,7 @@
         pickImageResult = result;
         dispatch_semaphore_signal(resultSemaphore);
       }];
-  [plugin returnSavedPathList:pathList];
+  [plugin sendCallResultWithSavedPathList:pathList];
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
