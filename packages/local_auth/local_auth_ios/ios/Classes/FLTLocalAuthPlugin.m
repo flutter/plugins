@@ -108,23 +108,22 @@
   }
   // If not, check if it is because no biometrics are enrolled (but still present).
   if (authError != nil) {
-      if (@available(iOS 11.0.1, *)) {
-        if (authError.code == LAErrorBiometryNotEnrolled) {
-          result(@YES);
-          return;
-        }
+    if (@available(iOS 11.0.1, *)) {
+      if (authError.code == LAErrorBiometryNotEnrolled) {
+        result(@YES);
+        return;
       }
+    }
     if (authError.code == LAErrorTouchIDNotEnrolled) {
       result(@YES);
       return;
     }
-    
   }
 
   result(@NO);
 }
 
-- (void)getEnrolledBiometrics:(FlutterResult)result  {
+- (void)getEnrolledBiometrics:(FlutterResult)result {
   LAContext *context = self.createAuthContext;
   NSError *authError = nil;
   NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
