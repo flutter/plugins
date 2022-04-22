@@ -25,14 +25,11 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) {
-    return initWithParams(
-      SignInInitParameters(
+    return initWithParams(SignInInitParameters(
         scopes: scopes,
         signInOption: signInOption,
         hostedDomain: hostedDomain,
-        clientId: clientId
-      )
-    );
+        clientId: clientId));
   }
 
   @override
