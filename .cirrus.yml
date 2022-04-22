@@ -6,6 +6,7 @@ only_if: $CIRRUS_TAG == ''
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
+  CIRRUS_CLONE_SUBMODULES: true # Used for code-excerpter, which isn't published.
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
@@ -155,6 +156,8 @@ task:
       analyze_script:
         - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
         - echo "If this test fails, the minumum Flutter version should be updated"
+    - name: readme_snippets
+      script: ./script/tool_runner.sh update-snippets --fail-on-change
     ### Web tasks ###
     - name: web-build_all_plugins
       env:
