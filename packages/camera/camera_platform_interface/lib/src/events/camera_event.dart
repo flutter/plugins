@@ -117,14 +117,15 @@ class CameraInitializedEvent extends CameraEvent {
           focusPointSupported == other.focusPointSupported;
 
   @override
-  int get hashCode =>
-      super.hashCode ^
-      previewWidth.hashCode ^
-      previewHeight.hashCode ^
-      exposureMode.hashCode ^
-      exposurePointSupported.hashCode ^
-      focusMode.hashCode ^
-      focusPointSupported.hashCode;
+  int get hashCode => Object.hash(
+        super.hashCode,
+        previewWidth,
+        previewHeight,
+        exposureMode,
+        exposurePointSupported,
+        focusMode,
+        focusPointSupported,
+      );
 }
 
 /// An event fired when the resolution preset of the camera has changed.
@@ -171,8 +172,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
           captureHeight == other.captureHeight;
 
   @override
-  int get hashCode =>
-      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
+  int get hashCode => Object.hash(super.hashCode, captureWidth, captureHeight);
 }
 
 /// An event fired when the camera is going to close.
@@ -239,7 +239,7 @@ class CameraErrorEvent extends CameraEvent {
           description == other.description;
 
   @override
-  int get hashCode => super.hashCode ^ description.hashCode;
+  int get hashCode => Object.hash(super.hashCode, description);
 }
 
 /// An event fired when a video has finished recording.
@@ -284,6 +284,5 @@ class VideoRecordedEvent extends CameraEvent {
           maxVideoDuration == other.maxVideoDuration;
 
   @override
-  int get hashCode =>
-      super.hashCode ^ file.hashCode ^ maxVideoDuration.hashCode;
+  int get hashCode => Object.hash(super.hashCode, file, maxVideoDuration);
 }

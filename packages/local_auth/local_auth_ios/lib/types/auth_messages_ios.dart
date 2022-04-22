@@ -65,12 +65,14 @@ class IOSAuthMessages extends AuthMessages {
           localizedFallbackTitle == other.localizedFallbackTitle;
 
   @override
-  int get hashCode =>
-      lockOut.hashCode ^
-      goToSettingsButton.hashCode ^
-      goToSettingsDescription.hashCode ^
-      cancelButton.hashCode ^
-      localizedFallbackTitle.hashCode;
+  int get hashCode => Object.hash(
+        super.hashCode,
+        lockOut,
+        goToSettingsButton,
+        goToSettingsDescription,
+        cancelButton,
+        localizedFallbackTitle,
+      );
 }
 
 // Default Strings for IOSAuthMessages plugin. Currently supports English.
