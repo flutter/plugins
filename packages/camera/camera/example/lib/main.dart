@@ -106,6 +106,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     super.dispose();
   }
 
+  // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -121,6 +122,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(cameraController.description);
     }
   }
+  // #enddocregion AppLifecycle
 
   @override
   Widget build(BuildContext context) {
