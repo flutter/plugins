@@ -206,13 +206,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The name of the asset is given by the [dataSource] argument and must not be
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
-  VideoPlayerController.asset(
-    this.dataSource, {
-    this.package,
-    this.videoPlayerOptions,
-    this.updateInterval = const Duration(milliseconds: 500),
-    Future<ClosedCaptionFile>? closedCaptionFile,
-  })  : _closedCaptionFileFuture = closedCaptionFile,
+  VideoPlayerController.asset(this.dataSource,
+      {this.package,
+      Future<ClosedCaptionFile>? closedCaptionFile,
+      this.videoPlayerOptions,
+      this.updateInterval = const Duration(milliseconds: 500)})
+      : _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const <String, String>{},
@@ -243,12 +242,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(
-    File file, {
-    Future<ClosedCaptionFile>? closedCaptionFile,
-    this.videoPlayerOptions,
-    this.updateInterval = const Duration(milliseconds: 500),
-  })  : _closedCaptionFileFuture = closedCaptionFile,
+  VideoPlayerController.file(File file,
+      {Future<ClosedCaptionFile>? closedCaptionFile,
+      this.videoPlayerOptions,
+      this.updateInterval = const Duration(milliseconds: 500)})
+      : _closedCaptionFileFuture = closedCaptionFile,
         dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -260,12 +258,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the video from the input content-URI.
   /// This is supported on Android only.
-  VideoPlayerController.contentUri(
-    Uri contentUri, {
-    Future<ClosedCaptionFile>? closedCaptionFile,
-    this.videoPlayerOptions,
-    this.updateInterval = const Duration(milliseconds: 500),
-  })  : assert(defaultTargetPlatform == TargetPlatform.android,
+  VideoPlayerController.contentUri(Uri contentUri,
+      {Future<ClosedCaptionFile>? closedCaptionFile,
+      this.videoPlayerOptions,
+      this.updateInterval = const Duration(milliseconds: 500)})
+      : assert(defaultTargetPlatform == TargetPlatform.android,
             'VideoPlayerController.contentUri is only supported on Android.'),
         _closedCaptionFileFuture = closedCaptionFile,
         dataSource = contentUri.toString(),
