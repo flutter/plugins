@@ -38,7 +38,7 @@ import 'types.dart';
 /// Default behaviour when unset is to open the url in a new tab.
 ///
 /// Returns true if the URL was launched successful, otherwise either returns
-/// false` or throws a [PlatformException] depending on the failure.
+/// false or throws a [PlatformException] depending on the failure.
 Future<bool> launchUrl(
   Uri url, {
   LaunchMode mode = LaunchMode.platformDefault,
