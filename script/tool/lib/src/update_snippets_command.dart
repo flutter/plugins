@@ -14,7 +14,7 @@ import 'common/repository_package.dart';
 
 /// A command to update README code snippets from code files.
 class UpdateSnippetsCommand extends PackageLoopingCommand {
-  /// Creates a custom test command instance.
+  /// Creates a snippet updater command instance.
   UpdateSnippetsCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),

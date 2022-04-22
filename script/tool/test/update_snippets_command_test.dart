@@ -31,7 +31,7 @@ void main() {
     );
 
     runner = CommandRunner<void>(
-        'custom_test_command', 'Test for custom_test_command');
+        'update_snippts_command', 'Test for update_snippets_command');
     runner.addCommand(analyzeCommand);
   });
 
