@@ -11,4 +11,3 @@
 
 export 'src/types.dart';
 export 'src/url_launcher_string.dart';
-export 'src/url_launcher_uri.dart';
