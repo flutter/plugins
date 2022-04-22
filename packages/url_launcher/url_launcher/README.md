@@ -121,7 +121,7 @@ using it (for instance, to adjust your UI based on what is available), you can
 check with [`canLaunchUrl`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunchUrl.html).
 
 However, `canLaunchUrl` can return false even if `launchUrl` would work in
-some circumstances (in web applicaitons, on mobile without the necessary
+some circumstances (in web applications, on mobile without the necessary
 configuration as described above, etc.), so in cases where you can provide
 fallback behavior it is better to use `launchUrl` directly and handle failure.
 For example, a UI button that would have sent feedback email using a `mailto` URL
