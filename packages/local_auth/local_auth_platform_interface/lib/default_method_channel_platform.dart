@@ -57,7 +57,7 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
           biometrics.add(BiometricType.iris);
           break;
         case 'undefined':
-          // Sentinel value for the case when nothing in enrolled, but hardware
+          // Sentinel value for the case when nothing is enrolled, but hardware
           // support for biometrics is available.
           break;
       }
