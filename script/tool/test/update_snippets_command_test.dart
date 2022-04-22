@@ -146,7 +146,7 @@ void main() {
   });
 
   test('fails if extraction fails', () async {
-    final Directory package = createFakePlugin('a_package', packagesDir,
+    createFakePlugin('a_package', packagesDir,
         extraFiles: <String>['example/build.excerpt.yaml']);
 
     processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
