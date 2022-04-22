@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -64,7 +63,7 @@ class SkProductResponseWrapper {
   }
 
   @override
-  int get hashCode => hashValues(products, invalidProductIdentifiers);
+  int get hashCode => Object.hash(products, invalidProductIdentifiers);
 }
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
@@ -142,7 +141,7 @@ class SKProductSubscriptionPeriodWrapper {
   }
 
   @override
-  int get hashCode => hashValues(numberOfUnits, unit);
+  int get hashCode => Object.hash(numberOfUnits, unit);
 }
 
 /// Dart wrapper around StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
@@ -261,8 +260,8 @@ class SKProductDiscountWrapper {
   }
 
   @override
-  int get hashCode => hashValues(price, priceLocale, numberOfPeriods,
-      paymentMode, subscriptionPeriod, identifier, type);
+  int get hashCode => Object.hash(
+      price, priceLocale, numberOfPeriods, paymentMode, subscriptionPeriod, identifier, type);
 }
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
@@ -371,7 +370,7 @@ class SKProductWrapper {
   }
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
       productIdentifier,
       localizedTitle,
       localizedDescription,
@@ -439,5 +438,5 @@ class SKPriceLocaleWrapper {
   }
 
   @override
-  int get hashCode => hashValues(currencySymbol, currencyCode);
+  int get hashCode => Object.hash(currencySymbol, currencyCode);
 }

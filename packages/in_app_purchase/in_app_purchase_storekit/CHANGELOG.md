@@ -1,6 +1,14 @@
-## 0.3.0+4
+## 0.3.0+6
 
 * Adds the `identifier` and `type` fields to the `SKProductDiscountWrapper` to reflect the changes in the [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc) in iOS 12.2.
+
+## 0.3.0+5
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+
+## 0.3.0+4
+
+* Ensures that `NSError` instances with an unexpected value for the `userInfo` field don't crash the app, but send an explanatory message instead.
 
 ## 0.3.0+3
 

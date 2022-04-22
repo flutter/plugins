@@ -1,3 +1,7 @@
+## 2.3.2
+
+* Updates ExoPlayer to 2.17.0.
+
 ## 2.3.1
 
 * Renames internal method channels to avoid potential confusion with the
