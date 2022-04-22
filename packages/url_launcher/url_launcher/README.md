@@ -124,7 +124,7 @@ However, `canLaunchUrl` can return false even if `launchUrl` would work in
 some circumstances (in web applicaitons, on mobile without the necessary
 configuration as described above, etc.), so in cases where you can provide
 fallback behavior it is better to use `launchUrl` directly and handle failure.
-For example, UI button that would have sent feedback email using a `mailto` URL
+For example, a UI button that would have sent feedback email using a `mailto` URL
 might instead open a web-based feedback form using an `https` URL on failure,
 rather than disabling the button if `canLaunchUrl` returns false for `mailto`.
 
