@@ -18,7 +18,7 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final Uri _url = Uri(scheme:'https', host:'flutter.dev');
+final Uri _url = Uri.parse('https://flutter.dev');
 
 void main() => runApp(
       const MaterialApp(
