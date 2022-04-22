@@ -7,10 +7,9 @@ environment:
   flutter: ">=2.5.0"
 
 dependencies:
+  cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -22,7 +21,6 @@ dev_dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true

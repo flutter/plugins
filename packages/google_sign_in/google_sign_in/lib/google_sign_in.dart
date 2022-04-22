@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui' show hashValues;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
@@ -39,6 +39,7 @@ class GoogleSignInAuthentication {
 /// [GoogleSignInUserData].
 ///
 /// [id] is guaranteed to be non-null.
+@immutable
 class GoogleSignInAccount implements GoogleIdentity {
   GoogleSignInAccount._(this._googleSignIn, GoogleSignInUserData data)
       : displayName = data.displayName,
@@ -99,9 +100,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response.idToken == null) {
-      response.idToken = _idToken;
-    }
+    response.idToken ??= _idToken;
 
     return GoogleSignInAuthentication._(response);
   }
@@ -113,10 +112,10 @@ class GoogleSignInAccount implements GoogleIdentity {
   Future<Map<String, String>> get authHeaders async {
     final String? token = (await authentication).accessToken;
     return <String, String>{
-      "Authorization": "Bearer $token",
+      'Authorization': 'Bearer $token',
       // TODO(kevmoo): Use the correct value once it's available from authentication
       // See https://github.com/flutter/flutter/issues/80905
-      "X-Goog-AuthUser": "0",
+      'X-Goog-AuthUser': '0',
     };
   }
 
@@ -131,8 +130,12 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   @override
   bool operator ==(dynamic other) {
-    if (identical(this, other)) return true;
-    if (other is! GoogleSignInAccount) return false;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! GoogleSignInAccount) {
+      return false;
+    }
     final GoogleSignInAccount otherAccount = other;
     return displayName == otherAccount.displayName &&
         email == otherAccount.email &&
@@ -144,7 +147,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   @override
   int get hashCode =>
-      hashValues(displayName, email, id, photoUrl, _idToken, serverAuthCode);
+      Object.hash(displayName, email, id, photoUrl, _idToken, serverAuthCode);
 
   @override
   String toString() {
@@ -236,6 +239,7 @@ class GoogleSignIn {
   final bool forceCodeForRefreshToken;
 
   StreamController<GoogleSignInAccount?> _currentUserController =
+  final StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.
@@ -286,7 +290,7 @@ class GoogleSignIn {
     final Completer<void> completer = Completer<void>();
     future.whenComplete(completer.complete).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
-      // TODO: Should we log errors here, if debug or similar?
+      // TODO(ditman): Should we log errors here, if debug or similar?
     });
     return completer.future;
   }

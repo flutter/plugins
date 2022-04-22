@@ -1,4 +1,23 @@
-## NEXT
+## 0.8.2+1
+
+- Adds a new `readme-check` command.
+- Updates `publish-plugin` command documentation.
+- Fixes `all-plugins-app` to preserve the original application's Dart SDK
+  version to avoid changing language feature opt-ins that the template may
+  rely on.
+- Fixes `custom-test` to run `pub get` before running Dart test scripts.
+
+## 0.8.2
+
+- Adds a new `custom-test` command.
+- Switches from deprecated `flutter packages` alias to `flutter pub`.
+
+## 0.8.1
+
+- Fixes an `analyze` regression in 0.8.0 with packages that have non-`example`
+  sub-packages.
+
+## 0.8.0
 
 - Ensures that `firebase-test-lab` runs include an `integration_test` runner.
 - Adds a `make-deps-path-based` command to convert inter-repo package
@@ -17,6 +36,11 @@
   for flake issues.
 - Adds support for `CHROME_EXECUTABLE` in `drive-examples` to match similar
   `flutter` behavior.
+- Validates `default_package` entries in plugins.
+- Removes `allow-warnings` from the `podspecs` command.
+- Adds `skip-if-not-supporting-flutter-version` to allow running tests using a
+  version of Flutter that not all packages support. (E.g., to allow for running
+  some tests against old versions of Flutter to help avoid accidental breakage.)
 
 ## 0.7.3
 

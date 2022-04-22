@@ -1,3 +1,12 @@
+## NEXT
+
+* Adds OS version support information to README.
+
+## 2.0.9
+
+* Updates documentation on README.md.
+* Updates example application.
+
 ## 2.0.8
 
 * Updates example app Android compileSdkVersion to 31.

@@ -1,1 +1,9 @@
 BasedOnStyle: Google
+---
+Language: Cpp
+DerivePointerAlignment: false
+PointerAlignment: Left
+---
+Language: ObjC
+DerivePointerAlignment: false
+PointerAlignment: Right

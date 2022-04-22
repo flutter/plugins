@@ -84,9 +84,12 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages plugin_name
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --packages plugin_name
-dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --apk --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --android --packages plugin_name
 ```
+
+Replace `--apk`/`--android` with the platform you want to test against
+(omit it to get a list of valid options).
 
 ### Run Native Tests
 
@@ -106,11 +109,18 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packa
 
 ### Publish a Release
 
-``sh
+**Releases are automated for `flutter/plugins` and `flutter/packages`.**
+
+The manual procedure described here is _deprecated_, and should only be used when
+the automated process fails. Please, read
+[Releasing a Plugin or Package](https://github.com/flutter/flutter/wiki/Releasing-a-Plugin-or-Package)
+on the Flutter Wiki first.
+
+```sh
 cd <path_to_plugins>
 git checkout <commit_hash_to_publish>
-dart run ./script/tool/bin/flutter_plugin_tools.dart publish-plugin --package <package>
-``
+dart run ./script/tool/bin/flutter_plugin_tools.dart publish-plugin --packages <package>
+```
 
 By default the tool tries to push tags to the `upstream` remote, but some
 additional settings can be configured. Run `dart run ./script/tool/bin/flutter_plugin_tools.dart
@@ -123,10 +133,6 @@ _everything_, including untracked or uncommitted files in version control.
 `publish-plugin` will first check the status of the local
 directory and refuse to publish if there are any mismatched files with version
 control present.
-
-Automated publishing is under development. Follow
-[flutter/flutter#27258](https://github.com/flutter/flutter/issues/27258)
-for updates.
 
 ## Updating the Tool
 

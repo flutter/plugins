@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
-import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
 
@@ -37,7 +34,7 @@ class TestMapsObject implements MapsObject {
   }
 
   @override
-  int get hashCode => hashValues(mapsId, data);
+  int get hashCode => Object.hash(mapsId, data);
 }
 
 class TestMapsObjectUpdate extends MapsObjectUpdates<TestMapsObject> {

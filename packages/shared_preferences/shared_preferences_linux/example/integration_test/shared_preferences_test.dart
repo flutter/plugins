@@ -31,7 +31,7 @@ void main() {
     late SharedPreferencesLinux preferences;
 
     setUp(() async {
-      preferences = SharedPreferencesLinux.instance;
+      preferences = SharedPreferencesLinux();
     });
 
     tearDown(() {

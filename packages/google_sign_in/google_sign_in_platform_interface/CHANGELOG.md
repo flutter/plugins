@@ -1,6 +1,10 @@
-## 2.1.2
+## 2.1.3
 
 * Adds `initWithForceCodeForRefreshToken` method to add the `forceCodeForRefreshToken` parameter.
+
+## 2.1.2
+
+* Internal code cleanup for stricter analysis options.
 
 ## 2.1.1
 

@@ -10,5 +10,6 @@ class JsUtil {
   bool hasProperty(Object o, Object name) => js_util.hasProperty(o, name);
 
   /// Returns the value of the property [name] in the object [o].
-  dynamic getProperty(Object o, Object name) => js_util.getProperty(o, name);
+  dynamic getProperty(Object o, Object name) =>
+      js_util.getProperty<dynamic>(o, name);
 }

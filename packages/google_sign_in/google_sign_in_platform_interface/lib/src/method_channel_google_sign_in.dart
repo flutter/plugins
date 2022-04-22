@@ -71,7 +71,7 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
         .invokeMapMethod<String, dynamic>('getTokens', <String, dynamic>{
       'email': email,
       'shouldRecoverAuth': shouldRecoverAuth,
-    }).then((result) => getTokenDataFromMap(result!));
+    }).then((Map<String, dynamic>? result) => getTokenDataFromMap(result!));
   }
 
   @override

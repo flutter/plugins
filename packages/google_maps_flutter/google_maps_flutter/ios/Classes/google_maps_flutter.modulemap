@@ -1,0 +1,10 @@
+framework module google_maps_flutter {
+  umbrella header "google_maps_flutter-umbrella.h"
+
+  export *
+  module * { export * }
+
+  explicit module Test {
+    header "GoogleMapController_Test.h"
+  }
+}

@@ -4,7 +4,6 @@
 
 #import <Foundation/Foundation.h>
 #import <camera/CameraPlugin.h>
-#import <camera/FLTThreadSafeFlutterResult.h>
 
 FOUNDATION_EXPORT double cameraVersionNumber;
 FOUNDATION_EXPORT const unsigned char cameraVersionString[];

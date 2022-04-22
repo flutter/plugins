@@ -207,7 +207,7 @@ void main() {
     test('reports skips with no tests', () async {
       final Directory pluginDirectory1 = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            platformMacOS: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -241,7 +241,7 @@ void main() {
       test('skip if iOS is not supported', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final List<String> output = await runCapturingPrint(runner,
@@ -258,7 +258,7 @@ void main() {
       test('skip if iOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.federated)
+              platformIOS: const PlatformDetails(PlatformSupport.federated)
             });
 
         final List<String> output = await runCapturingPrint(runner,
@@ -275,7 +275,7 @@ void main() {
       test('running with correct destination', () async {
         final Directory pluginDirectory = createFakePlugin(
             'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
+          platformIOS: const PlatformDetails(PlatformSupport.inline)
         });
 
         final Directory pluginExampleDirectory =
@@ -313,7 +313,7 @@ void main() {
           () async {
         final Directory pluginDirectory = createFakePlugin(
             'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
+          platformIOS: const PlatformDetails(PlatformSupport.inline)
         });
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
@@ -366,7 +366,7 @@ void main() {
       test('skip if macOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
+              platformMacOS: const PlatformDetails(PlatformSupport.federated),
             });
 
         final List<String> output =
@@ -385,7 +385,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -421,7 +421,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -451,7 +451,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -481,7 +481,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -517,7 +517,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -543,7 +543,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -582,7 +582,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -617,7 +617,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -649,7 +649,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/app/src/test/example_test.java',
@@ -681,7 +681,7 @@ void main() {
           'plugin1',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -693,7 +693,7 @@ void main() {
           'plugin2',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -724,7 +724,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -765,7 +765,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -808,7 +808,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -861,7 +861,7 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+            platformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
         );
 
@@ -886,7 +886,7 @@ void main() {
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+          platformLinux: const PlatformDetails(PlatformSupport.inline),
         });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -925,7 +925,7 @@ void main() {
           'example/$debugTestBinaryRelativePath',
           'example/$releaseTestBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+          platformLinux: const PlatformDetails(PlatformSupport.inline),
         });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -958,7 +958,7 @@ void main() {
       test('fails if CMake has not been configured', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+              platformLinux: const PlatformDetails(PlatformSupport.inline),
             });
 
         Error? commandError;
@@ -986,7 +986,7 @@ void main() {
         final Directory pluginDirectory = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+              platformLinux: const PlatformDetails(PlatformSupport.inline),
             });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -1021,7 +1021,7 @@ void main() {
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+          platformLinux: const PlatformDetails(PlatformSupport.inline),
         });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -1062,7 +1062,7 @@ void main() {
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
@@ -1090,7 +1090,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -1126,7 +1126,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -1162,7 +1162,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -1198,7 +1198,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -1238,7 +1238,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -1283,9 +1283,9 @@ void main() {
             'android/src/test/example_test.java',
           ],
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            platformAndroid: const PlatformDetails(PlatformSupport.inline),
+            platformIOS: const PlatformDetails(PlatformSupport.inline),
+            platformMacOS: const PlatformDetails(PlatformSupport.inline),
           },
         );
 
@@ -1337,7 +1337,7 @@ void main() {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+              platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -1374,7 +1374,7 @@ void main() {
       test('runs only iOS for a iOS plugin', () async {
         final Directory pluginDirectory = createFakePlugin(
             'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
+          platformIOS: const PlatformDetails(PlatformSupport.inline)
         });
 
         final Directory pluginExampleDirectory =
@@ -1439,9 +1439,9 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformMacos: const PlatformDetails(PlatformSupport.inline,
+            platformMacOS: const PlatformDetails(PlatformSupport.inline,
                 hasDartCode: true, hasNativeCode: false),
-            kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+            platformWindows: const PlatformDetails(PlatformSupport.inline,
                 hasDartCode: true, hasNativeCode: false),
           },
         );
@@ -1470,8 +1470,8 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+            platformAndroid: const PlatformDetails(PlatformSupport.inline),
+            platformIOS: const PlatformDetails(PlatformSupport.inline),
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -1526,8 +1526,8 @@ void main() {
           'plugin',
           packagesDir,
           platformSupport: <String, PlatformDetails>{
-            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+            platformAndroid: const PlatformDetails(PlatformSupport.inline),
+            platformIOS: const PlatformDetails(PlatformSupport.inline),
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -1625,7 +1625,7 @@ void main() {
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          platformWindows: const PlatformDetails(PlatformSupport.inline),
         });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -1664,7 +1664,7 @@ void main() {
           'example/$debugTestBinaryRelativePath',
           'example/$releaseTestBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          platformWindows: const PlatformDetails(PlatformSupport.inline),
         });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -1696,7 +1696,7 @@ void main() {
       test('fails if CMake has not been configured', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+              platformWindows: const PlatformDetails(PlatformSupport.inline),
             });
 
         Error? commandError;
@@ -1724,7 +1724,7 @@ void main() {
         final Directory pluginDirectory = createFakePlugin(
             'plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
-              kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+              platformWindows: const PlatformDetails(PlatformSupport.inline),
             });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
@@ -1759,7 +1759,7 @@ void main() {
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          platformWindows: const PlatformDetails(PlatformSupport.inline),
         });
         _createFakeCMakeCache(pluginDirectory, mockPlatform);
 

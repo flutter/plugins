@@ -19,22 +19,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTWebViewController : NSObject <FlutterPlatformView, WKUIDelegate>
 
-@property(nonatomic) FLTWKWebView* webView;
+@property(nonatomic) FLTWKWebView *webView;
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+              binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 
-- (UIView*)view;
+- (UIView *)view;
 
-- (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
+- (void)onMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
 
 @end
 
 @interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger
-                    cookieManager:(FLTCookieManager*)cookieManager;
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                    cookieManager:(FLTCookieManager *)cookieManager;
 @end
 
 NS_ASSUME_NONNULL_END

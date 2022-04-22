@@ -181,7 +181,7 @@ void main() {
         packagesDir,
         extraFiles: <String>['test/empty_test.dart'],
         platformSupport: <String, PlatformDetails>{
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          platformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 

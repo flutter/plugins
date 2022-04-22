@@ -6,12 +6,12 @@
 #import "JsonConversions.h"
 
 @implementation FLTGoogleMapPolygonController {
-  GMSPolygon* _polygon;
-  GMSMapView* _mapView;
+  GMSPolygon *_polygon;
+  GMSMapView *_mapView;
 }
-- (instancetype)initPolygonWithPath:(GMSMutablePath*)path
-                          polygonId:(NSString*)polygonId
-                            mapView:(GMSMapView*)mapView {
+- (instancetype)initPolygonWithPath:(GMSMutablePath *)path
+                          polygonId:(NSString *)polygonId
+                            mapView:(GMSMapView *)mapView {
   self = [super init];
   if (self) {
     _polygon = [GMSPolygon polygonWithPath:path];
@@ -37,20 +37,20 @@
 - (void)setZIndex:(int)zIndex {
   _polygon.zIndex = zIndex;
 }
-- (void)setPoints:(NSArray<CLLocation*>*)points {
-  GMSMutablePath* path = [GMSMutablePath path];
+- (void)setPoints:(NSArray<CLLocation *> *)points {
+  GMSMutablePath *path = [GMSMutablePath path];
 
-  for (CLLocation* location in points) {
+  for (CLLocation *location in points) {
     [path addCoordinate:location.coordinate];
   }
   _polygon.path = path;
 }
-- (void)setHoles:(NSArray<NSArray<CLLocation*>*>*)rawHoles {
-  NSMutableArray<GMSMutablePath*>* holes = [[NSMutableArray<GMSMutablePath*> alloc] init];
+- (void)setHoles:(NSArray<NSArray<CLLocation *> *> *)rawHoles {
+  NSMutableArray<GMSMutablePath *> *holes = [[NSMutableArray<GMSMutablePath *> alloc] init];
 
-  for (NSArray<CLLocation*>* points in rawHoles) {
-    GMSMutablePath* path = [GMSMutablePath path];
-    for (CLLocation* location in points) {
+  for (NSArray<CLLocation *> *points in rawHoles) {
+    GMSMutablePath *path = [GMSMutablePath path];
+    for (CLLocation *location in points) {
       [path addCoordinate:location.coordinate];
     }
     [holes addObject:path];
@@ -59,10 +59,10 @@
   _polygon.holes = holes;
 }
 
-- (void)setFillColor:(UIColor*)color {
+- (void)setFillColor:(UIColor *)color {
   _polygon.fillColor = color;
 }
-- (void)setStrokeColor:(UIColor*)color {
+- (void)setStrokeColor:(UIColor *)color {
   _polygon.strokeColor = color;
 }
 - (void)setStrokeWidth:(CGFloat)width {
@@ -70,72 +70,72 @@
 }
 @end
 
-static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
+static int ToInt(NSNumber *data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
-static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
+static BOOL ToBool(NSNumber *data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static NSArray<CLLocation*>* ToPoints(NSArray* data) {
+static NSArray<CLLocation *> *ToPoints(NSArray *data) {
   return [FLTGoogleMapJsonConversions toPoints:data];
 }
 
-static NSArray<NSArray<CLLocation*>*>* ToHoles(NSArray<NSArray*>* data) {
+static NSArray<NSArray<CLLocation *> *> *ToHoles(NSArray<NSArray *> *data) {
   return [FLTGoogleMapJsonConversions toHoles:data];
 }
 
-static UIColor* ToColor(NSNumber* data) { return [FLTGoogleMapJsonConversions toColor:data]; }
+static UIColor *ToColor(NSNumber *data) { return [FLTGoogleMapJsonConversions toColor:data]; }
 
-static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOptionsSink> sink,
-                                    NSObject<FlutterPluginRegistrar>* registrar) {
-  NSNumber* consumeTapEvents = data[@"consumeTapEvents"];
+static void InterpretPolygonOptions(NSDictionary *data, id<FLTGoogleMapPolygonOptionsSink> sink,
+                                    NSObject<FlutterPluginRegistrar> *registrar) {
+  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
   if (consumeTapEvents != nil) {
     [sink setConsumeTapEvents:ToBool(consumeTapEvents)];
   }
 
-  NSNumber* visible = data[@"visible"];
+  NSNumber *visible = data[@"visible"];
   if (visible != nil) {
     [sink setVisible:ToBool(visible)];
   }
 
-  NSNumber* zIndex = data[@"zIndex"];
+  NSNumber *zIndex = data[@"zIndex"];
   if (zIndex != nil) {
     [sink setZIndex:ToInt(zIndex)];
   }
 
-  NSArray* points = data[@"points"];
+  NSArray *points = data[@"points"];
   if (points) {
     [sink setPoints:ToPoints(points)];
   }
 
-  NSArray* holes = data[@"holes"];
+  NSArray *holes = data[@"holes"];
   if (holes) {
     [sink setHoles:ToHoles(holes)];
   }
 
-  NSNumber* fillColor = data[@"fillColor"];
+  NSNumber *fillColor = data[@"fillColor"];
   if (fillColor != nil) {
     [sink setFillColor:ToColor(fillColor)];
   }
 
-  NSNumber* strokeColor = data[@"strokeColor"];
+  NSNumber *strokeColor = data[@"strokeColor"];
   if (strokeColor != nil) {
     [sink setStrokeColor:ToColor(strokeColor)];
   }
 
-  NSNumber* strokeWidth = data[@"strokeWidth"];
+  NSNumber *strokeWidth = data[@"strokeWidth"];
   if (strokeWidth != nil) {
     [sink setStrokeWidth:ToInt(strokeWidth)];
   }
 }
 
 @implementation FLTPolygonsController {
-  NSMutableDictionary* _polygonIdToController;
-  FlutterMethodChannel* _methodChannel;
-  NSObject<FlutterPluginRegistrar>* _registrar;
-  GMSMapView* _mapView;
+  NSMutableDictionary *_polygonIdToController;
+  FlutterMethodChannel *_methodChannel;
+  NSObject<FlutterPluginRegistrar> *_registrar;
+  GMSMapView *_mapView;
 }
-- (instancetype)init:(FlutterMethodChannel*)methodChannel
-             mapView:(GMSMapView*)mapView
-           registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+- (instancetype)init:(FlutterMethodChannel *)methodChannel
+             mapView:(GMSMapView *)mapView
+           registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   self = [super init];
   if (self) {
     _methodChannel = methodChannel;
@@ -145,11 +145,11 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
   }
   return self;
 }
-- (void)addPolygons:(NSArray*)polygonsToAdd {
-  for (NSDictionary* polygon in polygonsToAdd) {
-    GMSMutablePath* path = [FLTPolygonsController getPath:polygon];
-    NSString* polygonId = [FLTPolygonsController getPolygonId:polygon];
-    FLTGoogleMapPolygonController* controller =
+- (void)addPolygons:(NSArray *)polygonsToAdd {
+  for (NSDictionary *polygon in polygonsToAdd) {
+    GMSMutablePath *path = [FLTPolygonsController getPath:polygon];
+    NSString *polygonId = [FLTPolygonsController getPolygonId:polygon];
+    FLTGoogleMapPolygonController *controller =
         [[FLTGoogleMapPolygonController alloc] initPolygonWithPath:path
                                                          polygonId:polygonId
                                                            mapView:_mapView];
@@ -157,22 +157,22 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
     _polygonIdToController[polygonId] = controller;
   }
 }
-- (void)changePolygons:(NSArray*)polygonsToChange {
-  for (NSDictionary* polygon in polygonsToChange) {
-    NSString* polygonId = [FLTPolygonsController getPolygonId:polygon];
-    FLTGoogleMapPolygonController* controller = _polygonIdToController[polygonId];
+- (void)changePolygons:(NSArray *)polygonsToChange {
+  for (NSDictionary *polygon in polygonsToChange) {
+    NSString *polygonId = [FLTPolygonsController getPolygonId:polygon];
+    FLTGoogleMapPolygonController *controller = _polygonIdToController[polygonId];
     if (!controller) {
       continue;
     }
     InterpretPolygonOptions(polygon, controller, _registrar);
   }
 }
-- (void)removePolygonIds:(NSArray*)polygonIdsToRemove {
-  for (NSString* polygonId in polygonIdsToRemove) {
+- (void)removePolygonIds:(NSArray *)polygonIdsToRemove {
+  for (NSString *polygonId in polygonIdsToRemove) {
     if (!polygonId) {
       continue;
     }
-    FLTGoogleMapPolygonController* controller = _polygonIdToController[polygonId];
+    FLTGoogleMapPolygonController *controller = _polygonIdToController[polygonId];
     if (!controller) {
       continue;
     }
@@ -180,32 +180,32 @@ static void InterpretPolygonOptions(NSDictionary* data, id<FLTGoogleMapPolygonOp
     [_polygonIdToController removeObjectForKey:polygonId];
   }
 }
-- (void)onPolygonTap:(NSString*)polygonId {
+- (void)onPolygonTap:(NSString *)polygonId {
   if (!polygonId) {
     return;
   }
-  FLTGoogleMapPolygonController* controller = _polygonIdToController[polygonId];
+  FLTGoogleMapPolygonController *controller = _polygonIdToController[polygonId];
   if (!controller) {
     return;
   }
   [_methodChannel invokeMethod:@"polygon#onTap" arguments:@{@"polygonId" : polygonId}];
 }
-- (bool)hasPolygonWithId:(NSString*)polygonId {
+- (bool)hasPolygonWithId:(NSString *)polygonId {
   if (!polygonId) {
     return false;
   }
   return _polygonIdToController[polygonId] != nil;
 }
-+ (GMSMutablePath*)getPath:(NSDictionary*)polygon {
-  NSArray* pointArray = polygon[@"points"];
-  NSArray<CLLocation*>* points = ToPoints(pointArray);
-  GMSMutablePath* path = [GMSMutablePath path];
-  for (CLLocation* location in points) {
++ (GMSMutablePath *)getPath:(NSDictionary *)polygon {
+  NSArray *pointArray = polygon[@"points"];
+  NSArray<CLLocation *> *points = ToPoints(pointArray);
+  GMSMutablePath *path = [GMSMutablePath path];
+  for (CLLocation *location in points) {
     [path addCoordinate:location.coordinate];
   }
   return path;
 }
-+ (NSString*)getPolygonId:(NSDictionary*)polygon {
++ (NSString *)getPolygonId:(NSDictionary *)polygon {
   return polygon[@"polygonId"];
 }
 @end

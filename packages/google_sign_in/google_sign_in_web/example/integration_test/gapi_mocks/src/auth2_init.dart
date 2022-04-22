@@ -12,6 +12,8 @@ var mockUser = ${googleUser(userData)};
 
 function GapiAuth2() {}
 GapiAuth2.prototype.init = function (initOptions) {
+  /*Leak the initOptions so we can look at them later.*/
+  window['gapi2.init.parameters'] = initOptions;
   return {
     then: (onSuccess, onError) => {
       window.setTimeout(() => {
@@ -95,7 +97,7 @@ GapiAuth2.prototype.getAuthInstance = function () {
       return new Promise((resolve, reject) => {
         window.setTimeout(() => {
           reject({
-            error: '${error}'
+            error: '$error'
           });
         }, 30);
       });

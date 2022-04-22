@@ -1,3 +1,17 @@
+## 0.2.1+4
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+* Updates minimum Flutter version for changes in 0.2.1+3.
+
+## 0.2.1+3
+
+* Internal code cleanup for stricter analysis options.
+
+## 0.2.1+2
+
+* Fixes cameraNotReadable error that prevented access to the camera on some Android devices when initializing a camera.
+* Implemented support for new Dart SDKs with an async requestFullscreen API.
+
 ## 0.2.1+1
 
 * Update usage documentation.

@@ -21,6 +21,7 @@ import 'android_webview_test.mocks.dart';
   TestJavaScriptChannelHostApi,
   TestWebChromeClientHostApi,
   TestWebSettingsHostApi,
+  TestWebStorageHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
   TestAssetManagerHostApi,
@@ -32,7 +33,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
-    group('$WebView', () {
+    group('WebView', () {
       late MockTestWebViewHostApi mockPlatformHostApi;
 
       late InstanceManager instanceManager;
@@ -55,9 +56,14 @@ void main() {
         verify(mockPlatformHostApi.create(webViewInstanceId, false));
       });
 
-      test('setWebContentsDebuggingEnabled', () {
+      test('setWebContentsDebuggingEnabled true', () {
         WebView.setWebContentsDebuggingEnabled(true);
         verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+      });
+
+      test('setWebContentsDebuggingEnabled false', () {
+        WebView.setWebContentsDebuggingEnabled(false);
+        verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(false));
       });
 
       test('loadData', () {
@@ -314,7 +320,7 @@ void main() {
       });
     });
 
-    group('$WebSettings', () {
+    group('WebSettings', () {
       late MockTestWebSettingsHostApi mockPlatformHostApi;
 
       late InstanceManager instanceManager;
@@ -440,7 +446,7 @@ void main() {
       });
     });
 
-    group('$JavaScriptChannel', () {
+    group('JavaScriptChannel', () {
       late JavaScriptChannelFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -468,7 +474,7 @@ void main() {
       });
     });
 
-    group('$WebViewClient', () {
+    group('WebViewClient', () {
       late WebViewClientFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -583,7 +589,7 @@ void main() {
       });
     });
 
-    group('$DownloadListener', () {
+    group('DownloadListener', () {
       late DownloadListenerFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -621,7 +627,7 @@ void main() {
       });
     });
 
-    group('$WebChromeClient', () {
+    group('WebChromeClient', () {
       late WebChromeClientFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -670,6 +676,31 @@ void main() {
           .thenAnswer((_) => Future<bool>.value(true));
       CookieManager.instance.clearCookies();
       verify(CookieManager.api.clearCookies());
+    });
+  });
+
+  group('WebStorage', () {
+    late MockTestWebStorageHostApi mockPlatformHostApi;
+
+    late WebStorage webStorage;
+    late int webStorageInstanceId;
+
+    setUp(() {
+      mockPlatformHostApi = MockTestWebStorageHostApi();
+      TestWebStorageHostApi.setup(mockPlatformHostApi);
+
+      webStorage = WebStorage();
+      webStorageInstanceId =
+          WebStorage.api.instanceManager.getInstanceId(webStorage)!;
+    });
+
+    test('create', () {
+      verify(mockPlatformHostApi.create(webStorageInstanceId));
+    });
+
+    test('deleteAllData', () {
+      webStorage.deleteAllData();
+      verify(mockPlatformHostApi.deleteAllData(webStorageInstanceId));
     });
   });
 }

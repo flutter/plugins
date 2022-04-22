@@ -5,20 +5,22 @@ import 'package:file/memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   late MemoryFileSystem fs;
+  late PathProviderLinux pathProvider;
 
   SharedPreferencesLinux.registerWith();
 
   setUp(() {
     fs = MemoryFileSystem.test();
+    pathProvider = FakePathProviderLinux();
   });
 
   Future<String> _getFilePath() async {
-    final PathProviderLinux pathProvider = PathProviderLinux();
     final String? directory = await pathProvider.getApplicationSupportPath();
     return path.join(directory!, 'shared_preferences.json');
   }
@@ -36,10 +38,12 @@ void main() {
   SharedPreferencesLinux _getPreferences() {
     final SharedPreferencesLinux prefs = SharedPreferencesLinux();
     prefs.fs = fs;
+    prefs.pathProvider = pathProvider;
     return prefs;
   }
 
   test('registered instance', () {
+    SharedPreferencesLinux.registerWith();
     expect(
         SharedPreferencesStorePlatform.instance, isA<SharedPreferencesLinux>());
   });
@@ -80,4 +84,27 @@ void main() {
     await prefs.clear();
     expect(await _readTestFile(), '{}');
   });
+}
+
+/// Fake implementation of PathProviderLinux that returns hard-coded paths,
+/// allowing tests to run on any platform.
+///
+/// Note that this should only be used with an in-memory filesystem, as the
+/// path it returns is a root path that does not actually exist on Linux.
+class FakePathProviderLinux extends PathProviderPlatform
+    implements PathProviderLinux {
+  @override
+  Future<String?> getApplicationSupportPath() async => r'/appsupport';
+
+  @override
+  Future<String?> getTemporaryPath() async => null;
+
+  @override
+  Future<String?> getLibraryPath() async => null;
+
+  @override
+  Future<String?> getApplicationDocumentsPath() async => null;
+
+  @override
+  Future<String?> getDownloadsPath() async => null;
 }

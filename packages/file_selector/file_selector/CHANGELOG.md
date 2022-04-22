@@ -1,3 +1,20 @@
+## NEXT
+
+* Adds OS version support information to README.
+
+## 0.8.4+1
+
+* Adds README information about macOS entitlements.
+* Adds necessary entitlement to macOS example.
+
+## 0.8.4
+
+* Adds an endorsed macOS implementation.
+
+## 0.8.3
+
+* Adds an endorsed Windows implementation.
+
 ## 0.8.2+1
 
 * Minor code cleanup for new analysis rules.

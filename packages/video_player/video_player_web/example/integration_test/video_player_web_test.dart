@@ -11,10 +11,15 @@ import 'package:integration_test/integration_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
+import 'utils.dart';
+
+// Use WebM to allow CI to run tests in Chromium.
+const String _videoAssetKey = 'assets/Butterfly-209.webm';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('VideoPlayer for Web', () {
+  group('VideoPlayerWeb plugin (hits network)', () {
     late Future<int> textureId;
 
     setUp(() {
@@ -23,11 +28,10 @@ void main() {
           .create(
             DataSource(
               sourceType: DataSourceType.network,
-              uri:
-                  'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+              uri: getUrlForAssetAsNetworkSource(_videoAssetKey),
             ),
           )
-          .then((textureId) => textureId!);
+          .then((int? textureId) => textureId!);
     });
 
     testWidgets('can init', (WidgetTester tester) async {
@@ -38,9 +42,9 @@ void main() {
       expect(
           VideoPlayerPlatform.instance.create(
             DataSource(
-                sourceType: DataSourceType.network,
-                uri:
-                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
+              sourceType: DataSourceType.network,
+              uri: getUrlForAssetAsNetworkSource(_videoAssetKey),
+            ),
           ),
           completion(isNonZero));
     });
@@ -98,14 +102,14 @@ void main() {
 
     testWidgets('throws PlatformException when playing bad media',
         (WidgetTester tester) async {
-      int videoPlayerId = (await VideoPlayerPlatform.instance.create(
+      final int videoPlayerId = (await VideoPlayerPlatform.instance.create(
         DataSource(
-            sourceType: DataSourceType.network,
-            uri:
-                'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
+          sourceType: DataSourceType.network,
+          uri: getUrlForAssetAsNetworkSource('assets/__non_existent.webm'),
+        ),
       ))!;
 
-      Stream<VideoEvent> eventStream =
+      final Stream<VideoEvent> eventStream =
           VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
 
       // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
@@ -113,7 +117,7 @@ void main() {
       await VideoPlayerPlatform.instance.play(videoPlayerId);
 
       expect(() async {
-        await eventStream.last;
+        await eventStream.timeout(const Duration(seconds: 5)).last;
       }, throwsA(isA<PlatformException>()));
     });
 
@@ -139,7 +143,7 @@ void main() {
       expect(
         VideoPlayerPlatform.instance.seekTo(
           await textureId,
-          Duration(seconds: 1),
+          const Duration(seconds: 1),
         ),
         completes,
       );
@@ -163,6 +167,41 @@ void main() {
     testWidgets('ignores setting mixWithOthers', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.setMixWithOthers(true), completes);
       expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
+    });
+
+    testWidgets('video playback lifecycle', (WidgetTester tester) async {
+      final int videoPlayerId = await textureId;
+      final Stream<VideoEvent> eventStream =
+          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
+
+      final Future<List<VideoEvent>> stream = eventStream.timeout(
+        const Duration(seconds: 1),
+        onTimeout: (EventSink<VideoEvent> sink) {
+          sink.close();
+        },
+      ).toList();
+
+      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+
+      // Let the video play, until we stop seeing events for a second
+      final List<VideoEvent> events = await stream;
+
+      await VideoPlayerPlatform.instance.pause(videoPlayerId);
+
+      // The expected list of event types should look like this:
+      // 1. bufferingStart,
+      // 2. bufferingUpdate (videoElement.onWaiting),
+      // 3. initialized (videoElement.onCanPlay),
+      // 4. bufferingEnd (videoElement.onCanPlayThrough),
+      expect(
+          events.map((VideoEvent e) => e.eventType),
+          equals(<VideoEventType>[
+            VideoEventType.bufferingStart,
+            VideoEventType.bufferingUpdate,
+            VideoEventType.initialized,
+            VideoEventType.bufferingEnd
+          ]));
     });
   });
 }

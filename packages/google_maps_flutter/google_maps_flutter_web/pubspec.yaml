@@ -1,6 +1,6 @@
 name: google_maps_flutter_web
 description: Web platform implementation of google_maps_flutter
-repository: https://github.com/flutter/plugins/tree/master/packages/google_maps_flutter/google_maps_flutter_web
+repository: https://github.com/flutter/plugins/tree/main/packages/google_maps_flutter/google_maps_flutter_web
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+maps%22
 version: 0.3.2+1
 

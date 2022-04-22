@@ -138,7 +138,7 @@ class FormatCommand extends PluginCommand {
 
       print('Formatting .cc, .cpp, .h, .m, and .mm files...');
       final int exitCode = await _runBatched(
-          getStringArg('clang-format'), <String>['-i', '--style=Google'],
+          getStringArg('clang-format'), <String>['-i', '--style=file'],
           files: clangFiles);
       if (exitCode != 0) {
         printError(

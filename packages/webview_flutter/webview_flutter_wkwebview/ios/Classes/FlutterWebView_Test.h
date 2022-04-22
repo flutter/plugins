@@ -10,11 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTWebViewController ()
 
-- (NSURLRequest*)buildNSURLRequest:(NSDictionary<NSString*, id>*)arguments;
+- (NSURLRequest *)buildNSURLRequest:(NSDictionary<NSString *, id> *)arguments;
 
-- (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result;
+- (void)onLoadUrl:(FlutterMethodCall *)call result:(FlutterResult)result;
 
-- (void)onLoadRequest:(FlutterMethodCall*)call result:(FlutterResult)result;
+- (void)onLoadRequest:(FlutterMethodCall *)call result:(FlutterResult)result;
 
 @end
 
