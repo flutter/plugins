@@ -36,6 +36,25 @@
   XCTAssertNil(error);
 }
 
+- (void)testLoadRequestWithInvalidUrl {
+  FWFWebView *mockWebView = OCMClassMock(FWFWebView.class);
+  OCMReject([mockWebView loadRequest:OCMOCK_ANY]);
+
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addInstance:mockWebView withIdentifier:0];
+
+  FWFWebViewHostApiImpl *hostApi =
+      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+
+  FlutterError *error;
+  FWFNSUrlRequestData *requestData = [FWFNSUrlRequestData makeWithUrl:@"%invalidUrl%"
+                                                           httpMethod:nil
+                                                             httpBody:nil
+                                                  allHttpHeaderFields:@{}];
+  [hostApi webView:@(0) loadRequest:requestData error:&error];
+  XCTAssertNotNil(error);
+}
+
 - (void)testSetCustomUserAgent {
   FWFWebView *mockWebView = OCMClassMock(FWFWebView.class);
 
