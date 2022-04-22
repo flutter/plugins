@@ -1,6 +1,19 @@
-## NEXT
+## 6.1.0
 
+* Introduces new `launchUrl` and `canLaunchUrl` APIs; `launch` and `canLaunch`
+  are now deprecated. These new APIs:
+  * replace the `String` URL argument with a `Uri`, to prevent common issues
+    with providing invalid URL strings.
+  * replace `forceSafariVC` and `forceWebView` with `LaunchMode`, which makes
+    the API platform-neutral, and standardizes the default behavior between
+    Android and iOS.
+  * move web view configuration options into a new `WebViewConfiguration`
+    object. The default behavior for JavaScript and DOM storage is now enabled
+    rather than disabled.
+* Also deprecates `closeWebView` in favor of `closeInAppWebView` to clarify
+  that it is specific to the in-app web view launch option.
 * Adds OS version support information to README.
+* Reorganizes and clarifies README.
 
 ## 6.0.20
 
