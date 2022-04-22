@@ -6,37 +6,35 @@
 @import webview_flutter_wkwebview;
 
 @interface FWFInstanceManagerTests : XCTestCase
-@property FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFInstanceManagerTests
-- (void)setUp {
-  self.instanceManager = [[FWFInstanceManager alloc] init];
-}
-
 - (void)testAddInstance {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 
-  [self.instanceManager addInstance:object withIdentifier:23];
-  XCTAssertEqualObjects([self.instanceManager instanceForIdentifier:23], object);
-  XCTAssertEqual([self.instanceManager identifierForInstance:object], 23);
+  [instanceManager addInstance:object withIdentifier:5];
+  XCTAssertEqualObjects([instanceManager instanceForIdentifier:5], object);
+  XCTAssertEqual([instanceManager identifierForInstance:object], 5);
 }
 
 - (void)testRemoveInstance {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
-  [self.instanceManager addInstance:object withIdentifier:46];
+  [instanceManager addInstance:object withIdentifier:5];
 
-  [self.instanceManager removeInstance:object];
-  XCTAssertNil([self.instanceManager instanceForIdentifier:46]);
-  XCTAssertEqual([self.instanceManager identifierForInstance:object], -1);
+  [instanceManager removeInstance:object];
+  XCTAssertNil([instanceManager instanceForIdentifier:5]);
+  XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
 }
 
 - (void)testRemoveInstanceWithIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
-  [self.instanceManager addInstance:object withIdentifier:69];
+  [instanceManager addInstance:object withIdentifier:5];
 
-  [self.instanceManager removeInstanceWithIdentifier:69];
-  XCTAssertNil([self.instanceManager instanceForIdentifier:69]);
-  XCTAssertEqual([self.instanceManager identifierForInstance:object], -1);
+  [instanceManager removeInstanceWithIdentifier:5];
+  XCTAssertNil([instanceManager instanceForIdentifier:5]);
+  XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
 }
 @end

@@ -23,9 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
  * pairs in response to hot restarts.
  *
  * @param instance The instance to be stored.
- * @param instanceIdentifier The identifier to be paired with instance.
+ * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0;
  */
-- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier;
+- (void)addInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
  * Removes the instance paired with a given identifier from the manager.
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param instance The instance to be removed from the manager.
  *
  * @return The identifier of the removed instance if the manager contains the given instance,
- * otherwise -1.
+ * otherwise NSNotFound.
  */
 - (long)removeInstance:(NSObject *)instance;
 
@@ -62,9 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param instance An instance that may be stored in the manager.
  *
- * @return The paired identifer if the manager contains the given instance, otherwise -1.
+ * @return The paired identifer if the manager contains the given instance, otherwise NSNotFound.
  */
-- (long)identifierForInstance:(nonnull NSObject *)instance;
+- (long)identifierForInstance:(NSObject *)instance;
 @end
 
 NS_ASSUME_NONNULL_END
