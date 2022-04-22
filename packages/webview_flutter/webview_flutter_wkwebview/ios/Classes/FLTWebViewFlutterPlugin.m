@@ -4,6 +4,7 @@
 
 #import "FLTWebViewFlutterPlugin.h"
 #import "FLTCookieManager.h"
+#import "FWFWebViewHostApi.h"
 #import "FlutterWebView.h"
 
 @implementation FLTWebViewFlutterPlugin

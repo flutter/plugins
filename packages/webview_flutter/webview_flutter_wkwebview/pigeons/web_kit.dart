@@ -13,6 +13,17 @@ import 'package:pigeon/pigeon.dart';
       'Use of this source code is governed by a BSD-style license that can be',
       'found in the LICENSE file.',
     ]),
+    objcHeaderOut: 'ios/Classes/FWFGeneratedWebKitApis.h',
+    objcSourceOut: 'ios/Classes/FWFGeneratedWebKitApis.m',
+    objcOptions: ObjcOptions(
+      header: 'ios/Classes/FWFGeneratedWebKitApis.h',
+      prefix: 'FWF',
+      copyrightHeader: <String>[
+        'Copyright 2013 The Flutter Authors. All rights reserved.',
+        'Use of this source code is governed by a BSD-style license that can be',
+        'found in the LICENSE file.',
+      ],
+    ),
   ),
 )
 
@@ -364,10 +375,12 @@ abstract class WKWebViewHostApi {
 
   void setNavigationDelegate(int instanceId, int? navigationDelegateInstanceId);
 
+  @ObjCSelector('webViewUrl:')
   String? getUrl(int instanceId);
 
   double getEstimatedProgress(int instanceId);
 
+  @ObjCSelector('webView:loadRequest:')
   void loadRequest(int instanceId, NSUrlRequestData request);
 
   void loadHtmlString(int instanceId, String string, String? baseUrl);
@@ -376,6 +389,7 @@ abstract class WKWebViewHostApi {
 
   void loadFlutterAsset(int instanceId, String key);
 
+  @ObjCSelector('webViewCanGoBack:')
   bool canGoBack(int instanceId);
 
   bool canGoForward(int instanceId);
@@ -390,6 +404,7 @@ abstract class WKWebViewHostApi {
 
   void setAllowsBackForwardNavigationGestures(int instanceId, bool allow);
 
+  @ObjCSelector('webView:setCustomUserAgent:')
   void setCustomUserAgent(int instanceId, String? userAgent);
 
   @async
