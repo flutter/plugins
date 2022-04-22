@@ -1,3 +1,9 @@
+## 1.0.3
+
+* Fixes regression in the default method channel implementation of
+  `deviceSupportsBiometrics` from federation that would cause it to return true
+  only if something is enrolled.
+
 ## 1.0.2
 
 * Adopts `Object.hash`.
