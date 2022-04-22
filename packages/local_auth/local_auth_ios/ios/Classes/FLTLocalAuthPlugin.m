@@ -140,14 +140,6 @@
         [biometrics addObject:@"fingerprint"];
       }
     }
-  } else if (authError.code == LAErrorTouchIDNotEnrolled) {
-    [biometrics addObject:@"undefined"];
-  } else {
-    if (@available(iOS 11.0.1, *)) {
-      if (authError != nil && authError.code == LAErrorBiometryNotEnrolled) {
-        [biometrics addObject:@"undefined"];
-      }
-    }
   }
   result(biometrics);
 }
