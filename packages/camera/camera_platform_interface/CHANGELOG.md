@@ -1,3 +1,8 @@
+## 2.1.6
+
+* Adopts `Object.hash`.
+* Removes obsolete dependency on `pedantic`.
+
 ## 2.1.5
 
 * Fixes asynchronous exceptions handling of the `initializeCamera` method.

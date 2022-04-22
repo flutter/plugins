@@ -97,15 +97,15 @@ void main() {
       expect(firstDescription == secondDescription, true);
     });
 
-    test('hashCode should match hashCode of all properties', () {
+    test('hashCode should match hashCode of all equality-tested properties',
+        () {
       const CameraDescription description = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 0,
       );
-      final int expectedHashCode = description.name.hashCode ^
-          description.lensDirection.hashCode ^
-          description.sensorOrientation.hashCode;
+      final int expectedHashCode =
+          Object.hash(description.name, description.lensDirection);
 
       expect(description.hashCode, expectedHashCode);
     });
