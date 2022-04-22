@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../lib/src/common/web_kit.pigeon.dart';
+import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 
 class _TestWKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
   const _TestWKWebsiteDataStoreHostApiCodec();

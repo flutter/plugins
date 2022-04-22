@@ -10,8 +10,8 @@
 @implementation FWFWebView
 - (void)setFrame:(CGRect)frame {
   [super setFrame:frame];
-  self.scrollView.contentInset = UIEdgeInsetsZero;
   // Prevents the contentInsets to be adjusted by iOS and gives control to Flutter.
+  self.scrollView.contentInset = UIEdgeInsetsZero;
   if (@available(iOS 11, *)) {
     // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
     // always be 0.
