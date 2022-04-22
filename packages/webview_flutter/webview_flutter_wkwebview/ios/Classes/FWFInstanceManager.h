@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  * pairs in response to hot restarts.
  *
  * @param instance The instance to be stored.
- * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0;
+ * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0.
  */
 - (void)addInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
