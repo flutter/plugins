@@ -7,11 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Converts a FWFNSUrlRequestData to a NSURLRequest.
+ * Converts an FWFNSUrlRequestData to an NSURLRequest.
  *
  * @param data The data object containing information to create an NSURLRequest.
  *
- * @return A NSURLRequest or nil if data could not be converted.
+ * @return An NSURLRequest or nil if data could not be converted.
  */
 id FWFConvertURLRequestData(FWFNSUrlRequestData* data);
 
