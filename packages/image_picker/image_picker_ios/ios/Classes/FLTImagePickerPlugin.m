@@ -16,30 +16,23 @@
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 #import "FLTPHPickerSaveImageToPathOperation.h"
+#import "messages.g.h"
 
-/**
- * Returns the value for the given key in 'dict', or nil if the value is
- * NSNull.
- */
-id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
-  id value = dict[key];
-  return value == [NSNull null] ? nil : value;
+@implementation FLTImagePickerMethodCallContext
+- (instancetype)initWithResult:(nonnull FlutterResultAdapter)result {
+  if (self = [super init]) {
+    _result = [result copy];
+  }
+  return self;
 }
+@end
+
+#pragma mark -
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
                                     UIImagePickerControllerDelegate,
                                     PHPickerViewControllerDelegate,
                                     UIAdaptivePresentationControllerDelegate>
-
-/**
- * The maximum amount of images that are allowed to be picked.
- */
-@property(assign, nonatomic) int maxImagesAllowed;
-
-/**
- * The arguments that are passed in from the Flutter method call.
- */
-@property(copy, nonatomic) NSDictionary *arguments;
 
 /**
  * The PHPickerViewController instance used to pick multiple
@@ -58,19 +51,13 @@ id GetNullableValueForKey(NSDictionary *dict, NSString *key) {
 
 @end
 
-static const int SOURCE_CAMERA = 0;
-static const int SOURCE_GALLERY = 1;
-
 typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPickerClassType };
 
 @implementation FLTImagePickerPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/image_picker"
-                                  binaryMessenger:[registrar messenger]];
   FLTImagePickerPlugin *instance = [FLTImagePickerPlugin new];
-  [registrar addMethodCallDelegate:instance channel:channel];
+  FLTImagePickerApiSetup(registrar.messenger, instance);
 }
 
 - (UIImagePickerController *)createImagePickerController {
@@ -107,130 +94,180 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Returns the UIImagePickerControllerCameraDevice to use given [arguments].
+ * Returns the UIImagePickerControllerCameraDevice to use given [source].
  *
- * If the cameraDevice value that is fetched from arguments is 1 then returns
- * UIImagePickerControllerCameraDeviceFront. If the cameraDevice value that is fetched
- * from arguments is 0 then returns UIImagePickerControllerCameraDeviceRear.
- *
- * @param arguments that should be used to get cameraDevice value.
+ * @param source The source specification from Dart.
  */
-- (UIImagePickerControllerCameraDevice)getCameraDeviceFromArguments:(NSDictionary *)arguments {
-  NSInteger cameraDevice = [arguments[@"cameraDevice"] intValue];
-  return (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
-                             : UIImagePickerControllerCameraDeviceRear;
+- (UIImagePickerControllerCameraDevice)cameraDeviceForSource:(FLTSourceSpecification *)source {
+  switch (source.camera) {
+    case FLTSourceCameraFront:
+      return UIImagePickerControllerCameraDeviceFront;
+    case FLTSourceCameraRear:
+      return UIImagePickerControllerCameraDeviceRear;
+  }
 }
 
-- (void)pickImageWithPHPicker:(int)maxImagesAllowed API_AVAILABLE(ios(14)) {
+- (void)launchPHPickerWithContext:(nonnull FLTImagePickerMethodCallContext *)context
+    API_AVAILABLE(ios(14)) {
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  config.selectionLimit = maxImagesAllowed;  // Setting to zero allow us to pick unlimited photos
+  config.selectionLimit = context.maxImageCount;
   config.filter = [PHPickerFilter imagesFilter];
 
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
   _pickerViewController.presentationController.delegate = self;
-
-  self.maxImagesAllowed = maxImagesAllowed;
+  self.callContext = context;
 
   [self checkPhotoAuthorizationForAccessLevel];
 }
 
-- (void)launchUIImagePickerWithSource:(int)imageSource {
+- (void)launchUIImagePickerWithSource:(nonnull FLTSourceSpecification *)source
+                              context:(nonnull FLTImagePickerMethodCallContext *)context {
   UIImagePickerController *imagePickerController = [self createImagePickerController];
   imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   imagePickerController.delegate = self;
   imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
+  self.callContext = context;
 
-  self.maxImagesAllowed = 1;
-
-  switch (imageSource) {
-    case SOURCE_CAMERA:
-      [self checkCameraAuthorizationWithImagePicker:imagePickerController];
+  switch (source.type) {
+    case FLTSourceTypeCamera:
+      [self checkCameraAuthorizationWithImagePicker:imagePickerController
+                                             camera:[self cameraDeviceForSource:source]];
       break;
-    case SOURCE_GALLERY:
+    case FLTSourceTypeGallery:
       [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       break;
     default:
-      self.result([FlutterError errorWithCode:@"invalid_source"
-                                      message:@"Invalid image source."
-                                      details:nil]);
+      [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
+                                                        message:@"Invalid image source."
+                                                        details:nil]];
       break;
   }
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (self.result) {
-    self.result([FlutterError errorWithCode:@"multiple_request"
-                                    message:@"Cancelled by a second request"
-                                    details:nil]);
-    self.result = nil;
-  }
+#pragma mark - FLTImagePickerApi
 
-  self.result = result;
-  _arguments = call.arguments;
+- (void)pickImageWithSource:(nonnull FLTSourceSpecification *)source
+                    maxSize:(nonnull FLTMaxSize *)maxSize
+                    quality:(nullable NSNumber *)imageQuality
+                 completion:
+                     (nonnull void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
+  [self cancelInProgressCall];
+  FLTImagePickerMethodCallContext *context = [[FLTImagePickerMethodCallContext alloc]
+      initWithResult:^void(NSArray<NSString *> *paths, FlutterError *error) {
+        if (paths && paths.count != 1) {
+          completion(nil, [FlutterError errorWithCode:@"invalid_result"
+                                              message:@"Incorrect number of return paths provided"
+                                              details:nil]);
+        }
+        completion(paths.firstObject, error);
+      }];
+  context.maxSize = maxSize;
+  context.imageQuality = imageQuality;
+  context.maxImageCount = 1;
 
-  if ([@"pickImage" isEqualToString:call.method]) {
-    int imageSource = [call.arguments[@"source"] intValue];
-
-    if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
-      if (@available(iOS 14, *)) {
-        // PHPicker is used
-        [self pickImageWithPHPicker:1];
-      } else {
-        // UIImagePicker is used
-        [self launchUIImagePickerWithSource:imageSource];
-      }
-    } else {
-      [self launchUIImagePickerWithSource:imageSource];
-    }
-  } else if ([@"pickMultiImage" isEqualToString:call.method]) {
+  if (source.type == FLTSourceTypeGallery) {  // Capture is not possible with PHPicker
     if (@available(iOS 14, *)) {
-      [self pickImageWithPHPicker:0];
+      [self launchPHPickerWithContext:context];
     } else {
-      [self launchUIImagePickerWithSource:SOURCE_GALLERY];
-    }
-  } else if ([@"pickVideo" isEqualToString:call.method]) {
-    UIImagePickerController *imagePickerController = [self createImagePickerController];
-    imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    imagePickerController.delegate = self;
-    imagePickerController.mediaTypes = @[
-      (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
-      (NSString *)kUTTypeMPEG4
-    ];
-    imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
-
-    int imageSource = [call.arguments[@"source"] intValue];
-    if ([call.arguments[@"maxDuration"] isKindOfClass:[NSNumber class]]) {
-      NSTimeInterval max = [call.arguments[@"maxDuration"] doubleValue];
-      imagePickerController.videoMaximumDuration = max;
-    }
-
-    switch (imageSource) {
-      case SOURCE_CAMERA:
-        [self checkCameraAuthorizationWithImagePicker:imagePickerController];
-        break;
-      case SOURCE_GALLERY:
-        [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
-        break;
-      default:
-        result([FlutterError errorWithCode:@"invalid_source"
-                                   message:@"Invalid video source."
-                                   details:nil]);
-        break;
+      [self launchUIImagePickerWithSource:source context:context];
     }
   } else {
-    result(FlutterMethodNotImplemented);
+    [self launchUIImagePickerWithSource:source context:context];
   }
 }
 
-- (void)showCameraWithImagePicker:(UIImagePickerController *)imagePickerController {
+- (void)pickMultiImageWithMaxSize:(nonnull FLTMaxSize *)maxSize
+                          quality:(nullable NSNumber *)imageQuality
+                       completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
+                                                    FlutterError *_Nullable))completion {
+  FLTImagePickerMethodCallContext *context =
+      [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
+  context.maxSize = maxSize;
+  context.imageQuality = imageQuality;
+
+  if (@available(iOS 14, *)) {
+    [self launchPHPickerWithContext:context];
+  } else {
+    // Camera is ignored for gallery mode, so the value here is arbitrary.
+    [self launchUIImagePickerWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                                      camera:FLTSourceCameraRear]
+                                context:context];
+  }
+}
+
+- (void)pickVideoWithSource:(nonnull FLTSourceSpecification *)source
+                maxDuration:(nullable NSNumber *)maxDurationSeconds
+                 completion:
+                     (nonnull void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
+  FLTImagePickerMethodCallContext *context = [[FLTImagePickerMethodCallContext alloc]
+      initWithResult:^void(NSArray<NSString *> *paths, FlutterError *error) {
+        if (paths && paths.count != 1) {
+          completion(nil, [FlutterError errorWithCode:@"invalid_result"
+                                              message:@"Incorrect number of return paths provided"
+                                              details:nil]);
+        }
+        completion(paths.firstObject, error);
+      }];
+  context.maxImageCount = 1;
+
+  UIImagePickerController *imagePickerController = [self createImagePickerController];
+  imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+  imagePickerController.delegate = self;
+  imagePickerController.mediaTypes = @[
+    (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
+    (NSString *)kUTTypeMPEG4
+  ];
+  imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+
+  if (maxDurationSeconds) {
+    NSTimeInterval max = [maxDurationSeconds doubleValue];
+    imagePickerController.videoMaximumDuration = max;
+  }
+
+  self.callContext = context;
+
+  switch (source.type) {
+    case FLTSourceTypeCamera:
+      [self checkCameraAuthorizationWithImagePicker:imagePickerController
+                                             camera:[self cameraDeviceForSource:source]];
+      break;
+    case FLTSourceTypeGallery:
+      [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+      break;
+    default:
+      [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
+                                                        message:@"Invalid video source."
+                                                        details:nil]];
+      break;
+  }
+}
+
+#pragma mark -
+
+/**
+ * If a call is still in progress, cancels it by returning an error and then clearing state.
+ *
+ * TODO(stuartmorgan): Eliminate this, and instead track context per image picker (e.g., using
+ * associated objects).
+ */
+- (void)cancelInProgressCall {
+  if (self.callContext) {
+    [self sendCallResultWithError:[FlutterError errorWithCode:@"multiple_request"
+                                                      message:@"Cancelled by a second request"
+                                                      details:nil]];
+    self.callContext = nil;
+  }
+}
+
+- (void)showCamera:(UIImagePickerControllerCameraDevice)device
+    withImagePicker:(UIImagePickerController *)imagePickerController {
   @synchronized(self) {
     if (imagePickerController.beingPresented) {
       return;
     }
   }
-  UIImagePickerControllerCameraDevice device = [self getCameraDeviceFromArguments:_arguments];
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
       [UIImagePickerController isCameraDeviceAvailable:device]) {
@@ -254,25 +291,24 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     [[self viewControllerWithWindow:nil] presentViewController:cameraErrorAlert
                                                       animated:YES
                                                     completion:nil];
-    self.result(nil);
-    self.result = nil;
-    _arguments = nil;
+    [self sendCallResultWithSavedPathList:nil];
   }
 }
 
-- (void)checkCameraAuthorizationWithImagePicker:(UIImagePickerController *)imagePickerController {
+- (void)checkCameraAuthorizationWithImagePicker:(UIImagePickerController *)imagePickerController
+                                         camera:(UIImagePickerControllerCameraDevice)device {
   AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
 
   switch (status) {
     case AVAuthorizationStatusAuthorized:
-      [self showCameraWithImagePicker:imagePickerController];
+      [self showCamera:device withImagePicker:imagePickerController];
       break;
     case AVAuthorizationStatusNotDetermined: {
       [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                completionHandler:^(BOOL granted) {
                                  dispatch_async(dispatch_get_main_queue(), ^{
                                    if (granted) {
-                                     [self showCameraWithImagePicker:imagePickerController];
+                                     [self showCamera:device withImagePicker:imagePickerController];
                                    } else {
                                      [self errorNoCameraAccess:AVAuthorizationStatusDenied];
                                    }
@@ -352,15 +388,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)errorNoCameraAccess:(AVAuthorizationStatus)status {
   switch (status) {
     case AVAuthorizationStatusRestricted:
-      self.result([FlutterError errorWithCode:@"camera_access_restricted"
-                                      message:@"The user is not allowed to use the camera."
-                                      details:nil]);
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"camera_access_restricted"
+                                              message:@"The user is not allowed to use the camera."
+                                              details:nil]];
       break;
     case AVAuthorizationStatusDenied:
     default:
-      self.result([FlutterError errorWithCode:@"camera_access_denied"
-                                      message:@"The user did not allow camera access."
-                                      details:nil]);
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"camera_access_denied"
+                                              message:@"The user did not allow camera access."
+                                              details:nil]];
       break;
   }
 }
@@ -368,15 +406,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)errorNoPhotoAccess:(PHAuthorizationStatus)status {
   switch (status) {
     case PHAuthorizationStatusRestricted:
-      self.result([FlutterError errorWithCode:@"photo_access_restricted"
-                                      message:@"The user is not allowed to use the photo."
-                                      details:nil]);
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"photo_access_restricted"
+                                              message:@"The user is not allowed to use the photo."
+                                              details:nil]];
       break;
     case PHAuthorizationStatusDenied:
     default:
-      self.result([FlutterError errorWithCode:@"photo_access_denied"
-                                      message:@"The user did not allow photo access."
-                                      details:nil]);
+      [self sendCallResultWithError:[FlutterError
+                                        errorWithCode:@"photo_access_denied"
+                                              message:@"The user did not allow photo access."
+                                              details:nil]];
       break;
   }
 }
@@ -406,31 +446,27 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return imageQuality;
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-  if (self.result != nil) {
-    self.result(nil);
-    self.result = nil;
-    self->_arguments = nil;
-  }
+  [self sendCallResultWithSavedPathList:nil];
 }
+
+#pragma mark - PHPickerViewControllerDelegate
 
 - (void)picker:(PHPickerViewController *)picker
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
   if (results.count == 0) {
-    if (self.result != nil) {
-      self.result(nil);
-      self.result = nil;
-      self->_arguments = nil;
-    }
+    [self sendCallResultWithSavedPathList:nil];
     return;
   }
   dispatch_queue_t backgroundQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
   dispatch_async(backgroundQueue, ^{
-    NSNumber *maxWidth = GetNullableValueForKey(self->_arguments, @"maxWidth");
-    NSNumber *maxHeight = GetNullableValueForKey(self->_arguments, @"maxHeight");
-    NSNumber *imageQuality = GetNullableValueForKey(self->_arguments, @"imageQuality");
+    NSNumber *maxWidth = self.callContext.maxSize.width;
+    NSNumber *maxHeight = self.callContext.maxSize.height;
+    NSNumber *imageQuality = self.callContext.imageQuality;
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
     NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
@@ -449,10 +485,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     }
     [operationQueue waitUntilAllOperationsAreFinished];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self handleSavedPathList:pathList];
+      [self sendCallResultWithSavedPathList:pathList];
     });
   });
 }
+
+#pragma mark -
 
 /**
  * Creates an NSMutableArray of a certain size filled with NSNull objects.
@@ -470,6 +508,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return mutableArray;
 }
 
+#pragma mark - UIImagePickerControllerDelegate
+
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL];
@@ -478,7 +518,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
   // to prevent below code to be unwantly executed multiple times and cause a
   // crash.
-  if (!self.result) {
+  if (!self.callContext) {
     return;
   }
   if (videoURL != nil) {
@@ -493,27 +533,25 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
           [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:&error];
 
           if (error) {
-            self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
-                                            message:@"Could not cache the video file."
-                                            details:nil]);
-            self.result = nil;
+            [self sendCallResultWithError:[FlutterError
+                                              errorWithCode:@"flutter_image_picker_copy_video_error"
+                                                    message:@"Could not cache the video file."
+                                                    details:nil]];
             return;
           }
         }
         videoURL = destination;
       }
     }
-    self.result(videoURL.path);
-    self.result = nil;
-    _arguments = nil;
+    [self sendCallResultWithSavedPathList:@[ videoURL.path ]];
   } else {
     UIImage *image = info[UIImagePickerControllerEditedImage];
     if (image == nil) {
       image = info[UIImagePickerControllerOriginalImage];
     }
-    NSNumber *maxWidth = GetNullableValueForKey(_arguments, @"maxWidth");
-    NSNumber *maxHeight = GetNullableValueForKey(_arguments, @"maxHeight");
-    NSNumber *imageQuality = GetNullableValueForKey(_arguments, @"imageQuality");
+    NSNumber *maxWidth = self.callContext.maxSize.width;
+    NSNumber *maxHeight = self.callContext.maxSize.height;
+    NSNumber *imageQuality = self.callContext.imageQuality;
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
@@ -547,13 +585,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
   [picker dismissViewControllerAnimated:YES completion:nil];
-  if (!self.result) {
-    return;
-  }
-  self.result(nil);
-  self.result = nil;
-  _arguments = nil;
+  [self sendCallResultWithSavedPathList:nil];
 }
+
+#pragma mark -
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData
                                  image:(UIImage *)image
@@ -566,7 +601,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxWidth:maxWidth
                                                          maxHeight:maxHeight
                                                       imageQuality:imageQuality];
-  [self handleSavedPathList:@[ savedPath ]];
+  [self sendCallResultWithSavedPathList:@[ savedPath ]];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
@@ -575,47 +610,36 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                         image:image
                                                                  imageQuality:imageQuality];
-  [self handleSavedPathList:@[ savedPath ]];
+  [self sendCallResultWithSavedPathList:@[ savedPath ]];
 }
 
-/**
- * Applies NSMutableArray on the FLutterResult.
- *
- * NSString must be returned by FlutterResult if the single image
- * mode is active. It is checked by maxImagesAllowed and
- * returns the first object of the pathlist.
- *
- * NSMutableArray must be returned by FlutterResult if the multi-image
- * mode is active. After the pathlist count is checked then it returns
- * the pathlist.
- *
- * @param pathList that should be applied to FlutterResult.
- */
-- (void)handleSavedPathList:(NSArray *)pathList {
-  if (!self.result) {
+- (void)sendCallResultWithSavedPathList:(nullable NSArray *)pathList {
+  if (!self.callContext) {
     return;
   }
 
-  if (pathList) {
-    if (![pathList containsObject:[NSNull null]]) {
-      if ((self.maxImagesAllowed == 1)) {
-        self.result(pathList.firstObject);
-      } else {
-        self.result(pathList);
-      }
-    } else {
-      self.result([FlutterError errorWithCode:@"create_error"
-                                      message:@"pathList's items should not be null"
-                                      details:nil]);
-    }
+  if ([pathList containsObject:[NSNull null]]) {
+    self.callContext.result(nil, [FlutterError errorWithCode:@"create_error"
+                                                     message:@"pathList's items should not be null"
+                                                     details:nil]);
   } else {
-    // This should never happen.
-    self.result([FlutterError errorWithCode:@"create_error"
-                                    message:@"pathList should not be nil"
-                                    details:nil]);
+    self.callContext.result(pathList, nil);
   }
-  self.result = nil;
-  _arguments = nil;
+  self.callContext = nil;
+}
+
+/**
+ * Sends the given error via `callContext.result` as the result of the original platform channel
+ * method call, clearing the in-progress call state.
+ *
+ * @param error The error to return.
+ */
+- (void)sendCallResultWithError:(FlutterError *)error {
+  if (!self.callContext) {
+    return;
+  }
+  self.callContext.result(nil, error);
+  self.callContext = nil;
 }
 
 @end
