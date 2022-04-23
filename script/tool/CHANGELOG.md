@@ -2,6 +2,7 @@
 
 - Adds a new `update-snippets` command to maintain README files using the
   `code-excerpter` package from flutter/site-shared.
+- `license-check` now ignores submodules.
 
 ## 0.8.2+1
 
