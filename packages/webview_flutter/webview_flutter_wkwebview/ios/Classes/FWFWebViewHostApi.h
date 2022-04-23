@@ -9,9 +9,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Implementation of WKWebView that can be used as a FlutterPlatformView.
+ */
 @interface FWFWebView : WKWebView <FlutterPlatformView>
 @end
 
+/**
+ * Host api implementation for WKWebView.
+ *
+ * Handles creating WKWebViews that intercommunicate with a paired Dart object.
+ */
 @interface FWFWebViewHostApiImpl : NSObject <FWFWKWebViewHostApi>
 - (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
 @end

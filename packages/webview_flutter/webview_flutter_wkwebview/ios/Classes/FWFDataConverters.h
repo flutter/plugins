@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param data The data object containing information to create an NSURLRequest.
  *
- * @return A NSURLRequest or nil if data was invalid.
+ * @return A NSURLRequest or nil if data could not be converted.
  */
-id CreateURLRequest(FWFNSUrlRequestData* data);
+id FWFConvertURLRequestData(FWFNSUrlRequestData* data);
 
 NS_ASSUME_NONNULL_END

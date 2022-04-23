@@ -47,7 +47,7 @@
           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   FWFWebView *webView =
       (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
-  NSURLRequest *urlRequest = CreateURLRequest(request);
+  NSURLRequest *urlRequest = FWFConvertURLRequestData(request);
   if (!urlRequest) {
     *error =
         [FlutterError errorWithCode:@"loadUrl_failed"

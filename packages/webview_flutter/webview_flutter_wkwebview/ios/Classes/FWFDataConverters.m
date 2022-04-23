@@ -5,7 +5,7 @@
 #import "FWFDataConverters.h"
 #import <Flutter/Flutter.h>
 
-id CreateURLRequest(FWFNSUrlRequestData *data) {
+id FWFConvertURLRequestData(FWFNSUrlRequestData *data) {
   NSURL *url = [NSURL URLWithString:data.url];
   if (!url) {
     return nil;
