@@ -118,17 +118,18 @@ class LicenseCheckCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final Iterable<File> allFiles = await _getAllFiles();
     // Create a set of absolute paths to submodule directories, with trailing
     // separator, to do prefix matching with to test directory inclusion.
     final Iterable<String> submodulePaths = (await _getSubmoduleDirectories())
         .map(
             (Directory dir) => '${dir.absolute.path}${platform.pathSeparator}');
 
+    final Iterable<File> allFiles = (await _getAllFiles()).where((File file) =>
+        !submodulePaths.any(
+            (String submodule) => file.absolute.path.startsWith(submodule)));
+
     final Iterable<File> codeFiles = allFiles.where((File file) =>
         _codeFileExtensions.contains(p.extension(file.path)) &&
-        !submodulePaths.any(
-            (String submodule) => file.absolute.path.startsWith(submodule)) &&
         !_shouldIgnoreFile(file));
     final Iterable<File> firstPartyLicenseFiles = allFiles.where((File file) =>
         path.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));

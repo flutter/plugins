@@ -139,13 +139,20 @@ void main() {
   url = https://github.com/foo/$submoduleName
 ''');
 
-      const String submoduleSourceFile = '$submoduleName/foo.dart';
-      root.childFile(submoduleSourceFile).createSync(recursive: true);
+      const List<String> submoduleFiles = <String>[
+        '$submoduleName/foo.dart',
+        '$submoduleName/LICENSE',
+      ];
+      for (final String filePath in submoduleFiles) {
+        root.childFile(filePath).createSync(recursive: true);
+      }
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['license-check']);
 
-      expect(output, isNot(contains('Checking $submoduleSourceFile')));
+      for (final String filePath in submoduleFiles) {
+        expect(output, isNot(contains('Checking $filePath')));
+      }
     });
 
     test('passes if all checked files have license blocks', () async {
