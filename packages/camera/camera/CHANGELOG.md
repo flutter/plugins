@@ -1,5 +1,6 @@
-## NEXT
+## 0.9.4+22
 
+* Change property of `FlutterTextureRegistry` from strong to weak.
 * Removes unnecessary imports.
 
 ## 0.9.4+21

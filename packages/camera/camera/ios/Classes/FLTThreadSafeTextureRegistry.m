@@ -6,7 +6,7 @@
 #import "QueueUtils.h"
 
 @interface FLTThreadSafeTextureRegistry ()
-@property(nonatomic, strong) NSObject<FlutterTextureRegistry> *registry;
+@property(nonatomic, weak) NSObject<FlutterTextureRegistry> *registry;
 @end
 
 @implementation FLTThreadSafeTextureRegistry
