@@ -1,3 +1,7 @@
+## 0.3.0+6
+
+* Fixed a memory leak error.
+
 ## 0.3.0+5
 
 * Migrates from `ui.hash*` to `Object.hash*`.
