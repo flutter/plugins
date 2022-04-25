@@ -222,3 +222,10 @@ abstract class WebChromeClientFlutterApi {
 
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
 }
+
+@HostApi(dartHostTestHandler: 'TestWebStorageHostApi')
+abstract class WebStorageHostApi {
+  void create(int instanceId);
+
+  void deleteAllData(int instanceId);
+}

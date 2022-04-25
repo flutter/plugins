@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart';
 
 /// Options used to create a camera with the given
@@ -50,7 +48,7 @@ class CameraOptions {
   }
 
   @override
-  int get hashCode => hashValues(audio, video);
+  int get hashCode => Object.hash(audio, video);
 }
 
 /// Indicates whether the audio track is requested.
@@ -140,7 +138,7 @@ class VideoConstraints {
   }
 
   @override
-  int get hashCode => hashValues(facingMode, width, height, deviceId);
+  int get hashCode => Object.hash(facingMode, width, height, deviceId);
 }
 
 /// The camera type used in [FacingModeConstraint].
@@ -213,7 +211,7 @@ class FacingModeConstraint {
   }
 
   @override
-  int get hashCode => hashValues(ideal, exact);
+  int get hashCode => Object.hash(ideal, exact);
 }
 
 /// The size of the requested video track used in
@@ -272,5 +270,5 @@ class VideoSizeConstraint {
   }
 
   @override
-  int get hashCode => hashValues(minimum, ideal, maximum);
+  int get hashCode => Object.hash(minimum, ideal, maximum);
 }

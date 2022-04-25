@@ -121,6 +121,21 @@ class MockWebSettings extends _i1.Mock implements _i2.WebSettings {
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
 }
 
+/// A class which mocks [WebStorage].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWebStorage extends _i1.Mock implements _i2.WebStorage {
+  MockWebStorage() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<void> deleteAllData() =>
+      (super.noSuchMethod(Invocation.method(#deleteAllData, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+}
+
 /// A class which mocks [WebView].
 ///
 /// See the documentation for Mockito's code generation for more information.

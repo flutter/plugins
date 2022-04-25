@@ -6,6 +6,10 @@ _Note_: This plugin is still under development, and some APIs might not be
 available yet. [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
+|             | Android | iOS    | Web |
+|-------------|---------|--------|-----|
+| **Support** | SDK 16+ | iOS 9+ | Any |
+
 ## Platform integration
 
 ### Android integration

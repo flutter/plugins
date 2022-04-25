@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 0.8.4+1
 
 * Adds README information about macOS entitlements.

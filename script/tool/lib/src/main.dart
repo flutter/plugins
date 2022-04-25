@@ -26,6 +26,7 @@ import 'native_test_command.dart';
 import 'publish_check_command.dart';
 import 'publish_plugin_command.dart';
 import 'pubspec_check_command.dart';
+import 'readme_check_command.dart';
 import 'test_command.dart';
 import 'version_check_command.dart';
 import 'xcode_analyze_command.dart';
@@ -65,6 +66,7 @@ void main(List<String> args) {
     ..addCommand(PublishCheckCommand(packagesDir))
     ..addCommand(PublishPluginCommand(packagesDir))
     ..addCommand(PubspecCheckCommand(packagesDir))
+    ..addCommand(ReadmeCheckCommand(packagesDir))
     ..addCommand(TestCommand(packagesDir))
     ..addCommand(VersionCheckCommand(packagesDir))
     ..addCommand(XcodeAnalyzeCommand(packagesDir));

@@ -852,3 +852,30 @@ class FlutterAssetManager {
   Future<String> getAssetFilePathByName(String name) =>
       api.getAssetFilePathByName(name);
 }
+
+/// Manages the JavaScript storage APIs provided by the [WebView].
+///
+/// Wraps [WebStorage](https://developer.android.com/reference/android/webkit/WebStorage).
+class WebStorage {
+  /// Constructs a [WebStorage].
+  ///
+  /// This constructor is only used for testing. An instance should be obtained
+  /// with [WebStorage.instance].
+  @visibleForTesting
+  WebStorage() {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
+  }
+
+  /// Pigeon Host Api implementation for [WebStorage].
+  @visibleForTesting
+  static WebStorageHostApiImpl api = WebStorageHostApiImpl();
+
+  /// The singleton instance of this class.
+  static WebStorage instance = WebStorage();
+
+  /// Clears all storage currently being used by the JavaScript storage APIs.
+  Future<void> deleteAllData() {
+    return api.deleteAllDataFromInstance(this);
+  }
+}

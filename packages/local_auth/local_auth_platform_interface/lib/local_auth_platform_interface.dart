@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:local_auth_platform_interface/default_method_channel_platform.dart';
-import 'package:local_auth_platform_interface/types/auth_messages.dart';
-import 'package:local_auth_platform_interface/types/auth_options.dart';
-import 'package:local_auth_platform_interface/types/biometric_type.dart';
+import 'package:local_auth_platform_interface/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+export 'package:local_auth_platform_interface/types/types.dart';
 
 /// The interface that implementations of local_auth must implement.
 ///

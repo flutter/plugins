@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 2.1.3
 
 * Fixes iOS crash on `EXC_BAD_ACCESS KERN_PROTECTION_FAILURE` if the map frame changes long after creation.

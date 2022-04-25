@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -71,7 +69,7 @@ class PurchaseWrapper {
   }
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
       orderId,
       packageName,
       purchaseTime,
@@ -238,7 +236,7 @@ class PurchaseHistoryRecordWrapper {
   }
 
   @override
-  int get hashCode => hashValues(purchaseTime, purchaseToken, signature, sku,
+  int get hashCode => Object.hash(purchaseTime, purchaseToken, signature, sku,
       originalJson, developerPayload);
 }
 
@@ -278,7 +276,7 @@ class PurchasesResultWrapper {
   }
 
   @override
-  int get hashCode => hashValues(billingResult, responseCode, purchasesList);
+  int get hashCode => Object.hash(billingResult, responseCode, purchasesList);
 
   /// The detailed description of the status of the operation.
   final BillingResultWrapper billingResult;
@@ -326,7 +324,7 @@ class PurchasesHistoryResult {
   }
 
   @override
-  int get hashCode => hashValues(billingResult, purchaseHistoryRecordList);
+  int get hashCode => Object.hash(billingResult, purchaseHistoryRecordList);
 
   /// The detailed description of the status of the [BillingClient.queryPurchaseHistory].
   final BillingResultWrapper billingResult;

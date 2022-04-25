@@ -9,6 +9,10 @@ The purpose of having this plugin instead of exposing an Android `Lifecycle` obj
 Android embedding plugins API is to force plugins to have a pub constraint that signifies the
 major version of the Android `Lifecycle` API they expect.
 
+|             | Android |
+|-------------|---------|
+| **Support** | SDK 16+ |
+
 ## Installation
 
 Add `flutter_plugin_android_lifecycle` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
@@ -32,7 +36,7 @@ public class MyPlugin implements FlutterPlugin, ActivityAware {
     Lifecycle lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
     // Use lifecycle as desired.
   }
-  
+
   //...
 }
 ```

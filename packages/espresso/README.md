@@ -2,6 +2,10 @@
 
 Provides bindings for Espresso tests of Flutter Android apps.
 
+|             | Android |
+|-------------|---------|
+| **Support** | SDK 16+ |
+
 ## Installation
 
 Add the `espresso` package as a `dev_dependency` in your app's pubspec.yaml. If you're testing the example app of a package, add it as a dev_dependency of the main package as well.
@@ -99,4 +103,3 @@ gcloud firebase test android run --type instrumentation \
   --results-bucket=<RESULTS_BUCKET> \
   --results-dir=<RESULTS_DIRECTORY>
 ```
-

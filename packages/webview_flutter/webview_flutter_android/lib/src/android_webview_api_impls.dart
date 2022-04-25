@@ -787,3 +787,30 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
     instance!.onProgressChanged(webViewInstance!, progress);
   }
 }
+
+/// Host api implementation for [WebStorage].
+class WebStorageHostApiImpl extends WebStorageHostApi {
+  /// Constructs a [WebStorageHostApiImpl].
+  WebStorageHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
+    this.instanceManager = instanceManager ?? InstanceManager.instance;
+  }
+
+  /// Maintains instances stored to communicate with java objects.
+  late final InstanceManager instanceManager;
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> createFromInstance(WebStorage instance) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      return create(instanceId);
+    }
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> deleteAllDataFromInstance(WebStorage instance) {
+    return deleteAllData(instanceManager.getInstanceId(instance)!);
+  }
+}

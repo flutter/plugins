@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 3.0.2
 
 * Adds additional explanation on why it is important to complete a purchase.
