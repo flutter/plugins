@@ -292,7 +292,7 @@ static const NSTimeInterval kTimeout = 30.0;
 }
 
 - (void)testDeviceSupportsBiometrics_withNonEnrolledHardware_iOS11 {
-  if (@available(iOS 11.0.1, *)) {
+  if (@available(iOS 11, *)) {
     FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
     id mockAuthContext = OCMClassMock([LAContext class]);
     plugin.authContextOverrides = @[ mockAuthContext ];
@@ -325,40 +325,6 @@ static const NSTimeInterval kTimeout = 30.0;
 
     [self waitForExpectationsWithTimeout:kTimeout handler:nil];
   }
-}
-
-- (void)testDeviceSupportsBiometrics_withNonEnrolledTouchID {
-  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
-  id mockAuthContext = OCMClassMock([LAContext class]);
-  plugin.authContextOverrides = @[ mockAuthContext ];
-
-  const LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
-  void (^canEvaluatePolicyHandler)(NSInvocation *) = ^(NSInvocation *invocation) {
-    // Write error
-    NSError *__autoreleasing *authError;
-    [invocation getArgument:&authError atIndex:3];
-    *authError = [NSError errorWithDomain:@"error" code:LAErrorTouchIDNotEnrolled userInfo:nil];
-    // Write return value
-    BOOL returnValue = NO;
-    NSValue *nsReturnValue = [NSValue valueWithBytes:&returnValue objCType:@encode(BOOL)];
-    [invocation setReturnValue:&nsReturnValue];
-  };
-  OCMStub([mockAuthContext canEvaluatePolicy:policy
-                                       error:(NSError * __autoreleasing *)[OCMArg anyPointer]])
-      .andDo(canEvaluatePolicyHandler);
-
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"deviceSupportsBiometrics"
-                                                              arguments:@{}];
-  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
-  [plugin handleMethodCall:call
-                    result:^(id _Nullable result) {
-                      XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      XCTAssertTrue([result boolValue]);
-                      [expectation fulfill];
-                    }];
-
-  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
 - (void)testDeviceSupportsBiometrics_withNoBiometricHardware {
@@ -396,7 +362,7 @@ static const NSTimeInterval kTimeout = 30.0;
 }
 
 - (void)testGetEnrolledBiometrics_withFaceID_iOS11 {
-  if (@available(iOS 11.0.1, *)) {
+  if (@available(iOS 11, *)) {
     FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
     id mockAuthContext = OCMClassMock([LAContext class]);
     plugin.authContextOverrides = @[ mockAuthContext ];
@@ -422,7 +388,7 @@ static const NSTimeInterval kTimeout = 30.0;
 }
 
 - (void)testGetEnrolledBiometrics_withTouchID_iOS11 {
-  if (@available(iOS 11.0.1, *)) {
+  if (@available(iOS 11, *)) {
     FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
     id mockAuthContext = OCMClassMock([LAContext class]);
     plugin.authContextOverrides = @[ mockAuthContext ];
@@ -448,7 +414,7 @@ static const NSTimeInterval kTimeout = 30.0;
 }
 
 - (void)testGetEnrolledBiometrics_withTouchID_preIOS11 {
-  if (@available(iOS 11.0.1, *)) {
+  if (@available(iOS 11, *)) {
     return;
   }
   FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
@@ -474,7 +440,7 @@ static const NSTimeInterval kTimeout = 30.0;
 }
 
 - (void)testGetEnrolledBiometrics_withoutEnrolledHardware_iOS11 {
-  if (@available(iOS 11.0.1, *)) {
+  if (@available(iOS 11, *)) {
     FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
     id mockAuthContext = OCMClassMock([LAContext class]);
     plugin.authContextOverrides = @[ mockAuthContext ];
@@ -508,42 +474,4 @@ static const NSTimeInterval kTimeout = 30.0;
     [self waitForExpectationsWithTimeout:kTimeout handler:nil];
   }
 }
-
-- (void)testGetEnrolledBiometrics_withoutEnrolledTouchID_preIOS11 {
-  if (@available(iOS 11.0.1, *)) {
-    return;
-  }
-  FLTLocalAuthPlugin *plugin = [[FLTLocalAuthPlugin alloc] init];
-  id mockAuthContext = OCMClassMock([LAContext class]);
-  plugin.authContextOverrides = @[ mockAuthContext ];
-
-  const LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
-  void (^canEvaluatePolicyHandler)(NSInvocation *) = ^(NSInvocation *invocation) {
-    // Write error
-    NSError *__autoreleasing *authError;
-    [invocation getArgument:&authError atIndex:3];
-    *authError = [NSError errorWithDomain:@"error" code:LAErrorTouchIDNotEnrolled userInfo:nil];
-    // Write return value
-    BOOL returnValue = NO;
-    NSValue *nsReturnValue = [NSValue valueWithBytes:&returnValue objCType:@encode(BOOL)];
-    [invocation setReturnValue:&nsReturnValue];
-  };
-  OCMStub([mockAuthContext canEvaluatePolicy:policy
-                                       error:(NSError * __autoreleasing *)[OCMArg anyPointer]])
-      .andDo(canEvaluatePolicyHandler);
-
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"getEnrolledBiometrics"
-                                                              arguments:@{}];
-  XCTestExpectation *expectation = [self expectationWithDescription:@"Result is called"];
-  [plugin handleMethodCall:call
-                    result:^(id _Nullable result) {
-                      XCTAssertTrue([NSThread isMainThread]);
-                      XCTAssertTrue([result isKindOfClass:[NSArray class]]);
-                      XCTAssertEqual([result count], 0);
-                      [expectation fulfill];
-                    }];
-
-  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
-}
-
 @end

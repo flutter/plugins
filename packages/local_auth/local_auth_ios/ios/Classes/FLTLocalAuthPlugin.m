@@ -108,13 +108,12 @@
   }
   // If not, check if it is because no biometrics are enrolled (but still present).
   if (authError != nil) {
-    if (@available(iOS 11.0.1, *)) {
+    if (@available(iOS 11, *)) {
       if (authError.code == LAErrorBiometryNotEnrolled) {
         result(@YES);
         return;
       }
-    }
-    if (authError.code == LAErrorTouchIDNotEnrolled) {
+    } else if (authError.code == LAErrorTouchIDNotEnrolled) {
       result(@YES);
       return;
     }
@@ -130,7 +129,7 @@
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
     if (authError == nil) {
-      if (@available(iOS 11.0.1, *)) {
+      if (@available(iOS 11, *)) {
         if (context.biometryType == LABiometryTypeFaceID) {
           [biometrics addObject:@"face"];
         } else if (context.biometryType == LABiometryTypeTouchID) {
