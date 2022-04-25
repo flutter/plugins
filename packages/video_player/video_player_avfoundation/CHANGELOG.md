@@ -1,3 +1,7 @@
+## 2.3.2
+
+* Applies the standardized transform for videos with different orientations.
+
 ## 2.3.1
 
 * Renames internal method channels to avoid potential confusion with the
