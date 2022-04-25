@@ -1,3 +1,8 @@
+
+## 2.7.3
+
+* Removes two compile time warnings
+
 ## 2.7.2
 
 * Fixes an integration test race condition.
