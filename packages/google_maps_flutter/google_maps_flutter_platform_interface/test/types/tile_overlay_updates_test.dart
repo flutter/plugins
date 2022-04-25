@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues, hashList;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/tile_overlay.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/tile_overlay_updates.dart';
@@ -98,10 +96,10 @@ void main() {
           TileOverlayUpdates.from(previous, current);
       expect(
           updates.hashCode,
-          hashValues(
-              hashList(updates.tileOverlaysToAdd),
-              hashList(updates.tileOverlayIdsToRemove),
-              hashList(updates.tileOverlaysToChange)));
+          Object.hash(
+              Object.hashAll(updates.tileOverlaysToAdd),
+              Object.hashAll(updates.tileOverlayIdsToRemove),
+              Object.hashAll(updates.tileOverlaysToChange)));
     });
 
     test('toString', () async {

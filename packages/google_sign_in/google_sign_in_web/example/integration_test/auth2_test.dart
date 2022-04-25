@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:html' as html;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
@@ -124,6 +126,25 @@ void main() {
             scopes: <String>['scope with spaces'],
           ),
           throwsAssertionError);
+    });
+
+    // See: https://github.com/flutter/flutter/issues/88084
+    testWidgets('Init passes plugin_name parameter with the expected value',
+        (WidgetTester tester) async {
+      await plugin.init(
+        hostedDomain: 'foo',
+        scopes: <String>['some', 'scope'],
+        clientId: '1234',
+      );
+
+      final Object? initParameters =
+          js_util.getProperty(html.window, 'gapi2.init.parameters');
+      expect(initParameters, isNotNull);
+
+      final Object? pluginNameParameter =
+          js_util.getProperty(initParameters!, 'plugin_name');
+      expect(pluginNameParameter, isA<String>());
+      expect(pluginNameParameter, 'dart-google_sign_in_web');
     });
 
     group('Successful .init, then', () {

@@ -1,3 +1,7 @@
+## 0.3.0+5
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+
 ## 0.3.0+4
 
 * Ensures that `NSError` instances with an unexpected value for the `userInfo` field don't crash the app, but send an explanatory message instead.

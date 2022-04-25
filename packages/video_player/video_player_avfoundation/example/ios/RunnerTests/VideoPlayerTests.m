@@ -7,6 +7,7 @@
 @import XCTest;
 
 #import <OCMock/OCMock.h>
+#import <video_player_avfoundation/AVAssetTrackUtils.h>
 
 @interface FLTVideoPlayer : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer *player;
@@ -15,6 +16,44 @@
 @interface FLTVideoPlayerPlugin (Test) <FLTAVFoundationVideoPlayerApi>
 @property(readonly, strong, nonatomic)
     NSMutableDictionary<NSNumber *, FLTVideoPlayer *> *playersByTextureId;
+@end
+
+@interface FakeAVAssetTrack : AVAssetTrack
+@property(readonly, nonatomic) CGAffineTransform preferredTransform;
+@property(readonly, nonatomic) CGSize naturalSize;
+@property(readonly, nonatomic) UIImageOrientation orientation;
+- (instancetype)initWithOrientation:(UIImageOrientation)orientation;
+@end
+
+@implementation FakeAVAssetTrack
+
+- (instancetype)initWithOrientation:(UIImageOrientation)orientation {
+  _orientation = orientation;
+  _naturalSize = CGSizeMake(800, 600);
+  return self;
+}
+
+- (CGAffineTransform)preferredTransform {
+  switch (_orientation) {
+    case UIImageOrientationUp:
+      return CGAffineTransformMake(1, 0, 0, 1, 0, 0);
+    case UIImageOrientationDown:
+      return CGAffineTransformMake(-1, 0, 0, -1, 0, 0);
+    case UIImageOrientationLeft:
+      return CGAffineTransformMake(0, -1, 1, 0, 0, 0);
+    case UIImageOrientationRight:
+      return CGAffineTransformMake(0, 1, -1, 0, 0, 0);
+    case UIImageOrientationUpMirrored:
+      return CGAffineTransformMake(-1, 0, 0, 1, 0, 0);
+    case UIImageOrientationDownMirrored:
+      return CGAffineTransformMake(1, 0, 0, -1, 0, 0);
+    case UIImageOrientationLeftMirrored:
+      return CGAffineTransformMake(0, -1, -1, 0, 0, 0);
+    case UIImageOrientationRightMirrored:
+      return CGAffineTransformMake(0, 1, 1, 0, 0, 0);
+  }
+}
+
 @end
 
 @interface VideoPlayerTests : XCTestCase
@@ -121,6 +160,17 @@
   XCTAssertEqualWithAccuracy([videoInitialization[@"duration"] intValue], 4000, 200);
 }
 
+- (void)testTransformFix {
+  [self validateTransformFixForOrientation:UIImageOrientationUp];
+  [self validateTransformFixForOrientation:UIImageOrientationDown];
+  [self validateTransformFixForOrientation:UIImageOrientationLeft];
+  [self validateTransformFixForOrientation:UIImageOrientationRight];
+  [self validateTransformFixForOrientation:UIImageOrientationUpMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationDownMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationLeftMirrored];
+  [self validateTransformFixForOrientation:UIImageOrientationRightMirrored];
+}
+
 - (NSDictionary<NSString *, id> *)testPlugin:(FLTVideoPlayerPlugin *)videoPlayerPlugin
                                          uri:(NSString *)uri {
   FlutterError *error;
@@ -173,6 +223,49 @@
   [player onCancelWithArguments:nil];
 
   return initializationEvent;
+}
+
+- (void)validateTransformFixForOrientation:(UIImageOrientation)orientation {
+  AVAssetTrack *track = [[FakeAVAssetTrack alloc] initWithOrientation:orientation];
+  CGAffineTransform t = FLTGetStandardizedTransformForTrack(track);
+  CGSize size = track.naturalSize;
+  CGFloat expectX, expectY;
+  switch (orientation) {
+    case UIImageOrientationUp:
+      expectX = 0;
+      expectY = 0;
+      break;
+    case UIImageOrientationDown:
+      expectX = size.width;
+      expectY = size.height;
+      break;
+    case UIImageOrientationLeft:
+      expectX = 0;
+      expectY = size.width;
+      break;
+    case UIImageOrientationRight:
+      expectX = size.height;
+      expectY = 0;
+      break;
+    case UIImageOrientationUpMirrored:
+      expectX = size.width;
+      expectY = 0;
+      break;
+    case UIImageOrientationDownMirrored:
+      expectX = 0;
+      expectY = size.height;
+      break;
+    case UIImageOrientationLeftMirrored:
+      expectX = size.height;
+      expectY = size.width;
+      break;
+    case UIImageOrientationRightMirrored:
+      expectX = 0;
+      expectY = 0;
+      break;
+  }
+  XCTAssertEqual(t.tx, expectX);
+  XCTAssertEqual(t.ty, expectY);
 }
 
 @end
