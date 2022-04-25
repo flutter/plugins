@@ -8,19 +8,23 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/license_check_command.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'common/plugin_command_test.mocks.dart';
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
   group('LicenseCheckCommand', () {
     late CommandRunner<void> runner;
     late FileSystem fileSystem;
+    late Platform platform;
     late Directory root;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      platform = MockPlatformWithSeparator();
       final Directory packagesDir =
           fileSystem.currentDirectory.childDirectory('packages');
       root = packagesDir.parent;
@@ -30,6 +34,7 @@ void main() {
 
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
+        platform: platform,
         gitDir: gitDir,
       );
       runner =
@@ -141,6 +146,7 @@ void main() {
 
       const List<String> submoduleFiles = <String>[
         '$submoduleName/foo.dart',
+        '$submoduleName/a/b/bar.dart',
         '$submoduleName/LICENSE',
       ];
       for (final String filePath in submoduleFiles) {
@@ -539,6 +545,11 @@ void main() {
           ]));
     });
   });
+}
+
+class MockPlatformWithSeparator extends MockPlatform {
+  @override
+  String get pathSeparator => isWindows ? r'\' : '/';
 }
 
 const String _correctLicenseFileText = '''

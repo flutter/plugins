@@ -5,6 +5,7 @@
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
@@ -106,8 +107,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
   /// Creates a new license check command for [packagesDir].
-  LicenseCheckCommand(Directory packagesDir, {GitDir? gitDir})
-      : super(packagesDir, gitDir: gitDir);
+  LicenseCheckCommand(Directory packagesDir,
+      {Platform platform = const LocalPlatform(), GitDir? gitDir})
+      : super(packagesDir, platform: platform, gitDir: gitDir);
 
   @override
   final String name = 'license-check';
