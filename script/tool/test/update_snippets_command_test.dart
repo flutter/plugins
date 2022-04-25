@@ -8,9 +8,12 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:flutter_plugin_tools/src/update_snippets_command.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+import 'common/plugin_command_test.mocks.dart';
 import 'mocks.dart';
 import 'util.dart';
 
@@ -23,11 +26,14 @@ void main() {
   setUp(() {
     fileSystem = MemoryFileSystem();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
+    final MockGitDir gitDir = MockGitDir();
+    when(gitDir.path).thenReturn(packagesDir.parent.path);
     processRunner = RecordingProcessRunner();
     final UpdateSnippetsCommand analyzeCommand = UpdateSnippetsCommand(
       packagesDir,
       processRunner: processRunner,
       platform: MockPlatform(),
+      gitDir: gitDir,
     );
 
     runner = CommandRunner<void>(
@@ -119,6 +125,40 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains('Skipped 1 package(s)'),
         ]));
+  });
+
+  test('restores pubspec even if running the script fails', () async {
+    final Directory package = createFakePlugin('a_package', packagesDir,
+        extraFiles: <String>['example/build.excerpt.yaml']);
+
+    processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
+      MockProcess(exitCode: 1), // dart pub get
+    ];
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['update-snippets'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    // Check that it's definitely a failure in a step between making the changes
+    // and restoring the original.
+    expect(commandError, isA<ToolExit>());
+    expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('The following packages had errors:'),
+          contains('a_package:\n'
+              '    Unable to get script dependencies')
+        ]));
+
+    final String examplePubspecContent = RepositoryPackage(package)
+        .getExamples()
+        .first
+        .pubspecFile
+        .readAsStringSync();
+    expect(examplePubspecContent, isNot(contains('code_excerpter')));
+    expect(examplePubspecContent, isNot(contains('code_excerpt_updater')));
   });
 
   test('fails if pub get fails', () async {

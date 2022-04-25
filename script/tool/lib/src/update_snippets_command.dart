@@ -6,6 +6,7 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:git/git.dart';
 import 'package:platform/platform.dart';
 
 import 'common/package_looping_command.dart';
@@ -19,7 +20,13 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
-  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
+    GitDir? gitDir,
+  }) : super(
+          packagesDir,
+          processRunner: processRunner,
+          platform: platform,
+          gitDir: gitDir,
+        ) {
     argParser.addFlag(_failOnChangeFlag, hide: true);
   }
 
@@ -33,6 +40,10 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
 
   // The relative directory path to put the extracted snippet yaml files.
   static const String _snippetOutputDir = 'snippets';
+
+  // The filane to store the pre-modification copy of the pubspec.
+  static const String _originalPubspecFilename =
+      'pubspec.plugin_tools_original.yaml';
 
   @override
   final String name = 'update-snippets';
@@ -53,29 +64,37 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
           'No $_buildRunnerConfigFile found in example(s).');
     }
 
+    final Directory repoRoot =
+        packagesDir.fileSystem.directory((await gitDir).path);
+
     for (final RepositoryPackage example in configuredExamples) {
-      // Ensure that dependencies are available.
-      final int pubGetExitCode = await processRunner.runAndStream(
-          'dart', <String>['pub', 'get'],
-          workingDir: example.directory);
-      if (pubGetExitCode != 0) {
-        return PackageResult.fail(
-            <String>['Unable to get script dependencies']);
-      }
+      _addSubmoduleDependencies(example, repoRoot: repoRoot);
 
-      // Update the snippets.
-      if (!await _extractSnippets(example)) {
-        return PackageResult.fail(<String>['Unable to extract snippets']);
-      }
-      if (!await _injectSnippets(example, targetPackage: package)) {
-        return PackageResult.fail(<String>['Unable to inject snippets']);
-      }
+      try {
+        // Ensure that dependencies are available.
+        final int pubGetExitCode = await processRunner.runAndStream(
+            'dart', <String>['pub', 'get'],
+            workingDir: example.directory);
+        if (pubGetExitCode != 0) {
+          return PackageResult.fail(
+              <String>['Unable to get script dependencies']);
+        }
 
-      // Clean up the extracted snippets directory.
-      final Directory snippetDirectory =
-          example.directory.childDirectory(_snippetOutputDir);
-      if (snippetDirectory.existsSync()) {
-        snippetDirectory.deleteSync(recursive: true);
+        // Update the snippets.
+        if (!await _extractSnippets(example)) {
+          return PackageResult.fail(<String>['Unable to extract snippets']);
+        }
+        if (!await _injectSnippets(example, targetPackage: package)) {
+          return PackageResult.fail(<String>['Unable to inject snippets']);
+        }
+      } finally {
+        // Clean up the pubspec changes and extracted snippets directory.
+        _undoPubspecChanges(example);
+        final Directory snippetDirectory =
+            example.directory.childDirectory(_snippetOutputDir);
+        if (snippetDirectory.existsSync()) {
+          snippetDirectory.deleteSync(recursive: true);
+        }
       }
     }
 
@@ -133,6 +152,50 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
         ],
         workingDir: example.directory);
     return exitCode == 0;
+  }
+
+  /// Adds `code_excerpter` and `code_excerpt_updater` to [package]'s
+  /// `dev_dependencies` using path-based references to the submodule copies.
+  /// This is done on the fly rather than being checked in so that:
+  /// - Just building examples don't require everyone to check out submodules.
+  /// - Examples can be analyzed/built even on versions of Flutter that these
+  ///   submodules do not support.
+  void _addSubmoduleDependencies(RepositoryPackage package,
+      {required Directory repoRoot}) {
+    final String pubspecContents = package.pubspecFile.readAsStringSync();
+    // Save aside a copy of the current pubspec state. This allows restoration
+    // to the previous state regardless of its git status at the time the script
+    // ran.
+    package.directory
+        .childFile(_originalPubspecFilename)
+        .writeAsStringSync(pubspecContents);
+
+    // Update the actual pubspec.
+    const String devDependenciesEntry = 'dev_dependencies:';
+    final String relativeRootPath =
+        getRelativePosixPath(repoRoot, from: package.directory);
+    final String newDevDependencies = '''
+$devDependenciesEntry
+  code_excerpter:
+    path: $relativeRootPath/site-shared/packages/code_excerpter
+  code_excerpt_updater:
+    path: $relativeRootPath/site-shared/packages/code_excerpt_updater
+''';
+    final String newPubspecContents =
+        pubspecContents.contains(devDependenciesEntry)
+            ? pubspecContents.replaceFirst(
+                RegExp('^$devDependenciesEntry\$', multiLine: true),
+                newDevDependencies)
+            : '$pubspecContents\n$newDevDependencies';
+    package.pubspecFile.writeAsStringSync(newPubspecContents);
+  }
+
+  /// Restores the version of the pubspec that was present before running
+  /// [_addSubmoduleDependencies].
+  void _undoPubspecChanges(RepositoryPackage package) {
+    package.directory
+        .childFile(_originalPubspecFilename)
+        .renameSync(package.pubspecFile.path);
   }
 
   /// Checks the git state, returning an error string unless nothing has
