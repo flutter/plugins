@@ -46,7 +46,7 @@ final class VideoPlayer {
   private static final String FORMAT_HLS = "hls";
   private static final String FORMAT_OTHER = "other";
 
-  private ExoPlayer exoPlayer;
+  private ExoPlayer mExoPlayer;
 
   private Surface surface;
 
@@ -56,7 +56,7 @@ final class VideoPlayer {
 
   private final EventChannel eventChannel;
 
-  private boolean isInitialized = false;
+  @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -178,20 +178,20 @@ final class VideoPlayer {
         new EventChannel.StreamHandler() {
           @Override
           public void onListen(Object o, EventChannel.EventSink sink) {
-            eventSink.setDelegate(sink);
+            mEventSink.setDelegate(sink);
           }
 
           @Override
           public void onCancel(Object o) {
-            eventSink.setDelegate(null);
+            mEventSink.setDelegate(null);
           }
         });
 
     surface = new Surface(textureEntry.surfaceTexture());
-    exoPlayer.setVideoSurface(surface);
-    setAudioAttributes(exoPlayer, options.mixWithOthers);
+    mExoPlayer.setVideoSurface(surface);
+    setAudioAttributes(mExoPlayer, options.mixWithOthers);
 
-    exoPlayer.addListener(
+    mExoPlayer.addListener(
         new Listener() {
           private boolean isBuffering = false;
 
@@ -200,7 +200,7 @@ final class VideoPlayer {
               isBuffering = buffering;
               Map<String, Object> event = new HashMap<>();
               event.put("event", isBuffering ? "bufferingStart" : "bufferingEnd");
-              eventSink.success(event);
+              mEventSink.success(event);
             }
           }
 
@@ -217,7 +217,7 @@ final class VideoPlayer {
             } else if (playbackState == Player.STATE_ENDED) {
               Map<String, Object> event = new HashMap<>();
               event.put("event", "completed");
-              eventSink.success(event);
+              mEventSink.success(event);
             }
 
             if (playbackState != Player.STATE_BUFFERING) {
@@ -228,8 +228,8 @@ final class VideoPlayer {
           @Override
           public void onPlayerError(final PlaybackException error) {
             setBuffering(false);
-            if (eventSink != null) {
-              eventSink.error("VideoError", "Video player had error " + error, null);
+            if (mEventSink != null) {
+              mEventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
         });
@@ -238,10 +238,10 @@ final class VideoPlayer {
   void sendBufferingUpdate() {
     Map<String, Object> event = new HashMap<>();
     event.put("event", "bufferingUpdate");
-    List<? extends Number> range = Arrays.asList(0, exoPlayer.getBufferedPosition());
+    List<? extends Number> range = Arrays.asList(0, mExoPlayer.getBufferedPosition());
     // iOS supports a list of buffered ranges, so here is a list with a single range.
     event.put("values", Collections.singletonList(range));
-    eventSink.success(event);
+    mEventSink.success(event);
   }
 
   private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
@@ -250,20 +250,20 @@ final class VideoPlayer {
   }
 
   void play() {
-    exoPlayer.setPlayWhenReady(true);
+    mExoPlayer.setPlayWhenReady(true);
   }
 
   void pause() {
-    exoPlayer.setPlayWhenReady(false);
+    mExoPlayer.setPlayWhenReady(false);
   }
 
   void setLooping(boolean value) {
-    exoPlayer.setRepeatMode(value ? REPEAT_MODE_ALL : REPEAT_MODE_OFF);
+    mExoPlayer.setRepeatMode(value ? REPEAT_MODE_ALL : REPEAT_MODE_OFF);
   }
 
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
-    exoPlayer.setVolume(bracketedValue);
+    mExoPlayer.setVolume(bracketedValue);
   }
 
   void setPlaybackSpeed(double value) {
@@ -271,44 +271,36 @@ final class VideoPlayer {
     // therefore never diverge from the default values.
     final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
 
-    exoPlayer.setPlaybackParameters(playbackParameters);
+    mExoPlayer.setPlaybackParameters(playbackParameters);
   }
 
   void seekTo(int location) {
-    exoPlayer.seekTo(location);
+    mExoPlayer.seekTo(location);
   }
 
   long getPosition() {
-    return exoPlayer.getCurrentPosition();
+    return mExoPlayer.getCurrentPosition();
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
-  private void sendInitialized() {
+  void sendInitialized() {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
-      event.put("duration", exoPlayer.getDuration());
+      event.put("duration", mExoPlayer.getDuration());
 
-      if (exoPlayer.getVideoFormat() != null) {
-        Format videoFormat = exoPlayer.getVideoFormat();
+      if (mExoPlayer.getVideoFormat() != null) {
+        Format videoFormat = mExoPlayer.getVideoFormat();
         int width = videoFormat.width;
         int height = videoFormat.height;
         int rotationDegrees = videoFormat.rotationDegrees;
         // Switch the width/height if video was taken in portrait mode
         if (rotationDegrees == 90 || rotationDegrees == 270) {
-          width = exoPlayer.getVideoFormat().height;
-          height = exoPlayer.getVideoFormat().width;
+          width = mExoPlayer.getVideoFormat().height;
+          height = mExoPlayer.getVideoFormat().width;
         }
         event.put("width", width);
         event.put("height", height);
-
-        // Rotating the video with ExoPlayer does not seem to be possible with a Surface,
-        // so inform the Flutter code that the widget needs to be rotated to prevent
-        // upside-down playback for videos with rotationDegrees of 180 (other orientations work
-        // correctly without correction).
-        if (rotationDegrees == 180) {
-          event.put("rotationCorrection", rotationDegrees);
-        }
       }
 
       eventSink.success(event);
@@ -317,15 +309,15 @@ final class VideoPlayer {
 
   void dispose() {
     if (isInitialized) {
-      exoPlayer.stop();
+      mExoPlayer.stop();
     }
     textureEntry.release();
     eventChannel.setStreamHandler(null);
     if (surface != null) {
       surface.release();
     }
-    if (exoPlayer != null) {
-      exoPlayer.release();
+    if (mExoPlayer != null) {
+      mExoPlayer.release();
     }
   }
 }
