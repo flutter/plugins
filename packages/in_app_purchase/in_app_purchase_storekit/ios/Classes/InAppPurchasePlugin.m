@@ -342,7 +342,7 @@
   if (@available(iOS 13.0, *)) {
     _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
         methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
-              binaryMessenger: [_registrar messenger]];
+              binaryMessenger:[_registrar messenger]];
 
     _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc]
         initWithMethodChannel:_paymentQueueDelegateCallbackChannel];
