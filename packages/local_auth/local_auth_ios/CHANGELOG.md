@@ -1,3 +1,8 @@
+## 1.0.4
+
+* Fixes `deviceSupportsBiometrics` to return true when biometric hardware 
+  is available but not enrolled.
+
 ## 1.0.3
 
 * Adopts `Object.hash`.
