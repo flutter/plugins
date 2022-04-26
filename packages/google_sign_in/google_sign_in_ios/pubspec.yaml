@@ -13,6 +13,7 @@ flutter:
     implements: google_sign_in
     platforms:
       ios:
+        dartPluginClass: GoogleSignInIOS
         pluginClass: FLTGoogleSignInPlugin
 
 dependencies:

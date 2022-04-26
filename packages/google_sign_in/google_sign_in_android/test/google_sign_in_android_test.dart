@@ -4,8 +4,9 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in_android/google_sign_in_android.dart';
+import 'package:google_sign_in_android/src/utils.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
-import 'package:google_sign_in_platform_interface/src/utils.dart';
 
 const Map<String, String> kUserData = <String, String>{
   'email': 'john.doe@gmail.com',
@@ -40,7 +41,7 @@ final GoogleSignInTokenData kToken =
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final MethodChannelGoogleSignIn googleSignIn = MethodChannelGoogleSignIn();
+  final GoogleSignInAndroid googleSignIn = GoogleSignInAndroid();
   final MethodChannel channel = googleSignIn.channel;
 
   final List<MethodCall> log = <MethodCall>[];
@@ -58,6 +59,11 @@ void main() {
       return Future<dynamic>.value(response);
     });
     log.clear();
+  });
+
+  test('registered instance', () {
+    GoogleSignInAndroid.registerWith();
+    expect(GoogleSignInPlatform.instance, isA<GoogleSignInAndroid>());
   });
 
   test('signInSilently transforms platform data to GoogleSignInUserData',

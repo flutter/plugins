@@ -6,18 +6,22 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
-import '../google_sign_in_platform_interface.dart';
-import 'types.dart';
-import 'utils.dart';
+import 'src/utils.dart';
 
-/// An implementation of [GoogleSignInPlatform] that uses method channels.
-class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
+/// iOS implementation of [GoogleSignInPlatform].
+class GoogleSignInIOS extends GoogleSignInPlatform {
   /// This is only exposed for test purposes. It shouldn't be used by clients of
   /// the plugin as it may break or change at any time.
   @visibleForTesting
   MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/google_sign_in');
+      const MethodChannel('plugins.flutter.io/google_sign_in_ios');
+
+  /// Registers this class as the default instance of [GoogleSignInPlatform].
+  static void registerWith() {
+    GoogleSignInPlatform.instance = GoogleSignInIOS();
+  }
 
   @override
   Future<void> init({
