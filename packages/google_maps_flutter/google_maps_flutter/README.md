@@ -56,6 +56,14 @@ To use [Hybrid Composition](https://flutter.dev/docs/development/platform-integr
 to render the `GoogleMap` widget on Android, set `AndroidGoogleMapsFlutter.useAndroidViewSurface` to
 true.
 
+Import if necessary:
+
+```dart
+import 'package:flutter/foundation.dart';
+```
+
+Add this code snippet to your main build() method
+
 ```dart
 if (defaultTargetPlatform == TargetPlatform.android) {
   AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
