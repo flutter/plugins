@@ -1,3 +1,8 @@
+## NEXT
+
+- Allows `make-deps-path-based` to skip packages it has alredy rewritten, so
+  that running multiple times won't fail after the first time.
+
 ## 0.8.2+1
 
 - Adds a new `readme-check` command.
