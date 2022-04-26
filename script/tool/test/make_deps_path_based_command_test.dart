@@ -144,6 +144,52 @@ void main() {
         ]));
   });
 
+  // This test case ensures that running CI using this command on an interim
+  // PR that itself used this command won't fail on the rewrite step.
+  test('running a second time no-ops without failing', () async {
+    final RepositoryPackage simplePackage = RepositoryPackage(
+        createFakePackage('foo', packagesDir, isFlutter: true));
+    final Directory pluginGroup = packagesDir.childDirectory('bar');
+
+    RepositoryPackage(createFakePackage('bar_platform_interface', pluginGroup,
+        isFlutter: true));
+    final RepositoryPackage pluginImplementation =
+        RepositoryPackage(createFakePlugin('bar_android', pluginGroup));
+    final RepositoryPackage pluginAppFacing =
+        RepositoryPackage(createFakePlugin('bar', pluginGroup));
+
+    _addDependencies(simplePackage, <String>[
+      'bar',
+      'bar_android',
+      'bar_platform_interface',
+    ]);
+    _addDependencies(pluginAppFacing, <String>[
+      'bar_platform_interface',
+      'bar_android',
+    ]);
+    _addDependencies(pluginImplementation, <String>[
+      'bar_platform_interface',
+    ]);
+
+    await runCapturingPrint(runner, <String>[
+      'make-deps-path-based',
+      '--target-dependencies=bar,bar_platform_interface'
+    ]);
+    final List<String> output = await runCapturingPrint(runner, <String>[
+      'make-deps-path-based',
+      '--target-dependencies=bar,bar_platform_interface'
+    ]);
+
+    expect(
+        output,
+        containsAll(<String>[
+          'Rewriting references to: bar, bar_platform_interface...',
+          '  Skipped packages/bar/bar/pubspec.yaml - Already rewritten',
+          '  Skipped packages/bar/bar_android/pubspec.yaml - Already rewritten',
+          '  Skipped packages/foo/pubspec.yaml - Already rewritten',
+        ]));
+  });
+
   group('target-dependencies-with-non-breaking-updates', () {
     test('no-ops for no published changes', () async {
       final Directory package = createFakePackage('foo', packagesDir);
