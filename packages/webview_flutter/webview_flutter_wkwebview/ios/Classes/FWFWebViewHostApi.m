@@ -28,7 +28,7 @@
 @end
 
 @interface FWFWebViewHostApiImpl ()
-@property (nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebViewHostApiImpl
