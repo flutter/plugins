@@ -44,12 +44,13 @@ void main() {
   final GoogleSignInIOS googleSignIn = GoogleSignInIOS();
   final MethodChannel channel = googleSignIn.channel;
 
-  final List<MethodCall> log = <MethodCall>[];
+  late List<MethodCall> log;
   late Map<String, dynamic>
       responses; // Some tests mutate some kDefaultResponses
 
   setUp(() {
     responses = Map<String, dynamic>.from(kDefaultResponses);
+    log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) {
       log.add(methodCall);
       final dynamic response = responses[methodCall.method];
@@ -58,12 +59,21 @@ void main() {
       }
       return Future<dynamic>.value(response);
     });
-    log.clear();
   });
 
   test('registered instance', () {
     GoogleSignInIOS.registerWith();
     expect(GoogleSignInPlatform.instance, isA<GoogleSignInIOS>());
+  });
+
+  test('init throws for SignInOptions.games', () async {
+    expect(
+        () => googleSignIn.init(
+            hostedDomain: 'example.com',
+            signInOption: SignInOption.games,
+            clientId: 'fakeClientId'),
+        throwsA(isInstanceOf<PlatformException>().having(
+            (PlatformException e) => e.code, 'code', 'unsupported-options')));
   });
 
   test('signInSilently transforms platform data to GoogleSignInUserData',
@@ -98,18 +108,21 @@ void main() {
         }));
   });
 
+  test('clearAuthCache is a no-op', () async {
+    await googleSignIn.clearAuthCache(token: 'abc');
+    expect(log.isEmpty, true);
+  });
+
   test('Other functions pass through arguments to the channel', () async {
     final Map<Function, Matcher> tests = <Function, Matcher>{
       () {
         googleSignIn.init(
             hostedDomain: 'example.com',
             scopes: <String>['two', 'scopes'],
-            signInOption: SignInOption.games,
             clientId: 'fakeClientId');
       }: isMethodCall('init', arguments: <String, dynamic>{
         'hostedDomain': 'example.com',
         'scopes': <String>['two', 'scopes'],
-        'signInOption': 'SignInOption.games',
         'clientId': 'fakeClientId',
       }),
       () {
@@ -118,11 +131,6 @@ void main() {
       }: isMethodCall('getTokens', arguments: <String, dynamic>{
         'email': 'example@example.com',
         'shouldRecoverAuth': false,
-      }),
-      () {
-        googleSignIn.clearAuthCache(token: 'abc');
-      }: isMethodCall('clearAuthCache', arguments: <String, dynamic>{
-        'token': 'abc',
       }),
       () {
         googleSignIn.requestScopes(<String>['newScope', 'anotherScope']);

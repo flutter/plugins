@@ -30,8 +30,12 @@ class GoogleSignInIOS extends GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) {
+    if (signInOption == SignInOption.games) {
+      throw PlatformException(
+          code: 'unsupported-options',
+          message: 'Games sign in is not supported on iOS');
+    }
     return channel.invokeMethod<void>('init', <String, dynamic>{
-      'signInOption': signInOption.toString(),
       'scopes': scopes,
       'hostedDomain': hostedDomain,
       'clientId': clientId,
@@ -78,11 +82,9 @@ class GoogleSignInIOS extends GoogleSignInPlatform {
   }
 
   @override
-  Future<void> clearAuthCache({String? token}) {
-    return channel.invokeMethod<void>(
-      'clearAuthCache',
-      <String, String?>{'token': token},
-    );
+  Future<void> clearAuthCache({String? token}) async {
+    // There's nothing to be done here on iOS since the expired/invalid
+    // tokens are refreshed automatically by getTokens.
   }
 
   @override
