@@ -73,7 +73,7 @@
   XCTAssertNil(error);
 }
 
-- (void)testUrl {
+- (void)testUrlForWebViewWithInstanceId {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMStub([mockWebView URL]).andReturn([NSURL URLWithString:@"https://www.flutter.dev/"]);
 
@@ -84,7 +84,7 @@
       [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  XCTAssertEqualObjects([hostApi webViewWithInstanceIdUrl:@0 error:&error],
+  XCTAssertEqualObjects([hostApi urlForWebViewWithInstanceId:@0 error:&error],
                         @"https://www.flutter.dev/");
   XCTAssertNil(error);
 }

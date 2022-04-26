@@ -375,7 +375,7 @@ abstract class WKWebViewHostApi {
 
   void setNavigationDelegate(int instanceId, int? navigationDelegateInstanceId);
 
-  @ObjCSelector('webViewWithInstanceIdUrl:')
+  @ObjCSelector('urlForWebViewWithInstanceId:')
   String? getUrl(int instanceId);
 
   double getEstimatedProgress(int instanceId);

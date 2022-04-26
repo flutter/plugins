@@ -347,8 +347,8 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
 - (void)setNavigationDelegateInstanceId:(NSNumber *)instanceId
            navigationDelegateInstanceId:(nullable NSNumber *)navigationDelegateInstanceId
                                   error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSString *)webViewWithInstanceIdUrl:(NSNumber *)instanceId
-                                          error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable NSString *)urlForWebViewWithInstanceId:(NSNumber *)instanceId
+                                             error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable NSNumber *)getEstimatedProgressInstanceId:(NSNumber *)instanceId
                                                 error:(FlutterError *_Nullable *_Nonnull)error;

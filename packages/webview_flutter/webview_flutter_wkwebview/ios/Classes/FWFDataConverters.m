@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #import "FWFDataConverters.h"
+
 #import <Flutter/Flutter.h>
 
-NSURLRequest *_Nullable FWFConvertURLRequestData(FWFNSUrlRequestData *data) {
+NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data) {
   NSURL *url = [NSURL URLWithString:data.url];
   if (!url) {
     return nil;

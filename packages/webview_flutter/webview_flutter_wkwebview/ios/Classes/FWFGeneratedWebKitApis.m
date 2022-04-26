@@ -1546,15 +1546,15 @@ void FWFWKWebViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(webViewWithInstanceIdUrl:error:)],
+      NSCAssert([api respondsToSelector:@selector(urlForWebViewWithInstanceId:error:)],
                 @"FWFWKWebViewHostApi api (%@) doesn't respond to "
-                @"@selector(webViewWithInstanceIdUrl:error:)",
+                @"@selector(urlForWebViewWithInstanceId:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        NSString *output = [api webViewWithInstanceIdUrl:arg_instanceId error:&error];
+        NSString *output = [api urlForWebViewWithInstanceId:arg_instanceId error:&error];
         callback(wrapResult(output, error));
       }];
     } else {

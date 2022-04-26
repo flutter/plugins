@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #import "FWFWebViewHostApi.h"
-#import <Flutter/Flutter.h>
-#import <WebKit/WebKit.h>
 #import "FWFDataConverters.h"
 
 @implementation FWFWebView
@@ -49,7 +47,7 @@
 - (void)webViewWithInstanceId:(nonnull NSNumber *)instanceId
                   loadRequest:(nonnull FWFNSUrlRequestData *)request
                         error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  NSURLRequest *urlRequest = FWFConvertURLRequestData(request);
+  NSURLRequest *urlRequest = FWFNSURLRequestFromRequestData(request);
   if (!urlRequest) {
     *error = [FlutterError errorWithCode:@"CreateNSURLRequestFailure"
                                  message:@"Failed instantiating an NSURLRequest."
@@ -71,9 +69,9 @@
   return @([self getWebViewInstance:instanceId].canGoBack);
 }
 
-- (nullable NSString *)webViewWithInstanceIdUrl:(nonnull NSNumber *)instanceId
-                                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
-                                                    error {
+- (nullable NSString *)
+    urlForWebViewWithInstanceId:(nonnull NSNumber *)instanceId
+                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   return [self getWebViewInstance:instanceId].URL.absoluteString;
 }
 
