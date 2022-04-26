@@ -32,8 +32,12 @@ void main() {
 
   group('canLaunch', () {
     test('calls through', () async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        return true;
+      });
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
-      await launcher.canLaunch('http://example.com/');
+      final bool canLaunch = await launcher.canLaunch('http://example.com/');
       expect(
         log,
         <Matcher>[
@@ -42,6 +46,7 @@ void main() {
           })
         ],
       );
+      expect(canLaunch, true);
     });
 
     test('returns false if platform returns null', () async {
@@ -49,6 +54,51 @@ void main() {
       final bool canLaunch = await launcher.canLaunch('http://example.com/');
 
       expect(canLaunch, false);
+    });
+
+    test('checks a generic URL if an http URL returns false', () async {
+      const String specificUrl = 'http://example.com/';
+      const String genericUrl = 'http://flutter.dev';
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        return methodCall.arguments['url'] != specificUrl;
+      });
+
+      final UrlLauncherAndroid launcher = UrlLauncherAndroid();
+      final bool canLaunch = await launcher.canLaunch(specificUrl);
+
+      expect(canLaunch, true);
+      expect(log.length, 2);
+      expect(log[1].arguments['url'], genericUrl);
+    });
+
+    test('checks a generic URL if an https URL returns false', () async {
+      const String specificUrl = 'https://example.com/';
+      const String genericUrl = 'https://flutter.dev';
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        return methodCall.arguments['url'] != specificUrl;
+      });
+
+      final UrlLauncherAndroid launcher = UrlLauncherAndroid();
+      final bool canLaunch = await launcher.canLaunch(specificUrl);
+
+      expect(canLaunch, true);
+      expect(log.length, 2);
+      expect(log[1].arguments['url'], genericUrl);
+    });
+
+    test('does not a generic URL if a non-web URL returns false', () async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        return false;
+      });
+
+      final UrlLauncherAndroid launcher = UrlLauncherAndroid();
+      final bool canLaunch = await launcher.canLaunch('sms:12345');
+
+      expect(canLaunch, false);
+      expect(log.length, 1);
     });
   });
 
