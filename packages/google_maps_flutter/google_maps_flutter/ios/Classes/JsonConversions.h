@@ -5,15 +5,26 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-@interface FLTGoogleMapJsonConversions : NSObject
-+ (bool)toBool:(NSNumber *)data;
-+ (int)toInt:(NSNumber *)data;
-+ (double)toDouble:(NSNumber *)data;
-+ (float)toFloat:(NSNumber *)data;
-+ (CLLocationCoordinate2D)toLocation:(NSArray *)data;
-+ (CGPoint)toPoint:(NSArray *)data;
-+ (NSArray *)positionToJson:(CLLocationCoordinate2D)position;
-+ (UIColor *)toColor:(NSNumber *)data;
-+ (NSArray<CLLocation *> *)toPoints:(NSArray *)data;
-+ (NSArray<NSArray<CLLocation *> *> *)toHoles:(NSArray *)data;
+NS_ASSUME_NONNULL_BEGIN
+
+@interface FLTGoogleMapJSONConversions : NSObject
+
++ (CLLocationCoordinate2D)locationFromLatlong:(NSArray *)latlong;
++ (CGPoint)pointFromArray:(NSArray *)array;
++ (NSArray *)arrayFromLocation:(CLLocationCoordinate2D)location;
++ (UIColor *)colorFromRGBA:(NSNumber *)data;
++ (NSArray<CLLocation *> *)pointsFromLatlongs:(NSArray *)data;
++ (NSArray<NSArray<CLLocation *> *> *)holesFromPointsArray:(NSArray *)data;
++ (nullable NSDictionary<NSString *, id> *)dictionaryFromPosition:
+    (nullable GMSCameraPosition *)position;
++ (NSDictionary<NSString *, NSNumber *> *)dictionaryFromPoint:(CGPoint)point;
++ (nullable NSDictionary *)dictionaryFromCoordinateBounds:(nullable GMSCoordinateBounds *)bounds;
++ (nullable GMSCameraPosition *)cameraPostionFromDictionary:(nullable NSDictionary *)channelValue;
++ (CGPoint)pointFromDictionary:(NSDictionary *)dictionary;
++ (GMSCoordinateBounds *)coordinateBoundsFromLatlongs:(NSArray *)latlongs;
++ (GMSMapViewType)mapViewTypeFromTypeValue:(NSNumber *)value;
++ (nullable GMSCameraUpdate *)cameraUpdateFromChannelValue:(NSArray *)channelValue;
+
 @end
+
+NS_ASSUME_NONNULL_END

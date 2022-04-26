@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                viewIdentifier:(int64_t)viewId
                     arguments:(nullable id)args
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
-- (void)showAtX:(CGFloat)x Y:(CGFloat)y;
+- (void)showAtOrigin:(CGPoint)origin;
 - (void)hide;
 - (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
 - (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;

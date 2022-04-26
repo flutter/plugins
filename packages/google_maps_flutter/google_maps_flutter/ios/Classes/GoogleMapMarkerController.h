@@ -26,9 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapMarkerController : NSObject <FLTGoogleMapMarkerOptionsSink>
-@property(atomic, readonly) NSString *markerId;
 - (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
-                              markerId:(NSString *)markerId
+                            identifier:(NSString *)identifier
                                mapView:(GMSMapView *)mapView;
 - (void)showInfoWindow;
 - (void)hideInfoWindow;
@@ -38,20 +37,24 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface FLTMarkersController : NSObject
-- (instancetype)init:(FlutterMethodChannel *)methodChannel
-             mapView:(GMSMapView *)mapView
-           registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+- (instancetype)initWithMethodChannel:(FlutterMethodChannel *)methodChannel
+                              mapView:(GMSMapView *)mapView
+                            registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)addMarkers:(NSArray *)markersToAdd;
 - (void)changeMarkers:(NSArray *)markersToChange;
-- (void)removeMarkerIds:(NSArray *)markerIdsToRemove;
-- (BOOL)onMarkerTap:(NSString *)markerId;
-- (void)onMarkerDragStart:(NSString *)markerId coordinate:(CLLocationCoordinate2D)coordinate;
-- (void)onMarkerDragEnd:(NSString *)markerId coordinate:(CLLocationCoordinate2D)coordinate;
-- (void)onMarkerDrag:(NSString *)markerId coordinate:(CLLocationCoordinate2D)coordinate;
-- (void)onInfoWindowTap:(NSString *)markerId;
-- (void)showMarkerInfoWindow:(NSString *)markerId result:(FlutterResult)result;
-- (void)hideMarkerInfoWindow:(NSString *)markerId result:(FlutterResult)result;
-- (void)isMarkerInfoWindowShown:(NSString *)markerId result:(FlutterResult)result;
+- (void)removeMarkersWithIdentifiers:(NSArray *)identifiers;
+- (BOOL)didTapMarkerWithIdentifier:(NSString *)identifier;
+- (void)didStartDraggingMarkerWithIdentifier:(NSString *)identifier
+                                    location:(CLLocationCoordinate2D)coordinate;
+- (void)didEndDraggingMarkerWithIdentifier:(NSString *)identifier
+                                  location:(CLLocationCoordinate2D)coordinate;
+- (void)didDragMarkerWithIdentifier:(NSString *)identifier
+                           location:(CLLocationCoordinate2D)coordinate;
+- (void)didTapInfoWindowOfMarkerWithIdentifier:(NSString *)identifier;
+- (void)showMarkerInfoWindowWithIdentifier:(NSString *)identifier result:(FlutterResult)result;
+- (void)hideMarkerInfoWindowWithIdentifier:(NSString *)identifier result:(FlutterResult)result;
+- (void)isInfoWindowShownForMarkerWithIdentifier:(NSString *)identifier
+                                          result:(FlutterResult)result;
 @end
 
 NS_ASSUME_NONNULL_END

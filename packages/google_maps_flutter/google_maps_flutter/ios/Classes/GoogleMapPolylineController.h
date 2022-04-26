@@ -18,9 +18,8 @@
 
 // Defines polyline controllable by Flutter.
 @interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
-@property(atomic, readonly) NSString *polylineId;
 - (instancetype)initPolylineWithPath:(GMSMutablePath *)path
-                          polylineId:(NSString *)polylineId
+                          identifier:(NSString *)identifier
                              mapView:(GMSMapView *)mapView;
 - (void)removePolyline;
 @end
@@ -31,7 +30,7 @@
            registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)addPolylines:(NSArray *)polylinesToAdd;
 - (void)changePolylines:(NSArray *)polylinesToChange;
-- (void)removePolylineIds:(NSArray *)polylineIdsToRemove;
-- (void)onPolylineTap:(NSString *)polylineId;
-- (bool)hasPolylineWithId:(NSString *)polylineId;
+- (void)removePolylineWithIdentifiers:(NSArray *)identifiers;
+- (void)didTapPolylineWithIdentifier:(NSString *)identifier;
+- (bool)hasPolylineWithIdentifier:(NSString *)identifier;
 @end
