@@ -203,9 +203,14 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
     if(enable) {
         if ([_captureSession canAddOutput:_metadataOutput]) {
             [_captureSession addOutput:_metadataOutput];
-            _metadataOutput.metadataObjectTypes = @[
-                                           AVMetadataObjectTypeQRCode
-                                           ];
+            for (AVMetadataObjectType type in _metadataOutput.availableMetadataObjectTypes) {
+                if (type == AVMetadataObjectTypeQRCode) {
+                    _metadataOutput.metadataObjectTypes = @[
+                                                   AVMetadataObjectTypeQRCode
+                                                   ];
+                    break;
+                }
+            }
         }
     } else {
         [_captureSession removeOutput:_metadataOutput];
