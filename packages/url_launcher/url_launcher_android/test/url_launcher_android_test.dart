@@ -10,10 +10,12 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$UrlLauncherAndroid', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/url_launcher_android');
-    final List<MethodCall> log = <MethodCall>[];
+  const MethodChannel channel =
+      MethodChannel('plugins.flutter.io/url_launcher_android');
+  late List<MethodCall> log;
+
+  setUp(() {
+    log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
 
@@ -21,17 +23,15 @@ void main() {
       // returned by the method channel if no return statement is specified.
       return null;
     });
+  });
 
-    tearDown(() {
-      log.clear();
-    });
+  test('registers instance', () {
+    UrlLauncherAndroid.registerWith();
+    expect(UrlLauncherPlatform.instance, isA<UrlLauncherAndroid>());
+  });
 
-    test('registers instance', () {
-      UrlLauncherAndroid.registerWith();
-      expect(UrlLauncherPlatform.instance, isA<UrlLauncherAndroid>());
-    });
-
-    test('canLaunch', () async {
+  group('canLaunch', () {
+    test('calls through', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.canLaunch('http://example.com/');
       expect(
@@ -44,14 +44,16 @@ void main() {
       );
     });
 
-    test('canLaunch should return false if platform returns null', () async {
+    test('returns false if platform returns null', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       final bool canLaunch = await launcher.canLaunch('http://example.com/');
 
       expect(canLaunch, false);
     });
+  });
 
-    test('launch', () async {
+  group('launch', () {
+    test('calls through', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.launch(
         'http://example.com/',
@@ -77,7 +79,7 @@ void main() {
       );
     });
 
-    test('launch with headers', () async {
+    test('passes headers', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.launch(
         'http://example.com/',
@@ -103,7 +105,7 @@ void main() {
       );
     });
 
-    test('launch universal links only', () async {
+    test('handles universal links only', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.launch(
         'http://example.com/',
@@ -129,7 +131,7 @@ void main() {
       );
     });
 
-    test('launch force WebView', () async {
+    test('handles force WebView', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.launch(
         'http://example.com/',
@@ -155,7 +157,7 @@ void main() {
       );
     });
 
-    test('launch force WebView enable javascript', () async {
+    test('handles force WebView with javascript', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.launch(
         'http://example.com/',
@@ -181,7 +183,7 @@ void main() {
       );
     });
 
-    test('launch force WebView enable DOM storage', () async {
+    test('handles force WebView with DOM storage', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.launch(
         'http://example.com/',
@@ -207,7 +209,7 @@ void main() {
       );
     });
 
-    test('launch should return false if platform returns null', () async {
+    test('returns false if platform returns null', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       final bool launched = await launcher.launch(
         'http://example.com/',
@@ -221,8 +223,10 @@ void main() {
 
       expect(launched, false);
     });
+  });
 
-    test('closeWebView default behavior', () async {
+  group('closeWebView', () {
+    test('calls through', () async {
       final UrlLauncherAndroid launcher = UrlLauncherAndroid();
       await launcher.closeWebView();
       expect(
