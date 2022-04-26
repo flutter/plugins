@@ -292,7 +292,7 @@ gmaps_visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
     ..data = heatmap.data
         .map(
           (e) => gmaps_visualization.WeightedLocation()
-            ..location = gmaps.LatLng(e.location.latitude, e.location.longitude)
+            ..location = gmaps.LatLng(e.latitude, e.longitude)
             ..weight = e.weight,
         )
         .toList()
