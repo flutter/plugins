@@ -18,15 +18,14 @@
 // Defines heatmap controllable by Flutter.
 @interface FLTGoogleMapHeatmapController : NSObject <FLTGoogleMapHeatmapOptionsSink>
 @property(atomic, readonly) NSString *heatmapId;
-- (instancetype)initWithHeatmap:(GMUHeatmapTileLayer *)heatmap mapView:(GMSMapView *)mapView;
+- (instancetype)initWithHeatmapTileLayer:(GMUHeatmapTileLayer *)heatmap
+                                 mapView:(GMSMapView *)mapView;
 - (void)removeHeatmap;
 - (void)clearTileCache;
 @end
 
 @interface FLTHeatmapsController : NSObject
-- (instancetype)init:(FlutterMethodChannel *)methodChannel
-             mapView:(GMSMapView *)mapView
-           registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+- (instancetype)init:(GMSMapView *)mapView;
 - (void)addHeatmaps:(NSArray *)heatmapsToAdd;
 - (void)changeHeatmaps:(NSArray *)heatmapsToChange;
 - (void)removeHeatmapIds:(NSArray *)heatmapIdsToRemove;
