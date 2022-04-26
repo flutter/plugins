@@ -30,54 +30,51 @@
 @end
 
 @interface FWFWebViewHostApiImpl ()
-@property FWFInstanceManager *instanceManager;
+@property(atomic, strong) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebViewHostApiImpl
 - (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
   self = [self init];
   if (self) {
-    self.instanceManager = instanceManager;
+    _instanceManager = instanceManager;
   }
   return self;
 }
 
-- (void)webView:(nonnull NSNumber *)instanceId
-    loadRequest:(nonnull FWFNSUrlRequestData *)request
-          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  FWFWebView *webView =
-      (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (FWFWebView *)getWebViewInstance:(NSNumber *)instanceId {
+  return (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+}
+
+- (void)webViewWithInstanceId:(nonnull NSNumber *)instanceId
+                  loadRequest:(nonnull FWFNSUrlRequestData *)request
+                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   NSURLRequest *urlRequest = FWFConvertURLRequestData(request);
   if (!urlRequest) {
-    *error =
-        [FlutterError errorWithCode:@"loadUrl_failed"
-                            message:@"Failed parsing the URL"
-                            details:[NSString stringWithFormat:@"Request was: '%@'", request.url]];
+    *error = [FlutterError errorWithCode:@"CreateNSURLRequestFailure"
+                                 message:@"Failed instantiating an NSURLRequest."
+                                 details:[NSString stringWithFormat:@"Url was: '%@'", request.url]];
     return;
   }
-  [webView loadRequest:urlRequest];
+  [[self getWebViewInstance:instanceId] loadRequest:urlRequest];
 }
 
-- (void)webView:(nonnull NSNumber *)instanceId
-    setCustomUserAgent:(nullable NSString *)userAgent
-                 error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  FWFWebView *webView =
-      (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
-  [webView setCustomUserAgent:userAgent];
+- (void)webViewWithInstanceId:(nonnull NSNumber *)instanceId
+           setCustomUserAgent:(nullable NSString *)userAgent
+                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[self getWebViewInstance:instanceId] setCustomUserAgent:userAgent];
 }
 
-- (nullable NSNumber *)webViewCanGoBack:(nonnull NSNumber *)instanceId
-                                  error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  FWFWebView *webView =
-      (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
-  return @(webView.canGoBack);
+- (nullable NSNumber *)
+    webViewWithInstanceIdCanGoBack:(nonnull NSNumber *)instanceId
+                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  return @([self getWebViewInstance:instanceId].canGoBack);
 }
 
-- (nullable NSString *)webViewUrl:(nonnull NSNumber *)instanceId
-                            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  FWFWebView *webView =
-      (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
-  return webView.URL.absoluteString;
+- (nullable NSString *)webViewWithInstanceIdUrl:(nonnull NSNumber *)instanceId
+                                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                    error {
+  return [self getWebViewInstance:instanceId].URL.absoluteString;
 }
 
 - (nullable NSNumber *)canGoForwardInstanceId:(nonnull NSNumber *)instanceId

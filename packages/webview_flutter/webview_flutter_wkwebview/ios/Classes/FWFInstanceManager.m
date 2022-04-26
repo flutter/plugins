@@ -13,9 +13,9 @@
 @implementation FWFInstanceManager
 - (instancetype)init {
   if (self) {
-    self.lockQueue = dispatch_queue_create("FWFInstanceManager", DISPATCH_QUEUE_SERIAL);
-    self.identifiersToInstances = [NSMapTable strongToStrongObjectsMapTable];
-    self.instancesToIdentifiers = [NSMapTable strongToStrongObjectsMapTable];
+    _lockQueue = dispatch_queue_create("FWFInstanceManager", DISPATCH_QUEUE_SERIAL);
+    _identifiersToInstances = [NSMapTable strongToStrongObjectsMapTable];
+    _instancesToIdentifiers = [NSMapTable strongToStrongObjectsMapTable];
   }
   return self;
 }

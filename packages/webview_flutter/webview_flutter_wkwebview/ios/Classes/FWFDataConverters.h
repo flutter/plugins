@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return An NSURLRequest or nil if data could not be converted.
  */
-id FWFConvertURLRequestData(FWFNSUrlRequestData* data);
+extern NSURLRequest* _Nullable FWFConvertURLRequestData(
+    FWFNSUrlRequestData* data);
 
 NS_ASSUME_NONNULL_END

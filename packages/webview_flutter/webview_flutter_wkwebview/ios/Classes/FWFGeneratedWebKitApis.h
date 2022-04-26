@@ -347,14 +347,14 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
 - (void)setNavigationDelegateInstanceId:(NSNumber *)instanceId
            navigationDelegateInstanceId:(nullable NSNumber *)navigationDelegateInstanceId
                                   error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSString *)webViewUrl:(NSNumber *)instanceId
-                            error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable NSString *)webViewWithInstanceIdUrl:(NSNumber *)instanceId
+                                          error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable NSNumber *)getEstimatedProgressInstanceId:(NSNumber *)instanceId
                                                 error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)webView:(NSNumber *)instanceId
-    loadRequest:(FWFNSUrlRequestData *)request
-          error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)webViewWithInstanceId:(NSNumber *)instanceId
+                  loadRequest:(FWFNSUrlRequestData *)request
+                        error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)loadHtmlStringInstanceId:(NSNumber *)instanceId
                           string:(NSString *)string
                          baseUrl:(nullable NSString *)baseUrl
@@ -367,8 +367,8 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
                                key:(NSString *)key
                              error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
-- (nullable NSNumber *)webViewCanGoBack:(NSNumber *)instanceId
-                                  error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable NSNumber *)webViewWithInstanceIdCanGoBack:(NSNumber *)instanceId
+                                                error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable NSNumber *)canGoForwardInstanceId:(NSNumber *)instanceId
                                         error:(FlutterError *_Nullable *_Nonnull)error;
@@ -380,9 +380,9 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
 - (void)setAllowsBackForwardNavigationGesturesInstanceId:(NSNumber *)instanceId
                                                    allow:(NSNumber *)allow
                                                    error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)webView:(NSNumber *)instanceId
-    setCustomUserAgent:(nullable NSString *)userAgent
-                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)webViewWithInstanceId:(NSNumber *)instanceId
+           setCustomUserAgent:(nullable NSString *)userAgent
+                        error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)evaluateJavaScriptInstanceId:(NSNumber *)instanceId
                     javascriptString:(NSString *)javascriptString
                           completion:

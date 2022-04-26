@@ -375,12 +375,12 @@ abstract class WKWebViewHostApi {
 
   void setNavigationDelegate(int instanceId, int? navigationDelegateInstanceId);
 
-  @ObjCSelector('webViewUrl:')
+  @ObjCSelector('webViewWithInstanceIdUrl:')
   String? getUrl(int instanceId);
 
   double getEstimatedProgress(int instanceId);
 
-  @ObjCSelector('webView:loadRequest:')
+  @ObjCSelector('webViewWithInstanceId:loadRequest:')
   void loadRequest(int instanceId, NSUrlRequestData request);
 
   void loadHtmlString(int instanceId, String string, String? baseUrl);
@@ -389,7 +389,7 @@ abstract class WKWebViewHostApi {
 
   void loadFlutterAsset(int instanceId, String key);
 
-  @ObjCSelector('webViewCanGoBack:')
+  @ObjCSelector('webViewWithInstanceIdCanGoBack:')
   bool canGoBack(int instanceId);
 
   bool canGoForward(int instanceId);
@@ -404,7 +404,7 @@ abstract class WKWebViewHostApi {
 
   void setAllowsBackForwardNavigationGestures(int instanceId, bool allow);
 
-  @ObjCSelector('webView:setCustomUserAgent:')
+  @ObjCSelector('webViewWithInstanceId:setCustomUserAgent:')
   void setCustomUserAgent(int instanceId, String? userAgent);
 
   @async
