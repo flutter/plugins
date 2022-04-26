@@ -8,7 +8,7 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/android_webview.pigeon.dart',
     dartTestOut: 'test/test_android_webview.pigeon.dart',
-    dartOptions: DartOptions(isNullSafe: true, copyrightHeader: <String>[
+    dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
       'found in the LICENSE file.',
@@ -17,7 +17,7 @@ import 'package:pigeon/pigeon.dart';
         'android/src/main/java/io/flutter/plugins/webviewflutter/GeneratedAndroidWebView.java',
     javaOptions: JavaOptions(
       package: 'io.flutter.plugins.webviewflutter',
-      className: 'GeneratedAndroidWebView.java',
+      className: 'GeneratedAndroidWebView',
       copyrightHeader: <String>[
         'Copyright 2013 The Flutter Authors. All rights reserved.',
         'Use of this source code is governed by a BSD-style license that can be',

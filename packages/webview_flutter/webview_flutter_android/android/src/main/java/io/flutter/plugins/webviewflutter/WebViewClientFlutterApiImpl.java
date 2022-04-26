@@ -26,40 +26,36 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   @RequiresApi(api = Build.VERSION_CODES.M)
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
       WebResourceError error) {
-    final GeneratedAndroidWebView.WebResourceErrorData errorData =
-        new GeneratedAndroidWebView.WebResourceErrorData();
-    errorData.setErrorCode((long) error.getErrorCode());
-    errorData.setDescription(error.getDescription().toString());
-
-    return errorData;
+    return new GeneratedAndroidWebView.WebResourceErrorData.Builder()
+        .setErrorCode((long) error.getErrorCode())
+        .setDescription(error.getDescription().toString())
+        .build();
   }
 
   @SuppressLint("RequiresFeature")
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
       WebResourceErrorCompat error) {
-    final GeneratedAndroidWebView.WebResourceErrorData errorData =
-        new GeneratedAndroidWebView.WebResourceErrorData();
-    errorData.setErrorCode((long) error.getErrorCode());
-    errorData.setDescription(error.getDescription().toString());
-
-    return errorData;
+    return new GeneratedAndroidWebView.WebResourceErrorData.Builder()
+        .setErrorCode((long) error.getErrorCode())
+        .setDescription(error.getDescription().toString())
+        .build();
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   static GeneratedAndroidWebView.WebResourceRequestData createWebResourceRequestData(
       WebResourceRequest request) {
-    final GeneratedAndroidWebView.WebResourceRequestData requestData =
-        new GeneratedAndroidWebView.WebResourceRequestData();
-    requestData.setUrl(request.getUrl().toString());
-    requestData.setIsForMainFrame(request.isForMainFrame());
+    final GeneratedAndroidWebView.WebResourceRequestData.Builder requestData =
+        new GeneratedAndroidWebView.WebResourceRequestData.Builder()
+            .setUrl(request.getUrl().toString())
+            .setIsForMainFrame(request.isForMainFrame())
+            .setHasGesture(request.hasGesture())
+            .setMethod(request.getMethod())
+            .setRequestHeaders(request.getRequestHeaders());
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       requestData.setIsRedirect(request.isRedirect());
     }
-    requestData.setHasGesture(request.hasGesture());
-    requestData.setMethod(request.getMethod());
-    requestData.setRequestHeaders(request.getRequestHeaders());
 
-    return requestData;
+    return requestData.build();
   }
 
   /**
