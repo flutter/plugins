@@ -24,9 +24,8 @@ void main() {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
         switch (methodCall.method) {
-          case 'getAvailableBiometrics':
-            return Future<List<String>>.value(
-                <String>['face', 'fingerprint', 'iris', 'undefined']);
+          case 'getEnrolledBiometrics':
+            return Future<List<String>>.value(<String>['weak', 'strong']);
           default:
             return Future<dynamic>.value(true);
         }
@@ -35,13 +34,13 @@ void main() {
       log.clear();
     });
 
-    test('deviceSupportsBiometrics calls getEnrolledBiometrics', () async {
+    test('deviceSupportsBiometrics calls platform', () async {
       final bool result = await localAuthentication.deviceSupportsBiometrics();
 
       expect(
         log,
         <Matcher>[
-          isMethodCall('getAvailableBiometrics', arguments: null),
+          isMethodCall('deviceSupportsBiometrics', arguments: null),
         ],
       );
       expect(result, true);
@@ -54,13 +53,12 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('getAvailableBiometrics', arguments: null),
+          isMethodCall('getEnrolledBiometrics', arguments: null),
         ],
       );
       expect(result, <BiometricType>[
-        BiometricType.face,
-        BiometricType.fingerprint,
-        BiometricType.iris
+        BiometricType.weak,
+        BiometricType.strong,
       ]);
     });
 

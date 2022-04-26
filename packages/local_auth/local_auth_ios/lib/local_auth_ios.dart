@@ -49,13 +49,14 @@ class LocalAuthIOS extends LocalAuthPlatform {
 
   @override
   Future<bool> deviceSupportsBiometrics() async {
-    return (await getEnrolledBiometrics()).isNotEmpty;
+    return (await _channel.invokeMethod<bool>('deviceSupportsBiometrics')) ??
+        false;
   }
 
   @override
   Future<List<BiometricType>> getEnrolledBiometrics() async {
     final List<String> result = (await _channel.invokeListMethod<String>(
-          'getAvailableBiometrics',
+          'getEnrolledBiometrics',
         )) ??
         <String>[];
     final List<BiometricType> biometrics = <BiometricType>[];
@@ -69,8 +70,6 @@ class LocalAuthIOS extends LocalAuthPlatform {
           break;
         case 'iris':
           biometrics.add(BiometricType.iris);
-          break;
-        case 'undefined':
           break;
       }
     }

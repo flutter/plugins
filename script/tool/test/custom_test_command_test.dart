@@ -85,6 +85,21 @@ void main() {
           ]));
     });
 
+    test('runs pub get before running Dart test script', () async {
+      final Directory package = createFakePlugin('a_package', packagesDir,
+          extraFiles: <String>['tool/run_tests.dart']);
+
+      await runCapturingPrint(runner, <String>['custom-test']);
+
+      expect(
+          processRunner.recordedCalls,
+          containsAll(<ProcessCall>[
+            ProcessCall('dart', const <String>['pub', 'get'], package.path),
+            ProcessCall('dart', const <String>['run', 'tool/run_tests.dart'],
+                package.path),
+          ]));
+    });
+
     test('runs when only legacy is present', () async {
       final Directory package = createFakePlugin('a_package', packagesDir,
           extraFiles: <String>['run_tests.sh']);
@@ -128,7 +143,8 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess(exitCode: 1),
+        MockProcess(exitCode: 0), // pub get
+        MockProcess(exitCode: 1), // test script
       ];
 
       Error? commandError;
@@ -143,6 +159,32 @@ void main() {
           containsAllInOrder(<Matcher>[
             contains('The following packages had errors:'),
             contains('a_package')
+          ]));
+    });
+
+    test('fails if pub get fails', () async {
+      createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+        'tool/run_tests.dart',
+        'run_tests.sh',
+      ]);
+
+      processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
+        MockProcess(exitCode: 1),
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['custom-test'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('The following packages had errors:'),
+            contains('a_package:\n'
+                '    Unable to get script dependencies')
           ]));
     });
 
@@ -260,7 +302,8 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess(exitCode: 1),
+        MockProcess(exitCode: 0), // pub get
+        MockProcess(exitCode: 1), // test script
       ];
 
       Error? commandError;

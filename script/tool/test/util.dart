@@ -434,8 +434,7 @@ class ProcessCall {
   }
 
   @override
-  int get hashCode =>
-      (executable.hashCode) ^ (args.hashCode) ^ (workingDir?.hashCode ?? 0);
+  int get hashCode => Object.hash(executable, args, workingDir);
 
   @override
   String toString() {

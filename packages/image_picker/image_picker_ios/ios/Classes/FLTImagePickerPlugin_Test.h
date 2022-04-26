@@ -6,26 +6,65 @@
 
 #import <image_picker_ios/FLTImagePickerPlugin.h>
 
-/** Methods exposed for unit testing. */
-@interface FLTImagePickerPlugin ()
+#import <messages.g.h>
 
-/** The Flutter result callback use to report results back to Flutter App. */
-@property(copy, nonatomic) FlutterResult result;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Applies NSMutableArray on the FLutterResult.
- *
- * NSString must be returned by FlutterResult if the single image
- * mode is active. It is checked by maxImagesAllowed and
- * returns the first object of the pathlist.
- *
- * NSMutableArray must be returned by FlutterResult if the multi-image
- * mode is active. After the pathlist count is checked then it returns
- * the pathlist.
- *
- * @param pathList that should be applied to FlutterResult.
+ * The return hander used for all method calls, which internally adapts the provided result list
+ * to return either a list or a single element depending on the original call.
  */
-- (void)handleSavedPathList:(NSArray *)pathList;
+typedef void (^FlutterResultAdapter)(NSArray<NSString *> *_Nullable, FlutterError *_Nullable);
+
+/**
+ * A container class for context to use when handling a method call from the Dart side.
+ */
+@interface FLTImagePickerMethodCallContext : NSObject
+
+/**
+ * Initializes a new context that calls |result| on completion of the operation.
+ */
+- (instancetype)initWithResult:(nonnull FlutterResultAdapter)result;
+
+/** The callback to provide results to the Dart caller. */
+@property(nonatomic, copy, nonnull) FlutterResultAdapter result;
+
+/**
+ * The maximum size to enforce on the results.
+ *
+ * If nil, no resizing is done.
+ */
+@property(nonatomic, strong, nullable) FLTMaxSize *maxSize;
+
+/**
+ * The image quality to resample the results to.
+ *
+ * If nil, no resampling is done.
+ */
+@property(nonatomic, strong, nullable) NSNumber *imageQuality;
+
+/** Maximum number of images to select. 0 indicates no maximum. */
+@property(nonatomic, assign) int maxImageCount;
+
+@end
+
+#pragma mark -
+
+/** Methods exposed for unit testing. */
+@interface FLTImagePickerPlugin () <FLTImagePickerApi>
+
+/**
+ * The context of the Flutter method call that is currently being handled, if any.
+ */
+@property(strong, nonatomic, nullable) FLTImagePickerMethodCallContext *callContext;
+
+/**
+ * Validates the provided paths list, then sends it via `callContext.result` as the result of the
+ * original platform channel method call, clearing the in-progress call state.
+ *
+ * @param pathList The paths to return. nil indicates a cancelled operation.
+ */
+- (void)sendCallResultWithSavedPathList:(nullable NSArray *)pathList;
 
 /**
  * Tells the delegate that the user cancelled the pick operation.
@@ -52,3 +91,5 @@
     (NSArray<UIImagePickerController *> *)imagePickerControllers;
 
 @end
+
+NS_ASSUME_NONNULL_END
