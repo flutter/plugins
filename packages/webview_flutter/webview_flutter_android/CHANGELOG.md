@@ -1,6 +1,6 @@
 ## NEXT
 
-* Update pigeon api with null safety.
+* Updates pigeon developer dependency to the latest version which adds support for null safety.
 
 ## 2.8.5
 
