@@ -62,7 +62,7 @@ Import if necessary:
 import 'package:flutter/foundation.dart';
 ```
 
-Add this code snippet to your main build() method
+Add this code snippet to your build() method
 
 ```dart
 if (defaultTargetPlatform == TargetPlatform.android) {
