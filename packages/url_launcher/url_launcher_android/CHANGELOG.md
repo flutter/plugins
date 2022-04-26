@@ -1,6 +1,6 @@
 ## 6.0.16
 
-* Add fallback querying for `canLaunch` with web URLs, to avoid false negatives
+* Adds fallback querying for `canLaunch` with web URLs, to avoid false negatives
   when there is a custom scheme handler.
 
 ## 6.0.15
