@@ -13,12 +13,6 @@
   if (self) {
     _heatmapTileLayer = heatmapTileLayer;
     _mapView = mapView;
-
-    // Workaround for weird heatmap rendering compared to other platforms
-    // Context:
-    // https://github.com/googlemaps/google-maps-ios-utils/issues/143#issuecomment-343850029
-    _heatmapTileLayer.minimumZoomIntensity = 0;
-    _heatmapTileLayer.maximumZoomIntensity = 21;
   }
   return self;
 }
@@ -47,6 +41,14 @@
 
 - (void)setRadius:(int)radius {
   _heatmapTileLayer.radius = radius;
+}
+
+- (void)setMinimumZoomIntensity:(int)intensity {
+  _heatmapTileLayer.minimumZoomIntensity = intensity;
+}
+
+- (void)setMaximumZoomIntensity:(int)intensity {
+  _heatmapTileLayer.maximumZoomIntensity = intensity;
 }
 
 - (void)setMap {
@@ -82,6 +84,16 @@
   NSNumber *radius = data[@"radius"];
   if (radius != nil) {
     [sink setRadius:[FLTGoogleMapJsonConversions toInt:radius]];
+  }
+
+  NSNumber *minimumZoomIntensity = data[@"minimumZoomIntensity"];
+  if (minimumZoomIntensity != nil) {
+    [sink setMinimumZoomIntensity:[FLTGoogleMapJsonConversions toInt:minimumZoomIntensity]];
+  }
+
+  NSNumber *maximumZoomIntensity = data[@"maximumZoomIntensity"];
+  if (maximumZoomIntensity != nil) {
+    [sink setMaximumZoomIntensity:[FLTGoogleMapJsonConversions toInt:maximumZoomIntensity]];
   }
 
   // The map must be set each time for options to update

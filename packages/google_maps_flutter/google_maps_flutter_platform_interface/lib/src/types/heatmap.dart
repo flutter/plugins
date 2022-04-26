@@ -31,6 +31,8 @@ class Heatmap implements MapsObject<Heatmap> {
     // Default is 0.6 on web, 0.7 on Android and iOS.
     this.opacity = 0.7,
     this.radius = 20,
+    this.minimumZoomIntensity = 0,
+    this.maximumZoomIntensity = 21,
   })  : assert(gradient == null || gradient.length > 0),
         // Docs for iOS say [radius] must be between 10 and 50, but anything
         // higher than 45 causes EXC_BAD_ACCESS.
@@ -71,6 +73,16 @@ class Heatmap implements MapsObject<Heatmap> {
   /// The radius of influence for each data point, in pixels.
   final int radius;
 
+  /// The minimum zoom intensity used for normalizing intensities.
+  /// 
+  /// iOS only.
+  final int minimumZoomIntensity;
+
+  /// The maximum zoom intensity used for normalizing intensities.
+  /// 
+  /// iOS only.
+  final int maximumZoomIntensity;
+
   /// Creates a new [Heatmap] object whose values are the same as this
   /// instance, unless overwritten by the specified parameters.
   Heatmap copyWith({
@@ -80,6 +92,8 @@ class Heatmap implements MapsObject<Heatmap> {
     double? maxIntensityParam,
     double? opacityParam,
     int? radiusParam,
+    int? minimumZoomIntensityParam,
+    int? maximumZoomIntensityParam,
   }) {
     return Heatmap(
       heatmapId: heatmapId,
@@ -89,6 +103,8 @@ class Heatmap implements MapsObject<Heatmap> {
       maxIntensity: maxIntensityParam ?? maxIntensity,
       opacity: opacityParam ?? opacity,
       radius: radiusParam ?? radius,
+      minimumZoomIntensity: minimumZoomIntensityParam ?? minimumZoomIntensity,
+      maximumZoomIntensity: maximumZoomIntensityParam ?? maximumZoomIntensity,
     );
   }
 
@@ -116,6 +132,8 @@ class Heatmap implements MapsObject<Heatmap> {
     addIfPresent('maxIntensity', maxIntensity);
     addIfPresent('opacity', opacity);
     addIfPresent('radius', radius);
+    addIfPresent('minimumZoomIntensity', minimumZoomIntensity);
+    addIfPresent('maximumZoomIntensity', maximumZoomIntensity);
 
     return json;
   }
@@ -131,7 +149,9 @@ class Heatmap implements MapsObject<Heatmap> {
         listEquals(gradient, typedOther.gradient) &&
         maxIntensity == typedOther.maxIntensity &&
         opacity == typedOther.opacity &&
-        radius == typedOther.radius;
+        radius == typedOther.radius &&
+        minimumZoomIntensity == typedOther.minimumZoomIntensity &&
+        maximumZoomIntensity == typedOther.maximumZoomIntensity;
   }
 
   @override

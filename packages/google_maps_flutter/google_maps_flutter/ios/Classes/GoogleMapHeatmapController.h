@@ -12,6 +12,8 @@
 - (void)setGradient:(GMUGradient *)gradient;
 - (void)setOpacity:(double)opacity;
 - (void)setRadius:(int)radius;
+- (void)setMinimumZoomIntensity:(int)intensity;
+- (void)setMaximumZoomIntensity:(int)intensity;
 - (void)setMap;
 @end
 
