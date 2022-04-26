@@ -327,7 +327,7 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     }
     id heatmapIdsToRemove = call.arguments[@"heatmapIdsToRemove"];
     if ([heatmapIdsToRemove isKindOfClass:[NSArray class]]) {
-      [_heatmapsController removeHeatmapIds:heatmapIdsToRemove];
+      [_heatmapsController removeHeatmapsWithIds:heatmapIdsToRemove];
     }
     result(nil);
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {

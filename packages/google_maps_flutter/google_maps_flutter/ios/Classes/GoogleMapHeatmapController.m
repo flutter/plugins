@@ -6,10 +6,7 @@
 #import "JsonConversions.h"
 @import GoogleMapsUtils;
 
-@implementation FLTGoogleMapHeatmapController {
-  GMUHeatmapTileLayer *_heatmapTileLayer;
-  GMSMapView *_mapView;
-}
+@implementation FLTGoogleMapHeatmapController
 - (instancetype)initWithHeatmapTileLayer:(GMUHeatmapTileLayer *)heatmapTileLayer
                                  mapView:(GMSMapView *)mapView {
   self = [super init];
@@ -57,54 +54,38 @@
 }
 @end
 
-static int ToInt(NSNumber *data) { return [FLTGoogleMapJsonConversions toInt:data]; }
-
-static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
-
-static NSArray<GMUWeightedLatLng *> *ToWeightedData(NSArray *data) {
-  return [FLTGoogleMapJsonConversions toWeightedData:data];
-}
-
-static GMUGradient *ToGradient(NSArray *data) {
-  return [FLTGoogleMapJsonConversions toGradient:data];
-}
-
-static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOptionsSink> sink) {
-  NSArray *weightedData = data[@"data"];
-  if (weightedData != nil) {
-    [sink setWeightedData:ToWeightedData(weightedData)];
-  }
-
-  NSArray *gradient = data[@"gradient"];
-  if (gradient != nil) {
-    [sink setGradient:ToGradient(gradient)];
-  }
-
-  NSNumber *opacity = data[@"opacity"];
-  if (opacity != nil) {
-    [sink setOpacity:ToDouble(opacity)];
-  }
-
-  NSNumber *radius = data[@"radius"];
-  if (radius != nil) {
-    [sink setRadius:ToInt(radius)];
-  }
-
-  // The map must be set each time for options to update
-  [sink setMap];
-}
-
-@implementation FLTHeatmapsController {
-  NSMutableDictionary *_heatmapIdToController;
-  GMSMapView *_mapView;
-}
+@implementation FLTHeatmapsController
 - (instancetype)init:(GMSMapView *)mapView {
   self = [super init];
   if (self) {
     _mapView = mapView;
-    _heatmapIdToController = [NSMutableDictionary dictionaryWithCapacity:1];
+    _heatmapIdToController = [[NSMutableDictionary alloc] init];
   }
   return self;
+}
+- (void)interpretOptions:(NSDictionary *)data sink:(id<FLTGoogleMapHeatmapOptionsSink>)sink {
+  NSArray *weightedData = data[@"data"];
+  if (weightedData != nil) {
+    [sink setWeightedData:[FLTGoogleMapJsonConversions toWeightedData:weightedData]];
+  }
+
+  NSArray *gradient = data[@"gradient"];
+  if (gradient != nil) {
+    [sink setGradient:[FLTGoogleMapJsonConversions toGradient:gradient]];
+  }
+
+  NSNumber *opacity = data[@"opacity"];
+  if (opacity != nil) {
+    [sink setOpacity:[FLTGoogleMapJsonConversions toDouble:opacity]];
+  }
+
+  NSNumber *radius = data[@"radius"];
+  if (radius != nil) {
+    [sink setRadius:[FLTGoogleMapJsonConversions toInt:radius]];
+  }
+
+  // The map must be set each time for options to update
+  [sink setMap];
 }
 - (void)addHeatmaps:(NSArray *)heatmapsToAdd {
   for (NSDictionary *heatmap in heatmapsToAdd) {
@@ -113,7 +94,7 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
     FLTGoogleMapHeatmapController *controller =
         [[FLTGoogleMapHeatmapController alloc] initWithHeatmapTileLayer:heatmapTileLayer
                                                                 mapView:_mapView];
-    InterpretHeatmapOptions(heatmap, controller);
+    [self interpretOptions:heatmap sink:controller];
     _heatmapIdToController[heatmapId] = controller;
   }
 }
@@ -124,12 +105,12 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
     if (!controller) {
       continue;
     }
-    InterpretHeatmapOptions(heatmap, controller);
+    [self interpretOptions:heatmap sink:controller];
 
     [controller clearTileCache];
   }
 }
-- (void)removeHeatmapIds:(NSArray *)heatmapIdsToRemove {
+- (void)removeHeatmapsWithIds:(NSArray *)heatmapIdsToRemove {
   for (NSString *heatmapId in heatmapIdsToRemove) {
     if (!heatmapId) {
       continue;
@@ -144,7 +125,7 @@ static void InterpretHeatmapOptions(NSDictionary *data, id<FLTGoogleMapHeatmapOp
 }
 - (bool)hasHeatmapWithId:(NSString *)heatmapId {
   if (!heatmapId) {
-    return false;
+    return NO;
   }
   return _heatmapIdToController[heatmapId] != nil;
 }
