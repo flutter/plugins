@@ -57,7 +57,7 @@ class LatLng {
 
   /// Create a [WeightedLatLng] from this [LatLng] with the specified [weight].
   WeightedLatLng weighted([double weight = 1.0]) =>
-      WeightedLatLng.fromLatLng(this, weight: weight);
+      WeightedLatLng(latitude, longitude, weight: weight);
 }
 
 /// A latitude/longitude aligned rectangle.
@@ -139,23 +139,17 @@ class LatLngBounds {
 
 /// A data point entry for a heatmap.
 /// This is a geographical data point with a weight attribute.
-class WeightedLatLng {
-  /// The location of the data point.
-  final LatLng location;
-
+class WeightedLatLng extends LatLng {
   /// The weighting value of the data point.
   final double weight;
 
   /// Creates a [WeightedLatLng] with the specified [weight]
   WeightedLatLng(double latitude, double longitude, {this.weight = 1.0})
-      : location = LatLng(latitude, longitude);
-
-  /// Creates a [WeightedLatLng] with the specified [location] and [weight].
-  WeightedLatLng.fromLatLng(this.location, {this.weight = 1.0});
+      : super(latitude, longitude);
 
   /// Converts this object to something serializable in JSON.
   Object toJson() {
-    return <Object>[location.toJson(), weight];
+    return <Object>[super.toJson(), weight];
   }
 
   /// Initialize a [WeightedLatLng] from an \[location, weight\] array.
@@ -174,15 +168,18 @@ class WeightedLatLng {
   }
 
   @override
-  String toString() => '$runtimeType($location, $weight)';
+  String toString() => '$runtimeType($latitude, $longitude, $weight)';
 
   @override
   bool operator ==(Object o) {
-    return o is WeightedLatLng && o.location == location && o.weight == weight;
+    return o is WeightedLatLng &&
+        o.latitude == latitude &&
+        o.longitude == longitude &&
+        o.weight == weight;
   }
 
   @override
-  int get hashCode => Object.hash(location, weight);
+  int get hashCode => Object.hash(latitude, longitude, weight);
 }
 
 /// Convenience extensions on [LatLng] iterables.
