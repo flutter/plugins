@@ -27,10 +27,10 @@ class UrlLauncherAndroid extends UrlLauncherPlatform {
     if (!canLaunchSpecificUrl) {
       final String scheme = _getUrlScheme(url);
       // canLaunch can return false when a custom application is registered to
-      // handle a web URL, but this application doesn't have permission to see
-      // what that handler is. If that happens, try a web URL (with the same
-      // scheme variant, to be safe) that should not have a custom handler. If
-      // that returns true, then there is a browser, which means that there is
+      // handle a web URL, but the caller doesn't have permission to see what
+      // that handler is. If that happens, try a web URL (with the same scheme
+      // variant, to be safe) that should not have a custom handler. If that
+      // returns true, then there is a browser, which means that there is
       // at least one handler for the original URL.
       if (scheme == 'http' || scheme == 'https') {
         return await _canLaunchUrl('$scheme://flutter.dev');
