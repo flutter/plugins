@@ -1,6 +1,6 @@
 # Camera Plugin
 
-<?code-excerpt path-base="snippets/packages/camera_example"?>
+<?code-excerpt path-base="excerpts/packages/camera_example"?>
 
 [![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dev/packages/camera)
 

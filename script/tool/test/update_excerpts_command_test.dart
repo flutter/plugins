@@ -9,7 +9,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
-import 'package:flutter_plugin_tools/src/update_snippets_command.dart';
+import 'package:flutter_plugin_tools/src/update_excerpts_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -29,7 +29,7 @@ void main() {
     final MockGitDir gitDir = MockGitDir();
     when(gitDir.path).thenReturn(packagesDir.parent.path);
     processRunner = RecordingProcessRunner();
-    final UpdateSnippetsCommand analyzeCommand = UpdateSnippetsCommand(
+    final UpdateExcerptsCommand command = UpdateExcerptsCommand(
       packagesDir,
       processRunner: processRunner,
       platform: MockPlatform(),
@@ -37,8 +37,8 @@ void main() {
     );
 
     runner = CommandRunner<void>(
-        'update_snippts_command', 'Test for update_snippets_command');
-    runner.addCommand(analyzeCommand);
+        'update_excerpts_command', 'Test for update_excerpts_command');
+    runner.addCommand(command);
   });
 
   test('runs pub get before running scripts', () async {
@@ -46,7 +46,7 @@ void main() {
         extraFiles: <String>['example/build.excerpt.yaml']);
     final Directory example = package.childDirectory('example');
 
-    await runCapturingPrint(runner, <String>['update-snippets']);
+    await runCapturingPrint(runner, <String>['update-excerpts']);
 
     expect(
         processRunner.recordedCalls,
@@ -61,7 +61,7 @@ void main() {
                 '--config',
                 'excerpt',
                 '--output',
-                'snippets',
+                'excerpts',
                 '--delete-conflicting-outputs',
               ],
               example.path),
@@ -74,7 +74,7 @@ void main() {
     final Directory example = package.childDirectory('example');
 
     final List<String> output =
-        await runCapturingPrint(runner, <String>['update-snippets']);
+        await runCapturingPrint(runner, <String>['update-excerpts']);
 
     expect(
         processRunner.recordedCalls,
@@ -88,7 +88,7 @@ void main() {
                 '--config',
                 'excerpt',
                 '--output',
-                'snippets',
+                'excerpts',
                 '--delete-conflicting-outputs',
               ],
               example.path),
@@ -116,7 +116,7 @@ void main() {
     createFakePlugin('a_package', packagesDir);
 
     final List<String> output =
-        await runCapturingPrint(runner, <String>['update-snippets']);
+        await runCapturingPrint(runner, <String>['update-excerpts']);
 
     expect(processRunner.recordedCalls, isEmpty);
 
@@ -137,7 +137,7 @@ void main() {
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
-        runner, <String>['update-snippets'], errorHandler: (Error e) {
+        runner, <String>['update-excerpts'], errorHandler: (Error e) {
       commandError = e;
     });
 
@@ -171,7 +171,7 @@ void main() {
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
-        runner, <String>['update-snippets'], errorHandler: (Error e) {
+        runner, <String>['update-excerpts'], errorHandler: (Error e) {
       commandError = e;
     });
 
@@ -196,7 +196,7 @@ void main() {
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
-        runner, <String>['update-snippets'], errorHandler: (Error e) {
+        runner, <String>['update-excerpts'], errorHandler: (Error e) {
       commandError = e;
     });
 
@@ -206,7 +206,7 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains('The following packages had errors:'),
           contains('a_package:\n'
-              '    Unable to extract snippets')
+              '    Unable to extract excerpts')
         ]));
   });
 
@@ -222,7 +222,7 @@ void main() {
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
-        runner, <String>['update-snippets'], errorHandler: (Error e) {
+        runner, <String>['update-excerpts'], errorHandler: (Error e) {
       commandError = e;
     });
 
@@ -232,7 +232,7 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains('The following packages had errors:'),
           contains('a_package:\n'
-              '    Unable to inject snippets')
+              '    Unable to inject excerpts')
         ]));
   });
 
@@ -247,7 +247,7 @@ void main() {
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
-        runner, <String>['update-snippets', '--fail-on-change'],
+        runner, <String>['update-excerpts', '--fail-on-change'],
         errorHandler: (Error e) {
       commandError = e;
     });
@@ -256,7 +256,7 @@ void main() {
     expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('README.md is out of sync with its source snippets'),
+          contains('README.md is out of sync with its source excerpts'),
         ]));
   });
 
@@ -269,7 +269,7 @@ void main() {
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
-        runner, <String>['update-snippets', '--fail-on-change'],
+        runner, <String>['update-excerpts', '--fail-on-change'],
         errorHandler: (Error e) {
       commandError = e;
     });

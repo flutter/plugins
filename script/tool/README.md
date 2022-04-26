@@ -109,13 +109,13 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packa
 
 ### Update README.md from Example Sources
 
-`update-snippets` requires sources that are in a submodule. If you didn't clone
+`update-excerpts` requires sources that are in a submodule. If you didn't clone
 with submodules, you will need to `git submodule update --init --recursive`
 before running this command.
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart update-snippets --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart update-excerpts --packages plugin_name
 ```
 
 ### Publish a Release

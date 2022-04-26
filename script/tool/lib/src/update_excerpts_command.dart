@@ -13,10 +13,10 @@ import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/repository_package.dart';
 
-/// A command to update README code snippets from code files.
-class UpdateSnippetsCommand extends PackageLoopingCommand {
-  /// Creates a snippet updater command instance.
-  UpdateSnippetsCommand(
+/// A command to update README code excerpts from code files.
+class UpdateExcerptsCommand extends PackageLoopingCommand {
+  /// Creates a excerpt updater command instance.
+  UpdateExcerptsCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
@@ -38,18 +38,18 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
   static const String _buildRunnerConfigFile =
       'build.$_buildRunnerConfigName.yaml';
 
-  // The relative directory path to put the extracted snippet yaml files.
-  static const String _snippetOutputDir = 'snippets';
+  // The relative directory path to put the extracted excerpt yaml files.
+  static const String _excerptOutputDir = 'excerpts';
 
   // The filane to store the pre-modification copy of the pubspec.
   static const String _originalPubspecFilename =
       'pubspec.plugin_tools_original.yaml';
 
   @override
-  final String name = 'update-snippets';
+  final String name = 'update-excerpts';
 
   @override
-  final String description = 'Updates code snippets in README.md files, based '
+  final String description = 'Updates code excerpts in README.md files, based '
       'on code from code files, via code-excerpt';
 
   @override
@@ -80,20 +80,20 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
               <String>['Unable to get script dependencies']);
         }
 
-        // Update the snippets.
+        // Update the excerpts.
         if (!await _extractSnippets(example)) {
-          return PackageResult.fail(<String>['Unable to extract snippets']);
+          return PackageResult.fail(<String>['Unable to extract excerpts']);
         }
         if (!await _injectSnippets(example, targetPackage: package)) {
-          return PackageResult.fail(<String>['Unable to inject snippets']);
+          return PackageResult.fail(<String>['Unable to inject excerpts']);
         }
       } finally {
-        // Clean up the pubspec changes and extracted snippets directory.
+        // Clean up the pubspec changes and extracted excerpts directory.
         _undoPubspecChanges(example);
-        final Directory snippetDirectory =
-            example.directory.childDirectory(_snippetOutputDir);
-        if (snippetDirectory.existsSync()) {
-          snippetDirectory.deleteSync(recursive: true);
+        final Directory excerptDirectory =
+            example.directory.childDirectory(_excerptOutputDir);
+        if (excerptDirectory.existsSync()) {
+          excerptDirectory.deleteSync(recursive: true);
         }
       }
     }
@@ -101,7 +101,7 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
     if (getBoolArg(_failOnChangeFlag)) {
       final String? stateError = await _validateRepositoryState();
       if (stateError != null) {
-        printError('README.md is out of sync with its source snippets.\n\n'
+        printError('README.md is out of sync with its source excerpts.\n\n'
             'If you edited code in README.md directly, you should instead edit '
             'the example source files. If you edited source files, run the '
             'repository tooling\'s "$name" command on this package, and update '
@@ -113,7 +113,7 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
     return PackageResult.success();
   }
 
-  /// Runs the extraction step to create the snippet files for the given
+  /// Runs the extraction step to create the excerpt files for the given
   /// example, returning true on success.
   Future<bool> _extractSnippets(RepositoryPackage example) async {
     final int exitCode = await processRunner.runAndStream(
@@ -125,7 +125,7 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
           '--config',
           _buildRunnerConfigName,
           '--output',
-          _snippetOutputDir,
+          _excerptOutputDir,
           '--delete-conflicting-outputs',
         ],
         workingDir: example.directory);
@@ -133,7 +133,7 @@ class UpdateSnippetsCommand extends PackageLoopingCommand {
   }
 
   /// Runs the injection step to update [targetPackage]'s README with the latest
-  /// snippets from [example], returning true on success.
+  /// excerpts from [example], returning true on success.
   Future<bool> _injectSnippets(
     RepositoryPackage example, {
     required RepositoryPackage targetPackage,

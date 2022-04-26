@@ -28,7 +28,7 @@ import 'publish_plugin_command.dart';
 import 'pubspec_check_command.dart';
 import 'readme_check_command.dart';
 import 'test_command.dart';
-import 'update_snippets_command.dart';
+import 'update_excerpts_command.dart';
 import 'version_check_command.dart';
 import 'xcode_analyze_command.dart';
 
@@ -69,7 +69,7 @@ void main(List<String> args) {
     ..addCommand(PubspecCheckCommand(packagesDir))
     ..addCommand(ReadmeCheckCommand(packagesDir))
     ..addCommand(TestCommand(packagesDir))
-    ..addCommand(UpdateSnippetsCommand(packagesDir))
+    ..addCommand(UpdateExcerptsCommand(packagesDir))
     ..addCommand(VersionCheckCommand(packagesDir))
     ..addCommand(XcodeAnalyzeCommand(packagesDir));
 
