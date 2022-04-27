@@ -46,7 +46,7 @@ final class VideoPlayer {
   private static final String FORMAT_HLS = "hls";
   private static final String FORMAT_OTHER = "other";
 
-  private ExoPlayer mExoPlayer;
+  private ExoPlayer exoPlayer;
 
   private Surface surface;
 
@@ -178,20 +178,20 @@ final class VideoPlayer {
         new EventChannel.StreamHandler() {
           @Override
           public void onListen(Object o, EventChannel.EventSink sink) {
-            mEventSink.setDelegate(sink);
+            eventSink.setDelegate(sink);
           }
 
           @Override
           public void onCancel(Object o) {
-            mEventSink.setDelegate(null);
+            eventSink.setDelegate(null);
           }
         });
 
     surface = new Surface(textureEntry.surfaceTexture());
-    mExoPlayer.setVideoSurface(surface);
-    setAudioAttributes(mExoPlayer, options.mixWithOthers);
+    exoPlayer.setVideoSurface(surface);
+    setAudioAttributes(exoPlayer, options.mixWithOthers);
 
-    mExoPlayer.addListener(
+    exoPlayer.addListener(
         new Listener() {
           private boolean isBuffering = false;
 
@@ -200,7 +200,7 @@ final class VideoPlayer {
               isBuffering = buffering;
               Map<String, Object> event = new HashMap<>();
               event.put("event", isBuffering ? "bufferingStart" : "bufferingEnd");
-              mEventSink.success(event);
+              eventSink.success(event);
             }
           }
 
@@ -217,7 +217,7 @@ final class VideoPlayer {
             } else if (playbackState == Player.STATE_ENDED) {
               Map<String, Object> event = new HashMap<>();
               event.put("event", "completed");
-              mEventSink.success(event);
+              eventSink.success(event);
             }
 
             if (playbackState != Player.STATE_BUFFERING) {
@@ -228,20 +228,23 @@ final class VideoPlayer {
           @Override
           public void onPlayerError(final PlaybackException error) {
             setBuffering(false);
-            if (mEventSink != null) {
-              mEventSink.error("VideoError", "Video player had error " + error, null);
+            if (eventSink != null) {
+              eventSink.error("VideoError", "Video player had error " + error, null);
             }
           }
         });
+
+    this.exoPlayer = exoPlayer;
+    this.eventSink = eventSink;
   }
 
   void sendBufferingUpdate() {
     Map<String, Object> event = new HashMap<>();
     event.put("event", "bufferingUpdate");
-    List<? extends Number> range = Arrays.asList(0, mExoPlayer.getBufferedPosition());
+    List<? extends Number> range = Arrays.asList(0, exoPlayer.getBufferedPosition());
     // iOS supports a list of buffered ranges, so here is a list with a single range.
     event.put("values", Collections.singletonList(range));
-    mEventSink.success(event);
+    eventSink.success(event);
   }
 
   private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
@@ -250,20 +253,20 @@ final class VideoPlayer {
   }
 
   void play() {
-    mExoPlayer.setPlayWhenReady(true);
+    exoPlayer.setPlayWhenReady(true);
   }
 
   void pause() {
-    mExoPlayer.setPlayWhenReady(false);
+    exoPlayer.setPlayWhenReady(false);
   }
 
   void setLooping(boolean value) {
-    mExoPlayer.setRepeatMode(value ? REPEAT_MODE_ALL : REPEAT_MODE_OFF);
+    exoPlayer.setRepeatMode(value ? REPEAT_MODE_ALL : REPEAT_MODE_OFF);
   }
 
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
-    mExoPlayer.setVolume(bracketedValue);
+    exoPlayer.setVolume(bracketedValue);
   }
 
   void setPlaybackSpeed(double value) {
@@ -271,15 +274,15 @@ final class VideoPlayer {
     // therefore never diverge from the default values.
     final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
 
-    mExoPlayer.setPlaybackParameters(playbackParameters);
+    exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
   void seekTo(int location) {
-    mExoPlayer.seekTo(location);
+    exoPlayer.seekTo(location);
   }
 
   long getPosition() {
-    return mExoPlayer.getCurrentPosition();
+    return exoPlayer.getCurrentPosition();
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
@@ -287,17 +290,17 @@ final class VideoPlayer {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
-      event.put("duration", mExoPlayer.getDuration());
+      event.put("duration", exoPlayer.getDuration());
 
-      if (mExoPlayer.getVideoFormat() != null) {
-        Format videoFormat = mExoPlayer.getVideoFormat();
+      if (exoPlayer.getVideoFormat() != null) {
+        Format videoFormat = exoPlayer.getVideoFormat();
         int width = videoFormat.width;
         int height = videoFormat.height;
         int rotationDegrees = videoFormat.rotationDegrees;
         // Switch the width/height if video was taken in portrait mode
         if (rotationDegrees == 90 || rotationDegrees == 270) {
-          width = mExoPlayer.getVideoFormat().height;
-          height = mExoPlayer.getVideoFormat().width;
+          width = exoPlayer.getVideoFormat().height;
+          height = exoPlayer.getVideoFormat().width;
         }
         event.put("width", width);
         event.put("height", height);
@@ -309,15 +312,15 @@ final class VideoPlayer {
 
   void dispose() {
     if (isInitialized) {
-      mExoPlayer.stop();
+      exoPlayer.stop();
     }
     textureEntry.release();
     eventChannel.setStreamHandler(null);
     if (surface != null) {
       surface.release();
     }
-    if (mExoPlayer != null) {
-      mExoPlayer.release();
+    if (exoPlayer != null) {
+      exoPlayer.release();
     }
   }
 }
