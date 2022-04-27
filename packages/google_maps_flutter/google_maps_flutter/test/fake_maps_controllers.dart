@@ -394,10 +394,20 @@ class FakePlatformGoogleMap {
 
       final bool dissipating = heatmapData['dissipating'] as bool;
 
-      final List<dynamic>? gradientData =
-          heatmapData['gradient'] as List<dynamic>?;
-      final List<Color>? gradient =
-          gradientData?.cast<int>().map((int e) => Color(e)).toList();
+      final Map<String, dynamic>? gradientData =
+          heatmapData['gradient'] as Map<String, dynamic>?;
+      final HeatmapGradient? gradient = gradientData != null
+          ? HeatmapGradient(
+              colors: (gradientData['colors'] as List<dynamic>)
+                  .cast<int>()
+                  .map((int e) => Color(e))
+                  .toList(),
+              startPoints: (gradientData['startPoints'] as List<dynamic>)
+                  .cast<double>()
+                  .toList(),
+              colorMapSize: gradientData['colorMapSize'] as int,
+            )
+          : null;
 
       final double? maxIntensity = heatmapData['maxIntensity'] as double?;
       final double opacity = heatmapData['opacity'] as double;
