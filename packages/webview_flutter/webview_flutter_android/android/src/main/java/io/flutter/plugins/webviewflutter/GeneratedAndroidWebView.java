@@ -53,16 +53,13 @@ public class GeneratedAndroidWebView {
       this.isForMainFrame = setterArg;
     }
 
-    private @NonNull Boolean isRedirect;
+    private @Nullable Boolean isRedirect;
 
-    public @NonNull Boolean getIsRedirect() {
+    public @Nullable Boolean getIsRedirect() {
       return isRedirect;
     }
 
-    public void setIsRedirect(@NonNull Boolean setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"isRedirect\" is null.");
-      }
+    public void setIsRedirect(@Nullable Boolean setterArg) {
       this.isRedirect = setterArg;
     }
 
@@ -125,7 +122,7 @@ public class GeneratedAndroidWebView {
 
       private @Nullable Boolean isRedirect;
 
-      public @NonNull Builder setIsRedirect(@NonNull Boolean setterArg) {
+      public @NonNull Builder setIsRedirect(@Nullable Boolean setterArg) {
         this.isRedirect = setterArg;
         return this;
       }

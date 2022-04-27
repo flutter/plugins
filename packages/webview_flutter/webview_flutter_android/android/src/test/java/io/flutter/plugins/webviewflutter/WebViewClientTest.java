@@ -4,16 +4,22 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.net.Uri;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCompatImpl;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCreator;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -95,5 +101,21 @@ public class WebViewClientTest {
     webViewClient.release();
     webViewClient.shouldOverrideUrlLoading(mockWebView, "");
     verify(mockFlutterApi, never()).urlLoading((WebViewClient) any(), any(), any(), any());
+  }
+
+  @Test
+  public void convertWebResourceRequestWithNullHeaders() {
+    final Uri mockUri = mock(Uri.class);
+    when(mockUri.toString()).thenReturn("");
+
+    final WebResourceRequest mockRequest = mock(WebResourceRequest.class);
+    when(mockRequest.getMethod()).thenReturn("method");
+    when(mockRequest.getUrl()).thenReturn(mockUri);
+    when(mockRequest.isForMainFrame()).thenReturn(true);
+    when(mockRequest.getRequestHeaders()).thenReturn(null);
+
+    final GeneratedAndroidWebView.WebResourceRequestData data =
+        WebViewClientFlutterApiImpl.createWebResourceRequestData(mockRequest);
+    assertEquals(data.getRequestHeaders(), new HashMap<String, String>());
   }
 }

@@ -15,7 +15,7 @@ class WebResourceRequestData {
   WebResourceRequestData({
     required this.url,
     required this.isForMainFrame,
-    required this.isRedirect,
+    this.isRedirect,
     required this.hasGesture,
     required this.method,
     required this.requestHeaders,
@@ -23,7 +23,7 @@ class WebResourceRequestData {
 
   String url;
   bool isForMainFrame;
-  bool isRedirect;
+  bool? isRedirect;
   bool hasGesture;
   String method;
   Map<String?, String?> requestHeaders;
@@ -44,7 +44,7 @@ class WebResourceRequestData {
     return WebResourceRequestData(
       url: pigeonMap['url']! as String,
       isForMainFrame: pigeonMap['isForMainFrame']! as bool,
-      isRedirect: pigeonMap['isRedirect']! as bool,
+      isRedirect: pigeonMap['isRedirect'] as bool?,
       hasGesture: pigeonMap['hasGesture']! as bool,
       method: pigeonMap['method']! as String,
       requestHeaders: (pigeonMap['requestHeaders'] as Map<Object?, Object?>?)!

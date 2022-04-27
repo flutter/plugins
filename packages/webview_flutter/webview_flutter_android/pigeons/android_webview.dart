@@ -29,7 +29,7 @@ import 'package:pigeon/pigeon.dart';
 class WebResourceRequestData {
   late String url;
   late bool isForMainFrame;
-  late bool isRedirect;
+  late bool? isRedirect;
   late bool hasGesture;
   late String method;
   late Map<String?, String?> requestHeaders;
