@@ -56,12 +56,16 @@ import java.util.Locale;
 
   static HashMap<String, Object> fromPurchase(Purchase purchase) {
     HashMap<String, Object> info = new HashMap<>();
+    List<String> skus = purchase.getSkus();
     info.put("orderId", purchase.getOrderId());
     info.put("packageName", purchase.getPackageName());
     info.put("purchaseTime", purchase.getPurchaseTime());
     info.put("purchaseToken", purchase.getPurchaseToken());
     info.put("signature", purchase.getSignature());
-    info.put("sku", purchase.getSkus());
+    if (!skus.isEmpty()) {
+      info.put("sku", skus[0]);
+    }
+    info.put("skus", skus);
     info.put("isAutoRenewing", purchase.isAutoRenewing());
     info.put("originalJson", purchase.getOriginalJson());
     info.put("developerPayload", purchase.getDeveloperPayload());
@@ -79,10 +83,14 @@ import java.util.Locale;
   static HashMap<String, Object> fromPurchaseHistoryRecord(
       PurchaseHistoryRecord purchaseHistoryRecord) {
     HashMap<String, Object> info = new HashMap<>();
+    List<String> skus = purchaseHistoryRecord.getSkus();
     info.put("purchaseTime", purchaseHistoryRecord.getPurchaseTime());
     info.put("purchaseToken", purchaseHistoryRecord.getPurchaseToken());
     info.put("signature", purchaseHistoryRecord.getSignature());
-    info.put("sku", purchaseHistoryRecord.getSkus());
+    if (!skus.isEmpty()) {
+      info.put("sku", skus[0]);
+    }
+    info.put("skus", skus);
     info.put("developerPayload", purchaseHistoryRecord.getDeveloperPayload());
     info.put("originalJson", purchaseHistoryRecord.getOriginalJson());
     info.put("quantity", purchaseHistoryRecord.getQuantity());
