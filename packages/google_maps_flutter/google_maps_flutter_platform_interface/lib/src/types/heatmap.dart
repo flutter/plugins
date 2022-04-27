@@ -33,7 +33,7 @@ class Heatmap implements MapsObject<Heatmap> {
     this.radius = 20,
     this.minimumZoomIntensity = 0,
     this.maximumZoomIntensity = 21,
-  }) :  // Docs for iOS say [radius] must be between 10 and 50, but anything
+  }) : // Docs for iOS say [radius] must be between 10 and 50, but anything
         // higher than 45 causes EXC_BAD_ACCESS.
         assert(radius >= 10 && radius <= 45);
 
