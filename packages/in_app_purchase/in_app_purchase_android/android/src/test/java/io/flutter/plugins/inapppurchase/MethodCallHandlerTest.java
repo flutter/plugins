@@ -496,6 +496,47 @@ public class MethodCallHandlerTest {
   }
 
   @Test
+  public void launchBillingFlow_ok_Full() {
+    // Fetch the sku details first and query the method call
+    String skuId = "foo";
+    String oldSkuId = "oldFoo";
+    String purchaseToken = "purchaseTokenFoo";
+    String accountId = "account";
+    int prorationMode = BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE;
+    queryForSkus(unmodifiableList(asList(skuId, oldSkuId)));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", oldSkuId);
+    arguments.put("purchaseToken", purchaseToken);
+    arguments.put("prorationMode", prorationMode);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    // Launch the billing flow
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(100)
+            .setDebugMessage("dummy debug message")
+            .build();
+    when(mockBillingClient.launchBillingFlow(any(), any())).thenReturn(billingResult);
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Verify we pass the arguments to the billing flow
+    ArgumentCaptor<BillingFlowParams> billingFlowParamsCaptor =
+        ArgumentCaptor.forClass(BillingFlowParams.class);
+    verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
+    BillingFlowParams params = billingFlowParamsCaptor.getValue();
+    assertEquals(params.getSku(), skuId);
+    assertEquals(params.getOldSku(), oldSkuId);
+    assertEquals(params.getOldSkuPurchaseToken(), purchaseToken);
+    assertEquals(params.getReplaceSkusProrationMode(), prorationMode);
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(fromBillingResult(billingResult));
+  }
+
+  @Test
   public void launchBillingFlow_clientDisconnected() {
     // Prepare the launch call after disconnecting the client
     MethodCall disconnectCall = new MethodCall(END_CONNECTION, null);

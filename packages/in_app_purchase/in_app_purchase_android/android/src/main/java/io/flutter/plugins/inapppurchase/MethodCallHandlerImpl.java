@@ -286,14 +286,26 @@ class MethodCallHandlerImpl
     billingClient.consumeAsync(params, listener);
   }
 
-  private void queryPurchases(String skuType, MethodChannel.Result result) {
+  private void queryPurchasesAsync(String skuType, MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
 
     // Like in our connect call, consider the billing client responding a "success" here regardless
     // of status code.
-    result.success(fromPurchasesResult(billingClient.queryPurchases(skuType)));
+    billingClient.queryPurchaseHistoryAsync(
+        skuType,
+        new PurchasesResponseListener() {
+          @Override
+          public void onQueryPurchasesResponse(
+              BillingResult billingResult, List<Purchase> purchasesList) {
+            final Map<String, Object> serialized = new HashMap<>();
+            serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+            serialized.put(
+                "purchaseList", fromPurchaseList(purchasesList));
+            result.success(serialized);
+          }
+        });
   }
 
   private void queryPurchaseHistoryAsync(String skuType, final MethodChannel.Result result) {
