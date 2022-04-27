@@ -18,7 +18,10 @@ FileDialogController::FileDialogController(IFileDialog* dialog)
 FileDialogController::~FileDialogController() {}
 
 HRESULT FileDialogController::SetDefaultFolder(IShellItem* folder) {
-  return dialog_->SetDefaultFolder(folder);
+  // Set the initialDirectory with SetFolder instead of SetDefaultFolder
+  // https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setdefaultfolder
+  // https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setfolder
+  return dialog_->SetFolder(folder);
 }
 
 HRESULT FileDialogController::SetFileName(const wchar_t* name) {
