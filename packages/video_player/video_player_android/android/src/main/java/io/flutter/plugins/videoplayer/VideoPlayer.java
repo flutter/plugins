@@ -286,6 +286,7 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
+  @VisibleForTesting
   void sendInitialized() {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
