@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
+import java.util.HashMap;
 
 /**
  * Flutter Api implementation for {@link WebViewClient}.
@@ -50,7 +51,10 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
             .setIsForMainFrame(request.isForMainFrame())
             .setHasGesture(request.hasGesture())
             .setMethod(request.getMethod())
-            .setRequestHeaders(request.getRequestHeaders());
+            .setRequestHeaders(
+                request.getRequestHeaders() != null
+                    ? request.getRequestHeaders()
+                    : new HashMap<>());
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       requestData.setIsRedirect(request.isRedirect());
     }
