@@ -236,7 +236,11 @@ class NSObject {
       : _api = NSObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        );
+        ) {
+    // Ensures FlutterApis for the Foundation library and FunctionFlutterApi are
+    // set up.
+    FoundationFlutterApis.instance.ensureSetUp();
+  }
 
   final NSObjectHostApiImpl _api;
 

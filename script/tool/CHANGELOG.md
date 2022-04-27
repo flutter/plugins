@@ -1,7 +1,16 @@
 ## NEXT
 
+- Allows `make-deps-path-based` to skip packages it has alredy rewritten, so
+  that running multiple times won't fail after the first time.
+
+## 0.8.2+1
+
 - Adds a new `readme-check` command.
 - Updates `publish-plugin` command documentation.
+- Fixes `all-plugins-app` to preserve the original application's Dart SDK
+  version to avoid changing language feature opt-ins that the template may
+  rely on.
+- Fixes `custom-test` to run `pub get` before running Dart test scripts.
 
 ## 0.8.2
 

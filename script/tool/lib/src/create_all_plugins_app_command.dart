@@ -147,6 +147,19 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _genPubspecWithAllPlugins() async {
+    final RepositoryPackage buildAllApp = RepositoryPackage(appDirectory);
+    // Read the old pubspec file's Dart SDK version, in order to preserve it
+    // in the new file. The template sometimes relies on having opted in to
+    // specific language features via SDK version, so using a different one
+    // can cause compilation failures.
+    final Pubspec originalPubspec = buildAllApp.parsePubspec();
+    const String dartSdkKey = 'sdk';
+    final VersionConstraint dartSdkConstraint =
+        originalPubspec.environment?[dartSdkKey] ??
+            VersionConstraint.compatibleWith(
+              Version.parse('2.12.0'),
+            );
+
     final Map<String, PathDependency> pluginDeps =
         await _getValidPathDependencies();
     final Pubspec pubspec = Pubspec(
@@ -154,9 +167,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       description: 'Flutter app containing all 1st party plugins.',
       version: Version.parse('1.0.0+1'),
       environment: <String, VersionConstraint>{
-        'sdk': VersionConstraint.compatibleWith(
-          Version.parse('2.12.0'),
-        ),
+        dartSdkKey: dartSdkConstraint,
       },
       dependencies: <String, Dependency>{
         'flutter': SdkDependency('flutter'),
@@ -166,8 +177,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       },
       dependencyOverrides: pluginDeps,
     );
-    final File pubspecFile = appDirectory.childFile('pubspec.yaml');
-    pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
+    buildAllApp.pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
   }
 
   Future<Map<String, PathDependency>> _getValidPathDependencies() async {
@@ -212,7 +222,12 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
     for (final MapEntry<String, dynamic> entry in values.entries) {
       buffer.writeln();
       if (entry.value is VersionConstraint) {
-        buffer.write('  ${entry.key}: ${entry.value}');
+        String value = entry.value.toString();
+        // Range constraints require quoting.
+        if (value.startsWith('>') || value.startsWith('<')) {
+          value = "'$value'";
+        }
+        buffer.write('  ${entry.key}: $value');
       } else if (entry.value is SdkDependency) {
         final SdkDependency dep = entry.value as SdkDependency;
         buffer.write('  ${entry.key}: \n    sdk: ${dep.sdk}');

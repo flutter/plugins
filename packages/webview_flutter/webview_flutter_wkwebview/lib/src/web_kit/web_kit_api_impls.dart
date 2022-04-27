@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
@@ -42,6 +43,73 @@ Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
 
     return WKWebsiteDataTypesEnumData(value: value);
   });
+}
+
+extension _NSHttpCookieConverter on NSHttpCookie {
+  NSHttpCookieData toNSHttpCookieData() {
+    return NSHttpCookieData(
+      properties: properties.map<NSHttpCookiePropertyKeyEnumData, String>(
+        (NSHttpCookiePropertyKey key, Object value) {
+          return MapEntry<NSHttpCookiePropertyKeyEnumData, String>(
+            key.toNSHttpCookiePropertyKeyEnumData(),
+            value.toString(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+extension _NSHttpCookiePropertyKeyConverter on NSHttpCookiePropertyKey {
+  NSHttpCookiePropertyKeyEnumData toNSHttpCookiePropertyKeyEnumData() {
+    late final NSHttpCookiePropertyKeyEnum value;
+    switch (this) {
+      case NSHttpCookiePropertyKey.comment:
+        value = NSHttpCookiePropertyKeyEnum.comment;
+        break;
+      case NSHttpCookiePropertyKey.commentUrl:
+        value = NSHttpCookiePropertyKeyEnum.commentUrl;
+        break;
+      case NSHttpCookiePropertyKey.discard:
+        value = NSHttpCookiePropertyKeyEnum.discard;
+        break;
+      case NSHttpCookiePropertyKey.domain:
+        value = NSHttpCookiePropertyKeyEnum.domain;
+        break;
+      case NSHttpCookiePropertyKey.expires:
+        value = NSHttpCookiePropertyKeyEnum.expires;
+        break;
+      case NSHttpCookiePropertyKey.maximumAge:
+        value = NSHttpCookiePropertyKeyEnum.maximumAge;
+        break;
+      case NSHttpCookiePropertyKey.name:
+        value = NSHttpCookiePropertyKeyEnum.name;
+        break;
+      case NSHttpCookiePropertyKey.originUrl:
+        value = NSHttpCookiePropertyKeyEnum.originUrl;
+        break;
+      case NSHttpCookiePropertyKey.path:
+        value = NSHttpCookiePropertyKeyEnum.path;
+        break;
+      case NSHttpCookiePropertyKey.port:
+        value = NSHttpCookiePropertyKeyEnum.port;
+        break;
+      case NSHttpCookiePropertyKey.sameSitePolicy:
+        value = NSHttpCookiePropertyKeyEnum.sameSitePolicy;
+        break;
+      case NSHttpCookiePropertyKey.secure:
+        value = NSHttpCookiePropertyKeyEnum.secure;
+        break;
+      case NSHttpCookiePropertyKey.value:
+        value = NSHttpCookiePropertyKeyEnum.value;
+        break;
+      case NSHttpCookiePropertyKey.version:
+        value = NSHttpCookiePropertyKeyEnum.version;
+        break;
+    }
+
+    return NSHttpCookiePropertyKeyEnumData(value: value);
+  }
 }
 
 extension _WKUserScriptInjectionTimeConverter on WKUserScriptInjectionTime {
@@ -106,6 +174,51 @@ extension _NSUrlRequestConverter on NSUrlRequest {
   }
 }
 
+/// Handles initialization of Flutter APIs for WebKit.
+class WebKitFlutterApis {
+  /// Constructs a [WebKitFlutterApis].
+  @visibleForTesting
+  WebKitFlutterApis({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _binaryMessenger = binaryMessenger {
+    navigationDelegateFlutterApi = WKNavigationDelegateFlutterApiImpl(
+      instanceManager: instanceManager,
+    );
+  }
+
+  static WebKitFlutterApis _instance = WebKitFlutterApis();
+
+  /// Sets the global instance containing the Flutter Apis for the WebKit library.
+  @visibleForTesting
+  static set instance(WebKitFlutterApis instance) {
+    _instance = instance;
+  }
+
+  /// Global instance containing the Flutter Apis for the WebKit library.
+  static WebKitFlutterApis get instance {
+    return _instance;
+  }
+
+  final BinaryMessenger? _binaryMessenger;
+  bool _hasBeenSetUp = false;
+
+  /// Flutter Api for [WKNavigationDelegate].
+  @visibleForTesting
+  late final WKNavigationDelegateFlutterApiImpl navigationDelegateFlutterApi;
+
+  /// Ensures all the Flutter APIs have been set up to receive calls from native code.
+  void ensureSetUp() {
+    if (!_hasBeenSetUp) {
+      WKNavigationDelegateFlutterApi.setup(
+        navigationDelegateFlutterApi,
+        binaryMessenger: _binaryMessenger,
+      );
+      _hasBeenSetUp = true;
+    }
+  }
+}
+
 /// Host api implementation for [WKWebSiteDataStore].
 class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   /// Constructs a [WebsiteDataStoreHostApiImpl].
@@ -129,6 +242,16 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
         instanceId,
         instanceManager.getInstanceId(configuration)!,
       );
+    }
+  }
+
+  /// Calls [createDefaultDataStore] with the ids of the provided object instances.
+  Future<void> createDefaultDataStoreForInstances(
+    WKWebsiteDataStore instance,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      await createDefaultDataStore(instanceId);
     }
   }
 
@@ -201,6 +324,44 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
     return setJavaScriptEnabled(
       instanceManager.getInstanceId(instance)!,
       enabled,
+    );
+  }
+}
+
+/// Host api implementation for [WKHttpCookieStore].
+class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
+  /// Constructs a [WKHttpCookieStoreHostApiImpl].
+  WKHttpCookieStoreHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  })  : instanceManager = instanceManager ?? InstanceManager.instance,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Maintains instances stored to communicate with Objective-C objects.
+  final InstanceManager instanceManager;
+
+  /// Calls [createFromWebsiteDataStore] with the ids of the provided object instances.
+  Future<void> createFromWebsiteDataStoreForInstances(
+    WKHttpCookieStore instance,
+    WKWebsiteDataStore dataStore,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      await createFromWebsiteDataStore(
+        instanceId,
+        instanceManager.getInstanceId(dataStore)!,
+      );
+    }
+  }
+
+  /// Calls [setCookie] with the ids of the provided object instances.
+  Future<void> setCookieForInsances(
+    WKHttpCookieStore instance,
+    NSHttpCookie cookie,
+  ) {
+    return setCookie(
+      instanceManager.getInstanceId(instance)!,
+      cookie.toNSHttpCookieData(),
     );
   }
 }
@@ -380,6 +541,47 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
     if (instanceId != null) {
       await create(instanceId);
     }
+  }
+
+  /// Calls [setDidFinishNavigation] with the ids of the provided object instances.
+  Future<void> setDidFinishNavigationFromInstance(
+    WKNavigationDelegate instance,
+    void Function(WKWebView, String?)? didFinishNavigation,
+  ) {
+    int? functionInstanceId;
+    if (didFinishNavigation != null) {
+      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation) ??
+          instanceManager.tryAddInstance(didFinishNavigation)!;
+    }
+    return setDidFinishNavigation(
+      instanceManager.getInstanceId(instance)!,
+      functionInstanceId,
+    );
+  }
+}
+
+/// Flutter api implementation for [WKNavigationDelegate].
+class WKNavigationDelegateFlutterApiImpl
+    extends WKNavigationDelegateFlutterApi {
+  /// Constructs a [WKNavigationDelegateFlutterApiImpl].
+  WKNavigationDelegateFlutterApiImpl({InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? InstanceManager.instance;
+  }
+
+  /// Maintains instances stored to communicate with native language objects.
+  late final InstanceManager instanceManager;
+
+  @override
+  void didFinishNavigation(
+    int functionInstanceId,
+    int webViewInstanceId,
+    String? url,
+  ) {
+    final void Function(
+      WKWebView webView,
+      String? url,
+    ) function = instanceManager.getInstance(functionInstanceId)!;
+    function(instanceManager.getInstance(webViewInstanceId)!, url);
   }
 }
 

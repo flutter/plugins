@@ -142,26 +142,32 @@ public class DeviceOrientationManager {
   }
 
   /**
-   * Returns the device's video orientation in degrees based on the sensor orientation and the last
-   * known UI orientation.
+   * Returns the device's video orientation in clockwise degrees based on the sensor orientation and
+   * the last known UI orientation.
    *
    * <p>Returns one of 0, 90, 180 or 270.
    *
-   * @return The device's video orientation in degrees.
+   * @return The device's video orientation in clockwise degrees.
    */
   public int getVideoOrientation() {
     return this.getVideoOrientation(this.lastOrientation);
   }
 
   /**
-   * Returns the device's video orientation in degrees based on the sensor orientation and the
-   * supplied {@link PlatformChannel.DeviceOrientation} value.
+   * Returns the device's video orientation in clockwise degrees based on the sensor orientation and
+   * the supplied {@link PlatformChannel.DeviceOrientation} value.
    *
    * <p>Returns one of 0, 90, 180 or 270.
    *
+   * <p>More details can be found in the official Android documentation:
+   * https://developer.android.com/reference/android/media/MediaRecorder#setOrientationHint(int)
+   *
+   * <p>See also:
+   * https://developer.android.com/training/camera2/camera-preview-large-screens#orientation_calculation
+   *
    * @param orientation The {@link PlatformChannel.DeviceOrientation} value that is to be converted
    *     into degrees.
-   * @return The device's video orientation in degrees.
+   * @return The device's video orientation in clockwise degrees.
    */
   public int getVideoOrientation(PlatformChannel.DeviceOrientation orientation) {
     int angle = 0;
@@ -179,10 +185,10 @@ public class DeviceOrientationManager {
         angle = 180;
         break;
       case LANDSCAPE_LEFT:
-        angle = 90;
+        angle = 270;
         break;
       case LANDSCAPE_RIGHT:
-        angle = 270;
+        angle = 90;
         break;
     }
 

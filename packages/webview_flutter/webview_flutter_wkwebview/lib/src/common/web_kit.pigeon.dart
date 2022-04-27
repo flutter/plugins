@@ -61,6 +61,23 @@ enum WKNavigationActionPolicyEnum {
   cancel,
 }
 
+enum NSHttpCookiePropertyKeyEnum {
+  comment,
+  commentUrl,
+  discard,
+  domain,
+  expires,
+  maximumAge,
+  name,
+  originUrl,
+  path,
+  port,
+  sameSitePolicy,
+  secure,
+  value,
+  version,
+}
+
 class NSKeyValueObservingOptionsEnumData {
   NSKeyValueObservingOptionsEnumData({
     this.value,
@@ -153,6 +170,29 @@ class WKWebsiteDataTypesEnumData {
   }
 }
 
+class NSHttpCookiePropertyKeyEnumData {
+  NSHttpCookiePropertyKeyEnumData({
+    this.value,
+  });
+
+  NSHttpCookiePropertyKeyEnum? value;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['value'] = value == null ? null : value!.index;
+    return pigeonMap;
+  }
+
+  static NSHttpCookiePropertyKeyEnumData decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return NSHttpCookiePropertyKeyEnumData(
+      value: pigeonMap['value'] != null
+          ? NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int]
+          : null,
+    );
+  }
+}
+
 class NSUrlRequestData {
   NSUrlRequestData({
     required this.url,
@@ -221,6 +261,28 @@ class WKUserScriptData {
   }
 }
 
+class NSHttpCookieData {
+  NSHttpCookieData({
+    required this.properties,
+  });
+
+  Map<NSHttpCookiePropertyKeyEnumData?, String?> properties;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['properties'] = properties;
+    return pigeonMap;
+  }
+
+  static NSHttpCookieData decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return NSHttpCookieData(
+      properties: (pigeonMap['properties'] as Map<Object?, Object?>?)!
+          .cast<NSHttpCookiePropertyKeyEnumData?, String?>(),
+    );
+  }
+}
+
 class _WKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
   const _WKWebsiteDataStoreHostApiCodec();
   @override
@@ -265,6 +327,31 @@ class WKWebsiteDataStoreHostApi {
     final Map<Object?, Object?>? replyMap = await channel
             .send(<Object?>[arg_instanceId, arg_configurationInstanceId])
         as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> createDefaultDataStore(int arg_instanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createDefaultDataStore',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1022,6 +1109,75 @@ class WKNavigationDelegateHostApi {
       return;
     }
   }
+
+  Future<void> setDidFinishNavigation(
+      int arg_instanceId, int? arg_functionInstanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_instanceId, arg_functionInstanceId])
+            as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+class _WKNavigationDelegateFlutterApiCodec extends StandardMessageCodec {
+  const _WKNavigationDelegateFlutterApiCodec();
+}
+
+abstract class WKNavigationDelegateFlutterApi {
+  static const MessageCodec<Object?> codec =
+      _WKNavigationDelegateFlutterApiCodec();
+
+  void didFinishNavigation(
+      int functionInstanceId, int webViewInstanceId, String? url);
+  static void setup(WKNavigationDelegateFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_functionInstanceId = (args[0] as int?);
+          assert(arg_functionInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
+          final int? arg_webViewInstanceId = (args[1] as int?);
+          assert(arg_webViewInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
+          final String? arg_url = (args[2] as String?);
+          assert(arg_url != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null String.');
+          api.didFinishNavigation(
+              arg_functionInstanceId!, arg_webViewInstanceId!, arg_url!);
+          return;
+        });
+      }
+    }
+  }
 }
 
 class _NSObjectHostApiCodec extends StandardMessageCodec {
@@ -1138,6 +1294,38 @@ class NSObjectHostApi {
       );
     } else {
       return;
+    }
+  }
+}
+
+class _FunctionFlutterApiCodec extends StandardMessageCodec {
+  const _FunctionFlutterApiCodec();
+}
+
+abstract class FunctionFlutterApi {
+  static const MessageCodec<Object?> codec = _FunctionFlutterApiCodec();
+
+  void dispose(int instanceId);
+  static void setup(FunctionFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.FunctionFlutterApi.dispose', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null, expected non-null int.');
+          api.dispose(arg_instanceId!);
+          return;
+        });
+      }
     }
   }
 }
@@ -1668,6 +1856,100 @@ class WKUIDelegateHostApi {
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+class _WKHttpCookieStoreHostApiCodec extends StandardMessageCodec {
+  const _WKHttpCookieStoreHostApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is NSHttpCookieData) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is NSHttpCookiePropertyKeyEnumData) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:
+        return NSHttpCookieData.decode(readValue(buffer)!);
+
+      case 129:
+        return NSHttpCookiePropertyKeyEnumData.decode(readValue(buffer)!);
+
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+class WKHttpCookieStoreHostApi {
+  /// Constructor for [WKHttpCookieStoreHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  WKHttpCookieStoreHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _WKHttpCookieStoreHostApiCodec();
+
+  Future<void> createFromWebsiteDataStore(
+      int arg_instanceId, int arg_websiteDataStoreInstanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_websiteDataStoreInstanceId])
+        as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setCookie(
+      int arg_instanceId, NSHttpCookieData arg_cookie) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_cookie]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

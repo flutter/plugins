@@ -15,7 +15,7 @@ const String notEnrolled = 'NotEnrolled';
 /// Indicates the device does not have a Touch ID/fingerprint scanner.
 const String notAvailable = 'NotAvailable';
 
-/// Indicates the device operating system is not iOS or Android.
+/// Indicates the device operating system is unsupported.
 const String otherOperatingSystem = 'OtherOperatingSystem';
 
 /// Indicates the API lock out due to too many attempts.

@@ -251,7 +251,11 @@ class WKWebsiteDataStore {
         );
 
   factory WKWebsiteDataStore._defaultDataStore() {
-    throw UnimplementedError();
+    final WKWebsiteDataStore websiteDataStore = WKWebsiteDataStore._();
+    websiteDataStore._websiteDataStoreApi.createDefaultDataStoreForInstances(
+      websiteDataStore,
+    );
+    return websiteDataStore;
   }
 
   /// Constructs a [WKWebsiteDataStore] that is owned by [configuration].
@@ -301,20 +305,38 @@ class WKWebsiteDataStore {
 /// An object that manages the HTTP cookies associated with a particular web view.
 ///
 /// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
-class WKHttpCookieStore {
+class WKHttpCookieStore extends NSObject {
+  WKHttpCookieStore._({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _httpCookieStoreApi = WKHttpCookieStoreHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
   /// Constructs a [WKHttpCookieStore] that is owned by [dataStore].
   @visibleForTesting
-  WKHttpCookieStore.fromWebsiteDataStore(
-    // TODO(bparrishMines): Remove ignore on implementation.
-    // ignore: avoid_unused_constructor_parameters
-    WKWebsiteDataStore dataStore,
-  ) {
-    throw UnimplementedError();
+  factory WKHttpCookieStore.fromWebsiteDataStore(
+    WKWebsiteDataStore dataStore, {
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) {
+    final WKHttpCookieStore cookieStore = WKHttpCookieStore._(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    cookieStore._httpCookieStoreApi.createFromWebsiteDataStoreForInstances(
+      cookieStore,
+      dataStore,
+    );
+    return cookieStore;
   }
+
+  final WKHttpCookieStoreHostApiImpl _httpCookieStoreApi;
 
   /// Adds a cookie to the cookie store.
   Future<void> setCookie(NSHttpCookie cookie) {
-    throw UnimplementedError();
+    return _httpCookieStoreApi.setCookieForInsances(this, cookie);
   }
 }
 
@@ -571,15 +593,20 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
-class WKNavigationDelegate {
+class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+  })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
+    WebKitFlutterApis.instance.ensureSetUp();
     _navigationDelegateApi.createForInstances(this);
   }
 
@@ -587,10 +614,7 @@ class WKNavigationDelegate {
 
   /// Called when navigation from the main frame has started.
   Future<void> setDidStartProvisionalNavigation(
-    void Function(
-      WKWebView webView,
-      String? url,
-    )?
+    void Function(WKWebView webView, String? url)?
         didStartProvisionalNavigation,
   ) {
     throw UnimplementedError();
@@ -600,7 +624,10 @@ class WKNavigationDelegate {
   Future<void> setDidFinishNavigation(
     void Function(WKWebView webView, String? url)? didFinishNavigation,
   ) {
-    throw UnimplementedError();
+    return _navigationDelegateApi.setDidFinishNavigationFromInstance(
+      this,
+      didFinishNavigation,
+    );
   }
 
   /// Called when permission is needed to navigate to new content.

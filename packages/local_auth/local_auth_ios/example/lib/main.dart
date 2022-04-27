@@ -25,7 +25,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   _SupportState _supportState = _SupportState.unknown;
   bool? _canCheckBiometrics;
-  List<BiometricType>? _availableBiometrics;
+  List<BiometricType>? _enrolledBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
 
@@ -40,12 +40,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkBiometrics() async {
-    late bool canCheckBiometrics;
+    late bool deviceSupportsBiometrics;
     try {
-      canCheckBiometrics =
-          (await LocalAuthPlatform.instance.getEnrolledBiometrics()).isNotEmpty;
+      deviceSupportsBiometrics =
+          await LocalAuthPlatform.instance.deviceSupportsBiometrics();
     } on PlatformException catch (e) {
-      canCheckBiometrics = false;
+      deviceSupportsBiometrics = false;
       print(e);
     }
     if (!mounted) {
@@ -53,17 +53,17 @@ class _MyAppState extends State<MyApp> {
     }
 
     setState(() {
-      _canCheckBiometrics = canCheckBiometrics;
+      _canCheckBiometrics = deviceSupportsBiometrics;
     });
   }
 
   Future<void> _getEnrolledBiometrics() async {
-    late List<BiometricType> availableBiometrics;
+    late List<BiometricType> enrolledBiometrics;
     try {
-      availableBiometrics =
+      enrolledBiometrics =
           await LocalAuthPlatform.instance.getEnrolledBiometrics();
     } on PlatformException catch (e) {
-      availableBiometrics = <BiometricType>[];
+      enrolledBiometrics = <BiometricType>[];
       print(e);
     }
     if (!mounted) {
@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     setState(() {
-      _availableBiometrics = availableBiometrics;
+      _enrolledBiometrics = enrolledBiometrics;
     });
   }
 
@@ -173,15 +173,15 @@ class _MyAppState extends State<MyApp> {
                 else
                   const Text('This device is not supported'),
                 const Divider(height: 100),
-                Text('Can check biometrics: $_canCheckBiometrics\n'),
+                Text('Device supports biometrics: $_canCheckBiometrics\n'),
                 ElevatedButton(
                   child: const Text('Check biometrics'),
                   onPressed: _checkBiometrics,
                 ),
                 const Divider(height: 100),
-                Text('Available biometrics: $_availableBiometrics\n'),
+                Text('Enrolled biometrics: $_enrolledBiometrics\n'),
                 ElevatedButton(
-                  child: const Text('Get available biometrics'),
+                  child: const Text('Get enrolled biometrics'),
                   onPressed: _getEnrolledBiometrics,
                 ),
                 const Divider(height: 100),
