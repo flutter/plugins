@@ -139,7 +139,7 @@ void main() {
     });
 
     test('initWithParams passes through arguments to the channel', () async {
-      await googleSignIn.initWithParams(SignInInitParameters(
+      await googleSignIn.initWithParams(const SignInInitParameters(
           hostedDomain: 'example.com',
           scopes: <String>['two', 'scopes'],
           signInOption: SignInOption.games,
