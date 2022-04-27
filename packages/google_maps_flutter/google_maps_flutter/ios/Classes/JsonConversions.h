@@ -19,5 +19,5 @@
 + (NSArray<NSArray<CLLocation *> *> *)toHoles:(NSArray *)data;
 + (GMUWeightedLatLng *)toWeightedLatLng:(NSArray *)data;
 + (NSArray<GMUWeightedLatLng *> *)toWeightedData:(NSArray *)data;
-+ (GMUGradient *)toGradient:(NSArray *)data;
++ (GMUGradient *)toGradient:(NSDictionary *)data;
 @end

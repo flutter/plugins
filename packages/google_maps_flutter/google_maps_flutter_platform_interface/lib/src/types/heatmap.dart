@@ -33,8 +33,7 @@ class Heatmap implements MapsObject<Heatmap> {
     this.radius = 20,
     this.minimumZoomIntensity = 0,
     this.maximumZoomIntensity = 21,
-  })  : assert(gradient == null || gradient.length > 0),
-        // Docs for iOS say [radius] must be between 10 and 50, but anything
+  }) :  // Docs for iOS say [radius] must be between 10 and 50, but anything
         // higher than 45 causes EXC_BAD_ACCESS.
         assert(radius >= 10 && radius <= 45);
 
@@ -56,7 +55,7 @@ class Heatmap implements MapsObject<Heatmap> {
   final bool dissipating;
 
   /// The color gradient of the heatmap
-  final List<Color>? gradient;
+  final HeatmapGradient? gradient;
 
   /// The maximum intensity of the heatmap. By default, heatmap colors are
   /// dynamically scaled according to the greatest concentration of points at
@@ -74,12 +73,12 @@ class Heatmap implements MapsObject<Heatmap> {
   final int radius;
 
   /// The minimum zoom intensity used for normalizing intensities.
-  /// 
+  ///
   /// iOS only.
   final int minimumZoomIntensity;
 
   /// The maximum zoom intensity used for normalizing intensities.
-  /// 
+  ///
   /// iOS only.
   final int maximumZoomIntensity;
 
@@ -88,7 +87,7 @@ class Heatmap implements MapsObject<Heatmap> {
   Heatmap copyWith({
     List<WeightedLatLng>? dataParam,
     bool? dissipatingParam,
-    List<Color>? gradientParam,
+    HeatmapGradient? gradientParam,
     double? maxIntensityParam,
     double? opacityParam,
     int? radiusParam,
@@ -112,7 +111,7 @@ class Heatmap implements MapsObject<Heatmap> {
   /// instance.
   Heatmap clone() => copyWith(
         dataParam: List.of(data),
-        gradientParam: gradient != null ? List.of(gradient!) : null,
+        gradientParam: gradient != null ? gradient!.clone() : null,
       );
 
   /// Converts this object to something serializable in JSON.
@@ -128,7 +127,7 @@ class Heatmap implements MapsObject<Heatmap> {
     addIfPresent('heatmapId', heatmapId.value);
     addIfPresent('data', data.map((e) => e.toJson()).toList());
     addIfPresent('dissipating', dissipating);
-    addIfPresent('gradient', gradient?.map((e) => e.value).toList());
+    addIfPresent('gradient', gradient?.toJson());
     addIfPresent('maxIntensity', maxIntensity);
     addIfPresent('opacity', opacity);
     addIfPresent('radius', radius);
@@ -146,7 +145,7 @@ class Heatmap implements MapsObject<Heatmap> {
     return heatmapId == typedOther.heatmapId &&
         listEquals(data, typedOther.data) &&
         dissipating == typedOther.dissipating &&
-        listEquals(gradient, typedOther.gradient) &&
+        gradient == typedOther.gradient &&
         maxIntensity == typedOther.maxIntensity &&
         opacity == typedOther.opacity &&
         radius == typedOther.radius &&
@@ -156,4 +155,78 @@ class Heatmap implements MapsObject<Heatmap> {
 
   @override
   int get hashCode => heatmapId.hashCode;
+}
+
+/// Represents a mapping of intensity to color.  Interpolates between given set
+/// intensity and color values to produce a full mapping for the range [0, 1].
+class HeatmapGradient {
+  /// The specific colors for the specific intensities specified by startPoints.
+  final List<Color> colors;
+
+  /// The intensities which will be the specific colors specified in colors.
+  ///
+  /// Android and iOS only.
+  final List<double> startPoints;
+
+  /// Number of entries in the generated color map.
+  ///
+  /// Android and iOS only.
+  final int colorMapSize;
+
+  /// Creates a new [HeatmapGradient] object.
+  const HeatmapGradient({
+    required this.colors,
+    required this.startPoints,
+    this.colorMapSize = 256,
+  })  : assert(colors.length == startPoints.length),
+        assert(colors.length > 0),
+        assert(startPoints.length > 0);
+
+  /// Creates a new [HeatmapGradient] object whose values are the same as this
+  /// instance, unless overwritten by the specified parameters.
+  HeatmapGradient copyWith({
+    List<Color>? colorsParam,
+    List<double>? startPointsParam,
+    int? colorMapSizeParam,
+  }) {
+    return HeatmapGradient(
+      colors: colorsParam ?? colors,
+      startPoints: startPointsParam ?? startPoints,
+      colorMapSize: colorMapSizeParam ?? colorMapSize,
+    );
+  }
+
+  /// Creates a new [HeatmapGradient] object whose values are the same as this
+  /// instance.
+  HeatmapGradient clone() => copyWith(
+        colorsParam: List.of(colors),
+        startPointsParam: List.of(startPoints),
+      );
+
+  /// Converts this object to something serializable in JSON.
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
+
+    void addIfPresent(String fieldName, Object? value) {
+      if (value != null) {
+        json[fieldName] = value;
+      }
+    }
+
+    addIfPresent('colors', colors.map((e) => e.value).toList());
+    addIfPresent('startPoints', startPoints);
+    addIfPresent('colorMapSize', colorMapSize);
+
+    return json;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final HeatmapGradient typedOther = other as HeatmapGradient;
+    return listEquals(colors, typedOther.colors) &&
+        listEquals(startPoints, typedOther.startPoints) &&
+        colorMapSize == typedOther.colorMapSize;
+  }
 }

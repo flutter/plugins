@@ -71,7 +71,7 @@
     [sink setWeightedData:[FLTGoogleMapJsonConversions toWeightedData:weightedData]];
   }
 
-  NSArray *gradient = data[@"gradient"];
+  NSDictionary *gradient = data[@"gradient"];
   if (gradient != nil) {
     [sink setGradient:[FLTGoogleMapJsonConversions toGradient:gradient]];
   }

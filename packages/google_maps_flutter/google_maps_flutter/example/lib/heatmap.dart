@@ -88,25 +88,27 @@ class HeatmapBodyState extends State<HeatmapBody> {
                   Heatmap(
                     heatmapId: const HeatmapId('test'),
                     data: enabledPoints,
-                    gradient: <Color>[
-                      // Web and Android need a first color with 0 alpha.
-                      // On iOS, this causes rendering issues.
-                      if (!(defaultTargetPlatform == TargetPlatform.iOS))
-                        const Color.fromARGB(0, 0, 255, 255),
-                      const Color.fromARGB(255, 0, 255, 255),
-                      const Color.fromARGB(255, 0, 191, 255),
-                      const Color.fromARGB(255, 0, 127, 255),
-                      const Color.fromARGB(255, 0, 63, 255),
-                      const Color.fromARGB(255, 0, 0, 255),
-                      const Color.fromARGB(255, 0, 0, 223),
-                      const Color.fromARGB(255, 0, 0, 191),
-                      const Color.fromARGB(255, 0, 0, 159),
-                      const Color.fromARGB(255, 0, 0, 127),
-                      const Color.fromARGB(255, 63, 0, 91),
-                      const Color.fromARGB(255, 127, 0, 63),
-                      const Color.fromARGB(255, 191, 0, 31),
-                      const Color.fromARGB(255, 255, 0, 0),
-                    ],
+                    gradient: HeatmapGradient(
+                      colors: <Color>[
+                        // Web and Android need a first color with 0 alpha.
+                        // On iOS, this causes rendering issues.
+                        if (!(defaultTargetPlatform == TargetPlatform.iOS))
+                          const Color.fromARGB(0, 0, 255, 255),
+                        const Color.fromARGB(255, 0, 255, 255),
+                        const Color.fromARGB(255, 0, 63, 255),
+                        const Color.fromARGB(255, 0, 0, 191),
+                        const Color.fromARGB(255, 63, 0, 91),
+                        const Color.fromARGB(255, 255, 0, 0),
+                      ],
+                      startPoints: <double>[
+                        if (!(defaultTargetPlatform == TargetPlatform.iOS)) 0,
+                        0.2,
+                        0.4,
+                        0.6,
+                        0.8,
+                        1.0,
+                      ],
+                    ),
                     maxIntensity: 1,
                     opacity: 0.7,
                     // Radius behaves differently on web and Android/iOS.

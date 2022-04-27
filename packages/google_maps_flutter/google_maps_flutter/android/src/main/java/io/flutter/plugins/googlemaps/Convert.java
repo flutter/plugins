@@ -651,25 +651,25 @@ class Convert {
   }
 
   private static Gradient toGradient(Object o) {
-    final List<?> data = toList(o);
-    final int[] colors = new int[data.size()];
-    final float[] startPoints = new float[data.size()];
-    final double startPointInterval = 1.0 / data.size();
-    float currentStartPoint = 0;
+    final Map<?, ?> data = toMap(o);
 
-    for (int i = 0; i < data.size(); i++) {
-      colors[i] = toInt(data.get(i));
-      startPoints[i] = currentStartPoint;
-
-      currentStartPoint += startPointInterval;
-
-      // Make sure the start point doesn't exceed the max value
-      if (currentStartPoint > 1) {
-        currentStartPoint = 1;
-      }
+    final List<?> colorData = toList(data.get("colors"));
+    assert colorData != null;
+    final int[] colors = new int[colorData.size()];
+    for (int i = 0; i < colorData.size(); i++) {
+      colors[i] = toInt(colorData.get(i));
     }
 
-    return new Gradient(colors, startPoints);
+    final List<?> startPointData = toList(data.get("startPoints"));
+    assert startPointData != null;
+    final float[] startPoints = new float[startPointData.size()];
+    for (int i = 0; i < startPointData.size(); i++) {
+      startPoints[i] = toFloat(startPointData.get(i));
+    }
+
+    final int colorMapSize = toInt(data.get("colorMapSize"));
+
+    return new Gradient(colors, startPoints, colorMapSize);
   }
 
   private static List<List<LatLng>> toHoles(Object o) {
