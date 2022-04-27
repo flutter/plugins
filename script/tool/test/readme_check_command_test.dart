@@ -275,4 +275,83 @@ A very useful plugin.
       );
     });
   });
+
+  group('code blocks', () {
+    test('fails on missing info string', () async {
+      final Directory packageDir = createFakePackage('a_package', packagesDir);
+
+      packageDir.childFile('README.md').writeAsStringSync('''
+Example:
+
+```
+void main() {
+  // ...
+}
+```
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['readme-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Code block at line 3 is missing a language identifier.'),
+          contains('Missing language identifier for code block'),
+        ]),
+      );
+    });
+
+    test('allows unknown info strings', () async {
+      final Directory packageDir = createFakePackage('a_package', packagesDir);
+
+      packageDir.childFile('README.md').writeAsStringSync('''
+Example:
+
+```someunknowninfotag
+A B C
+```
+''');
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'readme-check',
+      ]);
+
+      expect(
+        output,
+        containsAll(<Matcher>[
+          contains('Running for a_package...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('allows space around info strings', () async {
+      final Directory packageDir = createFakePackage('a_package', packagesDir);
+
+      packageDir.childFile('README.md').writeAsStringSync('''
+Example:
+
+```  dart
+A B C
+```
+''');
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'readme-check',
+      ]);
+
+      expect(
+        output,
+        containsAll(<Matcher>[
+          contains('Running for a_package...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+  });
 }

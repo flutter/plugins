@@ -61,8 +61,15 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     final Pubspec pubspec = package.parsePubspec();
     final bool isPlugin = pubspec.flutter?['plugin'] != null;
 
+    final List<String> readmeLines = package.readmeFile.readAsLinesSync();
+
+    final String? blockValidationError = _validateCodeBlocks(readmeLines);
+    if (blockValidationError != null) {
+      errors.add(blockValidationError);
+    }
+
     if (isPlugin && (!package.isFederated || package.isAppFacing)) {
-      final String? error = _validateSupportedPlatforms(package, pubspec);
+      final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
       if (error != null) {
         errors.add(error);
       }
@@ -73,23 +80,57 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
         : PackageResult.fail(errors);
   }
 
+  /// Validates that code blocks (``` ... ```) follow repository standards.
+  String? _validateCodeBlocks(List<String> readmeLines) {
+    final RegExp codeBlockDelimiterPattern = RegExp(r'^\s*```\s*([^ ]*)\s*');
+    final List<int> errorLines = <int>[];
+    bool inBlock = false;
+    for (int i = 0; i < readmeLines.length; ++i) {
+      final RegExpMatch? match =
+          codeBlockDelimiterPattern.firstMatch(readmeLines[i]);
+      if (match == null) {
+        continue;
+      }
+      if (inBlock) {
+        inBlock = false;
+      } else {
+        inBlock = true;
+        final String infoString = match[1] ?? '';
+        if (infoString.isEmpty) {
+          // Use 1-indexed line numbers, since it's for human-readable output.
+          errorLines.add(i + 1);
+        }
+      }
+    }
+    if (errorLines.isNotEmpty) {
+      for (final int lineNumber in errorLines) {
+        printError('${indentation}Code block at line $lineNumber is missing '
+            'a language identifier.');
+      }
+      printError(
+          '${indentation}For each block listed above, add a language tag to '
+          'the opening block. For instance, for Dart code, use:\n'
+          '${indentation * 2}```dart');
+      return 'Missing language identifier for code block';
+    }
+    return null;
+  }
+
   /// Validates that the plugin has a supported platforms table following the
   /// expected format, returning an error string if any issues are found.
   String? _validateSupportedPlatforms(
-      RepositoryPackage package, Pubspec pubspec) {
-    final List<String> contents = package.readmeFile.readAsLinesSync();
-
+      List<String> readmeLines, Pubspec pubspec) {
     // Example table following expected format:
     // |                | Android | iOS      | Web                    |
     // |----------------|---------|----------|------------------------|
     // | **Support**    | SDK 21+ | iOS 10+* | [See `camera_web `][1] |
-    final int detailsLineNumber =
-        contents.indexWhere((String line) => line.startsWith('| **Support**'));
+    final int detailsLineNumber = readmeLines
+        .indexWhere((String line) => line.startsWith('| **Support**'));
     if (detailsLineNumber == -1) {
       return 'No OS support table found';
     }
     final int osLineNumber = detailsLineNumber - 2;
-    if (osLineNumber < 0 || !contents[osLineNumber].startsWith('|')) {
+    if (osLineNumber < 0 || !readmeLines[osLineNumber].startsWith('|')) {
       return 'OS support table does not have the expected header format';
     }
 
@@ -111,7 +152,7 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     final YamlMap platformSupportMaps = platformsEntry as YamlMap;
     final Set<String> actuallySupportedPlatform =
         platformSupportMaps.keys.toSet().cast<String>();
-    final Iterable<String> documentedPlatforms = contents[osLineNumber]
+    final Iterable<String> documentedPlatforms = readmeLines[osLineNumber]
         .split('|')
         .map((String entry) => entry.trim())
         .where((String entry) => entry.isNotEmpty);
