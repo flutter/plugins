@@ -1,7 +1,8 @@
-## NEXT
+## 2.4.0
 
 * Updates minimum Flutter version to 2.10.
 * Adds OS version support information to README.
+* Adds `setClosedCaptionFile` method to `VideoPlayerController`.
 
 ## 2.3.0
 

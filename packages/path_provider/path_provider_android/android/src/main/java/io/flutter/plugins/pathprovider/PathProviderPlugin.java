@@ -17,16 +17,14 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.BinaryMessenger.TaskQueue;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCodec;
 import io.flutter.plugin.common.StandardMethodCodec;
 import io.flutter.util.PathUtils;
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -154,25 +152,17 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   private void setup(BinaryMessenger messenger, Context context) {
     String channelName = "plugins.flutter.io/path_provider_android";
-    // TODO(gaaclarke): Remove reflection guard when https://github.com/flutter/engine/pull/29147
-    // becomes available on the stable branch.
+    TaskQueue taskQueue = messenger.makeBackgroundTaskQueue();
+
     try {
-      Class methodChannelClass = Class.forName("io.flutter.plugin.common.MethodChannel");
-      Class taskQueueClass = Class.forName("io.flutter.plugin.common.BinaryMessenger$TaskQueue");
-      Method makeBackgroundTaskQueue = messenger.getClass().getMethod("makeBackgroundTaskQueue");
-      Object taskQueue = makeBackgroundTaskQueue.invoke(messenger);
-      Constructor<MethodChannel> constructor =
-          methodChannelClass.getConstructor(
-              BinaryMessenger.class, String.class, MethodCodec.class, taskQueueClass);
       channel =
-          constructor.newInstance(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
+          (MethodChannel)
+              new MethodChannel(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
       impl = new PathProviderBackgroundThread();
-      Log.d(TAG, "Use TaskQueues.");
     } catch (Exception ex) {
-      channel = new MethodChannel(messenger, channelName);
-      impl = new PathProviderPlatformThread();
-      Log.d(TAG, "Don't use TaskQueues.");
+      Log.e(TAG, "Received exception while setting up PathProviderPlugin", ex);
     }
+
     this.context = context;
     channel.setMethodCallHandler(this);
   }
