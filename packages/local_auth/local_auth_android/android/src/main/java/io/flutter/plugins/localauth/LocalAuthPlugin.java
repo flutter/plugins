@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import androidx.annotation.NonNull;
@@ -101,14 +100,17 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       case "authenticate":
         authenticate(call, result);
         break;
-      case "getAvailableBiometrics":
-        getAvailableBiometrics(result);
+      case "getEnrolledBiometrics":
+        getEnrolledBiometrics(result);
         break;
       case "isDeviceSupported":
         isDeviceSupported(result);
         break;
       case "stopAuthentication":
         stopAuthentication(result);
+        break;
+      case "deviceSupportsBiometrics":
+        deviceSupportsBiometrics(result);
         break;
       default:
         result.notImplemented();
@@ -248,42 +250,39 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
   }
 
+  private void deviceSupportsBiometrics(final Result result) {
+    result.success(hasBiometricHardware());
+  }
+
   /*
-   * Returns biometric types available on device
+   * Returns enrolled biometric types available on device.
    */
-  private void getAvailableBiometrics(final Result result) {
+  private void getEnrolledBiometrics(final Result result) {
     try {
       if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
-      ArrayList<String> biometrics = getAvailableBiometrics();
+      ArrayList<String> biometrics = getEnrolledBiometrics();
       result.success(biometrics);
     } catch (Exception e) {
       result.error("no_biometrics_available", e.getMessage(), null);
     }
   }
 
-  private ArrayList<String> getAvailableBiometrics() {
+  private ArrayList<String> getEnrolledBiometrics() {
     ArrayList<String> biometrics = new ArrayList<>();
     if (activity == null || activity.isFinishing()) {
       return biometrics;
     }
-    PackageManager packageManager = activity.getPackageManager();
-    if (Build.VERSION.SDK_INT >= 23) {
-      if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-        biometrics.add("fingerprint");
-      }
+    if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+        == BiometricManager.BIOMETRIC_SUCCESS) {
+      biometrics.add("weak");
     }
-    if (Build.VERSION.SDK_INT >= 29) {
-      if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
-        biometrics.add("face");
-      }
-      if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
-        biometrics.add("iris");
-      }
+    if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+        == BiometricManager.BIOMETRIC_SUCCESS) {
+      biometrics.add("strong");
     }
-
     return biometrics;
   }
 
@@ -358,5 +357,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @VisibleForTesting
   final Activity getActivity() {
     return activity;
+  }
+
+  @VisibleForTesting
+  void setBiometricManager(BiometricManager biometricManager) {
+    this.biometricManager = biometricManager;
   }
 }
