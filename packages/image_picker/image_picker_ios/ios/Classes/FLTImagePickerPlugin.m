@@ -119,7 +119,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _pickerViewController.presentationController.delegate = self;
   self.callContext = context;
 
-  BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+  BOOL requestFullMetadata = context.requestFullMetadata;
   if (requestFullMetadata) {
     [self checkPhotoAuthorizationForAccessLevel];
   } else {
@@ -135,7 +135,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
   self.callContext = context;
 
-  BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+  BOOL requestFullMetadata = context.requestFullMetadata;
 
   switch (source.type) {
     case FLTSourceTypeCamera:
@@ -167,6 +167,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)pickImageWithSource:(nonnull FLTSourceSpecification *)source
                     maxSize:(nonnull FLTMaxSize *)maxSize
                     quality:(nullable NSNumber *)imageQuality
+        requestFullMetadata:(NSNumber *)requestFullMetadata
                  completion:
                      (nonnull void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
   [self cancelInProgressCall];
@@ -182,6 +183,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   context.maxSize = maxSize;
   context.imageQuality = imageQuality;
   context.maxImageCount = 1;
+  context.requestFullMetadata = [requestFullMetadata boolValue];
 
   if (source.type == FLTSourceTypeGallery) {  // Capture is not possible with PHPicker
     if (@available(iOS 14, *)) {
@@ -243,7 +245,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 
   self.callContext = context;
-  BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+  BOOL requestFullMetadata = context.requestFullMetadata;
 
   switch (source.type) {
     case FLTSourceTypeCamera:
@@ -251,11 +253,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                              camera:[self cameraDeviceForSource:source]];
       break;
     case FLTSourceTypeGallery:
-        if (requestFullMetadata) {
-          [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
-        } else {
-          [self showPhotoLibraryWithImagePicker:imagePickerController];
-        }
+      if (requestFullMetadata) {
+        [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
+      } else {
+        [self showPhotoLibraryWithImagePicker:imagePickerController];
+      }
       break;
     default:
       [self sendCallResultWithError:[FlutterError errorWithCode:@"invalid_source"
@@ -574,7 +576,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *maxHeight = self.callContext.maxSize.height;
     NSNumber *imageQuality = self.callContext.imageQuality;
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-    BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+    BOOL requestFullMetadata = _callContext.requestFullMetadata;
 
     PHAsset *originalAsset;
     if (requestFullMetadata) {

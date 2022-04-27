@@ -60,6 +60,23 @@ class ImagePickerIOS extends ImagePickerPlatform {
   }
 
   @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions? options,
+  }) async {
+    final ImagePickerOptions pickerOptions = options ?? ImagePickerOptions();
+    final String? path = await _pickImageAsPath(
+      source: source,
+      maxWidth: pickerOptions.maxWidth,
+      maxHeight: pickerOptions.maxHeight,
+      imageQuality: pickerOptions.imageQuality,
+      preferredCameraDevice: pickerOptions.preferredCameraDevice,
+      requestFullMetadata: pickerOptions.requestFullMetadata,
+    );
+    return path != null ? XFile(path) : null;
+  }
+
+  @override
   Future<List<PickedFile>?> pickMultiImage({
     double? maxWidth,
     double? maxHeight,
@@ -108,6 +125,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool requestFullMetadata = true,
   }) {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
@@ -128,6 +146,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
           camera: _convertCamera(preferredCameraDevice)),
       MaxSize(width: maxWidth, height: maxHeight),
       imageQuality,
+      requestFullMetadata,
     );
   }
 
