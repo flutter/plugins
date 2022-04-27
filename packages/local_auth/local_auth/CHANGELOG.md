@@ -1,3 +1,7 @@
+## NEXT
+
+* Remove unnecessary imports.
+
 ## 2.0.0
 
 * Migrates plugin to federated architecture.

@@ -1,3 +1,7 @@
+## NEXT
+
+* Remove unnecessary imports.
+
 ## 6.1.0
 
 * Introduces new `launchUrl` and `canLaunchUrl` APIs; `launch` and `canLaunch`
