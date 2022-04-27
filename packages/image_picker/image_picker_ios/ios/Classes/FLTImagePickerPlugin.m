@@ -133,8 +133,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   self.maxImagesAllowed = maxImagesAllowed;
 
-  BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
-  if (usePHAsset) {
+  BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+  if (requestFullMetadata) {
     [self checkPhotoAuthorizationForAccessLevel];
   } else {
     [self showPhotoLibraryWithPHPicker:_pickerViewController];
@@ -147,7 +147,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   imagePickerController.delegate = self;
   imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-  BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+  BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
   self.maxImagesAllowed = 1;
 
   switch (imageSource) {
@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     case SOURCE_GALLERY:
       if (@available(iOS 11, *)) {
-        if (usePHAsset) {
+        if (requestFullMetadata) {
           [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
         } else {
           [self showPhotoLibraryWithImagePicker:imagePickerController];
@@ -220,13 +220,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       imagePickerController.videoMaximumDuration = max;
     }
 
-    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+    BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
     switch (imageSource) {
       case SOURCE_CAMERA:
         [self checkCameraAuthorizationWithImagePicker:imagePickerController];
         break;
       case SOURCE_GALLERY:
-        if (usePHAsset) {
+        if (requestFullMetadata) {
           [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
         } else {
           [self showPhotoLibraryWithImagePicker:imagePickerController];
@@ -534,10 +534,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *maxHeight = GetNullableValueForKey(_arguments, @"maxHeight");
     NSNumber *imageQuality = GetNullableValueForKey(_arguments, @"imageQuality");
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-    BOOL usePHAsset = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
+    BOOL requestFullMetadata = [[_arguments objectForKey:@"requestFullMetadata"] boolValue];
 
     PHAsset *originalAsset;
-    if (usePHAsset) {
+    if (requestFullMetadata) {
+      // Full metadata are available only in PHAsset, which requires gallery permission
       originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     }
 

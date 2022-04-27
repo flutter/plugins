@@ -190,7 +190,7 @@
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
                                                               arguments:@{
                                                                 @"source" : @(1),
-                                                                @"requestFullMetadata" : @(false),
+                                                                @"requestFullMetadata" : @(NO),
                                                               }];
 
   [plugin handleMethodCall:call
