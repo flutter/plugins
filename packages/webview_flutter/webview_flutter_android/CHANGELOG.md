@@ -1,6 +1,6 @@
 ## 2.8.6
 
-* Change the default WebView layout direction to `TextDirection.ltr`.
+* Changes default WebView layout direction to `TextDirection.ltr`.
 
 ## 2.8.5
 
