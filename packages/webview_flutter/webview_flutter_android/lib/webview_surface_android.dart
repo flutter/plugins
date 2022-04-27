@@ -59,7 +59,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
               // WebView content is not affected by the Android view's layout direction,
               // we explicitly set it here so that the widget doesn't require an ambient
               // directionality.
-              layoutDirection: TextDirection.rtl,
+              layoutDirection: TextDirection.ltr,
               creationParams:
                   InstanceManager.instance.getInstanceId(controller.webView),
               creationParamsCodec: const StandardMessageCodec(),

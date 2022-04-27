@@ -1,3 +1,7 @@
+## 2.8.6
+
+* Change the default WebView layout direction to `TextDirection.ltr`.
+
 ## 2.8.5
 
 * Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.
