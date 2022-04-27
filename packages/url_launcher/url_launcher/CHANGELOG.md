@@ -1,3 +1,8 @@
+## 6.1.1
+
+* Updates README section about query permissions to better reflect changes to
+  `canLaunchUrl` recommendations.
+
 ## 6.1.0
 
 * Introduces new `launchUrl` and `canLaunchUrl` APIs; `launch` and `canLaunch`
