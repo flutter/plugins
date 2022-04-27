@@ -26,7 +26,12 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
           processRunner: processRunner,
           platform: platform,
           gitDir: gitDir,
-        );
+        ) {
+    argParser.addFlag(_requireExcerptsArg,
+        help: 'Require that Dart code blocks be managed by code-excerpt.');
+  }
+
+  static const String _requireExcerptsArg = 'require-excerpts';
 
   // Standardized capitalizations for platforms that a plugin can support.
   static const Map<String, String> _standardPlatformNames = <String, String>{
@@ -83,7 +88,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
   /// Validates that code blocks (``` ... ```) follow repository standards.
   String? _validateCodeBlocks(List<String> readmeLines) {
     final RegExp codeBlockDelimiterPattern = RegExp(r'^\s*```\s*([^ ]*)\s*');
-    final List<int> errorLines = <int>[];
+    final List<int> missingLanguageLines = <int>[];
+    final List<int> missingExcerptLines = <int>[];
     bool inBlock = false;
     for (int i = 0; i < readmeLines.length; ++i) {
       final RegExpMatch? match =
@@ -93,27 +99,55 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       }
       if (inBlock) {
         inBlock = false;
-      } else {
-        inBlock = true;
-        final String infoString = match[1] ?? '';
-        if (infoString.isEmpty) {
-          // Use 1-indexed line numbers, since it's for human-readable output.
-          errorLines.add(i + 1);
+        continue;
+      }
+      inBlock = true;
+
+      final int humanReadableLineNumber = i + 1;
+
+      // Ensure that there's a language tag.
+      final String infoString = match[1] ?? '';
+      if (infoString.isEmpty) {
+        missingLanguageLines.add(humanReadableLineNumber);
+        continue;
+      }
+
+      // Check for code-excerpt usage if requested.
+      if (getBoolArg(_requireExcerptsArg) && infoString == 'dart') {
+        const String excerptTagStart = '<?code-excerpt ';
+        if (i == 0 || !readmeLines[i - 1].trim().startsWith(excerptTagStart)) {
+          missingExcerptLines.add(humanReadableLineNumber);
         }
       }
     }
-    if (errorLines.isNotEmpty) {
-      for (final int lineNumber in errorLines) {
+
+    String? errorSummary;
+
+    if (missingLanguageLines.isNotEmpty) {
+      for (final int lineNumber in missingLanguageLines) {
         printError('${indentation}Code block at line $lineNumber is missing '
             'a language identifier.');
       }
       printError(
-          '${indentation}For each block listed above, add a language tag to '
+          '\n${indentation}For each block listed above, add a language tag to '
           'the opening block. For instance, for Dart code, use:\n'
-          '${indentation * 2}```dart');
-      return 'Missing language identifier for code block';
+          '${indentation * 2}```dart\n');
+      errorSummary = 'Missing language identifier for code block';
     }
-    return null;
+
+    if (missingExcerptLines.isNotEmpty) {
+      for (final int lineNumber in missingExcerptLines) {
+        printError('${indentation}Dart code block at line $lineNumber is not '
+            'managed by code-excerpt.');
+      }
+      printError(
+          '\n${indentation}For each block listed above, add <?code-excerpt ...> '
+          'tag on the previous line, and ensure that a build.excerpt.yaml is '
+          'configured for the source example.\n');
+      errorSummary ??= 'Missing code-excerpt management for code block';
+    }
+
+    return errorSummary;
   }
 
   /// Validates that the plugin has a supported platforms table following the

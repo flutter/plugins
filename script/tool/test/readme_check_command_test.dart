@@ -353,5 +353,57 @@ A B C
         ]),
       );
     });
+
+    test('passes when excerpt requirement is met', () async {
+      final Directory packageDir = createFakePackage('a_package', packagesDir);
+
+      packageDir.childFile('README.md').writeAsStringSync('''
+Example:
+
+<?code-excerpt "main.dart (SomeSection)"?>
+```dart
+A B C
+```
+''');
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['readme-check', '--require-excerpts']);
+
+      expect(
+        output,
+        containsAll(<Matcher>[
+          contains('Running for a_package...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails on missing excerpt tag when requested', () async {
+      final Directory packageDir = createFakePackage('a_package', packagesDir);
+
+      packageDir.childFile('README.md').writeAsStringSync('''
+Example:
+
+```dart
+A B C
+```
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['readme-check', '--require-excerpts'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Dart code block at line 3 is not managed by code-excerpt.'),
+          contains('Missing code-excerpt management for code block'),
+        ]),
+      );
+    });
   });
 }
