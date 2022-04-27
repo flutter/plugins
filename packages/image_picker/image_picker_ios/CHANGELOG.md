@@ -1,3 +1,7 @@
+## 0.8.6
+
+* Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
+
 ## 0.8.5
 
 * Switches to an in-package method channel based on Pigeon.
