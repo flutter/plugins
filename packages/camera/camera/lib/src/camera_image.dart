@@ -6,7 +6,6 @@ import 'dart:typed_data';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 /// A single color plane of image data.
 ///

@@ -7,8 +7,6 @@ import 'dart:async';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-import 'types.dart';
-
 /// Passes [url] to the underlying platform for handling.
 ///
 /// [mode] support varies significantly by platform:
