@@ -131,8 +131,11 @@ class MethodCallHandlerImpl
                 : ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY,
             result);
         break;
-      case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES:
-        queryPurchases((String) call.argument("skuType"), result);
+      case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES: // Legacy method name.
+        queryPurchasesAsync((String) call.argument("skuType"), result);
+        break;
+      case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES_ASYNC:
+        queryPurchasesAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
@@ -148,6 +151,9 @@ class MethodCallHandlerImpl
         break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW:
         launchPriceChangeConfirmationFlow((String) call.argument("sku"), result);
+        break;
+      case InAppPurchasePlugin.MethodNames.GET_CONNECTION_STATE:
+        getConnectionState();
         break;
       default:
         result.notImplemented();
@@ -256,7 +262,11 @@ class MethodCallHandlerImpl
       paramsBuilder.setObfuscatedProfileId(obfuscatedProfileId);
     }
     if (oldSku != null && !oldSku.isEmpty()) {
-      paramsBuilder.setOldSku(oldSku, purchaseToken);
+      BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
+          BillingFlowParams.SubscriptionUpdateParams.Builder.newBuilder();
+      subscriptionUpdateParamsBuilder.setOldSkuPurchaseToken(purchaseToken);
+      // paramsBuilder.setOldSku(oldSku, purchaseToken);
+      paramsBuilder.setSubscriptionUpdateParams(subscriptionUpdateParamsBuilder.build());
     }
     // The proration mode value has to match one of the following declared in
     // https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
@@ -326,6 +336,15 @@ class MethodCallHandlerImpl
             result.success(serialized);
           }
         });
+  }
+
+  private void getConnectionState() {
+    if (billingClientError(result)) {
+      return;
+    }
+    final Map<String, Object> serialized = new HashMap<>();
+    serialized.put("connectionState", billingClient.getConnectionState());
+    result.success(serialized);
   }
 
   private void startConnection(final int handle, final MethodChannel.Result result) {

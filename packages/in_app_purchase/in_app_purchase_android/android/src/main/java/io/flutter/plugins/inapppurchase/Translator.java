@@ -61,12 +61,13 @@ import java.util.Locale;
     info.put("purchaseTime", purchase.getPurchaseTime());
     info.put("purchaseToken", purchase.getPurchaseToken());
     info.put("signature", purchase.getSignature());
-    info.put("sku", purchase.getSku());
+    info.put("sku", purchase.getSkus());
     info.put("isAutoRenewing", purchase.isAutoRenewing());
     info.put("originalJson", purchase.getOriginalJson());
     info.put("developerPayload", purchase.getDeveloperPayload());
     info.put("isAcknowledged", purchase.isAcknowledged());
     info.put("purchaseState", purchase.getPurchaseState());
+    info.put("quantity", purchase.getQuantity());
     AccountIdentifiers accountIdentifiers = purchase.getAccountIdentifiers();
     if (accountIdentifiers != null) {
       info.put("obfuscatedAccountId", accountIdentifiers.getObfuscatedAccountId());
@@ -81,9 +82,10 @@ import java.util.Locale;
     info.put("purchaseTime", purchaseHistoryRecord.getPurchaseTime());
     info.put("purchaseToken", purchaseHistoryRecord.getPurchaseToken());
     info.put("signature", purchaseHistoryRecord.getSignature());
-    info.put("sku", purchaseHistoryRecord.getSku());
+    info.put("sku", purchaseHistoryRecord.getSkus());
     info.put("developerPayload", purchaseHistoryRecord.getDeveloperPayload());
     info.put("originalJson", purchaseHistoryRecord.getOriginalJson());
+    info.put("quantity", purchaseHistoryRecord.getQuantity());
     return info;
   }
 
