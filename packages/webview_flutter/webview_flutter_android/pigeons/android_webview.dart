@@ -27,17 +27,28 @@ import 'package:pigeon/pigeon.dart';
   ),
 )
 class WebResourceRequestData {
-  late String url;
-  late bool isForMainFrame;
-  late bool? isRedirect;
-  late bool hasGesture;
-  late String method;
-  late Map<String?, String?> requestHeaders;
+  WebResourceRequestData(
+    this.url,
+    this.isForMainFrame,
+    this.isRedirect,
+    this.hasGesture,
+    this.method,
+    this.requestHeaders,
+  );
+
+  String url;
+  bool isForMainFrame;
+  bool? isRedirect;
+  bool hasGesture;
+  String method;
+  Map<String?, String?> requestHeaders;
 }
 
 class WebResourceErrorData {
-  late int errorCode;
-  late String description;
+  WebResourceErrorData(this.errorCode, this.description);
+
+  int errorCode;
+  String description;
 }
 
 @HostApi()

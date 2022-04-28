@@ -1,4 +1,4 @@
-## NEXT
+## 2.8.6
 
 * Updates pigeon developer dependency to the latest version which adds support for null safety.
 
