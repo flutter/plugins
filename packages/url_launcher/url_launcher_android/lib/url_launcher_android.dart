@@ -22,7 +22,24 @@ class UrlLauncherAndroid extends UrlLauncherPlatform {
   final LinkDelegate? linkDelegate = null;
 
   @override
-  Future<bool> canLaunch(String url) {
+  Future<bool> canLaunch(String url) async {
+    final bool canLaunchSpecificUrl = await _canLaunchUrl(url);
+    if (!canLaunchSpecificUrl) {
+      final String scheme = _getUrlScheme(url);
+      // canLaunch can return false when a custom application is registered to
+      // handle a web URL, but the caller doesn't have permission to see what
+      // that handler is. If that happens, try a web URL (with the same scheme
+      // variant, to be safe) that should not have a custom handler. If that
+      // returns true, then there is a browser, which means that there is
+      // at least one handler for the original URL.
+      if (scheme == 'http' || scheme == 'https') {
+        return await _canLaunchUrl('$scheme://flutter.dev');
+      }
+    }
+    return canLaunchSpecificUrl;
+  }
+
+  Future<bool> _canLaunchUrl(String url) {
     return _channel.invokeMethod<bool>(
       'canLaunch',
       <String, Object>{'url': url},
@@ -56,5 +73,17 @@ class UrlLauncherAndroid extends UrlLauncherPlatform {
         'headers': headers,
       },
     ).then((bool? value) => value ?? false);
+  }
+
+  // Returns the part of [url] up to the first ':', or an empty string if there
+  // is no ':'. This deliberately does not use [Uri] to extract the scheme
+  // so that it works on strings that aren't actually valid URLs, since Android
+  // is very lenient about what it accepts for launching.
+  String _getUrlScheme(String url) {
+    final int schemeEnd = url.indexOf(':');
+    if (schemeEnd == -1) {
+      return '';
+    }
+    return url.substring(0, schemeEnd);
   }
 }
