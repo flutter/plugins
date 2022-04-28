@@ -89,7 +89,7 @@
   if (!urlRequest) {
     *error = [FlutterError errorWithCode:@"FWFURLRequestParsingError"
                                  message:@"Failed instantiating an NSURLRequest."
-                                 details:[NSString stringWithFormat:@"Url was: '%@'", request.url]];
+                                 details:[NSString stringWithFormat:@"URL was: '%@'", request.url]];
     return;
   }
   [[self webViewForIdentifier:instanceId] loadRequest:urlRequest];
