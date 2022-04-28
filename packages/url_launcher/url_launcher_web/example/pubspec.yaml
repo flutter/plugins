@@ -8,6 +8,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher:
+    path: ../../url_launcher/
+dependency_overrides:
+  url_launcher_web:
+    path: ../
 
 dev_dependencies:
   build_runner: ^2.1.1

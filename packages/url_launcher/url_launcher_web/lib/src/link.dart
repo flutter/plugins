@@ -114,13 +114,24 @@ class LinkViewController extends PlatformViewController {
   factory LinkViewController.fromParams(
     PlatformViewCreationParams params,
     BuildContext context,
-  ) {
-    final int viewId = params.id;
-    final LinkViewController controller = LinkViewController(viewId, context);
-    controller._initialize().then((_) {
+  ) =>
+      LinkViewController(params.id, context).._asyncInit(params);
+
+  Future<void> _asyncInit(PlatformViewCreationParams params) async {
+    try {
+      await _initialize();
+      if (context == null) {
+        return;
+      }
       params.onPlatformViewCreated(viewId);
-    });
-    return controller;
+    } catch (exception, stack) {
+      FlutterError.reportError(FlutterErrorDetails(
+        exception: exception,
+        stack: stack,
+        library: 'url_launcher',
+        context: ErrorDescription('while initializing view $viewId'),
+      ));
+    }
   }
 
   static final Map<int, LinkViewController> _instances =
@@ -160,7 +171,7 @@ class LinkViewController extends PlatformViewController {
   final int viewId;
 
   /// The context of the [Link] widget that created this controller.
-  final BuildContext context;
+  BuildContext? context;
 
   late html.Element _element;
 
@@ -263,14 +274,29 @@ class LinkViewController extends PlatformViewController {
   }
 
   @override
-  Future<void> dispose() async {
+  Future<void> dispose() {
+    context = null;
     if (_isInitialized) {
       assert(_instances[viewId] == this);
       _instances.remove(viewId);
+      return _asyncDispose();
+    }
+    return Future<void>.value();
+  }
+
+  Future<void> _asyncDispose() async {
+    try {
       if (_instances.isEmpty) {
         await _clickSubscription.cancel();
       }
       await SystemChannels.platform_views.invokeMethod<void>('dispose', viewId);
+    } catch (exception, stack) {
+      FlutterError.reportError(FlutterErrorDetails(
+        exception: exception,
+        stack: stack,
+        library: 'url_launcher',
+        context: ErrorDescription('while disposing view $viewId'),
+      ));
     }
   }
 }
