@@ -1,0 +1,139 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/packages/flutter_plugin_android_lifecycle/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/path_provider/path_provider/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/path_provider/path_provider_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/webview_flutter/webview_flutter/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/connectivity/connectivity/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_sign_in/google_sign_in/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_sign_in/google_sign_in_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/camera/camera/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/local_auth/local_auth_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/local_auth/local_auth/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/video_player/video_player_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/url_launcher/url_launcher_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/url_launcher/url_launcher/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_maps_flutter/google_maps_flutter/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/in_app_purchase/in_app_purchase_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/in_app_purchase/in_app_purchase/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/image_picker/image_picker/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/quick_actions/quick_actions_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/quick_actions/quick_actions/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/shared_preferences/shared_preferences/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/shared_preferences/shared_preferences_android/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/espresso/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/espresso/example/android/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
