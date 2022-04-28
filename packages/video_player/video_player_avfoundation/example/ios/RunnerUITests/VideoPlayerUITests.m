@@ -30,16 +30,9 @@
   XCTAssertTrue([playButton waitForExistenceWithTimeout:30.0]);
   [playButton tap];
 
-  XCUIElement *playbackSpeed1x = app.staticTexts[@"1.0x\nPlayback speed"];
+  NSPredicate *find1xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '1.0x'"];
+  XCUIElement *playbackSpeed1x = [app.staticTexts containingPredicate:find1xButton].element;
   BOOL foundPlaybackSpeed1x = [playbackSpeed1x waitForExistenceWithTimeout:30.0];
-  if (!foundPlaybackSpeed1x) {
-    // Some old flutter version uses a different accessibility value for tooltips.
-    // We try to find the button if the old accessibility value is used.
-    // TODO(cyanglaz): Remove this when the new accessibility value is supported on flutter/stable
-    // https://github.com/flutter/flutter/issues/102771
-    playbackSpeed1x = app.staticTexts[@"Playback speed\n1.0x"];
-    foundPlaybackSpeed1x = [playbackSpeed1x waitForExistenceWithTimeout:2.0];
-  }
   XCTAssertTrue(foundPlaybackSpeed1x);
   [playbackSpeed1x tap];
 
@@ -47,18 +40,10 @@
   XCTAssertTrue([playbackSpeed5xButton waitForExistenceWithTimeout:30.0]);
   [playbackSpeed5xButton tap];
 
-  XCUIElement *playbackSpeed5x = app.staticTexts[@"5.0x\nPlayback speed"];
+  NSPredicate *find5xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '5.0x'"];
+  XCUIElement *playbackSpeed5x = [app.staticTexts containingPredicate:find5xButton].element;
   BOOL foundPlaybackSpeed5x = [playbackSpeed5x waitForExistenceWithTimeout:30.0];
-  if (!foundPlaybackSpeed5x) {
-    // Some old flutter version uses a different accessibility value for tooltips.
-    // We try to find the button if the old accessibility value is used.
-    // TODO(cyanglaz): Remove this when the new accessibility value is supported on flutter/stable
-    // https://github.com/flutter/flutter/issues/102771
-    playbackSpeed5x = app.staticTexts[@"Playback speed\n5.0x"];
-    foundPlaybackSpeed5x = [playbackSpeed5x waitForExistenceWithTimeout:2.0];
-  }
   XCTAssertTrue(foundPlaybackSpeed5x);
-  [playbackSpeed5x tap];
 
   // Cycle through tabs.
   for (NSString *tabName in @[ @"Asset", @"Remote" ]) {
