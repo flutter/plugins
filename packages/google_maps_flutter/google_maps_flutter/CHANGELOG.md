@@ -1,7 +1,10 @@
-
 ## 2.2.0
 
 * Adds options for gesture handling and tilt controls on web.
+
+## 2.1.4
+
+* Updates Android Google maps sdk version to `18.0.2`.
 * Adds OS version support information to README.
 
 ## 2.1.3
