@@ -35,42 +35,72 @@ void main() {
       final html.Element anchor = _findSingleAnchor();
       expect(anchor.getAttribute('href'), uri.toString());
       expect(anchor.getAttribute('target'), '_blank');
+      expect(anchor.getAttribute('draggable'), null,
+          reason: 'draggable is set');
+      expect(anchor.getComputedStyle().getPropertyValue('user-drag'), 'auto',
+          reason: 'user-drag style is set');
 
-      final Uri uri2 = Uri.parse('http://foobar2/example?q=2');
-      await tester.pumpWidget(Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebLinkDelegate(TestLinkInfo(
-          uri: uri2,
-          target: LinkTarget.self,
-          builder: (BuildContext context, FollowLink? followLink) {
-            return Container(width: 100, height: 100);
-          },
-        )),
-      ));
-      await tester.pumpAndSettle();
+      {
+        final Uri uri2 = Uri.parse('http://foobar2/example?q=2');
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebLinkDelegate(TestLinkInfo(
+            uri: uri2,
+            target: LinkTarget.self,
+            builder: (BuildContext context, FollowLink? followLink) {
+              return Container(width: 100, height: 100);
+            },
+          )),
+        ));
+        await tester.pumpAndSettle();
 
-      // Check that the same anchor has been updated.
-      expect(anchor.getAttribute('href'), uri2.toString());
-      expect(anchor.getAttribute('target'), '_self');
+        // Check that the same anchor has been updated.
+        expect(anchor.getAttribute('href'), uri2.toString());
+        expect(anchor.getAttribute('target'), '_self');
+      }
+      {
+        final Uri uri3 = Uri.parse('/foobar');
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebLinkDelegate(TestLinkInfo(
+            uri: uri3,
+            target: LinkTarget.self,
+            builder: (BuildContext context, FollowLink? followLink) {
+              return Container(width: 100, height: 100);
+            },
+          )),
+        ));
+        await tester.pumpAndSettle();
 
-      final Uri uri3 = Uri.parse('/foobar');
-      await tester.pumpWidget(Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebLinkDelegate(TestLinkInfo(
-          uri: uri3,
-          target: LinkTarget.self,
-          builder: (BuildContext context, FollowLink? followLink) {
-            return Container(width: 100, height: 100);
-          },
-        )),
-      ));
-      await tester.pumpAndSettle();
+        // Check that internal route properly prepares using the default
+        // [UrlStrategy]
+        expect(anchor.getAttribute('href'),
+            urlStrategy?.prepareExternalUrl(uri3.toString()));
+        expect(anchor.getAttribute('target'), '_self');
+      }
+      {
+        final Uri uri4 = Uri.parse('/link4');
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebLinkDelegate(TestLinkInfo(
+            uri: uri4,
+            target: LinkTarget.self,
+            draggable: false,
+            builder: (BuildContext context, FollowLink? followLink) {
+              return Container(width: 100, height: 100);
+            },
+          )),
+        ));
+        await tester.pumpAndSettle();
 
-      // Check that internal route properly prepares using the default
-      // [UrlStrategy]
-      expect(anchor.getAttribute('href'),
-          urlStrategy?.prepareExternalUrl(uri3.toString()));
-      expect(anchor.getAttribute('target'), '_self');
+        // Check that internal route properly prepares using the default
+        // [UrlStrategy]
+        expect(anchor.getAttribute('href'),
+            urlStrategy?.prepareExternalUrl(uri4.toString()));
+        expect(anchor.draggable, false, reason: 'draggable is not set');
+        expect(anchor.getComputedStyle().getPropertyValue('user-drag'), 'none',
+            reason: 'user-drag style is not set');
+      }
     });
 
     testWidgets('sizes itself correctly', (WidgetTester tester) async {
@@ -152,6 +182,7 @@ class TestLinkInfo extends LinkInfo {
   TestLinkInfo({
     required this.uri,
     required this.target,
+    this.draggable = true,
     required this.builder,
   });
 
@@ -163,6 +194,9 @@ class TestLinkInfo extends LinkInfo {
 
   @override
   final LinkTarget target;
+
+  @override
+  final bool draggable;
 
   @override
   bool get isDisabled => uri == null;

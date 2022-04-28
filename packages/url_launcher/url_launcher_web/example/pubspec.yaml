@@ -8,6 +8,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher:
+    path: ../../url_launcher/
+dependency_overrides:
+  url_launcher_web:
+    path: ../
+  url_launcher_platform_interface:
+    path: ../../url_launcher_platform_interface/
 
 dev_dependencies:
   build_runner: ^2.1.1
@@ -18,5 +25,3 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mockito: ^5.0.0
-  url_launcher_web:
-    path: ../

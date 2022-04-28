@@ -50,6 +50,7 @@ class Link extends StatelessWidget implements LinkInfo {
     Key? key,
     required this.uri,
     this.target = LinkTarget.defaultTarget,
+    this.draggable = true,
     required this.builder,
   }) : super(key: key);
 
@@ -64,6 +65,12 @@ class Link extends StatelessWidget implements LinkInfo {
   /// The target indicating where to open the link.
   @override
   final LinkTarget target;
+
+  /// Whether the link can be dragged e.g. to create a shortcut on the desktop.
+  ///
+  /// Default is true.
+  @override
+  final bool draggable;
 
   /// Whether the link is disabled or not.
   @override
