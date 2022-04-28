@@ -126,9 +126,8 @@ class LicenseCheckCommand extends PluginCommand {
         .map(
             (Directory dir) => '${dir.absolute.path}${platform.pathSeparator}');
 
-    final Iterable<File> allFiles = (await _getAllFiles()).where((File file) =>
-        !submodulePaths.any(
-            (String submodule) => file.absolute.path.startsWith(submodule)));
+    final Iterable<File> allFiles = (await _getAllFiles()).where(
+        (File file) => !submodulePaths.any(file.absolute.path.startsWith));
 
     final Iterable<File> codeFiles = allFiles.where((File file) =>
         _codeFileExtensions.contains(p.extension(file.path)) &&

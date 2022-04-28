@@ -41,7 +41,7 @@ class UpdateExcerptsCommand extends PackageLoopingCommand {
   // The relative directory path to put the extracted excerpt yaml files.
   static const String _excerptOutputDir = 'excerpts';
 
-  // The filane to store the pre-modification copy of the pubspec.
+  // The filename to store the pre-modification copy of the pubspec.
   static const String _originalPubspecFilename =
       'pubspec.plugin_tools_original.yaml';
 
@@ -156,6 +156,7 @@ class UpdateExcerptsCommand extends PackageLoopingCommand {
 
   /// Adds `code_excerpter` and `code_excerpt_updater` to [package]'s
   /// `dev_dependencies` using path-based references to the submodule copies.
+  ///
   /// This is done on the fly rather than being checked in so that:
   /// - Just building examples don't require everyone to check out submodules.
   /// - Examples can be analyzed/built even on versions of Flutter that these
