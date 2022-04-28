@@ -365,7 +365,7 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
                                  fileURL:(NSString *)url
                            readAccessURL:(NSString *)readAccessUrl
                                    error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)loadAssetForWebViewWithIdintefier:(NSNumber *)instanceId
+- (void)loadAssetForWebViewWithIdentifier:(NSNumber *)instanceId
                                  assetKey:(NSString *)key
                                     error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.

@@ -1711,17 +1711,17 @@ void FWFWKWebViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(loadAssetForWebViewWithIdintefier:
+      NSCAssert([api respondsToSelector:@selector(loadAssetForWebViewWithIdentifier:
                                                                            assetKey:error:)],
                 @"FWFWKWebViewHostApi api (%@) doesn't respond to "
-                @"@selector(loadAssetForWebViewWithIdintefier:assetKey:error:)",
+                @"@selector(loadAssetForWebViewWithIdentifier:assetKey:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSString *arg_key = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api loadAssetForWebViewWithIdintefier:arg_instanceId assetKey:arg_key error:&error];
+        [api loadAssetForWebViewWithIdentifier:arg_instanceId assetKey:arg_key error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

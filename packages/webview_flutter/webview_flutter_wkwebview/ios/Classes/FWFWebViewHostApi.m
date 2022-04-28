@@ -154,7 +154,7 @@
   [[self webViewForIdentifier:instanceId] goForward];
 }
 
-- (void)loadAssetForWebViewWithIdintefier:(nonnull NSNumber *)instanceId
+- (void)loadAssetForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
                                  assetKey:(nonnull NSString *)key
                                     error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   NSString *assetFilePath = [FlutterDartProject lookupKeyForAsset:key];

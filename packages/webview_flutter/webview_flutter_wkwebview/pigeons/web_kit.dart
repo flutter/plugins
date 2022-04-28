@@ -395,7 +395,7 @@ abstract class WKWebViewHostApi {
   @ObjCSelector('loadFileForWebViewWithIdentifier:fileURL:readAccessURL:')
   void loadFileUrl(int instanceId, String url, String readAccessUrl);
 
-  @ObjCSelector('loadAssetForWebViewWithIdintefier:assetKey:')
+  @ObjCSelector('loadAssetForWebViewWithIdentifier:assetKey:')
   void loadFlutterAsset(int instanceId, String key);
 
   @ObjCSelector('canGoBackForWebViewWithIdentifier:')
