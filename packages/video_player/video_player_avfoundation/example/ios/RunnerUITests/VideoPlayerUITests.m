@@ -31,7 +31,7 @@
   [playButton tap];
 
   NSPredicate *find1xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '1.0x'"];
-  XCUIElement *playbackSpeed1x = [app.staticTexts containingPredicate:find1xButton].element;
+  XCUIElement *playbackSpeed1x = [app.staticTexts elementMatchingPredicate:find1xButton];
   BOOL foundPlaybackSpeed1x = [playbackSpeed1x waitForExistenceWithTimeout:30.0];
   XCTAssertTrue(foundPlaybackSpeed1x);
   [playbackSpeed1x tap];
@@ -41,7 +41,7 @@
   [playbackSpeed5xButton tap];
 
   NSPredicate *find5xButton = [NSPredicate predicateWithFormat:@"label CONTAINS '5.0x'"];
-  XCUIElement *playbackSpeed5x = [app.staticTexts containingPredicate:find5xButton].element;
+  XCUIElement *playbackSpeed5x = [app.staticTexts elementMatchingPredicate:find5xButton];
   BOOL foundPlaybackSpeed5x = [playbackSpeed5x waitForExistenceWithTimeout:30.0];
   XCTAssertTrue(foundPlaybackSpeed5x);
 
