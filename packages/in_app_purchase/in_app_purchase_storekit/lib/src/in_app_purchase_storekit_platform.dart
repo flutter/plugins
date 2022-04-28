@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_storekit/src/in_app_purchase_storekit_platform_addition.dart';
 
 import '../in_app_purchase_storekit.dart';
 import '../store_kit_wrappers.dart';

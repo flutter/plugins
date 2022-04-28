@@ -6,9 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:quick_actions/quick_actions.dart';
-import 'package:quick_actions_platform_interface/platform_interface/quick_actions_platform.dart';
 import 'package:quick_actions_platform_interface/quick_actions_platform_interface.dart';
-import 'package:quick_actions_platform_interface/types/shortcut_item.dart';
 
 void main() {
   group('$QuickActions', () {

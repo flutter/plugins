@@ -10,8 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../billing_client_wrappers.dart';
 import '../channel.dart';
-import 'purchase_wrapper.dart';
-import 'sku_details_wrapper.dart';
 
 part 'billing_client_wrapper.g.dart';
 

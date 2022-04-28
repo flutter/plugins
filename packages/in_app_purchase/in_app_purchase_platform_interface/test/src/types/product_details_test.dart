@@ -4,7 +4,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_platform_interface/src/types/purchase_status.dart';
 
 void main() {
   group('Constructor Tests', () {

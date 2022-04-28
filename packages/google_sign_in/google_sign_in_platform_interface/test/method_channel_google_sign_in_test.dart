@@ -5,7 +5,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
-import 'package:google_sign_in_platform_interface/src/types.dart';
 import 'package:google_sign_in_platform_interface/src/utils.dart';
 
 const Map<String, String> kUserData = <String, String>{

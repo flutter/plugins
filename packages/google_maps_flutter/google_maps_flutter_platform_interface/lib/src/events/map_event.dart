@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 
 /// Generic Event coming from the native side of Maps.
 ///

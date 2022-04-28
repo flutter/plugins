@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 
 import '../google_sign_in_platform_interface.dart';
-import 'types.dart';
 import 'utils.dart';
 
 /// An implementation of [GoogleSignInPlatform] that uses method channels.
