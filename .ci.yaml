@@ -85,19 +85,6 @@ targets:
           {"dependency": "vs_build"}
         ]
 
-  - name: Windows uwp-platform_tests master
-    recipe: plugins/plugins
-    timeout: 30
-    properties:
-      add_recipes_cq: "true"
-      target_file: uwp_build_and_platform_tests.yaml
-      channel: master
-      version_file: flutter_master.version
-      dependencies: >
-        [
-          {"dependency": "vs_build"}
-        ]
-
   - name: Windows plugin_tools_tests
     recipe: plugins/plugins
     timeout: 30

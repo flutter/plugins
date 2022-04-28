@@ -1,7 +1,11 @@
 ## 2.2.0
 
-* Adds OS version support information to README.
 * Adds support for heatmap layers.
+
+## 2.1.4
+
+* Updates Android Google maps sdk version to `18.0.2`.
+* Adds OS version support information to README.
 
 ## 2.1.3
 
