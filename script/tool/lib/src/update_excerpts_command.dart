@@ -8,6 +8,8 @@ import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
+import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
@@ -172,23 +174,28 @@ class UpdateExcerptsCommand extends PackageLoopingCommand {
         .writeAsStringSync(pubspecContents);
 
     // Update the actual pubspec.
-    const String devDependenciesEntry = 'dev_dependencies:';
+    final YamlEditor editablePubspec = YamlEditor(pubspecContents);
+    const String devDependenciesKey = 'dev_dependencies';
+    final YamlNode root = editablePubspec.parseAt(<String>[]);
+    // Ensure that there's a `dev_dependencies` entry to update.
+    if ((root as YamlMap)[devDependenciesKey] == null) {
+      editablePubspec.update(<String>['dev_dependencies'], YamlMap());
+    }
+    final Set<String> submoduleDependencies = <String>{
+      'code_excerpter',
+      'code_excerpt_updater',
+    };
     final String relativeRootPath =
         getRelativePosixPath(repoRoot, from: package.directory);
-    final String newDevDependencies = '''
-$devDependenciesEntry
-  code_excerpter:
-    path: $relativeRootPath/site-shared/packages/code_excerpter
-  code_excerpt_updater:
-    path: $relativeRootPath/site-shared/packages/code_excerpt_updater
-''';
-    final String newPubspecContents =
-        pubspecContents.contains(devDependenciesEntry)
-            ? pubspecContents.replaceFirst(
-                RegExp('^$devDependenciesEntry\$', multiLine: true),
-                newDevDependencies)
-            : '$pubspecContents\n$newDevDependencies';
-    package.pubspecFile.writeAsStringSync(newPubspecContents);
+    for (final String dependency in submoduleDependencies) {
+      editablePubspec.update(<String>[
+        devDependenciesKey,
+        dependency
+      ], <String, String>{
+        'path': '$relativeRootPath/site-shared/packages/$dependency'
+      });
+    }
+    package.pubspecFile.writeAsStringSync(editablePubspec.toString());
   }
 
   /// Restores the version of the pubspec that was present before running

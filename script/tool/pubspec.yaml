@@ -21,6 +21,7 @@ dependencies:
   test: ^1.17.3
   uuid: ^3.0.4
   yaml: ^3.1.0
+  yaml_edit: ^2.0.2
 
 dev_dependencies:
   build_runner: ^2.0.3
