@@ -54,6 +54,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
+          requestFullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -86,6 +87,7 @@
                                                             camera:FLTSourceCameraFront]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
+          requestFullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -212,6 +214,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
+          requestFullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
