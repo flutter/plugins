@@ -194,34 +194,33 @@
   ]);
 }
 
-//- (void)testLoadFlutterAsset {
-//  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
-//
-//  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-//  [instanceManager addInstance:mockWebView withIdentifier:0];
-//
-//  FWFWebViewHostApiImpl *hostApi =
-//      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
-//
-//  FlutterError *error;
-//  XCTAssertEqualObjects([hostApi loadFlutterAssetForWebViewWithIdentifier:@0
-//
-//                                  key:aValue
-//
-//                                                                   error:&error], @YES);
-//  [hostApi loadFlutterAssetForWebViewWithIdentifier:@0
-//
-//                                key:aValue
-//
-//                                             error:&error];
-//  OCMVerify([mockWebView loadFlutterAsset
-//
-//    :aValue
-//
-//
-//  ]);
-//  XCTAssertNil(error);
-//}
+- (void)testLoadFlutterAsset {
+  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
+
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addInstance:mockWebView withIdentifier:0];
+
+  FWFAssetManager *mockAssetManager = OCMClassMock([FWFAssetManager class]);
+  OCMStub([mockAssetManager lookupKeyForAsset:@"assets/index.html"])
+      .andReturn(@"myFolder/assets/index.html");
+
+  NSBundle *mockBundle = OCMClassMock([NSBundle class]);
+  OCMStub([mockBundle URLForResource:@"myFolder/assets/index" withExtension:@"html"])
+      .andReturn([NSURL URLWithString:@"webview_flutter/myFolder/assets/index.html"]);
+
+  FWFWebViewHostApiImpl *hostApi =
+      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager
+                                                      bundle:mockBundle
+                                                assetManager:mockAssetManager];
+
+  FlutterError *error;
+  [hostApi loadAssetForWebViewWithIdentifier:@0 assetKey:@"assets/index.html" error:&error];
+
+  XCTAssertNil(error);
+  OCMVerify([mockWebView
+                  loadFileURL:[NSURL URLWithString:@"webview_flutter/myFolder/assets/index.html"]
+      allowingReadAccessToURL:[NSURL URLWithString:@"webview_flutter/myFolder/assets/"]]);
+}
 
 - (void)testCanGoForward {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);

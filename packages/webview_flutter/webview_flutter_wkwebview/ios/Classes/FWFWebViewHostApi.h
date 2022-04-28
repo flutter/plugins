@@ -10,6 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface FWFAssetManager : NSObject
+- (NSString *)lookupKeyForAsset:(NSString *)asset;
+@end
+
 /**
  * Implementation of WKWebView that can be used as a FlutterPlatformView.
  */
@@ -23,6 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface FWFWebViewHostApiImpl : NSObject <FWFWKWebViewHostApi>
 - (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager
+                                 bundle:(NSBundle *)bundle
+                           assetManager:(FWFAssetManager *)assetManager;
 @end
 
 NS_ASSUME_NONNULL_END

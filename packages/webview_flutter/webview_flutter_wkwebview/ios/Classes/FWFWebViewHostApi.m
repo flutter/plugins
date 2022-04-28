@@ -5,6 +5,12 @@
 #import "FWFWebViewHostApi.h"
 #import "FWFDataConverters.h"
 
+@implementation FWFAssetManager
+- (NSString *)lookupKeyForAsset:(NSString *)asset {
+  return [FlutterDartProject lookupKeyForAsset:asset];
+}
+@end
+
 @implementation FWFWebView
 - (void)setFrame:(CGRect)frame {
   [super setFrame:frame];
@@ -29,13 +35,25 @@
 
 @interface FWFWebViewHostApiImpl ()
 @property(nonatomic) FWFInstanceManager *instanceManager;
+@property NSBundle *bundle;
+@property FWFAssetManager *assetManager;
 @end
 
 @implementation FWFWebViewHostApiImpl
 - (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
+  return [self initWithInstanceManager:instanceManager
+                                bundle:[NSBundle mainBundle]
+                          assetManager:[[FWFAssetManager alloc] init]];
+}
+
+- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager
+                                 bundle:(NSBundle *)bundle
+                           assetManager:(FWFAssetManager *)assetManager {
   self = [self init];
   if (self) {
     _instanceManager = instanceManager;
+    _bundle = bundle;
+    _assetManager = assetManager;
   }
   return self;
 }
@@ -157,10 +175,10 @@
 - (void)loadAssetForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
                                  assetKey:(nonnull NSString *)key
                                     error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  NSString *assetFilePath = [FlutterDartProject lookupKeyForAsset:key];
-  NSURL *url = [[NSBundle mainBundle] URLForResource:[assetFilePath stringByDeletingPathExtension]
-                                       withExtension:assetFilePath.pathExtension];
+  NSString *assetFilePath = [self.assetManager lookupKeyForAsset:key];
 
+  NSURL *url = [self.bundle URLForResource:[assetFilePath stringByDeletingPathExtension]
+                             withExtension:assetFilePath.pathExtension];
   if (!url) {
     *error = [FWFWebViewHostApiImpl errorForURLString:assetFilePath];
   } else {
