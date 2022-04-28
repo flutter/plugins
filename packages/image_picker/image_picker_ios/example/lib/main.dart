@@ -40,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<XFile>? _imageFileList;
 
-  set _imageFile(XFile? value) {
+  void _setImageFileListFromFile(XFile? value) {
     _imageFileList = value == null ? null : <XFile>[value];
   }
 
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
             imageQuality: quality,
           );
           setState(() {
-            _imageFile = pickedFile;
+            _setImageFileListFromFile(pickedFile);
           });
         } catch (e) {
           setState(() {
@@ -216,27 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> retrieveLostData() async {
-    final LostDataResponse response = await _picker.getLostData();
-    if (response.isEmpty) {
-      return;
-    }
-    if (response.file != null) {
-      if (response.type == RetrieveType.video) {
-        isVideo = true;
-        await _playVideo(response.file);
-      } else {
-        isVideo = false;
-        setState(() {
-          _imageFile = response.file;
-          _imageFileList = response.files;
-        });
-      }
-    } else {
-      _retrieveDataError = response.exception!.code;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -244,35 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title!),
       ),
       body: Center(
-        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-            ? FutureBuilder<void>(
-                future: retrieveLostData(),
-                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return const Text(
-                        'You have not yet picked an image.',
-                        textAlign: TextAlign.center,
-                      );
-                    case ConnectionState.done:
-                      return _handlePreview();
-                    default:
-                      if (snapshot.hasError) {
-                        return Text(
-                          'Pick image/video error: ${snapshot.error}}',
-                          textAlign: TextAlign.center,
-                        );
-                      } else {
-                        return const Text(
-                          'You have not yet picked an image.',
-                          textAlign: TextAlign.center,
-                        );
-                      }
-                  }
-                },
-              )
-            : _handlePreview(),
+        child: _handlePreview(),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,

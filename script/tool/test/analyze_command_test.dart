@@ -93,7 +93,7 @@ void main() {
         ]));
   });
 
-  test('don\'t elide a non-contained example package', () async {
+  test("don't elide a non-contained example package", () async {
     final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
     final RepositoryPackage plugin2 = createFakePlugin('example', packagesDir);
 

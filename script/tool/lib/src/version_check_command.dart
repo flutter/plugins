@@ -403,7 +403,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
     final String badNextErrorMessage = '${indentation}When bumping the version '
         'for release, the NEXT section should be incorporated into the new '
-        'version\'s release notes.';
+        "version's release notes.";
 
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
@@ -594,7 +594,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
             'change description.');
       } else {
         printError(
-            'No CHANGELOG change found. If this PR needs an exemption from'
+            'No CHANGELOG change found. If this PR needs an exemption from '
             'the standard policy of listing all changes in the CHANGELOG, '
             'please add a line starting with\n'
             '$_missingChangelogChangeJustificationMarker\n'

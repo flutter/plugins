@@ -561,7 +561,7 @@ This is necessary because of X, Y, and Z
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.')
+              "should be incorporated into the new version's release notes.")
         ]),
       );
     });
@@ -595,7 +595,7 @@ This is necessary because of X, Y, and Z
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.'),
+              "should be incorporated into the new version's release notes."),
           contains('plugin:\n'
               '    CHANGELOG.md failed validation.'),
         ]),
@@ -627,7 +627,7 @@ This is necessary because of X, Y, and Z
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.')
+              "should be incorporated into the new version's release notes.")
         ]),
       );
     });
