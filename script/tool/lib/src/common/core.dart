@@ -26,26 +26,7 @@ const String platformMacOS = 'macos';
 const String platformWeb = 'web';
 
 /// Key for windows platform.
-///
-/// Note that this corresponds to the Win32 variant for flutter commands like
-/// `build` and `run`, but is a general platform containing all Windows
-/// variants for purposes of the `platform` section of a plugin pubspec).
 const String platformWindows = 'windows';
-
-/// Key for WinUWP platform.
-///
-/// Note that UWP is a platform for the purposes of flutter commands like
-/// `build` and `run`, but a variant of the `windows` platform for the purposes
-/// of plugin pubspecs).
-const String platformWinUwp = 'winuwp';
-
-/// Key for Win32 variant of the Windows platform.
-const String platformVariantWin32 = 'win32';
-
-/// Key for UWP variant of the Windows platform.
-///
-/// See the note on [platformWinUwp].
-const String platformVariantWinUwp = 'uwp';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
