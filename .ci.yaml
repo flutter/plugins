@@ -11,9 +11,6 @@ enabled_branches:
 platform_properties:
   linux:
     properties:
-      caches: >-
-        [
-        ]
       dependencies: >
         [
           {"dependency": "curl"}
@@ -22,11 +19,6 @@ platform_properties:
       os: Linux
   windows:
     properties:
-      caches: >-
-        [
-          {"name": "vsbuild", "path": "vsbuild"},
-          {"name": "pub_cache", "path": ".pub-cache"}
-        ]
       dependencies: >
         [
           {"dependency": "certs"}
