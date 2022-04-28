@@ -961,4 +961,275 @@ void main() {
       );
     });
   });
+
+  group('#getImageFromSource', () {
+    test('passes the image source argument correctly', () async {
+      await picker.getImageFromSource(source: ImageSource.camera);
+      await picker.getImageFromSource(source: ImageSource.gallery);
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+        ],
+      );
+    });
+
+    test('passes the width and height arguments correctly', () async {
+      await picker.getImageFromSource(source: ImageSource.camera);
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(maxWidth: 10.0),
+      );
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(maxHeight: 10.0),
+      );
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+        ),
+      );
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(
+          maxWidth: 10.0,
+          imageQuality: 70,
+        ),
+      );
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(
+          maxHeight: 10.0,
+          imageQuality: 70,
+        ),
+      );
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+          imageQuality: 70,
+        ),
+      );
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': 10.0,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': null,
+            'maxHeight': 10.0,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': 10.0,
+            'maxHeight': 20.0,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': 10.0,
+            'maxHeight': null,
+            'imageQuality': 70,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': null,
+            'maxHeight': 10.0,
+            'imageQuality': 70,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': 10.0,
+            'maxHeight': 20.0,
+            'imageQuality': 70,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+        ],
+      );
+    });
+
+    test('does not accept a invalid imageQuality argument', () {
+      expect(
+        () => picker.getImageFromSource(
+          source: ImageSource.gallery,
+          options: ImagePickerOptions(imageQuality: -1),
+        ),
+        throwsArgumentError,
+      );
+
+      expect(
+        () => picker.getImageFromSource(
+          source: ImageSource.gallery,
+          options: ImagePickerOptions(imageQuality: 101),
+        ),
+        throwsArgumentError,
+      );
+
+      expect(
+        () => picker.getImageFromSource(
+          source: ImageSource.camera,
+          options: ImagePickerOptions(imageQuality: -1),
+        ),
+        throwsArgumentError,
+      );
+
+      expect(
+        () => picker.getImageFromSource(
+          source: ImageSource.camera,
+          options: ImagePickerOptions(imageQuality: 101),
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('does not accept a negative width or height argument', () {
+      expect(
+        () => picker.getImageFromSource(
+          source: ImageSource.camera,
+          options: ImagePickerOptions(maxWidth: -1.0),
+        ),
+        throwsArgumentError,
+      );
+
+      expect(
+        () => picker.getImageFromSource(
+          source: ImageSource.camera,
+          options: ImagePickerOptions(maxHeight: -1.0),
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('handles a null image path response gracefully', () async {
+      log.returnValue = null;
+
+      expect(
+          await picker.getImageFromSource(source: ImageSource.gallery), isNull);
+      expect(
+          await picker.getImageFromSource(source: ImageSource.camera), isNull);
+    });
+
+    test('camera position defaults to back', () async {
+      await picker.getImageFromSource(source: ImageSource.camera);
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+        ],
+      );
+    });
+
+    test('camera position can set to front', () async {
+      await picker.getImageFromSource(
+        source: ImageSource.camera,
+        options: ImagePickerOptions(preferredCameraDevice: CameraDevice.front),
+      );
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.camera,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.front,
+            'requestFullMetadata': true,
+          }),
+        ],
+      );
+    });
+
+    test('Request full metadata argument defaults to true', () async {
+      await picker.getImageFromSource(source: ImageSource.gallery);
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
+          }),
+        ],
+      );
+    });
+
+    test('passes the request full metadata argument correctly', () async {
+      await picker.getImageFromSource(
+        source: ImageSource.gallery,
+        options: ImagePickerOptions(requestFullMetadata: false),
+      );
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
+            'source': SourceType.gallery,
+            'maxWidth': null,
+            'maxHeight': null,
+            'imageQuality': null,
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': false,
+          }),
+        ],
+      );
+    });
+  });
 }
