@@ -236,7 +236,7 @@ void main() {
         ]));
   });
 
-  test('fails if files are changed with --file-on-change', () async {
+  test('fails if files are changed with --fail-on-change', () async {
     createFakePlugin('a_plugin', packagesDir,
         extraFiles: <String>['example/build.excerpt.yaml']);
 
