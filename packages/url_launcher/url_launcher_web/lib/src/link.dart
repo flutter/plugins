@@ -302,6 +302,7 @@ class LinkViewController extends PlatformViewController {
       if (_instances.isEmpty) {
         await _clickSubscription.cancel();
       }
+      _dragSubscription?.cancel();
       await SystemChannels.platform_views.invokeMethod<void>('dispose', viewId);
     }
   }
