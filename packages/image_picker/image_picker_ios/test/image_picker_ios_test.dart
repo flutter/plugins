@@ -108,14 +108,16 @@ void main() {
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.gallery,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -161,49 +163,56 @@ void main() {
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': 70,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': 70,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': 70,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -262,6 +271,7 @@ void main() {
             'maxHeight': null,
             'imageQuality': null,
             'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -281,6 +291,7 @@ void main() {
             'maxHeight': null,
             'imageQuality': null,
             'cameraDevice': SourceCamera.front,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -529,14 +540,16 @@ void main() {
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.gallery,
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -582,49 +595,56 @@ void main() {
             'maxWidth': null,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': null,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': null,
             'imageQuality': 70,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': null,
             'maxHeight': 10.0,
             'imageQuality': 70,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
           const _LoggedMethodCall('pickImage', arguments: <String, dynamic>{
             'source': SourceType.camera,
             'maxWidth': 10.0,
             'maxHeight': 20.0,
             'imageQuality': 70,
-            'cameraDevice': SourceCamera.rear
+            'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -683,6 +703,7 @@ void main() {
             'maxHeight': null,
             'imageQuality': null,
             'cameraDevice': SourceCamera.rear,
+            'requestFullMetadata': true,
           }),
         ],
       );
@@ -702,6 +723,7 @@ void main() {
             'maxHeight': null,
             'imageQuality': null,
             'cameraDevice': SourceCamera.front,
+            'requestFullMetadata': true,
           }),
         ],
       );
