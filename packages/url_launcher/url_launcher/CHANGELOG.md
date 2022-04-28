@@ -1,6 +1,6 @@
 ## NEXT
 
-* Remove unnecessary imports.
+* Removes unnecessary imports.
 
 ## 6.1.0
 

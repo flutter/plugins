@@ -1,6 +1,6 @@
 ## NEXT
 
-* Remove unnecessary imports.
+* Removes unnecessary imports.
 
 ## 0.9.4+20
 

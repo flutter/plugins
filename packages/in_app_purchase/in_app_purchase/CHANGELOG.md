@@ -1,6 +1,6 @@
 ## NEXT
 
-* Remove unnecessary imports.
+* Removes unnecessary imports.
 * Adds OS version support information to README.
 
 ## 3.0.2
