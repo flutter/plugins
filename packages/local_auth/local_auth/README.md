@@ -30,11 +30,11 @@ Currently the following biometric types are implemented:
 - BiometricType.face
 - BiometricType.fingerprint
 
-To get a list of enrolled biometrics, call getAvailableBiometrics:
+To get a list of enrolled biometrics, call getEnrolledBiometrics:
 
 ```dart
 List<BiometricType> availableBiometrics =
-    await auth.getAvailableBiometrics();
+    await auth.getEnrolledBiometrics();
 
 if (Platform.isIOS) {
     if (availableBiometrics.contains(BiometricType.face)) {
@@ -212,7 +212,7 @@ Update your project's `AndroidManifest.xml` file to include the
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
 types (such as face scanning) and you want to support SDKs lower than Q,
-_do not_ call `getAvailableBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
+_do not_ call `getEnrolledBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
 This will return an error if there was no hardware available.
 
 ## Sticky Auth
