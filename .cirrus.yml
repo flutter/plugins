@@ -107,7 +107,7 @@ task:
           # to be converted. Once https://github.com/flutter/flutter/issues/102679
           # has been fixed, this can be removed and there can just be a single
           # run with --require-excerpts and no exclusions.
-          - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/config/temp_exclude_excerpt.yaml
+          - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
