@@ -155,6 +155,10 @@ task:
       analyze_script:
         - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
         - echo "If this test fails, the minumum Flutter version should be updated"
+    - name: readme_excerpts
+      env:
+        CIRRUS_CLONE_SUBMODULES: true
+      script: ./script/tool_runner.sh update-excerpts --fail-on-change
     ### Web tasks ###
     - name: web-build_all_plugins
       env:

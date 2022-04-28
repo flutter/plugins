@@ -18,14 +18,14 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const String _url = 'https://flutter.dev';
+final Uri _url = Uri.parse('https://flutter.dev');
 
 void main() => runApp(
       const MaterialApp(
         home: Material(
           child: Center(
             child: RaisedButton(
-              onPressed: _launchURL,
+              onPressed: _launchUrl,
               child: Text('Show Flutter homepage'),
             ),
           ),
@@ -33,8 +33,8 @@ void main() => runApp(
       ),
     );
 
-void _launchURL() async {
-  if (!await launch(_url)) throw 'Could not launch $_url';
+void _launchUrl() async {
+  if (!await launchUrl(_url)) throw 'Could not launch $_url';
 }
 ```
 
@@ -43,7 +43,7 @@ See the example app for more complex examples.
 ## Configuration
 
 ### iOS
-Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
+Add any URL schemes passed to `canLaunchUrl` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
 
 Example:
 ```
@@ -59,7 +59,7 @@ See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/u
 ### Android
 
 Starting from API 30 Android requires package visibility configuration in your
-`AndroidManifest.xml` otherwise `canLaunch` will return `false`. A `<queries>`
+`AndroidManifest.xml` otherwise `canLaunchUrl` will return `false`. A `<queries>`
 element must be added to your manifest as a child of the root element.
 
 The snippet below shows an example for an application that uses `https`, `tel`,
@@ -94,34 +94,53 @@ for examples of other queries.
 
 ## Supported URL schemes
 
-The [`launch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/launch.html) method
-takes a string argument containing a URL. This URL
-can be formatted using a number of different URL schemes. The supported
-URL schemes depend on the underlying platform and installed apps.
+The provided URL is passed directly to the host platform for handling. The
+supported URL schemes therefore depend on the platform and installed apps.
 
 Commonly used schemes include:
 
 | Scheme | Example | Action |
 |:---|:---|:---|
-| `https:<URL>` | `https://flutter.dev` | Open URL in the default browser |
-| `mailto:<email address>?subject=<subject>&body=<body>` | `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
-| `tel:<phone number>` | `tel:+1-555-010-999` | Make a phone call to <phone number> using the default phone app |
-| `sms:<phone number>` | `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
+| `https:<URL>` | `https://flutter.dev` | Open `<URL>` in the default browser |
+| `mailto:<email address>?subject=<subject>&body=<body>` | `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to `<email address>` in the default email app |
+| `tel:<phone number>` | `tel:+1-555-010-999` | Make a phone call to `<phone number>` using the default phone app |
+| `sms:<phone number>` | `sms:5550101234` | Send an SMS message to `<phone number>` using the default messaging app |
 | `file:<path>` | `file:/home` | Open file or folder using default app association, supported on desktop platforms |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html)
 and [Android](https://developer.android.com/guide/components/intents-common.html)
 
-**Note**: URL schemes are only supported if there are apps installed on the device that can
+URL schemes are only supported if there are apps installed on the device that can
 support them. For example, iOS simulators don't have a default email or phone
 apps installed, so can't open `tel:` or `mailto:` links.
+
+### Checking supported schemes
+
+If you need to know at runtime whether a scheme is guaranteed to work before
+using it (for instance, to adjust your UI based on what is available), you can
+check with [`canLaunchUrl`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunchUrl.html).
+
+However, `canLaunchUrl` can return false even if `launchUrl` would work in
+some circumstances (in web applications, on mobile without the necessary
+configuration as described above, etc.), so in cases where you can provide
+fallback behavior it is better to use `launchUrl` directly and handle failure.
+For example, a UI button that would have sent feedback email using a `mailto` URL
+might instead open a web-based feedback form using an `https` URL on failure,
+rather than disabling the button if `canLaunchUrl` returns false for `mailto`.
 
 ### Encoding URLs
 
 URLs must be properly encoded, especially when including spaces or other special
-characters. This can be done using the
+characters. In general this is handled automatically by the
 [`Uri` class](https://api.dart.dev/dart-core/Uri-class.html).
-For example:
+
+**However**, for any scheme other than `http` or `https`, you should use the
+`query` parameter and the `encodeQueryParameters` function shown below rather
+than `Uri`'s `queryParameters` constructor argument for any query parameters,
+due to [a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
+encodes query parameters. Using `queryParameters` will result in spaces being
+converted to `+` in many cases.
+
 ```dart
 String? encodeQueryParameters(Map<String, String> params) {
   return params.entries
@@ -137,43 +156,24 @@ final Uri emailLaunchUri = Uri(
   }),
 );
 
-launch(emailLaunchUri.toString());
+launchUrl(emailLaunchUri);
 ```
 
-**Warning**: For any scheme other than `http` or `https`, you should use the
-`query` parameter and the `encodeQueryParameters` function shown above rather
-than `Uri`'s `queryParameters` constructor argument, due to
-[a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
-encodes query parameters. Using `queryParameters` will result in spaces being
-converted to `+` in many cases.
+### URLs not handled by `Uri`
 
-### Handling missing URL receivers
+In rare cases, you may need to launch a URL that the host system considers
+valid, but cannot be expressed by `Uri`. For those cases, alternate APIs using
+strings are available by importing `url_launcher_string.dart`.
 
-A particular mobile device may not be able to receive all supported URL schemes.
-For example, a tablet may not have a cellular radio and thus no support for
-launching a URL using the `sms` scheme, or a device may not have an email app
-and thus no support for launching a URL using the `mailto` scheme.
+Using these APIs in any other cases is **strongly discouraged**, as providing
+invalid URL strings was a very common source of errors with this plugin's
+original APIs.
 
-We recommend checking which URL schemes are supported using the
-[`canLaunch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunch.html)
-in most cases. If the `canLaunch` method returns false, as a
-best practice we suggest adjusting the application UI so that the unsupported
-URL is never triggered; for example, if the `mailto` scheme is not supported, a
-UI button that would have sent feedback email could be changed to instead open
-a web-based feedback form using an `https` URL.
+### File scheme handling
 
-## Browser vs In-app Handling
-By default, Android opens up a browser when handling URLs. You can pass
-`forceWebView: true` parameter to tell the plugin to open a WebView instead.
-If you do this for a URL of a page containing JavaScript, make sure to pass in
-`enableJavaScript: true`, or else the launch method will not work properly. On
-iOS, the default behavior is to open all web URLs within the app. Everything
-else is redirected to the app handler.
+`file:` scheme can be used on desktop platforms: Windows, macOS, and Linux.
 
-## File scheme handling
-`file:` scheme can be used on desktop platforms: `macOS`, `Linux` and `Windows`.
-
-We recommend checking first whether the directory or file exists before calling `launch`.
+We recommend checking first whether the directory or file exists before calling `launchUrl`.
 
 Example:
 ```dart
@@ -181,13 +181,21 @@ var filePath = '/path/to/file';
 final Uri uri = Uri.file(filePath);
 
 if (await File(uri.toFilePath()).exists()) {
-  if (!await launch(uri.toString())) {
+  if (!await launchUrl(uri)) {
     throw 'Could not launch $uri';
   }
 }
 ```
 
-### macOS file access configuration
+#### macOS file access configuration
 
 If you need to access files outside of your application's sandbox, you will need to have the necessary
 [entitlements](https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox).
+
+## Browser vs in-app Handling
+
+On some platforms, web URLs can be launched either in an in-app web view, or
+in the default browser. The default behavior depends on the platform (see
+[`launchUrl`](https://pub.dev/documentation/url_launcher/latest/url_launcher/launchUrl.html)
+for details), but a specific mode can be used on supported platforms by
+passing a `LaunchMode`.

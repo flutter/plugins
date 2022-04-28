@@ -57,6 +57,8 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
           biometrics.add(BiometricType.iris);
           break;
         case 'undefined':
+          // Sentinel value for the case when nothing is enrolled, but hardware
+          // support for biometrics is available.
           break;
       }
     }
@@ -65,7 +67,14 @@ class DefaultLocalAuthPlatform extends LocalAuthPlatform {
 
   @override
   Future<bool> deviceSupportsBiometrics() async {
-    return (await getEnrolledBiometrics()).isNotEmpty;
+    final List<String> availableBiometrics =
+        (await _channel.invokeListMethod<String>(
+              'getAvailableBiometrics',
+            )) ??
+            <String>[];
+    // If anything, including the 'undefined' sentinel, is returned, then there
+    // is device support for biometrics.
+    return availableBiometrics.isNotEmpty;
   }
 
   @override
