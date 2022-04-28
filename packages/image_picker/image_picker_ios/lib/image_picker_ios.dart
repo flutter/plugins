@@ -51,10 +51,12 @@ class ImagePickerIOS extends ImagePickerPlatform {
   }) async {
     final String? path = await _pickImageAsPath(
       source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
+      options: ImagePickerOptions(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+      ),
     );
     return path != null ? PickedFile(path) : null;
   }
@@ -64,14 +66,9 @@ class ImagePickerIOS extends ImagePickerPlatform {
     required ImageSource source,
     ImagePickerOptions? options,
   }) async {
-    final ImagePickerOptions pickerOptions = options ?? ImagePickerOptions();
     final String? path = await _pickImageAsPath(
       source: source,
-      maxWidth: pickerOptions.maxWidth,
-      maxHeight: pickerOptions.maxHeight,
-      imageQuality: pickerOptions.imageQuality,
-      preferredCameraDevice: pickerOptions.preferredCameraDevice,
-      requestFullMetadata: pickerOptions.requestFullMetadata,
+      options: options,
     );
     return path != null ? XFile(path) : null;
   }
@@ -121,21 +118,22 @@ class ImagePickerIOS extends ImagePickerPlatform {
 
   Future<String?> _pickImageAsPath({
     required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool requestFullMetadata = true,
+    ImagePickerOptions? options,
   }) {
+    final ImagePickerOptions pickerOptions = options ?? ImagePickerOptions();
+
+    final int? imageQuality = pickerOptions.imageQuality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
+    final double? maxWidth = pickerOptions.maxWidth;
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
     }
 
+    final double? maxHeight = pickerOptions.maxHeight;
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
@@ -143,10 +141,10 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return _hostApi.pickImage(
       SourceSpecification(
           type: _convertSource(source),
-          camera: _convertCamera(preferredCameraDevice)),
+          camera: _convertCamera(pickerOptions.preferredCameraDevice)),
       MaxSize(width: maxWidth, height: maxHeight),
       imageQuality,
-      requestFullMetadata,
+      pickerOptions.requestFullMetadata,
     );
   }
 
@@ -186,10 +184,12 @@ class ImagePickerIOS extends ImagePickerPlatform {
   }) async {
     final String? path = await _pickImageAsPath(
       source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
+      options: ImagePickerOptions(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+      ),
     );
     return path != null ? XFile(path) : null;
   }

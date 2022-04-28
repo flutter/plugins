@@ -39,7 +39,11 @@ class _ApiLogger implements TestHostImagePickerApi {
 
   @override
   Future<String?> pickImage(
-      SourceSpecification source, MaxSize maxSize, int? imageQuality) async {
+    SourceSpecification source,
+    MaxSize maxSize,
+    int? imageQuality,
+    bool requestFullMetadata,
+  ) async {
     // Flatten arguments for easy comparison.
     calls.add(_LoggedMethodCall('pickImage', arguments: <String, dynamic>{
       'source': source.type,
@@ -47,6 +51,7 @@ class _ApiLogger implements TestHostImagePickerApi {
       'maxWidth': maxSize.width,
       'maxHeight': maxSize.height,
       'imageQuality': imageQuality,
+      'requestFullMetadata': requestFullMetadata,
     }));
     return returnValue as String?;
   }
