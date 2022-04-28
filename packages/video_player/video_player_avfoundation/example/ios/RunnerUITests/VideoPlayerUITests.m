@@ -54,7 +54,7 @@
     // We try to find the button if the old accessibility value is used.
     // TODO(cyanglaz): Remove this when the new accessibility value is supported on flutter/stable
     // https://github.com/flutter/flutter/issues/102771
-    playbackSpeed5x = app.staticTexts[@"Playback speed\n5.0x\n"];
+    playbackSpeed5x = app.staticTexts[@"Playback speed\n5.0x"];
     foundPlaybackSpeed5x = [playbackSpeed5x waitForExistenceWithTimeout:2.0];
   }
   XCTAssertTrue(foundPlaybackSpeed5x);
