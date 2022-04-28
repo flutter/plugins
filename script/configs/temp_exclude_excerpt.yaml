@@ -1,6 +1,6 @@
 # Packages that have not yet adopted code-excerpt.
 #
-# This only exists to allow incrementally adopt the new requirement.
+# This only exists to allow incrementally adopting the new requirement.
 # Packages shoud never be added to this list.
 
 # TODO(ecosystem): Remove everything from this list. See
