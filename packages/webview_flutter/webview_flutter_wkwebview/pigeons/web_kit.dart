@@ -8,7 +8,7 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/common/web_kit.pigeon.dart',
     dartTestOut: 'test/src/common/test_web_kit.pigeon.dart',
-    dartOptions: DartOptions(isNullSafe: true, copyrightHeader: <String>[
+    dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
       'found in the LICENSE file.',
@@ -369,46 +369,62 @@ abstract class FunctionFlutterApi {
 /// See https://developer.apple.com/documentation/webkit/wkwebview?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKWebViewHostApi')
 abstract class WKWebViewHostApi {
+  @ObjCSelector('createWithIdentifier:configurationIdentifier:')
   void create(int instanceId, int configurationInstanceId);
 
+  @ObjCSelector('setUIDelegateForWebViewWithIdentifier:delegateIdentifier:')
   void setUIDelegate(int instanceId, int? uiDelegateInstanceId);
 
+  @ObjCSelector(
+    'setNavigationDelegateForWebViewWithIdentifier:delegateIdentifier:',
+  )
   void setNavigationDelegate(int instanceId, int? navigationDelegateInstanceId);
 
-  @ObjCSelector('urlForWebViewWithInstanceId:')
+  @ObjCSelector('URLForWebViewWithIdentifier:')
   String? getUrl(int instanceId);
 
+  @ObjCSelector('estimatedProgressForWebViewWithIdentifier:')
   double getEstimatedProgress(int instanceId);
 
-  @ObjCSelector('webViewWithInstanceId:loadRequest:')
+  @ObjCSelector('loadRequestForWebViewWithIdentifier:request:')
   void loadRequest(int instanceId, NSUrlRequestData request);
 
+  @ObjCSelector('loadHTMLForWebViewWithIdentifier:HTMLString:baseURL:')
   void loadHtmlString(int instanceId, String string, String? baseUrl);
 
+  @ObjCSelector('loadFileForWebViewWithIdentifier:fileURL:readAccessURL:')
   void loadFileUrl(int instanceId, String url, String readAccessUrl);
 
+  @ObjCSelector('loadAssetForWebViewWithIdintefier:assetKey:')
   void loadFlutterAsset(int instanceId, String key);
 
-  @ObjCSelector('webViewWithInstanceIdCanGoBack:')
+  @ObjCSelector('canGoBackForWebViewWithIdentifier:')
   bool canGoBack(int instanceId);
 
+  @ObjCSelector('canGoForwardForWebViewWithIdentifier:')
   bool canGoForward(int instanceId);
 
+  @ObjCSelector('goBackForWebViewWithIdentifier:')
   void goBack(int instanceId);
 
+  @ObjCSelector('goForwardForWebViewWithIdentifier:')
   void goForward(int instanceId);
 
+  @ObjCSelector('reloadWebViewWithIdentifier:')
   void reload(int instanceId);
 
+  @ObjCSelector('titleForWebViewWithIdentifier:')
   String? getTitle(int instanceId);
 
+  @ObjCSelector('setAllowsBackForwardForWebViewWithIdentifier:isAllowed:')
   void setAllowsBackForwardNavigationGestures(int instanceId, bool allow);
 
-  @ObjCSelector('webViewWithInstanceId:setCustomUserAgent:')
+  @ObjCSelector('setUserAgentForWebViewWithIdentifier:userAgent:')
   void setCustomUserAgent(int instanceId, String? userAgent);
 
+  @ObjCSelector('evaluateJavaScriptForWebViewWithIdentifier:javaScriptString:')
   @async
-  String evaluateJavaScript(int instanceId, String javascriptString);
+  Object? evaluateJavaScript(int instanceId, String javaScriptString);
 }
 
 /// Mirror of WKUIDelegate.

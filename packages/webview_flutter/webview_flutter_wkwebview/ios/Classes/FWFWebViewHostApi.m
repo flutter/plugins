@@ -40,137 +40,196 @@
   return self;
 }
 
-- (FWFWebView *)getWebViewInstance:(NSNumber *)instanceId {
+- (FWFWebView *)webViewForIdentifier:(NSNumber *)instanceId {
   return (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
 }
 
-- (void)webViewWithInstanceId:(nonnull NSNumber *)instanceId
-                  loadRequest:(nonnull FWFNSUrlRequestData *)request
-                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
++ (nonnull FlutterError *)errorForURLString:(nonnull NSString *)string {
+  NSString *errorDetails = [NSString stringWithFormat:@"Initializing NSURL with the supplied "
+                                                      @"'%@' path resulted in a nil value.",
+                                                      string];
+  return [FlutterError errorWithCode:@"FWFURLParsingError"
+                             message:@"Failed parsing file path."
+                             details:errorDetails];
+}
+
+- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
+     configurationIdentifier:(nonnull NSNumber *)configurationInstanceId
+                       error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
+      instanceForIdentifier:configurationInstanceId.longValue];
+  FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)
+                                            configuration:configuration];
+  [self.instanceManager addInstance:webView withIdentifier:instanceId.longValue];
+}
+
+- (void)loadRequestForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                    request:(nonnull FWFNSUrlRequestData *)request
+                                      error:
+                                          (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   NSURLRequest *urlRequest = FWFNSURLRequestFromRequestData(request);
   if (!urlRequest) {
-    *error = [FlutterError errorWithCode:@"CreateNSURLRequestFailure"
+    *error = [FlutterError errorWithCode:@"FWFURLRequestParsingError"
                                  message:@"Failed instantiating an NSURLRequest."
                                  details:[NSString stringWithFormat:@"Url was: '%@'", request.url]];
     return;
   }
-  [[self getWebViewInstance:instanceId] loadRequest:urlRequest];
+  [[self webViewForIdentifier:instanceId] loadRequest:urlRequest];
 }
 
-- (void)webViewWithInstanceId:(nonnull NSNumber *)instanceId
-           setCustomUserAgent:(nullable NSString *)userAgent
-                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  [[self getWebViewInstance:instanceId] setCustomUserAgent:userAgent];
+- (void)setUserAgentForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                   userAgent:(nullable NSString *)userAgent
+                                       error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                 error {
+  [[self webViewForIdentifier:instanceId] setCustomUserAgent:userAgent];
 }
 
 - (nullable NSNumber *)
-    webViewWithInstanceIdCanGoBack:(nonnull NSNumber *)instanceId
-                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return @([self getWebViewInstance:instanceId].canGoBack);
+    canGoBackForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  return @([self webViewForIdentifier:instanceId].canGoBack);
 }
 
 - (nullable NSString *)
-    urlForWebViewWithInstanceId:(nonnull NSNumber *)instanceId
+    URLForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
                           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return [self getWebViewInstance:instanceId].URL.absoluteString;
-}
-
-- (nullable NSNumber *)canGoForwardInstanceId:(nonnull NSNumber *)instanceId
-                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
-                                                  error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
-}
-
-- (void)createInstanceId:(nonnull NSNumber *)instanceId
-    configurationInstanceId:(nonnull NSNumber *)configurationInstanceId
-                      error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
-}
-
-- (void)evaluateJavaScriptInstanceId:(nonnull NSNumber *)instanceId
-                    javascriptString:(nonnull NSString *)javascriptString
-                          completion:(nonnull void (^)(NSString *_Nullable,
-                                                       FlutterError *_Nullable))completion {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+  return [self webViewForIdentifier:instanceId].URL.absoluteString;
 }
 
 - (nullable NSNumber *)
-    getEstimatedProgressInstanceId:(nonnull NSNumber *)instanceId
-                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+    canGoForwardForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  return @([[self webViewForIdentifier:instanceId] canGoForward]);
 }
 
-- (nullable NSString *)getTitleInstanceId:(nonnull NSNumber *)instanceId
+- (nullable NSNumber *)
+    estimatedProgressForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                  error {
+  return @([[self webViewForIdentifier:instanceId] estimatedProgress]);
+}
+
+- (void)evaluateJavaScriptForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                  javaScriptString:(nonnull NSString *)javaScriptString
+                                        completion:
+                                            (nonnull void (^)(id _Nullable,
+                                                              FlutterError *_Nullable))completion {
+  [[self webViewForIdentifier:instanceId]
+      evaluateJavaScript:javaScriptString
+       completionHandler:^(id _Nullable result, NSError *_Nullable error) {
+         id returnValue = nil;
+         FlutterError *flutterError = nil;
+         if (!error) {
+           if (!result || [result isKindOfClass:[NSString class]] ||
+               [result isKindOfClass:[NSNumber class]]) {
+             returnValue = result;
+           } else {
+             NSString *className = NSStringFromClass([result class]);
+             NSString *message = [NSString
+                 stringWithFormat:
+                     @"Return type not supported: %@. Description of value was added to details.",
+                     className];
+             flutterError =
+                 [FlutterError errorWithCode:@"FWFEvaluateJavaScriptResultNotSupportedError"
+                                     message:message
+                                     details:[result description]];
+           }
+         } else {
+           flutterError = [FlutterError errorWithCode:@"FWFEvaluateJavaScriptError"
+                                              message:@"Failed evaluating JavaScript."
+                                              details:error];
+         }
+
+         completion(returnValue, flutterError);
+       }];
+}
+
+- (void)goBackForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                 error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[self webViewForIdentifier:instanceId] goBack];
+}
+
+- (void)goForwardForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
                                     error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+  [[self webViewForIdentifier:instanceId] goForward];
 }
 
-- (void)goBackInstanceId:(nonnull NSNumber *)instanceId
-                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)loadAssetForWebViewWithIdintefier:(nonnull NSNumber *)instanceId
+                                 assetKey:(nonnull NSString *)key
+                                    error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NSString *assetFilePath = [FlutterDartProject lookupKeyForAsset:key];
+  NSURL *url = [[NSBundle mainBundle] URLForResource:[assetFilePath stringByDeletingPathExtension]
+                                       withExtension:assetFilePath.pathExtension];
+
+  if (!url) {
+    *error = [FWFWebViewHostApiImpl errorForURLString:assetFilePath];
+  } else {
+    [[self webViewForIdentifier:instanceId] loadFileURL:url
+                                allowingReadAccessToURL:[url URLByDeletingLastPathComponent]];
+  }
 }
 
-- (void)goForwardInstanceId:(nonnull NSNumber *)instanceId
-                      error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)loadFileForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                 fileURL:(nonnull NSString *)url
+                           readAccessURL:(nonnull NSString *)readAccessUrl
+                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  NSURL *fileURL = [NSURL fileURLWithPath:url isDirectory:NO];
+  NSURL *readAccessNSURL = [NSURL fileURLWithPath:readAccessUrl isDirectory:YES];
+
+  if (!fileURL) {
+    *error = [FWFWebViewHostApiImpl errorForURLString:url];
+  } else if (!readAccessNSURL) {
+    *error = [FWFWebViewHostApiImpl errorForURLString:readAccessUrl];
+  } else {
+    [[self webViewForIdentifier:instanceId] loadFileURL:fileURL
+                                allowingReadAccessToURL:readAccessNSURL];
+  }
 }
 
-- (void)loadFileUrlInstanceId:(nonnull NSNumber *)instanceId
-                          url:(nonnull NSString *)url
-                readAccessUrl:(nonnull NSString *)readAccessUrl
-                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)loadHTMLForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                              HTMLString:(nonnull NSString *)string
+                                 baseURL:(nullable NSString *)baseUrl
+                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[self webViewForIdentifier:instanceId] loadHTMLString:string
+                                                 baseURL:[NSURL URLWithString:baseUrl]];
 }
 
-- (void)loadFlutterAssetInstanceId:(nonnull NSNumber *)instanceId
-                               key:(nonnull NSString *)key
-                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)reloadWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                              error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [[self webViewForIdentifier:instanceId] reload];
 }
 
-- (void)loadHtmlStringInstanceId:(nonnull NSNumber *)instanceId
-                          string:(nonnull NSString *)string
-                         baseUrl:(nullable NSString *)baseUrl
-                           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)
+    setAllowsBackForwardForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                                       isAllowed:(nonnull NSNumber *)allow
+                                           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                     error {
+  [[self webViewForIdentifier:instanceId] setAllowsBackForwardNavigationGestures:allow.boolValue];
 }
 
-- (void)reloadInstanceId:(nonnull NSNumber *)instanceId
-                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)
+    setNavigationDelegateForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                               delegateIdentifier:(nullable NSNumber *)navigationDelegateInstanceId
+                                            error:
+                                                (FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                    error {
+  id<WKNavigationDelegate> navigationDelegate = (id<WKNavigationDelegate>)[self.instanceManager
+      instanceForIdentifier:navigationDelegateInstanceId.longValue];
+  [[self webViewForIdentifier:instanceId] setNavigationDelegate:navigationDelegate];
 }
 
-- (void)setAllowsBackForwardNavigationGesturesInstanceId:(nonnull NSNumber *)instanceId
-                                                   allow:(nonnull NSNumber *)allow
-                                                   error:(FlutterError *_Nullable __autoreleasing
-                                                              *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (void)setUIDelegateForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                           delegateIdentifier:(nullable NSNumber *)uiDelegateInstanceId
+                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                  error {
+  id<WKUIDelegate> navigationDelegate =
+      (id<WKUIDelegate>)[self.instanceManager instanceForIdentifier:uiDelegateInstanceId.longValue];
+  [[self webViewForIdentifier:instanceId] setUIDelegate:navigationDelegate];
 }
 
-- (void)setNavigationDelegateInstanceId:(nonnull NSNumber *)instanceId
-           navigationDelegateInstanceId:(nullable NSNumber *)navigationDelegateInstanceId
-                                  error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
+- (nullable NSString *)
+    titleForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+                            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  return [[self webViewForIdentifier:instanceId] title];
 }
-
-- (void)setUIDelegateInstanceId:(nonnull NSNumber *)instanceId
-           uiDelegateInstanceId:(nullable NSNumber *)uiDelegateInstanceId
-                          error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  // TODO(bparrishMines): Implement
-  @throw [NSException exceptionWithName:@"UnsupportedException" reason:nil userInfo:nil];
-}
-
 @end
