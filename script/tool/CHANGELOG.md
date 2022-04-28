@@ -2,6 +2,7 @@
 
 - Allows `make-deps-path-based` to skip packages it has alredy rewritten, so
   that running multiple times won't fail after the first time.
+- Removes UWP support, since Flutter has dropped support for UWP.
 
 ## 0.8.2+1
 

@@ -37,7 +37,6 @@ bool pluginSupportsPlatform(
   String platform,
   RepositoryPackage plugin, {
   PlatformSupport? requiredMode,
-  String? variant,
 }) {
   assert(platform == platformIOS ||
       platform == platformAndroid ||
@@ -58,26 +57,6 @@ bool pluginSupportsPlatform(
     final bool federated = platformEntry.containsKey('default_package');
     if (federated != (requiredMode == PlatformSupport.federated)) {
       return false;
-    }
-  }
-
-  // If a variant is specified, check for that variant.
-  if (variant != null) {
-    const String variantsKey = 'supportedVariants';
-    if (platformEntry.containsKey(variantsKey)) {
-      if (!(platformEntry['supportedVariants']! as YamlList)
-          .contains(variant)) {
-        return false;
-      }
-    } else {
-      // Platforms with variants have a default variant when unspecified for
-      // backward compatibility. Must match the flutter tool logic.
-      const Map<String, String> defaultVariants = <String, String>{
-        platformWindows: platformVariantWin32,
-      };
-      if (variant != defaultVariants[platform]) {
-        return false;
-      }
     }
   }
 
