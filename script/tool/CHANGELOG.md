@@ -1,7 +1,11 @@
-## NEXT
+## 0.8.3
 
+- Adds a new `update-excerpts` command to maintain README files using the
+  `code-excerpter` package from flutter/site-shared.
+- `license-check` now ignores submodules.
 - Allows `make-deps-path-based` to skip packages it has alredy rewritten, so
   that running multiple times won't fail after the first time.
+- Removes UWP support, since Flutter has dropped support for UWP.
 
 ## 0.8.2+1
 
