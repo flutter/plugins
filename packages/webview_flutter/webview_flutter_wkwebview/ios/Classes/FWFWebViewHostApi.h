@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * A set of Flutter and Dart assets used by a `FlutterEngine` to initialize execution.
+ *
+ * Default implementation delegates methods to FlutterDartProject.
+ */
 @interface FWFAssetManager : NSObject
 - (NSString *)lookupKeyForAsset:(NSString *)asset;
 @end

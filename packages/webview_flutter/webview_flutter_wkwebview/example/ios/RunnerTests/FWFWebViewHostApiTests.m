@@ -312,38 +312,29 @@
   XCTAssertNil(error);
 }
 
-//- (void)testevaluateJavaScript {
-//  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
-//  OCMStub([mockWebView evaluateJavaScript
-//
-//  :aValue
-//
-//
-//  ]).andReturn(aValue);
-//
-//  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-//  [instanceManager addInstance:mockWebView withIdentifier:0];
-//
-//  FWFWebViewHostApiImpl *hostApi =
-//      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
-//
-//  FlutterError *error;
-//  XCTAssertEqualObjects([hostApi evaluateJavaScriptForWebViewWithIdentifier:@0
-//
-//                                  javaScriptString:aValue
-//
-//                                                                   error:&error], @YES);
-//  [hostApi evaluateJavaScriptForWebViewWithIdentifier:@0
-//
-//                                javaScriptString:aValue
-//
-//                                             error:&error];
-//  OCMVerify([mockWebView evaluateJavaScript
-//
-//    :aValue
-//
-//
-//  ]);
-//  XCTAssertNil(error);
-//}
+- (void)testEvaluateJavaScript {
+  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
+
+  OCMStub([mockWebView
+      evaluateJavaScript:@"runJavaScript"
+       completionHandler:([OCMArg invokeBlockWithArgs:@"result", [NSNull null], nil])]);
+
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addInstance:mockWebView withIdentifier:0];
+
+  FWFWebViewHostApiImpl *hostApi =
+      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+
+  NSString __block *returnValue;
+  FlutterError __block *returnError;
+  [hostApi evaluateJavaScriptForWebViewWithIdentifier:@0
+                                     javaScriptString:@"runJavaScript"
+                                           completion:^(id result, FlutterError *error) {
+                                             returnValue = result;
+                                             returnError = error;
+                                           }];
+
+  XCTAssertEqualObjects(returnValue, @"result");
+  XCTAssertNil(returnError);
+}
 @end

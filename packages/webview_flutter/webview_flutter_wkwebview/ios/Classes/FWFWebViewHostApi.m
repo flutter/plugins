@@ -14,7 +14,7 @@
 @implementation FWFWebView
 - (void)setFrame:(CGRect)frame {
   [super setFrame:frame];
-  // Prevents the contentInsets to be adjusted by iOS and gives control to Flutter.
+  // Prevents the contentInsets from being adjusted by iOS and gives control to Flutter.
   self.scrollView.contentInset = UIEdgeInsetsZero;
   if (@available(iOS 11, *)) {
     // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
@@ -143,14 +143,10 @@
              returnValue = result;
            } else {
              NSString *className = NSStringFromClass([result class]);
-             NSString *message = [NSString
-                 stringWithFormat:
-                     @"Return type not supported: %@. Description of value was added to details.",
-                     className];
-             flutterError =
-                 [FlutterError errorWithCode:@"FWFEvaluateJavaScriptResultNotSupportedError"
-                                     message:message
-                                     details:[result description]];
+             NSLog(@"Return type of evaluateJavaScript is not directly supported: %@. Returned "
+                   @"description of value.",
+                   className);
+             returnValue = [result description];
            }
          } else {
            flutterError = [FlutterError errorWithCode:@"FWFEvaluateJavaScriptError"
