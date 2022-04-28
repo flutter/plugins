@@ -50,7 +50,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in_ios"
                                   binaryMessenger:[registrar messenger]];
   FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
@@ -78,38 +78,30 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSString *signInOption = call.arguments[@"signInOption"];
-    if ([signInOption isEqualToString:@"SignInOption.games"]) {
-      result([FlutterError errorWithCode:@"unsupported-options"
-                                 message:@"Games sign in is not supported on iOS"
-                                 details:nil]);
-    } else {
-      NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
-                                                       ofType:@"plist"];
-      if (path) {
-        NSMutableDictionary<NSString *, NSString *> *plist =
-            [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        BOOL hasDynamicClientId = [call.arguments[@"clientId"] isKindOfClass:[NSString class]];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+    if (path) {
+      NSMutableDictionary<NSString *, NSString *> *plist =
+          [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+      BOOL hasDynamicClientId = [call.arguments[@"clientId"] isKindOfClass:[NSString class]];
 
-        if (hasDynamicClientId) {
-          self.signIn.clientID = call.arguments[@"clientId"];
-        } else {
-          self.signIn.clientID = plist[kClientIdKey];
-        }
-
-        self.signIn.serverClientID = plist[kServerClientIdKey];
-        self.signIn.scopes = call.arguments[@"scopes"];
-        if (call.arguments[@"hostedDomain"] == [NSNull null]) {
-          self.signIn.hostedDomain = nil;
-        } else {
-          self.signIn.hostedDomain = call.arguments[@"hostedDomain"];
-        }
-        result(nil);
+      if (hasDynamicClientId) {
+        self.signIn.clientID = call.arguments[@"clientId"];
       } else {
-        result([FlutterError errorWithCode:@"missing-config"
-                                   message:@"GoogleService-Info.plist file not found"
-                                   details:nil]);
+        self.signIn.clientID = plist[kClientIdKey];
       }
+
+      self.signIn.serverClientID = plist[kServerClientIdKey];
+      self.signIn.scopes = call.arguments[@"scopes"];
+      if (call.arguments[@"hostedDomain"] == [NSNull null]) {
+        self.signIn.hostedDomain = nil;
+      } else {
+        self.signIn.hostedDomain = call.arguments[@"hostedDomain"];
+      }
+      result(nil);
+    } else {
+      result([FlutterError errorWithCode:@"missing-config"
+                                 message:@"GoogleService-Info.plist file not found"
+                                 details:nil]);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     if ([self setAccountRequest:result]) {
@@ -144,10 +136,6 @@ static FlutterError *getFlutterError(NSError *error) {
     if ([self setAccountRequest:result]) {
       [self.signIn disconnect];
     }
-  } else if ([call.method isEqualToString:@"clearAuthCache"]) {
-    // There's nothing to be done here on iOS since the expired/invalid
-    // tokens are refreshed automatically by getTokensWithHandler.
-    result(nil);
   } else if ([call.method isEqualToString:@"requestScopes"]) {
     GIDGoogleUser *user = self.signIn.currentUser;
     if (user == nil) {
