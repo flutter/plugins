@@ -1,3 +1,8 @@
+## 6.0.16
+
+* Adds fallback querying for `canLaunch` with web URLs, to avoid false negatives
+  when there is a custom scheme handler.
+
 ## 6.0.15
 
 * Switches to an in-package method channel implementation.

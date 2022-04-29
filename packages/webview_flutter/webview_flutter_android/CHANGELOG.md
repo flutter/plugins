@@ -1,3 +1,7 @@
+## 2.8.6
+
+* Updates pigeon developer dependency to the latest version which adds support for null safety.
+
 ## 2.8.5
 
 * Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.

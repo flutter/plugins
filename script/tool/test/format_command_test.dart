@@ -448,7 +448,7 @@ void main() {
         ]));
   });
 
-  test('fails if files are changed with --file-on-change', () async {
+  test('fails if files are changed with --fail-on-change', () async {
     const List<String> files = <String>[
       'linux/foo_plugin.cc',
       'macos/Classes/Foo.h',
