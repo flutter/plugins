@@ -332,17 +332,16 @@ class _MyAppState extends State<_MyApp> {
       );
     }).toList();
     return Card(
-      child: Column(children: <Widget>[
-        consumableHeader,
-        const Divider(),
-        GridView.count(
-          crossAxisCount: 5,
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(16.0),
-          children: tokens,
-        )
-      ]),
-    );
+        child: Column(children: <Widget>[
+      consumableHeader,
+      const Divider(),
+      GridView.count(
+        crossAxisCount: 5,
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(16.0),
+        children: tokens,
+      )
+    ]));
   }
 
   Future<void> consume(String id) async {
