@@ -271,15 +271,14 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// If no images were picked, the return value is null.
   Future<XFile?> getImageFromSource({
     required ImageSource source,
-    ImagePickerOptions? options,
+    ImagePickerOptions options = const ImagePickerOptions(),
   }) {
     return getImage(
       source: source,
-      maxHeight: options?.maxHeight,
-      maxWidth: options?.maxWidth,
-      imageQuality: options?.imageQuality,
-      preferredCameraDevice:
-          options?.preferredCameraDevice ?? CameraDevice.rear,
+      maxHeight: options.maxHeight,
+      maxWidth: options.maxWidth,
+      imageQuality: options.imageQuality,
+      preferredCameraDevice: options.preferredCameraDevice,
     );
   }
 }

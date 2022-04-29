@@ -8,7 +8,7 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 class ImagePickerOptions {
   /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality],
   /// [referredCameraDevice] and [requestFullMetadata]. Any of the params may be null.
-  ImagePickerOptions({
+  const ImagePickerOptions({
     this.maxHeight,
     this.maxWidth,
     this.imageQuality,

@@ -202,16 +202,15 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   @override
   Future<XFile?> getImageFromSource({
     required ImageSource source,
-    ImagePickerOptions? options,
+    ImagePickerOptions options = const ImagePickerOptions(),
   }) async {
     final String? path = await _getImagePath(
       source: source,
-      maxHeight: options?.maxHeight,
-      maxWidth: options?.maxWidth,
-      imageQuality: options?.imageQuality,
-      preferredCameraDevice:
-          options?.preferredCameraDevice ?? CameraDevice.rear,
-      requestFullMetadata: options?.requestFullMetadata ?? true,
+      maxHeight: options.maxHeight,
+      maxWidth: options.maxWidth,
+      imageQuality: options.imageQuality,
+      preferredCameraDevice: options.preferredCameraDevice,
+      requestFullMetadata: options.requestFullMetadata,
     );
     return path != null ? XFile(path) : null;
   }

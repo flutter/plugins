@@ -64,7 +64,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
   @override
   Future<XFile?> getImageFromSource({
     required ImageSource source,
-    ImagePickerOptions? options,
+    ImagePickerOptions options = const ImagePickerOptions(),
   }) async {
     final String? path = await _pickImageAsPath(
       source: source,
@@ -118,33 +118,32 @@ class ImagePickerIOS extends ImagePickerPlatform {
 
   Future<String?> _pickImageAsPath({
     required ImageSource source,
-    ImagePickerOptions? options,
+    ImagePickerOptions options = const ImagePickerOptions(),
   }) {
-    final ImagePickerOptions pickerOptions = options ?? ImagePickerOptions();
-
-    final int? imageQuality = pickerOptions.imageQuality;
+    final int? imageQuality = options.imageQuality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
-    final double? maxWidth = pickerOptions.maxWidth;
+    final double? maxWidth = options.maxWidth;
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
     }
 
-    final double? maxHeight = pickerOptions.maxHeight;
+    final double? maxHeight = options.maxHeight;
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
     return _hostApi.pickImage(
       SourceSpecification(
-          type: _convertSource(source),
-          camera: _convertCamera(pickerOptions.preferredCameraDevice)),
+        type: _convertSource(source),
+        camera: _convertCamera(options.preferredCameraDevice),
+      ),
       MaxSize(width: maxWidth, height: maxHeight),
       imageQuality,
-      pickerOptions.requestFullMetadata,
+      options.requestFullMetadata,
     );
   }
 
