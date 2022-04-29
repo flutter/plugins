@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues, Offset;
+import 'dart:ui' show Offset;
 
 import 'types.dart';
 
@@ -99,7 +99,7 @@ class CameraPosition {
   }
 
   @override
-  int get hashCode => hashValues(bearing, target, tilt, zoom);
+  int get hashCode => Object.hash(bearing, target, tilt, zoom);
 
   @override
   String toString() =>

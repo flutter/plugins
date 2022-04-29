@@ -15,6 +15,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		982F2A6C27BADE17003C81F4 /* PartiallyMockedMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 982F2A6B27BADE17003C81F4 /* PartiallyMockedMapView.m */; };
 		F7151F13265D7ED70028CB91 /* GoogleMapsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F7151F12265D7ED70028CB91 /* GoogleMapsTests.m */; };
 		F7151F21265D7EE50028CB91 /* GoogleMapsUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = F7151F20265D7EE50028CB91 /* GoogleMapsUITests.m */; };
 		FC8F35FC8CD533B128950487 /* libPods-RunnerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F267F68029D1A4E2E4C572A7 /* libPods-RunnerTests.a */; };
@@ -67,6 +68,8 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		982F2A6A27BADE17003C81F4 /* PartiallyMockedMapView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PartiallyMockedMapView.h; sourceTree = "<group>"; };
+		982F2A6B27BADE17003C81F4 /* PartiallyMockedMapView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PartiallyMockedMapView.m; sourceTree = "<group>"; };
 		B7AFC65E3DD5AC60D834D83D /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		E52C6A6210A56F027C582EF9 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EA0E91726245EDC22B97E8B9 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -188,6 +191,8 @@
 			isa = PBXGroup;
 			children = (
 				F7151F12265D7ED70028CB91 /* GoogleMapsTests.m */,
+				982F2A6A27BADE17003C81F4 /* PartiallyMockedMapView.h */,
+				982F2A6B27BADE17003C81F4 /* PartiallyMockedMapView.m */,
 				F7151F14265D7ED70028CB91 /* Info.plist */,
 			);
 			path = RunnerTests;
@@ -270,7 +275,7 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
@@ -441,6 +446,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7151F13265D7ED70028CB91 /* GoogleMapsTests.m in Sources */,
+				982F2A6C27BADE17003C81F4 /* PartiallyMockedMapView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +517,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -567,6 +574,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

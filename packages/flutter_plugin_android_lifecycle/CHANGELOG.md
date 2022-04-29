@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds OS version support information to README.
+
 ## 2.0.5
 
 * Updates compileSdkVersion to 31.

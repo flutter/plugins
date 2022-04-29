@@ -233,15 +233,23 @@ abstract class ClientConfig {
   /// The default redirect_uri is the current URL stripped of query parameters and hash fragment.
   external String? get redirect_uri;
   external set redirect_uri(String? v);
-  external factory ClientConfig(
-      {String client_id,
-      String cookie_policy,
-      String scope,
-      bool fetch_basic_profile,
-      String? hosted_domain,
-      String openid_realm,
-      String /*'popup'|'redirect'*/ ux_mode,
-      String redirect_uri});
+
+  /// Allows newly created Client IDs to use the Google Platform Library from now until the March 30th, 2023 deprecation date.
+  /// See: https://github.com/flutter/flutter/issues/88084
+  external String? get plugin_name;
+  external set plugin_name(String? v);
+
+  external factory ClientConfig({
+    String client_id,
+    String cookie_policy,
+    String scope,
+    bool fetch_basic_profile,
+    String? hosted_domain,
+    String openid_realm,
+    String /*'popup'|'redirect'*/ ux_mode,
+    String redirect_uri,
+    String plugin_name,
+  });
 }
 
 @JS('gapi.auth2.SigninOptionsBuilder')

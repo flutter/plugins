@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -105,6 +106,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     super.dispose();
   }
 
+  // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -120,13 +122,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(cameraController.description);
     }
   }
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  // #enddocregion AppLifecycle
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Camera example'),
       ),
@@ -583,7 +583,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     };
 
     if (cameras.isEmpty) {
-      return const Text('No camera found');
+      _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
+        showInSnackBar('No camera found.');
+      });
+      return const Text('None');
     } else {
       for (final CameraDescription cameraDescription in cameras) {
         toggles.add(
@@ -609,8 +612,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
-    // ignore: deprecated_member_use
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {

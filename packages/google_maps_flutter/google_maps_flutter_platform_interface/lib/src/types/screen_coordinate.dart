@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart' show immutable;
 
 /// Represents a point coordinate in the [GoogleMap]'s view.
@@ -42,5 +40,5 @@ class ScreenCoordinate {
   }
 
   @override
-  int get hashCode => hashValues(x, y);
+  int get hashCode => Object.hash(x, y);
 }

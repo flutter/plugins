@@ -48,6 +48,9 @@ class RepositoryPackage {
   /// The package's top-level pubspec.yaml.
   File get pubspecFile => directory.childFile('pubspec.yaml');
 
+  /// The package's top-level README.
+  File get readmeFile => directory.childFile('README.md');
+
   late final Pubspec _parsedPubspec =
       Pubspec.parse(pubspecFile.readAsStringSync());
 
@@ -61,6 +64,12 @@ class RepositoryPackage {
   bool get isFederated =>
       directory.parent.basename != 'packages' &&
       directory.basename.startsWith(directory.parent.basename);
+
+  /// True if this appears to be the app-facing package of a federated plugin,
+  /// according to repository conventions.
+  bool get isAppFacing =>
+      directory.parent.basename != 'packages' &&
+      directory.basename == directory.parent.basename;
 
   /// True if this appears to be a platform interface package, according to
   /// repository conventions.

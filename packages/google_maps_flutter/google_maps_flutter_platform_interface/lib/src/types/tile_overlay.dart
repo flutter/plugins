@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart' show immutable;
 
 import 'types.dart';
@@ -146,6 +144,6 @@ class TileOverlay implements MapsObject {
   }
 
   @override
-  int get hashCode => hashValues(tileOverlayId, fadeIn, tileProvider,
+  int get hashCode => Object.hash(tileOverlayId, fadeIn, tileProvider,
       transparency, zIndex, visible, tileSize);
 }

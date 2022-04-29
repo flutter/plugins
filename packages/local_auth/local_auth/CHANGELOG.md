@@ -1,3 +1,43 @@
+## 2.0.0
+
+* Migrates plugin to federated architecture.
+* Adds OS version support information to README.
+* BREAKING CHANGE: Deprecated method `authenticateWithBiometrics` has been removed.
+  Use `authenticate` instead.
+* BREAKING CHANGE: Enum `BiometricType` has been expanded with options for `strong` and `weak`,
+  and applications should be updated to handle these accordingly. 
+* BREAKING CHANGE: Parameters of `authenticate` have been changed.
+  
+  Example:
+  ```dart  
+  // Old way of calling `authenticate`.
+  Future<bool> authenticate(
+    localizedReason: 'localized reason',
+    useErrorDialogs: true,
+    stickyAuth: false,
+    androidAuthStrings: const AndroidAuthMessages(),
+    iOSAuthStrings: const IOSAuthMessages(),
+    sensitiveTransaction: true,
+    biometricOnly: false,
+  );
+  // New way of calling `authenticate`.
+  Future<bool> authenticate(
+    localizedReason: 'localized reason',
+    authMessages: const <AuthMessages>[
+      IOSAuthMessages(),
+      AndroidAuthMessages()
+    ],
+    options: const AuthenticationOptions(
+      useErrorDialogs: true,
+      stickyAuth: false,
+      sensitiveTransaction: true,
+      biometricOnly: false,
+    ),
+  );
+  ```
+
+
+
 ## 1.1.11
 
 * Adds support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.

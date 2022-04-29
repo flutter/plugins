@@ -24,10 +24,13 @@ const Duration _playDuration = Duration(seconds: 1);
 const String _videoAssetKey = 'assets/Butterfly-209.mp4';
 
 // Returns the URL to load an asset from this example app as a network source.
+//
+// TODO(stuartmorgan): Convert this to a local `HttpServer` that vends the
+// assets directly, https://github.com/flutter/flutter/issues/95420
 String getUrlForAssetAsNetworkSource(String assetKey) {
   return 'https://github.com/flutter/plugins/blob/'
       // This hash can be rolled forward to pick up newly-added assets.
-      'cba393233e559c925a4daf71b06b4bb01c606762'
+      'cb381ced070d356799dddf24aca38ce0579d3d7b'
       '/packages/video_player/video_player/example/'
       '$assetKey'
       '?raw=true';
@@ -155,7 +158,7 @@ void main() {
 
     testWidgets('live stream duration != 0', (WidgetTester tester) async {
       final MiniController livestreamController = MiniController.network(
-        'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8',
       );
       await livestreamController.initialize();
 

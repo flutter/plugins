@@ -47,16 +47,12 @@ Directory createPackagesDirectory(
 class PlatformDetails {
   const PlatformDetails(
     this.type, {
-    this.variants = const <String>[],
     this.hasNativeCode = true,
     this.hasDartCode = false,
   });
 
   /// The type of support for the platform.
   final PlatformSupport type;
-
-  /// Any 'supportVariants' to list in the pubspec.
-  final List<String> variants;
 
   /// Whether or not the plugin includes native code.
   ///
@@ -293,18 +289,6 @@ String _pluginPlatformSection(
     entry = lines.join('\n') + '\n';
   }
 
-  // Add any variants.
-  if (support.variants.isNotEmpty) {
-    entry += '''
-        supportedVariants:
-''';
-    for (final String variant in support.variants) {
-      entry += '''
-          - $variant
-''';
-    }
-  }
-
   return entry;
 }
 
@@ -434,8 +418,7 @@ class ProcessCall {
   }
 
   @override
-  int get hashCode =>
-      (executable.hashCode) ^ (args.hashCode) ^ (workingDir?.hashCode ?? 0);
+  int get hashCode => Object.hash(executable, args, workingDir);
 
   @override
   String toString() {

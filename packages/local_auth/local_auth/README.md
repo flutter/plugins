@@ -6,7 +6,11 @@ the user.
 This means referring to biometric authentication on iOS (Touch ID or lock code)
 and the fingerprint APIs on Android (introduced in Android 6.0).
 
-## Usage in Dart
+|             | Android   | iOS  |
+|-------------|-----------|------|
+| **Support** | SDK 16+\* | 9.0+ |
+
+## Usage
 
 Import the relevant file:
 
@@ -133,6 +137,11 @@ try {
   }
 }
 ```
+
+### Android
+
+\* The plugin will build and run on SDK 16+, but `isDeviceSupported()` will
+always return false before SDK 23 (Android 6.0).
 
 ## iOS Integration
 
