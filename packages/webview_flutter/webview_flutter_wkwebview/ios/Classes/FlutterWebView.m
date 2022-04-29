@@ -575,7 +575,10 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.requiresUserActionForMediaPlayback = true;
+#pragma clang diagnostic pop
       } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.mediaPlaybackRequiresUserAction = true;
 #pragma clang diagnostic pop
       }
@@ -587,7 +590,10 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.requiresUserActionForMediaPlayback = false;
+#pragma clang diagnostic pop
       } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.mediaPlaybackRequiresUserAction = false;
 #pragma clang diagnostic pop
       }
