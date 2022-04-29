@@ -1,6 +1,10 @@
+## 0.9.4+22
+
+* Fixes preview orientation when pausing preview with locked orientation.
+
 ## 0.9.4+21
 
-* Fixes orientation when pausing preview with locked orientation.
+* Fixes README code samples.
 
 ## 0.9.4+20
 

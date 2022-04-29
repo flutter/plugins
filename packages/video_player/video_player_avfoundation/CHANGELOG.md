@@ -1,3 +1,8 @@
+## 2.3.3
+
+* Fix XCUITest based on the new voice over announcement for tooltips.
+  See: https://github.com/flutter/flutter/pull/87684
+
 ## 2.3.2
 
 * Applies the standardized transform for videos with different orientations.
