@@ -57,10 +57,8 @@ public class QuickActionsTest {
 
   @Test
   public void appShortcutsAreCreated() {
-    // Arrange
     List<Shortcut> expectedShortcuts = createMockShortcuts();
 
-    // Act
     ShortcutManager shortcutManager =
         (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
     List<ShortcutInfo> dynamicShortcuts = shortcutManager.getDynamicShortcuts();
@@ -74,14 +72,11 @@ public class QuickActionsTest {
 
   @Test
   public void appShortcutExistsAfterLongPressingAppIcon() throws UiObjectNotFoundException {
-    // Arrange
     List<Shortcut> shortcuts = createMockShortcuts();
     String appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
 
-    // Act
     findAppIcon(device, appName).longClick();
 
-    // Assert
     for (Shortcut shortcut : shortcuts) {
       Assert.assertTrue(
           "The specified shortcut label '" + shortcut.shortLabel + "' does not exist.",
