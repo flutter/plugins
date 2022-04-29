@@ -14,12 +14,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   cameras = await availableCameras();
-  runApp(CameraApp());
+  runApp(const CameraApp());
 }
 
 class CameraApp extends StatefulWidget {
+  const CameraApp({Key? key}) : super(key: key);
+
   @override
-  _CameraAppState createState() => _CameraAppState();
+  State<CameraApp> createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
