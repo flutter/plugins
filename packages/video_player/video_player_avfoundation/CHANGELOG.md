@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.3.2
 
 * Applies the standardized transform for videos with different orientations.

@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 0.8.2
 
 * Moves source to flutter/plugins.

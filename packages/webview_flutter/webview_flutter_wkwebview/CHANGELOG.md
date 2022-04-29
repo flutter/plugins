@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.7.2
 
 * Fixes an integration test race condition.

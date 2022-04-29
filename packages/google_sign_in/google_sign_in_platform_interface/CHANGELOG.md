@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.1.2
 
 * Internal code cleanup for stricter analysis options.
