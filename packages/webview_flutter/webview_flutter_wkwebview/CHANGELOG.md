@@ -1,3 +1,7 @@
+## 2.7.3
+
+* Removes two occurrences of the compiler warning: "'RequiresUserActionForMediaPlayback' is deprecated: first deprecated in ios 10.0".
+
 ## 2.7.2
 
 * Fixes an integration test race condition.
