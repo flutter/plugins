@@ -247,8 +247,8 @@ class _SampleMenu extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
             PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.showUserAgent,
-              child: const Text('Show user agent'),
               enabled: controller.hasData,
+              child: const Text('Show user agent'),
             ),
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.listCookies,

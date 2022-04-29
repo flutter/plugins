@@ -14,7 +14,8 @@ import 'page.dart';
 const LatLng _center = LatLng(32.080664, 34.9563837);
 
 class ScrollingMapPage extends GoogleMapExampleAppPage {
-  const ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
+  const ScrollingMapPage({Key? key})
+      : super(const Icon(Icons.map), 'Scrolling map', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class ScrollingMapPage extends GoogleMapExampleAppPage {
 }
 
 class ScrollingMapBody extends StatelessWidget {
-  const ScrollingMapBody();
+  const ScrollingMapBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

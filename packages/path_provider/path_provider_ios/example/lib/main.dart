@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,7 +31,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -90,8 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Temporary Directory'),
                 onPressed: _requestTempDirectory,
+                child: const Text('Get Temporary Directory'),
               ),
             ),
             FutureBuilder<String?>(
@@ -99,8 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Documents Directory'),
                 onPressed: _requestAppDocumentsDirectory,
+                child: const Text('Get Application Documents Directory'),
               ),
             ),
             FutureBuilder<String?>(
@@ -108,8 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Support Directory'),
                 onPressed: _requestAppSupportDirectory,
+                child: const Text('Get Application Support Directory'),
               ),
             ),
             FutureBuilder<String?>(
@@ -117,8 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Library Directory'),
                 onPressed: _requestAppLibraryDirectory,
+                child: const Text('Get Application Library Directory'),
               ),
             ),
             FutureBuilder<String?>(

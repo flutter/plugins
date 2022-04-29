@@ -44,6 +44,8 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
 ];
 
 class MapsDemo extends StatelessWidget {
+  const MapsDemo({Key? key}) : super(key: key);
+
   void _pushPage(BuildContext context, GoogleMapExampleAppPage page) {
     Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (_) => Scaffold(
@@ -72,5 +74,5 @@ void main() {
   if (defaultTargetPlatform == TargetPlatform.android) {
     AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
   }
-  runApp(MaterialApp(home: MapsDemo()));
+  runApp(const MaterialApp(home: MapsDemo()));
 }

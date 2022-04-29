@@ -179,22 +179,21 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (_imageFileList != null) {
       return Semantics(
-        label: 'image_picker_example_picked_images',
-        child: ListView.builder(
-          key: UniqueKey(),
-          itemBuilder: (BuildContext context, int index) {
-            // Why network for web?
-            // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-            return Semantics(
-              label: 'image_picker_example_picked_image',
-              child: kIsWeb
-                  ? Image.network(_imageFileList![index].path)
-                  : Image.file(File(_imageFileList![index].path)),
-            );
-          },
-          itemCount: _imageFileList!.length,
-        ),
-      );
+          label: 'image_picker_example_picked_images',
+          child: ListView.builder(
+            key: UniqueKey(),
+            itemBuilder: (BuildContext context, int index) {
+              // Why network for web?
+              // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+              return Semantics(
+                label: 'image_picker_example_picked_image',
+                child: kIsWeb
+                    ? Image.network(_imageFileList![index].path)
+                    : Image.file(File(_imageFileList![index].path)),
+              );
+            },
+            itemCount: _imageFileList!.length,
+          ));
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
