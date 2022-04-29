@@ -101,7 +101,13 @@ task:
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
         pubspec_script: ./script/tool_runner.sh pubspec-check
-        readme_script: ./script/tool_runner.sh readme-check
+        readme_script:
+          - ./script/tool_runner.sh readme-check
+          # Re-run with --require-excerpts, skipping packages that still need
+          # to be converted. Once https://github.com/flutter/flutter/issues/102679
+          # has been fixed, this can be removed and there can just be a single
+          # run with --require-excerpts and no exclusions.
+          - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
