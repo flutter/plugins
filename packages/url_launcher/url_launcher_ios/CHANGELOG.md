@@ -1,3 +1,7 @@
+## NEXT
+
+* Fix library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors lint warnings.
+
 ## 6.0.15
 
 * Switches to an in-package method channel implementation.
