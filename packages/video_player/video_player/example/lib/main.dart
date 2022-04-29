@@ -4,6 +4,9 @@
 
 // ignore_for_file: public_member_api_docs
 
+/// An example of using the plugin, controlling lifecycle and playback of the
+/// video.
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
