@@ -1,8 +1,9 @@
 gcp_credentials: ENCRYPTED[!2c88dee9c9d9805b214c9f7ad8f3bc8fae936cdb0f881d562101151c408c7e024a41222677d5831df90c60d2dd6cd80a!]
 
 # Don't run on release tags since it creates O(n^2) tasks where n is the
-# number of plugins
-only_if: $CIRRUS_TAG == ''
+# number of plugins.
+# Don't run on 'master' since it's a mirror of 'main'.
+only_if: $CIRRUS_TAG == '' && $CIRRUS_BRANCH != 'master'
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
