@@ -46,7 +46,7 @@ public class QuickActionsTest {
   }
 
   @Test
-  public void imagePickerPluginIsAdded() {
+  public void quickActionPluginIsAdded() {
     final ActivityScenario<QuickActionsTestActivity> scenario =
         ActivityScenario.launch(QuickActionsTestActivity.class);
     scenario.onActivity(
