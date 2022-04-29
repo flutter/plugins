@@ -1034,36 +1034,36 @@ void main() {
         await picker.getImageFromSource(source: ImageSource.camera);
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(maxWidth: 10.0),
+          options: const ImagePickerOptions(maxWidth: 10.0),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(maxHeight: 10.0),
+          options: const ImagePickerOptions(maxHeight: 10.0),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(
+          options: const ImagePickerOptions(
             maxWidth: 10.0,
             maxHeight: 20.0,
           ),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(
+          options: const ImagePickerOptions(
             maxWidth: 10.0,
             imageQuality: 70,
           ),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(
+          options: const ImagePickerOptions(
             maxHeight: 10.0,
             imageQuality: 70,
           ),
         );
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(
+          options: const ImagePickerOptions(
             maxWidth: 10.0,
             maxHeight: 20.0,
             imageQuality: 70,
@@ -1137,7 +1137,7 @@ void main() {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.gallery,
-            options: ImagePickerOptions(imageQuality: -1),
+            options: const ImagePickerOptions(imageQuality: -1),
           ),
           throwsArgumentError,
         );
@@ -1145,7 +1145,7 @@ void main() {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.gallery,
-            options: ImagePickerOptions(imageQuality: 101),
+            options: const ImagePickerOptions(imageQuality: 101),
           ),
           throwsArgumentError,
         );
@@ -1153,7 +1153,7 @@ void main() {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.camera,
-            options: ImagePickerOptions(imageQuality: -1),
+            options: const ImagePickerOptions(imageQuality: -1),
           ),
           throwsArgumentError,
         );
@@ -1161,7 +1161,7 @@ void main() {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.camera,
-            options: ImagePickerOptions(imageQuality: 101),
+            options: const ImagePickerOptions(imageQuality: 101),
           ),
           throwsArgumentError,
         );
@@ -1171,7 +1171,7 @@ void main() {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.camera,
-            options: ImagePickerOptions(maxWidth: -1.0),
+            options: const ImagePickerOptions(maxWidth: -1.0),
           ),
           throwsArgumentError,
         );
@@ -1179,7 +1179,7 @@ void main() {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.camera,
-            options: ImagePickerOptions(maxHeight: -1.0),
+            options: const ImagePickerOptions(maxHeight: -1.0),
           ),
           throwsArgumentError,
         );
@@ -1216,7 +1216,7 @@ void main() {
       test('camera position can set to front', () async {
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(
+          options: const ImagePickerOptions(
             preferredCameraDevice: CameraDevice.front,
           ),
         );
@@ -1239,7 +1239,7 @@ void main() {
       test('passes the full metadata argument correctly', () async {
         await picker.getImageFromSource(
           source: ImageSource.camera,
-          options: ImagePickerOptions(requestFullMetadata: false),
+          options: const ImagePickerOptions(requestFullMetadata: false),
         );
 
         expect(
