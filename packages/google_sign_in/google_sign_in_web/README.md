@@ -62,6 +62,8 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
   ],
+  // Optional: You can pass your client ID here instead of `meta` tag in web/index.html
+  clientId: 'YOUR_GOOGLE_SIGN_IN_OAUTH_CLIENT_ID.apps.googleusercontent.com',
 );
 ```
 
