@@ -1,6 +1,5 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
 package io.flutter.plugins.quickactionsexample;
 
@@ -69,7 +68,7 @@ public class QuickActionsTest {
     for (int i = 0; i < expectedShortcuts.size(); i++) {
       ShortcutInfo expectedShortcut = expectedShortcuts.get(i);
       ShortcutInfo dynamicShortcut = dynamicShortcuts.get(i);
-      
+
       assertEquals(expectedShortcut.getId(), dynamicShortcut.getId());
       assertEquals(expectedShortcut.getShortLabel(), dynamicShortcut.getShortLabel());
       assertEquals(expectedShortcut.getLongLabel(), dynamicShortcut.getLongLabel());
@@ -101,7 +100,8 @@ public class QuickActionsTest {
 
     // Act
     findAppIcon(device, appName).longClick();
-    UiObject appShortcut = device.findObject(new UiSelector().text(firstShortcut.getShortLabel().toString()));
+    UiObject appShortcut =
+        device.findObject(new UiSelector().text(firstShortcut.getShortLabel().toString()));
     appShortcut.clickAndWaitForNewWindow();
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
