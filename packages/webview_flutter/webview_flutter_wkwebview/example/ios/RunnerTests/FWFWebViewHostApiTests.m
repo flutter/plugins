@@ -55,7 +55,7 @@
   XCTAssertNotNil(error);
   XCTAssertEqualObjects(error.code, @"FWFURLRequestParsingError");
   XCTAssertEqualObjects(error.message, @"Failed instantiating an NSURLRequest.");
-  XCTAssertEqualObjects(error.details, @"Url was: '%invalidUrl%'");
+  XCTAssertEqualObjects(error.details, @"URL was: '%invalidUrl%'");
 }
 
 - (void)testSetCustomUserAgent {
