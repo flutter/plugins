@@ -149,16 +149,16 @@ typedef NS_ENUM(NSUInteger, FWFNSHttpCookiePropertyKeyEnum) {
 NSObject<FlutterMessageCodec> *FWFWKWebsiteDataStoreHostApiGetCodec(void);
 
 @protocol FWFWKWebsiteDataStoreHostApi
-- (void)createFromWebViewConfigurationInstanceId:(NSNumber *)instanceId
-                         configurationInstanceId:(NSNumber *)configurationInstanceId
-                                           error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)createDefaultDataStoreInstanceId:(NSNumber *)instanceId
-                                   error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)removeDataOfTypesInstanceId:(NSNumber *)instanceId
-                          dataTypes:(NSArray<FWFWKWebsiteDataTypesEnumData *> *)dataTypes
-          secondsModifiedSinceEpoch:(NSNumber *)secondsModifiedSinceEpoch
-                         completion:
-                             (void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)createDataStoreFromConfigurationWithIdentifier:(NSNumber *)instanceId
+                               configurationIdentifier:(NSNumber *)configurationInstanceId
+                                                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createDefaultDataStoreWithIdentifier:(NSNumber *)instanceId
+                                       error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)removeDataFromDataStoreWithIdentifier:(NSNumber *)instanceId
+                                      ofTypes:(NSArray<FWFWKWebsiteDataTypesEnumData *> *)dataTypes
+                    secondsModifiedSinceEpoch:(NSNumber *)secondsModifiedSinceEpoch
+                                   completion:(void (^)(NSNumber *_Nullable,
+                                                        FlutterError *_Nullable))completion;
 @end
 
 extern void FWFWKWebsiteDataStoreHostApiSetup(
@@ -170,15 +170,15 @@ NSObject<FlutterMessageCodec> *FWFUIViewHostApiGetCodec(void);
 
 @protocol FWFUIViewHostApi
 /// @return `nil` only when `error != nil`.
-- (nullable NSArray<NSNumber *> *)getContentOffsetInstanceId:(NSNumber *)instanceId
-                                                       error:
-                                                           (FlutterError *_Nullable *_Nonnull)error;
-- (void)setBackgroundColorInstanceId:(NSNumber *)instanceId
-                               value:(nullable NSNumber *)value
-                               error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setOpaqueInstanceId:(NSNumber *)instanceId
-                     opaque:(NSNumber *)opaque
-                      error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable NSArray<NSNumber *> *)
+    contentOffsetForViewWithIdentifier:(NSNumber *)instanceId
+                                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setBackgroundColorForViewWithIdentifier:(NSNumber *)instanceId
+                                        toValue:(nullable NSNumber *)value
+                                          error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setOpaqueForViewWithIdentifier:(NSNumber *)instanceId
+                              isOpaque:(NSNumber *)opaque
+                                 error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFUIViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
@@ -188,21 +188,21 @@ extern void FWFUIViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
 NSObject<FlutterMessageCodec> *FWFUIScrollViewHostApiGetCodec(void);
 
 @protocol FWFUIScrollViewHostApi
-- (void)createFromWebViewInstanceId:(NSNumber *)instanceId
-                  webViewInstanceId:(NSNumber *)webViewInstanceId
-                              error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createFromWebViewWithIdentifier:(NSNumber *)instanceId
+                      webViewIdentifier:(NSNumber *)webViewInstanceId
+                                  error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
-- (nullable NSArray<NSNumber *> *)getContentOffsetInstanceId:(NSNumber *)instanceId
-                                                       error:
-                                                           (FlutterError *_Nullable *_Nonnull)error;
-- (void)scrollByInstanceId:(NSNumber *)instanceId
-                         x:(NSNumber *)x
-                         y:(NSNumber *)y
-                     error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setContentOffsetInstanceId:(NSNumber *)instanceId
-                                 x:(NSNumber *)x
-                                 y:(NSNumber *)y
-                             error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable NSArray<NSNumber *> *)
+    contentOffsetForScrollViewWithIdentifier:(NSNumber *)instanceId
+                                       error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)scrollByForScrollViewWithIdentifier:(NSNumber *)instanceId
+                                        toX:(NSNumber *)x
+                                          y:(NSNumber *)y
+                                      error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setContentOffsetForScrollViewWithIdentifier:(NSNumber *)instanceId
+                                                toX:(NSNumber *)x
+                                                  y:(NSNumber *)y
+                                              error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
@@ -212,18 +212,24 @@ extern void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMesseng
 NSObject<FlutterMessageCodec> *FWFWKWebViewConfigurationHostApiGetCodec(void);
 
 @protocol FWFWKWebViewConfigurationHostApi
-- (void)createInstanceId:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)createFromWebViewInstanceId:(NSNumber *)instanceId
-                  webViewInstanceId:(NSNumber *)webViewInstanceId
-                              error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setAllowsInlineMediaPlaybackInstanceId:(NSNumber *)instanceId
-                                         allow:(NSNumber *)allow
-                                         error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createFromWebViewWithIdentifier:(NSNumber *)instanceId
+                      webViewIdentifier:(NSNumber *)webViewInstanceId
+                                  error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(NSNumber *)instanceId
+                                                          isAlowed:(NSNumber *)allow
+                                                             error:
+                                                                 (FlutterError *_Nullable *_Nonnull)
+                                                                     error;
 - (void)
-    setMediaTypesRequiringUserActionForPlaybackInstanceId:(NSNumber *)instanceId
-                                                    types:(NSArray<FWFWKAudiovisualMediaTypeEnumData
-                                                                       *> *)types
-                                                    error:(FlutterError *_Nullable *_Nonnull)error;
+    setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(NSNumber *)instanceId
+                                                         forTypes:
+                                                             (NSArray<
+                                                                 FWFWKAudiovisualMediaTypeEnumData
+                                                                     *> *)types
+                                                            error:
+                                                                (FlutterError *_Nullable *_Nonnull)
+                                                                    error;
 @end
 
 extern void FWFWKWebViewConfigurationHostApiSetup(
@@ -234,23 +240,26 @@ extern void FWFWKWebViewConfigurationHostApiSetup(
 NSObject<FlutterMessageCodec> *FWFWKUserContentControllerHostApiGetCodec(void);
 
 @protocol FWFWKUserContentControllerHostApi
-- (void)createFromWebViewConfigurationInstanceId:(NSNumber *)instanceId
-                         configurationInstanceId:(NSNumber *)configurationInstanceId
+- (void)createFromWebViewConfigurationWithIdentifier:(NSNumber *)instanceId
+                             configurationIdentifier:(NSNumber *)configurationInstanceId
+                                               error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)addScriptMessageHandlerForControllerWithIdentifier:(NSNumber *)instanceId
+                                         handlerIdentifier:(NSNumber *)handlerInstanceid
+                                                    ofName:(NSString *)name
+                                                     error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)removeScriptMessageHandlerForControllerWithIdentifier:(NSNumber *)instanceId
+                                                         name:(NSString *)name
+                                                        error:(FlutterError *_Nullable *_Nonnull)
+                                                                  error;
+- (void)removeAllScriptMessageHandlersForControllerWithIdentifier:(NSNumber *)instanceId
+                                                            error:
+                                                                (FlutterError *_Nullable *_Nonnull)
+                                                                    error;
+- (void)addUserScriptForControllerWithIdentifier:(NSNumber *)instanceId
+                                      userScript:(FWFWKUserScriptData *)userScript
                                            error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)addScriptMessageHandlerInstanceId:(NSNumber *)instanceId
-                        handlerInstanceid:(NSNumber *)handlerInstanceid
-                                     name:(NSString *)name
-                                    error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)removeScriptMessageHandlerInstanceId:(NSNumber *)instanceId
-                                        name:(NSString *)name
-                                       error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)removeAllScriptMessageHandlersInstanceId:(NSNumber *)instanceId
-                                           error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)addUserScriptInstanceId:(NSNumber *)instanceId
-                     userScript:(FWFWKUserScriptData *)userScript
-                          error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)removeAllUserScriptsInstanceId:(NSNumber *)instanceId
-                                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)removeAllUserScriptsForControllerWithIdentifier:(NSNumber *)instanceId
+                                                  error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKUserContentControllerHostApiSetup(
@@ -261,12 +270,12 @@ extern void FWFWKUserContentControllerHostApiSetup(
 NSObject<FlutterMessageCodec> *FWFWKPreferencesHostApiGetCodec(void);
 
 @protocol FWFWKPreferencesHostApi
-- (void)createFromWebViewConfigurationInstanceId:(NSNumber *)instanceId
-                         configurationInstanceId:(NSNumber *)configurationInstanceId
-                                           error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setJavaScriptEnabledInstanceId:(NSNumber *)instanceId
-                               enabled:(NSNumber *)enabled
+- (void)createFromWebViewConfiguration:(NSNumber *)instanceId
+               configurationIdentifier:(NSNumber *)configurationInstanceId
                                  error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setJavaScriptEnabledForPreferencesWithIdentifier:(NSNumber *)instanceId
+                                               isEnabled:(NSNumber *)enabled
+                                                   error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKPreferencesHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
@@ -276,7 +285,7 @@ extern void FWFWKPreferencesHostApiSetup(id<FlutterBinaryMessenger> binaryMessen
 NSObject<FlutterMessageCodec> *FWFWKScriptMessageHandlerHostApiGetCodec(void);
 
 @protocol FWFWKScriptMessageHandlerHostApi
-- (void)createInstanceId:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKScriptMessageHandlerHostApiSetup(
@@ -287,10 +296,10 @@ extern void FWFWKScriptMessageHandlerHostApiSetup(
 NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateHostApiGetCodec(void);
 
 @protocol FWFWKNavigationDelegateHostApi
-- (void)createInstanceId:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setDidFinishNavigationInstanceId:(NSNumber *)instanceId
-                      functionInstanceId:(nullable NSNumber *)functionInstanceId
-                                   error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setDidFinishNavigationForDelegateWithIdentifier:(NSNumber *)instanceId
+                                     functionIdentifier:(nullable NSNumber *)functionInstanceId
+                                                  error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKNavigationDelegateHostApiSetup(
@@ -302,25 +311,27 @@ NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateFlutterApiGetCodec(void);
 
 @interface FWFWKNavigationDelegateFlutterApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)didFinishNavigationFunctionInstanceId:(NSNumber *)functionInstanceId
-                            webViewInstanceId:(NSNumber *)webViewInstanceId
-                                          url:(nullable NSString *)url
-                                   completion:(void (^)(NSError *_Nullable))completion;
+- (void)didFinishNavigationForDelegateWithIdentifier:(NSNumber *)functionInstanceId
+                                   webViewIdentifier:(NSNumber *)webViewInstanceId
+                                                 URL:(nullable NSString *)url
+                                          completion:(void (^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FWFNSObjectHostApi.
 NSObject<FlutterMessageCodec> *FWFNSObjectHostApiGetCodec(void);
 
 @protocol FWFNSObjectHostApi
-- (void)disposeInstanceId:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)addObserverInstanceId:(NSNumber *)instanceId
-           observerInstanceId:(NSNumber *)observerInstanceId
-                      keyPath:(NSString *)keyPath
-                      options:(NSArray<FWFNSKeyValueObservingOptionsEnumData *> *)options
-                        error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)removeObserverInstanceId:(NSNumber *)instanceId
-              observerInstanceId:(NSNumber *)observerInstanceId
-                         keyPath:(NSString *)keyPath
-                           error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)disposeObjectWithIdentifier:(NSNumber *)instanceId
+                              error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)addObserverForObjectWithIdentifier:(NSNumber *)instanceId
+                        observerIdentifier:(NSNumber *)observerInstanceId
+                                   keyPath:(NSString *)keyPath
+                                   options:
+                                       (NSArray<FWFNSKeyValueObservingOptionsEnumData *> *)options
+                                     error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)removeObserverForObjectWithIdentifier:(NSNumber *)instanceId
+                           observerIdentifier:(NSNumber *)observerInstanceId
+                                      keyPath:(NSString *)keyPath
+                                        error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
@@ -331,8 +342,8 @@ NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec(void);
 
 @interface FWFFunctionFlutterApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)disposeInstanceId:(NSNumber *)instanceId
-               completion:(void (^)(NSError *_Nullable))completion;
+- (void)disposeFunctionWithIdentifier:(NSNumber *)instanceId
+                           completion:(void (^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FWFWKWebViewHostApi.
 NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
@@ -402,7 +413,7 @@ extern void FWFWKWebViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
 NSObject<FlutterMessageCodec> *FWFWKUIDelegateHostApiGetCodec(void);
 
 @protocol FWFWKUIDelegateHostApi
-- (void)createInstanceId:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKUIDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
@@ -412,12 +423,12 @@ extern void FWFWKUIDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMesseng
 NSObject<FlutterMessageCodec> *FWFWKHttpCookieStoreHostApiGetCodec(void);
 
 @protocol FWFWKHttpCookieStoreHostApi
-- (void)createFromWebsiteDataStoreInstanceId:(NSNumber *)instanceId
-                  websiteDataStoreInstanceId:(NSNumber *)websiteDataStoreInstanceId
-                                       error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setCookieInstanceId:(NSNumber *)instanceId
-                     cookie:(FWFNSHttpCookieData *)cookie
-                      error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createFromWebsiteDataStoreWithIdentifier:(NSNumber *)instanceId
+                             dataStoreIdentifier:(NSNumber *)websiteDataStoreInstanceId
+                                           error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setCookieForStoreWithIdentifier:(NSNumber *)instanceId
+                                 cookie:(FWFNSHttpCookieData *)cookie
+                                  error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKHttpCookieStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,

@@ -298,19 +298,20 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
                   codec:FWFWKWebsiteDataStoreHostApiGetCodec()];
     if (api) {
       NSCAssert(
-          [api respondsToSelector:@selector(createFromWebViewConfigurationInstanceId:
-                                                             configurationInstanceId:error:)],
+          [api respondsToSelector:@selector(createDataStoreFromConfigurationWithIdentifier:
+                                                                   configurationIdentifier:error:)],
           @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
-          @"@selector(createFromWebViewConfigurationInstanceId:configurationInstanceId:error:)",
+          @"@selector(createDataStoreFromConfigurationWithIdentifier:configurationIdentifier:error:"
+          @")",
           api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_configurationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebViewConfigurationInstanceId:arg_instanceId
-                              configurationInstanceId:arg_configurationInstanceId
-                                                error:&error];
+        [api createDataStoreFromConfigurationWithIdentifier:arg_instanceId
+                                    configurationIdentifier:arg_configurationInstanceId
+                                                      error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -323,15 +324,15 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebsiteDataStoreHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createDefaultDataStoreInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(createDefaultDataStoreWithIdentifier:error:)],
                 @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
-                @"@selector(createDefaultDataStoreInstanceId:error:)",
+                @"@selector(createDefaultDataStoreWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api createDefaultDataStoreInstanceId:arg_instanceId error:&error];
+        [api createDefaultDataStoreWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -344,24 +345,25 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebsiteDataStoreHostApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector
-               (removeDataOfTypesInstanceId:dataTypes:secondsModifiedSinceEpoch:completion:)],
-          @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
-          @"@selector(removeDataOfTypesInstanceId:dataTypes:secondsModifiedSinceEpoch:completion:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector
+                     (removeDataFromDataStoreWithIdentifier:
+                                                    ofTypes:secondsModifiedSinceEpoch:completion:)],
+                @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
+                @"@selector(removeDataFromDataStoreWithIdentifier:ofTypes:"
+                @"secondsModifiedSinceEpoch:completion:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSArray<FWFWKWebsiteDataTypesEnumData *> *arg_dataTypes = GetNullableObjectAtIndex(args, 1);
         NSNumber *arg_secondsModifiedSinceEpoch = GetNullableObjectAtIndex(args, 2);
-        [api removeDataOfTypesInstanceId:arg_instanceId
-                               dataTypes:arg_dataTypes
-               secondsModifiedSinceEpoch:arg_secondsModifiedSinceEpoch
-                              completion:^(NSNumber *_Nullable output,
-                                           FlutterError *_Nullable error) {
-                                callback(wrapResult(output, error));
-                              }];
+        [api removeDataFromDataStoreWithIdentifier:arg_instanceId
+                                           ofTypes:arg_dataTypes
+                         secondsModifiedSinceEpoch:arg_secondsModifiedSinceEpoch
+                                        completion:^(NSNumber *_Nullable output,
+                                                     FlutterError *_Nullable error) {
+                                          callback(wrapResult(output, error));
+                                        }];
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -408,15 +410,16 @@ void FWFUIViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getContentOffsetInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(contentOffsetForViewWithIdentifier:error:)],
                 @"FWFUIViewHostApi api (%@) doesn't respond to "
-                @"@selector(getContentOffsetInstanceId:error:)",
+                @"@selector(contentOffsetForViewWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        NSArray<NSNumber *> *output = [api getContentOffsetInstanceId:arg_instanceId error:&error];
+        NSArray<NSNumber *> *output = [api contentOffsetForViewWithIdentifier:arg_instanceId
+                                                                        error:&error];
         callback(wrapResult(output, error));
       }];
     } else {
@@ -429,16 +432,17 @@ void FWFUIViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setBackgroundColorInstanceId:value:error:)],
+      NSCAssert([api respondsToSelector:@selector(setBackgroundColorForViewWithIdentifier:
+                                                                                  toValue:error:)],
                 @"FWFUIViewHostApi api (%@) doesn't respond to "
-                @"@selector(setBackgroundColorInstanceId:value:error:)",
+                @"@selector(setBackgroundColorForViewWithIdentifier:toValue:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_value = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setBackgroundColorInstanceId:arg_instanceId value:arg_value error:&error];
+        [api setBackgroundColorForViewWithIdentifier:arg_instanceId toValue:arg_value error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -451,16 +455,16 @@ void FWFUIViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setOpaqueInstanceId:opaque:error:)],
+      NSCAssert([api respondsToSelector:@selector(setOpaqueForViewWithIdentifier:isOpaque:error:)],
                 @"FWFUIViewHostApi api (%@) doesn't respond to "
-                @"@selector(setOpaqueInstanceId:opaque:error:)",
+                @"@selector(setOpaqueForViewWithIdentifier:isOpaque:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_opaque = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setOpaqueInstanceId:arg_instanceId opaque:arg_opaque error:&error];
+        [api setOpaqueForViewWithIdentifier:arg_instanceId isOpaque:arg_opaque error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -508,19 +512,19 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIScrollViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createFromWebViewInstanceId:
-                                                            webViewInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(createFromWebViewWithIdentifier:
+                                                                webViewIdentifier:error:)],
                 @"FWFUIScrollViewHostApi api (%@) doesn't respond to "
-                @"@selector(createFromWebViewInstanceId:webViewInstanceId:error:)",
+                @"@selector(createFromWebViewWithIdentifier:webViewIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_webViewInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebViewInstanceId:arg_instanceId
-                       webViewInstanceId:arg_webViewInstanceId
-                                   error:&error];
+        [api createFromWebViewWithIdentifier:arg_instanceId
+                           webViewIdentifier:arg_webViewInstanceId
+                                       error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -533,15 +537,16 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIScrollViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getContentOffsetInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(contentOffsetForScrollViewWithIdentifier:error:)],
                 @"FWFUIScrollViewHostApi api (%@) doesn't respond to "
-                @"@selector(getContentOffsetInstanceId:error:)",
+                @"@selector(contentOffsetForScrollViewWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        NSArray<NSNumber *> *output = [api getContentOffsetInstanceId:arg_instanceId error:&error];
+        NSArray<NSNumber *> *output = [api contentOffsetForScrollViewWithIdentifier:arg_instanceId
+                                                                              error:&error];
         callback(wrapResult(output, error));
       }];
     } else {
@@ -554,9 +559,10 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIScrollViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(scrollByInstanceId:x:y:error:)],
+      NSCAssert([api respondsToSelector:@selector(scrollByForScrollViewWithIdentifier:
+                                                                                  toX:y:error:)],
                 @"FWFUIScrollViewHostApi api (%@) doesn't respond to "
-                @"@selector(scrollByInstanceId:x:y:error:)",
+                @"@selector(scrollByForScrollViewWithIdentifier:toX:y:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
@@ -564,7 +570,7 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         NSNumber *arg_x = GetNullableObjectAtIndex(args, 1);
         NSNumber *arg_y = GetNullableObjectAtIndex(args, 2);
         FlutterError *error;
-        [api scrollByInstanceId:arg_instanceId x:arg_x y:arg_y error:&error];
+        [api scrollByForScrollViewWithIdentifier:arg_instanceId toX:arg_x y:arg_y error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -577,9 +583,10 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIScrollViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setContentOffsetInstanceId:x:y:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (setContentOffsetForScrollViewWithIdentifier:toX:y:error:)],
                 @"FWFUIScrollViewHostApi api (%@) doesn't respond to "
-                @"@selector(setContentOffsetInstanceId:x:y:error:)",
+                @"@selector(setContentOffsetForScrollViewWithIdentifier:toX:y:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
@@ -587,7 +594,10 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         NSNumber *arg_x = GetNullableObjectAtIndex(args, 1);
         NSNumber *arg_y = GetNullableObjectAtIndex(args, 2);
         FlutterError *error;
-        [api setContentOffsetInstanceId:arg_instanceId x:arg_x y:arg_y error:&error];
+        [api setContentOffsetForScrollViewWithIdentifier:arg_instanceId
+                                                     toX:arg_x
+                                                       y:arg_y
+                                                   error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -652,15 +662,15 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebViewConfigurationHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(createWithIdentifier:error:)],
                 @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to "
-                @"@selector(createInstanceId:error:)",
+                @"@selector(createWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api createInstanceId:arg_instanceId error:&error];
+        [api createWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -673,19 +683,19 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebViewConfigurationHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createFromWebViewInstanceId:
-                                                            webViewInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(createFromWebViewWithIdentifier:
+                                                                webViewIdentifier:error:)],
                 @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to "
-                @"@selector(createFromWebViewInstanceId:webViewInstanceId:error:)",
+                @"@selector(createFromWebViewWithIdentifier:webViewIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_webViewInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebViewInstanceId:arg_instanceId
-                       webViewInstanceId:arg_webViewInstanceId
-                                   error:&error];
+        [api createFromWebViewWithIdentifier:arg_instanceId
+                           webViewIdentifier:arg_webViewInstanceId
+                                       error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -699,17 +709,20 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebViewConfigurationHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAllowsInlineMediaPlaybackInstanceId:
-                                                                                   allow:error:)],
-                @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to "
-                @"@selector(setAllowsInlineMediaPlaybackInstanceId:allow:error:)",
-                api);
+      NSCAssert(
+          [api respondsToSelector:@selector
+               (setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:error:)],
+          @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to "
+          @"@selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:error:)",
+          api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_allow = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setAllowsInlineMediaPlaybackInstanceId:arg_instanceId allow:arg_allow error:&error];
+        [api setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:arg_instanceId
+                                                               isAlowed:arg_allow
+                                                                  error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -724,18 +737,20 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
                   codec:FWFWKWebViewConfigurationHostApiGetCodec()];
     if (api) {
       NSCAssert([api respondsToSelector:@selector
-                     (setMediaTypesRequiringUserActionForPlaybackInstanceId:types:error:)],
+                     (setMediaTypesRequiresUserActionForConfigurationWithIdentifier:
+                                                                           forTypes:error:)],
                 @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to "
-                @"@selector(setMediaTypesRequiringUserActionForPlaybackInstanceId:types:error:)",
+                @"@selector(setMediaTypesRequiresUserActionForConfigurationWithIdentifier:forTypes:"
+                @"error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSArray<FWFWKAudiovisualMediaTypeEnumData *> *arg_types = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setMediaTypesRequiringUserActionForPlaybackInstanceId:arg_instanceId
-                                                             types:arg_types
-                                                             error:&error];
+        [api setMediaTypesRequiresUserActionForConfigurationWithIdentifier:arg_instanceId
+                                                                  forTypes:arg_types
+                                                                     error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -808,19 +823,19 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
                   codec:FWFWKUserContentControllerHostApiGetCodec()];
     if (api) {
       NSCAssert(
-          [api respondsToSelector:@selector(createFromWebViewConfigurationInstanceId:
-                                                             configurationInstanceId:error:)],
+          [api respondsToSelector:@selector(createFromWebViewConfigurationWithIdentifier:
+                                                                 configurationIdentifier:error:)],
           @"FWFWKUserContentControllerHostApi api (%@) doesn't respond to "
-          @"@selector(createFromWebViewConfigurationInstanceId:configurationInstanceId:error:)",
+          @"@selector(createFromWebViewConfigurationWithIdentifier:configurationIdentifier:error:)",
           api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_configurationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebViewConfigurationInstanceId:arg_instanceId
-                              configurationInstanceId:arg_configurationInstanceId
-                                                error:&error];
+        [api createFromWebViewConfigurationWithIdentifier:arg_instanceId
+                                  configurationIdentifier:arg_configurationInstanceId
+                                                    error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -833,10 +848,12 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
         binaryMessenger:binaryMessenger
                   codec:FWFWKUserContentControllerHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(addScriptMessageHandlerInstanceId:
-                                                                  handlerInstanceid:name:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (addScriptMessageHandlerForControllerWithIdentifier:
+                                                       handlerIdentifier:ofName:error:)],
                 @"FWFWKUserContentControllerHostApi api (%@) doesn't respond to "
-                @"@selector(addScriptMessageHandlerInstanceId:handlerInstanceid:name:error:)",
+                @"@selector(addScriptMessageHandlerForControllerWithIdentifier:handlerIdentifier:"
+                @"ofName:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
@@ -844,10 +861,10 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
         NSNumber *arg_handlerInstanceid = GetNullableObjectAtIndex(args, 1);
         NSString *arg_name = GetNullableObjectAtIndex(args, 2);
         FlutterError *error;
-        [api addScriptMessageHandlerInstanceId:arg_instanceId
-                             handlerInstanceid:arg_handlerInstanceid
-                                          name:arg_name
-                                         error:&error];
+        [api addScriptMessageHandlerForControllerWithIdentifier:arg_instanceId
+                                              handlerIdentifier:arg_handlerInstanceid
+                                                         ofName:arg_name
+                                                          error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -861,17 +878,19 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
         binaryMessenger:binaryMessenger
                   codec:FWFWKUserContentControllerHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeScriptMessageHandlerInstanceId:
-                                                                                  name:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (removeScriptMessageHandlerForControllerWithIdentifier:name:error:)],
                 @"FWFWKUserContentControllerHostApi api (%@) doesn't respond to "
-                @"@selector(removeScriptMessageHandlerInstanceId:name:error:)",
+                @"@selector(removeScriptMessageHandlerForControllerWithIdentifier:name:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSString *arg_name = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api removeScriptMessageHandlerInstanceId:arg_instanceId name:arg_name error:&error];
+        [api removeScriptMessageHandlerForControllerWithIdentifier:arg_instanceId
+                                                              name:arg_name
+                                                             error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -885,15 +904,16 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
         binaryMessenger:binaryMessenger
                   codec:FWFWKUserContentControllerHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeAllScriptMessageHandlersInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (removeAllScriptMessageHandlersForControllerWithIdentifier:error:)],
                 @"FWFWKUserContentControllerHostApi api (%@) doesn't respond to "
-                @"@selector(removeAllScriptMessageHandlersInstanceId:error:)",
+                @"@selector(removeAllScriptMessageHandlersForControllerWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api removeAllScriptMessageHandlersInstanceId:arg_instanceId error:&error];
+        [api removeAllScriptMessageHandlersForControllerWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -906,16 +926,19 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
         binaryMessenger:binaryMessenger
                   codec:FWFWKUserContentControllerHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(addUserScriptInstanceId:userScript:error:)],
+      NSCAssert([api respondsToSelector:@selector(addUserScriptForControllerWithIdentifier:
+                                                                                userScript:error:)],
                 @"FWFWKUserContentControllerHostApi api (%@) doesn't respond to "
-                @"@selector(addUserScriptInstanceId:userScript:error:)",
+                @"@selector(addUserScriptForControllerWithIdentifier:userScript:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FWFWKUserScriptData *arg_userScript = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api addUserScriptInstanceId:arg_instanceId userScript:arg_userScript error:&error];
+        [api addUserScriptForControllerWithIdentifier:arg_instanceId
+                                           userScript:arg_userScript
+                                                error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -928,15 +951,16 @@ void FWFWKUserContentControllerHostApiSetup(id<FlutterBinaryMessenger> binaryMes
         binaryMessenger:binaryMessenger
                   codec:FWFWKUserContentControllerHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeAllUserScriptsInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (removeAllUserScriptsForControllerWithIdentifier:error:)],
                 @"FWFWKUserContentControllerHostApi api (%@) doesn't respond to "
-                @"@selector(removeAllUserScriptsInstanceId:error:)",
+                @"@selector(removeAllUserScriptsForControllerWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api removeAllUserScriptsInstanceId:arg_instanceId error:&error];
+        [api removeAllUserScriptsForControllerWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -984,20 +1008,19 @@ void FWFWKPreferencesHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKPreferencesHostApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(createFromWebViewConfigurationInstanceId:
-                                                             configurationInstanceId:error:)],
-          @"FWFWKPreferencesHostApi api (%@) doesn't respond to "
-          @"@selector(createFromWebViewConfigurationInstanceId:configurationInstanceId:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(createFromWebViewConfiguration:
+                                                         configurationIdentifier:error:)],
+                @"FWFWKPreferencesHostApi api (%@) doesn't respond to "
+                @"@selector(createFromWebViewConfiguration:configurationIdentifier:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_configurationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebViewConfigurationInstanceId:arg_instanceId
-                              configurationInstanceId:arg_configurationInstanceId
-                                                error:&error];
+        [api createFromWebViewConfiguration:arg_instanceId
+                    configurationIdentifier:arg_configurationInstanceId
+                                      error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1010,16 +1033,19 @@ void FWFWKPreferencesHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKPreferencesHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setJavaScriptEnabledInstanceId:enabled:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (setJavaScriptEnabledForPreferencesWithIdentifier:isEnabled:error:)],
                 @"FWFWKPreferencesHostApi api (%@) doesn't respond to "
-                @"@selector(setJavaScriptEnabledInstanceId:enabled:error:)",
+                @"@selector(setJavaScriptEnabledForPreferencesWithIdentifier:isEnabled:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_enabled = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setJavaScriptEnabledInstanceId:arg_instanceId enabled:arg_enabled error:&error];
+        [api setJavaScriptEnabledForPreferencesWithIdentifier:arg_instanceId
+                                                    isEnabled:arg_enabled
+                                                        error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1067,15 +1093,15 @@ void FWFWKScriptMessageHandlerHostApiSetup(id<FlutterBinaryMessenger> binaryMess
         binaryMessenger:binaryMessenger
                   codec:FWFWKScriptMessageHandlerHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(createWithIdentifier:error:)],
                 @"FWFWKScriptMessageHandlerHostApi api (%@) doesn't respond to "
-                @"@selector(createInstanceId:error:)",
+                @"@selector(createWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api createInstanceId:arg_instanceId error:&error];
+        [api createWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1123,15 +1149,15 @@ void FWFWKNavigationDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMessen
         binaryMessenger:binaryMessenger
                   codec:FWFWKNavigationDelegateHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createInstanceId:error:)],
+      NSCAssert([api respondsToSelector:@selector(createWithIdentifier:error:)],
                 @"FWFWKNavigationDelegateHostApi api (%@) doesn't respond to "
-                @"@selector(createInstanceId:error:)",
+                @"@selector(createWithIdentifier:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api createInstanceId:arg_instanceId error:&error];
+        [api createWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1144,19 +1170,20 @@ void FWFWKNavigationDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMessen
         binaryMessenger:binaryMessenger
                   codec:FWFWKNavigationDelegateHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setDidFinishNavigationInstanceId:
-                                                                functionInstanceId:error:)],
-                @"FWFWKNavigationDelegateHostApi api (%@) doesn't respond to "
-                @"@selector(setDidFinishNavigationInstanceId:functionInstanceId:error:)",
-                api);
+      NSCAssert(
+          [api respondsToSelector:@selector
+               (setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:error:)],
+          @"FWFWKNavigationDelegateHostApi api (%@) doesn't respond to "
+          @"@selector(setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:error:)",
+          api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_functionInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setDidFinishNavigationInstanceId:arg_instanceId
-                           functionInstanceId:arg_functionInstanceId
-                                        error:&error];
+        [api setDidFinishNavigationForDelegateWithIdentifier:arg_instanceId
+                                          functionIdentifier:arg_functionInstanceId
+                                                       error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1209,10 +1236,10 @@ NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateFlutterApiGetCodec() {
   }
   return self;
 }
-- (void)didFinishNavigationFunctionInstanceId:(NSNumber *)arg_functionInstanceId
-                            webViewInstanceId:(NSNumber *)arg_webViewInstanceId
-                                          url:(nullable NSString *)arg_url
-                                   completion:(void (^)(NSError *_Nullable))completion {
+- (void)didFinishNavigationForDelegateWithIdentifier:(NSNumber *)arg_functionInstanceId
+                                   webViewIdentifier:(NSNumber *)arg_webViewInstanceId
+                                                 URL:(nullable NSString *)arg_url
+                                          completion:(void (^)(NSError *_Nullable))completion {
   FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
       messageChannelWithName:
           @"dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation"
@@ -1285,15 +1312,15 @@ void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFNSObjectHostApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(disposeInstanceId:error:)],
-          @"FWFNSObjectHostApi api (%@) doesn't respond to @selector(disposeInstanceId:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(disposeObjectWithIdentifier:error:)],
+                @"FWFNSObjectHostApi api (%@) doesn't respond to "
+                @"@selector(disposeObjectWithIdentifier:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api disposeInstanceId:arg_instanceId error:&error];
+        [api disposeObjectWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1306,10 +1333,12 @@ void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFNSObjectHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(addObserverInstanceId:
-                                                     observerInstanceId:keyPath:options:error:)],
+      NSCAssert([api respondsToSelector:@selector
+                     (addObserverForObjectWithIdentifier:
+                                      observerIdentifier:keyPath:options:error:)],
                 @"FWFNSObjectHostApi api (%@) doesn't respond to "
-                @"@selector(addObserverInstanceId:observerInstanceId:keyPath:options:error:)",
+                @"@selector(addObserverForObjectWithIdentifier:observerIdentifier:keyPath:options:"
+                @"error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
@@ -1319,11 +1348,11 @@ void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         NSArray<FWFNSKeyValueObservingOptionsEnumData *> *arg_options =
             GetNullableObjectAtIndex(args, 3);
         FlutterError *error;
-        [api addObserverInstanceId:arg_instanceId
-                observerInstanceId:arg_observerInstanceId
-                           keyPath:arg_keyPath
-                           options:arg_options
-                             error:&error];
+        [api addObserverForObjectWithIdentifier:arg_instanceId
+                             observerIdentifier:arg_observerInstanceId
+                                        keyPath:arg_keyPath
+                                        options:arg_options
+                                          error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1336,21 +1365,22 @@ void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFNSObjectHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeObserverInstanceId:
-                                                        observerInstanceId:keyPath:error:)],
-                @"FWFNSObjectHostApi api (%@) doesn't respond to "
-                @"@selector(removeObserverInstanceId:observerInstanceId:keyPath:error:)",
-                api);
+      NSCAssert(
+          [api respondsToSelector:@selector(removeObserverForObjectWithIdentifier:
+                                                               observerIdentifier:keyPath:error:)],
+          @"FWFNSObjectHostApi api (%@) doesn't respond to "
+          @"@selector(removeObserverForObjectWithIdentifier:observerIdentifier:keyPath:error:)",
+          api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_observerInstanceId = GetNullableObjectAtIndex(args, 1);
         NSString *arg_keyPath = GetNullableObjectAtIndex(args, 2);
         FlutterError *error;
-        [api removeObserverInstanceId:arg_instanceId
-                   observerInstanceId:arg_observerInstanceId
-                              keyPath:arg_keyPath
-                                error:&error];
+        [api removeObserverForObjectWithIdentifier:arg_instanceId
+                                observerIdentifier:arg_observerInstanceId
+                                           keyPath:arg_keyPath
+                                             error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1403,8 +1433,8 @@ NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec() {
   }
   return self;
 }
-- (void)disposeInstanceId:(NSNumber *)arg_instanceId
-               completion:(void (^)(NSError *_Nullable))completion {
+- (void)disposeFunctionWithIdentifier:(NSNumber *)arg_instanceId
+                           completion:(void (^)(NSError *_Nullable))completion {
   FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
       messageChannelWithName:@"dev.flutter.pigeon.FunctionFlutterApi.dispose"
              binaryMessenger:self.binaryMessenger
@@ -1973,15 +2003,15 @@ void FWFWKUIDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKUIDelegateHostApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(createInstanceId:error:)],
-          @"FWFWKUIDelegateHostApi api (%@) doesn't respond to @selector(createInstanceId:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(createWithIdentifier:error:)],
+                @"FWFWKUIDelegateHostApi api (%@) doesn't respond to "
+                @"@selector(createWithIdentifier:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api createInstanceId:arg_instanceId error:&error];
+        [api createWithIdentifier:arg_instanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -2052,20 +2082,19 @@ void FWFWKHttpCookieStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger
         binaryMessenger:binaryMessenger
                   codec:FWFWKHttpCookieStoreHostApiGetCodec()];
     if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector(createFromWebsiteDataStoreInstanceId:
-                                                      websiteDataStoreInstanceId:error:)],
-          @"FWFWKHttpCookieStoreHostApi api (%@) doesn't respond to "
-          @"@selector(createFromWebsiteDataStoreInstanceId:websiteDataStoreInstanceId:error:)",
-          api);
+      NSCAssert([api respondsToSelector:@selector(createFromWebsiteDataStoreWithIdentifier:
+                                                                       dataStoreIdentifier:error:)],
+                @"FWFWKHttpCookieStoreHostApi api (%@) doesn't respond to "
+                @"@selector(createFromWebsiteDataStoreWithIdentifier:dataStoreIdentifier:error:)",
+                api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_websiteDataStoreInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebsiteDataStoreInstanceId:arg_instanceId
-                       websiteDataStoreInstanceId:arg_websiteDataStoreInstanceId
-                                            error:&error];
+        [api createFromWebsiteDataStoreWithIdentifier:arg_instanceId
+                                  dataStoreIdentifier:arg_websiteDataStoreInstanceId
+                                                error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -2078,16 +2107,16 @@ void FWFWKHttpCookieStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger
         binaryMessenger:binaryMessenger
                   codec:FWFWKHttpCookieStoreHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setCookieInstanceId:cookie:error:)],
+      NSCAssert([api respondsToSelector:@selector(setCookieForStoreWithIdentifier:cookie:error:)],
                 @"FWFWKHttpCookieStoreHostApi api (%@) doesn't respond to "
-                @"@selector(setCookieInstanceId:cookie:error:)",
+                @"@selector(setCookieForStoreWithIdentifier:cookie:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FWFNSHttpCookieData *arg_cookie = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setCookieInstanceId:arg_instanceId cookie:arg_cookie error:&error];
+        [api setCookieForStoreWithIdentifier:arg_instanceId cookie:arg_cookie error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
