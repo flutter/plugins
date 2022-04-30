@@ -1,3 +1,7 @@
+## 0.8.5
+
+- Updates `test` to inculde the Dart unit tests of examples, if any.
+
 ## 0.8.4
 
 - `readme-check` now validates that there's a info tag on code blocks to
