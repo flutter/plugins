@@ -57,69 +57,82 @@ public class QuickActionsTest {
 
   @Test
   public void appShortcutsAreCreated() {
-    List<Shortcut> expectedShortcuts = createMockShortcuts();
+    List<ShortcutInfo> expectedShortcuts = createMockShortcuts();
 
     ShortcutManager shortcutManager =
         (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
     List<ShortcutInfo> dynamicShortcuts = shortcutManager.getDynamicShortcuts();
-    Object[] shortcuts = dynamicShortcuts.stream().map(Shortcut::new).toArray();
 
     // Assert the app shortcuts defined in ../lib/main.dart.
     assertFalse(dynamicShortcuts.isEmpty());
-    assertEquals(2, dynamicShortcuts.size());
-    assertArrayEquals(expectedShortcuts.toArray(), shortcuts);
+    assertEquals(expectedShortcuts.size(), dynamicShortcuts.size());
+    for (int i = 0; i < expectedShortcuts.size(); i++) {
+      ShortcutInfo expectedShortcut = expectedShortcuts.get(i);
+      ShortcutInfo dynamicShortcut = dynamicShortcuts.get(i);
+      
+      assertEquals(expectedShortcut.getId(), dynamicShortcut.getId());
+      assertEquals(expectedShortcut.getShortLabel(), dynamicShortcut.getShortLabel());
+      assertEquals(expectedShortcut.getLongLabel(), dynamicShortcut.getLongLabel());
+    }
   }
 
   @Test
   public void appShortcutExistsAfterLongPressingAppIcon() throws UiObjectNotFoundException {
-    List<Shortcut> shortcuts = createMockShortcuts();
+    List<ShortcutInfo> shortcuts = createMockShortcuts();
     String appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
 
     findAppIcon(device, appName).longClick();
 
-    for (Shortcut shortcut : shortcuts) {
+    for (ShortcutInfo shortcut : shortcuts) {
       Assert.assertTrue(
-          "The specified shortcut label '" + shortcut.shortLabel + "' does not exist.",
-          device.hasObject(By.text(shortcut.shortLabel)));
+          "The specified shortcut label '" + shortcut.getShortLabel() + "' does not exist.",
+          device.hasObject(By.text(shortcut.getShortLabel().toString())));
     }
   }
 
   @Test
   public void appShortcutLaunchActivityAfterPressing() throws UiObjectNotFoundException {
     // Arrange
-    List<Shortcut> shortcuts = createMockShortcuts();
+    List<ShortcutInfo> shortcuts = createMockShortcuts();
     String appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
-    Shortcut firstShortcut = shortcuts.get(0);
+    ShortcutInfo firstShortcut = shortcuts.get(0);
     AtomicReference<QuickActionsTestActivity> initialActivity = new AtomicReference<>();
     scenario.onActivity(initialActivity::set);
 
     // Act
     findAppIcon(device, appName).longClick();
-    UiObject appShortcut = device.findObject(new UiSelector().text(firstShortcut.shortLabel));
+    UiObject appShortcut = device.findObject(new UiSelector().text(firstShortcut.getShortLabel().toString()));
     appShortcut.clickAndWaitForNewWindow();
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
 
     // Assert
     Assert.assertTrue(
-        "AppShortcut:" + firstShortcut.type + " does not launch the correct activity",
+        "AppShortcut:" + firstShortcut.getId() + " does not launch the correct activity",
         // We can only find the shortcut type in content description while inspecting it in Ui
         // Automator Viewer.
-        device.hasObject(By.desc(firstShortcut.type)));
+        device.hasObject(By.desc(firstShortcut.getId())));
     // This is Android SingleTop behavior in which Android does not destroy the initial activity and
     // launch a new activity.
     Assert.assertEquals(initialActivity.get(), currentActivity.get());
   }
 
-  private List<Shortcut> createMockShortcuts() {
-    List<Shortcut> expectedShortcuts = new ArrayList<>();
+  private List<ShortcutInfo> createMockShortcuts() {
+    List<ShortcutInfo> expectedShortcuts = new ArrayList<>();
+
     String actionOneLocalizedTitle = "Action one";
     expectedShortcuts.add(
-        new Shortcut("action_one", actionOneLocalizedTitle, actionOneLocalizedTitle));
+        new ShortcutInfo.Builder(context, "action_one")
+            .setShortLabel(actionOneLocalizedTitle)
+            .setLongLabel(actionOneLocalizedTitle)
+            .build());
 
     String actionTwoLocalizedTitle = "Action two";
     expectedShortcuts.add(
-        new Shortcut("action_two", actionTwoLocalizedTitle, actionTwoLocalizedTitle));
+        new ShortcutInfo.Builder(context, "action_two")
+            .setShortLabel(actionTwoLocalizedTitle)
+            .setLongLabel(actionTwoLocalizedTitle)
+            .build());
 
     return expectedShortcuts;
   }
