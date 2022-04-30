@@ -46,7 +46,7 @@ See the example app for more complex examples.
 Add any URL schemes passed to `canLaunchUrl` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
 
 Example:
-```
+```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
   <string>https</string>
