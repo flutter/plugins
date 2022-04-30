@@ -47,6 +47,7 @@ Read the rest of the instructions if you need to add extra APIs (like Google Peo
 
 
 ### Using the plugin
+
 Add the following import to your Dart code:
 
 ```dart
@@ -63,6 +64,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 ```
+
 [Full list of available scopes](https://developers.google.com/identity/protocols/googlescopes).
 
 You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
