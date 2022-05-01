@@ -111,7 +111,7 @@ class Heatmap implements MapsObject<Heatmap> {
   /// instance.
   Heatmap clone() => copyWith(
         dataParam: List.of(data),
-        gradientParam: gradient != null ? gradient!.clone() : null,
+        gradientParam: gradient?.clone(),
       );
 
   /// Converts this object to something serializable in JSON.
