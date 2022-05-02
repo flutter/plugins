@@ -6,7 +6,7 @@
  *
  * @return An NSKeyValueObservingOptions or -1 if data could not be converted.
  */
-extern NSUInteger FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservingOptionsEnumData *data);
+extern NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservingOptionsEnumData *data);
 
 /**
  * Converts an FWFNSKeyValueChangeEnumData to an NSKeyValueChange.
@@ -15,7 +15,7 @@ extern NSUInteger FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservi
  *
  * @return An NSKeyValueChange or -1 if data could not be converted.
  */
-extern NSUInteger FWFNSKeyValueChangeFromEnumData(FWFNSKeyValueChangeEnumData *data);
+extern NSKeyValueChange FWFNSKeyValueChangeFromEnumData(FWFNSKeyValueChangeEnumData *data);
 
 /**
  * Converts an FWFNSKeyValueChangeKeyEnumData to an NSKeyValueChangeKey.
@@ -24,7 +24,7 @@ extern NSUInteger FWFNSKeyValueChangeFromEnumData(FWFNSKeyValueChangeEnumData *d
  *
  * @return An NSKeyValueChangeKey or -1 if data could not be converted.
  */
-extern NSUInteger FWFNSKeyValueChangeKeyFromEnumData(FWFNSKeyValueChangeKeyEnumData *data);
+extern NSKeyValueChangeKey FWFNSKeyValueChangeKeyFromEnumData(FWFNSKeyValueChangeKeyEnumData *data);
 
 /**
  * Converts an FWFNSHttpCookiePropertyKeyEnumData to an NSHttpCookiePropertyKey.
@@ -33,4 +33,4 @@ extern NSUInteger FWFNSKeyValueChangeKeyFromEnumData(FWFNSKeyValueChangeKeyEnumD
  *
  * @return An NSHttpCookiePropertyKey or -1 if data could not be converted.
  */
-extern NSUInteger FWFNSHttpCookiePropertyKeyFromEnumData(FWFNSHttpCookiePropertyKeyEnumData *data);
+extern NSHttpCookiePropertyKey FWFNSHttpCookiePropertyKeyFromEnumData(FWFNSHttpCookiePropertyKeyEnumData *data);

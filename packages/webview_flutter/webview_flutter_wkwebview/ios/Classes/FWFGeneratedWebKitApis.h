@@ -185,7 +185,7 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewConfigurationHostApiGetCodec(void);
 @protocol FWFWKWebViewConfigurationHostApi
 - (void)createWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)createFromWebViewWithIdentifier:(NSNumber *)instanceId webViewIdentifier:(NSNumber *)webViewInstanceId error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(NSNumber *)instanceId isAlowed:(NSNumber *)allow error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(NSNumber *)instanceId isAllowed:(NSNumber *)allow error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(NSNumber *)instanceId forTypes:(NSArray<FWFWKAudiovisualMediaTypeEnumData *> *)types error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 

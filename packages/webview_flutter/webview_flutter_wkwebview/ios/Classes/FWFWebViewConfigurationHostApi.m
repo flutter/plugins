@@ -37,9 +37,9 @@
 }
 
 - (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
-                                                          isAlowed:(nonnull NSNumber *)allow
+                                                         isAllowed:(nonnull NSNumber *)allow
                                                              error:(FlutterError *_Nullable *_Nonnull) error {
-  [[self webViewConfigurationForIdentifier:instanceId] setAllowsInlineMediaPlayback:allow];
+  [[self webViewConfigurationForIdentifier:instanceId] setAllowsInlineMediaPlayback:allow.boolValue];
 }
 
 - (void)setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId

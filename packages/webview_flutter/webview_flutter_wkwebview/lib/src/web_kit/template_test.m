@@ -15,12 +15,17 @@
 @implementation FWF__customValues_nameWithoutPrefix__HostApiTests
 /*iterate methods method*/
 - (void)test/*replace :case=pascal name*/methodName/**/ {
-  FWFWebView *mock__class_customValues_nameWithoutPrefix__ = OCMClassMock([
   /*if class_customValues_isProtocol*/
-  FWF__customValues_nameWithoutPrefix__
+    FWF__class_customValues_nameWithoutPrefix__
+    /**/
+    /*if! class_customValues_isProtocol*/
+    __class_name__
+    /**/ *mock__class_customValues_nameWithoutPrefix__ = OCMClassMock([
+  /*if class_customValues_isProtocol*/
+  FWF__class_customValues_nameWithoutPrefix__
   /**/
   /*if! class_customValues_isProtocol*/
-  __name__
+  __class_name__
   /**/
  class]);
 
@@ -31,15 +36,12 @@
       [[FWF__class_customValues_nameWithoutPrefix__HostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi __customValues_objcName__
-  /*iterate :end=1 parameters parameter*/
-  :aValue
-  /**/
-  /*iterate :start=1 parameters parameter*/
+  [hostApi __customValues_objcName__:@0
+  /*iterate parameters parameter*/
   __name__:aValue
   /**/
   error:&error];
-  OCMVerify([mockWebView __name__:
+  OCMVerify([mock__class_customValues_nameWithoutPrefix__ __name__
   /*iterate :end=1 parameters parameter*/
   :aValue
   /**/

@@ -15,10 +15,13 @@
 @implementation FWFPreferencesHostApiTests
 
 - (void)testSetJavaScriptEnabled {
-  FWFWebView *mockPreferences = OCMClassMock([
+  
+    
+    WKPreferences
+     *mockPreferences = OCMClassMock([
   
   
-  setJavaScriptEnabled
+  WKPreferences
   
  class]);
 
@@ -29,13 +32,12 @@
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setJavaScriptEnabledForPreferencesWithIdentifier
+  [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0
   
-  :aValue
-  
+  enabled:aValue
   
   error:&error];
-  OCMVerify([mockWebView setJavaScriptEnabled:
+  OCMVerify([mockPreferences setJavaScriptEnabled
   
   :aValue
   
@@ -62,10 +64,13 @@
 @implementation FWFWebsiteDataStoreHostApiTests
 
 - (void)testRemoveDataOfTypes {
-  FWFWebView *mockWebsiteDataStore = OCMClassMock([
+  
+    
+    WKWebsiteDataStore
+     *mockWebsiteDataStore = OCMClassMock([
   
   
-  removeDataOfTypes
+  WKWebsiteDataStore
   
  class]);
 
@@ -76,15 +81,14 @@
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeDataFromDataStoreWithIdentifier
+  [hostApi removeDataFromDataStoreWithIdentifier:@0
   
-  :aValue
-  
+  dataTypes:aValue
   
   since:aValue
   
   error:&error];
-  OCMVerify([mockWebView removeDataOfTypes:
+  OCMVerify([mockWebsiteDataStore removeDataOfTypes
   
   :aValue
   
@@ -113,10 +117,13 @@
 @implementation FWFHttpCookieStoreHostApiTests
 
 - (void)testSetCookie {
-  FWFWebView *mockHttpCookieStore = OCMClassMock([
+  
+    
+    WKHttpCookieStore
+     *mockHttpCookieStore = OCMClassMock([
   
   
-  setCookie
+  WKHttpCookieStore
   
  class]);
 
@@ -127,13 +134,12 @@
       [[FWFHttpCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setCookieForStoreWithIdentifier
+  [hostApi setCookieForStoreWithIdentifier:@0
   
-  :aValue
-  
+  cookie:aValue
   
   error:&error];
-  OCMVerify([mockWebView setCookie:
+  OCMVerify([mockHttpCookieStore setCookie
   
   :aValue
   
@@ -177,10 +183,13 @@
 @implementation FWFUserContentControllerHostApiTests
 
 - (void)testAddScriptMessageHandler {
-  FWFWebView *mockUserContentController = OCMClassMock([
+  
+    
+    WKUserContentController
+     *mockUserContentController = OCMClassMock([
   
   
-  addScriptMessageHandler
+  WKUserContentController
   
  class]);
 
@@ -191,15 +200,14 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi addScriptMessageHandlerForControllerWithIdentifier
+  [hostApi addScriptMessageHandlerForControllerWithIdentifier:@0
   
-  :aValue
-  
+  handler:aValue
   
   name:aValue
   
   error:&error];
-  OCMVerify([mockWebView addScriptMessageHandler:
+  OCMVerify([mockUserContentController addScriptMessageHandler
   
   :aValue
   
@@ -211,10 +219,13 @@
 }
 
 - (void)testRemoveScriptMessageHandler {
-  FWFWebView *mockUserContentController = OCMClassMock([
+  
+    
+    WKUserContentController
+     *mockUserContentController = OCMClassMock([
   
   
-  removeScriptMessageHandler
+  WKUserContentController
   
  class]);
 
@@ -225,13 +236,12 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeScriptMessageHandlerForControllerWithIdentifier
+  [hostApi removeScriptMessageHandlerForControllerWithIdentifier:@0
   
-  :aValue
-  
+  name:aValue
   
   error:&error];
-  OCMVerify([mockWebView removeScriptMessageHandler:
+  OCMVerify([mockUserContentController removeScriptMessageHandler
   
   :aValue
   
@@ -241,10 +251,13 @@
 }
 
 - (void)testRemoveAllScriptMessageHandlers {
-  FWFWebView *mockUserContentController = OCMClassMock([
+  
+    
+    WKUserContentController
+     *mockUserContentController = OCMClassMock([
   
   
-  removeAllScriptMessageHandlers
+  WKUserContentController
   
  class]);
 
@@ -255,11 +268,10 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier
-  
+  [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier:@0
   
   error:&error];
-  OCMVerify([mockWebView removeAllScriptMessageHandlers:
+  OCMVerify([mockUserContentController removeAllScriptMessageHandlers
   
   
   ]);
@@ -267,10 +279,13 @@
 }
 
 - (void)testAddUserScript {
-  FWFWebView *mockUserContentController = OCMClassMock([
+  
+    
+    WKUserContentController
+     *mockUserContentController = OCMClassMock([
   
   
-  addUserScript
+  WKUserContentController
   
  class]);
 
@@ -281,13 +296,12 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi addUserScriptForControllerWithIdentifier
+  [hostApi addUserScriptForControllerWithIdentifier:@0
   
-  :aValue
-  
+  userScript:aValue
   
   error:&error];
-  OCMVerify([mockWebView addUserScript:
+  OCMVerify([mockUserContentController addUserScript
   
   :aValue
   
@@ -297,10 +311,13 @@
 }
 
 - (void)testRemoveAllUserScripts {
-  FWFWebView *mockUserContentController = OCMClassMock([
+  
+    
+    WKUserContentController
+     *mockUserContentController = OCMClassMock([
   
   
-  removeAllUserScripts
+  WKUserContentController
   
  class]);
 
@@ -311,11 +328,10 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeAllUserScriptsForControllerWithIdentifier
-  
+  [hostApi removeAllUserScriptsForControllerWithIdentifier:@0
   
   error:&error];
-  OCMVerify([mockWebView removeAllUserScripts:
+  OCMVerify([mockUserContentController removeAllUserScripts
   
   
   ]);
@@ -340,10 +356,13 @@
 @implementation FWFWebViewConfigurationHostApiTests
 
 - (void)testSetAllowsInlineMediaPlayback {
-  FWFWebView *mockWebViewConfiguration = OCMClassMock([
+  
+    
+    WKWebViewConfiguration
+     *mockWebViewConfiguration = OCMClassMock([
   
   
-  setAllowsInlineMediaPlayback
+  WKWebViewConfiguration
   
  class]);
 
@@ -354,13 +373,12 @@
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier
+  [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
   
-  :aValue
-  
+  allow:aValue
   
   error:&error];
-  OCMVerify([mockWebView setAllowsInlineMediaPlayback:
+  OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback
   
   :aValue
   
@@ -370,10 +388,13 @@
 }
 
 - (void)testSetMediaTypesRequiringUserActionForPlayback {
-  FWFWebView *mockWebViewConfiguration = OCMClassMock([
+  
+    
+    WKWebViewConfiguration
+     *mockWebViewConfiguration = OCMClassMock([
   
   
-  setMediaTypesRequiringUserActionForPlayback
+  WKWebViewConfiguration
   
  class]);
 
@@ -384,13 +405,12 @@
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setMediaTypesRequiresUserActionForConfigurationWithIdentifier
+  [hostApi setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
   
-  :aValue
-  
+  types:aValue
   
   error:&error];
-  OCMVerify([mockWebView setMediaTypesRequiringUserActionForPlayback:
+  OCMVerify([mockWebViewConfiguration setMediaTypesRequiringUserActionForPlayback
   
   :aValue
   

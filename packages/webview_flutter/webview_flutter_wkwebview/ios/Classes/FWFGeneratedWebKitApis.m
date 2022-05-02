@@ -650,13 +650,13 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
         binaryMessenger:binaryMessenger
         codec:FWFWKWebViewConfigurationHostApiGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:error:)], @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to @selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAllowed:error:)], @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to @selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAllowed:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_allow = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:arg_instanceId isAlowed:arg_allow error:&error];
+        [api setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:arg_instanceId isAllowed:arg_allow error:&error];
         callback(wrapResult(nil, error));
       }];
     }

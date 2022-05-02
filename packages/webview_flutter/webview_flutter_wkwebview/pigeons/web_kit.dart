@@ -282,7 +282,7 @@ abstract class WKWebViewConfigurationHostApi {
   void createFromWebView(int instanceId, int webViewInstanceId);
 
   @ObjCSelector(
-    'setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:',
+    'setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAllowed:',
   )
   void setAllowsInlineMediaPlayback(int instanceId, bool allow);
 
@@ -335,7 +335,8 @@ abstract class WKUserContentControllerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkpreferences?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKPreferencesHostApi')
 abstract class WKPreferencesHostApi {
-  @ObjCSelector('createFromWebViewConfigurationWithIdentifier:configurationIdentifier:')
+  @ObjCSelector(
+      'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:')
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,
