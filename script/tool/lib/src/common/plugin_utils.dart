@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'core.dart';

@@ -8,6 +8,8 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'core.dart';
 
+export 'package:pubspec_parse/pubspec_parse.dart' show Pubspec;
+
 /// A package in the repository.
 //
 // TODO(stuartmorgan): Add more package-related info here, such as an on-demand

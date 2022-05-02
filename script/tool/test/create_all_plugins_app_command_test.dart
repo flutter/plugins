@@ -10,7 +10,6 @@ import 'package:file/local.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:flutter_plugin_tools/src/create_all_plugins_app_command.dart';
 import 'package:platform/platform.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:test/test.dart';
 
 import 'util.dart';
