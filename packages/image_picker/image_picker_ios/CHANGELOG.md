@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 0.8.5
 
 * Switches to an in-package method channel based on Pigeon.

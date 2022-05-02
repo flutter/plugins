@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 0.9.4+21
 
 * Fixes README code samples.

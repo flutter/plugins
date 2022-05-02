@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.3.3
 
 * Fix XCUITest based on the new voice over announcement for tooltips.
