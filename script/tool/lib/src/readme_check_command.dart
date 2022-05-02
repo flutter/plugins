@@ -5,7 +5,6 @@
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';

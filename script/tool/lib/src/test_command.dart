@@ -43,7 +43,7 @@ class TestCommand extends PackageLoopingCommand {
     }
 
     bool passed;
-    if (isFlutterPackage(package.directory)) {
+    if (package.requiresFlutter()) {
       passed = await _runFlutterTests(package);
     } else {
       passed = await _runDartTests(package);
