@@ -17,6 +17,14 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
+    directory: "/packages/espresso/android"
+    commit-message:
+      prefix: "[espresso]"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
     directory: "/packages/espresso/example/android/app"
     commit-message:
       prefix: "[espresso]"
@@ -113,6 +121,22 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
+    directory: "/packages/image_picker/image_picker_android/android"
+    commit-message:
+      prefix: "[image_picker_android]"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/image_picker/image_picker_android/example/android/app"
+    commit-message:
+      prefix: "[image_picker_android]"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
     directory: "/packages/local_auth/local_auth_android/android"
     commit-message:
       prefix: "[local_auth_android]"
@@ -140,6 +164,14 @@ updates:
     directory: "/packages/path_provider/path_provider/example/android/app"
     commit-message:
       prefix: "[path_provider]"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/path_provider/path_provider_android/android"
+    commit-message:
+      prefix: "[path_provider_android]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
