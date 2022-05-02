@@ -93,6 +93,12 @@ NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
   return nil;
 }
 
+extern WKUserScript* FWFWKUserScriptFromScriptData(FWFWKUserScriptData *data) {
+  return [[WKUserScript alloc] initWithSource:data.source
+                                injectionTime:FWFWKUserScriptInjectionTimeFromEnumData(data.injectionTime)
+                             forMainFrameOnly:data.isMainFrameOnly.boolValue];
+}
+
 WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(
     FWFWKUserScriptInjectionTimeEnumData *data) {
   switch (data.value) {

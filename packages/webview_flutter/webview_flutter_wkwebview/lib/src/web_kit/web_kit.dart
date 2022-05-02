@@ -389,7 +389,7 @@ class WKHttpCookieStore extends NSObject {
 /// Wraps [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc)
 @SimpleClassAnnotation(customValues: <String, Object?>{
   'nameWithoutPrefix': 'ScriptMessageHandler',
-  'isProtocol': false,
+  'isProtocol': true,
 })
 class WKScriptMessageHandler {
   /// Constructs a [WKScriptMessageHandler].

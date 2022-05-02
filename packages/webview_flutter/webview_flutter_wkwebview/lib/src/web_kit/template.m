@@ -32,7 +32,7 @@
        __name__
            /**/
            *)/*replace :case=camel customValues_nameWithoutPrefix*/ name
-    /**/ ForIdentifier:(NSNumber *)instanceId {
+    /**/ForIdentifier:(NSNumber *)instanceId {
   return (
       /*if customValues_isProtocol*/
       FWF__customValues_nameWithoutPrefix__

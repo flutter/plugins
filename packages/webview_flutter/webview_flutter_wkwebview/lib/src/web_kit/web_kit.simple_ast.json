@@ -490,7 +490,7 @@
       "fields": [],
       "customValues": {
         "nameWithoutPrefix": "ScriptMessageHandler",
-        "isProtocol": false
+        "isProtocol": true
       }
     },
     {

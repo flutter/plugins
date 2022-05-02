@@ -13,6 +13,34 @@
 @end
 
 @implementation FWF__customValues_nameWithoutPrefix__HostApiTests
+- (void)testCreateWithIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWF__customValues_nameWithoutPrefix__HostApiImpl *hostApi =
+      [[FWF__customValues_nameWithoutPrefix__HostApiImpl alloc] initWithInstanceManager:instanceManager];
+
+  FlutterError *error;
+  [hostApi createWithIdentifier:@0 error:&error];
+  /*if customValues_isProtocol*/
+    FWF__class_customValues_nameWithoutPrefix__
+      /**/
+      /*if! customValues_isProtocol*/
+      __name__ /**/
+  */*replace :case=camel customValues_nameWithoutPrefix*/name/**/ = (
+  /*if customValues_isProtocol*/
+      FWF__class_customValues_nameWithoutPrefix__
+        /**/
+        /*if! customValues_isProtocol*/
+        __name__ /**/
+  *) [instanceManager instanceForIdentifier:0];
+  /*if customValues_isProtocol*/
+  XCTAssertTrue([/*replace :case=camel customValues_nameWithoutPrefix*/name/**/ conformsToProtocol:@protocol(__name__)]);
+  /**/
+  /*if! customValues_isProtocol*/
+  XCTAssertTrue([/*replace :case=camel customValues_nameWithoutPrefix*/name/**/ isKindOfClass:[__name__ class]]);
+  /**/
+  XCTAssertNil(error);
+}
+
 /*iterate methods method*/
 - (void)test /*replace :case=pascal name*/ methodName /**/ {
   /*if class_customValues_isProtocol*/

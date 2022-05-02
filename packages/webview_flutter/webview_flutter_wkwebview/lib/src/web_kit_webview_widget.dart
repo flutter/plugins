@@ -517,8 +517,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     Set<String> removedJavaScriptChannels = const <String>{},
   }) async {
     webView.configuration.userContentController.removeAllUserScripts();
-    webView.configuration.userContentController
-        .removeAllScriptMessageHandlers();
+    _scriptMessageHandlers.keys.forEach(
+      webView.configuration.userContentController.removeScriptMessageHandler,
+    );
 
     removedJavaScriptChannels.forEach(_scriptMessageHandlers.remove);
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
