@@ -216,7 +216,7 @@ class NSHttpCookieData {
 @HostApi(dartHostTestHandler: 'TestWKWebsiteDataStoreHostApi')
 abstract class WKWebsiteDataStoreHostApi {
   @ObjCSelector(
-    'createDataStoreFromConfigurationWithIdentifier:configurationIdentifier:',
+    'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:',
   )
   void createFromWebViewConfiguration(
     int instanceId,
@@ -227,7 +227,7 @@ abstract class WKWebsiteDataStoreHostApi {
   void createDefaultDataStore(int instanceId);
 
   @ObjCSelector(
-    'removeDataFromDataStoreWithIdentifier:ofTypes:secondsModifiedSinceEpoch:',
+    'removeDataFromDataStoreWithIdentifier:ofTypes:modifiedSince:',
   )
   @async
   bool removeDataOfTypes(

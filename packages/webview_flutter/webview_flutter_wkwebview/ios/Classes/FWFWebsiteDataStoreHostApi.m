@@ -30,11 +30,30 @@
   [self.instanceManager addInstance:configuration.websiteDataStore withIdentifier:instanceId.longValue];
 }
 
+- (void)createDefaultDataStoreWithIdentifier:(nonnull NSNumber *)instanceId error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+  [self.instanceManager addInstance:[WKWebsiteDataStore defaultDataStore] withIdentifier:instanceId.longValue];
+}
 
 - (void)removeDataFromDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
-                dataTypes:(nonnull NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes
-                since:(nonnull NSNumber *)since
-                error:(FlutterError *_Nullable *_Nonnull) error {
-  return [[self websiteDataStoreForIdentifier:instanceId] removeDataOfTypes:dataTypes since:since];
+                ofTypes:(nonnull NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes
+                    modifiedSince:(nonnull NSNumber *)secondsModifiedSinceEpoch
+                                   completion:(nonnull void (^)(NSNumber * _Nullable, FlutterError * _Nullable))completion {
+  NSMutableSet<NSString *> *stringDataTypes = [NSMutableSet set];
+  for (FWFWKWebsiteDataTypeEnumData *type in dataTypes) {
+    [stringDataTypes addObject:FWFWKWebsiteDataTypeFromEnumData(type)];
+  }
+  
+  WKWebsiteDataStore *dataStore =[self websiteDataStoreForIdentifier:instanceId];
+  [dataStore fetchDataRecordsOfTypes:stringDataTypes completionHandler:^(NSArray<WKWebsiteDataRecord *> *records) {
+      [dataStore removeDataOfTypes:stringDataTypes
+                            modifiedSince:[NSDate dateWithTimeIntervalSince1970:secondsModifiedSinceEpoch.doubleValue]
+                              completionHandler:^{
+        if (records.count > 0) {
+          completion(@YES, nil);
+        } else {
+          completion(@NO, nil);
+        }
+      }];
+  }];
 }
 @end

@@ -276,13 +276,13 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
         codec:FWFWKWebsiteDataStoreHostApiGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createDataStoreFromConfigurationWithIdentifier:configurationIdentifier:error:)], @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to @selector(createDataStoreFromConfigurationWithIdentifier:configurationIdentifier:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(createFromWebViewConfigurationWithIdentifier:configurationIdentifier:error:)], @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to @selector(createFromWebViewConfigurationWithIdentifier:configurationIdentifier:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_configurationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createDataStoreFromConfigurationWithIdentifier:arg_instanceId configurationIdentifier:arg_configurationInstanceId error:&error];
+        [api createFromWebViewConfigurationWithIdentifier:arg_instanceId configurationIdentifier:arg_configurationInstanceId error:&error];
         callback(wrapResult(nil, error));
       }];
     }
@@ -317,13 +317,13 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
         codec:FWFWKWebsiteDataStoreHostApiGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeDataFromDataStoreWithIdentifier:ofTypes:secondsModifiedSinceEpoch:completion:)], @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to @selector(removeDataFromDataStoreWithIdentifier:ofTypes:secondsModifiedSinceEpoch:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(removeDataFromDataStoreWithIdentifier:ofTypes:modifiedSince:completion:)], @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to @selector(removeDataFromDataStoreWithIdentifier:ofTypes:modifiedSince:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSArray<FWFWKWebsiteDataTypeEnumData *> *arg_dataTypes = GetNullableObjectAtIndex(args, 1);
         NSNumber *arg_secondsModifiedSinceEpoch = GetNullableObjectAtIndex(args, 2);
-        [api removeDataFromDataStoreWithIdentifier:arg_instanceId ofTypes:arg_dataTypes secondsModifiedSinceEpoch:arg_secondsModifiedSinceEpoch completion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+        [api removeDataFromDataStoreWithIdentifier:arg_instanceId ofTypes:arg_dataTypes modifiedSince:arg_secondsModifiedSinceEpoch completion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

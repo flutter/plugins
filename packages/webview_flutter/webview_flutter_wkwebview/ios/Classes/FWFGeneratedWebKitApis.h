@@ -147,9 +147,9 @@ typedef NS_ENUM(NSUInteger, FWFNSHttpCookiePropertyKeyEnum) {
 NSObject<FlutterMessageCodec> *FWFWKWebsiteDataStoreHostApiGetCodec(void);
 
 @protocol FWFWKWebsiteDataStoreHostApi
-- (void)createDataStoreFromConfigurationWithIdentifier:(NSNumber *)instanceId configurationIdentifier:(NSNumber *)configurationInstanceId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createFromWebViewConfigurationWithIdentifier:(NSNumber *)instanceId configurationIdentifier:(NSNumber *)configurationInstanceId error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)createDefaultDataStoreWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)removeDataFromDataStoreWithIdentifier:(NSNumber *)instanceId ofTypes:(NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes secondsModifiedSinceEpoch:(NSNumber *)secondsModifiedSinceEpoch completion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)removeDataFromDataStoreWithIdentifier:(NSNumber *)instanceId ofTypes:(NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes modifiedSince:(NSNumber *)secondsModifiedSinceEpoch completion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FWFWKWebsiteDataStoreHostApi> *_Nullable api);
