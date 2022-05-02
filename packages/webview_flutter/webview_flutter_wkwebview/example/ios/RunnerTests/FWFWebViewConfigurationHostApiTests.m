@@ -12,6 +12,34 @@
 @end
 
 @implementation FWFWebViewConfigurationHostApiTests
+- (void)testCreateWithIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFWebViewConfigurationHostApiImpl *hostApi =
+      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  
+  FlutterError *error;
+  [hostApi createWithIdentifier:@0 error:&error];
+  WKWebViewConfiguration *configuration = (WKWebViewConfiguration *) [instanceManager instanceForIdentifier:0];
+  XCTAssertTrue([configuration isKindOfClass:[WKWebViewConfiguration class]]);
+  XCTAssertNil(error);
+}
+
+- (void)testCreateFromWebViewWithIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFWebViewConfigurationHostApiImpl *hostApi =
+      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  
+  WKWebView *mockWebView = OCMClassMock([WKWebView class]);
+  OCMStub([mockWebView configuration]).andReturn(OCMClassMock([WKWebViewConfiguration class]));
+  [instanceManager addInstance:mockWebView withIdentifier:0];
+  
+  FlutterError *error;
+  [hostApi createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
+  WKWebViewConfiguration *configuration = (WKWebViewConfiguration *) [instanceManager instanceForIdentifier:1];
+  XCTAssertTrue([configuration isKindOfClass:[WKWebViewConfiguration class]]);
+  XCTAssertNil(error);
+}
+
 - (void)testSetAllowsInlineMediaPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
@@ -23,15 +51,9 @@
 
   FlutterError *error;
   [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
-
                                                             isAllowed:@NO
-
                                                                 error:&error];
-  OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback
-
-:NO
-
-  ]);
+  OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback:NO  ]);
   XCTAssertNil(error);
 }
 
