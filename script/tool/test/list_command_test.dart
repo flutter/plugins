@@ -12,7 +12,7 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$ListCommand', () {
+  group('ListCommand', () {
     late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;

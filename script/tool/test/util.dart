@@ -107,6 +107,12 @@ Directory createFakePlugin(
 ///
 /// [extraFiles] is an optional list of package-relative paths, using unix-style
 /// separators, of extra files to create in the package.
+///
+/// If [includeCommonFiles] is true, common but non-critical files like
+/// CHANGELOG.md and AUTHORS will be included.
+///
+/// If non-null, [directoryName] will be used for the directory instead of
+/// [name].
 // TODO(stuartmorgan): Convert the return to a RepositoryPackage.
 Directory createFakePackage(
   String name,
@@ -116,37 +122,43 @@ Directory createFakePackage(
   bool isFlutter = false,
   String? version = '0.0.1',
   String flutterConstraint = '>=2.5.0',
+  bool includeCommonFiles = true,
+  String? directoryName,
+  String? publishTo,
 }) {
-  final Directory packageDirectory = parentDirectory.childDirectory(name);
+  final Directory packageDirectory =
+      parentDirectory.childDirectory(directoryName ?? name);
   packageDirectory.createSync(recursive: true);
 
+  packageDirectory.childDirectory('lib').createSync();
   createFakePubspec(packageDirectory,
       name: name,
       isFlutter: isFlutter,
       version: version,
       flutterConstraint: flutterConstraint);
-  createFakeCHANGELOG(packageDirectory, '''
+  if (includeCommonFiles) {
+    createFakeCHANGELOG(packageDirectory, '''
 ## $version
   * Some changes.
   ''');
-  createFakeAuthors(packageDirectory);
+    createFakeAuthors(packageDirectory);
+  }
 
   if (examples.length == 1) {
-    final Directory exampleDir = packageDirectory.childDirectory(examples.first)
-      ..createSync();
-    createFakePubspec(exampleDir,
-        name: '${name}_example',
+    createFakePackage('${name}_example', packageDirectory,
+        directoryName: examples.first,
+        examples: <String>[],
+        includeCommonFiles: false,
         isFlutter: isFlutter,
         publishTo: 'none',
         flutterConstraint: flutterConstraint);
   } else if (examples.isNotEmpty) {
-    final Directory exampleDir = packageDirectory.childDirectory('example')
-      ..createSync();
-    for (final String example in examples) {
-      final Directory currentExample = exampleDir.childDirectory(example)
-        ..createSync();
-      createFakePubspec(currentExample,
-          name: example,
+    final Directory examplesDirectory =
+        packageDirectory.childDirectory('example')..createSync();
+    for (final String exampleName in examples) {
+      createFakePackage(exampleName, examplesDirectory,
+          examples: <String>[],
+          includeCommonFiles: false,
           isFlutter: isFlutter,
           publishTo: 'none',
           flutterConstraint: flutterConstraint);
@@ -179,7 +191,7 @@ void createFakePubspec(
   bool isPlugin = false,
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
-  String publishTo = 'http://no_pub_server.com',
+  String? publishTo,
   String? version,
   String dartConstraint = '>=2.0.0 <3.0.0',
   String flutterConstraint = '>=2.5.0',
@@ -219,9 +231,16 @@ flutter:
     }
   }
 
-  String yaml = '''
+  // Default to a fake server to avoid ever accidentally publishing something
+  // from a test. Does not use 'none' since that changes the behavior of some
+  // commands.
+  final String publishToSection =
+      'publish_to: ${publishTo ?? 'http://no_pub_server.com'}';
+
+  final String yaml = '''
 name: $name
 ${(version != null) ? 'version: $version' : ''}
+$publishToSection
 
 $environmentSection
 
@@ -230,11 +249,6 @@ $dependenciesSection
 $pluginSection
 ''';
 
-  if (publishTo.isNotEmpty) {
-    yaml += '''
-publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being published by a broken test.
-''';
-  }
   parent.childFile('pubspec.yaml').createSync();
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
 }

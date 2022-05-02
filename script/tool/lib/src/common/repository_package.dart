@@ -99,7 +99,7 @@ class RepositoryPackage {
     if (!exampleDirectory.existsSync()) {
       return <RepositoryPackage>[];
     }
-    if (isFlutterPackage(exampleDirectory)) {
+    if (isPackage(exampleDirectory)) {
       return <RepositoryPackage>[RepositoryPackage(exampleDirectory)];
     }
     // Only look at the subdirectories of the example directory if the example
@@ -107,8 +107,8 @@ class RepositoryPackage {
     // example directory for other Dart packages.
     return exampleDirectory
         .listSync()
-        .where((FileSystemEntity entity) => isFlutterPackage(entity))
-        // isFlutterPackage guarantees that the cast to Directory is safe.
+        .where((FileSystemEntity entity) => isPackage(entity))
+        // isPackage guarantees that the cast to Directory is safe.
         .map((FileSystemEntity entity) =>
             RepositoryPackage(entity as Directory));
   }

@@ -123,9 +123,6 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    if (!package.requiresFlutter()) {
-      return PackageResult.skip('Not a Flutter package.');
-    }
     final bool isPlugin = isFlutterPlugin(package);
 
     if (package.isPlatformInterface &&

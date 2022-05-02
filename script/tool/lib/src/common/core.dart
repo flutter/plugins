@@ -5,8 +5,6 @@
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 
-import 'repository_package.dart';
-
 /// The signature for a print handler for commands that allow overriding the
 /// print destination.
 typedef Print = void Function(Object? object);
@@ -32,16 +30,14 @@ const String platformWindows = 'windows';
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
 
-/// Returns whether the given directory is a Flutter package.
-bool isFlutterPackage(FileSystemEntity entity) {
+/// Returns whether the given directory is a Dart package.
+bool isPackage(FileSystemEntity entity) {
   if (entity is! Directory) {
     return false;
   }
-  final File pubspecFile = entity.childFile('pubspec.yaml');
-  if (!pubspecFile.existsSync()) {
-    return false;
-  }
-  return RepositoryPackage(entity).requiresFlutter();
+  // Per https://dart.dev/guides/libraries/create-library-packages#what-makes-a-library-package
+  return entity.childFile('pubspec.yaml').existsSync() &&
+      entity.childDirectory('lib').existsSync();
 }
 
 /// Prints `successMessage` in green.

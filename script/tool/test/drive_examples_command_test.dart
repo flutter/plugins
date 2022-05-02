@@ -1081,34 +1081,13 @@ void main() {
     });
 
     group('packages', () {
-      test('are skipped if not Flutter-based', () async {
-        final Directory package = createFakePackage('a_package', packagesDir);
-        package.childDirectory('example');
-
-        final List<String> output = await runCapturingPrint(runner, <String>[
-          'drive-examples',
-          '--web',
+      test('can be driven', () async {
+        final Directory package =
+            createFakePackage('a_package', packagesDir, extraFiles: <String>[
+          'example/integration_test/foo_test.dart',
+          'example/test_driver/integration_test.dart',
+          'example/web/index.html',
         ]);
-
-        expect(
-          output,
-          containsAllInOrder(<Matcher>[
-            contains('Running for a_package'),
-            contains('SKIPPING: Not a Flutter package.'),
-          ]),
-        );
-
-        expect(processRunner.recordedCalls.isEmpty, true);
-      });
-
-      test('can be driven if Flutter-based', () async {
-        final Directory package = createFakePackage('a_package', packagesDir,
-            isFlutter: true,
-            extraFiles: <String>[
-              'example/integration_test/foo_test.dart',
-              'example/test_driver/integration_test.dart',
-              'example/web/index.html',
-            ]);
         final Directory exampleDirectory = package.childDirectory('example');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
