@@ -1,5 +1,6 @@
 ## NEXT
 
+* Removes unnecessary imports.
 * Adds OS version support information to README.
 
 ## 0.8.4+1

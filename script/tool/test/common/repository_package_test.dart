@@ -5,7 +5,6 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:test/test.dart';
 
 import '../util.dart';
@@ -97,7 +96,7 @@ void main() {
   });
 
   group('getExamples', () {
-    test('handles a single example', () async {
+    test('handles a single Flutter example', () async {
       final Directory plugin = createFakePlugin('a_plugin', packagesDir);
 
       final List<RepositoryPackage> examples =
@@ -107,7 +106,7 @@ void main() {
       expect(examples[0].path, plugin.childDirectory('example').path);
     });
 
-    test('handles multiple examples', () async {
+    test('handles multiple Flutter examples', () async {
       final Directory plugin = createFakePlugin('a_plugin', packagesDir,
           examples: <String>['example1', 'example2']);
 
@@ -119,6 +118,30 @@ void main() {
           plugin.childDirectory('example').childDirectory('example1').path);
       expect(examples[1].path,
           plugin.childDirectory('example').childDirectory('example2').path);
+    });
+
+    test('handles a single non-Flutter example', () async {
+      final Directory package = createFakePackage('a_package', packagesDir);
+
+      final List<RepositoryPackage> examples =
+          RepositoryPackage(package).getExamples().toList();
+
+      expect(examples.length, 1);
+      expect(examples[0].path, package.childDirectory('example').path);
+    });
+
+    test('handles multiple non-Flutter examples', () async {
+      final Directory package = createFakePackage('a_package', packagesDir,
+          examples: <String>['example1', 'example2']);
+
+      final List<RepositoryPackage> examples =
+          RepositoryPackage(package).getExamples().toList();
+
+      expect(examples.length, 2);
+      expect(examples[0].path,
+          package.childDirectory('example').childDirectory('example1').path);
+      expect(examples[1].path,
+          package.childDirectory('example').childDirectory('example2').path);
     });
   });
 
@@ -177,6 +200,20 @@ void main() {
       final Pubspec pubspec = RepositoryPackage(plugin).parsePubspec();
 
       expect(pubspec.name, 'a_plugin');
+    });
+  });
+
+  group('requiresFlutter', () {
+    test('returns true for Flutter package', () async {
+      final Directory package =
+          createFakePackage('a_package', packagesDir, isFlutter: true);
+      expect(RepositoryPackage(package).requiresFlutter(), true);
+    });
+
+    test('returns false for non-Flutter package', () async {
+      final Directory package =
+          createFakePackage('a_package', packagesDir, isFlutter: false);
+      expect(RepositoryPackage(package).requiresFlutter(), false);
     });
   });
 }

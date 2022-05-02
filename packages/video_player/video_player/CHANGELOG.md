@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.4.0
 
 * Updates minimum Flutter version to 2.10.

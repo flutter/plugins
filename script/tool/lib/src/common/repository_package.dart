@@ -8,6 +8,8 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'core.dart';
 
+export 'package:pubspec_parse/pubspec_parse.dart' show Pubspec;
+
 /// A package in the repository.
 //
 // TODO(stuartmorgan): Add more package-related info here, such as an on-demand
@@ -59,6 +61,12 @@ class RepositoryPackage {
   /// Caches for future use.
   Pubspec parsePubspec() => _parsedPubspec;
 
+  /// Returns true if the package depends on Flutter.
+  bool requiresFlutter() {
+    final Pubspec pubspec = parsePubspec();
+    return pubspec.dependencies.containsKey('flutter');
+  }
+
   /// True if this appears to be a federated plugin package, according to
   /// repository conventions.
   bool get isFederated =>
@@ -91,7 +99,7 @@ class RepositoryPackage {
     if (!exampleDirectory.existsSync()) {
       return <RepositoryPackage>[];
     }
-    if (isFlutterPackage(exampleDirectory)) {
+    if (isPackage(exampleDirectory)) {
       return <RepositoryPackage>[RepositoryPackage(exampleDirectory)];
     }
     // Only look at the subdirectories of the example directory if the example
@@ -99,8 +107,8 @@ class RepositoryPackage {
     // example directory for other Dart packages.
     return exampleDirectory
         .listSync()
-        .where((FileSystemEntity entity) => isFlutterPackage(entity))
-        // isFlutterPackage guarantees that the cast to Directory is safe.
+        .where((FileSystemEntity entity) => isPackage(entity))
+        // isPackage guarantees that the cast to Directory is safe.
         .map((FileSystemEntity entity) =>
             RepositoryPackage(entity as Directory));
   }

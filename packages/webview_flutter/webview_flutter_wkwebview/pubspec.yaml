@@ -29,4 +29,4 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.1.0
   pedantic: ^1.10.0
-  pigeon: ^2.0.3
+  pigeon: ^3.0.3

@@ -128,6 +128,7 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/integration_test.dart',
           'example/integration_test/foo_test.dart',
+          'example/ios/ios.m',
         ],
         platformSupport: <String, PlatformDetails>{
           platformIOS: const PlatformDetails(PlatformSupport.inline),
@@ -193,6 +194,8 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/android/android.java',
+          'example/ios/ios.m',
         ],
         platformSupport: <String, PlatformDetails>{
           platformAndroid: const PlatformDetails(PlatformSupport.inline),
@@ -243,6 +246,8 @@ void main() {
         packagesDir,
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
+          'example/android/android.java',
+          'example/ios/ios.m',
         ],
         platformSupport: <String, PlatformDetails>{
           platformAndroid: const PlatformDetails(PlatformSupport.inline),
@@ -276,6 +281,8 @@ void main() {
         packagesDir,
         extraFiles: <String>[
           'example/lib/main.dart',
+          'example/android/android.java',
+          'example/ios/ios.m',
         ],
         platformSupport: <String, PlatformDetails>{
           platformAndroid: const PlatformDetails(PlatformSupport.inline),
@@ -312,6 +319,8 @@ void main() {
           'example/integration_test/bar_test.dart',
           'example/integration_test/foo_test.dart',
           'example/integration_test/ignore_me.dart',
+          'example/android/android.java',
+          'example/ios/ios.m',
         ],
         platformSupport: <String, PlatformDetails>{
           platformAndroid: const PlatformDetails(PlatformSupport.inline),
@@ -398,6 +407,7 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/linux/linux.cc',
         ],
         platformSupport: <String, PlatformDetails>{
           platformLinux: const PlatformDetails(PlatformSupport.inline),
@@ -542,6 +552,7 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/web/index.html',
         ],
         platformSupport: <String, PlatformDetails>{
           platformWeb: const PlatformDetails(PlatformSupport.inline),
@@ -591,6 +602,7 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/web/index.html',
         ],
         platformSupport: <String, PlatformDetails>{
           platformWeb: const PlatformDetails(PlatformSupport.inline),
@@ -668,6 +680,7 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/windows/windows.cpp',
         ],
         platformSupport: <String, PlatformDetails>{
           platformWindows: const PlatformDetails(PlatformSupport.inline),
@@ -715,6 +728,7 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/android/android.java',
         ],
         platformSupport: <String, PlatformDetails>{
           platformAndroid: const PlatformDetails(PlatformSupport.inline),
@@ -853,6 +867,8 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
+          'example/android/android.java',
+          'example/ios/ios.m',
         ],
         platformSupport: <String, PlatformDetails>{
           platformAndroid: const PlatformDetails(PlatformSupport.inline),
@@ -927,6 +943,7 @@ void main() {
         extraFiles: <String>[
           'example/integration_test/bar_test.dart',
           'example/integration_test/foo_test.dart',
+          'example/web/index.html',
         ],
         platformSupport: <String, PlatformDetails>{
           platformWeb: const PlatformDetails(PlatformSupport.inline),
@@ -959,6 +976,7 @@ void main() {
         packagesDir,
         extraFiles: <String>[
           'example/test_driver/integration_test.dart',
+          'example/web/index.html',
         ],
         platformSupport: <String, PlatformDetails>{
           platformWeb: const PlatformDetails(PlatformSupport.inline),
@@ -995,6 +1013,7 @@ void main() {
           'example/test_driver/integration_test.dart',
           'example/integration_test/bar_test.dart',
           'example/integration_test/foo_test.dart',
+          'example/macos/macos.swift',
         ],
         platformSupport: <String, PlatformDetails>{
           platformMacOS: const PlatformDetails(PlatformSupport.inline),
@@ -1059,6 +1078,148 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
           ]));
+    });
+
+    group('packages', () {
+      test('can be driven', () async {
+        final Directory package =
+            createFakePackage('a_package', packagesDir, extraFiles: <String>[
+          'example/integration_test/foo_test.dart',
+          'example/test_driver/integration_test.dart',
+          'example/web/index.html',
+        ]);
+        final Directory exampleDirectory = package.childDirectory('example');
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'drive-examples',
+          '--web',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for a_package'),
+            contains('No issues found!'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  getFlutterCommand(mockPlatform),
+                  const <String>[
+                    'drive',
+                    '-d',
+                    'web-server',
+                    '--web-port=7357',
+                    '--browser-name=chrome',
+                    '--driver',
+                    'test_driver/integration_test.dart',
+                    '--target',
+                    'integration_test/foo_test.dart'
+                  ],
+                  exampleDirectory.path),
+            ]));
+      });
+
+      test('are skipped when example does not support platform', () async {
+        createFakePackage('a_package', packagesDir,
+            isFlutter: true,
+            extraFiles: <String>[
+              'example/integration_test/foo_test.dart',
+              'example/test_driver/integration_test.dart',
+            ]);
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'drive-examples',
+          '--web',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for a_package'),
+            contains('Skipping a_package/example; does not support any '
+                'requested platforms'),
+            contains('SKIPPING: No example supports requested platform(s).'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls.isEmpty, true);
+      });
+
+      test('drive only supported examples if there is more than one', () async {
+        final Directory package = createFakePackage('a_package', packagesDir,
+            isFlutter: true,
+            examples: <String>[
+              'with_web',
+              'without_web'
+            ],
+            extraFiles: <String>[
+              'example/with_web/integration_test/foo_test.dart',
+              'example/with_web/test_driver/integration_test.dart',
+              'example/with_web/web/index.html',
+              'example/without_web/integration_test/foo_test.dart',
+              'example/without_web/test_driver/integration_test.dart',
+            ]);
+        final Directory supportedExampleDirectory =
+            package.childDirectory('example').childDirectory('with_web');
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'drive-examples',
+          '--web',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for a_package'),
+            contains(
+                'Skipping a_package/example/without_web; does not support any requested platforms.'),
+            contains('No issues found!'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  getFlutterCommand(mockPlatform),
+                  const <String>[
+                    'drive',
+                    '-d',
+                    'web-server',
+                    '--web-port=7357',
+                    '--browser-name=chrome',
+                    '--driver',
+                    'test_driver/integration_test.dart',
+                    '--target',
+                    'integration_test/foo_test.dart'
+                  ],
+                  supportedExampleDirectory.path),
+            ]));
+      });
+
+      test('are skipped when there is no integration testing', () async {
+        createFakePackage('a_package', packagesDir,
+            isFlutter: true, extraFiles: <String>['example/web/index.html']);
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'drive-examples',
+          '--web',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for a_package'),
+            contains('SKIPPING: No example is configured for driver tests.'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls.isEmpty, true);
+      });
     });
   });
 }

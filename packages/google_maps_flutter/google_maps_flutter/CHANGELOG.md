@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.1.4
 
 * Updates Android Google maps sdk version to `18.0.2`.
