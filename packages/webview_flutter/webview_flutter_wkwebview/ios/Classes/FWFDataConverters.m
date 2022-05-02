@@ -27,7 +27,8 @@ NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data
 extern NSHTTPCookie *_Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData *data) {
   NSMutableDictionary<NSHTTPCookiePropertyKey, id> *properties = [NSMutableDictionary dictionary];
   for (int i = 0; i < data.propertyKeys.count; i++) {
-    NSHTTPCookiePropertyKey cookieKey = FWFNSHTTPCookiePropertyKeyFromEnumData(data.propertyKeys[i]);
+    NSHTTPCookiePropertyKey cookieKey =
+        FWFNSHTTPCookiePropertyKeyFromEnumData(data.propertyKeys[i]);
     if (!cookieKey) {
       return nil;
     }
@@ -93,10 +94,11 @@ NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
   return nil;
 }
 
-extern WKUserScript* FWFWKUserScriptFromScriptData(FWFWKUserScriptData *data) {
-  return [[WKUserScript alloc] initWithSource:data.source
-                                injectionTime:FWFWKUserScriptInjectionTimeFromEnumData(data.injectionTime)
-                             forMainFrameOnly:data.isMainFrameOnly.boolValue];
+extern WKUserScript *FWFWKUserScriptFromScriptData(FWFWKUserScriptData *data) {
+  return [[WKUserScript alloc]
+        initWithSource:data.source
+         injectionTime:FWFWKUserScriptInjectionTimeFromEnumData(data.injectionTime)
+      forMainFrameOnly:data.isMainFrameOnly.boolValue];
 }
 
 WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(

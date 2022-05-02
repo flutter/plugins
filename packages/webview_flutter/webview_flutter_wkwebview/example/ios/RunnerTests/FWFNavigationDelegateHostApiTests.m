@@ -8,22 +8,21 @@
 
 #import <OCMock/OCMock.h>
 
-@interface FWFScriptMessageHandlerHostApiTests : XCTestCase
+@interface FWFNavigationDelegateHostApiTests : XCTestCase
 @end
 
-@implementation FWFScriptMessageHandlerHostApiTests
+@implementation FWFNavigationDelegateHostApiTests
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFScriptMessageHandlerHostApiImpl *hostApi =
-      [[FWFScriptMessageHandlerHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFNavigationDelegateHostApiImpl *hostApi =
+      [[FWFNavigationDelegateHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
+  FWFNavigationDelegate *navigationDelegate =
+      (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
 
-  FWFScriptMessageHandler *scriptMessageHandler =
-      (FWFScriptMessageHandler *)[instanceManager instanceForIdentifier:0];
-
-  XCTAssertTrue([scriptMessageHandler conformsToProtocol:@protocol(WKScriptMessageHandler)]);
+  XCTAssertTrue([navigationDelegate conformsToProtocol:@protocol(WKNavigationDelegate)]);
   XCTAssertNil(error);
 }
 @end

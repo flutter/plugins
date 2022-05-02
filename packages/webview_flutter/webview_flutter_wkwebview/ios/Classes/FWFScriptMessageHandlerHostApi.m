@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FWFDataConverters.h"
 #import "FWFScriptMessageHandlerHostApi.h"
-
+#import "FWFDataConverters.h"
 
 @implementation FWFScriptMessageHandler
-- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
-  
+- (void)userContentController:(nonnull WKUserContentController *)userContentController
+      didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
 }
 @end
 
@@ -25,14 +24,14 @@
   return self;
 }
 
-- (FWFScriptMessageHandler*)scriptMessageHandlerForIdentifier:(NSNumber *)instanceId {
-  return (FWFScriptMessageHandler*)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (FWFScriptMessageHandler *)scriptMessageHandlerForIdentifier:(NSNumber *)instanceId {
+  return (FWFScriptMessageHandler *)[self.instanceManager
+      instanceForIdentifier:instanceId.longValue];
 }
 
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFScriptMessageHandler *scriptMessageHandler = [[FWFScriptMessageHandler alloc] init];
-  [self.instanceManager addInstance:scriptMessageHandler
-                     withIdentifier:instanceId.longValue];
+  [self.instanceManager addInstance:scriptMessageHandler withIdentifier:instanceId.longValue];
 }
 @end

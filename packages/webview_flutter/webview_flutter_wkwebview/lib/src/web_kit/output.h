@@ -11,8 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-
 /**
  * Host api implementation for WKPreferences.
  *
@@ -35,8 +33,6 @@ NS_ASSUME_NONNULL_END
 #import "FWFInstanceManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-
 
 /**
  * Host api implementation for WKWebsiteDataStore.
@@ -61,8 +57,6 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-
 /**
  * Host api implementation for WKHttpCookieStore.
  *
@@ -86,13 +80,11 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 /**
  * Implementation of WKScriptMessageHandler for FWFScriptMessageHandlerHostApiImpl.
  */
 @interface FWFScriptMessageHandler : NSObject <WKScriptMessageHandler>
 @end
-
 
 /**
  * Host api implementation for WKScriptMessageHandler.
@@ -117,8 +109,6 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-
 /**
  * Host api implementation for WKUserContentController.
  *
@@ -141,8 +131,6 @@ NS_ASSUME_NONNULL_END
 #import "FWFInstanceManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-
 
 /**
  * Host api implementation for WKWebViewConfiguration.
@@ -167,13 +155,11 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 /**
  * Implementation of WKUIDelegate for FWFUIDelegateHostApiImpl.
  */
 @interface FWFUIDelegate : NSObject <WKUIDelegate>
 @end
-
 
 /**
  * Host api implementation for WKUIDelegate.
@@ -198,13 +184,11 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 /**
  * Implementation of WKNavigationDelegate for FWFNavigationDelegateHostApiImpl.
  */
 @interface FWFNavigationDelegate : NSObject <WKNavigationDelegate>
 @end
-
 
 /**
  * Host api implementation for WKNavigationDelegate.

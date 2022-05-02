@@ -54,7 +54,7 @@ extern NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
  *
  * @return A WKUserScript or nil if data could not be converted.
  */
-extern WKUserScript* FWFWKUserScriptFromScriptData(FWFWKUserScriptData *data);
+extern WKUserScript *FWFWKUserScriptFromScriptData(FWFWKUserScriptData *data);
 
 /**
  * Converts an FWFWKUserScriptInjectionTimeEnumData to a WKUserScriptInjectionTime.

@@ -16,12 +16,12 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebsiteDataStoreHostApiImpl *hostApi =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
-  
+
   [instanceManager addInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
-  
+
   FlutterError *error;
   [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
-  WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *) [instanceManager instanceForIdentifier:1];
+  WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([dataStore isKindOfClass:[WKWebsiteDataStore class]]);
   XCTAssertNil(error);
 }
@@ -30,10 +30,10 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebsiteDataStoreHostApiImpl *hostApi =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
-  
+
   FlutterError *error;
   [hostApi createDefaultDataStoreWithIdentifier:@0 error:&error];
-  WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *) [instanceManager instanceForIdentifier:0];
+  WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[instanceManager instanceForIdentifier:0];
   XCTAssertEqualObjects(dataStore, [WKWebsiteDataStore defaultDataStore]);
   XCTAssertNil(error);
 }

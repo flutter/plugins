@@ -20,26 +20,18 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      WKPreferences 
-  *preferences = (
-  
-        
-        WKPreferences 
-  *) [instanceManager instanceForIdentifier:0];
-  
-  
+
+  WKPreferences *preferences = (
+
+      WKPreferences *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([preferences isKindOfClass:[WKPreferences class]]);
-  
+
   XCTAssertNil(error);
 }
 
-
 - (void)test SetJavaScriptEnabled {
-  
-    
-    WKPreferences
+  WKPreferences
      *mockPreferences = OCMClassMock([
   
   
@@ -51,20 +43,18 @@
   [instanceManager addInstance:mockPreferences withIdentifier:0];
 
   FWFPreferencesHostApiImpl *hostApi =
-      [[FWFPreferencesHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0
-                            
-                            enabled:aValue
-                               
-                               error:&error];
+
+                                                    enabled:aValue
+
+                                                      error:&error];
   OCMVerify([mockPreferences setJavaScriptEnabled
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
@@ -92,26 +82,18 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      WKWebsiteDataStore 
-  *websiteDataStore = (
-  
-        
-        WKWebsiteDataStore 
-  *) [instanceManager instanceForIdentifier:0];
-  
-  
+
+  WKWebsiteDataStore *websiteDataStore = (
+
+      WKWebsiteDataStore *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([websiteDataStore isKindOfClass:[WKWebsiteDataStore class]]);
-  
+
   XCTAssertNil(error);
 }
 
-
 - (void)test RemoveDataOfTypes {
-  
-    
-    WKWebsiteDataStore
+  WKWebsiteDataStore
      *mockWebsiteDataStore = OCMClassMock([
   
   
@@ -123,24 +105,22 @@
   [instanceManager addInstance:mockWebsiteDataStore withIdentifier:0];
 
   FWFWebsiteDataStoreHostApiImpl *hostApi =
-      [[FWFWebsiteDataStoreHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi removeDataFromDataStoreWithIdentifier:@0
-                            
-                            dataTypes:aValue
-                               
-                            since:aValue
-                               
-                               error:&error];
+
+                                       dataTypes:aValue
+
+                                           since:aValue
+
+                                           error:&error];
   OCMVerify([mockWebsiteDataStore removeDataOfTypes
 
-:aValue
-      
-      
-      since:aValue
-      
+                                                   :aValue
+
+                                              since:aValue
+
   ]);
   XCTAssertNil(error);
 }
@@ -168,26 +148,18 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      WKHttpCookieStore 
-  *httpCookieStore = (
-  
-        
-        WKHttpCookieStore 
-  *) [instanceManager instanceForIdentifier:0];
-  
-  
+
+  WKHttpCookieStore *httpCookieStore = (
+
+      WKHttpCookieStore *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([httpCookieStore isKindOfClass:[WKHttpCookieStore class]]);
-  
+
   XCTAssertNil(error);
 }
 
-
 - (void)test SetCookie {
-  
-    
-    WKHttpCookieStore
+  WKHttpCookieStore
      *mockHttpCookieStore = OCMClassMock([
   
   
@@ -199,20 +171,18 @@
   [instanceManager addInstance:mockHttpCookieStore withIdentifier:0];
 
   FWFHttpCookieStoreHostApiImpl *hostApi =
-      [[FWFHttpCookieStoreHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFHttpCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setCookieForStoreWithIdentifier:@0
-                            
-                            cookie:aValue
-                               
-                               error:&error];
+
+                                    cookie:aValue
+
+                                     error:&error];
   OCMVerify([mockHttpCookieStore setCookie
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
@@ -240,23 +210,19 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-    FWFScriptMessageHandler
-      
-      
-  *scriptMessageHandler = (
-  
-      FWFScriptMessageHandler
-        
-        
-  *) [instanceManager instanceForIdentifier:0];
-  
+
+  FWFScriptMessageHandler
+
+      *scriptMessageHandler = (
+
+          FWFScriptMessageHandler
+
+              *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([scriptMessageHandler conformsToProtocol:@protocol(WKScriptMessageHandler)]);
-  
-  
+
   XCTAssertNil(error);
 }
-
 
 @end
 
@@ -281,26 +247,18 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      WKUserContentController 
-  *userContentController = (
-  
-        
-        WKUserContentController 
-  *) [instanceManager instanceForIdentifier:0];
-  
-  
+
+  WKUserContentController *userContentController = (
+
+      WKUserContentController *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([userContentController isKindOfClass:[WKUserContentController class]]);
-  
+
   XCTAssertNil(error);
 }
 
-
 - (void)test AddScriptMessageHandler {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -312,32 +270,28 @@
   [instanceManager addInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
-      [[FWFUserContentControllerHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi addScriptMessageHandlerForControllerWithIdentifier:@0
-                            
-                            handler:aValue
-                               
-                            name:aValue
-                               
-                               error:&error];
+
+                                                      handler:aValue
+
+                                                         name:aValue
+
+                                                        error:&error];
   OCMVerify([mockUserContentController addScriptMessageHandler
 
-:aValue
-      
-      
-      name:aValue
-      
+                                                              :aValue
+
+                                                          name:aValue
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test RemoveScriptMessageHandler {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -349,28 +303,24 @@
   [instanceManager addInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
-      [[FWFUserContentControllerHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi removeScriptMessageHandlerForControllerWithIdentifier:@0
-                            
-                            name:aValue
-                               
-                               error:&error];
+
+                                                            name:aValue
+
+                                                           error:&error];
   OCMVerify([mockUserContentController removeScriptMessageHandler
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test RemoveAllScriptMessageHandlers {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -382,24 +332,20 @@
   [instanceManager addInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
-      [[FWFUserContentControllerHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier:@0
-                            
-                               error:&error];
+
+                                                               error:&error];
   OCMVerify([mockUserContentController removeAllScriptMessageHandlers
 
-      
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test AddUserScript {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -411,28 +357,24 @@
   [instanceManager addInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
-      [[FWFUserContentControllerHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi addUserScriptForControllerWithIdentifier:@0
-                            
-                            userScript:aValue
-                               
-                               error:&error];
+
+                                         userScript:aValue
+
+                                              error:&error];
   OCMVerify([mockUserContentController addUserScript
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test RemoveAllUserScripts {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -444,16 +386,14 @@
   [instanceManager addInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
-      [[FWFUserContentControllerHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi removeAllUserScriptsForControllerWithIdentifier:@0
-                            
-                               error:&error];
+
+                                                     error:&error];
   OCMVerify([mockUserContentController removeAllUserScripts
 
-      
   ]);
   XCTAssertNil(error);
 }
@@ -481,26 +421,18 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      WKWebViewConfiguration 
-  *webViewConfiguration = (
-  
-        
-        WKWebViewConfiguration 
-  *) [instanceManager instanceForIdentifier:0];
-  
-  
+
+  WKWebViewConfiguration *webViewConfiguration = (
+
+      WKWebViewConfiguration *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([webViewConfiguration isKindOfClass:[WKWebViewConfiguration class]]);
-  
+
   XCTAssertNil(error);
 }
 
-
 - (void)test SetAllowsInlineMediaPlayback {
-  
-    
-    WKWebViewConfiguration
+  WKWebViewConfiguration
      *mockWebViewConfiguration = OCMClassMock([
   
   
@@ -512,28 +444,24 @@
   [instanceManager addInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostApi =
-      [[FWFWebViewConfigurationHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
-                            
-                            allow:aValue
-                               
-                               error:&error];
+
+                                                                allow:aValue
+
+                                                                error:&error];
   OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test SetMediaTypesRequiringUserActionForPlayback {
-  
-    
-    WKWebViewConfiguration
+  WKWebViewConfiguration
      *mockWebViewConfiguration = OCMClassMock([
   
   
@@ -545,20 +473,18 @@
   [instanceManager addInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostApi =
-      [[FWFWebViewConfigurationHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
-                            
-                            types:aValue
-                               
-                               error:&error];
+
+                                                                   types:aValue
+
+                                                                   error:&error];
   OCMVerify([mockWebViewConfiguration setMediaTypesRequiringUserActionForPlayback
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
@@ -586,23 +512,19 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-    FWFUIDelegate
-      
-      
-  *uIDelegate = (
-  
-      FWFUIDelegate
-        
-        
-  *) [instanceManager instanceForIdentifier:0];
-  
+
+  FWFUIDelegate
+
+      *uIDelegate = (
+
+          FWFUIDelegate
+
+              *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([uIDelegate conformsToProtocol:@protocol(WKUIDelegate)]);
-  
-  
+
   XCTAssertNil(error);
 }
-
 
 @end
 
@@ -627,22 +549,18 @@
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-    FWFNavigationDelegate
-      
-      
-  *navigationDelegate = (
-  
-      FWFNavigationDelegate
-        
-        
-  *) [instanceManager instanceForIdentifier:0];
-  
+
+  FWFNavigationDelegate
+
+      *navigationDelegate = (
+
+          FWFNavigationDelegate
+
+              *)[instanceManager instanceForIdentifier:0];
+
   XCTAssertTrue([navigationDelegate conformsToProtocol:@protocol(WKNavigationDelegate)]);
-  
-  
+
   XCTAssertNil(error);
 }
-
 
 @end
