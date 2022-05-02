@@ -59,6 +59,12 @@ class RepositoryPackage {
   /// Caches for future use.
   Pubspec parsePubspec() => _parsedPubspec;
 
+  /// Returns true if the package depends on Flutter.
+  bool requiresFlutter() {
+    final Pubspec pubspec = parsePubspec();
+    return pubspec.dependencies.containsKey('flutter');
+  }
+
   /// True if this appears to be a federated plugin package, according to
   /// repository conventions.
   bool get isFederated =>

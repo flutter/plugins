@@ -4,7 +4,8 @@
 
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
-import 'package:yaml/yaml.dart';
+
+import 'repository_package.dart';
 
 /// The signature for a print handler for commands that allow overriding the
 /// print destination.
@@ -31,26 +32,16 @@ const String platformWindows = 'windows';
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
 
-/// Returns whether the given directory contains a Flutter package.
+/// Returns whether the given directory is a Flutter package.
 bool isFlutterPackage(FileSystemEntity entity) {
   if (entity is! Directory) {
     return false;
   }
-
-  try {
-    final File pubspecFile = entity.childFile('pubspec.yaml');
-    final YamlMap pubspecYaml =
-        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
-    final YamlMap? dependencies = pubspecYaml['dependencies'] as YamlMap?;
-    if (dependencies == null) {
-      return false;
-    }
-    return dependencies.containsKey('flutter');
-  } on FileSystemException {
-    return false;
-  } on YamlException {
+  final File pubspecFile = entity.childFile('pubspec.yaml');
+  if (!pubspecFile.existsSync()) {
     return false;
   }
+  return RepositoryPackage(entity).requiresFlutter();
 }
 
 /// Prints `successMessage` in green.

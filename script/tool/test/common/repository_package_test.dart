@@ -179,4 +179,18 @@ void main() {
       expect(pubspec.name, 'a_plugin');
     });
   });
+
+  group('requiresFlutter', () {
+    test('returns true for Flutter package', () async {
+      final Directory package =
+          createFakePackage('a_package', packagesDir, isFlutter: true);
+      expect(RepositoryPackage(package).requiresFlutter(), true);
+    });
+
+    test('returns false for non-Flutter package', () async {
+      final Directory package =
+          createFakePackage('a_package', packagesDir, isFlutter: false);
+      expect(RepositoryPackage(package).requiresFlutter(), false);
+    });
+  });
 }
