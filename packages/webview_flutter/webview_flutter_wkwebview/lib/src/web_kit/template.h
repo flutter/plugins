@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Implementation of __name__ for FWF__customValues_nameWithoutPrefix__HostApiImpl.
  */
-@interface FWF__customValues_nameWithoutPrefix__ : NSObject<__name__>
+@interface FWF__customValues_nameWithoutPrefix__ : NSObject <__name__>
 @end
 /*-*/
 

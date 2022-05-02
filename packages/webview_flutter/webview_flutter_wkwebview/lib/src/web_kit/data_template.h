@@ -6,5 +6,5 @@
  *
  * @return An __name__ or -1 if data could not be converted.
  */
-extern __name__ FWF__name__FromEnumData(FWF__name__EnumData *data);
+extern __name__ FWF__name__FromEnumData(FWF__name__EnumData* data);
 /*-*/

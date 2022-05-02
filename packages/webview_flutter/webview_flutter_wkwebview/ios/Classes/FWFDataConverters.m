@@ -24,9 +24,9 @@ NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data
   return request;
 }
 
-extern NSHTTPCookie* _Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData* data) {
+extern NSHTTPCookie *_Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData *data) {
   NSMutableDictionary<NSHTTPCookiePropertyKey, id> *properties = [NSMutableDictionary dictionary];
-  for (FWFNSHttpCookiePropertyKeyEnumData* key in data.properties.allKeys) {
+  for (FWFNSHttpCookiePropertyKeyEnumData *key in data.properties.allKeys) {
     NSHTTPCookiePropertyKey cookieKey = FWFNSHTTPCookiePropertyKeyFromEnumData(key);
     if (!cookieKey) {
       return nil;
@@ -36,9 +36,9 @@ extern NSHTTPCookie* _Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData
   return [NSHTTPCookie cookieWithProperties:properties];
 }
 
-
-NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservingOptionsEnumData *data) {
-  switch(data.value) {
+NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(
+    FWFNSKeyValueObservingOptionsEnumData *data) {
+  switch (data.value) {
     case FWFNSKeyValueObservingOptionsEnumNewValue:
       return NSKeyValueObservingOptionNew;
     case FWFNSKeyValueObservingOptionsEnumOldValue:
@@ -48,12 +48,13 @@ NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyVal
     case FWFNSKeyValueObservingOptionsEnumPriorNotification:
       return NSKeyValueObservingOptionPrior;
   }
-  
+
   return -1;
 }
 
-NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(FWFNSHttpCookiePropertyKeyEnumData *data) {
-  switch(data.value) {
+NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
+    FWFNSHttpCookiePropertyKeyEnumData *data) {
+  switch (data.value) {
     case FWFNSHttpCookiePropertyKeyEnumComment:
       return NSHTTPCookieComment;
     case FWFNSHttpCookiePropertyKeyEnumCommentUrl:
@@ -88,41 +89,41 @@ NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(FWFNSHt
     case FWFNSHttpCookiePropertyKeyEnumVersion:
       return NSHTTPCookieVersion;
   }
-  
+
   return nil;
 }
 
-
-WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(FWFWKUserScriptInjectionTimeEnumData *data) {
-  switch(data.value) {
+WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(
+    FWFWKUserScriptInjectionTimeEnumData *data) {
+  switch (data.value) {
     case FWFWKUserScriptInjectionTimeEnumAtDocumentStart:
       return WKUserScriptInjectionTimeAtDocumentStart;
     case FWFWKUserScriptInjectionTimeEnumAtDocumentEnd:
       return WKUserScriptInjectionTimeAtDocumentEnd;
   }
-  
+
   return -1;
 }
 
 API_AVAILABLE(ios(10.0))
-WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(FWFWKAudiovisualMediaTypeEnumData *data) {
-    switch(data.value) {
-      case FWFWKAudiovisualMediaTypeEnumNone:
-        return WKAudiovisualMediaTypeNone;
-      case FWFWKAudiovisualMediaTypeEnumAudio:
-        return WKAudiovisualMediaTypeAudio;
-      case FWFWKAudiovisualMediaTypeEnumVideo:
-        return WKAudiovisualMediaTypeVideo;
-      case FWFWKAudiovisualMediaTypeEnumAll:
-        return WKAudiovisualMediaTypeAll;
-    }
-  
-  
+WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
+    FWFWKAudiovisualMediaTypeEnumData *data) {
+  switch (data.value) {
+    case FWFWKAudiovisualMediaTypeEnumNone:
+      return WKAudiovisualMediaTypeNone;
+    case FWFWKAudiovisualMediaTypeEnumAudio:
+      return WKAudiovisualMediaTypeAudio;
+    case FWFWKAudiovisualMediaTypeEnumVideo:
+      return WKAudiovisualMediaTypeVideo;
+    case FWFWKAudiovisualMediaTypeEnumAll:
+      return WKAudiovisualMediaTypeAll;
+  }
+
   return -1;
 }
 
 NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumData *data) {
-  switch(data.value) {
+  switch (data.value) {
     case FWFWKWebsiteDataTypeEnumCookies:
       return WKWebsiteDataTypeCookies;
     case FWFWKWebsiteDataTypeEnumMemoryCache:
@@ -140,7 +141,6 @@ NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumDat
     case FWFWKWebsiteDataTypeEnumIndexedDBDatabases:
       return WKWebsiteDataTypeIndexedDBDatabases;
   }
-  
+
   return nil;
 }
-

@@ -15,14 +15,16 @@
 
 - (void)testRemoveDataOfTypes {
   WKWebsiteDataStore *mockWebsiteDataStore = OCMClassMock([WKWebsiteDataStore class]);
-  
+
   WKWebsiteDataRecord *mockDataRecord = OCMClassMock([WKWebsiteDataRecord class]);
   OCMStub([mockWebsiteDataStore
-           fetchDataRecordsOfTypes:[NSSet setWithObject:WKWebsiteDataTypeLocalStorage]
-           completionHandler:([OCMArg invokeBlockWithArgs:@[mockDataRecord], nil])]);
-  
+      fetchDataRecordsOfTypes:[NSSet setWithObject:WKWebsiteDataTypeLocalStorage]
+            completionHandler:([OCMArg invokeBlockWithArgs:@[ mockDataRecord ], nil])]);
+
   OCMStub([mockWebsiteDataStore
-           removeDataOfTypes:[NSSet setWithObject:WKWebsiteDataTypeLocalStorage] modifiedSince:[NSDate dateWithTimeIntervalSince1970:45.0] completionHandler:([OCMArg invokeBlock])]);
+      removeDataOfTypes:[NSSet setWithObject:WKWebsiteDataTypeLocalStorage]
+          modifiedSince:[NSDate dateWithTimeIntervalSince1970:45.0]
+      completionHandler:([OCMArg invokeBlock])]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstance:mockWebsiteDataStore withIdentifier:0];
@@ -33,12 +35,15 @@
   NSNumber __block *returnValue;
   FlutterError *__block blockError;
   [hostApi removeDataFromDataStoreWithIdentifier:@0
-                                         ofTypes:@[[FWFWKWebsiteDataTypeEnumData makeWithValue:FWFWKWebsiteDataTypeEnumLocalStorage]]
+                                         ofTypes:@[
+                                           [FWFWKWebsiteDataTypeEnumData
+                                               makeWithValue:FWFWKWebsiteDataTypeEnumLocalStorage]
+                                         ]
                                    modifiedSince:@45.0
                                       completion:^(NSNumber *result, FlutterError *error) {
-    returnValue = result;
-    blockError = error;
-  }];
+                                        returnValue = result;
+                                        blockError = error;
+                                      }];
   XCTAssertEqualObjects(returnValue, @YES);
   XCTAssertNil(blockError);
 }

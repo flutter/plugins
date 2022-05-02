@@ -23,16 +23,11 @@
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0
-  
-  isEnabled:@YES
-  
-  error:&error];
+  [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0 isEnabled:@YES error:&error];
   OCMVerify([mockPreferences setJavaScriptEnabled
-  
-  :YES
-  
-  
+
+:YES
+
   ]);
   XCTAssertNil(error);
 }

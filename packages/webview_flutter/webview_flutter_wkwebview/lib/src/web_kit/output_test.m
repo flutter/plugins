@@ -15,9 +15,7 @@
 @implementation FWFPreferencesHostApiTests
 
 - (void)testSetJavaScriptEnabled {
-  
-    
-    WKPreferences
+  WKPreferences
      *mockPreferences = OCMClassMock([
   
   
@@ -33,15 +31,14 @@
 
   FlutterError *error;
   [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0
-  
-  enabled:aValue
-  
-  error:&error];
+
+                                                    enabled:aValue
+
+                                                      error:&error];
   OCMVerify([mockPreferences setJavaScriptEnabled
-  
-  :aValue
-  
-  
+
+:aValue
+
   ]);
   XCTAssertNil(error);
 }
@@ -64,9 +61,7 @@
 @implementation FWFWebsiteDataStoreHostApiTests
 
 - (void)testRemoveDataOfTypes {
-  
-    
-    WKWebsiteDataStore
+  WKWebsiteDataStore
      *mockWebsiteDataStore = OCMClassMock([
   
   
@@ -82,19 +77,18 @@
 
   FlutterError *error;
   [hostApi removeDataFromDataStoreWithIdentifier:@0
-  
-  dataTypes:aValue
-  
-  since:aValue
-  
-  error:&error];
+
+                                       dataTypes:aValue
+
+                                           since:aValue
+
+                                           error:&error];
   OCMVerify([mockWebsiteDataStore removeDataOfTypes
-  
-  :aValue
-  
-  
-  since:aValue
-  
+
+                                                   :aValue
+
+                                              since:aValue
+
   ]);
   XCTAssertNil(error);
 }
@@ -117,9 +111,7 @@
 @implementation FWFHttpCookieStoreHostApiTests
 
 - (void)testSetCookie {
-  
-    
-    WKHttpCookieStore
+  WKHttpCookieStore
      *mockHttpCookieStore = OCMClassMock([
   
   
@@ -135,15 +127,14 @@
 
   FlutterError *error;
   [hostApi setCookieForStoreWithIdentifier:@0
-  
-  cookie:aValue
-  
-  error:&error];
+
+                                    cookie:aValue
+
+                                     error:&error];
   OCMVerify([mockHttpCookieStore setCookie
-  
-  :aValue
-  
-  
+
+:aValue
+
   ]);
   XCTAssertNil(error);
 }
@@ -183,9 +174,7 @@
 @implementation FWFUserContentControllerHostApiTests
 
 - (void)testAddScriptMessageHandler {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -201,27 +190,24 @@
 
   FlutterError *error;
   [hostApi addScriptMessageHandlerForControllerWithIdentifier:@0
-  
-  handler:aValue
-  
-  name:aValue
-  
-  error:&error];
+
+                                                      handler:aValue
+
+                                                         name:aValue
+
+                                                        error:&error];
   OCMVerify([mockUserContentController addScriptMessageHandler
-  
-  :aValue
-  
-  
-  name:aValue
-  
+
+                                                              :aValue
+
+                                                          name:aValue
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)testRemoveScriptMessageHandler {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -237,23 +223,20 @@
 
   FlutterError *error;
   [hostApi removeScriptMessageHandlerForControllerWithIdentifier:@0
-  
-  name:aValue
-  
-  error:&error];
+
+                                                            name:aValue
+
+                                                           error:&error];
   OCMVerify([mockUserContentController removeScriptMessageHandler
-  
-  :aValue
-  
-  
+
+:aValue
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)testRemoveAllScriptMessageHandlers {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -269,19 +252,16 @@
 
   FlutterError *error;
   [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier:@0
-  
-  error:&error];
+
+                                                               error:&error];
   OCMVerify([mockUserContentController removeAllScriptMessageHandlers
-  
-  
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)testAddUserScript {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -297,23 +277,20 @@
 
   FlutterError *error;
   [hostApi addUserScriptForControllerWithIdentifier:@0
-  
-  userScript:aValue
-  
-  error:&error];
+
+                                         userScript:aValue
+
+                                              error:&error];
   OCMVerify([mockUserContentController addUserScript
-  
-  :aValue
-  
-  
+
+:aValue
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)testRemoveAllUserScripts {
-  
-    
-    WKUserContentController
+  WKUserContentController
      *mockUserContentController = OCMClassMock([
   
   
@@ -329,11 +306,10 @@
 
   FlutterError *error;
   [hostApi removeAllUserScriptsForControllerWithIdentifier:@0
-  
-  error:&error];
+
+                                                     error:&error];
   OCMVerify([mockUserContentController removeAllUserScripts
-  
-  
+
   ]);
   XCTAssertNil(error);
 }
@@ -356,9 +332,7 @@
 @implementation FWFWebViewConfigurationHostApiTests
 
 - (void)testSetAllowsInlineMediaPlayback {
-  
-    
-    WKWebViewConfiguration
+  WKWebViewConfiguration
      *mockWebViewConfiguration = OCMClassMock([
   
   
@@ -374,23 +348,20 @@
 
   FlutterError *error;
   [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
-  
-  allow:aValue
-  
-  error:&error];
+
+                                                                allow:aValue
+
+                                                                error:&error];
   OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback
-  
-  :aValue
-  
-  
+
+:aValue
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)testSetMediaTypesRequiringUserActionForPlayback {
-  
-    
-    WKWebViewConfiguration
+  WKWebViewConfiguration
      *mockWebViewConfiguration = OCMClassMock([
   
   
@@ -406,15 +377,14 @@
 
   FlutterError *error;
   [hostApi setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
-  
-  types:aValue
-  
-  error:&error];
+
+                                                                   types:aValue
+
+                                                                   error:&error];
   OCMVerify([mockWebViewConfiguration setMediaTypesRequiringUserActionForPlayback
-  
-  :aValue
-  
-  
+
+:aValue
+
   ]);
   XCTAssertNil(error);
 }

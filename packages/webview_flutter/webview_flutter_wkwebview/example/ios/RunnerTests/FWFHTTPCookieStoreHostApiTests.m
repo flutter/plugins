@@ -23,17 +23,17 @@
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FWFNSHttpCookieData *cookieData = [FWFNSHttpCookieData makeWithProperties:@{
-    [FWFNSHttpCookiePropertyKeyEnumData makeWithValue:FWFNSHttpCookiePropertyKeyEnumName]:@"hello"
+    [FWFNSHttpCookiePropertyKeyEnumData makeWithValue:FWFNSHttpCookiePropertyKeyEnumName] : @"hello"
   }];
   FlutterError *__block blockError;
   [hostApi setCookieForStoreWithIdentifier:@0
                                     cookie:cookieData
                                 completion:^(FlutterError *error) {
-    blockError = error;
-  }];
-  OCMVerify([mockHttpCookieStore setCookie:[NSHTTPCookie cookieWithProperties:@{
-    NSHTTPCookieName: @"hello"
-  }] completionHandler:OCMOCK_ANY]);
+                                  blockError = error;
+                                }];
+  OCMVerify([mockHttpCookieStore
+              setCookie:[NSHTTPCookie cookieWithProperties:@{NSHTTPCookieName : @"hello"}]
+      completionHandler:OCMOCK_ANY]);
   XCTAssertNil(blockError);
 }
 

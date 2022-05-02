@@ -24,15 +24,14 @@
 
   FlutterError *error;
   [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
-  
-  isAllowed:@NO
-  
-  error:&error];
+
+                                                            isAllowed:@NO
+
+                                                                error:&error];
   OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback
-  
-  :NO
-  
-  
+
+:NO
+
   ]);
   XCTAssertNil(error);
 }
@@ -47,15 +46,20 @@
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
-                                                                forTypes:@[[FWFWKAudiovisualMediaTypeEnumData makeWithValue:FWFWKAudiovisualMediaTypeEnumAudio], [FWFWKAudiovisualMediaTypeEnumData makeWithValue:FWFWKAudiovisualMediaTypeEnumVideo]]
-                                                                   error:&error];
-  OCMVerify([mockWebViewConfiguration setMediaTypesRequiringUserActionForPlayback
-  
-  :(WKAudiovisualMediaTypeAudio | WKAudiovisualMediaTypeVideo)
-  
-  
-  ]);
+  [hostApi
+      setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
+                                                           forTypes:@[
+                                                             [FWFWKAudiovisualMediaTypeEnumData
+                                                                 makeWithValue:
+                                                                     FWFWKAudiovisualMediaTypeEnumAudio],
+                                                             [FWFWKAudiovisualMediaTypeEnumData
+                                                                 makeWithValue:
+                                                                     FWFWKAudiovisualMediaTypeEnumVideo]
+                                                           ]
+                                                              error:&error];
+  OCMVerify([mockWebViewConfiguration
+      setMediaTypesRequiringUserActionForPlayback:(WKAudiovisualMediaTypeAudio |
+                                                   WKAudiovisualMediaTypeVideo)]);
   XCTAssertNil(error);
 }
 

@@ -18,8 +18,8 @@
   return self;
 }
 
-- (WKPreferences*)preferencesForIdentifier:(NSNumber *)instanceId {
-  return (WKPreferences*)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (WKPreferences *)preferencesForIdentifier:(NSNumber *)instanceId {
+  return (WKPreferences *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
 }
 
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
@@ -31,14 +31,14 @@
 - (void)createFromWebViewConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
                              configurationIdentifier:(nonnull NSNumber *)configurationInstanceId
                                                error:(FlutterError *_Nullable *_Nonnull)error {
-  WKWebViewConfiguration *configuration = (WKWebViewConfiguration *) [self.instanceManager instanceForIdentifier:configurationInstanceId.longValue];
+  WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
+      instanceForIdentifier:configurationInstanceId.longValue];
   [self.instanceManager addInstance:configuration.preferences withIdentifier:instanceId.longValue];
 }
 
-
 - (void)setJavaScriptEnabledForPreferencesWithIdentifier:(nonnull NSNumber *)instanceId
-                                              isEnabled:(nonnull NSNumber *)enabled
-                            error:(FlutterError *_Nullable *_Nonnull) error {
+                                               isEnabled:(nonnull NSNumber *)enabled
+                                                   error:(FlutterError *_Nullable *_Nonnull)error {
   [[self preferencesForIdentifier:instanceId] setJavaScriptEnabled:enabled.boolValue];
 }
 @end

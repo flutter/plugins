@@ -14,9 +14,9 @@
 
 @implementation FWF__customValues_nameWithoutPrefix__HostApiTests
 /*iterate methods method*/
-- (void)test/*replace :case=pascal name*/methodName/**/ {
+- (void)test /*replace :case=pascal name*/ methodName /**/ {
   /*if class_customValues_isProtocol*/
-    FWF__class_customValues_nameWithoutPrefix__
+  FWF__class_customValues_nameWithoutPrefix__
     /**/
     /*if! class_customValues_isProtocol*/
     __class_name__
@@ -33,21 +33,22 @@
   [instanceManager addInstance:mock__class_customValues_nameWithoutPrefix__ withIdentifier:0];
 
   FWF__class_customValues_nameWithoutPrefix__HostApiImpl *hostApi =
-      [[FWF__class_customValues_nameWithoutPrefix__HostApiImpl alloc] initWithInstanceManager:instanceManager];
+      [[FWF__class_customValues_nameWithoutPrefix__HostApiImpl alloc]
+          initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi __customValues_objcName__:@0
-  /*iterate parameters parameter*/
-  __name__:aValue
-  /**/
-  error:&error];
+                            /*iterate parameters parameter*/
+                            __name__:aValue
+                               /**/
+                               error:&error];
   OCMVerify([mock__class_customValues_nameWithoutPrefix__ __name__
-  /*iterate :end=1 parameters parameter*/
-  :aValue
-  /**/
-  /*iterate :start=1 parameters parameter*/
-  __name__:aValue
-  /**/
+/*iterate :end=1 parameters parameter*/
+:aValue
+      /**/
+      /*iterate :start=1 parameters parameter*/
+      __name__:aValue
+      /**/
   ]);
   XCTAssertNil(error);
 }

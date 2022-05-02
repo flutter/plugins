@@ -19,8 +19,9 @@
   return self;
 }
 
-- (WKWebViewConfiguration*)webViewConfigurationForIdentifier:(NSNumber *)instanceId {
-  return (WKWebViewConfiguration *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (WKWebViewConfiguration *)webViewConfigurationForIdentifier:(NSNumber *)instanceId {
+  return (WKWebViewConfiguration *)[self.instanceManager
+      instanceForIdentifier:instanceId.longValue];
 }
 
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
@@ -32,22 +33,33 @@
 - (void)createFromWebViewWithIdentifier:(nonnull NSNumber *)instanceId
                       webViewIdentifier:(nonnull NSNumber *)webViewInstanceId
                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  WKWebView *webView = (WKWebView *)[self.instanceManager instanceForIdentifier:webViewInstanceId.longValue];
+  WKWebView *webView =
+      (WKWebView *)[self.instanceManager instanceForIdentifier:webViewInstanceId.longValue];
   [self.instanceManager addInstance:webView.configuration withIdentifier:instanceId.longValue];
 }
 
 - (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
                                                          isAllowed:(nonnull NSNumber *)allow
-                                                             error:(FlutterError *_Nullable *_Nonnull) error {
-  [[self webViewConfigurationForIdentifier:instanceId] setAllowsInlineMediaPlayback:allow.boolValue];
+                                                             error:
+                                                                 (FlutterError *_Nullable *_Nonnull)
+                                                                     error {
+  [[self webViewConfigurationForIdentifier:instanceId]
+      setAllowsInlineMediaPlayback:allow.boolValue];
 }
 
-- (void)setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
-          forTypes:(nonnull NSArray<FWFWKAudiovisualMediaTypeEnumData *> *)types
-                            error:(FlutterError *_Nullable *_Nonnull) error {
+- (void)
+    setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
+                                                         forTypes:
+                                                             (nonnull NSArray<
+                                                                 FWFWKAudiovisualMediaTypeEnumData
+                                                                     *> *)types
+                                                            error:
+                                                                (FlutterError *_Nullable *_Nonnull)
+                                                                    error {
   NSAssert(types.count, @"Types must not be empty.");
-  
-  WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self webViewConfigurationForIdentifier:instanceId];
+
+  WKWebViewConfiguration *configuration =
+      (WKWebViewConfiguration *)[self webViewConfigurationForIdentifier:instanceId];
   if (@available(iOS 10.0, *)) {
     WKAudiovisualMediaTypes typesInt = 0;
     for (FWFWKAudiovisualMediaTypeEnumData *data in types) {
@@ -56,7 +68,7 @@
     [configuration setMediaTypesRequiringUserActionForPlayback:typesInt];
   } else {
     for (FWFWKAudiovisualMediaTypeEnumData *data in types) {
-      switch(data.value) {
+      switch (data.value) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         case FWFWKAudiovisualMediaTypeEnumNone:

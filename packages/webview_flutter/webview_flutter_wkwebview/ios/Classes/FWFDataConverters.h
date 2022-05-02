@@ -16,8 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return An NSURLRequest or nil if data could not be converted.
  */
-extern NSURLRequest* _Nullable FWFNSURLRequestFromRequestData(
-    FWFNSUrlRequestData* data);
+extern NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data);
 
 /**
  * Converts an FWFNSHttpCookieData to an NSHTTPCookie.
@@ -26,7 +25,7 @@ extern NSURLRequest* _Nullable FWFNSURLRequestFromRequestData(
  *
  * @return An NSHTTPCookie or nil if data could not be converted.
  */
-extern NSHTTPCookie* _Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData* data);
+extern NSHTTPCookie *_Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData *data);
 
 /**
  * Converts an FWFNSKeyValueObservingOptionsEnumData to an NSKeyValueObservingOptions.
@@ -35,7 +34,8 @@ extern NSHTTPCookie* _Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData
  *
  * @return An NSKeyValueObservingOptions or -1 if data could not be converted.
  */
-extern NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservingOptionsEnumData *data);
+extern NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(
+    FWFNSKeyValueObservingOptionsEnumData *data);
 
 /**
  * Converts an FWFNSHTTPCookiePropertyKeyEnumData to an NSHTTPCookiePropertyKey.
@@ -44,7 +44,8 @@ extern NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFN
  *
  * @return An NSHttpCookiePropertyKey or nil if data could not be converted.
  */
-extern NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(FWFNSHttpCookiePropertyKeyEnumData *data);
+extern NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
+    FWFNSHttpCookiePropertyKeyEnumData *data);
 
 /**
  * Converts an FWFWKUserScriptInjectionTimeEnumData to a WKUserScriptInjectionTime.
@@ -53,7 +54,8 @@ extern NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
  *
  * @return An WKUserScriptInjectionTime or -1 if data could not be converted.
  */
-extern WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(FWFWKUserScriptInjectionTimeEnumData *data);
+extern WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(
+    FWFWKUserScriptInjectionTimeEnumData *data);
 
 /**
  * Converts an FWFWKAudiovisualMediaTypeEnumData to an WKAudiovisualMediaTypes.
@@ -63,7 +65,8 @@ extern WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(FWFWKU
  * @return An WKAudiovisualMediaType or -1 if data could not be converted.
  */
 API_AVAILABLE(ios(10.0))
-extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(FWFWKAudiovisualMediaTypeEnumData *data);
+extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
+    FWFWKAudiovisualMediaTypeEnumData *data);
 
 /**
  * Converts an FWFWKWebsiteDataTypeEnumData to a WKWebsiteDataType.

@@ -19,17 +19,18 @@
   return self;
 }
 
-- (WKHTTPCookieStore *)HTTPCookieStoreForIdentifier:(NSNumber *)instanceId  API_AVAILABLE(ios(11.0)){
-  return (WKHTTPCookieStore
-          *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (WKHTTPCookieStore *)HTTPCookieStoreForIdentifier:(NSNumber *)instanceId
+    API_AVAILABLE(ios(11.0)) {
+  return (WKHTTPCookieStore *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
 }
-
 
 - (void)createFromWebsiteDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
                              dataStoreIdentifier:(nonnull NSNumber *)websiteDataStoreInstanceId
-                                           error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+                                           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
+                                                     error {
   if (@available(iOS 11.0, *)) {
-    WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager instanceForIdentifier:websiteDataStoreInstanceId.longValue];
+    WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
+        instanceForIdentifier:websiteDataStoreInstanceId.longValue];
     [self.instanceManager addInstance:dataStore.httpCookieStore
                        withIdentifier:instanceId.longValue];
   } else {
@@ -39,15 +40,16 @@
   }
 }
 
-- (void)setCookieForStoreWithIdentifier:(nonnull NSNumber *)instanceId cookie:(nonnull FWFNSHttpCookieData *)cookie completion:(nonnull void (^)(FlutterError * _Nullable))completion {
+- (void)setCookieForStoreWithIdentifier:(nonnull NSNumber *)instanceId
+                                 cookie:(nonnull FWFNSHttpCookieData *)cookie
+                             completion:(nonnull void (^)(FlutterError *_Nullable))completion {
   NSHTTPCookie *nsCookie = FWFNSHTTPCookieFromCookieData(cookie);
-  
+
   if (@available(iOS 11.0, *)) {
     [[self HTTPCookieStoreForIdentifier:instanceId] setCookie:nsCookie
                                             completionHandler:^{
-      completion(nil);
-     }
-    ];
+                                              completion(nil);
+                                            }];
   } else {
     completion([FlutterError errorWithCode:@"FWFUnsupportedVersionError"
                                    message:@"setCookie is only supported on versions 11+."
