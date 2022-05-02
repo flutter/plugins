@@ -169,10 +169,10 @@ void main() {
         ).captured.single as NSHttpCookieData;
 
         expect(
-          cookie.properties.entries.single.key!.value,
+          cookie.propertyKeys.single!.value,
           NSHttpCookiePropertyKeyEnum.comment,
         );
-        expect(cookie.properties.entries.single.value, 'aComment');
+        expect(cookie.propertyValues.single, 'aComment');
       });
     });
 

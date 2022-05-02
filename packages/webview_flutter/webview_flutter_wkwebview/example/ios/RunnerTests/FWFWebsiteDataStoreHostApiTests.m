@@ -12,7 +12,6 @@
 @end
 
 @implementation FWFWebsiteDataStoreHostApiTests
-
 - (void)testRemoveDataOfTypes {
   WKWebsiteDataStore *mockWebsiteDataStore = OCMClassMock([WKWebsiteDataStore class]);
 
@@ -47,5 +46,4 @@
   XCTAssertEqualObjects(returnValue, @YES);
   XCTAssertNil(blockError);
 }
-
 @end

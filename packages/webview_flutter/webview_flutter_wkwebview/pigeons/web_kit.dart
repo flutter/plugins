@@ -207,7 +207,11 @@ class WKScriptMessageData {
 ///
 /// See https://developer.apple.com/documentation/foundation/nshttpcookie?language=objc.
 class NSHttpCookieData {
-  late Map<NSHttpCookiePropertyKeyEnumData?, String?> properties;
+  // `NSDictionary`s are unable to use data classes as keys because they don't
+  // conform to `NSCopying`. This splits the map of properties into a list of
+  // keys and values with the ordered maintained.
+  late List<NSHttpCookiePropertyKeyEnumData?> propertyKeys;
+  late List<Object?> propertyValues;
 }
 
 /// Mirror of WKWebsiteDataStore.
@@ -336,7 +340,8 @@ abstract class WKUserContentControllerHostApi {
 @HostApi(dartHostTestHandler: 'TestWKPreferencesHostApi')
 abstract class WKPreferencesHostApi {
   @ObjCSelector(
-      'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:')
+    'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:',
+  )
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,

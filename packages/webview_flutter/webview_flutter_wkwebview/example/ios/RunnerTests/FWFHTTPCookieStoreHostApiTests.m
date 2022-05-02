@@ -12,7 +12,6 @@
 @end
 
 @implementation FWFHTTPCookieStoreHostApiTests
-
 - (void)testSetCookie API_AVAILABLE(ios(11.0)) {
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
@@ -22,9 +21,7 @@
   FWFHTTPCookieStoreHostApiImpl *hostApi =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  FWFNSHttpCookieData *cookieData = [FWFNSHttpCookieData makeWithProperties:@{
-    [FWFNSHttpCookiePropertyKeyEnumData makeWithValue:FWFNSHttpCookiePropertyKeyEnumName] : @"hello"
-  }];
+  FWFNSHttpCookieData *cookieData = [FWFNSHttpCookieData makeWithPropertyKeys:@[[FWFNSHttpCookiePropertyKeyEnumData makeWithValue:FWFNSHttpCookiePropertyKeyEnumName]] propertyValues:@[@"hello"]];
   FlutterError *__block blockError;
   [hostApi setCookieForStoreWithIdentifier:@0
                                     cookie:cookieData
@@ -36,5 +33,4 @@
       completionHandler:OCMOCK_ANY]);
   XCTAssertNil(blockError);
 }
-
 @end

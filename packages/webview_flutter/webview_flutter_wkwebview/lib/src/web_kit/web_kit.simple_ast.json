@@ -1450,43 +1450,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "WKNavigationActionPolicy",
-      "values": [
-        {
-          "name": "allow",
-          "type": {
-            "name": "WKNavigationActionPolicy",
-            "nullable": false,
-            "typeArguments": [],
-            "functionParameters": [],
-            "isVoid": false,
-            "isClass": false,
-            "isFunction": false,
-            "isEnum": true,
-            "isSimpleClass": false,
-            "isUnknownOrUnsupportedType": false,
-            "customValues": {}
-          }
-        },
-        {
-          "name": "cancel",
-          "type": {
-            "name": "WKNavigationActionPolicy",
-            "nullable": false,
-            "typeArguments": [],
-            "functionParameters": [],
-            "isVoid": false,
-            "isClass": false,
-            "isFunction": false,
-            "isEnum": true,
-            "isSimpleClass": false,
-            "isUnknownOrUnsupportedType": false,
-            "customValues": {}
-          }
-        }
-      ]
     }
   ]
 }

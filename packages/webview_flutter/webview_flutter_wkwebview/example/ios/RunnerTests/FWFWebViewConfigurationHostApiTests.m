@@ -12,7 +12,6 @@
 @end
 
 @implementation FWFWebViewConfigurationHostApiTests
-
 - (void)testSetAllowsInlineMediaPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
@@ -62,5 +61,4 @@
                                                    WKAudiovisualMediaTypeVideo)]);
   XCTAssertNil(error);
 }
-
 @end

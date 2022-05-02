@@ -48,14 +48,12 @@ Iterable<WKWebsiteDataTypeEnumData> _toWKWebsiteDataTypeEnumData(
 extension _NSHttpCookieConverter on NSHttpCookie {
   NSHttpCookieData toNSHttpCookieData() {
     return NSHttpCookieData(
-      properties: properties.map<NSHttpCookiePropertyKeyEnumData, String>(
-        (NSHttpCookiePropertyKey key, Object value) {
-          return MapEntry<NSHttpCookiePropertyKeyEnumData, String>(
-            key.toNSHttpCookiePropertyKeyEnumData(),
-            value.toString(),
-          );
+      propertyKeys: properties.keys.map<NSHttpCookiePropertyKeyEnumData>(
+        (NSHttpCookiePropertyKey key) {
+          return key.toNSHttpCookiePropertyKeyEnumData();
         },
-      ),
+      ).toList(),
+      propertyValues: properties.values.map<Object>((_) => _).toList(),
     );
   }
 }

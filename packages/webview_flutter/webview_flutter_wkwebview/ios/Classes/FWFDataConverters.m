@@ -26,12 +26,12 @@ NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data
 
 extern NSHTTPCookie *_Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData *data) {
   NSMutableDictionary<NSHTTPCookiePropertyKey, id> *properties = [NSMutableDictionary dictionary];
-  for (FWFNSHttpCookiePropertyKeyEnumData *key in data.properties.allKeys) {
-    NSHTTPCookiePropertyKey cookieKey = FWFNSHTTPCookiePropertyKeyFromEnumData(key);
+  for (int i = 0; i < data.propertyKeys.count; i++) {
+    NSHTTPCookiePropertyKey cookieKey = FWFNSHTTPCookiePropertyKeyFromEnumData(data.propertyKeys[i]);
     if (!cookieKey) {
       return nil;
     }
-    [properties setObject:data.properties[key] forKey:cookieKey];
+    [properties setObject:data.propertyValues[i] forKey:cookieKey];
   }
   return [NSHTTPCookie cookieWithProperties:properties];
 }
