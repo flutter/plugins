@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 1.0.2
 
 * Fixes `getEnrolledBiometrics` to match documented behaviour:

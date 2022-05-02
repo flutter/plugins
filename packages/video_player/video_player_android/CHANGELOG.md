@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.3.2
 
 * Updates ExoPlayer to 2.17.0.

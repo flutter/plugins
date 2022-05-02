@@ -1,6 +1,7 @@
 ## 0.9.4+22
 
 * Fixes preview orientation when pausing preview with locked orientation.
+* Removes unnecessary imports.
 
 ## 0.9.4+21
 

@@ -1,5 +1,6 @@
 ## NEXT
 
+* Removes unnecessary imports.
 * Fixes unit tests to run on latest `master` version of Flutter.
 
 ## 0.1.0+1
