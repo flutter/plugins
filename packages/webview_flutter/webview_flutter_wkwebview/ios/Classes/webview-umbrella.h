@@ -13,3 +13,7 @@
 #import <webview_flutter_wkwebview/FWFWebViewHostApi.h>
 #import <webview_flutter_wkwebview/FlutterWebView.h>
 #import <webview_flutter_wkwebview/JavaScriptChannelHandler.h>
+#import <webview_flutter_wkwebview/FWFWebViewConfigurationHostApi.h>
+#import <webview_flutter_wkwebview/FWFPreferencesHostApi.h>
+#import <webview_flutter_wkwebview/FWFWebsiteDataStoreHostApi.h>
+#import <webview_flutter_wkwebview/FWFHTTPCookieStoreHostApi.h>

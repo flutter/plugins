@@ -95,21 +95,21 @@ void main() {
 
         expect(
           websiteDataStore.removeDataOfTypes(
-            <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies},
+            <WKWebsiteDataType>{WKWebsiteDataType.cookies},
             DateTime.fromMillisecondsSinceEpoch(5000),
           ),
           completion(true),
         );
 
-        final List<WKWebsiteDataTypesEnumData> typeData =
+        final List<WKWebsiteDataTypeEnumData> typeData =
             verify(mockPlatformHostApi.removeDataOfTypes(
           instanceManager.getInstanceId(websiteDataStore),
           captureAny,
           5.0,
-        )).captured.single.cast<WKWebsiteDataTypesEnumData>()
-                as List<WKWebsiteDataTypesEnumData>;
+        )).captured.single.cast<WKWebsiteDataTypeEnumData>()
+                as List<WKWebsiteDataTypeEnumData>;
 
-        expect(typeData.single.value, WKWebsiteDataTypesEnum.cookies);
+        expect(typeData.single.value, WKWebsiteDataTypeEnum.cookies);
       });
     });
 

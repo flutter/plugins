@@ -101,19 +101,19 @@ class WKAudiovisualMediaTypeEnumData {
 /// Mirror of WKWebsiteDataTypes.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
-enum WKWebsiteDataTypesEnum {
+enum WKWebsiteDataTypeEnum {
   cookies,
   memoryCache,
   diskCache,
   offlineWebApplicationCache,
-  localStroage,
+  localStorage,
   sessionStorage,
-  sqlDatabases,
+  webSQLDatabases,
   indexedDBDatabases,
 }
 
-class WKWebsiteDataTypesEnumData {
-  late WKWebsiteDataTypesEnum? value;
+class WKWebsiteDataTypeEnumData {
+  late WKWebsiteDataTypeEnum? value;
 }
 
 /// Mirror of WKNavigationActionPolicy.
@@ -232,7 +232,7 @@ abstract class WKWebsiteDataStoreHostApi {
   @async
   bool removeDataOfTypes(
     int instanceId,
-    List<WKWebsiteDataTypesEnumData> dataTypes,
+    List<WKWebsiteDataTypeEnumData> dataTypes,
     double secondsModifiedSinceEpoch,
   );
 }
@@ -335,7 +335,7 @@ abstract class WKUserContentControllerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkpreferences?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKPreferencesHostApi')
 abstract class WKPreferencesHostApi {
-  @ObjCSelector('createFromWebViewConfiguration:configurationIdentifier:')
+  @ObjCSelector('createFromWebViewConfigurationWithIdentifier:configurationIdentifier:')
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,
@@ -498,5 +498,6 @@ abstract class WKHttpCookieStoreHostApi {
   );
 
   @ObjCSelector('setCookieForStoreWithIdentifier:cookie:')
+  @async
   void setCookie(int instanceId, NSHttpCookieData cookie);
 }

@@ -20,6 +20,8 @@ dependencies:
     sdk: flutter
   path: ^1.8.0
   webview_flutter_platform_interface: ^1.8.0
+  simple_ast:
+    path: ../../../../penguin/packages/simple_ast
 
 dev_dependencies:
   build_runner: ^2.1.5
@@ -30,3 +32,7 @@ dev_dependencies:
   mockito: ^5.1.0
   pedantic: ^1.10.0
   pigeon: ^3.0.3
+  code_template_processor:
+    path: ../../../../penguin/packages/code_template_processor
+  simple_ast_generator:
+    path: ../../../../penguin/packages/simple_ast_generator

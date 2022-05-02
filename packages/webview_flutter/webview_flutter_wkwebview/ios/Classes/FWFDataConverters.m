@@ -23,3 +23,124 @@ NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data
 
   return request;
 }
+
+extern NSHTTPCookie* _Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData* data) {
+  NSMutableDictionary<NSHTTPCookiePropertyKey, id> *properties = [NSMutableDictionary dictionary];
+  for (FWFNSHttpCookiePropertyKeyEnumData* key in data.properties.allKeys) {
+    NSHTTPCookiePropertyKey cookieKey = FWFNSHTTPCookiePropertyKeyFromEnumData(key);
+    if (!cookieKey) {
+      return nil;
+    }
+    [properties setObject:data.properties[key] forKey:cookieKey];
+  }
+  return [NSHTTPCookie cookieWithProperties:properties];
+}
+
+
+NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservingOptionsEnumData *data) {
+  switch(data.value) {
+    case FWFNSKeyValueObservingOptionsEnumNewValue:
+      return NSKeyValueObservingOptionNew;
+    case FWFNSKeyValueObservingOptionsEnumOldValue:
+      return NSKeyValueObservingOptionOld;
+    case FWFNSKeyValueObservingOptionsEnumInitialValue:
+      return NSKeyValueObservingOptionInitial;
+    case FWFNSKeyValueObservingOptionsEnumPriorNotification:
+      return NSKeyValueObservingOptionPrior;
+  }
+  
+  return -1;
+}
+
+NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(FWFNSHttpCookiePropertyKeyEnumData *data) {
+  switch(data.value) {
+    case FWFNSHttpCookiePropertyKeyEnumComment:
+      return NSHTTPCookieComment;
+    case FWFNSHttpCookiePropertyKeyEnumCommentUrl:
+      return NSHTTPCookieCommentURL;
+    case FWFNSHttpCookiePropertyKeyEnumDiscard:
+      return NSHTTPCookieDiscard;
+    case FWFNSHttpCookiePropertyKeyEnumDomain:
+      return NSHTTPCookieDomain;
+    case FWFNSHttpCookiePropertyKeyEnumExpires:
+      return NSHTTPCookieExpires;
+    case FWFNSHttpCookiePropertyKeyEnumMaximumAge:
+      return NSHTTPCookieMaximumAge;
+    case FWFNSHttpCookiePropertyKeyEnumName:
+      return NSHTTPCookieName;
+    case FWFNSHttpCookiePropertyKeyEnumOriginUrl:
+      return NSHTTPCookieOriginURL;
+    case FWFNSHttpCookiePropertyKeyEnumPath:
+      return NSHTTPCookiePath;
+    case FWFNSHttpCookiePropertyKeyEnumPort:
+      return NSHTTPCookiePort;
+    case FWFNSHttpCookiePropertyKeyEnumSameSitePolicy:
+      if (@available(iOS 13.0, *)) {
+        return NSHTTPCookieSameSitePolicy;
+      } else {
+        NSLog(@"NSHTTPCookieSameSitePolicy is only supported on iOS 13+.");
+        return nil;
+      }
+    case FWFNSHttpCookiePropertyKeyEnumSecure:
+      return NSHTTPCookieSecure;
+    case FWFNSHttpCookiePropertyKeyEnumValue:
+      return NSHTTPCookieValue;
+    case FWFNSHttpCookiePropertyKeyEnumVersion:
+      return NSHTTPCookieVersion;
+  }
+  
+  return nil;
+}
+
+
+WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(FWFWKUserScriptInjectionTimeEnumData *data) {
+  switch(data.value) {
+    case FWFWKUserScriptInjectionTimeEnumAtDocumentStart:
+      return WKUserScriptInjectionTimeAtDocumentStart;
+    case FWFWKUserScriptInjectionTimeEnumAtDocumentEnd:
+      return WKUserScriptInjectionTimeAtDocumentEnd;
+  }
+  
+  return -1;
+}
+
+API_AVAILABLE(ios(10.0))
+WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(FWFWKAudiovisualMediaTypeEnumData *data) {
+    switch(data.value) {
+      case FWFWKAudiovisualMediaTypeEnumNone:
+        return WKAudiovisualMediaTypeNone;
+      case FWFWKAudiovisualMediaTypeEnumAudio:
+        return WKAudiovisualMediaTypeAudio;
+      case FWFWKAudiovisualMediaTypeEnumVideo:
+        return WKAudiovisualMediaTypeVideo;
+      case FWFWKAudiovisualMediaTypeEnumAll:
+        return WKAudiovisualMediaTypeAll;
+    }
+  
+  
+  return -1;
+}
+
+NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumData *data) {
+  switch(data.value) {
+    case FWFWKWebsiteDataTypeEnumCookies:
+      return WKWebsiteDataTypeCookies;
+    case FWFWKWebsiteDataTypeEnumMemoryCache:
+      return WKWebsiteDataTypeMemoryCache;
+    case FWFWKWebsiteDataTypeEnumDiskCache:
+      return WKWebsiteDataTypeDiskCache;
+    case FWFWKWebsiteDataTypeEnumOfflineWebApplicationCache:
+      return WKWebsiteDataTypeOfflineWebApplicationCache;
+    case FWFWKWebsiteDataTypeEnumLocalStorage:
+      return WKWebsiteDataTypeLocalStorage;
+    case FWFWKWebsiteDataTypeEnumSessionStorage:
+      return WKWebsiteDataTypeSessionStorage;
+    case FWFWKWebsiteDataTypeEnumWebSQLDatabases:
+      return WKWebsiteDataTypeWebSQLDatabases;
+    case FWFWKWebsiteDataTypeEnumIndexedDBDatabases:
+      return WKWebsiteDataTypeIndexedDBDatabases;
+  }
+  
+  return nil;
+}
+

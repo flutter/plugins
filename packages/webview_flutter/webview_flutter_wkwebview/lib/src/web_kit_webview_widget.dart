@@ -227,11 +227,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<void> clearCache() {
     return webView.configuration.websiteDataStore.removeDataOfTypes(
-      <WKWebsiteDataTypes>{
-        WKWebsiteDataTypes.memoryCache,
-        WKWebsiteDataTypes.diskCache,
-        WKWebsiteDataTypes.offlineWebApplicationCache,
-        WKWebsiteDataTypes.localStroage,
+      <WKWebsiteDataType>{
+        WKWebsiteDataType.memoryCache,
+        WKWebsiteDataType.diskCache,
+        WKWebsiteDataType.offlineWebApplicationCache,
+        WKWebsiteDataType.localStorage,
       },
       DateTime.fromMillisecondsSinceEpoch(0),
     );

@@ -6,6 +6,7 @@ import 'dart:math';
 
 import 'package:flutter/painting.dart' show Color;
 import 'package:flutter/services.dart';
+import 'package:simple_ast/annotations.dart';
 
 import '../common/instance_manager.dart';
 import '../foundation/foundation.dart';
@@ -15,6 +16,7 @@ import 'ui_kit_api_impls.dart';
 /// A view that allows the scrolling and zooming of its contained views.
 ///
 /// Wraps [UIScrollView](https://developer.apple.com/documentation/uikit/uiscrollview?language=objc).
+@SimpleClassAnnotation()
 class UIScrollView extends UIView {
   /// Constructs a [UIScrollView] that is owned by [webView].
   UIScrollView.fromWebView(
@@ -58,6 +60,7 @@ class UIScrollView extends UIView {
 /// Manages the content for a rectangular area on the screen.
 ///
 /// Wraps [UIView](https://developer.apple.com/documentation/uikit/uiview?language=objc).
+@SimpleClassAnnotation()
 class UIView extends NSObject {
   /// Constructs an [NSObject].
   UIView({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})

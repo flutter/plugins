@@ -4,8 +4,11 @@
 
 #import "FWFGeneratedWebKitApis.h"
 
+#import <WebKit/WebKit.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Some should take an NSError
 /**
  * Converts an FWFNSUrlRequestData to an NSURLRequest.
  *
@@ -15,5 +18,60 @@ NS_ASSUME_NONNULL_BEGIN
  */
 extern NSURLRequest* _Nullable FWFNSURLRequestFromRequestData(
     FWFNSUrlRequestData* data);
+
+/**
+ * Converts an FWFNSHttpCookieData to an NSHTTPCookie.
+ *
+ * @param data The data object containing information to create an NSHTTPCookie.
+ *
+ * @return An NSHTTPCookie or nil if data could not be converted.
+ */
+extern NSHTTPCookie* _Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData* data);
+
+/**
+ * Converts an FWFNSKeyValueObservingOptionsEnumData to an NSKeyValueObservingOptions.
+ *
+ * @param data The data object containing information to create an NSKeyValueObservingOptions.
+ *
+ * @return An NSKeyValueObservingOptions or -1 if data could not be converted.
+ */
+extern NSKeyValueObservingOptions FWFNSKeyValueObservingOptionsFromEnumData(FWFNSKeyValueObservingOptionsEnumData *data);
+
+/**
+ * Converts an FWFNSHTTPCookiePropertyKeyEnumData to an NSHTTPCookiePropertyKey.
+ *
+ * @param data The data object containing information to create an NSHTTPCookiePropertyKey.
+ *
+ * @return An NSHttpCookiePropertyKey or nil if data could not be converted.
+ */
+extern NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(FWFNSHttpCookiePropertyKeyEnumData *data);
+
+/**
+ * Converts an FWFWKUserScriptInjectionTimeEnumData to a WKUserScriptInjectionTime.
+ *
+ * @param data The data object containing information to create a WKUserScriptInjectionTime.
+ *
+ * @return An WKUserScriptInjectionTime or -1 if data could not be converted.
+ */
+extern WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(FWFWKUserScriptInjectionTimeEnumData *data);
+
+/**
+ * Converts an FWFWKAudiovisualMediaTypeEnumData to an WKAudiovisualMediaTypes.
+ *
+ * @param data The data object containing information to create an WKAudiovisualMediaTypes.
+ *
+ * @return An WKAudiovisualMediaType or -1 if data could not be converted.
+ */
+API_AVAILABLE(ios(10.0))
+extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(FWFWKAudiovisualMediaTypeEnumData *data);
+
+/**
+ * Converts an FWFWKWebsiteDataTypeEnumData to a WKWebsiteDataType.
+ *
+ * @param data The data object containing information to create a WKWebsiteDataType.
+ *
+ * @return An WKWebsiteDataType or nil if data could not be converted.
+ */
+extern NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumData *data);
 
 NS_ASSUME_NONNULL_END

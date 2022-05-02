@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:simple_ast/annotations.dart';
 
 import '../common/instance_manager.dart';
 import 'foundation_api_impls.dart';
@@ -13,6 +14,7 @@ import 'foundation_api_impls.dart';
 /// The values that can be returned in a change map.
 ///
 /// Wraps [NSKeyValueObservingOptions](https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions?language=objc).
+@SimpleEnumAnnotation()
 enum NSKeyValueObservingOptions {
   /// Indicates that the change map should provide the new attribute value, if applicable.
   ///
@@ -38,6 +40,7 @@ enum NSKeyValueObservingOptions {
 /// The kinds of changes that can be observed.
 ///
 /// Wraps [NSKeyValueChange](https://developer.apple.com/documentation/foundation/nskeyvaluechange?language=objc).
+@SimpleEnumAnnotation()
 enum NSKeyValueChange {
   /// Indicates that the value of the observed key path was set to a new value.
   ///
@@ -63,6 +66,7 @@ enum NSKeyValueChange {
 /// The keys that can appear in the change map.
 ///
 /// Wraps [NSKeyValueChangeKey](https://developer.apple.com/documentation/foundation/nskeyvaluechangekey?language=objc).
+@SimpleEnumAnnotation()
 enum NSKeyValueChangeKey {
   /// Indicates changes made in a collection.
   ///
@@ -93,6 +97,7 @@ enum NSKeyValueChangeKey {
 /// The supported keys in a cookie attributes dictionary.
 ///
 /// Wraps [NSHTTPCookiePropertyKey](https://developer.apple.com/documentation/foundation/nshttpcookiepropertykey).
+@SimpleEnumAnnotation()
 enum NSHttpCookiePropertyKey {
   /// A String object containing the comment for the cookie.
   ///
@@ -197,6 +202,7 @@ class NSUrlRequest {
 ///
 /// Wraps [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
 @immutable
+@SimpleClassAnnotation(customValues: <String, Object?>{'isDataClass': true})
 class NSError {
   /// Constructs an [NSError].
   const NSError({
@@ -221,6 +227,7 @@ class NSError {
 ///
 /// Wraps [NSHTTPCookie](https://developer.apple.com/documentation/foundation/nshttpcookie).
 @immutable
+@SimpleClassAnnotation(customValues: <String, Object?>{'isDataClass': true})
 class NSHttpCookie {
   /// Initializes an HTTP cookie object using the provided properties.
   const NSHttpCookie.withProperties(this.properties);
@@ -230,6 +237,7 @@ class NSHttpCookie {
 }
 
 /// The root class of most Objective-C class hierarchies.
+@SimpleClassAnnotation()
 class NSObject {
   /// Constructs an [NSObject].
   NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
@@ -270,6 +278,7 @@ class NSObject {
   }
 
   /// Informs the observing object when the value at the specified key path has changed.
+  @SimpleMethodAnnotation(ignore: true)
   Future<void> setObserveValue(
     void Function(
       String keyPath,

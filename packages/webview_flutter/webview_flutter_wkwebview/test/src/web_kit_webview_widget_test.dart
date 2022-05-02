@@ -771,11 +771,11 @@ void main() {
         await buildWidget(tester);
         when(
           mockWebsiteDataStore.removeDataOfTypes(
-            <WKWebsiteDataTypes>{
-              WKWebsiteDataTypes.memoryCache,
-              WKWebsiteDataTypes.diskCache,
-              WKWebsiteDataTypes.offlineWebApplicationCache,
-              WKWebsiteDataTypes.localStroage,
+            <WKWebsiteDataType>{
+              WKWebsiteDataType.memoryCache,
+              WKWebsiteDataType.diskCache,
+              WKWebsiteDataType.offlineWebApplicationCache,
+              WKWebsiteDataType.localStorage,
             },
             DateTime.fromMillisecondsSinceEpoch(0),
           ),
