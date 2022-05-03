@@ -58,6 +58,28 @@ void main() {
       );
     });
 
+    test('runs flutter test on Flutter package example tests', () async {
+      final Directory pluginDir = createFakePlugin('a_plugin', packagesDir,
+          extraFiles: <String>[
+            'test/empty_test.dart',
+            'example/test/an_example_test.dart'
+          ]);
+
+      await runCapturingPrint(runner, <String>['test']);
+
+      expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(getFlutterCommand(mockPlatform),
+              const <String>['test', '--color'], pluginDir.path),
+          ProcessCall(
+              getFlutterCommand(mockPlatform),
+              const <String>['test', '--color'],
+              pluginDir.childDirectory('example').path),
+        ]),
+      );
+    });
+
     test('fails when Flutter tests fail', () async {
       createFakePlugin('plugin1', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
@@ -102,7 +124,7 @@ void main() {
       );
     });
 
-    test('runs pub run test on non-Flutter packages', () async {
+    test('runs dart run test on non-Flutter packages', () async {
       final Directory pluginDir = createFakePlugin('a', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
       final Directory packageDir = createFakePackage('b', packagesDir,
@@ -121,8 +143,30 @@ void main() {
           ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),
           ProcessCall(
               'dart',
-              const <String>['pub', 'run', '--enable-experiment=exp1', 'test'],
+              const <String>['run', '--enable-experiment=exp1', 'test'],
               packageDir.path),
+        ]),
+      );
+    });
+
+    test('runs dart run test on non-Flutter package examples', () async {
+      final Directory packageDir = createFakePackage('a_package', packagesDir,
+          extraFiles: <String>[
+            'test/empty_test.dart',
+            'example/test/an_example_test.dart'
+          ]);
+
+      await runCapturingPrint(runner, <String>['test']);
+
+      expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),
+          ProcessCall('dart', const <String>['run', 'test'], packageDir.path),
+          ProcessCall('dart', const <String>['pub', 'get'],
+              packageDir.childDirectory('example').path),
+          ProcessCall('dart', const <String>['run', 'test'],
+              packageDir.childDirectory('example').path),
         ]),
       );
     });
@@ -217,7 +261,7 @@ void main() {
           ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),
           ProcessCall(
               'dart',
-              const <String>['pub', 'run', '--enable-experiment=exp1', 'test'],
+              const <String>['run', '--enable-experiment=exp1', 'test'],
               packageDir.path),
         ]),
       );

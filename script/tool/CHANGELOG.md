@@ -1,5 +1,6 @@
-## NEXT
+## 0.8.5
 
+- Updates `test` to inculde the Dart unit tests of examples, if any.
 - `drive-examples` now supports non-plugin packages.
 - Commands that iterate over examples now include non-Flutter example packages.
 
