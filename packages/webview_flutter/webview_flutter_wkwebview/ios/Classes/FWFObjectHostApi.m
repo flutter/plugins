@@ -49,6 +49,6 @@
 
 - (void)disposeObjectWithIdentifier:(nonnull NSNumber *)instanceId
                               error:(FlutterError *_Nullable *_Nonnull)error {
-  [self.instanceManager removeInstance:[self objectForIdentifier:instanceId]];
+  [self.instanceManager removeInstanceWithIdentifier:instanceId.longValue];
 }
 @end
