@@ -91,6 +91,19 @@ void main() {
           ]));
     });
 
+    test('includes packages without source', () async {
+      final RepositoryPackage package =
+          createFakePackage('package', packagesDir);
+      package.libDirectory.deleteSync(recursive: true);
+
+      await runCapturingPrint(runner, <String>['sample']);
+      expect(
+          command.plugins,
+          unorderedEquals(<String>[
+            package.path,
+          ]));
+    });
+
     test('all plugins includes third_party/packages', () async {
       final RepositoryPackage plugin1 =
           createFakePlugin('plugin1', packagesDir);
