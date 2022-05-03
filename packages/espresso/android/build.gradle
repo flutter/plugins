@@ -56,14 +56,14 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     testImplementation "com.google.truth:truth:1.0"
-    api 'androidx.test:runner:1.1.1'
+    api 'androidx.test:runner:1.4.0'
     api 'androidx.test.espresso:espresso-core:3.1.1'
 
     // Core library
     api 'androidx.test:core:1.0.0'
 
     // AndroidJUnitRunner and JUnit Rules
-    api 'androidx.test:runner:1.1.0'
+    api 'androidx.test:runner:1.4.0'
     api 'androidx.test:rules:1.1.0'
 
     // Assertions
