@@ -28,7 +28,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  url_launcher_android: ^6.0.13
+  url_launcher_android: ^6.0.16
   url_launcher_ios: ^6.0.13
   # Allow either the pure-native or Dart/native hybrid versions of the desktop
   # implementations, as both are compatible.
