@@ -8,7 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// TODO: Some should take an NSError
 /**
  * Converts an FWFNSUrlRequestData to an NSURLRequest.
  *

@@ -41,7 +41,7 @@ class UIScrollView extends UIView {
   ///
   /// This method is not a part of UIKit and is only a helper method to make
   /// scrollBy atomic.
-  Future<void> scrollBy( Point<double> offset) {
+  Future<void> scrollBy(Point<double> offset) {
     return _scrollViewApi.scrollByForInstances(this, offset);
   }
 
@@ -50,7 +50,7 @@ class UIScrollView extends UIView {
   /// The default value is `Point<double>(0.0, 0.0)`.
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
-  Future<void> setContentOffset( Point<double> offset) {
+  Future<void> setContentOffset(Point<double> offset) {
     return _scrollViewApi.setContentOffsetForInstances(this, offset);
   }
 }
@@ -73,14 +73,14 @@ class UIView extends NSObject {
   /// The default value is null, which results in a transparent background color.
   ///
   /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
-  Future<void> setBackgroundColor( Color? color) {
+  Future<void> setBackgroundColor(Color? color) {
     return _viewApi.setBackgroundColorForInstances(this, color);
   }
 
   /// Determines whether the view is opaque.
   ///
   /// Sets [UIView.opaque](https://developer.apple.com/documentation/uikit/uiview?language=objc).
-  Future<void> setOpaque( bool opaque) {
+  Future<void> setOpaque(bool opaque) {
     return _viewApi.setOpaqueForInstances(this, opaque);
   }
 }

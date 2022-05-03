@@ -40,5 +40,4 @@
                                  error:(FlutterError *_Nullable *_Nonnull)error {
   [[self viewForIdentifier:instanceId] setOpaque:opaque.boolValue];
 }
-
 @end

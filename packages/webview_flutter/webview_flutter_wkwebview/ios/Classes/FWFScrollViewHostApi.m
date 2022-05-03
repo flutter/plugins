@@ -54,5 +54,4 @@
   [[self scrollViewForIdentifier:instanceId]
       setContentOffset:CGPointMake(x.doubleValue, y.doubleValue)];
 }
-
 @end

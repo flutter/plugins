@@ -30,4 +30,11 @@
   FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc] init];
   [self.instanceManager addInstance:navigationDelegate withIdentifier:instanceId.longValue];
 }
+
+- (void)setDidFinishNavigationForDelegateWithIdentifier:(nonnull NSNumber *)instanceId
+                                     functionIdentifier:(nullable NSNumber *)functionInstanceId
+                                                  error:(FlutterError *_Nullable __autoreleasing
+                                                             *_Nonnull)error {
+  // TODO(bparrishMines): Implement when callback method design is finalized.
+}
 @end

@@ -77,9 +77,7 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier:@0
-
-                                                               error:&error];
+  [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier:@0 error:&error];
   OCMVerify([mockUserContentController removeAllScriptMessageHandlers]);
   XCTAssertNil(error);
 }
@@ -122,9 +120,7 @@
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeAllUserScriptsForControllerWithIdentifier:@0
-
-                                                     error:&error];
+  [hostApi removeAllUserScriptsForControllerWithIdentifier:@0 error:&error];
   OCMVerify([mockUserContentController removeAllUserScripts]);
   XCTAssertNil(error);
 }

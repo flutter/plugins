@@ -37,11 +37,7 @@
 
   FlutterError *error;
   [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0 isEnabled:@YES error:&error];
-  OCMVerify([mockPreferences setJavaScriptEnabled
-
-:YES
-
-  ]);
+  OCMVerify([mockPreferences setJavaScriptEnabled:YES]);
   XCTAssertNil(error);
 }
 @end

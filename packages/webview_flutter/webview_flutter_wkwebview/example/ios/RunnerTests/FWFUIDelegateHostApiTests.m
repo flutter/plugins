@@ -24,5 +24,4 @@
   XCTAssertTrue([delegate conformsToProtocol:@protocol(WKUIDelegate)]);
   XCTAssertNil(error);
 }
-
 @end
