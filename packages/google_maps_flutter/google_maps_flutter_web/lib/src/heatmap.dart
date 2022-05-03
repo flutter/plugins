@@ -12,7 +12,7 @@ class HeatmapController {
   HeatmapController({required gmaps_visualization.HeatmapLayer heatmap})
       : _heatmap = heatmap;
 
-  /// Returns the wrapped [gmaps_visualization.Heatmap]. Only used for testing.
+  /// Returns the wrapped [gmaps_visualization.HeatmapLayer]. Only used for testing.
   @visibleForTesting
   gmaps_visualization.HeatmapLayer? get heatmap => _heatmap;
 
