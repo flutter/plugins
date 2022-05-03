@@ -51,5 +51,4 @@
                               error:(FlutterError *_Nullable *_Nonnull)error {
   [self.instanceManager removeInstance:[self objectForIdentifier:instanceId]];
 }
-
 @end

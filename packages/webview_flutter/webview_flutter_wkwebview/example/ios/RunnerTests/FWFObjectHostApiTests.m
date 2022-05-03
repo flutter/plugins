@@ -79,5 +79,4 @@
   XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
   XCTAssertNil(error);
 }
-
 @end
