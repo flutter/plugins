@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 0.3.2+1
 
 * Removes dependency on `meta`.

@@ -249,12 +249,13 @@ class VideoEvent {
   }
 
   @override
-  int get hashCode =>
-      eventType.hashCode ^
-      duration.hashCode ^
-      size.hashCode ^
-      rotationCorrection.hashCode ^
-      buffered.hashCode;
+  int get hashCode => Object.hash(
+        eventType,
+        duration,
+        size,
+        rotationCorrection,
+        buffered,
+      );
 }
 
 /// Type of the event.
@@ -343,7 +344,7 @@ class DurationRange {
           end == other.end;
 
   @override
-  int get hashCode => start.hashCode ^ end.hashCode;
+  int get hashCode => Object.hash(start, end);
 }
 
 /// [VideoPlayerOptions] can be optionally used to set additional player settings

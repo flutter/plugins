@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -11,7 +9,6 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit_cookie_manager.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
 import 'web_kit_cookie_manager_test.mocks.dart';
 
@@ -22,7 +19,7 @@ import 'web_kit_cookie_manager_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebKitWebViewWidget', () {
+  group('WebKitWebViewWidget', () {
     late MockWKWebsiteDataStore mockWebsiteDataStore;
     late MockWKHttpCookieStore mockWKHttpCookieStore;
 

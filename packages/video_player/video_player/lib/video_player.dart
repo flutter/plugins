@@ -207,8 +207,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource,
-      {this.package, this.closedCaptionFile, this.videoPlayerOptions})
-      : dataSourceType = DataSourceType.asset,
+      {this.package,
+      Future<ClosedCaptionFile>? closedCaptionFile,
+      this.videoPlayerOptions})
+      : _closedCaptionFileFuture = closedCaptionFile,
+        dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const <String, String>{},
         super(VideoPlayerValue(duration: Duration.zero));
@@ -225,10 +228,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.network(
     this.dataSource, {
     this.formatHint,
-    this.closedCaptionFile,
+    Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
-  })  : dataSourceType = DataSourceType.network,
+  })  : _closedCaptionFileFuture = closedCaptionFile,
+        dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
 
@@ -237,8 +241,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file,
-      {this.closedCaptionFile, this.videoPlayerOptions})
-      : dataSource = 'file://${file.path}',
+      {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
+      : _closedCaptionFileFuture = closedCaptionFile,
+        dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
@@ -250,9 +255,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the video from the input content-URI.
   /// This is supported on Android only.
   VideoPlayerController.contentUri(Uri contentUri,
-      {this.closedCaptionFile, this.videoPlayerOptions})
+      {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
       : assert(defaultTargetPlatform == TargetPlatform.android,
             'VideoPlayerController.contentUri is only supported on Android.'),
+        _closedCaptionFileFuture = closedCaptionFile,
         dataSource = contentUri.toString(),
         dataSourceType = DataSourceType.contentUri,
         package = null,
@@ -283,13 +289,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
 
-  /// Optional field to specify a file containing the closed
-  /// captioning.
-  ///
-  /// This future will be awaited and the file will be loaded when
-  /// [initialize()] is called.
-  final Future<ClosedCaptionFile>? closedCaptionFile;
-
+  Future<ClosedCaptionFile>? _closedCaptionFileFuture;
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
   bool _isDisposed = false;
@@ -397,9 +397,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
     }
 
-    if (closedCaptionFile != null) {
-      _closedCaptionFile ??= await closedCaptionFile;
-      value = value.copyWith(caption: _getCaptionAt(value.position));
+    if (_closedCaptionFileFuture != null) {
+      await _updateClosedCaptionWithFuture(_closedCaptionFileFuture);
     }
 
     void errorListener(Object obj) {
@@ -632,6 +631,28 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     return Caption.none;
+  }
+
+  /// Returns the file containing closed captions for the video, if any.
+  Future<ClosedCaptionFile>? get closedCaptionFile {
+    return _closedCaptionFileFuture;
+  }
+
+  /// Sets a closed caption file.
+  ///
+  /// If [closedCaptionFile] is null, closed captions will be removed.
+  Future<void> setClosedCaptionFile(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {
+    await _updateClosedCaptionWithFuture(closedCaptionFile);
+    _closedCaptionFileFuture = closedCaptionFile;
+  }
+
+  Future<void> _updateClosedCaptionWithFuture(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {
+    _closedCaptionFile = await closedCaptionFile;
+    value = value.copyWith(caption: _getCaptionAt(value.position));
   }
 
   void _updatePosition(Duration position) {
