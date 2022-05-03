@@ -1,3 +1,7 @@
+## 0.10.1+1
+
+* Adds note how to set Google Sign-In OAuth client ID on dart code.
+
 ## 0.10.1
 
 * Updates minimum Flutter version to 2.8.
