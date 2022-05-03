@@ -60,7 +60,7 @@ dependencies {
     api 'androidx.test.espresso:espresso-core:3.1.1'
 
     // Core library
-    api 'androidx.test:core:1.0.0'
+    api 'androidx.test:core:1.4.0'
 
     // AndroidJUnitRunner and JUnit Rules
     api 'androidx.test:runner:1.1.0'
