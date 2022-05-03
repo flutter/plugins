@@ -7,7 +7,7 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 /// Specifies options for picking a single image from the device's camera or gallery.
 class ImagePickerOptions {
   /// Creates an instance with the given [maxHeight], [maxWidth], [imageQuality],
-  /// [referredCameraDevice] and [requestFullMetadata]. Any of the params may be null.
+  /// [referredCameraDevice] and [requestFullMetadata].
   const ImagePickerOptions({
     this.maxHeight,
     this.maxWidth,
@@ -16,33 +16,31 @@ class ImagePickerOptions {
     this.requestFullMetadata = true,
   });
 
-  /// If specified, the image will be at most `maxWidth` wide. Otherwise,
-  /// the image will be returned at its original width.
+  /// The maximum width of the image, in pixels. If null, the image will only
+  /// be resized if maxHeight is specified.
   final double? maxWidth;
 
-  /// If specified, the image will be at most`maxHeight` tall.
-  /// Otherwise the image will be returned at its original height.
+  /// The maximum height of the image, in pixels. If null, the image will only
+  /// be resized if maxWidth is specified.
   final double? maxHeight;
 
-  /// Modifies the quality of the image, ranging from 0-100 where 100 is the original/max
-  /// quality. If `imageQuality` is null, the image with the originalquality will
-  /// be returned. Compression is only supported for certain image types such as
-  /// JPEG. If compression is not supported for the image that is picked, a warning
-  /// message will be logged.
+  /// Modifies the quality of the image, ranging from 0-100 where 100 is the
+  /// original/max quality.
+  ///
+  /// If null, the image will be returned with the original quality. Compression
+  /// is only supported for certain image types such as JPEG. If compression is
+  /// not supported for the image that is picked, a warning message will be logged.
   final int? imageQuality;
 
   /// Used to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery].
-  /// It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter
-  /// for an intent to specify if the front or rear camera should be opened, this
-  /// function is not guaranteed to work on an Android device.
+  ///
+  /// Ignored if the source is not [ImageSource.camera], or the chosen camera is not
+  /// supported on the device. Defaults to [CameraDevice.rear].
   final CameraDevice preferredCameraDevice;
 
-  /// `requestFullMetadata` defaults to `true`, so the plugin tries to get the
-  /// full image metadata which may require extra permission requests on certain platforms.
-  /// If `requestFullMetadata` is set to `false`, the plugin fetches the image
-  /// in a way that reduces permission requests from the platform (e.g. on iOS
-  /// the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
+  /// If true, requests full image metadata, which may require extra permissions
+  /// on some platforms, (e.g., NSPhotoLibraryUsageDescription on iOS).
+  //
+  // Defaults to true.
   final bool requestFullMetadata;
 }
