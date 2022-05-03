@@ -13,12 +13,15 @@ import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:quiver/collection.dart';
 
 import 'mocks.dart';
+
+export 'package:flutter_plugin_tools/src/common/repository_package.dart';
 
 /// Returns the exe name that command will use when running Flutter on
 /// [platform].
@@ -65,6 +68,20 @@ class PlatformDetails {
   final bool hasDartCode;
 }
 
+/// Returns the 'example' directory for [package].
+///
+/// This is deliberately not a method on [RepositoryPackage] since actual tool
+/// code should essentially never need this, and instead be using
+/// [RepositoryPackage.getExamples] to avoid assuming there's a single example
+/// directory. However, needing to construct paths with the example directory
+/// is very common in test code.
+///
+/// This returns a Directory rather than a RepositoryPackage because there is no
+/// guarantee that the returned directory is a package.
+Directory getExampleDir(RepositoryPackage package) {
+  return package.directory.childDirectory('example');
+}
+
 /// Creates a plugin package with the given [name] in [packagesDirectory].
 ///
 /// [platformSupport] is a map of platform string to the support details for
@@ -72,8 +89,7 @@ class PlatformDetails {
 ///
 /// [extraFiles] is an optional list of plugin-relative paths, using Posix
 /// separators, of extra files to create in the plugin.
-// TODO(stuartmorgan): Convert the return to a RepositoryPackage.
-Directory createFakePlugin(
+RepositoryPackage createFakePlugin(
   String name,
   Directory parentDirectory, {
   List<String> examples = const <String>['example'],
@@ -83,7 +99,7 @@ Directory createFakePlugin(
   String? version = '0.0.1',
   String flutterConstraint = '>=2.5.0',
 }) {
-  final Directory pluginDirectory = createFakePackage(name, parentDirectory,
+  final RepositoryPackage package = createFakePackage(name, parentDirectory,
       isFlutter: true,
       examples: examples,
       extraFiles: extraFiles,
@@ -91,7 +107,7 @@ Directory createFakePlugin(
       flutterConstraint: flutterConstraint);
 
   createFakePubspec(
-    pluginDirectory,
+    package,
     name: name,
     isFlutter: true,
     isPlugin: true,
@@ -100,7 +116,7 @@ Directory createFakePlugin(
     flutterConstraint: flutterConstraint,
   );
 
-  return pluginDirectory;
+  return package;
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
@@ -113,8 +129,7 @@ Directory createFakePlugin(
 ///
 /// If non-null, [directoryName] will be used for the directory instead of
 /// [name].
-// TODO(stuartmorgan): Convert the return to a RepositoryPackage.
-Directory createFakePackage(
+RepositoryPackage createFakePackage(
   String name,
   Directory parentDirectory, {
   List<String> examples = const <String>['example'],
@@ -126,26 +141,26 @@ Directory createFakePackage(
   String? directoryName,
   String? publishTo,
 }) {
-  final Directory packageDirectory =
-      parentDirectory.childDirectory(directoryName ?? name);
-  packageDirectory.createSync(recursive: true);
+  final RepositoryPackage package =
+      RepositoryPackage(parentDirectory.childDirectory(directoryName ?? name));
+  package.directory.createSync(recursive: true);
 
-  packageDirectory.childDirectory('lib').createSync();
-  createFakePubspec(packageDirectory,
+  package.libDirectory.createSync();
+  createFakePubspec(package,
       name: name,
       isFlutter: isFlutter,
       version: version,
       flutterConstraint: flutterConstraint);
   if (includeCommonFiles) {
-    createFakeCHANGELOG(packageDirectory, '''
+    createFakeCHANGELOG(package, '''
 ## $version
   * Some changes.
   ''');
-    createFakeAuthors(packageDirectory);
+    createFakeAuthors(package);
   }
 
   if (examples.length == 1) {
-    createFakePackage('${name}_example', packageDirectory,
+    createFakePackage('${name}_example', package.directory,
         directoryName: examples.first,
         examples: <String>[],
         includeCommonFiles: false,
@@ -153,8 +168,7 @@ Directory createFakePackage(
         publishTo: 'none',
         flutterConstraint: flutterConstraint);
   } else if (examples.isNotEmpty) {
-    final Directory examplesDirectory =
-        packageDirectory.childDirectory('example')..createSync();
+    final Directory examplesDirectory = getExampleDir(package)..createSync();
     for (final String exampleName in examples) {
       createFakePackage(exampleName, examplesDirectory,
           examples: <String>[],
@@ -167,16 +181,16 @@ Directory createFakePackage(
 
   final p.Context posixContext = p.posix;
   for (final String file in extraFiles) {
-    childFileWithSubcomponents(packageDirectory, posixContext.split(file))
+    childFileWithSubcomponents(package.directory, posixContext.split(file))
         .createSync(recursive: true);
   }
 
-  return packageDirectory;
+  return package;
 }
 
-void createFakeCHANGELOG(Directory parent, String texts) {
-  parent.childFile('CHANGELOG.md').createSync();
-  parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
+void createFakeCHANGELOG(RepositoryPackage package, String texts) {
+  package.changelogFile.createSync();
+  package.changelogFile.writeAsStringSync(texts);
 }
 
 /// Creates a `pubspec.yaml` file with a flutter dependency.
@@ -185,7 +199,7 @@ void createFakeCHANGELOG(Directory parent, String texts) {
 /// that platform. If empty, no `plugin` entry will be created unless `isPlugin`
 /// is set to `true`.
 void createFakePubspec(
-  Directory parent, {
+  RepositoryPackage package, {
   String name = 'fake_package',
   bool isFlutter = true,
   bool isPlugin = false,
@@ -249,14 +263,13 @@ $dependenciesSection
 $pluginSection
 ''';
 
-  parent.childFile('pubspec.yaml').createSync();
-  parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
+  package.pubspecFile.createSync();
+  package.pubspecFile.writeAsStringSync(yaml);
 }
 
-void createFakeAuthors(Directory parent) {
-  final File authorsFile = parent.childFile('AUTHORS');
-  authorsFile.createSync();
-  authorsFile.writeAsStringSync('Google Inc.');
+void createFakeAuthors(RepositoryPackage package) {
+  package.authorsFile.createSync();
+  package.authorsFile.writeAsStringSync('Google Inc.');
 }
 
 String _pluginPlatformSection(

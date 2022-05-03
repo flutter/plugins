@@ -246,12 +246,12 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
   bool _passesAuthorsCheck(RepositoryPackage package) {
     final List<String> pathComponents =
-        package.directory.fileSystem.path.split(package.directory.path);
+        package.directory.fileSystem.path.split(package.path);
     if (pathComponents.contains('third_party')) {
       // Third-party packages aren't required to have an AUTHORS file.
       return true;
     }
-    return package.directory.childFile('AUTHORS').existsSync();
+    return package.authorsFile.existsSync();
   }
 
   void _printImportantStatusMessage(String message, {required bool isError}) {

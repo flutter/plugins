@@ -37,45 +37,45 @@ void main() {
   });
 
   test('analyzes all packages', () async {
-    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
-    final Directory plugin2Dir = createFakePlugin('b', packagesDir);
+    final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
+    final RepositoryPackage plugin2 = createFakePlugin('b', packagesDir);
 
     await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', const <String>['pub', 'get'], plugin1Dir.path),
-          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-              plugin1Dir.path),
-          ProcessCall('flutter', const <String>['pub', 'get'], plugin2Dir.path),
-          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-              plugin2Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin1.path),
+          ProcessCall(
+              'dart', const <String>['analyze', '--fatal-infos'], plugin1.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin2.path),
+          ProcessCall(
+              'dart', const <String>['analyze', '--fatal-infos'], plugin2.path),
         ]));
   });
 
   test('skips flutter pub get for examples', () async {
-    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
+    final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
 
     await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', const <String>['pub', 'get'], plugin1Dir.path),
-          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-              plugin1Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin1.path),
+          ProcessCall(
+              'dart', const <String>['analyze', '--fatal-infos'], plugin1.path),
         ]));
   });
 
   test('runs flutter pub get for non-example subpackages', () async {
-    final Directory mainPackageDir = createFakePackage('a', packagesDir);
-    final Directory otherPackages =
-        mainPackageDir.childDirectory('other_packages');
-    final Directory subpackage1 =
-        createFakePackage('subpackage1', otherPackages);
-    final Directory subpackage2 =
-        createFakePackage('subpackage2', otherPackages);
+    final RepositoryPackage mainPackage = createFakePackage('a', packagesDir);
+    final Directory otherPackagesDir =
+        mainPackage.directory.childDirectory('other_packages');
+    final RepositoryPackage subpackage1 =
+        createFakePackage('subpackage1', otherPackagesDir);
+    final RepositoryPackage subpackage2 =
+        createFakePackage('subpackage2', otherPackagesDir);
 
     await runCapturingPrint(runner, <String>['analyze']);
 
@@ -83,36 +83,36 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              'flutter', const <String>['pub', 'get'], mainPackageDir.path),
+              'flutter', const <String>['pub', 'get'], mainPackage.path),
           ProcessCall(
               'flutter', const <String>['pub', 'get'], subpackage1.path),
           ProcessCall(
               'flutter', const <String>['pub', 'get'], subpackage2.path),
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-              mainPackageDir.path),
+              mainPackage.path),
         ]));
   });
 
   test('don\'t elide a non-contained example package', () async {
-    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
-    final Directory plugin2Dir = createFakePlugin('example', packagesDir);
+    final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
+    final RepositoryPackage plugin2 = createFakePlugin('example', packagesDir);
 
     await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', const <String>['pub', 'get'], plugin1Dir.path),
-          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-              plugin1Dir.path),
-          ProcessCall('flutter', const <String>['pub', 'get'], plugin2Dir.path),
-          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-              plugin2Dir.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin1.path),
+          ProcessCall(
+              'dart', const <String>['analyze', '--fatal-infos'], plugin1.path),
+          ProcessCall('flutter', const <String>['pub', 'get'], plugin2.path),
+          ProcessCall(
+              'dart', const <String>['analyze', '--fatal-infos'], plugin2.path),
         ]));
   });
 
   test('uses a separate analysis sdk', () async {
-    final Directory pluginDir = createFakePlugin('a', packagesDir);
+    final RepositoryPackage plugin = createFakePlugin('a', packagesDir);
 
     await runCapturingPrint(
         runner, <String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
@@ -123,12 +123,12 @@ void main() {
         ProcessCall(
           'flutter',
           const <String>['pub', 'get'],
-          pluginDir.path,
+          plugin.path,
         ),
         ProcessCall(
           'foo/bar/baz/bin/dart',
           const <String>['analyze', '--fatal-infos'],
-          pluginDir.path,
+          plugin.path,
         ),
       ]),
     );
@@ -180,7 +180,7 @@ void main() {
     });
 
     test('takes an allow list', () async {
-      final Directory pluginDir = createFakePlugin('foo', packagesDir,
+      final RepositoryPackage plugin = createFakePlugin('foo', packagesDir,
           extraFiles: <String>['analysis_options.yaml']);
 
       await runCapturingPrint(
@@ -189,15 +189,14 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(
-                'flutter', const <String>['pub', 'get'], pluginDir.path),
+            ProcessCall('flutter', const <String>['pub', 'get'], plugin.path),
             ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-                pluginDir.path),
+                plugin.path),
           ]));
     });
 
     test('takes an allow config file', () async {
-      final Directory pluginDir = createFakePlugin('foo', packagesDir,
+      final RepositoryPackage plugin = createFakePlugin('foo', packagesDir,
           extraFiles: <String>['analysis_options.yaml']);
       final File allowFile = packagesDir.childFile('custom.yaml');
       allowFile.writeAsStringSync('- foo');
@@ -208,10 +207,9 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(
-                'flutter', const <String>['pub', 'get'], pluginDir.path),
+            ProcessCall('flutter', const <String>['pub', 'get'], plugin.path),
             ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
-                pluginDir.path),
+                plugin.path),
           ]));
     });
 
@@ -280,7 +278,7 @@ void main() {
   // modify the script above, as it is run from source, but out-of-repo.
   // Contact stuartmorgan or devoncarew for assistance.
   test('Dart repo analyze command works', () async {
-    final Directory pluginDir = createFakePlugin('foo', packagesDir,
+    final RepositoryPackage plugin = createFakePlugin('foo', packagesDir,
         extraFiles: <String>['analysis_options.yaml']);
     final File allowFile = packagesDir.childFile('custom.yaml');
     allowFile.writeAsStringSync('- foo');
@@ -300,12 +298,12 @@ void main() {
         ProcessCall(
           'flutter',
           const <String>['pub', 'get'],
-          pluginDir.path,
+          plugin.path,
         ),
         ProcessCall(
           'foo/bar/baz/bin/dart',
           const <String>['analyze', '--fatal-infos'],
-          pluginDir.path,
+          plugin.path,
         ),
       ]),
     );

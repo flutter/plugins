@@ -50,10 +50,10 @@ void main() {
   /// Returns a modified version of a list of [relativePaths] that are relative
   /// to [package] to instead be relative to [packagesDir].
   List<String> _getPackagesDirRelativePaths(
-      Directory packageDir, List<String> relativePaths) {
+      RepositoryPackage package, List<String> relativePaths) {
     final p.Context path = analyzeCommand.path;
     final String relativeBase =
-        path.relative(packageDir.path, from: packagesDir.path);
+        path.relative(package.path, from: packagesDir.path);
     return relativePaths
         .map((String relativePath) => path.join(relativeBase, relativePath))
         .toList();
@@ -86,7 +86,7 @@ void main() {
       'lib/src/b.dart',
       'lib/src/c.dart',
     ];
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: files,
@@ -101,7 +101,7 @@ void main() {
               getFlutterCommand(mockPlatform),
               <String>[
                 'format',
-                ..._getPackagesDirRelativePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -114,7 +114,7 @@ void main() {
       'lib/src/c.dart',
     ];
     const String unformattedFile = 'lib/src/d.dart';
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: <String>[
@@ -124,7 +124,8 @@ void main() {
     );
 
     final p.Context posixContext = p.posix;
-    childFileWithSubcomponents(pluginDir, posixContext.split(unformattedFile))
+    childFileWithSubcomponents(
+            plugin.directory, posixContext.split(unformattedFile))
         .writeAsStringSync(
             '// copyright bla bla\n// This file is hand-formatted.\ncode...');
 
@@ -137,7 +138,7 @@ void main() {
               getFlutterCommand(mockPlatform),
               <String>[
                 'format',
-                ..._getPackagesDirRelativePaths(pluginDir, formattedFiles)
+                ..._getPackagesDirRelativePaths(plugin, formattedFiles)
               ],
               packagesDir.path),
         ]));
@@ -172,7 +173,7 @@ void main() {
       'android/src/main/java/io/flutter/plugins/a_plugin/a.java',
       'android/src/main/java/io/flutter/plugins/a_plugin/b.java',
     ];
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: files,
@@ -190,7 +191,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getPackagesDirRelativePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -252,7 +253,7 @@ void main() {
       'android/src/main/java/io/flutter/plugins/a_plugin/a.java',
       'android/src/main/java/io/flutter/plugins/a_plugin/b.java',
     ];
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: files,
@@ -270,7 +271,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getPackagesDirRelativePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -285,7 +286,7 @@ void main() {
       'macos/Classes/Foo.mm',
       'windows/foo_plugin.cpp',
     ];
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: files,
@@ -302,7 +303,7 @@ void main() {
               <String>[
                 '-i',
                 '--style=file',
-                ..._getPackagesDirRelativePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -339,7 +340,7 @@ void main() {
     const List<String> files = <String>[
       'windows/foo_plugin.cpp',
     ];
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: files,
@@ -358,7 +359,7 @@ void main() {
               <String>[
                 '-i',
                 '--style=file',
-                ..._getPackagesDirRelativePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(plugin, files)
               ],
               packagesDir.path),
         ]));
@@ -403,7 +404,7 @@ void main() {
     const List<String> javaFiles = <String>[
       'android/src/main/java/io/flutter/plugins/a_plugin/a.java'
     ];
-    final Directory pluginDir = createFakePlugin(
+    final RepositoryPackage plugin = createFakePlugin(
       'a_plugin',
       packagesDir,
       extraFiles: <String>[
@@ -426,14 +427,14 @@ void main() {
               <String>[
                 '-i',
                 '--style=file',
-                ..._getPackagesDirRelativePaths(pluginDir, clangFiles)
+                ..._getPackagesDirRelativePaths(plugin, clangFiles)
               ],
               packagesDir.path),
           ProcessCall(
               getFlutterCommand(mockPlatform),
               <String>[
                 'format',
-                ..._getPackagesDirRelativePaths(pluginDir, dartFiles)
+                ..._getPackagesDirRelativePaths(plugin, dartFiles)
               ],
               packagesDir.path),
           ProcessCall(
@@ -442,7 +443,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getPackagesDirRelativePaths(pluginDir, javaFiles)
+                ..._getPackagesDirRelativePaths(plugin, javaFiles)
               ],
               packagesDir.path),
         ]));
