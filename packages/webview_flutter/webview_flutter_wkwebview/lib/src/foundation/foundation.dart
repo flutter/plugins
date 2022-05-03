@@ -6,16 +6,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:simple_ast/annotations.dart';
 
 import '../common/instance_manager.dart';
-import '../web_kit/web_kit.dart';
 import 'foundation_api_impls.dart';
 
 /// The values that can be returned in a change map.
 ///
 /// Wraps [NSKeyValueObservingOptions](https://developer.apple.com/documentation/foundation/nskeyvalueobservingoptions?language=objc).
-@SimpleEnumAnnotation()
 enum NSKeyValueObservingOptions {
   /// Indicates that the change map should provide the new attribute value, if applicable.
   ///
@@ -41,7 +38,6 @@ enum NSKeyValueObservingOptions {
 /// The kinds of changes that can be observed.
 ///
 /// Wraps [NSKeyValueChange](https://developer.apple.com/documentation/foundation/nskeyvaluechange?language=objc).
-@SimpleEnumAnnotation()
 enum NSKeyValueChange {
   /// Indicates that the value of the observed key path was set to a new value.
   ///
@@ -67,7 +63,6 @@ enum NSKeyValueChange {
 /// The keys that can appear in the change map.
 ///
 /// Wraps [NSKeyValueChangeKey](https://developer.apple.com/documentation/foundation/nskeyvaluechangekey?language=objc).
-@SimpleEnumAnnotation()
 enum NSKeyValueChangeKey {
   /// Indicates changes made in a collection.
   ///
@@ -98,7 +93,6 @@ enum NSKeyValueChangeKey {
 /// The supported keys in a cookie attributes dictionary.
 ///
 /// Wraps [NSHTTPCookiePropertyKey](https://developer.apple.com/documentation/foundation/nshttpcookiepropertykey).
-@SimpleEnumAnnotation()
 enum NSHttpCookiePropertyKey {
   /// A String object containing the comment for the cookie.
   ///
@@ -236,9 +230,6 @@ class NSHttpCookie {
 }
 
 /// The root class of most Objective-C class hierarchies.
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'Object',
-})
 class NSObject {
   /// Constructs an [NSObject].
   NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
@@ -254,17 +245,10 @@ class NSObject {
   final NSObjectHostApiImpl _api;
 
   /// Registers the observer object to receive KVO notifications.
-  @SimpleMethodAnnotation(customValues: <String, Object?>{
-    'returnsVoid': true,
-    'objcName': 'addObserverForObjectWithIdentifier',
-  })
   Future<void> addObserver(
-    @nsNumber NSObject observer, {
-    @nsString required String keyPath,
-    @SimpleTypeAnnotation(customValues: <String, Object?>{
-      'objcName': 'NSArray<NSKeyValueObservingOptionsEnumData *>'
-    })
-        required Set<NSKeyValueObservingOptions> options,
+    NSObject observer, {
+    required String keyPath,
+    required Set<NSKeyValueObservingOptions> options,
   }) {
     assert(options.isNotEmpty);
     return _api.addObserverForInstances(
@@ -276,26 +260,16 @@ class NSObject {
   }
 
   /// Stops the observer object from receiving change notifications for the property.
-  @SimpleMethodAnnotation(customValues: <String, Object?>{
-    'returnsVoid': true,
-    'objcName': 'removeObserverForObjectWithIdentifier',
-  })
-  Future<void> removeObserver(@nsNumber NSObject observer,
-      {@nsString required String keyPath}) {
+  Future<void> removeObserver(NSObject observer, {required String keyPath}) {
     return _api.removeObserverForInstances(this, observer, keyPath);
   }
 
   /// Release the reference to the Objective-C object.
-  @SimpleMethodAnnotation(customValues: <String, Object?>{
-    'returnsVoid': true,
-    'objcName': 'disposeObjectWithIdentifier',
-  })
   Future<void> dispose() {
     return _api.disposeForInstances(this);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setObserveValue(
     void Function(
       String keyPath,

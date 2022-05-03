@@ -332,7 +332,7 @@ void main() {
 
             final List<dynamic> javaScriptChannels = verifyInOrder(<Object>[
               mockUserContentController.removeAllUserScripts(),
-              mockUserContentController.removeAllScriptMessageHandlers(),
+              mockUserContentController.removeScriptMessageHandler('myChannel'),
               mockUserContentController.addScriptMessageHandler(
                 captureAny,
                 captureAny,
@@ -374,7 +374,6 @@ void main() {
             ));
 
             verify(mockUserContentController.removeAllUserScripts());
-            verify(mockUserContentController.removeAllScriptMessageHandlers());
             verifyNever(mockUserContentController.addScriptMessageHandler(
               any,
               any,
@@ -837,12 +836,15 @@ void main() {
 
         await testController.removeJavascriptChannels(<String>{'c'});
 
-        verify(mockUserContentController.removeAllScriptMessageHandlers());
         verify(mockUserContentController.removeAllUserScripts());
+        verify(mockUserContentController.removeScriptMessageHandler('c'));
+        verify(mockUserContentController.removeScriptMessageHandler('d'));
 
         final List<dynamic> javaScriptChannels = verify(
           mockUserContentController.addScriptMessageHandler(
-              captureAny, captureAny),
+            captureAny,
+            captureAny,
+          ),
         ).captured;
         expect(
           javaScriptChannels[0],

@@ -4,29 +4,16 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:simple_ast/annotations.dart';
 
 import '../common/instance_manager.dart';
 import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
 import 'web_kit_api_impls.dart';
 
-const SimpleTypeAnnotation nsObject = SimpleTypeAnnotation(
-  customValues: <String, Object?>{'objcName': 'NSObject'},
-);
-
-const SimpleTypeAnnotation nsString = SimpleTypeAnnotation(
-  customValues: <String, Object?>{'objcName': 'NSString'},
-);
-
-const SimpleTypeAnnotation nsNumber = SimpleTypeAnnotation(
-  customValues: <String, Object?>{'objcName': 'NSNumber'},
-);
-
 /// Times at which to inject script content into a webpage.
 ///
 /// Wraps [WKUserScriptInjectionTime](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime?language=objc).
-@SimpleEnumAnnotation()
+
 enum WKUserScriptInjectionTime {
   /// Inject the script after the creation of the webpage’s document element, but before loading any other content.
   ///
@@ -42,7 +29,7 @@ enum WKUserScriptInjectionTime {
 /// The media types that require a user gesture to begin playing.
 ///
 /// Wraps [WKAudiovisualMediaTypes](https://developer.apple.com/documentation/webkit/wkaudiovisualmediatypes?language=objc).
-@SimpleEnumAnnotation()
+
 enum WKAudiovisualMediaType {
   /// No media types require a user gesture to begin playing.
   ///
@@ -68,7 +55,7 @@ enum WKAudiovisualMediaType {
 /// Types of data that websites store.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
-@SimpleEnumAnnotation()
+
 enum WKWebsiteDataType {
   /// Cookies.
   cookies,
@@ -226,10 +213,6 @@ class WKScriptMessage {
 /// Encapsulates the standard behaviors to apply to websites.
 ///
 /// Wraps [WKPreferences](https://developer.apple.com/documentation/webkit/wkpreferences?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'Preferences',
-  'isProtocol': false,
-})
 class WKPreferences {
   /// Constructs a [WKPreferences] that is owned by [configuration].
   @visibleForTesting
@@ -253,11 +236,7 @@ class WKPreferences {
   /// Sets whether JavaScript is enabled.
   ///
   /// The default value is true.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'setJavaScriptEnabledForPreferencesWithIdentifier',
-    'returnsVoid': true,
-  })
-  Future<void> setJavaScriptEnabled(@nsNumber bool enabled) {
+  Future<void> setJavaScriptEnabled(bool enabled) {
     return _preferencesApi.setJavaScriptEnabledForInstances(this, enabled);
   }
 }
@@ -265,10 +244,7 @@ class WKPreferences {
 /// Manages cookies, disk and memory caches, and other types of data for a web view.
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'WebsiteDataStore',
-  'isProtocol': false,
-})
+
 class WKWebsiteDataStore {
   WKWebsiteDataStore._({
     BinaryMessenger? binaryMessenger,
@@ -318,17 +294,10 @@ class WKWebsiteDataStore {
   /// Removes website data that changed after the specified date.
   ///
   /// Returns whether any data was removed.
-  @nsNumber
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'removeDataFromDataStoreWithIdentifier',
-    'returnsVoid': false,
-  })
+
   Future<bool> removeDataOfTypes(
-    @SimpleTypeAnnotation(customValues: <String, Object?>{
-      'objcName': 'NSArray<FWFWKWebsiteDataTypeEnumData *>'
-    })
-        Set<WKWebsiteDataType> dataTypes,
-    @nsNumber DateTime since,
+    Set<WKWebsiteDataType> dataTypes,
+    DateTime since,
   ) {
     return _websiteDataStoreApi.removeDataOfTypesForInstances(
       this,
@@ -341,10 +310,7 @@ class WKWebsiteDataStore {
 /// An object that manages the HTTP cookies associated with a particular web view.
 ///
 /// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'HttpCookieStore',
-  'isProtocol': false,
-})
+
 class WKHttpCookieStore extends NSObject {
   WKHttpCookieStore._({
     BinaryMessenger? binaryMessenger,
@@ -375,15 +341,8 @@ class WKHttpCookieStore extends NSObject {
   final WKHttpCookieStoreHostApiImpl _httpCookieStoreApi;
 
   /// Adds a cookie to the cookie store.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'setCookieForStoreWithIdentifier',
-    'returnsVoid': true,
-  })
-  Future<void> setCookie(
-      @SimpleTypeAnnotation(customValues: <String, Object?>{
-    'objcName': 'NSHttpCookie'
-  })
-          NSHttpCookie cookie) {
+
+  Future<void> setCookie(NSHttpCookie cookie) {
     return _httpCookieStoreApi.setCookieForInsances(this, cookie);
   }
 }
@@ -391,10 +350,7 @@ class WKHttpCookieStore extends NSObject {
 /// An interface for receiving messages from JavaScript code running in a webpage.
 ///
 /// Wraps [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc)
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'ScriptMessageHandler',
-  'isProtocol': true,
-})
+
 class WKScriptMessageHandler {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler({
@@ -414,7 +370,6 @@ class WKScriptMessageHandler {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setDidReceiveScriptMessage(
     void Function(
       WKUserContentController userContentController,
@@ -435,10 +390,7 @@ class WKScriptMessageHandler {
 ///   code.
 ///
 /// Wraps [WKUserContentController](https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'UserContentController',
-  'isProtocol': false,
-})
+
 class WKUserContentController {
   /// Constructs a [WKUserContentController] that is owned by [configuration].
   @visibleForTesting
@@ -469,16 +421,10 @@ class WKUserContentController {
   /// specify the string `MyFunction`, the user content controller defines the `
   /// `window.webkit.messageHandlers.MyFunction.postMessage()` function in
   /// JavaScript.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'addScriptMessageHandlerForControllerWithIdentifier',
-    'returnsVoid': true,
-  })
+
   Future<void> addScriptMessageHandler(
-    @SimpleTypeAnnotation(customValues: <String, Object?>{
-      'objcName': 'WKScriptMessageHandler'
-    })
-        WKScriptMessageHandler handler,
-    @nsString String name,
+    WKScriptMessageHandler handler,
+    String name,
   ) {
     assert(name.isNotEmpty);
     return _userContentControllerApi.addScriptMessageHandlerForInstances(
@@ -497,11 +443,8 @@ class WKUserContentController {
   /// using the [addScriptMessageHandler] method. This method removes the
   /// message handler from the page content world. If you installed the message
   /// handler in a different content world, this method doesn’t remove it.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'removeScriptMessageHandlerForControllerWithIdentifier',
-    'returnsVoid': true,
-  })
-  Future<void> removeScriptMessageHandler(@nsString String name) {
+
+  Future<void> removeScriptMessageHandler(String name) {
     return _userContentControllerApi.removeScriptMessageHandlerForInstances(
       this,
       name,
@@ -509,10 +452,7 @@ class WKUserContentController {
   }
 
   /// Uninstalls all custom message handlers associated with the user content controller.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'removeAllScriptMessageHandlersForControllerWithIdentifier',
-    'returnsVoid': true,
-  })
+
   Future<void> removeAllScriptMessageHandlers() {
     return _userContentControllerApi.removeAllScriptMessageHandlersForInstances(
       this,
@@ -520,24 +460,14 @@ class WKUserContentController {
   }
 
   /// Injects the specified script into the webpage’s content.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'addUserScriptForControllerWithIdentifier',
-    'returnsVoid': true,
-  })
-  Future<void> addUserScript(
-      @SimpleTypeAnnotation(customValues: <String, Object?>{
-    'objcName': 'WKUserScript'
-  })
-          WKUserScript userScript) {
+
+  Future<void> addUserScript(WKUserScript userScript) {
     return _userContentControllerApi.addUserScriptForInstances(
         this, userScript);
   }
 
   /// Removes all user scripts from the web view.
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'removeAllUserScriptsForControllerWithIdentifier',
-    'returnsVoid': true,
-  })
+
   Future<void> removeAllUserScripts() {
     return _userContentControllerApi.removeAllUserScriptsForInstances(this);
   }
@@ -546,10 +476,7 @@ class WKUserContentController {
 /// A collection of properties that you use to initialize a web view.
 ///
 /// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'WebViewConfiguration',
-  'isProtocol': false,
-})
+
 class WKWebViewConfiguration {
   /// Constructs a [WKWebViewConfiguration].
   factory WKWebViewConfiguration({
@@ -622,11 +549,8 @@ class WKWebViewConfiguration {
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   ///
   /// Sets [WKWebViewConfiguration.allowsInlineMediaPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1614793-allowsinlinemediaplayback?language=objc).
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'setAllowsInlineMediaPlaybackForConfigurationWithIdentifier',
-    'returnsVoid': true,
-  })
-  Future<void> setAllowsInlineMediaPlayback(@nsNumber bool allow) {
+
+  Future<void> setAllowsInlineMediaPlayback(bool allow) {
     return _webViewConfigurationApi.setAllowsInlineMediaPlaybackForInstances(
       this,
       allow,
@@ -639,15 +563,9 @@ class WKWebViewConfiguration {
   /// required to begin playing media.
   ///
   /// Sets [WKWebViewConfiguration.mediaTypesRequiringUserActionForPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1851524-mediatypesrequiringuseractionfor?language=objc).
-  @SimpleMethodAnnotation(customValues: <String, Object>{
-    'objcName': 'setMediaTypesRequiresUserActionForConfigurationWithIdentifier',
-    'returnsVoid': true,
-  })
+
   Future<void> setMediaTypesRequiringUserActionForPlayback(
-    @SimpleTypeAnnotation(customValues: <String, Object?>{
-      'objcName': 'NSArray<FWFWKAudiovisualMediaTypeEnumData *>'
-    })
-        Set<WKAudiovisualMediaType> types,
+    Set<WKAudiovisualMediaType> types,
   ) {
     assert(types.isNotEmpty);
     return _webViewConfigurationApi
@@ -661,10 +579,7 @@ class WKWebViewConfiguration {
 /// The methods for presenting native user interface elements on behalf of a webpage.
 ///
 /// Wraps [WKUIDelegate](https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'UIDelegate',
-  'isProtocol': true,
-})
+
 class WKUIDelegate {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate({
@@ -680,7 +595,7 @@ class WKUIDelegate {
   final WKUIDelegateHostApiImpl _uiDelegateApi;
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
-  @SimpleMethodAnnotation(ignore: true)
+
   Future<void> setOnCreateWebView(
     void Function(
       WKWebViewConfiguration configuration,
@@ -698,10 +613,7 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
-@SimpleClassAnnotation(customValues: <String, Object?>{
-  'nameWithoutPrefix': 'NavigationDelegate',
-  'isProtocol': true,
-})
+
 class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
@@ -722,7 +634,6 @@ class WKNavigationDelegate extends NSObject {
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
 
   /// Called when navigation from the main frame has started.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setDidStartProvisionalNavigation(
     void Function(WKWebView webView, String? url)?
         didStartProvisionalNavigation,
@@ -731,7 +642,6 @@ class WKNavigationDelegate extends NSObject {
   }
 
   /// Called when navigation is complete.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setDidFinishNavigation(
     void Function(WKWebView webView, String? url)? didFinishNavigation,
   ) {
@@ -742,7 +652,6 @@ class WKNavigationDelegate extends NSObject {
   }
 
   /// Called when permission is needed to navigate to new content.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setDecidePolicyForNavigationAction(
       Future<WKNavigationActionPolicy> Function(
     WKWebView webView,
@@ -753,7 +662,6 @@ class WKNavigationDelegate extends NSObject {
   }
 
   /// Called when an error occurred during navigation.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setDidFailNavigation(
     void Function(WKWebView webView, NSError error)? didFailNavigation,
   ) {
@@ -761,7 +669,6 @@ class WKNavigationDelegate extends NSObject {
   }
 
   /// Called when an error occurred during the early navigation process.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setDidFailProvisionalNavigation(
     void Function(WKWebView webView, NSError error)?
         didFailProvisionalNavigation,
@@ -770,7 +677,6 @@ class WKNavigationDelegate extends NSObject {
   }
 
   /// Called when the web view’s content process was terminated.
-  @SimpleMethodAnnotation(ignore: true)
   Future<void> setWebViewWebContentProcessDidTerminate(
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   ) {
