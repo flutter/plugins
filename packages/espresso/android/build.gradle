@@ -77,7 +77,7 @@ dependencies {
     api 'androidx.test.espresso:espresso-intents:3.1.0'
     api 'androidx.test.espresso:espresso-accessibility:3.1.0'
     api 'androidx.test.espresso:espresso-web:3.1.0'
-    api 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
+    api 'androidx.test.espresso.idling:idling-concurrent:3.4.0'
 
     // The following Espresso dependency can be either "implementation"
     // or "androidTestImplementation", depending on whether you want the
