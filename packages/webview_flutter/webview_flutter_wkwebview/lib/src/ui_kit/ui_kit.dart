@@ -16,7 +16,9 @@ import 'ui_kit_api_impls.dart';
 /// A view that allows the scrolling and zooming of its contained views.
 ///
 /// Wraps [UIScrollView](https://developer.apple.com/documentation/uikit/uiscrollview?language=objc).
-@SimpleClassAnnotation()
+@SimpleClassAnnotation(
+  customValues: <String, Object?>{'nameWithoutPrefix': 'ScrollView'},
+)
 class UIScrollView extends UIView {
   /// Constructs a [UIScrollView] that is owned by [webView].
   UIScrollView.fromWebView(
@@ -35,6 +37,11 @@ class UIScrollView extends UIView {
   /// Point at which the origin of the content view is offset from the origin of the scroll view.
   ///
   /// Represents [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
+  @nsNumber
+  @SimpleMethodAnnotation(customValues: <String, Object>{
+    'objcName': 'contentOffsetForScrollViewWithIdentifier',
+    'returnsVoid': false,
+  })
   Future<Point<double>> getContentOffset() {
     return _scrollViewApi.getContentOffsetForInstances(this);
   }
@@ -43,7 +50,11 @@ class UIScrollView extends UIView {
   ///
   /// This method is not a part of UIKit and is only a helper method to make
   /// scrollBy atomic.
-  Future<void> scrollBy(Point<double> offset) {
+  @SimpleMethodAnnotation(customValues: <String, Object>{
+    'objcName': 'scrollByForScrollViewWithIdentifier',
+    'returnsVoid': true,
+  })
+  Future<void> scrollBy(@nsNumber Point<double> offset) {
     return _scrollViewApi.scrollByForInstances(this, offset);
   }
 
@@ -52,7 +63,11 @@ class UIScrollView extends UIView {
   /// The default value is `Point<double>(0.0, 0.0)`.
   ///
   /// Sets [WKWebView.contentOffset](https://developer.apple.com/documentation/uikit/uiscrollview/1619404-contentoffset?language=objc).
-  Future<void> setContentOffset(Point<double> offset) {
+  @SimpleMethodAnnotation(customValues: <String, Object>{
+    'objcName': 'setContentOffsetForScrollViewWithIdentifier',
+    'returnsVoid': true,
+  })
+  Future<void> setContentOffset(@nsNumber Point<double> offset) {
     return _scrollViewApi.setContentOffsetForInstances(this, offset);
   }
 }
@@ -60,7 +75,9 @@ class UIScrollView extends UIView {
 /// Manages the content for a rectangular area on the screen.
 ///
 /// Wraps [UIView](https://developer.apple.com/documentation/uikit/uiview?language=objc).
-@SimpleClassAnnotation()
+@SimpleClassAnnotation(
+  customValues: <String, Object?>{'nameWithoutPrefix': 'UIView'},
+)
 class UIView extends NSObject {
   /// Constructs an [NSObject].
   UIView({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
@@ -76,14 +93,22 @@ class UIView extends NSObject {
   /// The default value is null, which results in a transparent background color.
   ///
   /// Sets [UIView.backgroundColor](https://developer.apple.com/documentation/uikit/uiview/1622591-backgroundcolor?language=objc).
-  Future<void> setBackgroundColor(Color? color) {
+  @SimpleMethodAnnotation(customValues: <String, Object>{
+    'objcName': 'setBackgroundColorForViewWithIdentifier',
+    'returnsVoid': true,
+  })
+  Future<void> setBackgroundColor(@nsNumber Color? color) {
     return _viewApi.setBackgroundColorForInstances(this, color);
   }
 
   /// Determines whether the view is opaque.
   ///
   /// Sets [UIView.opaque](https://developer.apple.com/documentation/uikit/uiview?language=objc).
-  Future<void> setOpaque(bool opaque) {
+  @SimpleMethodAnnotation(customValues: <String, Object>{
+    'objcName': 'setOpaqueForViewWithIdentifier',
+    'returnsVoid': true,
+  })
+  Future<void> setOpaque(@nsNumber bool opaque) {
     return _viewApi.setOpaqueForInstances(this, opaque);
   }
 }

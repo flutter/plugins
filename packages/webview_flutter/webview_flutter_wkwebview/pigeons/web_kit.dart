@@ -246,9 +246,6 @@ abstract class WKWebsiteDataStoreHostApi {
 /// See https://developer.apple.com/documentation/uikit/uiview?language=objc.
 @HostApi(dartHostTestHandler: 'TestUIViewHostApi')
 abstract class UIViewHostApi {
-  @ObjCSelector('contentOffsetForViewWithIdentifier:')
-  List<double?> getContentOffset(int instanceId);
-
   @ObjCSelector('setBackgroundColorForViewWithIdentifier:toValue:')
   void setBackgroundColor(int instanceId, int? value);
 
@@ -267,7 +264,7 @@ abstract class UIScrollViewHostApi {
   @ObjCSelector('contentOffsetForScrollViewWithIdentifier:')
   List<double?> getContentOffset(int instanceId);
 
-  @ObjCSelector('scrollByForScrollViewWithIdentifier:toX:y:')
+  @ObjCSelector('scrollByForScrollViewWithIdentifier:x:y:')
   void scrollBy(int instanceId, double x, double y);
 
   @ObjCSelector('setContentOffsetForScrollViewWithIdentifier:toX:y:')

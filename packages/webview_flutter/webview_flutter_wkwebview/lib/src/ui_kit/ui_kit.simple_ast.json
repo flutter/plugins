@@ -44,12 +44,17 @@
             "isEnum": false,
             "isSimpleClass": false,
             "isUnknownOrUnsupportedType": false,
-            "customValues": {}
+            "customValues": {
+              "objcName": "NSNumber"
+            }
           },
           "returnsVoid": false,
           "static": false,
           "parameters": [],
-          "customValues": {}
+          "customValues": {
+            "objcName": "contentOffsetForScrollViewWithIdentifier",
+            "returnsVoid": false
+          }
         },
         {
           "name": "scrollBy",
@@ -110,12 +115,17 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSNumber"
+                }
               },
               "customValues": {}
             }
           ],
-          "customValues": {}
+          "customValues": {
+            "objcName": "scrollByForScrollViewWithIdentifier",
+            "returnsVoid": true
+          }
         },
         {
           "name": "setContentOffset",
@@ -176,12 +186,17 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSNumber"
+                }
               },
               "customValues": {}
             }
           ],
-          "customValues": {}
+          "customValues": {
+            "objcName": "setContentOffsetForScrollViewWithIdentifier",
+            "returnsVoid": true
+          }
         }
       ],
       "constructors": [
@@ -243,7 +258,9 @@
         }
       ],
       "fields": [],
-      "customValues": {}
+      "customValues": {
+        "nameWithoutPrefix": "ScrollView"
+      }
     },
     {
       "name": "UIView",
@@ -293,12 +310,17 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSNumber"
+                }
               },
               "customValues": {}
             }
           ],
-          "customValues": {}
+          "customValues": {
+            "objcName": "setBackgroundColorForViewWithIdentifier",
+            "returnsVoid": true
+          }
         },
         {
           "name": "setOpaque",
@@ -345,12 +367,17 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSNumber"
+                }
               },
               "customValues": {}
             }
           ],
-          "customValues": {}
+          "customValues": {
+            "objcName": "setOpaqueForViewWithIdentifier",
+            "returnsVoid": true
+          }
         }
       ],
       "constructors": [
@@ -395,7 +422,9 @@
         }
       ],
       "fields": [],
-      "customValues": {}
+      "customValues": {
+        "nameWithoutPrefix": "UIView"
+      }
     }
   ],
   "functions": [],

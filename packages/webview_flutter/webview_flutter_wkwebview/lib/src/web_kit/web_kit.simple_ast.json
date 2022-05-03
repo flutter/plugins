@@ -364,7 +364,7 @@
                 "isClass": true,
                 "isFunction": false,
                 "isEnum": false,
-                "isSimpleClass": true,
+                "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
                 "customValues": {
                   "objcName": "NSHttpCookie"

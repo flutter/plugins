@@ -202,7 +202,6 @@ class NSUrlRequest {
 ///
 /// Wraps [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
 @immutable
-@SimpleClassAnnotation(customValues: <String, Object?>{'isDataClass': true})
 class NSError {
   /// Constructs an [NSError].
   const NSError({
@@ -227,7 +226,6 @@ class NSError {
 ///
 /// Wraps [NSHTTPCookie](https://developer.apple.com/documentation/foundation/nshttpcookie).
 @immutable
-@SimpleClassAnnotation(customValues: <String, Object?>{'isDataClass': true})
 class NSHttpCookie {
   /// Initializes an HTTP cookie object using the provided properties.
   const NSHttpCookie.withProperties(this.properties);
@@ -237,7 +235,9 @@ class NSHttpCookie {
 }
 
 /// The root class of most Objective-C class hierarchies.
-@SimpleClassAnnotation()
+@SimpleClassAnnotation(customValues: <String, Object?>{
+  'nameWithoutPrefix': 'Object',
+})
 class NSObject {
   /// Constructs an [NSObject].
   NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
