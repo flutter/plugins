@@ -51,7 +51,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_maps_flutter/google_maps_flutter/android"
     commit-message:
-      prefix: "[maps]"
+      prefix: "[google_maps]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -59,7 +59,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_maps_flutter/google_maps_flutter/example/android/app"
     commit-message:
-      prefix: "[maps]"
+      prefix: "[google_maps]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -91,7 +91,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/in_app_purchase/in_app_purchase_android/android"
     commit-message:
-      prefix: "[in_app]"
+      prefix: "[in_app_pur]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -99,7 +99,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/in_app_purchase/in_app_purchase_android/example/android/app"
     commit-message:
-      prefix: "[in_app]"
+      prefix: "[in_app_pur]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -107,7 +107,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/in_app_purchase/in_app_purchase/example/android/app"
     commit-message:
-      prefix: "[in_app]"
+      prefix: "[in_app_pur]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
