@@ -35,7 +35,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/flutter_plugin_android_lifecycle/android"
     commit-message:
-      prefix: "[flutter_plugin_android_lifecycle]"
+      prefix: "[lifecycle]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -43,7 +43,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/flutter_plugin_android_lifecycle/example/android/app"
     commit-message:
-      prefix: "[flutter_plugin_android_lifecycle]"
+      prefix: "[lifecycle]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -51,7 +51,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_maps_flutter/google_maps_flutter/android"
     commit-message:
-      prefix: "[google_maps_flutter]"
+      prefix: "[google_maps]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -59,7 +59,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_maps_flutter/google_maps_flutter/example/android/app"
     commit-message:
-      prefix: "[google_maps_flutter]"
+      prefix: "[google_maps]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -67,7 +67,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_sign_in/google_sign_in/example/android/app"
     commit-message:
-      prefix: "[google_sign_in]"
+      prefix: "[sign_in]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -75,7 +75,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_sign_in/google_sign_in_android/android"
     commit-message:
-      prefix: "[google_sign_in_android]"
+      prefix: "[sign_in]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -83,7 +83,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/google_sign_in/google_sign_in_android/example/android/app"
     commit-message:
-      prefix: "[google_sign_in_android]"
+      prefix: "[sign_in]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -91,7 +91,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/in_app_purchase/in_app_purchase_android/android"
     commit-message:
-      prefix: "[in_app_purchase_android]"
+      prefix: "[in_app_pur]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -99,7 +99,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/in_app_purchase/in_app_purchase_android/example/android/app"
     commit-message:
-      prefix: "[in_app_purchase_android]"
+      prefix: "[in_app_pur]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -107,7 +107,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/in_app_purchase/in_app_purchase/example/android/app"
     commit-message:
-      prefix: "[in_app_purchase]"
+      prefix: "[in_app_pur]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -123,7 +123,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/image_picker/image_picker_android/android"
     commit-message:
-      prefix: "[image_picker_android]"
+      prefix: "[image_picker]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -131,7 +131,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/image_picker/image_picker_android/example/android/app"
     commit-message:
-      prefix: "[image_picker_android]"
+      prefix: "[image_picker]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -139,7 +139,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/local_auth/local_auth_android/android"
     commit-message:
-      prefix: "[local_auth_android]"
+      prefix: "[local_auth]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -147,7 +147,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/local_auth/local_auth_android/example/android/app"
     commit-message:
-      prefix: "[local_auth_android]"
+      prefix: "[local_auth]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -171,7 +171,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/path_provider/path_provider_android/android"
     commit-message:
-      prefix: "[path_provider_android]"
+      prefix: "[path_provider]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -179,7 +179,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/path_provider/path_provider_android/example/android/app"
     commit-message:
-      prefix: "[path_provider_android]"
+      prefix: "[path_provider]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -187,7 +187,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/quick_actions/quick_actions_android/android"
     commit-message:
-      prefix: "[quick_actions_android]"
+      prefix: "[quick_actions]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -195,7 +195,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/quick_actions/quick_actions_android/example/android/app"
     commit-message:
-      prefix: "[quick_actions_android]"
+      prefix: "[quick_actions]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -211,7 +211,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/shared_preferences/shared_preferences/example/android/app"
     commit-message:
-      prefix: "[shared_preferences]"
+      prefix: "[shared_pref]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -219,7 +219,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/shared_preferences/shared_preferences_android/example/android/app"
     commit-message:
-      prefix: "[shared_preferences_android]"
+      prefix: "[shared_pref]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -227,7 +227,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/url_launcher/url_launcher_android/android"
     commit-message:
-      prefix: "[url_launcher_android]"
+      prefix: "[url_launcher]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -235,7 +235,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/url_launcher/url_launcher_android/example/android/app"
     commit-message:
-      prefix: "[url_launcher_android]"
+      prefix: "[url_launcher]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -251,7 +251,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/video_player/video_player_android/android"
     commit-message:
-      prefix: "[video_player_android]"
+      prefix: "[video_player]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -259,7 +259,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/video_player/video_player_android/example/android/app"
     commit-message:
-      prefix: "[video_player_android]"
+      prefix: "[video_player]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -267,7 +267,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/webview_flutter/webview_flutter/example/android/app"
     commit-message:
-      prefix: "[webview_flutter]"
+      prefix: "[webview]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -275,7 +275,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/webview_flutter/webview_flutter_android/android"
     commit-message:
-      prefix: "[webview_flutter_android]"
+      prefix: "[webview]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -283,7 +283,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/packages/webview_flutter/webview_flutter_android/example/android"
     commit-message:
-      prefix: "[webview_flutter_android]"
+      prefix: "[webview]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
