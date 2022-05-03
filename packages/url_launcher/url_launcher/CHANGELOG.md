@@ -1,6 +1,7 @@
 ## NEXT
 
 * Removes unnecessary imports.
+* Updates minimal url_launcher_android version
 
 ## 6.1.0
 
