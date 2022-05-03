@@ -7,7 +7,6 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:flutter_plugin_tools/src/create_all_plugins_app_command.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
@@ -49,8 +48,7 @@ void main() {
       createFakePlugin('pluginc', packagesDir);
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
-      final List<String> pubspec =
-          command.appDirectory.childFile('pubspec.yaml').readAsLinesSync();
+      final List<String> pubspec = command.app.pubspecFile.readAsLinesSync();
 
       expect(
           pubspec,
@@ -67,8 +65,7 @@ void main() {
       createFakePlugin('pluginc', packagesDir);
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
-      final List<String> pubspec =
-          command.appDirectory.childFile('pubspec.yaml').readAsLinesSync();
+      final List<String> pubspec = command.app.pubspecFile.readAsLinesSync();
 
       expect(
           pubspec,
@@ -99,8 +96,7 @@ void main() {
       createFakePlugin('plugina', packagesDir);
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
-      final Pubspec generatedPubspec =
-          RepositoryPackage(command.appDirectory).parsePubspec();
+      final Pubspec generatedPubspec = command.app.parsePubspec();
 
       const String dartSdkKey = 'sdk';
       expect(generatedPubspec.environment?[dartSdkKey],
@@ -115,8 +111,8 @@ void main() {
       await runCapturingPrint(runner,
           <String>['all-plugins-app', '--output-dir=${customOutputDir.path}']);
 
-      expect(command.appDirectory.path,
-          customOutputDir.childDirectory('all_plugins').path);
+      expect(
+          command.app.path, customOutputDir.childDirectory('all_plugins').path);
     });
 
     test('logs exclusions', () async {

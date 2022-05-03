@@ -384,7 +384,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final Version fromPubspec = pubspec.version!;
 
     // get first version from CHANGELOG
-    final File changelog = package.directory.childFile('CHANGELOG.md');
+    final File changelog = package.changelogFile;
     final List<String> lines = changelog.readAsLinesSync();
     String? firstLineWithText;
     final Iterator<String> iterator = lines.iterator;

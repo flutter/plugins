@@ -30,6 +30,10 @@ const String platformWindows = 'windows';
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
 
+/// Target platforms supported by Flutter.
+// ignore: public_member_api_docs
+enum FlutterPlatform { android, ios, linux, macos, web, windows }
+
 /// Returns whether the given directory is a Dart package.
 bool isPackage(FileSystemEntity entity) {
   if (entity is! Directory) {

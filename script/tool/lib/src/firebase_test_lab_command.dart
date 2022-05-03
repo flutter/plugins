@@ -146,7 +146,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     required RepositoryPackage package,
   }) async {
     final Directory androidDirectory =
-        example.directory.childDirectory('android');
+        example.platformDirectory(FlutterPlatform.android);
     if (!androidDirectory.existsSync()) {
       return PackageResult.skip(
           '${example.displayName} does not support Android.');
@@ -171,7 +171,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     }
 
     // Ensures that gradle wrapper exists
-    final GradleProject project = GradleProject(example.directory,
+    final GradleProject project = GradleProject(example,
         processRunner: processRunner, platform: platform);
     if (!await _ensureGradleWrapperExists(project)) {
       return PackageResult.fail(<String>['Unable to build example apk']);

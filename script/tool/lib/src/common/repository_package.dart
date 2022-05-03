@@ -9,6 +9,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'core.dart';
 
 export 'package:pubspec_parse/pubspec_parse.dart' show Pubspec;
+export 'core.dart' show FlutterPlatform;
 
 /// A package in the repository.
 //
@@ -52,6 +53,44 @@ class RepositoryPackage {
 
   /// The package's top-level README.
   File get readmeFile => directory.childFile('README.md');
+
+  /// The package's top-level README.
+  File get changelogFile => directory.childFile('CHANGELOG.md');
+
+  /// The package's top-level README.
+  File get authorsFile => directory.childFile('AUTHORS');
+
+  /// The lib directory containing the package's code.
+  Directory get libDirectory => directory.childDirectory('lib');
+
+  /// The test directory containing the package's Dart tests.
+  Directory get testDirectory => directory.childDirectory('test');
+
+  /// Returns the directory containing support for [platform].
+  Directory platformDirectory(FlutterPlatform platform) {
+    late final String directoryName;
+    switch (platform) {
+      case FlutterPlatform.android:
+        directoryName = 'android';
+        break;
+      case FlutterPlatform.ios:
+        directoryName = 'ios';
+        break;
+      case FlutterPlatform.linux:
+        directoryName = 'linux';
+        break;
+      case FlutterPlatform.macos:
+        directoryName = 'macos';
+        break;
+      case FlutterPlatform.web:
+        directoryName = 'web';
+        break;
+      case FlutterPlatform.windows:
+        directoryName = 'windows';
+        break;
+    }
+    return directory.childDirectory(directoryName);
+  }
 
   late final Pubspec _parsedPubspec =
       Pubspec.parse(pubspecFile.readAsStringSync());
