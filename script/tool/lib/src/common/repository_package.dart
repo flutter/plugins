@@ -112,13 +112,4 @@ class RepositoryPackage {
         .map((FileSystemEntity entity) =>
             RepositoryPackage(entity as Directory));
   }
-
-  /// Returns the example directory, assuming there is only one.
-  ///
-  /// DO NOT USE THIS METHOD. It exists only to easily find code that was
-  /// written to use a single example and needs to be restructured to handle
-  /// multiple examples. New code should always use [getExamples].
-  // TODO(stuartmorgan): Eliminate all uses of this.
-  RepositoryPackage getSingleExampleDeprecated() =>
-      RepositoryPackage(directory.childDirectory('example'));
 }
