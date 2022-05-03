@@ -58,5 +58,5 @@ dependencies {
     testImplementation 'org.json:json:20180813'
     testImplementation 'org.mockito:mockito-core:3.6.0'
     androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
