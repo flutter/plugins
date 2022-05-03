@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:simple_ast/annotations.dart';
 
 import '../common/instance_manager.dart';
+import '../web_kit/web_kit.dart';
 import 'foundation_api_impls.dart';
 
 /// The values that can be returned in a change map.
@@ -253,10 +254,17 @@ class NSObject {
   final NSObjectHostApiImpl _api;
 
   /// Registers the observer object to receive KVO notifications.
+  @SimpleMethodAnnotation(customValues: <String, Object?>{
+    'returnsVoid': true,
+    'objcName': 'addObserverForObjectWithIdentifier',
+  })
   Future<void> addObserver(
-    NSObject observer, {
-    required String keyPath,
-    required Set<NSKeyValueObservingOptions> options,
+    @nsNumber NSObject observer, {
+    @nsString required String keyPath,
+    @SimpleTypeAnnotation(customValues: <String, Object?>{
+      'objcName': 'NSArray<NSKeyValueObservingOptionsEnumData *>'
+    })
+        required Set<NSKeyValueObservingOptions> options,
   }) {
     assert(options.isNotEmpty);
     return _api.addObserverForInstances(
@@ -268,11 +276,20 @@ class NSObject {
   }
 
   /// Stops the observer object from receiving change notifications for the property.
-  Future<void> removeObserver(NSObject observer, {required String keyPath}) {
+  @SimpleMethodAnnotation(customValues: <String, Object?>{
+    'returnsVoid': true,
+    'objcName': 'removeObserverForObjectWithIdentifier',
+  })
+  Future<void> removeObserver(@nsNumber NSObject observer,
+      {@nsString required String keyPath}) {
     return _api.removeObserverForInstances(this, observer, keyPath);
   }
 
   /// Release the reference to the Objective-C object.
+  @SimpleMethodAnnotation(customValues: <String, Object?>{
+    'returnsVoid': true,
+    'objcName': 'disposeObjectWithIdentifier',
+  })
   Future<void> dispose() {
     return _api.disposeForInstances(this);
   }

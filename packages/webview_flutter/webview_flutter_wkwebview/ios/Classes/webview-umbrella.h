@@ -23,3 +23,4 @@
 #import <webview_flutter_wkwebview/JavaScriptChannelHandler.h>
 #import <webview_flutter_wkwebview/FWFScrollViewHostApi.h>
 #import <webview_flutter_wkwebview/FWFUIViewHostApi.h>
+#import <webview_flutter_wkwebview/FWFObjectHostApi.h>

@@ -24,6 +24,7 @@
 		8FB79B852820A3A400C101D3 /* FWFUIDelegateHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B842820A3A400C101D3 /* FWFUIDelegateHostApiTests.m */; };
 		8FB79B8F2820BAB300C101D3 /* FWFScrollViewHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B8E2820BAB300C101D3 /* FWFScrollViewHostApiTests.m */; };
 		8FB79B912820BAC700C101D3 /* FWFUIViewHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B902820BAC700C101D3 /* FWFUIViewHostApiTests.m */; };
+		8FB79B972821985200C101D3 /* FWFObjectHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B962821985200C101D3 /* FWFObjectHostApiTests.m */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -93,6 +94,7 @@
 		8FB79B842820A3A400C101D3 /* FWFUIDelegateHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFUIDelegateHostApiTests.m; sourceTree = "<group>"; };
 		8FB79B8E2820BAB300C101D3 /* FWFScrollViewHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFScrollViewHostApiTests.m; sourceTree = "<group>"; };
 		8FB79B902820BAC700C101D3 /* FWFUIViewHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFUIViewHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B962821985200C101D3 /* FWFObjectHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFObjectHostApiTests.m; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -165,6 +167,7 @@
 				8FB79B842820A3A400C101D3 /* FWFUIDelegateHostApiTests.m */,
 				8FB79B8E2820BAB300C101D3 /* FWFScrollViewHostApiTests.m */,
 				8FB79B902820BAC700C101D3 /* FWFUIViewHostApiTests.m */,
+				8FB79B962821985200C101D3 /* FWFObjectHostApiTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -464,6 +467,7 @@
 			files = (
 				8FA6A87928062CD000A4B183 /* FWFInstanceManagerTests.m in Sources */,
 				8FB79B852820A3A400C101D3 /* FWFUIDelegateHostApiTests.m in Sources */,
+				8FB79B972821985200C101D3 /* FWFObjectHostApiTests.m in Sources */,
 				8FB79B672820453400C101D3 /* FWFHTTPCookieStoreHostApiTests.m in Sources */,
 				8FB79B5328134C3100C101D3 /* FWFWebViewHostApiTests.m in Sources */,
 				8FB79B73282096B500C101D3 /* FWFScriptMessageHandlerHostApiTests.m in Sources */,

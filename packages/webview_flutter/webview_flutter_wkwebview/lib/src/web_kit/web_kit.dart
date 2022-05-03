@@ -11,6 +11,10 @@ import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
 import 'web_kit_api_impls.dart';
 
+const SimpleTypeAnnotation nsObject = SimpleTypeAnnotation(
+  customValues: <String, Object?>{'objcName': 'NSObject'},
+);
+
 const SimpleTypeAnnotation nsString = SimpleTypeAnnotation(
   customValues: <String, Object?>{'objcName': 'NSString'},
 );

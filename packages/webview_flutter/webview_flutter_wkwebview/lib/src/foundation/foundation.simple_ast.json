@@ -48,7 +48,9 @@
                 "isEnum": false,
                 "isSimpleClass": true,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSObject"
+                }
               },
               "customValues": {}
             },
@@ -65,7 +67,9 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSString"
+                }
               },
               "customValues": {}
             },
@@ -96,12 +100,17 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSArray<NSKeyValueObservingOptionsEnumData *>"
+                }
               },
               "customValues": {}
             }
           ],
-          "customValues": {}
+          "customValues": {
+            "returnsVoid": true,
+            "objcName": "addObserverForObjectWithIdentifier"
+          }
         },
         {
           "name": "removeObserver",
@@ -148,7 +157,9 @@
                 "isEnum": false,
                 "isSimpleClass": true,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSObject"
+                }
               },
               "customValues": {}
             },
@@ -165,12 +176,17 @@
                 "isEnum": false,
                 "isSimpleClass": false,
                 "isUnknownOrUnsupportedType": false,
-                "customValues": {}
+                "customValues": {
+                  "objcName": "NSString"
+                }
               },
               "customValues": {}
             }
           ],
-          "customValues": {}
+          "customValues": {
+            "returnsVoid": true,
+            "objcName": "removeObserverForObjectWithIdentifier"
+          }
         },
         {
           "name": "dispose",
@@ -204,7 +220,10 @@
           "returnsVoid": false,
           "static": false,
           "parameters": [],
-          "customValues": {}
+          "customValues": {
+            "returnsVoid": true,
+            "objcName": "disposeObjectWithIdentifier"
+          }
         }
       ],
       "constructors": [
