@@ -208,7 +208,7 @@ void main() {
       final options = gmaps_visualization.HeatmapLayerOptions()
         ..data = [gmaps.LatLng(0, 0)];
 
-      expect(heatmap.data, isNull);
+      expect(heatmap.data, hasLength(0));
 
       controller.update(options);
 
