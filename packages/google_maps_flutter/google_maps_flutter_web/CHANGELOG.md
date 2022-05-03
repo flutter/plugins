@@ -1,6 +1,7 @@
 ## 0.3.3
 
 * Adds support for heatmap layers.
+* Removes unnecessary imports.
 
 ## 0.3.2+1
 

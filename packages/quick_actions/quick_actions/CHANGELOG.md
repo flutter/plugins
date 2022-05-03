@@ -1,5 +1,6 @@
 ## NEXT
 
+* Removes unnecessary imports.
 * Updates minimum Flutter version to 2.8.
 * Adds OS version support information to README.
 

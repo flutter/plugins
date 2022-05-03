@@ -1,6 +1,7 @@
 ## 2.2.0
 
 * Adds support for heatmap layers.
+* Removes unnecessary imports.
 
 ## 2.1.6
 

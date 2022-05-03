@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 2.0.8
 
 * Ensures `buffering` state is only removed when the browser reports enough data

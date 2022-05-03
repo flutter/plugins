@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/git_version_finder.dart';
 import 'common/plugin_command.dart';
+import 'common/repository_package.dart';
 
 const int _exitPackageNotFound = 3;
 const int _exitCannotUpdatePubspec = 4;

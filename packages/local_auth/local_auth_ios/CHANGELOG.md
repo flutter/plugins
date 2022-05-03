@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 1.0.4
 
 * Fixes `deviceSupportsBiometrics` to return true when biometric hardware 
