@@ -19,14 +19,12 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstance:mockScrollView withIdentifier:0];
 
-  FWFScrollViewHostApiImpl *hostApi = [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+  FWFScrollViewHostApiImpl *hostApi =
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  NSArray<NSNumber *> *expectedValue = @[@1.0, @2.0];
-  XCTAssertEqualObjects(
-                        [hostApi contentOffsetForScrollViewWithIdentifier:@0
-                                                                    error:&error],
+  NSArray<NSNumber *> *expectedValue = @[ @1.0, @2.0 ];
+  XCTAssertEqualObjects([hostApi contentOffsetForScrollViewWithIdentifier:@0 error:&error],
                         expectedValue);
   XCTAssertNil(error);
 }
@@ -39,14 +37,10 @@
   [instanceManager addInstance:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
-      [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi scrollByForScrollViewWithIdentifier:@0
-                                        x:@1
-                                             y:@2
-                                         error:&error];
+  [hostApi scrollByForScrollViewWithIdentifier:@0 x:@1 y:@2 error:&error];
   XCTAssertEqual(scrollView.contentOffset.x, 2);
   XCTAssertEqual(scrollView.contentOffset.y, 4);
   XCTAssertNil(error);
@@ -59,14 +53,10 @@
   [instanceManager addInstance:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
-      [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setContentOffsetForScrollViewWithIdentifier:@0
-                            toX:@1
-                                                     y:@2
-                               error:&error];
+  [hostApi setContentOffsetForScrollViewWithIdentifier:@0 toX:@1 y:@2 error:&error];
   XCTAssertEqual(scrollView.contentOffset.x, 1);
   XCTAssertEqual(scrollView.contentOffset.y, 2);
   XCTAssertNil(error);

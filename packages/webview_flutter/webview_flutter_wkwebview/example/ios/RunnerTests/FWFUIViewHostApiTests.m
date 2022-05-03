@@ -19,14 +19,11 @@
   [instanceManager addInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostApi =
-      [[FWFUIViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setBackgroundColorForViewWithIdentifier:@0
-                            toValue:@123
-                               error:&error];
-  
+  [hostApi setBackgroundColorForViewWithIdentifier:@0 toValue:@123 error:&error];
+
   OCMVerify([mockUIView setBackgroundColor:[UIColor colorWithRed:(123 >> 16 & 0xff) / 255.0
                                                            green:(123 >> 8 & 0xff) / 255.0
                                                             blue:(123 & 0xff) / 255.0
@@ -41,13 +38,10 @@
   [instanceManager addInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostApi =
-      [[FWFUIViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setOpaqueForViewWithIdentifier:@0
-                            isOpaque:@YES
-                               error:&error];
+  [hostApi setOpaqueForViewWithIdentifier:@0 isOpaque:@YES error:&error];
   OCMVerify([mockUIView setOpaque:YES]);
   XCTAssertNil(error);
 }

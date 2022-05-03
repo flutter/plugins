@@ -18,20 +18,29 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstance:mockObject withIdentifier:0];
 
-  FWFObjectHostApiImpl *hostApi = [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
-  
+  FWFObjectHostApiImpl *hostApi =
+      [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
+
   NSObject *observerObject = [[NSObject alloc] init];
   [instanceManager addInstance:observerObject withIdentifier:1];
 
   FlutterError *error;
-  [hostApi addObserverForObjectWithIdentifier:@0
-                            observerIdentifier:@1
-                            keyPath:@"myKey"
-                            options:@[[FWFNSKeyValueObservingOptionsEnumData makeWithValue:FWFNSKeyValueObservingOptionsEnumOldValue],
-                                      [FWFNSKeyValueObservingOptionsEnumData makeWithValue:FWFNSKeyValueObservingOptionsEnumNewValue]]
-                              error:&error];
-  
-  OCMVerify([mockObject addObserver:observerObject forKeyPath:@"myKey" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:nil]);
+  [hostApi
+      addObserverForObjectWithIdentifier:@0
+                      observerIdentifier:@1
+                                 keyPath:@"myKey"
+                                 options:@[
+                                   [FWFNSKeyValueObservingOptionsEnumData
+                                       makeWithValue:FWFNSKeyValueObservingOptionsEnumOldValue],
+                                   [FWFNSKeyValueObservingOptionsEnumData
+                                       makeWithValue:FWFNSKeyValueObservingOptionsEnumNewValue]
+                                 ]
+                                   error:&error];
+
+  OCMVerify([mockObject addObserver:observerObject
+                         forKeyPath:@"myKey"
+                            options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew)
+                            context:nil]);
   XCTAssertNil(error);
 }
 
@@ -42,17 +51,16 @@
   [instanceManager addInstance:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
-      [[FWFObjectHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
-  
+      [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
+
   NSObject *observerObject = [[NSObject alloc] init];
   [instanceManager addInstance:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostApi removeObserverForObjectWithIdentifier:@0
-                            observerIdentifier:@1
-                            keyPath:@"myKey"
-                               error:&error];
+                              observerIdentifier:@1
+                                         keyPath:@"myKey"
+                                           error:&error];
   OCMVerify([mockObject removeObserver:observerObject forKeyPath:@"myKey"]);
   XCTAssertNil(error);
 }
@@ -64,8 +72,7 @@
   [instanceManager addInstance:object withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
-      [[FWFObjectHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi disposeObjectWithIdentifier:@0 error:&error];

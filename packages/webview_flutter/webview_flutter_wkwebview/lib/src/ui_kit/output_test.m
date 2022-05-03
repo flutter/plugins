@@ -16,34 +16,22 @@
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFScrollViewHostApiImpl *hostApi =
-      [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      UIScrollView                                                          
-          * scrollView
-      = (
-          
-              
-              UIScrollView 
-                  *)[instanceManager instanceForIdentifier:0];
-  
-  
-  XCTAssertTrue(
-      [scrollView isKindOfClass:[UIScrollView
-                                                                                          class]]);
-  
+
+  UIScrollView *scrollView = (
+
+      UIScrollView *)[instanceManager instanceForIdentifier:0];
+
+  XCTAssertTrue([scrollView isKindOfClass:[UIScrollView class]]);
+
   XCTAssertNil(error);
 }
 
-
 - (void)test GetContentOffset {
-  
-    
-    UIScrollView
+  UIScrollView
      *mockScrollView = OCMClassMock([
   
   
@@ -55,24 +43,20 @@
   [instanceManager addInstance:mockScrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
-      [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi contentOffsetForScrollViewWithIdentifier:@0
-                            
-                               error:&error];
+
+                                              error:&error];
   OCMVerify([mockScrollView getContentOffset
 
-      
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test ScrollBy {
-  
-    
-    UIScrollView
+  UIScrollView
      *mockScrollView = OCMClassMock([
   
   
@@ -84,28 +68,24 @@
   [instanceManager addInstance:mockScrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
-      [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi scrollByForScrollViewWithIdentifier:@0
-                            
-                            offset:aValue
-                               
-                               error:&error];
+
+                                        offset:aValue
+
+                                         error:&error];
   OCMVerify([mockScrollView scrollBy
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test SetContentOffset {
-  
-    
-    UIScrollView
+  UIScrollView
      *mockScrollView = OCMClassMock([
   
   
@@ -117,20 +97,18 @@
   [instanceManager addInstance:mockScrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
-      [[FWFScrollViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setContentOffsetForScrollViewWithIdentifier:@0
-                            
-                            offset:aValue
-                               
-                               error:&error];
+
+                                                offset:aValue
+
+                                                 error:&error];
   OCMVerify([mockScrollView setContentOffset
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
@@ -154,34 +132,22 @@
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFUIViewHostApiImpl *hostApi =
-      [[FWFUIViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi createWithIdentifier:@0 error:&error];
-  
-      
-      UIView                                                          
-          * uIView
-      = (
-          
-              
-              UIView 
-                  *)[instanceManager instanceForIdentifier:0];
-  
-  
-  XCTAssertTrue(
-      [uIView isKindOfClass:[UIView
-                                                                                          class]]);
-  
+
+  UIView *uIView = (
+
+      UIView *)[instanceManager instanceForIdentifier:0];
+
+  XCTAssertTrue([uIView isKindOfClass:[UIView class]]);
+
   XCTAssertNil(error);
 }
 
-
 - (void)test SetBackgroundColor {
-  
-    
-    UIView
+  UIView
      *mockUIView = OCMClassMock([
   
   
@@ -193,28 +159,24 @@
   [instanceManager addInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostApi =
-      [[FWFUIViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setBackgroundColorForViewWithIdentifier:@0
-                            
-                            color:aValue
-                               
-                               error:&error];
+
+                                             color:aValue
+
+                                             error:&error];
   OCMVerify([mockUIView setBackgroundColor
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }
 
 - (void)test SetOpaque {
-  
-    
-    UIView
+  UIView
      *mockUIView = OCMClassMock([
   
   
@@ -226,20 +188,18 @@
   [instanceManager addInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostApi =
-      [[FWFUIViewHostApiImpl alloc]
-          initWithInstanceManager:instanceManager];
+      [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi setOpaqueForViewWithIdentifier:@0
-                            
-                            opaque:aValue
-                               
-                               error:&error];
+
+                                   opaque:aValue
+
+                                    error:&error];
   OCMVerify([mockUIView setOpaque
 
 :aValue
-      
-      
+
   ]);
   XCTAssertNil(error);
 }

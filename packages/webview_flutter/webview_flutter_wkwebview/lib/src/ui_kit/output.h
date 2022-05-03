@@ -11,8 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-
 /**
  * Host api implementation for UIScrollView.
  *
@@ -35,8 +33,6 @@ NS_ASSUME_NONNULL_END
 #import "FWFInstanceManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-
 
 /**
  * Host api implementation for UIView.

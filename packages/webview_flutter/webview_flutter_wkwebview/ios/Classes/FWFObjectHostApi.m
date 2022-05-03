@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FWFDataConverters.h"
 #import "FWFObjectHostApi.h"
+#import "FWFDataConverters.h"
 
 @interface FWFObjectHostApiImpl ()
 @property(nonatomic) FWFInstanceManager *instanceManager;
@@ -19,36 +19,36 @@
 }
 
 - (NSObject *)objectForIdentifier:(NSNumber *)instanceId {
-  return (NSObject*) [self.instanceManager instanceForIdentifier:instanceId.longValue];
+  return (NSObject *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
 }
 
 - (void)addObserverForObjectWithIdentifier:(nonnull NSNumber *)instanceId
                         observerIdentifier:(nonnull NSNumber *)observer
                                    keyPath:(nonnull NSString *)keyPath
-                                   options:(nonnull NSArray<FWFNSKeyValueObservingOptionsEnumData *> *)options
-                            error:(FlutterError *_Nullable *_Nonnull)error {
+                                   options:
+                                       (nonnull NSArray<FWFNSKeyValueObservingOptionsEnumData *> *)
+                                           options
+                                     error:(FlutterError *_Nullable *_Nonnull)error {
   NSKeyValueObservingOptions optionsInt = 0;
   for (FWFNSKeyValueObservingOptionsEnumData *data in options) {
     optionsInt |= FWFNSKeyValueObservingOptionsFromEnumData(data);
   }
-  [[self objectForIdentifier:instanceId]
-   addObserver:[self objectForIdentifier:observer]
-   forKeyPath:keyPath
-   options:optionsInt
-   context:nil
-  ];
+  [[self objectForIdentifier:instanceId] addObserver:[self objectForIdentifier:observer]
+                                          forKeyPath:keyPath
+                                             options:optionsInt
+                                             context:nil];
 }
 
 - (void)removeObserverForObjectWithIdentifier:(nonnull NSNumber *)instanceId
-                         observerIdentifier:(nonnull  NSNumber *)observer
-                         keyPath:(nonnull  NSString *)keyPath
-                            error:(FlutterError *_Nullable *_Nonnull)error {
-  
-  [[self objectForIdentifier:instanceId] removeObserver:[self objectForIdentifier:observer] forKeyPath:keyPath];
+                           observerIdentifier:(nonnull NSNumber *)observer
+                                      keyPath:(nonnull NSString *)keyPath
+                                        error:(FlutterError *_Nullable *_Nonnull)error {
+  [[self objectForIdentifier:instanceId] removeObserver:[self objectForIdentifier:observer]
+                                             forKeyPath:keyPath];
 }
 
 - (void)disposeObjectWithIdentifier:(nonnull NSNumber *)instanceId
-                         error:(FlutterError *_Nullable *_Nonnull)error {
+                              error:(FlutterError *_Nullable *_Nonnull)error {
   [self.instanceManager removeInstance:[self objectForIdentifier:instanceId]];
 }
 

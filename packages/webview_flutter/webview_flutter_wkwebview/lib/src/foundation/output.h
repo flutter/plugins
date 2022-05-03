@@ -11,8 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-
 /**
  * Host api implementation for NSObject.
  *
