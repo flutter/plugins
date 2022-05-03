@@ -51,7 +51,7 @@ android {
 dependencies {
     api "androidx.core:core:1.3.2"
     api "androidx.biometric:biometric:1.1.0"
-    api "androidx.fragment:fragment:1.3.2"
+    api "androidx.fragment:fragment:1.4.1"
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-inline:3.9.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
