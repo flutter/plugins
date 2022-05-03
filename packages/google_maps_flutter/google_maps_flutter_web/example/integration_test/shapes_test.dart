@@ -396,7 +396,7 @@ void main() {
       };
       controller.addHeatmaps(heatmaps);
 
-      expect(controller.heatmaps[HeatmapId('1')]?.heatmap?.data, isNull);
+      expect(controller.heatmaps[HeatmapId('1')]?.heatmap?.data, hasLength(0));
 
       final updatedHeatmaps = {
         Heatmap(heatmapId: HeatmapId('1'), data: [WeightedLatLng(0, 0)]),
@@ -437,7 +437,7 @@ void main() {
         Heatmap(
           heatmapId: HeatmapId('1'),
           gradient:
-              HeatmapGradient(colors: [Color(0x7FFABADA)], startPoints: [0]),
+              HeatmapGradient(colors: [Color(0xFFFABADA)], startPoints: [0]),
         ),
       };
 
@@ -445,7 +445,7 @@ void main() {
 
       final heatmap = controller.heatmaps.values.first.heatmap!;
 
-      expect(heatmap.get('gradient'), '[rgba(127, 17, 224, 1)]');
+      expect(heatmap.get('gradient'), ['rgba(250, 186, 218, 1)']);
     });
   });
 }
