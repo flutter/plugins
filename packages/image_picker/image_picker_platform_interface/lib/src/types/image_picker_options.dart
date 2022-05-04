@@ -21,8 +21,9 @@ class ImagePickerOptions {
   /// If null, the image will only be resized if [maxHeight] is specified.
   final double? maxWidth;
 
-  /// The maximum height of the image, in pixels. If null, the image will only
-  /// be resized if maxWidth is specified.
+  /// The maximum height of the image, in pixels.
+  ///
+  /// If null, the image will only be resized if maxWidth is specified.
   final double? maxHeight;
 
   /// Modifies the quality of the image, ranging from 0-100 where 100 is the
