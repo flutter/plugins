@@ -4,9 +4,9 @@
 
 package io.flutter.plugins.quickactionsexample;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.content.pm.ShortcutInfo;
@@ -17,12 +17,12 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiScrollable;
 import androidx.test.uiautomator.UiSelector;
-import androidx.test.uiautomator.By;
 import io.flutter.plugins.quickactions.QuickActionsPlugin;
 import java.util.ArrayList;
 import java.util.List;
