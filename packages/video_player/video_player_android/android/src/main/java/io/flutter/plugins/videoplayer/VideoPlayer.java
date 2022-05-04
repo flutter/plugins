@@ -233,9 +233,6 @@ final class VideoPlayer {
             }
           }
         });
-
-    this.exoPlayer = exoPlayer;
-    this.eventSink = eventSink;
   }
 
   void sendBufferingUpdate() {
