@@ -34,9 +34,10 @@
     [self.instanceManager addInstance:dataStore.httpCookieStore
                        withIdentifier:instanceId.longValue];
   } else {
-    *error = [FlutterError errorWithCode:@"FWFUnsupportedVersionError"
-                                 message:@"setCookie is only supported on versions 11+."
-                                 details:nil];
+    *error = [FlutterError
+        errorWithCode:@"FWFUnsupportedVersionError"
+              message:@"WKWebsiteDataStore.httpCookieStore is only supported on versions 11+."
+              details:nil];
   }
 }
 
