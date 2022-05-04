@@ -76,9 +76,9 @@ void main() {
     });
 
     setUpAll(() {
-      registerFallbackValue<MediaStreamTrack>(MockMediaStreamTrack());
-      registerFallbackValue<CameraOptions>(MockCameraOptions());
-      registerFallbackValue<FlashMode>(FlashMode.off);
+      registerFallbackValue(MockMediaStreamTrack());
+      registerFallbackValue(MockCameraOptions());
+      registerFallbackValue(FlashMode.off);
     });
 
     testWidgets('CameraPlugin is the live instance',
