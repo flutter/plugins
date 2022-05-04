@@ -31,9 +31,6 @@ final class CameraPermissions {
       PermissionsRegistry permissionsRegistry,
       boolean enableAudio,
       ResultCallback callback) {
-    if (ongoing) {
-      callback.onResult("cameraPermission", "Camera permission request ongoing");
-    }
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
       permissionsRegistry.addListener(
           new CameraRequestPermissionsListener(
@@ -90,9 +87,9 @@ final class CameraPermissions {
 
       alreadyCalled = true;
       if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-        callback.onResult("cameraPermission", "MediaRecorderCamera permission not granted");
+        callback.onResult("CameraAccessDenied", "Camera access permission was denied.");
       } else if (grantResults.length > 1 && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-        callback.onResult("cameraPermission", "MediaRecorderAudio permission not granted");
+        callback.onResult("AudioAccessDenied", "Audio access permission was denied.");
       } else {
         callback.onResult(null, null);
       }
