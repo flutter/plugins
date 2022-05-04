@@ -76,6 +76,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.4.0'
+    // Workaround for https://github.com/android/android-test/issues/861
+    androidTestImplementation 'com.google.android.apps.common.testing.accessibility.framework:3.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
     androidTestImplementation 'androidx.test.espresso.idling:idling-concurrent:3.4.0'
 
