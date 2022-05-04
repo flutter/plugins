@@ -13,7 +13,7 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 # Declare default permissions as read only.
-permissions: read-al
+permissions: read-all
 
 jobs:
   label:
