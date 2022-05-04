@@ -1,3 +1,7 @@
+## 0.2.0+2
+
+* Updates most native dependencies to latest versions.
+
 ## 0.2.0+1
 
 * Adds OS version support information to README.
