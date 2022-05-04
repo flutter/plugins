@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:yaml/yaml.dart';
 
@@ -111,13 +110,8 @@ YamlMap? _readPlatformPubspecSectionForPlugin(
 /// section from [plugin]'s pubspec.yaml, or null if either it is not present,
 /// or the pubspec couldn't be read.
 YamlMap? _readPluginPubspecSection(RepositoryPackage package) {
-  final File pubspecFile = package.pubspecFile;
-  if (!pubspecFile.existsSync()) {
-    return null;
-  }
-  final YamlMap pubspecYaml =
-      loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
-  final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
+  final Pubspec pubspec = package.parsePubspec();
+  final Map<String, dynamic>? flutterSection = pubspec.flutter;
   if (flutterSection == null) {
     return null;
   }

@@ -62,7 +62,7 @@ void main() {
       const String federatedPluginName = 'a_federated_plugin';
       final Directory federatedDir =
           packagesDir.childDirectory(federatedPluginName);
-      final List<Directory> packageDirectories = <Directory>[
+      final List<RepositoryPackage> packages = <RepositoryPackage>[
         // A non-plugin package.
         createFakePackage('a_package', packagesDir),
         // Non-app-facing parts of a federated plugin.
@@ -71,8 +71,8 @@ void main() {
         createFakePlugin('${federatedPluginName}_android', federatedDir),
       ];
 
-      for (final Directory package in packageDirectories) {
-        package.childFile('README.md').writeAsStringSync('''
+      for (final RepositoryPackage package in packages) {
+        package.readmeFile.writeAsStringSync('''
 A very useful package.
 ''');
       }
@@ -94,9 +94,10 @@ A very useful package.
 
     test('fails when non-federated plugin is missing an OS support table',
         () async {
-      final Directory pluginDir = createFakePlugin('a_plugin', packagesDir);
+      final RepositoryPackage plugin =
+          createFakePlugin('a_plugin', packagesDir);
 
-      pluginDir.childFile('README.md').writeAsStringSync('''
+      plugin.readmeFile.writeAsStringSync('''
 A very useful plugin.
 ''');
 
@@ -118,10 +119,10 @@ A very useful plugin.
     test(
         'fails when app-facing part of a federated plugin is missing an OS support table',
         () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
 
-      pluginDir.childFile('README.md').writeAsStringSync('''
+      plugin.readmeFile.writeAsStringSync('''
 A very useful plugin.
 ''');
 
@@ -141,9 +142,10 @@ A very useful plugin.
     });
 
     test('fails the OS support table is missing the header', () async {
-      final Directory pluginDir = createFakePlugin('a_plugin', packagesDir);
+      final RepositoryPackage plugin =
+          createFakePlugin('a_plugin', packagesDir);
 
-      pluginDir.childFile('README.md').writeAsStringSync('''
+      plugin.readmeFile.writeAsStringSync('''
 A very useful plugin.
 
 | **Support**    | SDK 21+ | iOS 10+* | [See `camera_web `][1] |
@@ -165,7 +167,7 @@ A very useful plugin.
     });
 
     test('fails if the OS support table is missing a supported OS', () async {
-      final Directory pluginDir = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'a_plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
@@ -175,7 +177,7 @@ A very useful plugin.
         },
       );
 
-      pluginDir.childFile('README.md').writeAsStringSync('''
+      plugin.readmeFile.writeAsStringSync('''
 A very useful plugin.
 
 |                | Android | iOS      |
@@ -202,7 +204,7 @@ A very useful plugin.
     });
 
     test('fails if the OS support table lists an extra OS', () async {
-      final Directory pluginDir = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'a_plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
@@ -211,7 +213,7 @@ A very useful plugin.
         },
       );
 
-      pluginDir.childFile('README.md').writeAsStringSync('''
+      plugin.readmeFile.writeAsStringSync('''
 A very useful plugin.
 
 |                | Android | iOS      | Web                    |
@@ -239,7 +241,7 @@ A very useful plugin.
 
     test('fails if the OS support table has unexpected OS formatting',
         () async {
-      final Directory pluginDir = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'a_plugin',
         packagesDir,
         platformSupport: <String, PlatformDetails>{
@@ -250,7 +252,7 @@ A very useful plugin.
         },
       );
 
-      pluginDir.childFile('README.md').writeAsStringSync('''
+      plugin.readmeFile.writeAsStringSync('''
 A very useful plugin.
 
 |                | android | ios      | MacOS | web                    |
@@ -278,9 +280,10 @@ A very useful plugin.
 
   group('code blocks', () {
     test('fails on missing info string', () async {
-      final Directory packageDir = createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
 
-      packageDir.childFile('README.md').writeAsStringSync('''
+      package.readmeFile.writeAsStringSync('''
 Example:
 
 ```
@@ -307,9 +310,10 @@ void main() {
     });
 
     test('allows unknown info strings', () async {
-      final Directory packageDir = createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
 
-      packageDir.childFile('README.md').writeAsStringSync('''
+      package.readmeFile.writeAsStringSync('''
 Example:
 
 ```someunknowninfotag
@@ -331,9 +335,10 @@ A B C
     });
 
     test('allows space around info strings', () async {
-      final Directory packageDir = createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
 
-      packageDir.childFile('README.md').writeAsStringSync('''
+      package.readmeFile.writeAsStringSync('''
 Example:
 
 ```  dart
@@ -355,9 +360,10 @@ A B C
     });
 
     test('passes when excerpt requirement is met', () async {
-      final Directory packageDir = createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
 
-      packageDir.childFile('README.md').writeAsStringSync('''
+      package.readmeFile.writeAsStringSync('''
 Example:
 
 <?code-excerpt "main.dart (SomeSection)"?>
@@ -379,9 +385,10 @@ A B C
     });
 
     test('fails on missing excerpt tag when requested', () async {
-      final Directory packageDir = createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
 
-      packageDir.childFile('README.md').writeAsStringSync('''
+      package.readmeFile.writeAsStringSync('''
 Example:
 
 ```dart

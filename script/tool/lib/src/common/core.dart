@@ -4,7 +4,6 @@
 
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
-import 'package:yaml/yaml.dart';
 
 /// The signature for a print handler for commands that allow overriding the
 /// print destination.
@@ -31,26 +30,22 @@ const String platformWindows = 'windows';
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
 
-/// Returns whether the given directory contains a Flutter package.
-bool isFlutterPackage(FileSystemEntity entity) {
+/// Target platforms supported by Flutter.
+// ignore: public_member_api_docs
+enum FlutterPlatform { android, ios, linux, macos, web, windows }
+
+/// Returns whether the given directory is a Dart package.
+bool isPackage(FileSystemEntity entity) {
   if (entity is! Directory) {
     return false;
   }
-
-  try {
-    final File pubspecFile = entity.childFile('pubspec.yaml');
-    final YamlMap pubspecYaml =
-        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
-    final YamlMap? dependencies = pubspecYaml['dependencies'] as YamlMap?;
-    if (dependencies == null) {
-      return false;
-    }
-    return dependencies.containsKey('flutter');
-  } on FileSystemException {
-    return false;
-  } on YamlException {
-    return false;
-  }
+  // According to
+  // https://dart.dev/guides/libraries/create-library-packages#what-makes-a-library-package
+  // a package must also have a `lib/` directory, but in practice that's not
+  // always true. flutter/plugins has some special cases (espresso, some
+  // federated implementation packages) that don't have any source, so this
+  // deliberately doesn't check that there's a lib directory.
+  return entity.childFile('pubspec.yaml').existsSync();
 }
 
 /// Prints `successMessage` in green.
