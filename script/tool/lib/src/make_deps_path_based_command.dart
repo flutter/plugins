@@ -178,7 +178,7 @@ dependency_overrides:
       for (final String packageName in packagesToOverride) {
         // Find the relative path from the common base to the local package.
         final List<String> repoRelativePathComponents = path.split(
-            path.relative(localDependencies[packageName]!.directory.path,
+            path.relative(localDependencies[packageName]!.path,
                 from: commonBasePath));
         newPubspecContents += '''
   $packageName:

@@ -4,7 +4,6 @@
 
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:test/test.dart';
 
 import '../util.dart';
@@ -97,107 +96,109 @@ void main() {
 
   group('getExamples', () {
     test('handles a single Flutter example', () async {
-      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
+      final RepositoryPackage plugin =
+          createFakePlugin('a_plugin', packagesDir);
 
-      final List<RepositoryPackage> examples =
-          RepositoryPackage(plugin).getExamples().toList();
+      final List<RepositoryPackage> examples = plugin.getExamples().toList();
 
       expect(examples.length, 1);
-      expect(examples[0].path, plugin.childDirectory('example').path);
+      expect(examples[0].path, getExampleDir(plugin).path);
     });
 
     test('handles multiple Flutter examples', () async {
-      final Directory plugin = createFakePlugin('a_plugin', packagesDir,
+      final RepositoryPackage plugin = createFakePlugin('a_plugin', packagesDir,
           examples: <String>['example1', 'example2']);
 
-      final List<RepositoryPackage> examples =
-          RepositoryPackage(plugin).getExamples().toList();
+      final List<RepositoryPackage> examples = plugin.getExamples().toList();
 
       expect(examples.length, 2);
       expect(examples[0].path,
-          plugin.childDirectory('example').childDirectory('example1').path);
+          getExampleDir(plugin).childDirectory('example1').path);
       expect(examples[1].path,
-          plugin.childDirectory('example').childDirectory('example2').path);
+          getExampleDir(plugin).childDirectory('example2').path);
     });
 
     test('handles a single non-Flutter example', () async {
-      final Directory package = createFakePackage('a_package', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
 
-      final List<RepositoryPackage> examples =
-          RepositoryPackage(package).getExamples().toList();
+      final List<RepositoryPackage> examples = package.getExamples().toList();
 
       expect(examples.length, 1);
-      expect(examples[0].path, package.childDirectory('example').path);
+      expect(examples[0].path, getExampleDir(package).path);
     });
 
     test('handles multiple non-Flutter examples', () async {
-      final Directory package = createFakePackage('a_package', packagesDir,
+      final RepositoryPackage package = createFakePackage(
+          'a_package', packagesDir,
           examples: <String>['example1', 'example2']);
 
-      final List<RepositoryPackage> examples =
-          RepositoryPackage(package).getExamples().toList();
+      final List<RepositoryPackage> examples = package.getExamples().toList();
 
       expect(examples.length, 2);
       expect(examples[0].path,
-          package.childDirectory('example').childDirectory('example1').path);
+          getExampleDir(package).childDirectory('example1').path);
       expect(examples[1].path,
-          package.childDirectory('example').childDirectory('example2').path);
+          getExampleDir(package).childDirectory('example2').path);
     });
   });
 
   group('federated plugin queries', () {
     test('all return false for a simple plugin', () {
-      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
-      expect(RepositoryPackage(plugin).isFederated, false);
-      expect(RepositoryPackage(plugin).isAppFacing, false);
-      expect(RepositoryPackage(plugin).isPlatformInterface, false);
-      expect(RepositoryPackage(plugin).isFederated, false);
+      final RepositoryPackage plugin =
+          createFakePlugin('a_plugin', packagesDir);
+      expect(plugin.isFederated, false);
+      expect(plugin.isAppFacing, false);
+      expect(plugin.isPlatformInterface, false);
+      expect(plugin.isFederated, false);
     });
 
     test('handle app-facing packages', () {
-      final Directory plugin =
+      final RepositoryPackage plugin =
           createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
-      expect(RepositoryPackage(plugin).isFederated, true);
-      expect(RepositoryPackage(plugin).isAppFacing, true);
-      expect(RepositoryPackage(plugin).isPlatformInterface, false);
-      expect(RepositoryPackage(plugin).isPlatformImplementation, false);
+      expect(plugin.isFederated, true);
+      expect(plugin.isAppFacing, true);
+      expect(plugin.isPlatformInterface, false);
+      expect(plugin.isPlatformImplementation, false);
     });
 
     test('handle platform interface packages', () {
-      final Directory plugin = createFakePlugin('a_plugin_platform_interface',
+      final RepositoryPackage plugin = createFakePlugin(
+          'a_plugin_platform_interface',
           packagesDir.childDirectory('a_plugin'));
-      expect(RepositoryPackage(plugin).isFederated, true);
-      expect(RepositoryPackage(plugin).isAppFacing, false);
-      expect(RepositoryPackage(plugin).isPlatformInterface, true);
-      expect(RepositoryPackage(plugin).isPlatformImplementation, false);
+      expect(plugin.isFederated, true);
+      expect(plugin.isAppFacing, false);
+      expect(plugin.isPlatformInterface, true);
+      expect(plugin.isPlatformImplementation, false);
     });
 
     test('handle platform implementation packages', () {
       // A platform interface can end with anything, not just one of the known
       // platform names, because of cases like webview_flutter_wkwebview.
-      final Directory plugin = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'a_plugin_foo', packagesDir.childDirectory('a_plugin'));
-      expect(RepositoryPackage(plugin).isFederated, true);
-      expect(RepositoryPackage(plugin).isAppFacing, false);
-      expect(RepositoryPackage(plugin).isPlatformInterface, false);
-      expect(RepositoryPackage(plugin).isPlatformImplementation, true);
+      expect(plugin.isFederated, true);
+      expect(plugin.isAppFacing, false);
+      expect(plugin.isPlatformInterface, false);
+      expect(plugin.isPlatformImplementation, true);
     });
   });
 
   group('pubspec', () {
     test('file', () async {
-      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
+      final RepositoryPackage plugin =
+          createFakePlugin('a_plugin', packagesDir);
 
-      final File pubspecFile = RepositoryPackage(plugin).pubspecFile;
+      final File pubspecFile = plugin.pubspecFile;
 
-      expect(pubspecFile.path, plugin.childFile('pubspec.yaml').path);
+      expect(pubspecFile.path, plugin.directory.childFile('pubspec.yaml').path);
     });
 
     test('parsing', () async {
-      final Directory plugin = createFakePlugin('a_plugin', packagesDir,
+      final RepositoryPackage plugin = createFakePlugin('a_plugin', packagesDir,
           examples: <String>['example1', 'example2']);
 
-      final Pubspec pubspec = RepositoryPackage(plugin).parsePubspec();
+      final Pubspec pubspec = plugin.parsePubspec();
 
       expect(pubspec.name, 'a_plugin');
     });
@@ -205,15 +206,15 @@ void main() {
 
   group('requiresFlutter', () {
     test('returns true for Flutter package', () async {
-      final Directory package =
+      final RepositoryPackage package =
           createFakePackage('a_package', packagesDir, isFlutter: true);
-      expect(RepositoryPackage(package).requiresFlutter(), true);
+      expect(package.requiresFlutter(), true);
     });
 
     test('returns false for non-Flutter package', () async {
-      final Directory package =
+      final RepositoryPackage package =
           createFakePackage('a_package', packagesDir, isFlutter: false);
-      expect(RepositoryPackage(package).requiresFlutter(), false);
+      expect(package.requiresFlutter(), false);
     });
   });
 }

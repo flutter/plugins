@@ -82,13 +82,12 @@ void main() {
       });
 
       test('runs for iOS plugin', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          platformIOS: const PlatformDetails(PlatformSupport.inline)
-        });
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              platformIOS: const PlatformDetails(PlatformSupport.inline)
+            });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -184,14 +183,12 @@ void main() {
       });
 
       test('runs for macOS plugin', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
               platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -251,15 +248,13 @@ void main() {
 
     group('combined', () {
       test('runs both iOS and macOS when supported', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
               platformIOS: const PlatformDetails(PlatformSupport.inline),
               platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -311,14 +306,12 @@ void main() {
       });
 
       test('runs only macOS for a macOS plugin', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
               platformMacOS: const PlatformDetails(PlatformSupport.inline),
             });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',
@@ -353,13 +346,12 @@ void main() {
       });
 
       test('runs only iOS for a iOS plugin', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
-          platformIOS: const PlatformDetails(PlatformSupport.inline)
-        });
+        final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              platformIOS: const PlatformDetails(PlatformSupport.inline)
+            });
 
-        final Directory pluginExampleDirectory =
-            pluginDirectory.childDirectory('example');
+        final Directory pluginExampleDirectory = getExampleDir(plugin);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xcode-analyze',

@@ -7,7 +7,6 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:flutter_plugin_tools/src/make_deps_path_based_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -62,9 +61,9 @@ void main() {
   }
 
   test('no-ops for no plugins', () async {
-    RepositoryPackage(createFakePackage('foo', packagesDir, isFlutter: true));
-    final RepositoryPackage packageBar = RepositoryPackage(
-        createFakePackage('bar', packagesDir, isFlutter: true));
+    createFakePackage('foo', packagesDir, isFlutter: true);
+    final RepositoryPackage packageBar =
+        createFakePackage('bar', packagesDir, isFlutter: true);
     _addDependencies(packageBar, <String>['foo']);
     final String originalPubspecContents =
         packageBar.pubspecFile.readAsStringSync();
@@ -83,16 +82,15 @@ void main() {
   });
 
   test('rewrites references', () async {
-    final RepositoryPackage simplePackage = RepositoryPackage(
-        createFakePackage('foo', packagesDir, isFlutter: true));
+    final RepositoryPackage simplePackage =
+        createFakePackage('foo', packagesDir, isFlutter: true);
     final Directory pluginGroup = packagesDir.childDirectory('bar');
 
-    RepositoryPackage(createFakePackage('bar_platform_interface', pluginGroup,
-        isFlutter: true));
+    createFakePackage('bar_platform_interface', pluginGroup, isFlutter: true);
     final RepositoryPackage pluginImplementation =
-        RepositoryPackage(createFakePlugin('bar_android', pluginGroup));
+        createFakePlugin('bar_android', pluginGroup);
     final RepositoryPackage pluginAppFacing =
-        RepositoryPackage(createFakePlugin('bar', pluginGroup));
+        createFakePlugin('bar', pluginGroup);
 
     _addDependencies(simplePackage, <String>[
       'bar',
@@ -147,16 +145,15 @@ void main() {
   // This test case ensures that running CI using this command on an interim
   // PR that itself used this command won't fail on the rewrite step.
   test('running a second time no-ops without failing', () async {
-    final RepositoryPackage simplePackage = RepositoryPackage(
-        createFakePackage('foo', packagesDir, isFlutter: true));
+    final RepositoryPackage simplePackage =
+        createFakePackage('foo', packagesDir, isFlutter: true);
     final Directory pluginGroup = packagesDir.childDirectory('bar');
 
-    RepositoryPackage(createFakePackage('bar_platform_interface', pluginGroup,
-        isFlutter: true));
+    createFakePackage('bar_platform_interface', pluginGroup, isFlutter: true);
     final RepositoryPackage pluginImplementation =
-        RepositoryPackage(createFakePlugin('bar_android', pluginGroup));
+        createFakePlugin('bar_android', pluginGroup);
     final RepositoryPackage pluginAppFacing =
-        RepositoryPackage(createFakePlugin('bar', pluginGroup));
+        createFakePlugin('bar', pluginGroup);
 
     _addDependencies(simplePackage, <String>[
       'bar',
@@ -192,18 +189,17 @@ void main() {
 
   group('target-dependencies-with-non-breaking-updates', () {
     test('no-ops for no published changes', () async {
-      final Directory package = createFakePackage('foo', packagesDir);
+      final RepositoryPackage package = createFakePackage('foo', packagesDir);
 
       final String changedFileOutput = <File>[
-        package.childFile('pubspec.yaml'),
+        package.pubspecFile,
       ].map((File file) => file.path).join('\n');
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(stdout: changedFileOutput),
       ];
       // Simulate no change to the version in the interface's pubspec.yaml.
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
-        MockProcess(
-            stdout: RepositoryPackage(package).pubspecFile.readAsStringSync()),
+        MockProcess(stdout: package.pubspecFile.readAsStringSync()),
       ];
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -244,10 +240,10 @@ void main() {
 
     test('includes bugfix version changes as targets', () async {
       const String newVersion = '1.0.1';
-      final Directory package =
+      final RepositoryPackage package =
           createFakePackage('foo', packagesDir, version: newVersion);
 
-      final File pubspecFile = RepositoryPackage(package).pubspecFile;
+      final File pubspecFile = package.pubspecFile;
       final String changedFileOutput = <File>[
         pubspecFile,
       ].map((File file) => file.path).join('\n');
@@ -276,10 +272,10 @@ void main() {
 
     test('includes minor version changes to 1.0+ as targets', () async {
       const String newVersion = '1.1.0';
-      final Directory package =
+      final RepositoryPackage package =
           createFakePackage('foo', packagesDir, version: newVersion);
 
-      final File pubspecFile = RepositoryPackage(package).pubspecFile;
+      final File pubspecFile = package.pubspecFile;
       final String changedFileOutput = <File>[
         pubspecFile,
       ].map((File file) => file.path).join('\n');
@@ -308,10 +304,10 @@ void main() {
 
     test('does not include major version changes as targets', () async {
       const String newVersion = '2.0.0';
-      final Directory package =
+      final RepositoryPackage package =
           createFakePackage('foo', packagesDir, version: newVersion);
 
-      final File pubspecFile = RepositoryPackage(package).pubspecFile;
+      final File pubspecFile = package.pubspecFile;
       final String changedFileOutput = <File>[
         pubspecFile,
       ].map((File file) => file.path).join('\n');
@@ -340,10 +336,10 @@ void main() {
 
     test('does not include minor version changes to 0.x as targets', () async {
       const String newVersion = '0.8.0';
-      final Directory package =
+      final RepositoryPackage package =
           createFakePackage('foo', packagesDir, version: newVersion);
 
-      final File pubspecFile = RepositoryPackage(package).pubspecFile;
+      final File pubspecFile = package.pubspecFile;
       final String changedFileOutput = <File>[
         pubspecFile,
       ].map((File file) => file.path).join('\n');
@@ -373,12 +369,12 @@ void main() {
     test('skips anything outside of the packages directory', () async {
       final Directory toolDir = packagesDir.parent.childDirectory('tool');
       const String newVersion = '1.1.0';
-      final Directory package = createFakePackage(
+      final RepositoryPackage package = createFakePackage(
           'flutter_plugin_tools', toolDir,
           version: newVersion);
 
       // Simulate a minor version change so it would be a target.
-      final File pubspecFile = RepositoryPackage(package).pubspecFile;
+      final File pubspecFile = package.pubspecFile;
       final String changedFileOutput = <File>[
         pubspecFile,
       ].map((File file) => file.path).join('\n');

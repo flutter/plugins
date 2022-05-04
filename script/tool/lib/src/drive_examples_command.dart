@@ -125,8 +125,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final bool isPlugin = isFlutterPlugin(package);
 
-    if (package.isPlatformInterface &&
-        !package.getSingleExampleDeprecated().directory.existsSync()) {
+    if (package.isPlatformInterface && package.getExamples().isEmpty) {
       // Platform interface packages generally aren't intended to have
       // examples, and don't need integration tests, so skip rather than fail.
       return PackageResult.skip(

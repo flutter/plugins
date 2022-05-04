@@ -8,7 +8,6 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:flutter_plugin_tools/src/update_excerpts_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -42,9 +41,9 @@ void main() {
   });
 
   test('runs pub get before running scripts', () async {
-    final Directory package = createFakePlugin('a_package', packagesDir,
+    final RepositoryPackage package = createFakePlugin('a_package', packagesDir,
         extraFiles: <String>['example/build.excerpt.yaml']);
-    final Directory example = package.childDirectory('example');
+    final Directory example = getExampleDir(package);
 
     await runCapturingPrint(runner, <String>['update-excerpts']);
 
@@ -69,9 +68,9 @@ void main() {
   });
 
   test('runs when config is present', () async {
-    final Directory package = createFakePlugin('a_package', packagesDir,
+    final RepositoryPackage package = createFakePlugin('a_package', packagesDir,
         extraFiles: <String>['example/build.excerpt.yaml']);
-    final Directory example = package.childDirectory('example');
+    final Directory example = getExampleDir(package);
 
     final List<String> output =
         await runCapturingPrint(runner, <String>['update-excerpts']);
@@ -128,7 +127,7 @@ void main() {
   });
 
   test('restores pubspec even if running the script fails', () async {
-    final Directory package = createFakePlugin('a_package', packagesDir,
+    final RepositoryPackage package = createFakePlugin('a_package', packagesDir,
         extraFiles: <String>['example/build.excerpt.yaml']);
 
     processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
@@ -152,11 +151,8 @@ void main() {
               '    Unable to get script dependencies')
         ]));
 
-    final String examplePubspecContent = RepositoryPackage(package)
-        .getExamples()
-        .first
-        .pubspecFile
-        .readAsStringSync();
+    final String examplePubspecContent =
+        package.getExamples().first.pubspecFile.readAsStringSync();
     expect(examplePubspecContent, isNot(contains('code_excerpter')));
     expect(examplePubspecContent, isNot(contains('code_excerpt_updater')));
   });
