@@ -1149,15 +1149,18 @@ void FWFWKNavigationDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMessen
         binaryMessenger:binaryMessenger
                   codec:FWFWKNavigationDelegateHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createWithIdentifier:error:)],
+      NSCAssert([api respondsToSelector:@selector(createWithIdentifier:didFinishNavigation:error:)],
                 @"FWFWKNavigationDelegateHostApi api (%@) doesn't respond to "
-                @"@selector(createWithIdentifier:error:)",
+                @"@selector(createWithIdentifier:didFinishNavigation:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
+        NSNumber *arg_didFinishNavigationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createWithIdentifier:arg_instanceId error:&error];
+        [api createWithIdentifier:arg_instanceId
+              didFinishNavigation:arg_didFinishNavigationInstanceId
+                            error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

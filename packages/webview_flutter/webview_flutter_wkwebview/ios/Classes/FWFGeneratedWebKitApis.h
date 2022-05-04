@@ -296,7 +296,9 @@ extern void FWFWKScriptMessageHandlerHostApiSetup(
 NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateHostApiGetCodec(void);
 
 @protocol FWFWKNavigationDelegateHostApi
-- (void)createWithIdentifier:(NSNumber *)instanceId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createWithIdentifier:(NSNumber *)instanceId
+         didFinishNavigation:(nullable NSNumber *)didFinishNavigationInstanceId
+                       error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setDidFinishNavigationForDelegateWithIdentifier:(NSNumber *)instanceId
                                      functionIdentifier:(nullable NSNumber *)functionInstanceId
                                                   error:(FlutterError *_Nullable *_Nonnull)error;

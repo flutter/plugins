@@ -359,8 +359,8 @@ abstract class WKScriptMessageHandlerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKNavigationDelegateHostApi')
 abstract class WKNavigationDelegateHostApi {
-  @ObjCSelector('createWithIdentifier:')
-  void create(int instanceId);
+  @ObjCSelector('createWithIdentifier:didFinishNavigation:')
+  void create(int instanceId, int? didFinishNavigationInstanceId);
 
   @ObjCSelector(
     'setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:',

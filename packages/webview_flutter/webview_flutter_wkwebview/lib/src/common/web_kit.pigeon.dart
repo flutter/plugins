@@ -1085,12 +1085,14 @@ class WKNavigationDelegateHostApi {
   static const MessageCodec<Object?> codec =
       _WKNavigationDelegateHostApiCodec();
 
-  Future<void> create(int arg_instanceId) async {
+  Future<void> create(
+      int arg_instanceId, int? arg_didFinishNavigationInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WKNavigationDelegateHostApi.create', codec,
         binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_didFinishNavigationInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
