@@ -1,9 +1,9 @@
 ## 2.5.0
 
-* Makes `getImage` deprecated in favor of a new method `getImageFromSource`
+* Makes `getImage` deprecated in favor of a new method `getImageFromSource`.
 * Adds `requestFullMetadata` option that allows disabling extra permission requests
-  on certain platforms
-* Moves optional image picking parameters to `ImagePickerOptions` class 
+  on certain platforms.
+* Moves optional image picking parameters to `ImagePickerOptions` class.
   
 ## 2.4.4
 
