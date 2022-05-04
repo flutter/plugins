@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
+#import <Foundation/Foundation.h>
 #import <GoogleMaps/GoogleMaps.h>
 @import GoogleMapsUtils;
 

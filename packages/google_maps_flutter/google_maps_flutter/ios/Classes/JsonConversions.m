@@ -69,6 +69,10 @@
 }
 
 + (GMUWeightedLatLng *)toWeightedLatLng:(NSArray *)data {
+  NSAssert(data.count == 2, @"WeightedLatLng data must have length of 2");
+  if (data.count != 2) {
+    return nil;
+  }
   return
       [[GMUWeightedLatLng alloc] initWithCoordinate:[FLTGoogleMapJsonConversions toLocation:data[0]]
                                           intensity:[FLTGoogleMapJsonConversions toDouble:data[1]]];
@@ -78,6 +82,7 @@
   NSMutableArray<GMUWeightedLatLng *> *weightedData = [[NSMutableArray alloc] init];
   for (NSArray *latLng in data) {
     GMUWeightedLatLng *weightedLatLng = [FLTGoogleMapJsonConversions toWeightedLatLng:latLng];
+    if (weightedLatLng == nil) continue;
     [weightedData addObject:weightedLatLng];
   }
 
