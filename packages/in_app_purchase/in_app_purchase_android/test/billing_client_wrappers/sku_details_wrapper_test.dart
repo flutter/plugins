@@ -4,7 +4,15 @@
 
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/src/types/google_play_product_details.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
+
+class MockSkuDetailsWrapper extends Mock implements SkuDetailsWrapper {}
+
+class MockSkuDetailsResponseWrapper extends Mock
+    implements SkuDetailsResponseWrapper {}
+
+class MockBillingResultWrapper extends Mock implements BillingResultWrapper {}
 
 const SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   description: 'description',
@@ -124,6 +132,60 @@ void main() {
           BillingResultWrapper.fromJson(null);
       expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
       expect(billingResult.responseCode, BillingResponse.error);
+    });
+
+    test('operator == of SkuDetailsWrapper works fine', () {
+      const SkuDetailsWrapper firstSkuDetailsInstance = SkuDetailsWrapper(
+        description: 'description',
+        freeTrialPeriod: 'freeTrialPeriod',
+        introductoryPrice: 'introductoryPrice',
+        introductoryPriceAmountMicros: 990000,
+        introductoryPriceCycles: 1,
+        introductoryPricePeriod: 'introductoryPricePeriod',
+        price: 'price',
+        priceAmountMicros: 1000,
+        priceCurrencyCode: 'priceCurrencyCode',
+        priceCurrencySymbol: r'$',
+        sku: 'sku',
+        subscriptionPeriod: 'subscriptionPeriod',
+        title: 'title',
+        type: SkuType.inapp,
+        originalPrice: 'originalPrice',
+        originalPriceAmountMicros: 1000,
+      );
+      const SkuDetailsWrapper secondSkuDetailsInstance = SkuDetailsWrapper(
+        description: 'description',
+        freeTrialPeriod: 'freeTrialPeriod',
+        introductoryPrice: 'introductoryPrice',
+        introductoryPriceAmountMicros: 990000,
+        introductoryPriceCycles: 1,
+        introductoryPricePeriod: 'introductoryPricePeriod',
+        price: 'price',
+        priceAmountMicros: 1000,
+        priceCurrencyCode: 'priceCurrencyCode',
+        priceCurrencySymbol: r'$',
+        sku: 'sku',
+        subscriptionPeriod: 'subscriptionPeriod',
+        title: 'title',
+        type: SkuType.inapp,
+        originalPrice: 'originalPrice',
+        originalPriceAmountMicros: 1000,
+      );
+      expect(firstSkuDetailsInstance == secondSkuDetailsInstance, isTrue);
+    });
+
+    test('operator == of BillingResultWrapper works fine', () {
+      const BillingResultWrapper firstBillingResultInstance =
+          BillingResultWrapper(
+        responseCode: BillingResponse.ok,
+        debugMessage: 'debugMessage',
+      );
+      const BillingResultWrapper secondBillingResultInstance =
+          BillingResultWrapper(
+        responseCode: BillingResponse.ok,
+        debugMessage: 'debugMessage',
+      );
+      expect(firstBillingResultInstance == secondBillingResultInstance, isTrue);
     });
   });
 }

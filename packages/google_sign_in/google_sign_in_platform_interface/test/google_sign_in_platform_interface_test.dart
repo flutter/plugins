@@ -29,12 +29,53 @@ void main() {
       GoogleSignInPlatform.instance = ImplementsWithIsMock();
     });
   });
+
+  group('GoogleSignInTokenData', () {
+    test('can be compared by == operator', () {
+      final GoogleSignInTokenData firstInstance = GoogleSignInTokenData(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      final GoogleSignInTokenData secondInstance = GoogleSignInTokenData(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      expect(firstInstance == secondInstance, isTrue);
+    });
+  });
+  group('GoogleSignInUserData', () {
+    test('can be compared by == operator', () {
+      final GoogleSignInUserData firstInstance = GoogleSignInUserData(
+        email: 'email',
+        id: 'id',
+        displayName: 'displayName',
+        photoUrl: 'photoUrl',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      final GoogleSignInUserData secondInstance = GoogleSignInUserData(
+        email: 'email',
+        id: 'id',
+        displayName: 'displayName',
+        photoUrl: 'photoUrl',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      expect(firstInstance == secondInstance, isTrue);
+    });
+  });
 }
 
 class ImplementsWithIsMock extends Mock implements GoogleSignInPlatform {
   @override
   bool get isMock => true;
 }
+
+class MockGoogleSignInTokenData extends Mock implements GoogleSignInTokenData {}
+
+class MockGoogleSignInUserData extends Mock implements GoogleSignInUserData {}
 
 class ImplementsGoogleSignInPlatform extends Mock
     implements GoogleSignInPlatform {}

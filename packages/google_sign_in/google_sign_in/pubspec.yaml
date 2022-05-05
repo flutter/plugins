@@ -36,6 +36,7 @@ dev_dependencies:
   http: ^0.13.0
   integration_test:
     sdk: flutter
+  mocktail: ^0.3.0
 
 # The example deliberately includes limited-use secrets.
 false_secrets:
