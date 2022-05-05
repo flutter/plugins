@@ -1,6 +1,7 @@
-## NEXT
+## 0.9.4+22
 
 * Removes unnecessary imports.
+* Updates camera access permission error codes to be consistent with other platforms.
 
 ## 0.9.4+21
 
