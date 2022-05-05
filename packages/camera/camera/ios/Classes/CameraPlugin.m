@@ -104,7 +104,7 @@
       [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInWideAngleCamera];
       [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInTelephotoCamera];
       if (@available(iOS 13.0, *)) {
-          [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
+        [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
       }
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
           discoverySessionWithDeviceTypes:[NSArray arrayWithArray:dicscoveryDevices]
