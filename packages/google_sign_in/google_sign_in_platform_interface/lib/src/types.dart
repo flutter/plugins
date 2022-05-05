@@ -79,7 +79,7 @@ class GoogleSignInUserData {
   @override
   // TODO(stuartmorgan): Make this class immutable in the next breaking change.
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
@@ -122,7 +122,7 @@ class GoogleSignInTokenData {
   @override
   // TODO(stuartmorgan): Make this class immutable in the next breaking change.
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
