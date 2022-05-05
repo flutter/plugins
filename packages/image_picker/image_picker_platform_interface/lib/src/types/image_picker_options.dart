@@ -23,15 +23,17 @@ class ImagePickerOptions {
 
   /// The maximum height of the image, in pixels.
   ///
-  /// If null, the image will only be resized if maxWidth is specified.
+  /// If null, the image will only be resized if [maxWidth] is specified.
   final double? maxHeight;
 
   /// Modifies the quality of the image, ranging from 0-100 where 100 is the
   /// original/max quality.
   ///
-  /// If null, the image will be returned with the original quality. Compression
-  /// is only supported for certain image types such as JPEG. If compression is
-  /// not supported for the image that is picked, a warning message will be logged.
+  /// Compression is only supported for certain image types such as JPEG. If
+  /// compression is not supported for the image that is picked, a warning
+  /// message will be logged.
+  ///
+  /// If null, the image will be returned with the original quality.
   final int? imageQuality;
 
   /// Used to specify the camera to use when the `source` is [ImageSource.camera].

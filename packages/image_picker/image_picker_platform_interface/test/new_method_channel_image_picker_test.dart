@@ -150,7 +150,7 @@ void main() {
         );
       });
 
-      test('does not accept a invalid imageQuality argument', () {
+      test('does not accept an invalid imageQuality argument', () {
         expect(
           () => picker.pickImage(imageQuality: -1, source: ImageSource.gallery),
           throwsArgumentError,
@@ -331,7 +331,7 @@ void main() {
         );
       });
 
-      test('does not accept a invalid imageQuality argument', () {
+      test('does not accept an invalid imageQuality argument', () {
         returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.pickMultiImage(imageQuality: -1),
@@ -630,7 +630,7 @@ void main() {
         );
       });
 
-      test('does not accept a invalid imageQuality argument', () {
+      test('does not accept an invalid imageQuality argument', () {
         expect(
           () => picker.getImage(imageQuality: -1, source: ImageSource.gallery),
           throwsArgumentError,
@@ -810,7 +810,7 @@ void main() {
         );
       });
 
-      test('does not accept a invalid imageQuality argument', () {
+      test('does not accept an invalid imageQuality argument', () {
         returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.getMultiImage(imageQuality: -1),
@@ -1133,7 +1133,7 @@ void main() {
         );
       });
 
-      test('does not accept a invalid imageQuality argument', () {
+      test('does not accept an invalid imageQuality argument', () {
         expect(
           () => picker.getImageFromSource(
             source: ImageSource.gallery,
