@@ -1,3 +1,11 @@
+## NEXT
+
+* Removes unnecessary imports.
+
+## 0.9.4+21
+
+* Fixes README code samples.
+
 ## 0.9.4+20
 
 * Fixes an issue with the orientation of videos recorded in landscape on Android.

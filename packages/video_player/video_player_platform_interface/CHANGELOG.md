@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 5.1.2
 
 * Adopts `Object.hash`.

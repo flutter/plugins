@@ -140,12 +140,12 @@ class MockTestWKWebViewHostApi extends _i1.Mock
           Invocation.method(#setCustomUserAgent, [instanceId, userAgent]),
           returnValueForMissingStub: null);
   @override
-  _i4.Future<String> evaluateJavaScript(
-          int? instanceId, String? javascriptString) =>
+  _i4.Future<Object?> evaluateJavaScript(
+          int? instanceId, String? javaScriptString) =>
       (super.noSuchMethod(
           Invocation.method(
-              #evaluateJavaScript, [instanceId, javascriptString]),
-          returnValue: Future<String>.value('')) as _i4.Future<String>);
+              #evaluateJavaScript, [instanceId, javaScriptString]),
+          returnValue: Future<Object?>.value()) as _i4.Future<Object?>);
 }
 
 /// A class which mocks [TestUIScrollViewHostApi].
