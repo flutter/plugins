@@ -122,10 +122,10 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart update-excerpts --packages 
 
 `update-release-info` will automatically update the version and `CHANGELOG.md`
 following standard repository style and practice. It can be used for
-single-package updates to handled the details of getting the `CHANGELOG.md`
-format correct, but is especially useful for bulk updates.
+single-package updates to handle the details of getting the `CHANGELOG.md`
+format correct, but is especially useful for bulk updates across multiple packages.
 
-For instance, if you've added a new analysis option that required production
+For instance, if you add a new analysis option that requires production
 code changes across many packages:
 
 ```sh
@@ -137,7 +137,7 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart update-release-info \
 ```
 
 The `minimal` option for `--version` will treat each package as either `bugfix`
-or `next` depending on the files that have changed in that package, so is
+or `next` depending on the files that have changed in that package, so it is
 often the best choice for a bulk change.
 
 For cases where you know the change time, `minor` or `bugfix` will make the
