@@ -1,10 +1,12 @@
 # local_auth
 
+<?code-excerpt path-base="excerpts/packages/local_auth_example"?>
+
 This Flutter plugin provides means to perform local, on-device authentication of
 the user.
 
-This means referring to biometric authentication on iOS (Touch ID or lock code)
-and the fingerprint APIs on Android (introduced in Android 6.0).
+On supported devices, this includes authentication with biometrics such as
+fingerprint of facial recognition.
 
 |             | Android   | iOS  |
 |-------------|-----------|------|
@@ -18,7 +20,8 @@ Import the relevant file:
 import 'package:local_auth/local_auth.dart';
 ```
 
-To check whether there is local authentication available on this device or not, call canCheckBiometrics:
+To check whether there is local authentication available on this device or not,
+call canCheckBiometrics:
 
 ```dart
 bool canCheckBiometrics =
@@ -124,18 +127,25 @@ There are 6 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable, Othe
 They are wrapped in LocalAuthenticationError class. You can
 catch the exception and handle them by different types. For example:
 
+<?code-excerpt "readme_error_handling.dart (ErrorHandling)"?>
 ```dart
 import 'package:flutter/services.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
-
-try {
-  bool didAuthenticate = await local_auth.authenticate(
-      localizedReason: 'Please authenticate to show account balance');
-} on PlatformException catch (e) {
-  if (e.code == auth_error.notAvailable) {
-    // Handle this exception here.
+import 'package:local_auth/local_auth.dart';
+// ···
+  final LocalAuthentication auth = LocalAuthentication();
+// ···
+  try {
+    final bool didAuthenticate = await auth.authenticate(
+        localizedReason: 'Please authenticate to show account balance');
+    print(didAuthenticate ? 'Success!' : 'Failure');
+  } on PlatformException catch (e) {
+    if (e.code == auth_error.notAvailable) {
+      // Add handling of no hardware here.
+    } else {
+      // ...
+    }
   }
-}
 ```
 
 ### Android
