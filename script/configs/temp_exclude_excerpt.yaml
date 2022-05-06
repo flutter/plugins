@@ -15,7 +15,6 @@
 - image_picker_for_web
 - in_app_purchase/in_app_purchase
 - ios_platform_images
-- local_auth/local_auth
 - path_provider/path_provider
 - plugin_platform_interface
 - quick_actions/quick_actions
