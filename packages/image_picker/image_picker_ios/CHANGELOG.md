@@ -2,6 +2,10 @@
 
 * Removes unnecessary imports.
 
+## 0.8.6
+
+* Fix 'messages.g.h' file not found.
+
 ## 0.8.5
 
 * Switches to an in-package method channel based on Pigeon.
