@@ -69,9 +69,11 @@ PackageChangeState checkPackageChangeState(
 
     if (!needsVersionChange &&
         !isChangelog &&
-        // The example's main.dart is shown on pub.dev, but for anything else
-        // in the example publishing has no purpose.
-        !(components.contains('example') && components.last != 'main.dart') &&
+        // One of a few special files example will be shown on pub.dev, but for
+        // anything else in the example publishing has no purpose.
+        !(components.first == 'example' &&
+            !<String>{'main.dart', 'readme.md', 'example.md'}
+                .contains(components.last.toLowerCase())) &&
         // Changes to tests don't need to be published.
         !components.contains('test') &&
         !components.contains('androidTest') &&

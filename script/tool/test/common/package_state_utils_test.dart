@@ -17,7 +17,7 @@ void main() {
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
   });
 
-  group('pluginSupportsPlatform', () {
+  group('checkPackageChangeState', () {
     test('reports version change needed for code changes', () async {
       final RepositoryPackage package =
           createFakePackage('a_package', packagesDir);
@@ -79,6 +79,54 @@ void main() {
 
       const List<String> changedFiles = <String>[
         'packages/a_plugin/lib/foo/tool/tool_thing.dart',
+      ];
+
+      final PackageChangeState state = checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+    });
+
+    test('requires a version change for example main', () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/example/lib/main.dart',
+      ];
+
+      final PackageChangeState state = checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+    });
+
+    test('requires a version change for example readme.md', () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/example/README.md',
+      ];
+
+      final PackageChangeState state = checkPackageChangeState(package,
+          changedPaths: changedFiles,
+          relativePackagePath: 'packages/a_plugin/');
+
+      expect(state.hasChanges, true);
+      expect(state.needsVersionChange, true);
+    });
+
+    test('requires a version change for example example.md', () async {
+      final RepositoryPackage package =
+          createFakePlugin('a_plugin', packagesDir);
+
+      const List<String> changedFiles = <String>[
+        'packages/a_plugin/example/lib/example.md',
       ];
 
       final PackageChangeState state = checkPackageChangeState(package,
