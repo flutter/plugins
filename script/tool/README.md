@@ -133,12 +133,11 @@ cd <repository root>
 dart run ./script/tool/bin/flutter_plugin_tools.dart update-release-info \
   --version=minimal \
   --changelog="Fixes violations of new analysis option some_new_option."
-  --run-on-changed-packages
 ```
 
-The `minimal` option for `--version` will treat each package as either `bugfix`
-or `next` depending on the files that have changed in that package, so it is
-often the best choice for a bulk change.
+The `minimal` option for `--version` will skip unchanged packages, and treat
+each changed package as either `bugfix` or `next` depending on the files that
+have changed in that package, so it is often the best choice for a bulk change.
 
 For cases where you know the change time, `minor` or `bugfix` will make the
 corresponding version bump, or `next` will update only `CHANGELOG.md` without

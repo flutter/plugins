@@ -57,8 +57,10 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
               'No version change; just adds a NEXT entry to the changelog.',
           _versionBugfix: 'Increments the bugfix version.',
           _versionMinor: 'Increments the minor version.',
-          _versionMinimal: 'Either increments the bugfix version or uses NEXT '
-              'depending on the files changed.',
+          _versionMinimal: 'Depending on the changes to each package: '
+              'increments the bugfix version (for publishable changes), '
+              "uses NEXT (for changes that don't need to be published), "
+              'or skips (if no changes).',
         });
   }
 
@@ -122,7 +124,8 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
     String nextVersionString;
 
     _VersionIncrementType? versionChange = _versionChange;
-    // If the change type is `minimal`, determine whether a version change is
+
+    // If the change type is `minimal` determine what changes, if any, are
     // needed.
     if (versionChange == null &&
         getStringArg(_versionTypeFlag) == _versionMinimal) {
@@ -133,6 +136,10 @@ class UpdateReleaseInfoCommand extends PackageLoopingCommand {
       final PackageChangeState state = checkPackageChangeState(package,
           changedPaths: _changedFiles,
           relativePackagePath: relativePackagePath);
+
+      if (!state.hasChanges) {
+        return PackageResult.skip('No changes to package');
+      }
       if (state.needsVersionChange) {
         versionChange = _VersionIncrementType.bugfix;
       }

@@ -383,6 +383,34 @@ $originalChangelog''';
       expect(newChangelog, expectedChangeLog);
     });
 
+    test('skips for "minimal" when there are no changes at all', () async {
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir, version: '1.0.1');
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(stdout: '''
+packages/different_package/test/plugin_test.dart
+'''),
+      ];
+      final String originalChangelog = package.changelogFile.readAsStringSync();
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'update-release-info',
+        '--version=minimal',
+        '--changelog',
+        'A change.',
+      ]);
+
+      final String version = package.parsePubspec().version?.toString() ?? '';
+      expect(version, '1.0.1');
+      expect(package.changelogFile.readAsStringSync(), originalChangelog);
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No changes to package'),
+            contains('Skipped 1 package')
+          ]));
+    });
+
     test('fails if CHANGELOG.md is missing', () async {
       createFakePackage('a_package', packagesDir, includeCommonFiles: false);
 
