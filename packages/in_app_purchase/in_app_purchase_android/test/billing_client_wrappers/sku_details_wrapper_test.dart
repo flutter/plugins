@@ -4,14 +4,17 @@
 
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/src/types/google_play_product_details.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+/// Verify that [SkuDetailsWrapper] can be mocked even though it's unused
 class MockSkuDetailsWrapper extends Mock implements SkuDetailsWrapper {}
 
+/// Verify that [SkuDetailsResponseWrapper] can be mocked even though it's unused
 class MockSkuDetailsResponseWrapper extends Mock
     implements SkuDetailsResponseWrapper {}
 
+/// Verify that [BillingResultWrapper] can be mocked even though it's unused
 class MockBillingResultWrapper extends Mock implements BillingResultWrapper {}
 
 const SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(

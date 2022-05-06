@@ -9,8 +9,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/mockito.dart';
 
+/// Verify that [GoogleSignInTokenData] can be mocked even though it's unused
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
 
 void main() {
