@@ -1,6 +1,6 @@
 ## 0.2.2+4
 
-* Enables mocking models by Changing overridden operator == parameter type from `dynamic` to `Object`.
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
 * Removes unnecessary imports.
 
 ## 0.2.2+3
