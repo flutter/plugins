@@ -1,7 +1,3 @@
-## 0.8.6
-
-* Fix 'messages.g.h' file not found on iOS project.
-
 ## 0.8.5
 
 * Moves Android and iOS implementations to federated packages.
