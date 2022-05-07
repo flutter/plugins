@@ -6,7 +6,7 @@ This Flutter plugin provides means to perform local, on-device authentication of
 the user.
 
 On supported devices, this includes authentication with biometrics such as
-fingerprint of facial recognition.
+fingerprint or facial recognition.
 
 |             | Android   | iOS  |
 |-------------|-----------|------|
