@@ -1,5 +1,8 @@
-## NEXT
+## 2.0.1
 
+* Restores the ability to import `error_codes.dart`.
+* Updates README to match API changes in 2.0, and to improve clarity in
+  general.
 * Removes unnecessary imports.
 
 ## 2.0.0
@@ -9,11 +12,11 @@
 * BREAKING CHANGE: Deprecated method `authenticateWithBiometrics` has been removed.
   Use `authenticate` instead.
 * BREAKING CHANGE: Enum `BiometricType` has been expanded with options for `strong` and `weak`,
-  and applications should be updated to handle these accordingly. 
+  and applications should be updated to handle these accordingly.
 * BREAKING CHANGE: Parameters of `authenticate` have been changed.
-  
+
   Example:
-  ```dart  
+  ```dart
   // Old way of calling `authenticate`.
   Future<bool> authenticate(
     localizedReason: 'localized reason',
