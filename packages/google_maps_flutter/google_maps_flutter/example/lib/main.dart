@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +41,9 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   const TileOverlayPage(),
 ];
 
+/// MapsDemo is the Main Application.
 class MapsDemo extends StatelessWidget {
+  /// Default Constructor
   const MapsDemo({Key? key}) : super(key: key);
 
   void _pushPage(BuildContext context, GoogleMapExampleAppPage page) {

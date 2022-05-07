@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
-
 import 'package:example/get_directory_page.dart';
 import 'package:example/home_page.dart';
 import 'package:example/open_image_page.dart';
@@ -18,6 +16,7 @@ void main() {
 
 /// MyApp is the Main Application.
 class MyApp extends StatelessWidget {
+  /// Default Constructor
   const MyApp({Key? key}) : super(key: key);
 
   @override

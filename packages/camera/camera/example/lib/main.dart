@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:io';
 
@@ -13,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
 
+/// Camera example home widget.
 class CameraExampleHome extends StatefulWidget {
+  /// Default Constructor
   const CameraExampleHome({Key? key}) : super(key: key);
 
   @override
@@ -36,7 +36,7 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
   }
 }
 
-void logError(String code, String? message) {
+void _logError(String code, String? message) {
   if (message != null) {
     print('Error: $code\nError Message: $message');
   } else {
@@ -584,13 +584,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(description);
     };
 
-    if (cameras.isEmpty) {
+    if (_cameras.isEmpty) {
       _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
         showInSnackBar('No camera found.');
       });
       return const Text('None');
     } else {
-      for (final CameraDescription cameraDescription in cameras) {
+      for (final CameraDescription cameraDescription in _cameras) {
         toggles.add(
           SizedBox(
             width: 90.0,
@@ -1016,12 +1016,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void _showCameraException(CameraException e) {
-    logError(e.code, e.description);
+    _logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 }
 
+/// CameraApp is the Main Application.
 class CameraApp extends StatelessWidget {
+  /// Default Constructor
   const CameraApp({Key? key}) : super(key: key);
 
   @override
@@ -1032,15 +1034,15 @@ class CameraApp extends StatelessWidget {
   }
 }
 
-List<CameraDescription> cameras = <CameraDescription>[];
+List<CameraDescription> _cameras = <CameraDescription>[];
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras();
+    _cameras = await availableCameras();
   } on CameraException catch (e) {
-    logError(e.code, e.description);
+    _logError(e.code, e.description);
   }
   runApp(const CameraApp());
 }

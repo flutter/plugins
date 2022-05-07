@@ -89,16 +89,18 @@ Here is a small example flutter app displaying a full screen camera preview.
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-late List<CameraDescription> cameras;
+late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  cameras = await availableCameras();
+  _cameras = await availableCameras();
   runApp(const CameraApp());
 }
 
+/// CameraApp is the Main Application.
 class CameraApp extends StatefulWidget {
+  /// Default Constructor
   const CameraApp({Key? key}) : super(key: key);
 
   @override
@@ -111,7 +113,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    controller = CameraController(cameras[0], ResolutionPreset.max);
+    controller = CameraController(_cameras[0], ResolutionPreset.max);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
