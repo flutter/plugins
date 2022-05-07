@@ -11,7 +11,6 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:local_auth/src/types/error_codes.dart';
 import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
