@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
-import 'package:local_auth_platform_interface/types/auth_options.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

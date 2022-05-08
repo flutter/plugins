@@ -12,7 +12,7 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$ListCommand', () {
+  group('ListCommand', () {
     late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
@@ -119,17 +119,11 @@ void main() {
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
-      final Directory federatedPlugin = packagesDir.childDirectory('my_plugin')
-        ..createSync();
-      final Directory clientLibrary =
-          federatedPlugin.childDirectory('my_plugin')..createSync();
-      createFakePubspec(clientLibrary);
-      final Directory webLibrary =
-          federatedPlugin.childDirectory('my_plugin_web')..createSync();
-      createFakePubspec(webLibrary);
-      final Directory macLibrary =
-          federatedPlugin.childDirectory('my_plugin_macos')..createSync();
-      createFakePubspec(macLibrary);
+      final Directory federatedPluginDir =
+          packagesDir.childDirectory('my_plugin')..createSync();
+      createFakePlugin('my_plugin', federatedPluginDir);
+      createFakePlugin('my_plugin_web', federatedPluginDir);
+      createFakePlugin('my_plugin_macos', federatedPluginDir);
 
       // Test without specifying `--type`.
       final List<String> plugins =
@@ -151,17 +145,11 @@ void main() {
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
-      final Directory federatedPlugin = packagesDir.childDirectory('my_plugin')
-        ..createSync();
-      final Directory clientLibrary =
-          federatedPlugin.childDirectory('my_plugin')..createSync();
-      createFakePubspec(clientLibrary);
-      final Directory webLibrary =
-          federatedPlugin.childDirectory('my_plugin_web')..createSync();
-      createFakePubspec(webLibrary);
-      final Directory macLibrary =
-          federatedPlugin.childDirectory('my_plugin_macos')..createSync();
-      createFakePubspec(macLibrary);
+      final Directory federatedPluginDir =
+          packagesDir.childDirectory('my_plugin')..createSync();
+      createFakePlugin('my_plugin', federatedPluginDir);
+      createFakePlugin('my_plugin_web', federatedPluginDir);
+      createFakePlugin('my_plugin_macos', federatedPluginDir);
 
       List<String> plugins = await runCapturingPrint(
           runner, <String>['list', '--packages=plugin1']);
