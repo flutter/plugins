@@ -1,6 +1,5 @@
-## 2.1.3
+## NEXT
 
-* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
 * Removes unnecessary imports.
 
 ## 2.1.2
