@@ -107,7 +107,7 @@
         [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
       }
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:[NSArray arrayWithArray:dicscoveryDevices]
+          discoverySessionWithDeviceTypes:dicscoveryDevices
                                 mediaType:AVMediaTypeVideo
                                  position:AVCaptureDevicePositionUnspecified];
       NSArray<AVCaptureDevice *> *devices = discoverySession.devices;

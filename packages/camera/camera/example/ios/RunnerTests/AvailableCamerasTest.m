@@ -60,10 +60,9 @@
   }
 
   id discoverySessionMock = OCMClassMock([AVCaptureDeviceDiscoverySession class]);
-  OCMStub([discoverySessionMock
-              discoverySessionWithDeviceTypes:[NSArray arrayWithArray:requiredTypes]
-                                    mediaType:AVMediaTypeVideo
-                                     position:AVCaptureDevicePositionUnspecified])
+  OCMStub([discoverySessionMock discoverySessionWithDeviceTypes:requiredTypes
+                                                      mediaType:AVMediaTypeVideo
+                                                       position:AVCaptureDevicePositionUnspecified])
       .andReturn(discoverySessionMock);
 
   NSMutableArray *cameras = [NSMutableArray array];
@@ -110,10 +109,9 @@
   }
 
   id discoverySessionMock = OCMClassMock([AVCaptureDeviceDiscoverySession class]);
-  OCMStub([discoverySessionMock
-              discoverySessionWithDeviceTypes:[NSArray arrayWithArray:requiredTypes]
-                                    mediaType:AVMediaTypeVideo
-                                     position:AVCaptureDevicePositionUnspecified])
+  OCMStub([discoverySessionMock discoverySessionWithDeviceTypes:requiredTypes
+                                                      mediaType:AVMediaTypeVideo
+                                                       position:AVCaptureDevicePositionUnspecified])
       .andReturn(discoverySessionMock);
 
   NSMutableArray *cameras = [NSMutableArray array];
