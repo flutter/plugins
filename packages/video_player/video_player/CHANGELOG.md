@@ -1,6 +1,7 @@
 ## NEXT
 
 * Removes unnecessary imports.
+* Fixes order-dependent unit tests.
 
 ## 2.4.0
 
