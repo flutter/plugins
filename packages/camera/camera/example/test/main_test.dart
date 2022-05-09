@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('Test snackbar', (WidgetTester tester) async {
     WidgetsFlutterBinding.ensureInitialized();
-    await tester.pumpWidget(CameraApp());
+    await tester.pumpWidget(const CameraApp());
     await tester.pumpAndSettle();
     expect(find.byType(SnackBar), findsOneWidget);
   });
