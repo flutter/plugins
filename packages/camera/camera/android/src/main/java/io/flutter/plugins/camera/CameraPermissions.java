@@ -24,18 +24,25 @@ final class CameraPermissions {
   }
 
   private static final int CAMERA_REQUEST_ID = 9796;
+  private boolean ongoing = false;
 
   void requestPermissions(
       Activity activity,
       PermissionsRegistry permissionsRegistry,
       boolean enableAudio,
       ResultCallback callback) {
+    if (ongoing) {
+      callback.onResult("cameraPermissionOngoing", "Camera permission request ongoing.");
+      return;
+    }
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
       permissionsRegistry.addListener(
           new CameraRequestPermissionsListener(
               (String errorCode, String errorDescription) -> {
+                ongoing = false;
                 callback.onResult(errorCode, errorDescription);
               }));
+      ongoing = true;
       ActivityCompat.requestPermissions(
           activity,
           enableAudio
