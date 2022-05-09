@@ -6,7 +6,6 @@ import 'package:file_selector/file_selector.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:test/fake.dart';
 
 void main() {
   late FakeFileSelector fakePlatformImplementation;

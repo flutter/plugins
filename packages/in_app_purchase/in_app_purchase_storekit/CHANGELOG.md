@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 0.3.0+5
 
 * Migrates from `ui.hash*` to `Object.hash*`.

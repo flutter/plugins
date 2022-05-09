@@ -30,10 +30,13 @@ class CreateAllPluginsAppCommand extends PluginCommand {
             'Defaults to the repository root.');
   }
 
-  /// The location of the synthesized app project.
-  Directory get appDirectory => packagesDir.fileSystem
+  /// The location to create the synthesized app project.
+  Directory get _appDirectory => packagesDir.fileSystem
       .directory(getStringArg(_outputDirectoryFlag))
       .childDirectory('all_plugins');
+
+  /// The synthesized app project.
+  RepositoryPackage get app => RepositoryPackage(_appDirectory);
 
   @override
   String get description =>
@@ -73,7 +76,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
         '--template=app',
         '--project-name=all_plugins',
         '--android-language=java',
-        appDirectory.path,
+        _appDirectory.path,
       ],
     );
 
@@ -83,8 +86,8 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _updateAppGradle() async {
-    final File gradleFile = appDirectory
-        .childDirectory('android')
+    final File gradleFile = app
+        .platformDirectory(FlutterPlatform.android)
         .childDirectory('app')
         .childFile('build.gradle');
     if (!gradleFile.existsSync()) {
@@ -119,8 +122,8 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _updateManifest() async {
-    final File manifestFile = appDirectory
-        .childDirectory('android')
+    final File manifestFile = app
+        .platformDirectory(FlutterPlatform.android)
         .childDirectory('app')
         .childDirectory('src')
         .childDirectory('main')
@@ -147,12 +150,11 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _genPubspecWithAllPlugins() async {
-    final RepositoryPackage buildAllApp = RepositoryPackage(appDirectory);
     // Read the old pubspec file's Dart SDK version, in order to preserve it
     // in the new file. The template sometimes relies on having opted in to
     // specific language features via SDK version, so using a different one
     // can cause compilation failures.
-    final Pubspec originalPubspec = buildAllApp.parsePubspec();
+    final Pubspec originalPubspec = app.parsePubspec();
     const String dartSdkKey = 'sdk';
     final VersionConstraint dartSdkConstraint =
         originalPubspec.environment?[dartSdkKey] ??
@@ -177,7 +179,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       },
       dependencyOverrides: pluginDeps,
     );
-    buildAllApp.pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
+    app.pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
   }
 
   Future<Map<String, PathDependency>> _getValidPathDependencies() async {
