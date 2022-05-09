@@ -24,7 +24,7 @@ final class CameraPermissions {
   }
 
   private static final int CAMERA_REQUEST_ID = 9796;
-  private boolean ongoing = false;
+  @VisibleForTesting boolean ongoing = false;
 
   void requestPermissions(
       Activity activity,

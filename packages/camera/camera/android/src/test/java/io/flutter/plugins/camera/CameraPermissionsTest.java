@@ -9,12 +9,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import io.flutter.plugins.camera.CameraPermissions.CameraRequestPermissionsListener;
+import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camera.CameraPermissions.ResultCallback;
 import org.junit.Test;
 
 public class CameraPermissionsTest {
+  @Test
+  public void requestPermissions_errorsWhenRequestOngoing() {
+    CameraPermissions cameraPermissions = new CameraPermissions();
+    Activity fakeActivity = mock(Activity.class);
+    PermissionsRegistry fakePermissionsRegistry = mock(PermissionsRegistry.class);
+    ResultCallback fakeResultCallback = mock(ResultCallback.class);
+
+    cameraPermissions.ongoing = true;
+    cameraPermissions.requestPermissions(
+        fakeActivity, fakePermissionsRegistry, true, fakeResultCallback);
+
+    verify(fakeResultCallback)
+        .onResult("cameraPermissionOngoing", "Camera permission request ongoing.");
+  }
+
   @Test
   public void listener_respondsOnce() {
     final int[] calledCounter = {0};
@@ -31,43 +48,45 @@ public class CameraPermissionsTest {
 
   @Test
   public void callback_respondsWithCameraAccessDenied() {
-    ResultCallback callback = mock(ResultCallback.class);
+    ResultCallback fakeResultCallback = mock(ResultCallback.class);
     CameraRequestPermissionsListener permissionsListener =
-        new CameraRequestPermissionsListener(callback);
+        new CameraRequestPermissionsListener(fakeResultCallback);
 
     permissionsListener.onRequestPermissionsResult(
         9796, null, new int[] {PackageManager.PERMISSION_DENIED});
 
-    verify(callback).onResult("CameraAccessDenied", "Camera access permission was denied.");
+    verify(fakeResultCallback)
+        .onResult("CameraAccessDenied", "Camera access permission was denied.");
   }
 
   @Test
   public void callback_respondsWithAudioAccessDenied() {
-    ResultCallback callback = mock(ResultCallback.class);
+    ResultCallback fakeResultCallback = mock(ResultCallback.class);
     CameraRequestPermissionsListener permissionsListener =
-        new CameraRequestPermissionsListener(callback);
+        new CameraRequestPermissionsListener(fakeResultCallback);
 
     permissionsListener.onRequestPermissionsResult(
         9796,
         null,
         new int[] {PackageManager.PERMISSION_GRANTED, PackageManager.PERMISSION_DENIED});
 
-    verify(callback).onResult("AudioAccessDenied", "Audio access permission was denied.");
+    verify(fakeResultCallback).onResult("AudioAccessDenied", "Audio access permission was denied.");
   }
 
   @Test
   public void callback_doesNotRespond() {
-    ResultCallback callback = mock(ResultCallback.class);
+    ResultCallback fakeResultCallback = mock(ResultCallback.class);
     CameraRequestPermissionsListener permissionsListener =
-        new CameraRequestPermissionsListener(callback);
+        new CameraRequestPermissionsListener(fakeResultCallback);
 
     permissionsListener.onRequestPermissionsResult(
         9796,
         null,
         new int[] {PackageManager.PERMISSION_GRANTED, PackageManager.PERMISSION_GRANTED});
 
-    verify(callback, never())
+    verify(fakeResultCallback, never())
         .onResult("CameraAccessDenied", "Camera access permission was denied.");
-    verify(callback, never()).onResult("AudioAccessDenied", "Audio access permission was denied.");
+    verify(fakeResultCallback, never())
+        .onResult("AudioAccessDenied", "Audio access permission was denied.");
   }
 }
