@@ -7,7 +7,6 @@
 /// An example of using the plugin, controlling lifecycle and playback of the
 /// video.
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 

@@ -37,7 +37,7 @@ Normally `flutter run` starts in a random port. In the case where you need to de
 
 You can tell `flutter run` to listen for requests in a specific host and port with the following:
 
-```
+```sh
 flutter run -d chrome --web-hostname localhost --web-port 7357
 ```
 

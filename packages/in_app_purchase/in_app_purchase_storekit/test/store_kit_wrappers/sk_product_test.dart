@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_storekit/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase_storekit/src/types/app_store_product_details.dart';
 import 'package:in_app_purchase_storekit/src/types/app_store_purchase_details.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';

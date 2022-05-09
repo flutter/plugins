@@ -5,9 +5,6 @@
 import 'package:flutter/services.dart';
 import 'package:local_auth_ios/types/auth_messages_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'package:local_auth_platform_interface/types/auth_messages.dart';
-import 'package:local_auth_platform_interface/types/auth_options.dart';
-import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
 export 'package:local_auth_ios/types/auth_messages_ios.dart';
 export 'package:local_auth_platform_interface/types/auth_messages.dart';
@@ -49,13 +46,14 @@ class LocalAuthIOS extends LocalAuthPlatform {
 
   @override
   Future<bool> deviceSupportsBiometrics() async {
-    return (await getEnrolledBiometrics()).isNotEmpty;
+    return (await _channel.invokeMethod<bool>('deviceSupportsBiometrics')) ??
+        false;
   }
 
   @override
   Future<List<BiometricType>> getEnrolledBiometrics() async {
     final List<String> result = (await _channel.invokeListMethod<String>(
-          'getAvailableBiometrics',
+          'getEnrolledBiometrics',
         )) ??
         <String>[];
     final List<BiometricType> biometrics = <BiometricType>[];
@@ -69,8 +67,6 @@ class LocalAuthIOS extends LocalAuthPlatform {
           break;
         case 'iris':
           biometrics.add(BiometricType.iris);
-          break;
-        case 'undefined':
           break;
       }
     }

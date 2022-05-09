@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 3.0.2
 
 * Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.
