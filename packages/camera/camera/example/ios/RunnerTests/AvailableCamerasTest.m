@@ -9,28 +9,6 @@
 #import <OCMock/OCMock.h>
 #import "MockFLTThreadSafeFlutterResult.h"
 
-@interface AVCaptureDeviceMock : AVCaptureDevice
-
-@end
-
-@implementation AVCaptureDeviceMock {
-  NSString *_mockId;
-  AVCaptureDevicePosition _mockPosition;
-}
-- (AVCaptureDevicePosition)position {
-  return _mockPosition;
-}
-- (NSString *)uniqueID {
-  return _mockId;
-}
-- (id)initWithId:(NSString *)localId position:(AVCaptureDevicePosition)localPosition {
-  _mockId = localId;
-  _mockPosition = localPosition;
-  return self;
-}
-
-@end
-
 @interface AvailableCamerasTest : XCTestCase
 @end
 
@@ -42,14 +20,21 @@
       [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 
   // iPhone 13 Cameras:
-  id wideAngleCamera = [[AVCaptureDeviceMock alloc] initWithId:@"0"
-                                                      position:AVCaptureDevicePositionBack];
-  id frontFacingCamera = [[AVCaptureDeviceMock alloc] initWithId:@"1"
-                                                        position:AVCaptureDevicePositionFront];
-  id ultraWideCamera = [[AVCaptureDeviceMock alloc] initWithId:@"2"
-                                                      position:AVCaptureDevicePositionBack];
-  id telephotoCamera = [[AVCaptureDeviceMock alloc] initWithId:@"3"
-                                                      position:AVCaptureDevicePositionBack];
+  AVCaptureDevice *wideAngleCamera = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([wideAngleCamera uniqueID]).andReturn(@"0");
+  OCMStub([wideAngleCamera position]).andReturn(AVCaptureDevicePositionBack);
+
+  AVCaptureDevice *frontFacingCamera = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([frontFacingCamera uniqueID]).andReturn(@"1");
+  OCMStub([frontFacingCamera position]).andReturn(AVCaptureDevicePositionFront);
+
+  AVCaptureDevice *ultraWideCamera = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([ultraWideCamera uniqueID]).andReturn(@"2");
+  OCMStub([ultraWideCamera position]).andReturn(AVCaptureDevicePositionBack);
+
+  AVCaptureDevice *telephotoCamera = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([telephotoCamera uniqueID]).andReturn(@"3");
+  OCMStub([telephotoCamera position]).andReturn(AVCaptureDevicePositionBack);
 
   NSMutableArray *requiredTypes = [NSMutableArray array];
   [requiredTypes addObjectsFromArray:@[
@@ -95,10 +80,13 @@
       [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 
   // iPhone 8 Cameras:
-  id wideAngleCamera = [[AVCaptureDeviceMock alloc] initWithId:@"0"
-                                                      position:AVCaptureDevicePositionBack];
-  id frontFacingCamera = [[AVCaptureDeviceMock alloc] initWithId:@"1"
-                                                        position:AVCaptureDevicePositionFront];
+  AVCaptureDevice *wideAngleCamera = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([wideAngleCamera uniqueID]).andReturn(@"0");
+  OCMStub([wideAngleCamera position]).andReturn(AVCaptureDevicePositionBack);
+
+  AVCaptureDevice *frontFacingCamera = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([frontFacingCamera uniqueID]).andReturn(@"1");
+  OCMStub([frontFacingCamera position]).andReturn(AVCaptureDevicePositionFront);
 
   NSMutableArray *requiredTypes = [NSMutableArray array];
   [requiredTypes addObjectsFromArray:@[
