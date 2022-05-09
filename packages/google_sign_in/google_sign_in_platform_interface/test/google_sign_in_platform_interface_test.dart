@@ -73,12 +73,6 @@ class ImplementsWithIsMock extends Mock implements GoogleSignInPlatform {
   bool get isMock => true;
 }
 
-/// Verify that [GoogleSignInTokenData] can be mocked even though it's unused
-class MockGoogleSignInTokenData extends Mock implements GoogleSignInTokenData {}
-
-/// Verify that [GoogleSignInUserData] can be mocked even though it's unused
-class MockGoogleSignInUserData extends Mock implements GoogleSignInUserData {}
-
 class ImplementsGoogleSignInPlatform extends Mock
     implements GoogleSignInPlatform {}
 
