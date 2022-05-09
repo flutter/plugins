@@ -29,7 +29,7 @@ public class CameraPermissionsTest {
         fakeActivity, fakePermissionsRegistry, true, fakeResultCallback);
 
     verify(fakeResultCallback)
-        .onResult("cameraPermissionOngoing", "Camera permission request ongoing.");
+        .onResult("cameraPermissionRequest", "Camera permission request ongoing.");
   }
 
   @Test

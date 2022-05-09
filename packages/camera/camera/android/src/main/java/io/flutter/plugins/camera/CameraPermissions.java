@@ -32,7 +32,7 @@ final class CameraPermissions {
       boolean enableAudio,
       ResultCallback callback) {
     if (ongoing) {
-      callback.onResult("cameraPermissionOngoing", "Camera permission request ongoing.");
+      callback.onResult("cameraPermissionRequest", "Camera permission request ongoing.");
       return;
     }
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
