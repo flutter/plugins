@@ -11,11 +11,14 @@ import 'package:example/save_text_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 /// MyApp is the Main Application.
 class MyApp extends StatelessWidget {
+  /// Default Constructor
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,13 +27,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: const HomePage(),
       routes: <String, WidgetBuilder>{
-        '/open/image': (BuildContext context) => OpenImagePage(),
-        '/open/images': (BuildContext context) => OpenMultipleImagesPage(),
-        '/open/text': (BuildContext context) => OpenTextPage(),
+        '/open/image': (BuildContext context) => const OpenImagePage(),
+        '/open/images': (BuildContext context) =>
+            const OpenMultipleImagesPage(),
+        '/open/text': (BuildContext context) => const OpenTextPage(),
         '/save/text': (BuildContext context) => SaveTextPage(),
-        '/directory': (BuildContext context) => GetDirectoryPage(),
+        '/directory': (BuildContext context) => const GetDirectoryPage(),
       },
     );
   }
