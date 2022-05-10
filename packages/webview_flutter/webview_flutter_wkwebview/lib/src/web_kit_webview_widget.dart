@@ -18,13 +18,14 @@ import 'web_kit/web_kit.dart';
 class WebKitWebViewWidget extends StatefulWidget {
   /// Constructs a [WebKitWebViewWidget].
   const WebKitWebViewWidget({
+    Key? key,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     required this.onBuildWidget,
     this.configuration,
     @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
-  });
+  }) : super(key: key);
 
   /// The initial parameters used to setup the WebView.
   final CreationParams creationParams;
@@ -226,11 +227,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<void> clearCache() {
     return webView.configuration.websiteDataStore.removeDataOfTypes(
-      <WKWebsiteDataTypes>{
-        WKWebsiteDataTypes.memoryCache,
-        WKWebsiteDataTypes.diskCache,
-        WKWebsiteDataTypes.offlineWebApplicationCache,
-        WKWebsiteDataTypes.localStroage,
+      <WKWebsiteDataType>{
+        WKWebsiteDataType.memoryCache,
+        WKWebsiteDataType.diskCache,
+        WKWebsiteDataType.offlineWebApplicationCache,
+        WKWebsiteDataType.localStorage,
       },
       DateTime.fromMillisecondsSinceEpoch(0),
     );
@@ -516,8 +517,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     Set<String> removedJavaScriptChannels = const <String>{},
   }) async {
     webView.configuration.userContentController.removeAllUserScripts();
-    webView.configuration.userContentController
-        .removeAllScriptMessageHandlers();
+    // TODO(bparrishMines): This can be replaced with
+    // `removeAllScriptMessageHandlers` once Dart supports runtime version
+    // checking. (e.g. The equivalent to @availability in Objective-C.)
+    _scriptMessageHandlers.keys.forEach(
+      webView.configuration.userContentController.removeScriptMessageHandler,
+    );
 
     removedJavaScriptChannels.forEach(_scriptMessageHandlers.remove);
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
