@@ -32,18 +32,6 @@
                         [NSHTTPCookie cookieWithProperties:@{NSHTTPCookieName : @"cookieName"}]);
 }
 
-- (void)testFWFNSHTTPCookieFromCookieDataIgnoresSameSitePolicy {
-  NSHTTPCookie *cookie = FWFNSHTTPCookieFromCookieData([FWFNSHttpCookieData
-      makeWithPropertyKeys:@[
-        [FWFNSHttpCookiePropertyKeyEnumData makeWithValue:FWFNSHttpCookiePropertyKeyEnumName],
-        [FWFNSHttpCookiePropertyKeyEnumData
-            makeWithValue:FWFNSHttpCookiePropertyKeyEnumSameSitePolicy]
-      ]
-            propertyValues:@[ @"cookieName", @"cookiePolicy" ]]);
-  XCTAssertEqualObjects(cookie,
-                        [NSHTTPCookie cookieWithProperties:@{NSHTTPCookieName : @"cookieName"}]);
-}
-
 - (void)testFWFWKUserScriptFromScriptData {
   WKUserScript *userScript = FWFWKUserScriptFromScriptData([FWFWKUserScriptData
        makeWithSource:@"mySource"
