@@ -1,6 +1,6 @@
-## 0.9.4+23
+## 0.10.0
 
-* Updates camera access permission error codes to be consistent with other platforms.
+* Updates Android camera access permission error codes to be consistent with other platforms.
 
 ## 0.9.4+22
 
