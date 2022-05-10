@@ -1,7 +1,7 @@
 ## 0.8.5+1
 
 * Removes unnecessary imports.
-* Fix 'messages.g.h' file not found.
+* Fixes 'messages.g.h' file not found.
 
 ## 0.8.5
 
