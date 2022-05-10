@@ -30,7 +30,9 @@ extern NSHTTPCookie *_Nullable FWFNSHTTPCookieFromCookieData(FWFNSHttpCookieData
     NSHTTPCookiePropertyKey cookieKey =
         FWFNSHTTPCookiePropertyKeyFromEnumData(data.propertyKeys[i]);
     if (!cookieKey) {
-      return nil;
+      // Some keys aren't supported on all versions, so this ignores keys
+      // that require a higher version or are unsupported.
+      continue;
     }
     [properties setObject:data.propertyValues[i] forKey:cookieKey];
   }
@@ -80,7 +82,6 @@ NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
       if (@available(iOS 13.0, *)) {
         return NSHTTPCookieSameSitePolicy;
       } else {
-        NSLog(@"NSHTTPCookieSameSitePolicy is only supported on iOS 13+.");
         return nil;
       }
     case FWFNSHttpCookiePropertyKeyEnumSecure:

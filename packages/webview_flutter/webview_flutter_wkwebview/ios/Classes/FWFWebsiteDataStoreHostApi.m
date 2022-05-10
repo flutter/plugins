@@ -39,13 +39,13 @@
                      withIdentifier:instanceId.longValue];
 }
 
-- (void)removeDataFromDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
-                                      ofTypes:(nonnull NSArray<FWFWKWebsiteDataTypeEnumData *> *)
-                                                  dataTypes
-                                modifiedSince:(nonnull NSNumber *)secondsModifiedSinceEpoch
-                                   completion:
-                                       (nonnull void (^)(NSNumber *_Nullable,
-                                                         FlutterError *_Nullable))completion {
+- (void)
+    removeDataFromDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
+                                  ofTypes:
+                                      (nonnull NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes
+                            modifiedSince:(nonnull NSNumber *)modificationTimeInSecondsSinceEpoch
+                               completion:(nonnull void (^)(NSNumber *_Nullable,
+                                                            FlutterError *_Nullable))completion {
   NSMutableSet<NSString *> *stringDataTypes = [NSMutableSet set];
   for (FWFWKWebsiteDataTypeEnumData *type in dataTypes) {
     [stringDataTypes addObject:FWFWKWebsiteDataTypeFromEnumData(type)];
@@ -57,14 +57,10 @@
             completionHandler:^(NSArray<WKWebsiteDataRecord *> *records) {
               [dataStore
                   removeDataOfTypes:stringDataTypes
-                      modifiedSince:[NSDate dateWithTimeIntervalSince1970:secondsModifiedSinceEpoch
-                                                                              .doubleValue]
+                      modifiedSince:[NSDate dateWithTimeIntervalSince1970:
+                                                modificationTimeInSecondsSinceEpoch.doubleValue]
                   completionHandler:^{
-                    if (records.count > 0) {
-                      completion(@YES, nil);
-                    } else {
-                      completion(@NO, nil);
-                    }
+                    completion(@(records.count > 0), nil);
                   }];
             }];
 }

@@ -88,26 +88,36 @@ typedef NS_ENUM(NSUInteger, FWFNSHttpCookiePropertyKeyEnum) {
 @class FWFNSHttpCookieData;
 
 @interface FWFNSKeyValueObservingOptionsEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFNSKeyValueObservingOptionsEnum)value;
 @property(nonatomic, assign) FWFNSKeyValueObservingOptionsEnum value;
 @end
 
 @interface FWFWKUserScriptInjectionTimeEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFWKUserScriptInjectionTimeEnum)value;
 @property(nonatomic, assign) FWFWKUserScriptInjectionTimeEnum value;
 @end
 
 @interface FWFWKAudiovisualMediaTypeEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFWKAudiovisualMediaTypeEnum)value;
 @property(nonatomic, assign) FWFWKAudiovisualMediaTypeEnum value;
 @end
 
 @interface FWFWKWebsiteDataTypeEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFWKWebsiteDataTypeEnum)value;
 @property(nonatomic, assign) FWFWKWebsiteDataTypeEnum value;
 @end
 
 @interface FWFNSHttpCookiePropertyKeyEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFNSHttpCookiePropertyKeyEnum)value;
 @property(nonatomic, assign) FWFNSHttpCookiePropertyKeyEnum value;
 @end
@@ -156,7 +166,7 @@ NSObject<FlutterMessageCodec> *FWFWKWebsiteDataStoreHostApiGetCodec(void);
                                        error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)removeDataFromDataStoreWithIdentifier:(NSNumber *)instanceId
                                       ofTypes:(NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes
-                                modifiedSince:(NSNumber *)secondsModifiedSinceEpoch
+                                modifiedSince:(NSNumber *)modificationTimeInSecondsSinceEpoch
                                    completion:(void (^)(NSNumber *_Nullable,
                                                         FlutterError *_Nullable))completion;
 @end

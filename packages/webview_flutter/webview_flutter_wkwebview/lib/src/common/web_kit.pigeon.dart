@@ -80,115 +80,105 @@ enum NSHttpCookiePropertyKeyEnum {
 
 class NSKeyValueObservingOptionsEnumData {
   NSKeyValueObservingOptionsEnumData({
-    this.value,
+    required this.value,
   });
 
-  NSKeyValueObservingOptionsEnum? value;
+  NSKeyValueObservingOptionsEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static NSKeyValueObservingOptionsEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSKeyValueObservingOptionsEnumData(
-      value: pigeonMap['value'] != null
-          ? NSKeyValueObservingOptionsEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: NSKeyValueObservingOptionsEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class WKUserScriptInjectionTimeEnumData {
   WKUserScriptInjectionTimeEnumData({
-    this.value,
+    required this.value,
   });
 
-  WKUserScriptInjectionTimeEnum? value;
+  WKUserScriptInjectionTimeEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static WKUserScriptInjectionTimeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKUserScriptInjectionTimeEnumData(
-      value: pigeonMap['value'] != null
-          ? WKUserScriptInjectionTimeEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: WKUserScriptInjectionTimeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class WKAudiovisualMediaTypeEnumData {
   WKAudiovisualMediaTypeEnumData({
-    this.value,
+    required this.value,
   });
 
-  WKAudiovisualMediaTypeEnum? value;
+  WKAudiovisualMediaTypeEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static WKAudiovisualMediaTypeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKAudiovisualMediaTypeEnumData(
-      value: pigeonMap['value'] != null
-          ? WKAudiovisualMediaTypeEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: WKAudiovisualMediaTypeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class WKWebsiteDataTypeEnumData {
   WKWebsiteDataTypeEnumData({
-    this.value,
+    required this.value,
   });
 
-  WKWebsiteDataTypeEnum? value;
+  WKWebsiteDataTypeEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static WKWebsiteDataTypeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKWebsiteDataTypeEnumData(
-      value: pigeonMap['value'] != null
-          ? WKWebsiteDataTypeEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: WKWebsiteDataTypeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class NSHttpCookiePropertyKeyEnumData {
   NSHttpCookiePropertyKeyEnumData({
-    this.value,
+    required this.value,
   });
 
-  NSHttpCookiePropertyKeyEnum? value;
+  NSHttpCookiePropertyKeyEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static NSHttpCookiePropertyKeyEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSHttpCookiePropertyKeyEnumData(
-      value: pigeonMap['value'] != null
-          ? NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -377,14 +367,14 @@ class WKWebsiteDataStoreHostApi {
   Future<bool> removeDataOfTypes(
       int arg_instanceId,
       List<WKWebsiteDataTypeEnumData?> arg_dataTypes,
-      double arg_secondsModifiedSinceEpoch) async {
+      double arg_modificationTimeInSecondsSinceEpoch) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
       arg_instanceId,
       arg_dataTypes,
-      arg_secondsModifiedSinceEpoch
+      arg_modificationTimeInSecondsSinceEpoch
     ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(

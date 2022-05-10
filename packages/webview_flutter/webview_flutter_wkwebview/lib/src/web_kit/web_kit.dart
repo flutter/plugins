@@ -13,7 +13,6 @@ import 'web_kit_api_impls.dart';
 /// Times at which to inject script content into a webpage.
 ///
 /// Wraps [WKUserScriptInjectionTime](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime?language=objc).
-
 enum WKUserScriptInjectionTime {
   /// Inject the script after the creation of the webpage’s document element, but before loading any other content.
   ///
@@ -29,7 +28,6 @@ enum WKUserScriptInjectionTime {
 /// The media types that require a user gesture to begin playing.
 ///
 /// Wraps [WKAudiovisualMediaTypes](https://developer.apple.com/documentation/webkit/wkaudiovisualmediatypes?language=objc).
-
 enum WKAudiovisualMediaType {
   /// No media types require a user gesture to begin playing.
   ///
@@ -55,7 +53,6 @@ enum WKAudiovisualMediaType {
 /// Types of data that websites store.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
-
 enum WKWebsiteDataType {
   /// Cookies.
   cookies,
@@ -244,7 +241,6 @@ class WKPreferences {
 /// Manages cookies, disk and memory caches, and other types of data for a web view.
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
-
 class WKWebsiteDataStore {
   WKWebsiteDataStore._({
     BinaryMessenger? binaryMessenger,
@@ -294,7 +290,6 @@ class WKWebsiteDataStore {
   /// Removes website data that changed after the specified date.
   ///
   /// Returns whether any data was removed.
-
   Future<bool> removeDataOfTypes(
     Set<WKWebsiteDataType> dataTypes,
     DateTime since,
@@ -310,7 +305,6 @@ class WKWebsiteDataStore {
 /// An object that manages the HTTP cookies associated with a particular web view.
 ///
 /// Wraps [WKHTTPCookieStore](https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc).
-
 class WKHttpCookieStore extends NSObject {
   WKHttpCookieStore._({
     BinaryMessenger? binaryMessenger,
@@ -341,7 +335,6 @@ class WKHttpCookieStore extends NSObject {
   final WKHttpCookieStoreHostApiImpl _httpCookieStoreApi;
 
   /// Adds a cookie to the cookie store.
-
   Future<void> setCookie(NSHttpCookie cookie) {
     return _httpCookieStoreApi.setCookieForInsances(this, cookie);
   }
@@ -350,7 +343,6 @@ class WKHttpCookieStore extends NSObject {
 /// An interface for receiving messages from JavaScript code running in a webpage.
 ///
 /// Wraps [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc)
-
 class WKScriptMessageHandler {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler({
@@ -390,7 +382,6 @@ class WKScriptMessageHandler {
 ///   code.
 ///
 /// Wraps [WKUserContentController](https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc).
-
 class WKUserContentController {
   /// Constructs a [WKUserContentController] that is owned by [configuration].
   @visibleForTesting
@@ -421,7 +412,6 @@ class WKUserContentController {
   /// specify the string `MyFunction`, the user content controller defines the `
   /// `window.webkit.messageHandlers.MyFunction.postMessage()` function in
   /// JavaScript.
-
   Future<void> addScriptMessageHandler(
     WKScriptMessageHandler handler,
     String name,
@@ -443,7 +433,6 @@ class WKUserContentController {
   /// using the [addScriptMessageHandler] method. This method removes the
   /// message handler from the page content world. If you installed the message
   /// handler in a different content world, this method doesn’t remove it.
-
   Future<void> removeScriptMessageHandler(String name) {
     return _userContentControllerApi.removeScriptMessageHandlerForInstances(
       this,
@@ -451,8 +440,10 @@ class WKUserContentController {
     );
   }
 
-  /// Uninstalls all custom message handlers associated with the user content controller.
-
+  /// Uninstalls all custom message handlers associated with the user content
+  /// controller.
+  ///
+  /// Only supported on iOS version 14+.
   Future<void> removeAllScriptMessageHandlers() {
     return _userContentControllerApi.removeAllScriptMessageHandlersForInstances(
       this,
@@ -460,14 +451,12 @@ class WKUserContentController {
   }
 
   /// Injects the specified script into the webpage’s content.
-
   Future<void> addUserScript(WKUserScript userScript) {
     return _userContentControllerApi.addUserScriptForInstances(
         this, userScript);
   }
 
   /// Removes all user scripts from the web view.
-
   Future<void> removeAllUserScripts() {
     return _userContentControllerApi.removeAllUserScriptsForInstances(this);
   }
@@ -476,7 +465,6 @@ class WKUserContentController {
 /// A collection of properties that you use to initialize a web view.
 ///
 /// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc).
-
 class WKWebViewConfiguration {
   /// Constructs a [WKWebViewConfiguration].
   factory WKWebViewConfiguration({
@@ -549,7 +537,6 @@ class WKWebViewConfiguration {
   /// Indicates whether HTML5 videos play inline or use the native full-screen controller.
   ///
   /// Sets [WKWebViewConfiguration.allowsInlineMediaPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1614793-allowsinlinemediaplayback?language=objc).
-
   Future<void> setAllowsInlineMediaPlayback(bool allow) {
     return _webViewConfigurationApi.setAllowsInlineMediaPlaybackForInstances(
       this,
@@ -563,7 +550,6 @@ class WKWebViewConfiguration {
   /// required to begin playing media.
   ///
   /// Sets [WKWebViewConfiguration.mediaTypesRequiringUserActionForPlayback](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/1851524-mediatypesrequiringuseractionfor?language=objc).
-
   Future<void> setMediaTypesRequiringUserActionForPlayback(
     Set<WKAudiovisualMediaType> types,
   ) {
@@ -579,7 +565,6 @@ class WKWebViewConfiguration {
 /// The methods for presenting native user interface elements on behalf of a webpage.
 ///
 /// Wraps [WKUIDelegate](https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc).
-
 class WKUIDelegate {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate({
@@ -595,7 +580,6 @@ class WKUIDelegate {
   final WKUIDelegateHostApiImpl _uiDelegateApi;
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
-
   Future<void> setOnCreateWebView(
     void Function(
       WKWebViewConfiguration configuration,
@@ -613,7 +597,6 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
-
 class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({

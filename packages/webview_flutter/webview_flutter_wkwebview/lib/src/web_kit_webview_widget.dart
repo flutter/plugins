@@ -517,6 +517,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     Set<String> removedJavaScriptChannels = const <String>{},
   }) async {
     webView.configuration.userContentController.removeAllUserScripts();
+    // TODO(bparrishMines): This can be replaced with
+    // `removeAllScriptMessageHandlers` once Dart supports runtime version
+    // checking. (e.g. The equivalent to @availability in Objective-C.)
     _scriptMessageHandlers.keys.forEach(
       webView.configuration.userContentController.removeScriptMessageHandler,
     );

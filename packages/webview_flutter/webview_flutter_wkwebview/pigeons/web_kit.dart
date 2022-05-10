@@ -37,10 +37,10 @@ enum NSKeyValueObservingOptionsEnum {
   priorNotification,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSKeyValueObservingOptionsEnumData {
-  // TODO(bparrishMines): Generated code fails when enums are marked as nonnull.
-  // Change to nonnull once this is fixed: https://github.com/flutter/flutter/issues/100594
-  late NSKeyValueObservingOptionsEnum? value;
+  late NSKeyValueObservingOptionsEnum value;
 }
 
 /// Mirror of NSKeyValueChange.
@@ -53,8 +53,10 @@ enum NSKeyValueChangeEnum {
   replacement,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSKeyValueChangeEnumData {
-  late NSKeyValueChangeEnum? value;
+  late NSKeyValueChangeEnum value;
 }
 
 /// Mirror of NSKeyValueChangeKey.
@@ -68,8 +70,10 @@ enum NSKeyValueChangeKeyEnum {
   oldValue,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSKeyValueChangeKeyEnumData {
-  late NSKeyValueChangeKeyEnum? value;
+  late NSKeyValueChangeKeyEnum value;
 }
 
 /// Mirror of WKUserScriptInjectionTime.
@@ -80,8 +84,10 @@ enum WKUserScriptInjectionTimeEnum {
   atDocumentEnd,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKUserScriptInjectionTimeEnumData {
-  late WKUserScriptInjectionTimeEnum? value;
+  late WKUserScriptInjectionTimeEnum value;
 }
 
 /// Mirror of WKAudiovisualMediaTypes.
@@ -94,8 +100,10 @@ enum WKAudiovisualMediaTypeEnum {
   all,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKAudiovisualMediaTypeEnumData {
-  late WKAudiovisualMediaTypeEnum? value;
+  late WKAudiovisualMediaTypeEnum value;
 }
 
 /// Mirror of WKWebsiteDataTypes.
@@ -112,8 +120,10 @@ enum WKWebsiteDataTypeEnum {
   indexedDBDatabases,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKWebsiteDataTypeEnumData {
-  late WKWebsiteDataTypeEnum? value;
+  late WKWebsiteDataTypeEnum value;
 }
 
 /// Mirror of WKNavigationActionPolicy.
@@ -124,8 +134,10 @@ enum WKNavigationActionPolicyEnum {
   cancel,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKNavigationActionPolicyEnumData {
-  late WKNavigationActionPolicyEnum? value;
+  late WKNavigationActionPolicyEnum value;
 }
 
 /// Mirror of NSHTTPCookiePropertyKey.
@@ -148,8 +160,10 @@ enum NSHttpCookiePropertyKeyEnum {
   version,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSHttpCookiePropertyKeyEnumData {
-  late NSHttpCookiePropertyKeyEnum? value;
+  late NSHttpCookiePropertyKeyEnum value;
 }
 
 /// Mirror of NSURLRequest.
@@ -207,6 +221,8 @@ class WKScriptMessageData {
 ///
 /// See https://developer.apple.com/documentation/foundation/nshttpcookie?language=objc.
 class NSHttpCookieData {
+  // TODO(bparrishMines): Change to a map when Objective-C data classes conform
+  // to `NSCopying`. See https://github.com/flutter/flutter/issues/103383.
   // `NSDictionary`s are unable to use data classes as keys because they don't
   // conform to `NSCopying`. This splits the map of properties into a list of
   // keys and values with the ordered maintained.
@@ -237,7 +253,7 @@ abstract class WKWebsiteDataStoreHostApi {
   bool removeDataOfTypes(
     int instanceId,
     List<WKWebsiteDataTypeEnumData> dataTypes,
-    double secondsModifiedSinceEpoch,
+    double modificationTimeInSecondsSinceEpoch,
   );
 }
 

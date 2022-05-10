@@ -359,10 +359,10 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSArray<FWFWKWebsiteDataTypeEnumData *> *arg_dataTypes = GetNullableObjectAtIndex(args, 1);
-        NSNumber *arg_secondsModifiedSinceEpoch = GetNullableObjectAtIndex(args, 2);
+        NSNumber *arg_modificationTimeInSecondsSinceEpoch = GetNullableObjectAtIndex(args, 2);
         [api removeDataFromDataStoreWithIdentifier:arg_instanceId
                                            ofTypes:arg_dataTypes
-                                     modifiedSince:arg_secondsModifiedSinceEpoch
+                                     modifiedSince:arg_modificationTimeInSecondsSinceEpoch
                                         completion:^(NSNumber *_Nullable output,
                                                      FlutterError *_Nullable error) {
                                           callback(wrapResult(output, error));
