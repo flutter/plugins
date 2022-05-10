@@ -33,7 +33,7 @@ const List<String> _kProductIds = <String>[
 
 class _MyApp extends StatefulWidget {
   @override
-  State<_MyApp> createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<_MyApp> {
@@ -247,61 +247,60 @@ class _MyAppState extends State<_MyApp> {
       (ProductDetails productDetails) {
         final PurchaseDetails? previousPurchase = purchases[productDetails.id];
         return ListTile(
-          title: Text(
-            productDetails.title,
-          ),
-          subtitle: Text(
-            productDetails.description,
-          ),
-          trailing: previousPurchase != null
-              ? IconButton(
-                  onPressed: () => confirmPriceChange(context),
-                  icon: const Icon(Icons.upgrade))
-              : TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.green[800],
-                    primary: Colors.white,
-                  ),
-                  onPressed: () {
-                    late PurchaseParam purchaseParam;
+            title: Text(
+              productDetails.title,
+            ),
+            subtitle: Text(
+              productDetails.description,
+            ),
+            trailing: previousPurchase != null
+                ? IconButton(
+                    onPressed: () => confirmPriceChange(context),
+                    icon: const Icon(Icons.upgrade))
+                : TextButton(
+                    child: Text(productDetails.price),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      primary: Colors.white,
+                    ),
+                    onPressed: () {
+                      late PurchaseParam purchaseParam;
 
-                    if (Platform.isAndroid) {
-                      // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
-                      // verify the latest status of you your subscription by using server side receipt validation
-                      // and update the UI accordingly. The subscription purchase status shown
-                      // inside the app may not be accurate.
-                      final GooglePlayPurchaseDetails? oldSubscription =
-                          _getOldSubscription(productDetails, purchases);
+                      if (Platform.isAndroid) {
+                        // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+                        // verify the latest status of you your subscription by using server side receipt validation
+                        // and update the UI accordingly. The subscription purchase status shown
+                        // inside the app may not be accurate.
+                        final GooglePlayPurchaseDetails? oldSubscription =
+                            _getOldSubscription(productDetails, purchases);
 
-                      purchaseParam = GooglePlayPurchaseParam(
+                        purchaseParam = GooglePlayPurchaseParam(
+                            productDetails: productDetails,
+                            applicationUserName: null,
+                            changeSubscriptionParam: (oldSubscription != null)
+                                ? ChangeSubscriptionParam(
+                                    oldPurchaseDetails: oldSubscription,
+                                    prorationMode: ProrationMode
+                                        .immediateWithTimeProration,
+                                  )
+                                : null);
+                      } else {
+                        purchaseParam = PurchaseParam(
                           productDetails: productDetails,
                           applicationUserName: null,
-                          changeSubscriptionParam: (oldSubscription != null)
-                              ? ChangeSubscriptionParam(
-                                  oldPurchaseDetails: oldSubscription,
-                                  prorationMode:
-                                      ProrationMode.immediateWithTimeProration,
-                                )
-                              : null);
-                    } else {
-                      purchaseParam = PurchaseParam(
-                        productDetails: productDetails,
-                        applicationUserName: null,
-                      );
-                    }
+                        );
+                      }
 
-                    if (productDetails.id == _kConsumableId) {
-                      _inAppPurchase.buyConsumable(
-                          purchaseParam: purchaseParam,
-                          autoConsume: _kAutoConsume || Platform.isIOS);
-                    } else {
-                      _inAppPurchase.buyNonConsumable(
-                          purchaseParam: purchaseParam);
-                    }
-                  },
-                  child: Text(productDetails.price),
-                ),
-        );
+                      if (productDetails.id == _kConsumableId) {
+                        _inAppPurchase.buyConsumable(
+                            purchaseParam: purchaseParam,
+                            autoConsume: _kAutoConsume || Platform.isIOS);
+                      } else {
+                        _inAppPurchase.buyNonConsumable(
+                            purchaseParam: purchaseParam);
+                      }
+                    },
+                  ));
       },
     ));
 
@@ -341,9 +340,9 @@ class _MyAppState extends State<_MyApp> {
       const Divider(),
       GridView.count(
         crossAxisCount: 5,
+        children: tokens,
         shrinkWrap: true,
         padding: const EdgeInsets.all(16.0),
-        children: tokens,
       )
     ]));
   }
@@ -360,12 +359,12 @@ class _MyAppState extends State<_MyApp> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(
+            child: const Text('Restore purchases'),
             style: TextButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
               primary: Colors.white,
             ),
             onPressed: () => _inAppPurchase.restorePurchases(),
-            child: const Text('Restore purchases'),
           ),
         ],
       ),

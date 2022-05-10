@@ -9,14 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 /// Example app for Camera Windows plugin.
 class MyApp extends StatefulWidget {
-  /// Default Constructor
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   State<MyApp> createState() => _MyAppState();
 }

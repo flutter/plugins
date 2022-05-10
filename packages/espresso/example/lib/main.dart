@@ -4,13 +4,10 @@
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 /// Example app for Espresso plugin.
 class MyApp extends StatelessWidget {
-  /// Default Constructor
-  const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -48,7 +45,7 @@ class _MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<_MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<_MyHomePage> {

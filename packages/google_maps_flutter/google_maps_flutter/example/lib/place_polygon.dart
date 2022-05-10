@@ -10,8 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlacePolygonPage extends GoogleMapExampleAppPage {
-  const PlacePolygonPage({Key? key})
-      : super(const Icon(Icons.linear_scale), 'Place polygon', key: key);
+  const PlacePolygonPage()
+      : super(const Icon(Icons.linear_scale), 'Place polygon');
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class PlacePolygonPage extends GoogleMapExampleAppPage {
 }
 
 class PlacePolygonBody extends StatefulWidget {
-  const PlacePolygonBody({Key? key}) : super(key: key);
+  const PlacePolygonBody();
 
   @override
   State<StatefulWidget> createState() => PlacePolygonBodyState();
@@ -196,64 +196,64 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                     Column(
                       children: <Widget>[
                         TextButton(
-                          onPressed: _add,
                           child: const Text('add'),
+                          onPressed: _add,
                         ),
                         TextButton(
+                          child: const Text('remove'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _remove(selectedId),
-                          child: const Text('remove'),
                         ),
                         TextButton(
+                          child: const Text('toggle visible'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _toggleVisible(selectedId),
-                          child: const Text('toggle visible'),
                         ),
                         TextButton(
+                          child: const Text('toggle geodesic'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _toggleGeodesic(selectedId),
-                          child: const Text('toggle geodesic'),
                         ),
                       ],
                     ),
                     Column(
                       children: <Widget>[
                         TextButton(
+                          child: const Text('add holes'),
                           onPressed: (selectedId == null)
                               ? null
                               : ((polygons[selectedId]!.holes.isNotEmpty)
                                   ? null
                                   : () => _addHoles(selectedId)),
-                          child: const Text('add holes'),
                         ),
                         TextButton(
+                          child: const Text('remove holes'),
                           onPressed: (selectedId == null)
                               ? null
                               : ((polygons[selectedId]!.holes.isEmpty)
                                   ? null
                                   : () => _removeHoles(selectedId)),
-                          child: const Text('remove holes'),
                         ),
                         TextButton(
+                          child: const Text('change stroke width'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeWidth(selectedId),
-                          child: const Text('change stroke width'),
                         ),
                         TextButton(
+                          child: const Text('change stroke color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeStrokeColor(selectedId),
-                          child: const Text('change stroke color'),
                         ),
                         TextButton(
+                          child: const Text('change fill color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeFillColor(selectedId),
-                          child: const Text('change fill color'),
                         ),
                       ],
                     )

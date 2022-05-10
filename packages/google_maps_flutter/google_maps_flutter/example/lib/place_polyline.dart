@@ -11,8 +11,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlacePolylinePage extends GoogleMapExampleAppPage {
-  const PlacePolylinePage({Key? key})
-      : super(const Icon(Icons.linear_scale), 'Place polyline', key: key);
+  const PlacePolylinePage()
+      : super(const Icon(Icons.linear_scale), 'Place polyline');
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class PlacePolylinePage extends GoogleMapExampleAppPage {
 }
 
 class PlacePolylineBody extends StatefulWidget {
-  const PlacePolylineBody({Key? key}) : super(key: key);
+  const PlacePolylineBody();
 
   @override
   State<StatefulWidget> createState() => PlacePolylineBodyState();
@@ -234,66 +234,66 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                     Column(
                       children: <Widget>[
                         TextButton(
-                          onPressed: _add,
                           child: const Text('add'),
+                          onPressed: _add,
                         ),
                         TextButton(
+                          child: const Text('remove'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _remove(selectedId),
-                          child: const Text('remove'),
                         ),
                         TextButton(
+                          child: const Text('toggle visible'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _toggleVisible(selectedId),
-                          child: const Text('toggle visible'),
                         ),
                         TextButton(
+                          child: const Text('toggle geodesic'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _toggleGeodesic(selectedId),
-                          child: const Text('toggle geodesic'),
                         ),
                       ],
                     ),
                     Column(
                       children: <Widget>[
                         TextButton(
+                          child: const Text('change width'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeWidth(selectedId),
-                          child: const Text('change width'),
                         ),
                         TextButton(
+                          child: const Text('change color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeColor(selectedId),
-                          child: const Text('change color'),
                         ),
                         TextButton(
+                          child: const Text('change start cap [Android only]'),
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changeStartCap(selectedId),
-                          child: const Text('change start cap [Android only]'),
                         ),
                         TextButton(
+                          child: const Text('change end cap [Android only]'),
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changeEndCap(selectedId),
-                          child: const Text('change end cap [Android only]'),
                         ),
                         TextButton(
+                          child: const Text('change joint type [Android only]'),
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changeJointType(selectedId),
-                          child: const Text('change joint type [Android only]'),
                         ),
                         TextButton(
+                          child: const Text('change pattern [Android only]'),
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changePattern(selectedId),
-                          child: const Text('change pattern [Android only]'),
                         ),
                       ],
                     )

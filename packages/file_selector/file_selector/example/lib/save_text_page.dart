@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 
 /// Page for showing an example of saving with file_selector
 class SaveTextPage extends StatelessWidget {
-  /// Default Constructor
-  SaveTextPage({Key? key}) : super(key: key);
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 

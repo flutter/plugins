@@ -7,9 +7,6 @@ import 'package:flutter/material.dart';
 
 /// Screen that shows an example of getDirectoryPath
 class GetDirectoryPage extends StatelessWidget {
-  /// Default Constructor
-  const GetDirectoryPage({Key? key}) : super(key: key);
-
   Future<void> _getDirectoryPath(BuildContext context) async {
     const String confirmButtonText = 'Choose';
     final String? directoryPath = await getDirectoryPath(
@@ -53,7 +50,7 @@ class GetDirectoryPage extends StatelessWidget {
 /// Widget that displays a text file in a dialog
 class TextDisplay extends StatelessWidget {
   /// Default Constructor
-  const TextDisplay(this.directoryPath, {Key? key}) : super(key: key);
+  const TextDisplay(this.directoryPath);
 
   /// Directory path
   final String directoryPath;
