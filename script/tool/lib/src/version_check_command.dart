@@ -531,7 +531,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     final Directory gitRoot =
         packagesDir.fileSystem.directory((await gitDir).path);
     final String relativePackagePath =
-        getRelativePosixPath(package.directory, from: gitRoot) + '/';
+        '${getRelativePosixPath(package.directory, from: gitRoot)}/';
     bool hasChanges = false;
     bool needsVersionChange = false;
     bool hasChangelogChange = false;
