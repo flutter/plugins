@@ -100,14 +100,14 @@
                        result:(FLTThreadSafeFlutterResult *)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     if (@available(iOS 10.0, *)) {
-      NSMutableArray *dicscoveryDevices = [NSMutableArray array];
-      [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInWideAngleCamera];
-      [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInTelephotoCamera];
+      NSMutableArray *discoveryDevices = [NSMutableArray array];
+      [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInWideAngleCamera];
+      [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInTelephotoCamera];
       if (@available(iOS 13.0, *)) {
-        [dicscoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
+        [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
       }
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:dicscoveryDevices
+          discoverySessionWithDeviceTypes:discoveryDevices
                                 mediaType:AVMediaTypeVideo
                                  position:AVCaptureDevicePositionUnspecified];
       NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
