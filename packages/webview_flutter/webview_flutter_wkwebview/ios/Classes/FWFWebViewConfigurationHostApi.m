@@ -78,6 +78,7 @@
         case FWFWKAudiovisualMediaTypeEnumVideo:
         case FWFWKAudiovisualMediaTypeEnumAll:
           configuration.requiresUserActionForMediaPlayback = true;
+          break;
 #pragma clang diagnostic pop
       }
     }

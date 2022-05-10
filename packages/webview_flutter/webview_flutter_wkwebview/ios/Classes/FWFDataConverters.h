@@ -49,7 +49,7 @@ extern NSHTTPCookiePropertyKey _Nullable FWFNSHTTPCookiePropertyKeyFromEnumData(
 /**
  * Converts a WKUserScriptData to a WKUserScript.
  *
- * @param data The data object containing information to create an WKUserScript.
+ * @param data The data object containing information to create a WKUserScript.
  *
  * @return A WKUserScript or nil if data could not be converted.
  */
@@ -60,17 +60,17 @@ extern WKUserScript *FWFWKUserScriptFromScriptData(FWFWKUserScriptData *data);
  *
  * @param data The data object containing information to create a WKUserScriptInjectionTime.
  *
- * @return An WKUserScriptInjectionTime or -1 if data could not be converted.
+ * @return A WKUserScriptInjectionTime or -1 if data could not be converted.
  */
 extern WKUserScriptInjectionTime FWFWKUserScriptInjectionTimeFromEnumData(
     FWFWKUserScriptInjectionTimeEnumData *data);
 
 /**
- * Converts an FWFWKAudiovisualMediaTypeEnumData to an WKAudiovisualMediaTypes.
+ * Converts an FWFWKAudiovisualMediaTypeEnumData to a WKAudiovisualMediaTypes.
  *
- * @param data The data object containing information to create an WKAudiovisualMediaTypes.
+ * @param data The data object containing information to create a WKAudiovisualMediaTypes.
  *
- * @return An WKAudiovisualMediaType or -1 if data could not be converted.
+ * @return A WKAudiovisualMediaType or -1 if data could not be converted.
  */
 API_AVAILABLE(ios(10.0))
 extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
@@ -81,7 +81,7 @@ extern WKAudiovisualMediaTypes FWFWKAudiovisualMediaTypeFromEnumData(
  *
  * @param data The data object containing information to create a WKWebsiteDataType.
  *
- * @return An WKWebsiteDataType or nil if data could not be converted.
+ * @return A WKWebsiteDataType or nil if data could not be converted.
  */
 extern NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumData *data);
 
