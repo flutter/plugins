@@ -1,3 +1,9 @@
+## 0.8.5
+
+- Updates `test` to inculde the Dart unit tests of examples, if any.
+- `drive-examples` now supports non-plugin packages.
+- Commands that iterate over examples now include non-Flutter example packages.
+
 ## 0.8.4
 
 - `readme-check` now validates that there's a info tag on code blocks to
@@ -316,7 +322,7 @@ and `firebase-test-lab`.
 
 ## v.0.0.36+2
 
-- Default to showing podspec lint warnings
+- Default to showing podspec lint warnings.
 
 ## v.0.0.36+1
 

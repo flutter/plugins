@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 /// Screen that allows the user to select an image file using
 /// `openFiles`, then displays the selected images in a gallery dialog.
 class OpenImagePage extends StatelessWidget {
+  /// Default Constructor
+  const OpenImagePage({Key? key}) : super(key: key);
+
   Future<void> _openImageFile(BuildContext context) async {
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
@@ -59,7 +62,8 @@ class OpenImagePage extends StatelessWidget {
 /// Widget that displays an image in a dialog.
 class ImageDisplay extends StatelessWidget {
   /// Default Constructor.
-  const ImageDisplay(this.fileName, this.filePath);
+  const ImageDisplay(this.fileName, this.filePath, {Key? key})
+      : super(key: key);
 
   /// The name of the selected file.
   final String fileName;

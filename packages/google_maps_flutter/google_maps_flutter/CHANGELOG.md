@@ -1,3 +1,9 @@
+## 2.1.5
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 2.1.4
 
 * Updates Android Google maps sdk version to `18.0.2`.
@@ -219,7 +225,7 @@ GoogleMapController is now uniformly driven by implementing `DefaultLifecycleObs
 
 ## 0.5.26+1
 
-* Removes a errorneously added method from the GoogleMapController.h header file.
+* Removes an erroneously added method from the GoogleMapController.h header file.
 
 ## 0.5.26
 

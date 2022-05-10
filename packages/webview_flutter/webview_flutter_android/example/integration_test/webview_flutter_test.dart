@@ -14,7 +14,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_android/webview_android.dart';
@@ -1447,9 +1446,10 @@ Future<String> _runJavaScriptReturningResult(
 
 class ResizableWebView extends StatefulWidget {
   const ResizableWebView({
+    Key? key,
     required this.onResize,
     required this.onPageFinished,
-  });
+  }) : super(key: key);
 
   final JavascriptMessageHandler onResize;
   final VoidCallback onPageFinished;
