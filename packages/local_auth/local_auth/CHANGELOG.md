@@ -1,7 +1,7 @@
 ## 2.0.2
 
-* Removes ignoring `public_member_api_docs` lint in the example.
-* Fixes `use_key_in_widget_constructors` lint.
+* Fixes `use_key_in_widget_constructors` lint in the example.
+* Removes ignoring `public_member_api_docs` lint.
 
 ## 2.0.1
 
