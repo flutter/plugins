@@ -10,7 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_example/page.dart';
 
 class HeatmapPage extends GoogleMapExampleAppPage {
-  const HeatmapPage() : super(const Icon(Icons.map), 'Heatmaps');
+  const HeatmapPage({Key? key})
+      : super(const Icon(Icons.map), 'Heatmaps', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class HeatmapPage extends GoogleMapExampleAppPage {
 }
 
 class HeatmapBody extends StatefulWidget {
-  const HeatmapBody();
+  const HeatmapBody({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => HeatmapBodyState();
@@ -127,14 +128,14 @@ class HeatmapBodyState extends State<HeatmapBody> {
                     Column(
                       children: <Widget>[
                         TextButton(
-                          child: const Text('Add point'),
                           onPressed:
                               disabledPoints.isNotEmpty ? _addPoint : null,
+                          child: const Text('Add point'),
                         ),
                         TextButton(
-                          child: const Text('Remove point'),
                           onPressed:
                               enabledPoints.isNotEmpty ? _removePoint : null,
+                          child: const Text('Remove point'),
                         ),
                       ],
                     )
