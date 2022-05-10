@@ -166,12 +166,11 @@ class MakeDepsPathBasedCommand extends PluginCommand {
       final List<String> relativeBasePathComponents =
           List<String>.filled(packageDepth, '..');
       // This is done via strings rather than by manipulating the Pubspec and
-      // then re-serialiazing so that it's a localized change, rather than
+      // then re-serializing so that it's a localized change, rather than
       // rewriting the whole file (e.g., destroying comments), which could be
       // more disruptive for local use.
-      String newPubspecContents = pubspecContents +
-          '''
-
+      String newPubspecContents = '''
+$pubspecContents
 $_dependencyOverrideWarningComment
 dependency_overrides:
 ''';

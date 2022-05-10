@@ -179,7 +179,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     String html, {
     String? baseUrl,
   }) async {
-    _element.src = 'data:text/html,' + Uri.encodeFull(html);
+    _element.src = 'data:text/html,${Uri.encodeFull(html)}';
   }
 
   @override
@@ -195,7 +195,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     final String contentType =
         httpReq.getResponseHeader('content-type') ?? 'text/html';
     _element.src =
-        'data:$contentType,' + Uri.encodeFull(httpReq.responseText ?? '');
+        'data:$contentType,${Uri.encodeFull(httpReq.responseText ?? '')}';
   }
 
   @override

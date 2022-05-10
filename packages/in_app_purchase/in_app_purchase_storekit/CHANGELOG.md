@@ -1,3 +1,7 @@
+## 0.3.0+7
+
+* Fixes `prefer_interpolation_to_compose_strings` lint warnings.
+
 ## 0.3.0+6
 
 * Removes unnecessary imports.

@@ -1,3 +1,7 @@
+## 2.8.8
+
+* Fixes `prefer_interpolation_to_compose_strings` lint warnings.
+
 ## 2.8.7
 
 * Removes unnecessary imports.

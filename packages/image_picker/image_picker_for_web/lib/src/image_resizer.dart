@@ -81,7 +81,7 @@ class ImageResizer {
         await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
     return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: originalFile.mimeType,
-        name: 'scaled_' + originalFile.name,
+        name: 'scaled_${originalFile.name}',
         lastModified: DateTime.now(),
         length: blob.size);
   }

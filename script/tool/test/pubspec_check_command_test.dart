@@ -43,7 +43,7 @@ String _headerSection(
     repositoryPath,
   ];
   final String repoLink =
-      'https://github.com/' + repoLinkPathComponents.join('/');
+      'https://github.com/${repoLinkPathComponents.join('/')}';
   final String issueTrackerLink = 'https://github.com/flutter/flutter/issues?'
       'q=is%3Aissue+is%3Aopen+label%3A%22p%3A+$name%22';
   description ??= 'A test package for validating that the pubspec.yaml '

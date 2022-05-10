@@ -1,6 +1,6 @@
 ## 0.8.5+1
 
-* Fixes `prefer_function_declarations_over_variables` lint warnings.
+* Fixes `prefer_function_declarations_over_variables` and `prefer_interpolation_to_compose_strings` lint warnings.
 
 ## 0.8.5
 

@@ -1,3 +1,7 @@
+## 2.4.4+1
+
+* Fixes `prefer_interpolation_to_compose_strings` lint warnings.
+
 ## 2.4.4
 
 * Internal code cleanup for stricter analysis options.

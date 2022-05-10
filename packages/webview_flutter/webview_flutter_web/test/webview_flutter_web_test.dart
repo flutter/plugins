@@ -11,6 +11,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_web/webview_flutter_web.dart';
+
 import './webview_flutter_web_test.mocks.dart';
 
 @GenerateMocks(<Type>[
@@ -64,7 +65,7 @@ void main() {
       // Run
       controller.loadHtmlString('test html');
       // Verify
-      verify(mockElement.src = 'data:text/html,' + Uri.encodeFull('test html'));
+      verify(mockElement.src = 'data:text/html,${Uri.encodeFull('test html')}');
     });
 
     group('loadRequest', () {
@@ -123,7 +124,7 @@ void main() {
           sendData: Uint8List.fromList('test body'.codeUnits),
         ));
         verify(
-            mockElement.src = 'data:text/plain,' + Uri.encodeFull('test data'));
+            mockElement.src = 'data:text/plain,${Uri.encodeFull('test data')}');
       });
     });
   });

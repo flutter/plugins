@@ -286,9 +286,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     final Iterable<String> missingPackages = defaultPackages
         .where((String package) => !dependencies.contains(package));
     if (missingPackages.isNotEmpty) {
-      return 'The following default_packages are missing '
-              'corresponding dependencies:\n  ' +
-          missingPackages.join('\n  ');
+      return 'The following default_packages are missing corresponding dependencies:\n  ${missingPackages.join('\n  ')}';
     }
 
     return null;

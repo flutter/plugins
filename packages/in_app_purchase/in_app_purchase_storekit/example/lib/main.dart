@@ -193,7 +193,7 @@ class _MyAppState extends State<_MyApp> {
       leading: Icon(_isAvailable ? Icons.check : Icons.block,
           color: _isAvailable ? Colors.green : ThemeData.light().errorColor),
       title: Text(
-          'The store is ' + (_isAvailable ? 'available' : 'unavailable') + '.'),
+          'The store is ${_isAvailable ? 'available' : 'unavailable'}.'),
     );
     final List<Widget> children = <Widget>[storeHeader];
 

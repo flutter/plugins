@@ -207,7 +207,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
   Future<void> _changeInfo(MarkerId markerId) async {
     final Marker marker = markers[markerId]!;
-    final String newSnippet = marker.infoWindow.snippet! + '*';
+    final String newSnippet = '${marker.infoWindow.snippet!}*';
     setState(() {
       markers[markerId] = marker.copyWith(
         infoWindowParam: marker.infoWindow.copyWith(

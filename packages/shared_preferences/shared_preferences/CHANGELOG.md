@@ -1,3 +1,7 @@
+## 2.0.15
+
+* Fixes `prefer_interpolation_to_compose_strings` lint warnings.
+
 ## 2.0.14
 
 * Adds OS version support information to README.
