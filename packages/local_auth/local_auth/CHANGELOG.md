@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Removes ignoring `public_member_api_docs` lint.
+* Fixes `use_key_in_widget_constructors` lint.
+
 ## 2.0.1
 
 * Restores the ability to import `error_codes.dart`.

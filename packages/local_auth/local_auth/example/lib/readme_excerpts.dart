@@ -5,8 +5,6 @@
 // This file exists solely to host compiled excerpts for README.md, and is not
 // intended for use as an actual example application.
 
-// ignore_for_file: public_member_api_docs
-
 import 'package:flutter/material.dart';
 // #docregion ErrorHandling
 import 'package:flutter/services.dart';
@@ -24,10 +22,13 @@ import 'package:local_auth_ios/local_auth_ios.dart';
 // #enddocregion CustomMessages
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
-
+/// MyApp is the Main Application.
 class MyApp extends StatefulWidget {
+  /// Default Constructor
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
