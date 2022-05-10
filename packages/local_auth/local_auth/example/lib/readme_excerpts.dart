@@ -24,6 +24,7 @@ import 'package:local_auth_ios/local_auth_ios.dart';
 void main() {
   runApp(const MyApp());
 }
+
 /// MyApp is the Main Application.
 class MyApp extends StatefulWidget {
   /// Default Constructor
