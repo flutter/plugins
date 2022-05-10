@@ -53,7 +53,7 @@ void main() {
     });
 
     setUpAll(() {
-      registerFallbackValue<CameraOptions>(MockCameraOptions());
+      registerFallbackValue(MockCameraOptions());
     });
 
     group('initialize', () {

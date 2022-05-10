@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   release:
     if: github.repository_owner == 'flutter'

@@ -45,8 +45,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 + (FWFWKAudiovisualMediaTypeEnumData *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface FWFWKWebsiteDataTypesEnumData ()
-+ (FWFWKWebsiteDataTypesEnumData *)fromMap:(NSDictionary *)dict;
+@interface FWFWKWebsiteDataTypeEnumData ()
++ (FWFWKWebsiteDataTypeEnumData *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 @interface FWFNSHttpCookiePropertyKeyEnumData ()
@@ -120,14 +120,14 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
-@implementation FWFWKWebsiteDataTypesEnumData
-+ (instancetype)makeWithValue:(FWFWKWebsiteDataTypesEnum)value {
-  FWFWKWebsiteDataTypesEnumData *pigeonResult = [[FWFWKWebsiteDataTypesEnumData alloc] init];
+@implementation FWFWKWebsiteDataTypeEnumData
++ (instancetype)makeWithValue:(FWFWKWebsiteDataTypeEnum)value {
+  FWFWKWebsiteDataTypeEnumData *pigeonResult = [[FWFWKWebsiteDataTypeEnumData alloc] init];
   pigeonResult.value = value;
   return pigeonResult;
 }
-+ (FWFWKWebsiteDataTypesEnumData *)fromMap:(NSDictionary *)dict {
-  FWFWKWebsiteDataTypesEnumData *pigeonResult = [[FWFWKWebsiteDataTypesEnumData alloc] init];
++ (FWFWKWebsiteDataTypeEnumData *)fromMap:(NSDictionary *)dict {
+  FWFWKWebsiteDataTypeEnumData *pigeonResult = [[FWFWKWebsiteDataTypeEnumData alloc] init];
   pigeonResult.value = [GetNullableObject(dict, @"value") integerValue];
   return pigeonResult;
 }
@@ -220,22 +220,27 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @end
 
 @implementation FWFNSHttpCookieData
-+ (instancetype)makeWithProperties:
-    (NSDictionary<FWFNSHttpCookiePropertyKeyEnumData *, NSString *> *)properties {
++ (instancetype)makeWithPropertyKeys:(NSArray<FWFNSHttpCookiePropertyKeyEnumData *> *)propertyKeys
+                      propertyValues:(NSArray<id> *)propertyValues {
   FWFNSHttpCookieData *pigeonResult = [[FWFNSHttpCookieData alloc] init];
-  pigeonResult.properties = properties;
+  pigeonResult.propertyKeys = propertyKeys;
+  pigeonResult.propertyValues = propertyValues;
   return pigeonResult;
 }
 + (FWFNSHttpCookieData *)fromMap:(NSDictionary *)dict {
   FWFNSHttpCookieData *pigeonResult = [[FWFNSHttpCookieData alloc] init];
-  pigeonResult.properties = GetNullableObject(dict, @"properties");
-  NSAssert(pigeonResult.properties != nil, @"");
+  pigeonResult.propertyKeys = GetNullableObject(dict, @"propertyKeys");
+  NSAssert(pigeonResult.propertyKeys != nil, @"");
+  pigeonResult.propertyValues = GetNullableObject(dict, @"propertyValues");
+  NSAssert(pigeonResult.propertyValues != nil, @"");
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
   return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.properties ? self.properties : [NSNull null]),
-                                   @"properties", nil];
+      dictionaryWithObjectsAndKeys:(self.propertyKeys ? self.propertyKeys : [NSNull null]),
+                                   @"propertyKeys",
+                                   (self.propertyValues ? self.propertyValues : [NSNull null]),
+                                   @"propertyValues", nil];
 }
 @end
 
@@ -245,7 +250,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
     case 128:
-      return [FWFWKWebsiteDataTypesEnumData fromMap:[self readValue]];
+      return [FWFWKWebsiteDataTypeEnumData fromMap:[self readValue]];
 
     default:
       return [super readValueOfType:type];
@@ -257,7 +262,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @end
 @implementation FWFWKWebsiteDataStoreHostApiCodecWriter
 - (void)writeValue:(id)value {
-  if ([value isKindOfClass:[FWFWKWebsiteDataTypesEnumData class]]) {
+  if ([value isKindOfClass:[FWFWKWebsiteDataTypeEnumData class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else {
@@ -298,20 +303,19 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
                   codec:FWFWKWebsiteDataStoreHostApiGetCodec()];
     if (api) {
       NSCAssert(
-          [api respondsToSelector:@selector(createDataStoreFromConfigurationWithIdentifier:
-                                                                   configurationIdentifier:error:)],
+          [api respondsToSelector:@selector(createFromWebViewConfigurationWithIdentifier:
+                                                                 configurationIdentifier:error:)],
           @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
-          @"@selector(createDataStoreFromConfigurationWithIdentifier:configurationIdentifier:error:"
-          @")",
+          @"@selector(createFromWebViewConfigurationWithIdentifier:configurationIdentifier:error:)",
           api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_configurationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createDataStoreFromConfigurationWithIdentifier:arg_instanceId
-                                    configurationIdentifier:arg_configurationInstanceId
-                                                      error:&error];
+        [api createFromWebViewConfigurationWithIdentifier:arg_instanceId
+                                  configurationIdentifier:arg_configurationInstanceId
+                                                    error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -345,21 +349,20 @@ void FWFWKWebsiteDataStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
                   codec:FWFWKWebsiteDataStoreHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector
-                     (removeDataFromDataStoreWithIdentifier:
-                                                    ofTypes:secondsModifiedSinceEpoch:completion:)],
-                @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
-                @"@selector(removeDataFromDataStoreWithIdentifier:ofTypes:"
-                @"secondsModifiedSinceEpoch:completion:)",
-                api);
+      NSCAssert(
+          [api respondsToSelector:@selector
+               (removeDataFromDataStoreWithIdentifier:ofTypes:modifiedSince:completion:)],
+          @"FWFWKWebsiteDataStoreHostApi api (%@) doesn't respond to "
+          @"@selector(removeDataFromDataStoreWithIdentifier:ofTypes:modifiedSince:completion:)",
+          api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
-        NSArray<FWFWKWebsiteDataTypesEnumData *> *arg_dataTypes = GetNullableObjectAtIndex(args, 1);
-        NSNumber *arg_secondsModifiedSinceEpoch = GetNullableObjectAtIndex(args, 2);
+        NSArray<FWFWKWebsiteDataTypeEnumData *> *arg_dataTypes = GetNullableObjectAtIndex(args, 1);
+        NSNumber *arg_modificationTimeInSecondsSinceEpoch = GetNullableObjectAtIndex(args, 2);
         [api removeDataFromDataStoreWithIdentifier:arg_instanceId
                                            ofTypes:arg_dataTypes
-                         secondsModifiedSinceEpoch:arg_secondsModifiedSinceEpoch
+                                     modifiedSince:arg_modificationTimeInSecondsSinceEpoch
                                         completion:^(NSNumber *_Nullable output,
                                                      FlutterError *_Nullable error) {
                                           callback(wrapResult(output, error));
@@ -404,28 +407,6 @@ NSObject<FlutterMessageCodec> *FWFUIViewHostApiGetCodec() {
 
 void FWFUIViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
                            NSObject<FWFUIViewHostApi> *api) {
-  {
-    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
-           initWithName:@"dev.flutter.pigeon.UIViewHostApi.getContentOffset"
-        binaryMessenger:binaryMessenger
-                  codec:FWFUIViewHostApiGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(contentOffsetForViewWithIdentifier:error:)],
-                @"FWFUIViewHostApi api (%@) doesn't respond to "
-                @"@selector(contentOffsetForViewWithIdentifier:error:)",
-                api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
-        FlutterError *error;
-        NSArray<NSNumber *> *output = [api contentOffsetForViewWithIdentifier:arg_instanceId
-                                                                        error:&error];
-        callback(wrapResult(output, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
   {
     FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
            initWithName:@"dev.flutter.pigeon.UIViewHostApi.setBackgroundColor"
@@ -559,10 +540,9 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFUIScrollViewHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(scrollByForScrollViewWithIdentifier:
-                                                                                  toX:y:error:)],
+      NSCAssert([api respondsToSelector:@selector(scrollByForScrollViewWithIdentifier:x:y:error:)],
                 @"FWFUIScrollViewHostApi api (%@) doesn't respond to "
-                @"@selector(scrollByForScrollViewWithIdentifier:toX:y:error:)",
+                @"@selector(scrollByForScrollViewWithIdentifier:x:y:error:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
@@ -570,7 +550,7 @@ void FWFUIScrollViewHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         NSNumber *arg_x = GetNullableObjectAtIndex(args, 1);
         NSNumber *arg_y = GetNullableObjectAtIndex(args, 2);
         FlutterError *error;
-        [api scrollByForScrollViewWithIdentifier:arg_instanceId toX:arg_x y:arg_y error:&error];
+        [api scrollByForScrollViewWithIdentifier:arg_instanceId x:arg_x y:arg_y error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -711,9 +691,9 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
     if (api) {
       NSCAssert(
           [api respondsToSelector:@selector
-               (setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:error:)],
+               (setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAllowed:error:)],
           @"FWFWKWebViewConfigurationHostApi api (%@) doesn't respond to "
-          @"@selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAlowed:error:)",
+          @"@selector(setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAllowed:error:)",
           api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
@@ -721,7 +701,7 @@ void FWFWKWebViewConfigurationHostApiSetup(id<FlutterBinaryMessenger> binaryMess
         NSNumber *arg_allow = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
         [api setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:arg_instanceId
-                                                               isAlowed:arg_allow
+                                                              isAllowed:arg_allow
                                                                   error:&error];
         callback(wrapResult(nil, error));
       }];
@@ -1008,19 +988,20 @@ void FWFWKPreferencesHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
         binaryMessenger:binaryMessenger
                   codec:FWFWKPreferencesHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(createFromWebViewConfiguration:
-                                                         configurationIdentifier:error:)],
-                @"FWFWKPreferencesHostApi api (%@) doesn't respond to "
-                @"@selector(createFromWebViewConfiguration:configurationIdentifier:error:)",
-                api);
+      NSCAssert(
+          [api respondsToSelector:@selector(createFromWebViewConfigurationWithIdentifier:
+                                                                 configurationIdentifier:error:)],
+          @"FWFWKPreferencesHostApi api (%@) doesn't respond to "
+          @"@selector(createFromWebViewConfigurationWithIdentifier:configurationIdentifier:error:)",
+          api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_configurationInstanceId = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api createFromWebViewConfiguration:arg_instanceId
-                    configurationIdentifier:arg_configurationInstanceId
-                                      error:&error];
+        [api createFromWebViewConfigurationWithIdentifier:arg_instanceId
+                                  configurationIdentifier:arg_configurationInstanceId
+                                                    error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
@@ -1472,7 +1453,7 @@ NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec() {
       return [FWFWKUserScriptInjectionTimeEnumData fromMap:[self readValue]];
 
     case 135:
-      return [FWFWKWebsiteDataTypesEnumData fromMap:[self readValue]];
+      return [FWFWKWebsiteDataTypeEnumData fromMap:[self readValue]];
 
     default:
       return [super readValueOfType:type];
@@ -1505,7 +1486,7 @@ NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec() {
   } else if ([value isKindOfClass:[FWFWKUserScriptInjectionTimeEnumData class]]) {
     [self writeByte:134];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FWFWKWebsiteDataTypesEnumData class]]) {
+  } else if ([value isKindOfClass:[FWFWKWebsiteDataTypeEnumData class]]) {
     [self writeByte:135];
     [self writeValue:[value toMap]];
   } else {
@@ -2107,17 +2088,20 @@ void FWFWKHttpCookieStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger
         binaryMessenger:binaryMessenger
                   codec:FWFWKHttpCookieStoreHostApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setCookieForStoreWithIdentifier:cookie:error:)],
+      NSCAssert([api respondsToSelector:@selector(setCookieForStoreWithIdentifier:
+                                                                           cookie:completion:)],
                 @"FWFWKHttpCookieStoreHostApi api (%@) doesn't respond to "
-                @"@selector(setCookieForStoreWithIdentifier:cookie:error:)",
+                @"@selector(setCookieForStoreWithIdentifier:cookie:completion:)",
                 api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_instanceId = GetNullableObjectAtIndex(args, 0);
         FWFNSHttpCookieData *arg_cookie = GetNullableObjectAtIndex(args, 1);
-        FlutterError *error;
-        [api setCookieForStoreWithIdentifier:arg_instanceId cookie:arg_cookie error:&error];
-        callback(wrapResult(nil, error));
+        [api setCookieForStoreWithIdentifier:arg_instanceId
+                                      cookie:arg_cookie
+                                  completion:^(FlutterError *_Nullable error) {
+                                    callback(wrapResult(nil, error));
+                                  }];
       }];
     } else {
       [channel setMessageHandler:nil];

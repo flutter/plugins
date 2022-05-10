@@ -1,7 +1,12 @@
 ## 0.3.3
 
 * Adds support for heatmap layers.
+
+## 0.3.2+2
+
 * Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
 
 ## 0.3.2+1
 

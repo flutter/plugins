@@ -368,7 +368,7 @@ abstract class PluginCommand extends Command<void> {
       await for (final FileSystemEntity entity
           in dir.list(followLinks: false)) {
         // A top-level Dart package is a plugin package.
-        if (_isDartPackage(entity)) {
+        if (isPackage(entity)) {
           if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
@@ -378,7 +378,7 @@ abstract class PluginCommand extends Command<void> {
           // Look for Dart packages under this top-level directory.
           await for (final FileSystemEntity subdir
               in entity.list(followLinks: false)) {
-            if (_isDartPackage(subdir)) {
+            if (isPackage(subdir)) {
               // There are three ways for a federated plugin to match:
               // - package name (path_provider_android)
               // - fully specified name (path_provider/path_provider_android)
@@ -427,9 +427,9 @@ abstract class PluginCommand extends Command<void> {
       {bool filterExcluded = true}) async* {
     yield* package.directory
         .list(recursive: true, followLinks: false)
-        .where(_isDartPackage)
+        .where(isPackage)
         .map((FileSystemEntity directory) =>
-            // _isDartPackage guarantees that this cast is valid.
+            // isPackage guarantees that this cast is valid.
             RepositoryPackage(directory as Directory));
   }
 
@@ -446,12 +446,6 @@ abstract class PluginCommand extends Command<void> {
         .list(recursive: true, followLinks: false)
         .where((FileSystemEntity entity) => entity is File)
         .cast<File>();
-  }
-
-  /// Returns whether the specified entity is a directory containing a
-  /// `pubspec.yaml` file.
-  bool _isDartPackage(FileSystemEntity entity) {
-    return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
   /// Retrieve an instance of [GitVersionFinder] based on `_baseShaArg` and [gitDir].

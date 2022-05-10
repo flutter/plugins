@@ -41,7 +41,7 @@ class TestCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    if (!package.directory.childDirectory('test').existsSync()) {
+    if (!package.testDirectory.existsSync()) {
       return PackageResult.skip('No test/ directory.');
     }
 
