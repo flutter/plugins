@@ -39,7 +39,7 @@ class SaveTextPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
+            SizedBox(
               width: 300,
               child: TextField(
                 minLines: 1,
@@ -50,7 +50,7 @@ class SaveTextPage extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               width: 300,
               child: TextField(
                 minLines: 1,

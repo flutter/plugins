@@ -25,7 +25,7 @@ void main() {
           uri: uri,
           target: LinkTarget.blank,
           builder: (BuildContext context, FollowLink? followLink) {
-            return Container(width: 100, height: 100);
+            return const SizedBox(width: 100, height: 100);
           },
         )),
       ));
@@ -43,7 +43,7 @@ void main() {
           uri: uri2,
           target: LinkTarget.self,
           builder: (BuildContext context, FollowLink? followLink) {
-            return Container(width: 100, height: 100);
+            return const SizedBox(width: 100, height: 100);
           },
         )),
       ));
@@ -60,7 +60,7 @@ void main() {
           uri: uri3,
           target: LinkTarget.self,
           builder: (BuildContext context, FollowLink? followLink) {
-            return Container(width: 100, height: 100);
+            return const SizedBox(width: 100, height: 100);
           },
         )),
       ));
@@ -113,7 +113,7 @@ void main() {
           uri: null,
           target: LinkTarget.defaultTarget,
           builder: (BuildContext context, FollowLink? followLink) {
-            return Container(width: 100, height: 100);
+            return const SizedBox(width: 100, height: 100);
           },
         )),
       ));

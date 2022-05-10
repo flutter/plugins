@@ -187,7 +187,7 @@ linter:
     - prefer_is_not_operator
     - prefer_iterable_whereType
     # - prefer_mixin # https://github.com/dart-lang/language/issues/32
-    # - prefer_null_aware_operators # disable until NNBD, see https://github.com/flutter/flutter/pull/32711#issuecomment-492930932
+    - prefer_null_aware_operators
     # - prefer_relative_imports # not yet tested
     - prefer_single_quotes
     - prefer_spread_collections
@@ -196,7 +196,7 @@ linter:
     # - provide_deprecation_message # not yet tested
     # - public_member_api_docs # enabled on a case-by-case basis; see e.g. packages/analysis_options.yaml
     - recursive_getters
-    # - sized_box_for_whitespace # not yet tested
+    - sized_box_for_whitespace
     - slash_for_doc_comments
     - sort_child_properties_last
     - sort_constructors_first

@@ -1,3 +1,7 @@
+## 0.8.2+2
+
+* Fixes `sized_box_for_whitespace` lint warnings.
+
 ## 0.8.2+1
 
 * Removes unnecessary imports.
