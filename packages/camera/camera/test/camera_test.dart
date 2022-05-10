@@ -1195,8 +1195,7 @@ void main() {
           isPreviewPaused: false,
           deviceOrientation: DeviceOrientation.portraitUp,
           lockedCaptureOrientation:
-              const Optional<DeviceOrientation>.fromNullable(
-                  DeviceOrientation.landscapeRight));
+              Optional<DeviceOrientation>.of(DeviceOrientation.landscapeRight));
 
       await cameraController.pausePreview();
 
