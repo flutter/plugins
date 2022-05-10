@@ -351,14 +351,14 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 /// Widget that displays the video controlled by [controller].
 class VideoPlayer extends StatefulWidget {
   /// Uses the given [controller] for all video rendered in this widget.
-  const VideoPlayer(this.controller, {Key? key}) : super(key: key);
+  const VideoPlayer(this.controller);
 
   /// The [MiniController] responsible for the video being rendered in
   /// this widget.
   final MiniController controller;
 
   @override
-  State<VideoPlayer> createState() => _VideoPlayerState();
+  _VideoPlayerState createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
@@ -450,14 +450,14 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 class VideoProgressIndicator extends StatefulWidget {
   /// Construct an instance that displays the play/buffering status of the video
   /// controlled by [controller].
-  const VideoProgressIndicator(this.controller, {Key? key}) : super(key: key);
+  const VideoProgressIndicator(this.controller);
 
   /// The [MiniController] that actually associates a video with this
   /// widget.
   final MiniController controller;
 
   @override
-  State<VideoProgressIndicator> createState() => _VideoProgressIndicatorState();
+  _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
@@ -527,11 +527,11 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       );
     }
     return _VideoScrubber(
-      controller: controller,
       child: Padding(
         padding: const EdgeInsets.only(top: 5.0),
         child: progressIndicator,
       ),
+      controller: controller,
     );
   }
 }

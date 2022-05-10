@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 
 /// Home Page of the application
 class HomePage extends StatelessWidget {
-  /// Default Constructor
-  const HomePage({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = ElevatedButton.styleFrom(

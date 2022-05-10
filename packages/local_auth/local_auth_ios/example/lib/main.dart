@@ -12,14 +12,12 @@ import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
-  State<MyApp> createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -175,14 +173,14 @@ class _MyAppState extends State<MyApp> {
                 const Divider(height: 100),
                 Text('Device supports biometrics: $_canCheckBiometrics\n'),
                 ElevatedButton(
-                  onPressed: _checkBiometrics,
                   child: const Text('Check biometrics'),
+                  onPressed: _checkBiometrics,
                 ),
                 const Divider(height: 100),
                 Text('Enrolled biometrics: $_enrolledBiometrics\n'),
                 ElevatedButton(
-                  onPressed: _getEnrolledBiometrics,
                   child: const Text('Get enrolled biometrics'),
+                  onPressed: _getEnrolledBiometrics,
                 ),
                 const Divider(height: 100),
                 Text('Current State: $_authorized\n'),
@@ -201,7 +199,6 @@ class _MyAppState extends State<MyApp> {
                   Column(
                     children: <Widget>[
                       ElevatedButton(
-                        onPressed: _authenticate,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const <Widget>[
@@ -209,9 +206,9 @@ class _MyAppState extends State<MyApp> {
                             Icon(Icons.perm_device_information),
                           ],
                         ),
+                        onPressed: _authenticate,
                       ),
                       ElevatedButton(
-                        onPressed: _authenticateWithBiometrics,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
@@ -221,6 +218,7 @@ class _MyAppState extends State<MyApp> {
                             const Icon(Icons.fingerprint),
                           ],
                         ),
+                        onPressed: _authenticateWithBiometrics,
                       ),
                     ],
                   ),

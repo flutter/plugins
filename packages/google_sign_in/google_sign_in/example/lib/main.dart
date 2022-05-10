@@ -22,7 +22,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
       title: 'Google Sign In',
       home: SignInDemo(),
     ),
@@ -30,8 +30,6 @@ void main() {
 }
 
 class SignInDemo extends StatefulWidget {
-  const SignInDemo({Key? key}) : super(key: key);
-
   @override
   State createState() => SignInDemoState();
 }
@@ -127,8 +125,8 @@ class SignInDemoState extends State<SignInDemo> {
           const Text('Signed in successfully.'),
           Text(_contactText),
           ElevatedButton(
-            onPressed: _handleSignOut,
             child: const Text('SIGN OUT'),
+            onPressed: _handleSignOut,
           ),
           ElevatedButton(
             child: const Text('REFRESH'),
@@ -142,8 +140,8 @@ class SignInDemoState extends State<SignInDemo> {
         children: <Widget>[
           const Text('You are not currently signed in.'),
           ElevatedButton(
-            onPressed: _handleSignIn,
             child: const Text('SIGN IN'),
+            onPressed: _handleSignIn,
           ),
         ],
       );

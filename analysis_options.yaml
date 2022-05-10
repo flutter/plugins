@@ -134,7 +134,6 @@ linter:
     - leading_newlines_in_multiline_strings
     - library_names
     - library_prefixes
-    - library_private_types_in_public_api
     # - lines_longer_than_80_chars # not required by flutter style
     - list_remove_unrelated_type
     # - literal_only_boolean_expressions # too many false positives: https://github.com/dart-lang/sdk/issues/34181
@@ -198,7 +197,7 @@ linter:
     - recursive_getters
     # - sized_box_for_whitespace # not yet tested
     - slash_for_doc_comments
-    - sort_child_properties_last
+    # - sort_child_properties_last # not yet tested
     - sort_constructors_first
     - sort_unnamed_constructors_first
     - test_types_in_equals
@@ -230,7 +229,7 @@ linter:
     - use_full_hex_values_for_flutter_colors
     # - use_function_type_syntax_for_parameters # not yet tested
     - use_is_even_rather_than_modulo
-    - use_key_in_widget_constructors
+    # - use_key_in_widget_constructors # not yet tested
     - use_late_for_private_fields_and_variables
     - use_raw_strings
     - use_rethrow_when_possible

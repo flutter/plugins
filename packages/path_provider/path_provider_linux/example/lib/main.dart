@@ -7,16 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 /// Sample app
 class MyApp extends StatefulWidget {
-  /// Default Constructor
-  const MyApp({Key? key}) : super(key: key);
-
   @override
-  State<MyApp> createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {

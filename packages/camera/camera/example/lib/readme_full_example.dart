@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 // #docregion FullAppExample
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-late List<CameraDescription> _cameras;
+late List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  _cameras = await availableCameras();
-  runApp(const CameraApp());
+  cameras = await availableCameras();
+  runApp(CameraApp());
 }
 
-/// CameraApp is the Main Application.
 class CameraApp extends StatefulWidget {
-  /// Default Constructor
-  const CameraApp({Key? key}) : super(key: key);
-
   @override
-  State<CameraApp> createState() => _CameraAppState();
+  _CameraAppState createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
@@ -30,7 +28,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    controller = CameraController(_cameras[0], ResolutionPreset.max);
+    controller = CameraController(cameras[0], ResolutionPreset.max);
     controller.initialize().then((_) {
       if (!mounted) {
         return;

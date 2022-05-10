@@ -1306,8 +1306,7 @@ Future<String> _runJavascriptReturningResult(
 
 class ResizableWebView extends StatefulWidget {
   const ResizableWebView(
-      {Key? key, required this.onResize, required this.onPageFinished})
-      : super(key: key);
+      {required this.onResize, required this.onPageFinished});
 
   final JavascriptMessageHandler onResize;
   final VoidCallback onPageFinished;

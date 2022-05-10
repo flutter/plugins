@@ -22,13 +22,11 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// in place of a profile photo, or a default profile photo if the user's
   /// identity does not specify a `displayName`.
   const GoogleUserCircleAvatar({
-    Key? key,
     required this.identity,
     this.placeholderPhotoUrl,
     this.foregroundColor,
     this.backgroundColor,
-  })  : assert(identity != null),
-        super(key: key);
+  }) : assert(identity != null);
 
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.

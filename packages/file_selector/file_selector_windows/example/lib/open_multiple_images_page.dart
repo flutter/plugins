@@ -11,9 +11,6 @@ import 'package:flutter/material.dart';
 /// Screen that allows the user to select multiple image files using
 /// `openFiles`, then displays the selected images in a gallery dialog.
 class OpenMultipleImagesPage extends StatelessWidget {
-  /// Default Constructor
-  const OpenMultipleImagesPage({Key? key}) : super(key: key);
-
   Future<void> _openImageFile(BuildContext context) async {
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
@@ -66,7 +63,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
 /// Widget that displays a text file in a dialog.
 class MultipleImagesDisplay extends StatelessWidget {
   /// Default Constructor.
-  const MultipleImagesDisplay(this.files, {Key? key}) : super(key: key);
+  const MultipleImagesDisplay(this.files);
 
   /// The files containing the images.
   final List<XFile> files;

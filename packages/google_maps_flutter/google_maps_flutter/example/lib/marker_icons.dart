@@ -11,8 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class MarkerIconsPage extends GoogleMapExampleAppPage {
-  const MarkerIconsPage({Key? key})
-      : super(const Icon(Icons.image), 'Marker icons', key: key);
+  const MarkerIconsPage() : super(const Icon(Icons.image), 'Marker icons');
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class MarkerIconsPage extends GoogleMapExampleAppPage {
 }
 
 class MarkerIconsBody extends StatefulWidget {
-  const MarkerIconsBody({Key? key}) : super(key: key);
+  const MarkerIconsBody();
 
   @override
   State<StatefulWidget> createState() => MarkerIconsBodyState();

@@ -71,12 +71,12 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class WebViewExample extends StatefulWidget {
-  const WebViewExample({Key? key, this.cookieManager}) : super(key: key);
+  const WebViewExample({this.cookieManager});
 
   final CookieManager? cookieManager;
 
   @override
-  State<WebViewExample> createState() => _WebViewExampleState();
+  _WebViewExampleState createState() => _WebViewExampleState();
 }
 
 class _WebViewExampleState extends State<WebViewExample> {
@@ -190,9 +190,8 @@ enum MenuOptions {
 }
 
 class SampleMenu extends StatelessWidget {
-  SampleMenu(this.controller, CookieManager? cookieManager, {Key? key})
-      : cookieManager = cookieManager ?? CookieManager(),
-        super(key: key);
+  SampleMenu(this.controller, CookieManager? cookieManager)
+      : cookieManager = cookieManager ?? CookieManager();
 
   final Future<WebViewController> controller;
   late final CookieManager cookieManager;
@@ -251,8 +250,8 @@ class SampleMenu extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
-              enabled: controller.hasData,
               child: const Text('Show user agent'),
+              enabled: controller.hasData,
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.listCookies,
@@ -444,9 +443,8 @@ class SampleMenu extends StatelessWidget {
 }
 
 class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture, {Key? key})
-      : assert(_webViewControllerFuture != null),
-        super(key: key);
+  const NavigationControls(this._webViewControllerFuture)
+      : assert(_webViewControllerFuture != null);
 
   final Future<WebViewController> _webViewControllerFuture;
 

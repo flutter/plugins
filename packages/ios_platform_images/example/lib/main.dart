@@ -5,15 +5,12 @@
 import 'package:flutter/material.dart';
 import 'package:ios_platform_images/ios_platform_images.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 /// Main widget for the example app.
 class MyApp extends StatefulWidget {
-  /// Default Constructor
-  const MyApp({Key? key}) : super(key: key);
-
   @override
-  State<MyApp> createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
