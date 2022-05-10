@@ -10,8 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlaceCirclePage extends GoogleMapExampleAppPage {
-  const PlaceCirclePage({Key? key})
-      : super(const Icon(Icons.linear_scale), 'Place circle', key: key);
+  const PlaceCirclePage()
+      : super(const Icon(Icons.linear_scale), 'Place circle');
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class PlaceCirclePage extends GoogleMapExampleAppPage {
 }
 
 class PlaceCircleBody extends StatefulWidget {
-  const PlaceCircleBody({Key? key}) : super(key: key);
+  const PlaceCircleBody();
 
   @override
   State<StatefulWidget> createState() => PlaceCircleBodyState();
@@ -170,42 +170,42 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                     Column(
                       children: <Widget>[
                         TextButton(
-                          onPressed: _add,
                           child: const Text('add'),
+                          onPressed: _add,
                         ),
                         TextButton(
+                          child: const Text('remove'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _remove(selectedId),
-                          child: const Text('remove'),
                         ),
                         TextButton(
+                          child: const Text('toggle visible'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _toggleVisible(selectedId),
-                          child: const Text('toggle visible'),
                         ),
                       ],
                     ),
                     Column(
                       children: <Widget>[
                         TextButton(
+                          child: const Text('change stroke width'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeStrokeWidth(selectedId),
-                          child: const Text('change stroke width'),
                         ),
                         TextButton(
+                          child: const Text('change stroke color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeStrokeColor(selectedId),
-                          child: const Text('change stroke color'),
                         ),
                         TextButton(
+                          child: const Text('change fill color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeFillColor(selectedId),
-                          child: const Text('change fill color'),
                         ),
                       ],
                     )

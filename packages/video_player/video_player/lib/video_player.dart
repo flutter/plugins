@@ -708,14 +708,14 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
 /// Widget that displays the video controlled by [controller].
 class VideoPlayer extends StatefulWidget {
   /// Uses the given [controller] for all video rendered in this widget.
-  const VideoPlayer(this.controller, {Key? key}) : super(key: key);
+  const VideoPlayer(this.controller);
 
   /// The [VideoPlayerController] responsible for the video being rendered in
   /// this widget.
   final VideoPlayerController controller;
 
   @override
-  State<VideoPlayer> createState() => _VideoPlayerState();
+  _VideoPlayerState createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
@@ -883,11 +883,10 @@ class VideoProgressIndicator extends StatefulWidget {
   /// to `top: 5.0`.
   const VideoProgressIndicator(
     this.controller, {
-    Key? key,
     this.colors = const VideoProgressColors(),
     required this.allowScrubbing,
     this.padding = const EdgeInsets.only(top: 5.0),
-  }) : super(key: key);
+  });
 
   /// The [VideoPlayerController] that actually associates a video with this
   /// widget.
@@ -911,7 +910,7 @@ class VideoProgressIndicator extends StatefulWidget {
   final EdgeInsets padding;
 
   @override
-  State<VideoProgressIndicator> createState() => _VideoProgressIndicatorState();
+  _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
@@ -985,8 +984,8 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
     );
     if (widget.allowScrubbing) {
       return _VideoScrubber(
-        controller: controller,
         child: paddedProgressIndicator,
+        controller: controller,
       );
     } else {
       return paddedProgressIndicator;
