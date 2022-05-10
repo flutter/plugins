@@ -53,7 +53,7 @@ enum WKAudiovisualMediaType {
 /// Types of data that websites store.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
-enum WKWebsiteDataTypes {
+enum WKWebsiteDataType {
   /// Cookies.
   cookies,
 
@@ -67,13 +67,13 @@ enum WKWebsiteDataTypes {
   offlineWebApplicationCache,
 
   /// HTML local storage.
-  localStroage,
+  localStorage,
 
   /// HTML session storage.
   sessionStorage,
 
   /// WebSQL databases.
-  sqlDatabases,
+  webSQLDatabases,
 
   /// IndexedDB databases.
   indexedDBDatabases,
@@ -291,7 +291,7 @@ class WKWebsiteDataStore {
   ///
   /// Returns whether any data was removed.
   Future<bool> removeDataOfTypes(
-    Set<WKWebsiteDataTypes> dataTypes,
+    Set<WKWebsiteDataType> dataTypes,
     DateTime since,
   ) {
     return _websiteDataStoreApi.removeDataOfTypesForInstances(
@@ -440,7 +440,10 @@ class WKUserContentController {
     );
   }
 
-  /// Uninstalls all custom message handlers associated with the user content controller.
+  /// Uninstalls all custom message handlers associated with the user content
+  /// controller.
+  ///
+  /// Only supported on iOS version 14+.
   Future<void> removeAllScriptMessageHandlers() {
     return _userContentControllerApi.removeAllScriptMessageHandlersForInstances(
       this,
@@ -550,6 +553,7 @@ class WKWebViewConfiguration {
   Future<void> setMediaTypesRequiringUserActionForPlayback(
     Set<WKAudiovisualMediaType> types,
   ) {
+    assert(types.isNotEmpty);
     return _webViewConfigurationApi
         .setMediaTypesRequiringUserActionForPlaybackForInstances(
       this,

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,17 @@
 		8FA6A87928062CD000A4B183 /* FWFInstanceManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FA6A87828062CD000A4B183 /* FWFInstanceManagerTests.m */; };
 		8FB79B5328134C3100C101D3 /* FWFWebViewHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B5228134C3100C101D3 /* FWFWebViewHostApiTests.m */; };
 		8FB79B55281B24F600C101D3 /* FWFDataConvertersTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B54281B24F600C101D3 /* FWFDataConvertersTests.m */; };
+		8FB79B672820453400C101D3 /* FWFHTTPCookieStoreHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B662820453400C101D3 /* FWFHTTPCookieStoreHostApiTests.m */; };
+		8FB79B6928204E8700C101D3 /* FWFPreferencesHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B6828204E8700C101D3 /* FWFPreferencesHostApiTests.m */; };
+		8FB79B6B28204EE500C101D3 /* FWFWebsiteDataStoreHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B6A28204EE500C101D3 /* FWFWebsiteDataStoreHostApiTests.m */; };
+		8FB79B6D2820533B00C101D3 /* FWFWebViewConfigurationHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B6C2820533B00C101D3 /* FWFWebViewConfigurationHostApiTests.m */; };
+		8FB79B73282096B500C101D3 /* FWFScriptMessageHandlerHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B72282096B500C101D3 /* FWFScriptMessageHandlerHostApiTests.m */; };
+		8FB79B7928209D1300C101D3 /* FWFUserContentControllerHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B7828209D1300C101D3 /* FWFUserContentControllerHostApiTests.m */; };
+		8FB79B832820A39300C101D3 /* FWFNavigationDelegateHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B822820A39300C101D3 /* FWFNavigationDelegateHostApiTests.m */; };
+		8FB79B852820A3A400C101D3 /* FWFUIDelegateHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B842820A3A400C101D3 /* FWFUIDelegateHostApiTests.m */; };
+		8FB79B8F2820BAB300C101D3 /* FWFScrollViewHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B8E2820BAB300C101D3 /* FWFScrollViewHostApiTests.m */; };
+		8FB79B912820BAC700C101D3 /* FWFUIViewHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B902820BAC700C101D3 /* FWFUIViewHostApiTests.m */; };
+		8FB79B972821985200C101D3 /* FWFObjectHostApiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FB79B962821985200C101D3 /* FWFObjectHostApiTests.m */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -73,6 +84,17 @@
 		8FA6A87828062CD000A4B183 /* FWFInstanceManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFInstanceManagerTests.m; sourceTree = "<group>"; };
 		8FB79B5228134C3100C101D3 /* FWFWebViewHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFWebViewHostApiTests.m; sourceTree = "<group>"; };
 		8FB79B54281B24F600C101D3 /* FWFDataConvertersTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFDataConvertersTests.m; sourceTree = "<group>"; };
+		8FB79B662820453400C101D3 /* FWFHTTPCookieStoreHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFHTTPCookieStoreHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B6828204E8700C101D3 /* FWFPreferencesHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFPreferencesHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B6A28204EE500C101D3 /* FWFWebsiteDataStoreHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFWebsiteDataStoreHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B6C2820533B00C101D3 /* FWFWebViewConfigurationHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFWebViewConfigurationHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B72282096B500C101D3 /* FWFScriptMessageHandlerHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFScriptMessageHandlerHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B7828209D1300C101D3 /* FWFUserContentControllerHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFUserContentControllerHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B822820A39300C101D3 /* FWFNavigationDelegateHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFNavigationDelegateHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B842820A3A400C101D3 /* FWFUIDelegateHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFUIDelegateHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B8E2820BAB300C101D3 /* FWFScrollViewHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFScrollViewHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B902820BAC700C101D3 /* FWFUIViewHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFUIViewHostApiTests.m; sourceTree = "<group>"; };
+		8FB79B962821985200C101D3 /* FWFObjectHostApiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FWFObjectHostApiTests.m; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -135,6 +157,17 @@
 				8FA6A87828062CD000A4B183 /* FWFInstanceManagerTests.m */,
 				8FB79B5228134C3100C101D3 /* FWFWebViewHostApiTests.m */,
 				8FB79B54281B24F600C101D3 /* FWFDataConvertersTests.m */,
+				8FB79B662820453400C101D3 /* FWFHTTPCookieStoreHostApiTests.m */,
+				8FB79B6828204E8700C101D3 /* FWFPreferencesHostApiTests.m */,
+				8FB79B6A28204EE500C101D3 /* FWFWebsiteDataStoreHostApiTests.m */,
+				8FB79B6C2820533B00C101D3 /* FWFWebViewConfigurationHostApiTests.m */,
+				8FB79B72282096B500C101D3 /* FWFScriptMessageHandlerHostApiTests.m */,
+				8FB79B7828209D1300C101D3 /* FWFUserContentControllerHostApiTests.m */,
+				8FB79B822820A39300C101D3 /* FWFNavigationDelegateHostApiTests.m */,
+				8FB79B842820A3A400C101D3 /* FWFUIDelegateHostApiTests.m */,
+				8FB79B8E2820BAB300C101D3 /* FWFScrollViewHostApiTests.m */,
+				8FB79B902820BAC700C101D3 /* FWFUIViewHostApiTests.m */,
+				8FB79B962821985200C101D3 /* FWFObjectHostApiTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -433,11 +466,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FA6A87928062CD000A4B183 /* FWFInstanceManagerTests.m in Sources */,
+				8FB79B852820A3A400C101D3 /* FWFUIDelegateHostApiTests.m in Sources */,
+				8FB79B972821985200C101D3 /* FWFObjectHostApiTests.m in Sources */,
+				8FB79B672820453400C101D3 /* FWFHTTPCookieStoreHostApiTests.m in Sources */,
 				8FB79B5328134C3100C101D3 /* FWFWebViewHostApiTests.m in Sources */,
+				8FB79B73282096B500C101D3 /* FWFScriptMessageHandlerHostApiTests.m in Sources */,
 				334734012669319100DCC49E /* FLTWebViewTests.m in Sources */,
+				8FB79B7928209D1300C101D3 /* FWFUserContentControllerHostApiTests.m in Sources */,
+				8FB79B6B28204EE500C101D3 /* FWFWebsiteDataStoreHostApiTests.m in Sources */,
+				8FB79B8F2820BAB300C101D3 /* FWFScrollViewHostApiTests.m in Sources */,
+				8FB79B912820BAC700C101D3 /* FWFUIViewHostApiTests.m in Sources */,
 				334734022669319400DCC49E /* FLTWKNavigationDelegateTests.m in Sources */,
 				8FB79B55281B24F600C101D3 /* FWFDataConvertersTests.m in Sources */,
+				8FB79B6D2820533B00C101D3 /* FWFWebViewConfigurationHostApiTests.m in Sources */,
+				8FB79B832820A39300C101D3 /* FWFNavigationDelegateHostApiTests.m in Sources */,
 				E43693B527512C0F00382F85 /* FLTCookieManagerTests.m in Sources */,
+				8FB79B6928204E8700C101D3 /* FWFPreferencesHostApiTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

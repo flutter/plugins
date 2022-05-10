@@ -2,11 +2,11 @@
 // in webview_flutter_wkwebview/example/ios/.symlinks/plugins/webview_flutter_wkwebview/test/src/web_kit/web_kit_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i4;
+import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart'
-    as _i3;
+    as _i4;
 
 import '../common/test_web_kit.pigeon.dart' as _i2;
 
@@ -37,9 +37,10 @@ class MockTestWKHttpCookieStoreHostApi extends _i1.Mock
               [instanceId, websiteDataStoreInstanceId]),
           returnValueForMissingStub: null);
   @override
-  void setCookie(int? instanceId, _i3.NSHttpCookieData? cookie) =>
-      super.noSuchMethod(Invocation.method(#setCookie, [instanceId, cookie]),
-          returnValueForMissingStub: null);
+  _i3.Future<void> setCookie(int? instanceId, _i4.NSHttpCookieData? cookie) =>
+      (super.noSuchMethod(Invocation.method(#setCookie, [instanceId, cookie]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
 }
 
 /// A class which mocks [TestWKNavigationDelegateHostApi].
@@ -149,7 +150,7 @@ class MockTestWKUserContentControllerHostApi extends _i1.Mock
       Invocation.method(#removeAllScriptMessageHandlers, [instanceId]),
       returnValueForMissingStub: null);
   @override
-  void addUserScript(int? instanceId, _i3.WKUserScriptData? userScript) => super
+  void addUserScript(int? instanceId, _i4.WKUserScriptData? userScript) => super
       .noSuchMethod(Invocation.method(#addUserScript, [instanceId, userScript]),
           returnValueForMissingStub: null);
   @override
@@ -184,7 +185,7 @@ class MockTestWKWebViewConfigurationHostApi extends _i1.Mock
           returnValueForMissingStub: null);
   @override
   void setMediaTypesRequiringUserActionForPlayback(
-          int? instanceId, List<_i3.WKAudiovisualMediaTypeEnumData?>? types) =>
+          int? instanceId, List<_i4.WKAudiovisualMediaTypeEnumData?>? types) =>
       super.noSuchMethod(
           Invocation.method(#setMediaTypesRequiringUserActionForPlayback,
               [instanceId, types]),
@@ -225,7 +226,7 @@ class MockTestWKWebViewHostApi extends _i1.Mock
       Invocation.method(#getEstimatedProgress, [instanceId]),
       returnValue: 0.0) as double);
   @override
-  void loadRequest(int? instanceId, _i3.NSUrlRequestData? request) =>
+  void loadRequest(int? instanceId, _i4.NSUrlRequestData? request) =>
       super.noSuchMethod(Invocation.method(#loadRequest, [instanceId, request]),
           returnValueForMissingStub: null);
   @override
@@ -278,12 +279,12 @@ class MockTestWKWebViewHostApi extends _i1.Mock
           Invocation.method(#setCustomUserAgent, [instanceId, userAgent]),
           returnValueForMissingStub: null);
   @override
-  _i4.Future<Object?> evaluateJavaScript(
+  _i3.Future<Object?> evaluateJavaScript(
           int? instanceId, String? javaScriptString) =>
       (super.noSuchMethod(
           Invocation.method(
               #evaluateJavaScript, [instanceId, javaScriptString]),
-          returnValue: Future<Object?>.value()) as _i4.Future<Object?>);
+          returnValue: Future<Object?>.value()) as _i3.Future<Object?>);
 }
 
 /// A class which mocks [TestWKWebsiteDataStoreHostApi].
@@ -307,12 +308,12 @@ class MockTestWKWebsiteDataStoreHostApi extends _i1.Mock
       Invocation.method(#createDefaultDataStore, [instanceId]),
       returnValueForMissingStub: null);
   @override
-  _i4.Future<bool> removeDataOfTypes(
+  _i3.Future<bool> removeDataOfTypes(
           int? instanceId,
-          List<_i3.WKWebsiteDataTypesEnumData?>? dataTypes,
+          List<_i4.WKWebsiteDataTypeEnumData?>? dataTypes,
           double? secondsModifiedSinceEpoch) =>
       (super.noSuchMethod(
           Invocation.method(#removeDataOfTypes,
               [instanceId, dataTypes, secondsModifiedSinceEpoch]),
-          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+          returnValue: Future<bool>.value(false)) as _i3.Future<bool>);
 }
