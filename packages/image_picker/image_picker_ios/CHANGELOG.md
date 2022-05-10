@@ -1,7 +1,10 @@
+## 0.8.5+2
+
+* Fixes 'messages.g.h' file not found.
+
 ## 0.8.5+1
 
 * Removes unnecessary imports.
-* Fixes 'messages.g.h' file not found.
 * Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
   lint warnings.
 
