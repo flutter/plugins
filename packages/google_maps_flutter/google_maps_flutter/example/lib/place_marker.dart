@@ -15,7 +15,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlaceMarkerPage extends GoogleMapExampleAppPage {
-  const PlaceMarkerPage() : super(const Icon(Icons.place), 'Place marker');
+  const PlaceMarkerPage({Key? key})
+      : super(const Icon(Icons.place), 'Place marker', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class PlaceMarkerPage extends GoogleMapExampleAppPage {
 }
 
 class PlaceMarkerBody extends StatefulWidget {
-  const PlaceMarkerBody();
+  const PlaceMarkerBody({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => PlaceMarkerBodyState();
@@ -308,13 +309,13 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               TextButton(
-                child: const Text('Add'),
                 onPressed: _add,
+                child: const Text('Add'),
               ),
               TextButton(
-                child: const Text('Remove'),
                 onPressed:
                     selectedId == null ? null : () => _remove(selectedId),
+                child: const Text('Remove'),
               ),
             ],
           ),
@@ -322,62 +323,61 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
             alignment: WrapAlignment.spaceEvenly,
             children: <Widget>[
               TextButton(
-                child: const Text('change info'),
                 onPressed:
                     selectedId == null ? null : () => _changeInfo(selectedId),
+                child: const Text('change info'),
               ),
               TextButton(
-                child: const Text('change info anchor'),
                 onPressed: selectedId == null
                     ? null
                     : () => _changeInfoAnchor(selectedId),
+                child: const Text('change info anchor'),
               ),
               TextButton(
-                child: const Text('change alpha'),
                 onPressed:
                     selectedId == null ? null : () => _changeAlpha(selectedId),
+                child: const Text('change alpha'),
               ),
               TextButton(
-                child: const Text('change anchor'),
                 onPressed:
                     selectedId == null ? null : () => _changeAnchor(selectedId),
+                child: const Text('change anchor'),
               ),
               TextButton(
-                child: const Text('toggle draggable'),
                 onPressed: selectedId == null
                     ? null
                     : () => _toggleDraggable(selectedId),
+                child: const Text('toggle draggable'),
               ),
               TextButton(
-                child: const Text('toggle flat'),
                 onPressed:
                     selectedId == null ? null : () => _toggleFlat(selectedId),
+                child: const Text('toggle flat'),
               ),
               TextButton(
-                child: const Text('change position'),
                 onPressed: selectedId == null
                     ? null
                     : () => _changePosition(selectedId),
+                child: const Text('change position'),
               ),
               TextButton(
-                child: const Text('change rotation'),
                 onPressed: selectedId == null
                     ? null
                     : () => _changeRotation(selectedId),
+                child: const Text('change rotation'),
               ),
               TextButton(
-                child: const Text('toggle visible'),
                 onPressed: selectedId == null
                     ? null
                     : () => _toggleVisible(selectedId),
+                child: const Text('toggle visible'),
               ),
               TextButton(
-                child: const Text('change zIndex'),
                 onPressed:
                     selectedId == null ? null : () => _changeZIndex(selectedId),
+                child: const Text('change zIndex'),
               ),
               TextButton(
-                child: const Text('set marker icon'),
                 onPressed: selectedId == null
                     ? null
                     : () {
@@ -387,6 +387,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           },
                         );
                       },
+                child: const Text('set marker icon'),
               ),
             ],
           ),

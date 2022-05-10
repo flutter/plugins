@@ -62,18 +62,24 @@ void main() {
 
   group('plugin iteration', () {
     test('all plugins from file system', () async {
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
       await runCapturingPrint(runner, <String>['sample']);
       expect(command.plugins,
           unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
     test('includes both plugins and packages', () async {
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      final Directory package3 = createFakePackage('package3', packagesDir);
-      final Directory package4 = createFakePackage('package4', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage package3 =
+          createFakePackage('package3', packagesDir);
+      final RepositoryPackage package4 =
+          createFakePackage('package4', packagesDir);
       await runCapturingPrint(runner, <String>['sample']);
       expect(
           command.plugins,
@@ -85,10 +91,25 @@ void main() {
           ]));
     });
 
+    test('includes packages without source', () async {
+      final RepositoryPackage package =
+          createFakePackage('package', packagesDir);
+      package.libDirectory.deleteSync(recursive: true);
+
+      await runCapturingPrint(runner, <String>['sample']);
+      expect(
+          command.plugins,
+          unorderedEquals(<String>[
+            package.path,
+          ]));
+    });
+
     test('all plugins includes third_party/packages', () async {
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      final Directory plugin3 =
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin3 =
           createFakePlugin('plugin3', thirdPartyPackagesDir);
       await runCapturingPrint(runner, <String>['sample']);
       expect(command.plugins,
@@ -96,10 +117,12 @@ void main() {
     });
 
     test('--packages limits packages', () async {
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
       createFakePackage('package3', packagesDir);
-      final Directory package4 = createFakePackage('package4', packagesDir);
+      final RepositoryPackage package4 =
+          createFakePackage('package4', packagesDir);
       await runCapturingPrint(
           runner, <String>['sample', '--packages=plugin1,package4']);
       expect(
@@ -111,10 +134,12 @@ void main() {
     });
 
     test('--plugins acts as an alias to --packages', () async {
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
       createFakePackage('package3', packagesDir);
-      final Directory package4 = createFakePackage('package4', packagesDir);
+      final RepositoryPackage package4 =
+          createFakePackage('package4', packagesDir);
       await runCapturingPrint(
           runner, <String>['sample', '--plugins=plugin1,package4']);
       expect(
@@ -127,7 +152,8 @@ void main() {
 
     test('exclude packages when packages flag is specified', () async {
       createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
       await runCapturingPrint(runner, <String>[
         'sample',
         '--packages=plugin1,plugin2',
@@ -146,7 +172,8 @@ void main() {
 
     test('exclude federated plugins when packages flag is specified', () async {
       createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
       await runCapturingPrint(runner, <String>[
         'sample',
         '--packages=federated/plugin1,plugin2',
@@ -158,7 +185,8 @@ void main() {
     test('exclude entire federated plugins when packages flag is specified',
         () async {
       createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
       await runCapturingPrint(runner, <String>[
         'sample',
         '--packages=federated/plugin1,plugin2',
@@ -189,11 +217,11 @@ packages/plugin1/plugin1/plugin1.dart
 '''),
       ];
       final Directory pluginGroup = packagesDir.childDirectory('plugin1');
-      final Directory appFacingPackage =
+      final RepositoryPackage appFacingPackage =
           createFakePlugin('plugin1', pluginGroup);
-      final Directory platformInterfacePackage =
+      final RepositoryPackage platformInterfacePackage =
           createFakePlugin('plugin1_platform_interface', pluginGroup);
-      final Directory implementationPackage =
+      final RepositoryPackage implementationPackage =
           createFakePlugin('plugin1_web', pluginGroup);
 
       await runCapturingPrint(
@@ -217,7 +245,7 @@ packages/plugin1/plugin1/plugin1.dart
 '''),
       ];
       final Directory pluginGroup = packagesDir.childDirectory('plugin1');
-      final Directory appFacingPackage =
+      final RepositoryPackage appFacingPackage =
           createFakePlugin('plugin1', pluginGroup);
       createFakePlugin('plugin1_platform_interface', pluginGroup);
       createFakePlugin('plugin1_web', pluginGroup);
@@ -239,7 +267,7 @@ packages/plugin1/plugin1/plugin1.dart
       final Directory pluginGroup = packagesDir.childDirectory('plugin1');
 
       createFakePlugin('plugin1', pluginGroup);
-      final Directory platformInterfacePackage =
+      final RepositoryPackage platformInterfacePackage =
           createFakePlugin('plugin1_platform_interface', pluginGroup);
       createFakePlugin('plugin1_web', pluginGroup);
 
@@ -265,14 +293,15 @@ packages/plugin1/plugin1/plugin1.dart
           CommandRunner<void>('common_command', 'subpackage testing');
       localRunner.addCommand(localCommand);
 
-      final Directory package = createFakePackage('apackage', packagesDir);
+      final RepositoryPackage package =
+          createFakePackage('apackage', packagesDir);
 
       await runCapturingPrint(localRunner, <String>['sample']);
       expect(
           localCommand.plugins,
           containsAllInOrder(<String>[
             package.path,
-            package.childDirectory('example').path,
+            getExampleDir(package).path,
           ]));
     });
 
@@ -340,8 +369,10 @@ packages/plugin1/plugin1/plugin1.dart
 
     group('test run-on-changed-packages', () {
       test('all plugins should be tested if there are no changes.', () async {
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -355,8 +386,10 @@ packages/plugin1/plugin1/plugin1.dart
         processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
           MockProcess(stdout: 'AUTHORS'),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -371,8 +404,10 @@ packages/plugin1/plugin1/plugin1.dart
 packages/plugin1/CHANGELOG
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -387,8 +422,10 @@ packages/plugin1/CHANGELOG
 packages/plugin1/CHANGELOG
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -404,8 +441,10 @@ packages/plugin1/CHANGELOG
 packages/plugin1/CHANGELOG
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -421,8 +460,10 @@ script/tool_runner.sh
 packages/plugin1/CHANGELOG
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -438,8 +479,10 @@ analysis_options.yaml
 packages/plugin1/CHANGELOG
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -455,8 +498,10 @@ packages/plugin1/CHANGELOG
 packages/plugin1/CHANGELOG
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
@@ -468,7 +513,8 @@ packages/plugin1/CHANGELOG
         processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
           MockProcess(stdout: 'packages/plugin1/plugin1.dart'),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
         final List<String> output = await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
@@ -491,7 +537,8 @@ packages/plugin1/plugin1.dart
 packages/plugin1/ios/plugin1.m
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
@@ -507,8 +554,10 @@ packages/plugin1/plugin1.dart
 packages/plugin2/ios/plugin2.m
 '''),
         ];
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-        final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+        final RepositoryPackage plugin1 =
+            createFakePlugin('plugin1', packagesDir);
+        final RepositoryPackage plugin2 =
+            createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
         await runCapturingPrint(runner,
             <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
@@ -527,7 +576,7 @@ packages/plugin1/plugin1_platform_interface/plugin1_platform_interface.dart
 packages/plugin1/plugin1_web/plugin1_web.dart
 '''),
         ];
-        final Directory plugin1 =
+        final RepositoryPackage plugin1 =
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
@@ -545,7 +594,7 @@ packages/plugin1/plugin1_web/plugin1_web.dart
 packages/plugin1/plugin1/plugin1.dart
 '''),
         ];
-        final Directory plugin1 =
+        final RepositoryPackage plugin1 =
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin1_platform_interface',
             packagesDir.childDirectory('plugin1'));
@@ -564,7 +613,7 @@ packages/plugin2/ios/plugin2.m
 packages/plugin3/plugin3.dart
 '''),
         ];
-        final Directory plugin1 =
+        final RepositoryPackage plugin1 =
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
@@ -624,7 +673,8 @@ script/tool_runner.sh
         processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
           MockProcess(stdout: 'packages/a_package/lib/a_package.dart'),
         ];
-        final Directory packageA = createFakePackage('a_package', packagesDir);
+        final RepositoryPackage packageA =
+            createFakePackage('a_package', packagesDir);
         createFakePlugin('b_package', packagesDir);
         final List<String> output = await runCapturingPrint(
             runner, <String>['sample', '--run-on-dirty-packages']);
@@ -647,8 +697,10 @@ packages/a_package/lib/a_package.dart
 packages/b_package/lib/src/foo.dart
 '''),
         ];
-        final Directory packageA = createFakePackage('a_package', packagesDir);
-        final Directory packageB = createFakePackage('b_package', packagesDir);
+        final RepositoryPackage packageA =
+            createFakePackage('a_package', packagesDir);
+        final RepositoryPackage packageB =
+            createFakePackage('b_package', packagesDir);
         createFakePackage('c_package', packagesDir);
         await runCapturingPrint(
             runner, <String>['sample', '--run-on-dirty-packages']);
@@ -664,7 +716,8 @@ packages/a_package/lib/a_package.dart
 packages/b_package/lib/src/foo.dart
 '''),
         ];
-        final Directory packageA = createFakePackage('a_package', packagesDir);
+        final RepositoryPackage packageA =
+            createFakePackage('a_package', packagesDir);
         createFakePackage('b_package', packagesDir);
         createFakePackage('c_package', packagesDir);
         await runCapturingPrint(runner, <String>[
@@ -686,7 +739,8 @@ packages/b_package/lib/src/foo.dart
       processRunner.mockProcessesForExecutable['git-rev-parse'] = <Process>[
         MockProcess(stdout: 'a-branch'),
       ];
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
 
       final List<String> output = await runCapturingPrint(
@@ -707,8 +761,10 @@ packages/b_package/lib/src/foo.dart
       processRunner.mockProcessesForExecutable['git-rev-parse'] = <Process>[
         MockProcess(stdout: 'main'),
       ];
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['sample', '--packages-for-branch']);
@@ -729,8 +785,10 @@ packages/b_package/lib/src/foo.dart
       processRunner.mockProcessesForExecutable['git-rev-parse'] = <Process>[
         MockProcess(stdout: 'master'),
       ];
-      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['sample', '--packages-for-branch']);
@@ -770,18 +828,19 @@ packages/b_package/lib/src/foo.dart
 
   group('sharding', () {
     test('distributes evenly when evenly divisible', () async {
-      final List<List<Directory>> expectedShards = <List<Directory>>[
-        <Directory>[
+      final List<List<RepositoryPackage>> expectedShards =
+          <List<RepositoryPackage>>[
+        <RepositoryPackage>[
           createFakePackage('package1', packagesDir),
           createFakePackage('package2', packagesDir),
           createFakePackage('package3', packagesDir),
         ],
-        <Directory>[
+        <RepositoryPackage>[
           createFakePackage('package4', packagesDir),
           createFakePackage('package5', packagesDir),
           createFakePackage('package6', packagesDir),
         ],
-        <Directory>[
+        <RepositoryPackage>[
           createFakePackage('package7', packagesDir),
           createFakePackage('package8', packagesDir),
           createFakePackage('package9', packagesDir),
@@ -807,25 +866,26 @@ packages/b_package/lib/src/foo.dart
         expect(
             localCommand.plugins,
             unorderedEquals(expectedShards[i]
-                .map((Directory packageDir) => packageDir.path)
+                .map((RepositoryPackage package) => package.path)
                 .toList()));
       }
     });
 
     test('distributes as evenly as possible when not evenly divisible',
         () async {
-      final List<List<Directory>> expectedShards = <List<Directory>>[
-        <Directory>[
+      final List<List<RepositoryPackage>> expectedShards =
+          <List<RepositoryPackage>>[
+        <RepositoryPackage>[
           createFakePackage('package1', packagesDir),
           createFakePackage('package2', packagesDir),
           createFakePackage('package3', packagesDir),
         ],
-        <Directory>[
+        <RepositoryPackage>[
           createFakePackage('package4', packagesDir),
           createFakePackage('package5', packagesDir),
           createFakePackage('package6', packagesDir),
         ],
-        <Directory>[
+        <RepositoryPackage>[
           createFakePackage('package7', packagesDir),
           createFakePackage('package8', packagesDir),
         ],
@@ -850,7 +910,7 @@ packages/b_package/lib/src/foo.dart
         expect(
             localCommand.plugins,
             unorderedEquals(expectedShards[i]
-                .map((Directory packageDir) => packageDir.path)
+                .map((RepositoryPackage package) => package.path)
                 .toList()));
       }
     });
@@ -864,18 +924,19 @@ packages/b_package/lib/src/foo.dart
     // excluding some plugins from the later step shouldn't change what's tested
     // in each shard, as it may no longer align with what was built.
     test('counts excluded plugins when sharding', () async {
-      final List<List<Directory>> expectedShards = <List<Directory>>[
-        <Directory>[
+      final List<List<RepositoryPackage>> expectedShards =
+          <List<RepositoryPackage>>[
+        <RepositoryPackage>[
           createFakePackage('package1', packagesDir),
           createFakePackage('package2', packagesDir),
           createFakePackage('package3', packagesDir),
         ],
-        <Directory>[
+        <RepositoryPackage>[
           createFakePackage('package4', packagesDir),
           createFakePackage('package5', packagesDir),
           createFakePackage('package6', packagesDir),
         ],
-        <Directory>[
+        <RepositoryPackage>[
           createFakePackage('package7', packagesDir),
         ],
       ];
@@ -903,7 +964,7 @@ packages/b_package/lib/src/foo.dart
         expect(
             localCommand.plugins,
             unorderedEquals(expectedShards[i]
-                .map((Directory packageDir) => packageDir.path)
+                .map((RepositoryPackage package) => package.path)
                 .toList()));
       }
     });

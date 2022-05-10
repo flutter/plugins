@@ -25,7 +25,7 @@ void main() {
       instanceManager = InstanceManager();
     });
 
-    group('$NSObject', () {
+    group('NSObject', () {
       late MockTestNSObjectHostApi mockPlatformHostApi;
 
       late NSObject object;

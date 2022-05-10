@@ -1,7 +1,14 @@
-## NEXT
+## 2.4.1
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.4.0
 
 * Updates minimum Flutter version to 2.10.
 * Adds OS version support information to README.
+* Adds `setClosedCaptionFile` method to `VideoPlayerController`.
 
 ## 2.3.0
 

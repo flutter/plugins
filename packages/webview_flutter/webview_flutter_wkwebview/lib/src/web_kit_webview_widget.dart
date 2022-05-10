@@ -8,7 +8,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -19,13 +18,14 @@ import 'web_kit/web_kit.dart';
 class WebKitWebViewWidget extends StatefulWidget {
   /// Constructs a [WebKitWebViewWidget].
   const WebKitWebViewWidget({
+    Key? key,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     required this.onBuildWidget,
     this.configuration,
     @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
-  });
+  }) : super(key: key);
 
   /// The initial parameters used to setup the WebView.
   final CreationParams creationParams;

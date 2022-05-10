@@ -1,5 +1,7 @@
 # Camera Plugin
 
+<?code-excerpt path-base="excerpts/packages/camera_example"?>
+
 [![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dev/packages/camera)
 
 A Flutter plugin for iOS, Android and Web allowing access to the device cameras.
@@ -44,7 +46,7 @@ If editing `Info.plist` as text, add:
 
 Change the minimum Android sdk version to 21 (or higher) in your `android/app/build.gradle` file.
 
-```
+```groovy
 minSdkVersion 21
 ```
 
@@ -59,53 +61,59 @@ For web integration details, see the
 
 As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#050) of the camera plugin, lifecycle changes are no longer handled by the plugin. This means developers are now responsible to control camera resources when the lifecycle state is updated. Failure to do so might lead to unexpected behavior (for example as described in issue [#39109](https://github.com/flutter/flutter/issues/39109)). Handling lifecycle changes can be done by overriding the `didChangeAppLifecycleState` method like so:
 
+<?code-excerpt "main.dart (AppLifecycle)"?>
 ```dart
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // App state changed before we got the chance to initialize.
-    if (controller == null || !controller.value.isInitialized) {
-      return;
-    }
-    if (state == AppLifecycleState.inactive) {
-      controller?.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      if (controller != null) {
-        onNewCameraSelected(controller.description);
-      }
-    }
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  final CameraController? cameraController = controller;
+
+  // App state changed before we got the chance to initialize.
+  if (cameraController == null || !cameraController.value.isInitialized) {
+    return;
   }
+
+  if (state == AppLifecycleState.inactive) {
+    cameraController.dispose();
+  } else if (state == AppLifecycleState.resumed) {
+    onNewCameraSelected(cameraController.description);
+  }
+}
 ```
 
 ### Example
 
 Here is a small example flutter app displaying a full screen camera preview.
 
+<?code-excerpt "readme_full_example.dart (FullAppExample)"?>
 ```dart
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 
-List<CameraDescription> cameras;
+late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  cameras = await availableCameras();
-  runApp(CameraApp());
+  _cameras = await availableCameras();
+  runApp(const CameraApp());
 }
 
+/// CameraApp is the Main Application.
 class CameraApp extends StatefulWidget {
+  /// Default Constructor
+  const CameraApp({Key? key}) : super(key: key);
+
   @override
-  _CameraAppState createState() => _CameraAppState();
+  State<CameraApp> createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
-  CameraController controller;
+  late CameraController controller;
 
   @override
   void initState() {
     super.initState();
-    controller = CameraController(cameras[0], ResolutionPreset.max);
+    controller = CameraController(_cameras[0], ResolutionPreset.max);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -116,7 +124,7 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -130,7 +138,6 @@ class _CameraAppState extends State<CameraApp> {
     );
   }
 }
-
 ```
 
 For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/main/packages/camera/camera/example).

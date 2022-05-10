@@ -166,8 +166,7 @@ public class WebViewTest {
 
   @Test
   public void loadDataWithNullValues() {
-    testHostApiImpl.loadData(
-        0L, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "<null-value>", "<null-value>");
+    testHostApiImpl.loadData(0L, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", null, null);
     verify(mockWebView).loadData("VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", null, null);
   }
 
@@ -192,12 +191,7 @@ public class WebViewTest {
   @Test
   public void loadDataWithBaseUrlAndNullValues() {
     testHostApiImpl.loadDataWithBaseUrl(
-        0L,
-        "<null-value>",
-        "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==",
-        "<null-value>",
-        "<null-value>",
-        "<null-value>");
+        0L, null, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", null, null, null);
     verify(mockWebView)
         .loadDataWithBaseURL(null, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", null, null, null);
   }

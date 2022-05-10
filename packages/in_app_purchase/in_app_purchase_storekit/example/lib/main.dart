@@ -37,7 +37,7 @@ const List<String> _kProductIds = <String>[
 
 class _MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  State<_MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<_MyApp> {
@@ -259,7 +259,6 @@ class _MyAppState extends State<_MyApp> {
                     },
                     icon: const Icon(Icons.upgrade))
                 : TextButton(
-                    child: Text(productDetails.price),
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.green[800],
                       primary: Colors.white,
@@ -278,6 +277,7 @@ class _MyAppState extends State<_MyApp> {
                             purchaseParam: purchaseParam);
                       }
                     },
+                    child: Text(productDetails.price),
                   ));
       },
     ));
@@ -318,9 +318,9 @@ class _MyAppState extends State<_MyApp> {
       const Divider(),
       GridView.count(
         crossAxisCount: 5,
-        children: tokens,
         shrinkWrap: true,
         padding: const EdgeInsets.all(16.0),
+        children: tokens,
       )
     ]));
   }
@@ -337,12 +337,12 @@ class _MyAppState extends State<_MyApp> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(
-            child: const Text('Restore purchases'),
             style: TextButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
               primary: Colors.white,
             ),
             onPressed: () => _iapStoreKitPlatform.restorePurchases(),
+            child: const Text('Restore purchases'),
           ),
         ],
       ),
