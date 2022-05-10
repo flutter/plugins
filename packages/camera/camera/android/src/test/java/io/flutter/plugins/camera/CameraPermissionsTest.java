@@ -9,29 +9,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import io.flutter.plugins.camera.CameraPermissions.CameraRequestPermissionsListener;
-import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camera.CameraPermissions.ResultCallback;
 import org.junit.Test;
 
 public class CameraPermissionsTest {
-  @Test
-  public void requestPermissions_errorsWhenRequestOngoing() {
-    CameraPermissions cameraPermissions = new CameraPermissions();
-    Activity fakeActivity = mock(Activity.class);
-    PermissionsRegistry fakePermissionsRegistry = mock(PermissionsRegistry.class);
-    ResultCallback fakeResultCallback = mock(ResultCallback.class);
-
-    cameraPermissions.ongoing = true;
-    cameraPermissions.requestPermissions(
-        fakeActivity, fakePermissionsRegistry, true, fakeResultCallback);
-
-    verify(fakeResultCallback)
-        .onResult("cameraPermissionRequest", "Camera permission request ongoing.");
-  }
-
   @Test
   public void listener_respondsOnce() {
     final int[] calledCounter = {0};

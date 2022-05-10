@@ -23,6 +23,7 @@ final class CameraPermissions {
     void onResult(String errorCode, String errorDescription);
   }
 
+  private static final String TAG = "CameraPermissions";
   private static final int CAMERA_REQUEST_ID = 9796;
   @VisibleForTesting boolean ongoing = false;
 
@@ -32,7 +33,7 @@ final class CameraPermissions {
       boolean enableAudio,
       ResultCallback callback) {
     if (ongoing) {
-      callback.onResult("cameraPermissionRequest", "Camera permission request ongoing.");
+      Log.e(TAG, "Another request is ongoing and multiple requests cannot be handled at once.");
       return;
     }
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
