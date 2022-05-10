@@ -1,6 +1,10 @@
+## 0.8.5+1
+
+* Fixes `prefer_function_declarations_over_variables` lint warnings.
+
 ## 0.8.5
 
-- Updates `test` to inculde the Dart unit tests of examples, if any.
+- Updates `test` to include the Dart unit tests of examples, if any.
 - `drive-examples` now supports non-plugin packages.
 - Commands that iterate over examples now include non-Flutter example packages.
 
@@ -16,7 +20,7 @@
 - Adds a new `update-excerpts` command to maintain README files using the
   `code-excerpter` package from flutter/site-shared.
 - `license-check` now ignores submodules.
-- Allows `make-deps-path-based` to skip packages it has alredy rewritten, so
+- Allows `make-deps-path-based` to skip packages it has already rewritten, so
   that running multiple times won't fail after the first time.
 - Removes UWP support, since Flutter has dropped support for UWP.
 
@@ -113,7 +117,7 @@
 - Added Android native integration test support to `native-test`.
 - Added a new `android-lint` command to lint Android plugin native code.
 - Pubspec validation now checks for `implements` in implementation packages.
-- Pubspec valitation now checks the full relative path of `repository` entries.
+- Pubspec validation now checks the full relative path of `repository` entries.
 - `build-examples` now supports UWP plugins via a `--winuwp` flag.
 - `native-test` now supports `--windows` for unit tests.
 - **Breaking change**: `publish` no longer accepts `--no-tag-release` or
@@ -121,7 +125,7 @@
 - **Breaking change**: `publish`'s `--package` flag has been replaced with the
   `--packages` flag used by most other packages.
 - **Breaking change** Passing both `--run-on-changed-packages` and `--packages`
-  is now an error; previously it the former would be ignored.
+  is now an error; previously the former would be ignored.
 
 ## 0.5.0
 

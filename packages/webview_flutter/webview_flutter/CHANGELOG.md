@@ -1,3 +1,7 @@
+## 3.0.4
+
+* Fixes `prefer_function_declarations_over_variables` lint warnings.
+
 ## 3.0.3
 
 * Removes unnecessary imports.

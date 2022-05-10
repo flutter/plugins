@@ -1,3 +1,7 @@
+## 2.7.5
+
+* Fixes `prefer_function_declarations_over_variables` lint warnings.
+
 ## 2.7.4
 
 * Removes unnecessary imports.
