@@ -63,8 +63,7 @@ abstract class GoogleSignInPlatform {
   /// if the provided instance is a class implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
 
-  /// Initializes the plugin. You must call this method before calling other
-  /// methods.
+  /// Initializes the plugin. Deprecated: call [initWithParams] instead.
   ///
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
@@ -89,8 +88,8 @@ abstract class GoogleSignInPlatform {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// Initializes the plugin. You must call this method before calling other
-  /// methods.
+  /// Initializes the plugin with [params]. You must call this method before
+  /// calling other methods.
   ///
   /// The [params] argument specifies the parameters that will be used to
   /// initialize the plugin.
