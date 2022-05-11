@@ -10,52 +10,53 @@ import '../common/web_kit.pigeon.dart';
 import '../foundation/foundation.dart';
 import 'web_kit.dart';
 
-Iterable<WKWebsiteDataTypesEnumData> _toWKWebsiteDataTypesEnumData(
-    Iterable<WKWebsiteDataTypes> types) {
-  return types.map<WKWebsiteDataTypesEnumData>((WKWebsiteDataTypes type) {
-    late final WKWebsiteDataTypesEnum value;
+Iterable<WKWebsiteDataTypeEnumData> _toWKWebsiteDataTypeEnumData(
+    Iterable<WKWebsiteDataType> types) {
+  return types.map<WKWebsiteDataTypeEnumData>((WKWebsiteDataType type) {
+    late final WKWebsiteDataTypeEnum value;
     switch (type) {
-      case WKWebsiteDataTypes.cookies:
-        value = WKWebsiteDataTypesEnum.cookies;
+      case WKWebsiteDataType.cookies:
+        value = WKWebsiteDataTypeEnum.cookies;
         break;
-      case WKWebsiteDataTypes.memoryCache:
-        value = WKWebsiteDataTypesEnum.memoryCache;
+      case WKWebsiteDataType.memoryCache:
+        value = WKWebsiteDataTypeEnum.memoryCache;
         break;
-      case WKWebsiteDataTypes.diskCache:
-        value = WKWebsiteDataTypesEnum.diskCache;
+      case WKWebsiteDataType.diskCache:
+        value = WKWebsiteDataTypeEnum.diskCache;
         break;
-      case WKWebsiteDataTypes.offlineWebApplicationCache:
-        value = WKWebsiteDataTypesEnum.offlineWebApplicationCache;
+      case WKWebsiteDataType.offlineWebApplicationCache:
+        value = WKWebsiteDataTypeEnum.offlineWebApplicationCache;
         break;
-      case WKWebsiteDataTypes.localStroage:
-        value = WKWebsiteDataTypesEnum.localStroage;
+      case WKWebsiteDataType.localStorage:
+        value = WKWebsiteDataTypeEnum.localStorage;
         break;
-      case WKWebsiteDataTypes.sessionStorage:
-        value = WKWebsiteDataTypesEnum.sessionStorage;
+      case WKWebsiteDataType.sessionStorage:
+        value = WKWebsiteDataTypeEnum.sessionStorage;
         break;
-      case WKWebsiteDataTypes.sqlDatabases:
-        value = WKWebsiteDataTypesEnum.sqlDatabases;
+      case WKWebsiteDataType.webSQLDatabases:
+        value = WKWebsiteDataTypeEnum.webSQLDatabases;
         break;
-      case WKWebsiteDataTypes.indexedDBDatabases:
-        value = WKWebsiteDataTypesEnum.indexedDBDatabases;
+      case WKWebsiteDataType.indexedDBDatabases:
+        value = WKWebsiteDataTypeEnum.indexedDBDatabases;
         break;
     }
 
-    return WKWebsiteDataTypesEnumData(value: value);
+    return WKWebsiteDataTypeEnumData(value: value);
   });
 }
 
 extension _NSHttpCookieConverter on NSHttpCookie {
   NSHttpCookieData toNSHttpCookieData() {
+    final Iterable<NSHttpCookiePropertyKey> keys = properties.keys;
     return NSHttpCookieData(
-      properties: properties.map<NSHttpCookiePropertyKeyEnumData, String>(
-        (NSHttpCookiePropertyKey key, Object value) {
-          return MapEntry<NSHttpCookiePropertyKeyEnumData, String>(
-            key.toNSHttpCookiePropertyKeyEnumData(),
-            value.toString(),
-          );
+      propertyKeys: keys.map<NSHttpCookiePropertyKeyEnumData>(
+        (NSHttpCookiePropertyKey key) {
+          return key.toNSHttpCookiePropertyKeyEnumData();
         },
-      ),
+      ).toList(),
+      propertyValues: keys
+          .map<Object>((NSHttpCookiePropertyKey key) => properties[key]!)
+          .toList(),
     );
   }
 }
@@ -258,12 +259,12 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   /// Calls [removeDataOfTypes] with the ids of the provided object instances.
   Future<bool> removeDataOfTypesForInstances(
     WKWebsiteDataStore instance,
-    Set<WKWebsiteDataTypes> dataTypes, {
+    Set<WKWebsiteDataType> dataTypes, {
     required double secondsModifiedSinceEpoch,
   }) {
     return removeDataOfTypes(
       instanceManager.getInstanceId(instance)!,
-      _toWKWebsiteDataTypesEnumData(dataTypes).toList(),
+      _toWKWebsiteDataTypeEnumData(dataTypes).toList(),
       secondsModifiedSinceEpoch,
     );
   }

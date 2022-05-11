@@ -68,7 +68,7 @@ void main() {
 
     expect(
       () => webViewPlatform.createPlatformWebViewController(
-          const WebViewControllerCreationParams()),
+          const PlatformWebViewControllerCreationParams()),
       throwsUnimplementedError,
     );
   });

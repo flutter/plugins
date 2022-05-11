@@ -21,7 +21,8 @@ import 'webview_platform.dart';
 /// [WebViewCookieManagerDelegate] methods.
 abstract class PlatformWebViewController extends PlatformInterface {
   /// Creates a new [PlatformWebViewController]
-  factory PlatformWebViewController(WebViewControllerCreationParams params) {
+  factory PlatformWebViewController(
+      PlatformWebViewControllerCreationParams params) {
     final PlatformWebViewController webViewControllerDelegate =
         WebViewPlatform.instance!.createPlatformWebViewController(params);
     PlatformInterface.verify(webViewControllerDelegate, _token);
@@ -38,7 +39,7 @@ abstract class PlatformWebViewController extends PlatformInterface {
   static final Object _token = Object();
 
   /// The parameters used to initialize the [PlatformWebViewController].
-  final WebViewControllerCreationParams params;
+  final PlatformWebViewControllerCreationParams params;
 
   /// Loads the file located on the specified [absoluteFilePath].
   ///
@@ -156,12 +157,12 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'clearLocalStorage is not implemented on the current platform');
   }
 
-  /// Sets the [NavigationCallbackDelegate] containing the callback methods that
+  /// Sets the [PlatformNavigationCallbackDelegate] containing the callback methods that
   /// are called during navigation events.
-  Future<void> setNavigationCallbackDelegate(
+  Future<void> setPlatformNavigationCallbackDelegate(
       PlatformNavigationCallbackDelegate handler) {
     throw UnimplementedError(
-        'setNavigationCallbackDelegate is not implemented on the current platform');
+        'setPlatformNavigationCallbackDelegate is not implemented on the current platform');
   }
 
   /// Runs the given JavaScript in the context of the current page.

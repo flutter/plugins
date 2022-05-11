@@ -26,13 +26,14 @@ void main() {
         .thenReturn(ImplementsPlatformWebViewController());
 
     expect(() {
-      PlatformWebViewController(const WebViewControllerCreationParams());
+      PlatformWebViewController(
+          const PlatformWebViewControllerCreationParams());
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
-    const WebViewControllerCreationParams params =
-        WebViewControllerCreationParams();
+    const PlatformWebViewControllerCreationParams params =
+        PlatformWebViewControllerCreationParams();
     when((WebViewPlatform.instance! as MockWebViewPlatform)
             .createPlatformWebViewController(any))
         .thenReturn(ExtendsPlatformWebViewController(params));
@@ -45,7 +46,9 @@ void main() {
             .createPlatformWebViewController(any))
         .thenReturn(MockWebViewControllerDelegate());
 
-    expect(PlatformWebViewController(const WebViewControllerCreationParams()),
+    expect(
+        PlatformWebViewController(
+            const PlatformWebViewControllerCreationParams()),
         isNotNull);
   });
 
@@ -55,7 +58,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.loadFile(''),
@@ -69,7 +72,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.loadFlutterAsset(''),
@@ -83,7 +86,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.loadHtmlString(''),
@@ -97,7 +100,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.loadRequest(MockLoadRequestParamsDelegate()),
@@ -111,7 +114,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.currentUrl(),
@@ -125,7 +128,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.canGoBack(),
@@ -139,7 +142,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.canGoForward(),
@@ -152,7 +155,7 @@ void main() {
       'Default implementation of goBack should throw unimplemented error', () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.goBack(),
@@ -166,7 +169,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.goForward(),
@@ -179,7 +182,7 @@ void main() {
       'Default implementation of reload should throw unimplemented error', () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.reload(),
@@ -193,7 +196,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.clearCache(),
@@ -207,7 +210,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.clearLocalStorage(),
@@ -220,11 +223,11 @@ void main() {
     () {
       final PlatformWebViewController controller =
           ExtendsPlatformWebViewController(
-              const WebViewControllerCreationParams());
+              const PlatformWebViewControllerCreationParams());
 
       expect(
-        () => controller
-            .setNavigationCallbackDelegate(MockNavigationCallbackDelegate()),
+        () => controller.setPlatformNavigationCallbackDelegate(
+            MockNavigationCallbackDelegate()),
         throwsUnimplementedError,
       );
     },
@@ -236,7 +239,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.runJavaScript('javaScript'),
@@ -250,7 +253,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.runJavaScriptReturningResult('javaScript'),
@@ -264,7 +267,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.addJavaScriptChannel(
@@ -283,7 +286,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.removeJavaScriptChannel('test'),
@@ -297,7 +300,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.getTitle(),
@@ -311,7 +314,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.scrollTo(0, 0),
@@ -325,7 +328,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.scrollBy(0, 0),
@@ -339,7 +342,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.getScrollPosition(),
@@ -353,7 +356,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.enableDebugging(true),
@@ -367,7 +370,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.enableGestureNavigation(true),
@@ -381,7 +384,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.enableZoom(true),
@@ -395,7 +398,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.setBackgroundColor(Colors.blue),
@@ -409,7 +412,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.setJavaScriptMode(JavaScriptMode.disabled),
@@ -423,7 +426,7 @@ void main() {
       () {
     final PlatformWebViewController controller =
         ExtendsPlatformWebViewController(
-            const WebViewControllerCreationParams());
+            const PlatformWebViewControllerCreationParams());
 
     expect(
       () => controller.setUserAgent(null),
@@ -450,7 +453,8 @@ class MockWebViewControllerDelegate extends Mock
         PlatformWebViewController {}
 
 class ExtendsPlatformWebViewController extends PlatformWebViewController {
-  ExtendsPlatformWebViewController(WebViewControllerCreationParams params)
+  ExtendsPlatformWebViewController(
+      PlatformWebViewControllerCreationParams params)
       : super.implementation(params);
 }
 

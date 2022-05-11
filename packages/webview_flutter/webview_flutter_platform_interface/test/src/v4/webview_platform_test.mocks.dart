@@ -63,7 +63,7 @@ class MockWebViewPlatform extends _i1.Mock implements _i6.WebViewPlatform {
               as _i3.PlatformNavigationCallbackDelegate);
   @override
   _i4.PlatformWebViewController createPlatformWebViewController(
-          _i7.WebViewControllerCreationParams? params) =>
+          _i7.PlatformWebViewControllerCreationParams? params) =>
       (super.noSuchMethod(
               Invocation.method(#createPlatformWebViewController, [params]),
               returnValue: _FakePlatformWebViewController_2())

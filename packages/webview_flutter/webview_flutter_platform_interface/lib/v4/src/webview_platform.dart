@@ -63,7 +63,7 @@ abstract class WebViewPlatform extends PlatformInterface {
   /// This function should only be called by the app-facing package.
   /// Look at using [WebViewController] in `webview_flutter` instead.
   PlatformWebViewController createPlatformWebViewController(
-    WebViewControllerCreationParams params,
+    PlatformWebViewControllerCreationParams params,
   ) {
     throw UnimplementedError(
         'createWebViewControllerDelegate is not implemented on the current platform.');

@@ -4,31 +4,31 @@
 
 import 'package:flutter/material.dart';
 
-/// Object specifying creation parameters for creating a [WebViewControllerDelegate].
+/// Object specifying creation parameters for creating a [PlatformWebViewController].
 ///
 /// Platform specific implementations can add additional fields by extending
 /// this class.
 ///
 /// {@tool sample}
-/// This example demonstrates how to extend the [WebViewControllerCreationParams] to
+/// This example demonstrates how to extend the [PlatformWebViewControllerCreationParams] to
 /// provide additional platform specific parameters.
 ///
-/// When extending [WebViewControllerCreationParams] additional parameters
+/// When extending [PlatformWebViewControllerCreationParams] additional parameters
 /// should always accept `null` or have a default value to prevent breaking
 /// changes.
 ///
 /// ```dart
 /// class WKWebViewControllerCreationParams
-///     extends WebViewControllerCreationParams {
+///     extends PlatformWebViewControllerCreationParams {
 ///   WKWebViewControllerCreationParams._(
 ///     // This parameter prevents breaking changes later.
 ///     // ignore: avoid_unused_constructor_parameters
-///     WebViewControllerCreationParams params, {
+///     PlatformWebViewControllerCreationParams params, {
 ///     this.domain,
 ///   }) : super();
 ///
-///   factory WKWebViewControllerCreationParams.fromWebViewControllerCreationParams(
-///     WebViewControllerCreationParams params, {
+///   factory WKWebViewControllerCreationParams.fromPlatformWebViewControllerCreationParams(
+///     PlatformWebViewControllerCreationParams params, {
 ///     String? domain,
 ///   }) {
 ///     return WKWebViewControllerCreationParams._(params, domain: domain);
@@ -39,7 +39,7 @@ import 'package:flutter/material.dart';
 /// ```
 /// {@end-tool}
 @immutable
-class WebViewControllerCreationParams {
-  /// Used by the platform implementation to create a new [WebViewControllerCreationParams].
-  const WebViewControllerCreationParams();
+class PlatformWebViewControllerCreationParams {
+  /// Used by the platform implementation to create a new [PlatformWebViewController].
+  const PlatformWebViewControllerCreationParams();
 }
