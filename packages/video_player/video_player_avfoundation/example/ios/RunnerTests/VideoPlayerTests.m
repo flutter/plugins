@@ -191,12 +191,21 @@
   XCTestExpectation *initializedExpectation = [self expectationWithDescription:@"initialized"];
   __block NSDictionary<NSString *, id> *initializationEvent;
   [player onListenWithArguments:nil
-                      eventSink:^(NSDictionary<NSString *, id> *event) {
-                        if ([event[@"event"] isEqualToString:@"initialized"]) {
-                          initializationEvent = event;
-                          XCTAssertEqual(event.count, 4);
-                          [initializedExpectation fulfill];
+                      eventSink:^(id event) {
+                        XCTAssertTrue([event isKindOfClass:[NSDictionary class]],
+                                      @"Unexpected event type: %@", event);
+                        if ([event isKindOfClass:[NSDictionary class]]) {
+                          NSDictionary<NSString *, id> *eventDictionary = event;
+                          if ([eventDictionary[@"event"] isEqualToString:@"initialized"]) {
+                            initializationEvent = eventDictionary;
+                            XCTAssertEqual(eventDictionary.count, 4);
+                          }
+                        } else if ([event isKindOfClass:[FlutterError class]]) {
+                          FlutterError *error = event;
+                          XCTFail(@"%@: %@ (%@)", error.code, error.message, error.details);
                         }
+
+                        [initializedExpectation fulfill];
                       }];
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 
