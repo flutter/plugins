@@ -5,7 +5,6 @@
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
@@ -226,8 +225,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool _checkIssueLink(Pubspec pubspec) {
     return pubspec.issueTracker
             ?.toString()
-            .startsWith(_expectedIssueLinkFormat) ==
-        true;
+            .startsWith(_expectedIssueLinkFormat) ??
+        false;
   }
 
   // Validates the "implements" keyword for a plugin, returning an error
@@ -288,8 +287,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
         .where((String package) => !dependencies.contains(package));
     if (missingPackages.isNotEmpty) {
       return 'The following default_packages are missing '
-              'corresponding dependencies:\n  ' +
-          missingPackages.join('\n  ');
+          'corresponding dependencies:\n'
+          '  ${missingPackages.join('\n  ')}';
     }
 
     return null;

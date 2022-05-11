@@ -47,7 +47,7 @@ import android.util.Log;
 
 /** Google sign-in plugin for Flutter. */
 public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
-  private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
+  private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in_android";
 
   private static final String METHOD_INIT = "init";
   private static final String METHOD_SIGN_IN_SILENTLY = "signInSilently";

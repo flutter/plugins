@@ -1,6 +1,15 @@
-## 0.10.2
+## 0.10.1+3
 
 * Adds override for `GoogleSignInPlatform.initWithForceCodeForRefreshToken`.
+
+## 0.10.1+2
+
+* Minor fixes for new analysis options.
+
+## 0.10.1+1
+
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
 
 ## 0.10.1
 

@@ -35,8 +35,10 @@
     } else {
       [self authenticate:call.arguments withFlutterResult:result];
     }
-  } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
-    [self getAvailableBiometrics:result];
+  } else if ([@"getEnrolledBiometrics" isEqualToString:call.method]) {
+    [self getEnrolledBiometrics:result];
+  } else if ([@"deviceSupportsBiometrics" isEqualToString:call.method]) {
+    [self deviceSupportsBiometrics:result];
   } else if ([@"isDeviceSupported" isEqualToString:call.method]) {
     result(@YES);
   } else {
@@ -93,14 +95,41 @@
                                                                                    completion:nil];
 }
 
-- (void)getAvailableBiometrics:(FlutterResult)result {
+- (void)deviceSupportsBiometrics:(FlutterResult)result {
+  LAContext *context = self.createAuthContext;
+  NSError *authError = nil;
+  // Check if authentication with biometrics is possible.
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&authError]) {
+    if (authError == nil) {
+      result(@YES);
+      return;
+    }
+  }
+  // If not, check if it is because no biometrics are enrolled (but still present).
+  if (authError != nil) {
+    if (@available(iOS 11, *)) {
+      if (authError.code == LAErrorBiometryNotEnrolled) {
+        result(@YES);
+        return;
+      }
+    } else if (authError.code == LAErrorTouchIDNotEnrolled) {
+      result(@YES);
+      return;
+    }
+  }
+
+  result(@NO);
+}
+
+- (void)getEnrolledBiometrics:(FlutterResult)result {
   LAContext *context = self.createAuthContext;
   NSError *authError = nil;
   NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
     if (authError == nil) {
-      if (@available(iOS 11.0.1, *)) {
+      if (@available(iOS 11, *)) {
         if (context.biometryType == LABiometryTypeFaceID) {
           [biometrics addObject:@"face"];
         } else if (context.biometryType == LABiometryTypeTouchID) {
@@ -110,8 +139,6 @@
         [biometrics addObject:@"fingerprint"];
       }
     }
-  } else if (authError.code == LAErrorTouchIDNotEnrolled) {
-    [biometrics addObject:@"undefined"];
   }
   result(biometrics);
 }

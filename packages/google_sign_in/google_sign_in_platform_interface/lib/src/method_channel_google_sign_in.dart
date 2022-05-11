@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 
 import '../google_sign_in_platform_interface.dart';
-import 'types.dart';
 import 'utils.dart';
 
 /// An implementation of [GoogleSignInPlatform] that uses method channels.
@@ -26,27 +25,21 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) {
-    return initWithForceCodeForRefreshToken(
+    return initWithParams(SignInInitParameters(
         scopes: scopes,
         signInOption: signInOption,
         hostedDomain: hostedDomain,
-        clientId: clientId);
+        clientId: clientId));
   }
 
   @override
-  Future<void> initWithForceCodeForRefreshToken({
-    List<String> scopes = const <String>[],
-    SignInOption signInOption = SignInOption.standard,
-    String? hostedDomain,
-    String? clientId,
-    bool forceCodeForRefreshToken = false,
-  }) {
+  Future<void> initWithParams(SignInInitParameters params) {
     return channel.invokeMethod<void>('init', <String, dynamic>{
-      'signInOption': signInOption.toString(),
-      'scopes': scopes,
-      'hostedDomain': hostedDomain,
-      'clientId': clientId,
-      'forceCodeForRefreshToken': forceCodeForRefreshToken,
+      'signInOption': params.signInOption.toString(),
+      'scopes': params.scopes,
+      'hostedDomain': params.hostedDomain,
+      'clientId': params.clientId,
+      'forceCodeForRefreshToken': params.forceCodeForRefreshToken,
     });
   }
 

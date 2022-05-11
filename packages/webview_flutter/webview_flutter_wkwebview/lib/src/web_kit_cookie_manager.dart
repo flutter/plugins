@@ -19,7 +19,7 @@ class WebKitCookieManager extends WebViewCookieManagerPlatform {
   @override
   Future<bool> clearCookies() async {
     return websiteDataStore.removeDataOfTypes(
-      <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies},
+      <WKWebsiteDataType>{WKWebsiteDataType.cookies},
       DateTime.fromMillisecondsSinceEpoch(0),
     );
   }

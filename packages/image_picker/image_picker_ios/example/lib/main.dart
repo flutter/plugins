@@ -13,10 +13,12 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 import 'package:video_player/video_player.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -32,13 +34,13 @@ class MyHomePage extends StatefulWidget {
   final String? title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   List<XFile>? _imageFileList;
 
-  set _imageFile(XFile? value) {
+  void _setImageFileListFromFile(XFile? value) {
     _imageFileList = value == null ? null : <XFile>[value];
   }
 
@@ -116,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
             imageQuality: quality,
           );
           setState(() {
-            _imageFile = pickedFile;
+            _setImageFileListFromFile(pickedFile);
           });
         } catch (e) {
           setState(() {
@@ -177,21 +179,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (_imageFileList != null) {
       return Semantics(
-          child: ListView.builder(
-            key: UniqueKey(),
-            itemBuilder: (BuildContext context, int index) {
-              // Why network for web?
-              // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-              return Semantics(
-                label: 'image_picker_example_picked_image',
-                child: kIsWeb
-                    ? Image.network(_imageFileList![index].path)
-                    : Image.file(File(_imageFileList![index].path)),
-              );
-            },
-            itemCount: _imageFileList!.length,
-          ),
-          label: 'image_picker_example_picked_images');
+        label: 'image_picker_example_picked_images',
+        child: ListView.builder(
+          key: UniqueKey(),
+          itemBuilder: (BuildContext context, int index) {
+            // Why network for web?
+            // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+            return Semantics(
+              label: 'image_picker_example_picked_image',
+              child: kIsWeb
+                  ? Image.network(_imageFileList![index].path)
+                  : Image.file(File(_imageFileList![index].path)),
+            );
+          },
+          itemCount: _imageFileList!.length,
+        ),
+      );
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -213,27 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> retrieveLostData() async {
-    final LostDataResponse response = await _picker.getLostData();
-    if (response.isEmpty) {
-      return;
-    }
-    if (response.file != null) {
-      if (response.type == RetrieveType.video) {
-        isVideo = true;
-        await _playVideo(response.file);
-      } else {
-        isVideo = false;
-        setState(() {
-          _imageFile = response.file;
-          _imageFileList = response.files;
-        });
-      }
-    } else {
-      _retrieveDataError = response.exception!.code;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,35 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title!),
       ),
       body: Center(
-        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-            ? FutureBuilder<void>(
-                future: retrieveLostData(),
-                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return const Text(
-                        'You have not yet picked an image.',
-                        textAlign: TextAlign.center,
-                      );
-                    case ConnectionState.done:
-                      return _handlePreview();
-                    default:
-                      if (snapshot.hasError) {
-                        return Text(
-                          'Pick image/video error: ${snapshot.error}}',
-                          textAlign: TextAlign.center,
-                        );
-                      } else {
-                        return const Text(
-                          'You have not yet picked an image.',
-                          textAlign: TextAlign.center,
-                        );
-                      }
-                  }
-                },
-              )
-            : _handlePreview(),
+        child: _handlePreview(),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -417,7 +371,7 @@ typedef OnPickImageCallback = void Function(
     double? maxWidth, double? maxHeight, int? quality);
 
 class AspectRatioVideo extends StatefulWidget {
-  const AspectRatioVideo(this.controller);
+  const AspectRatioVideo(this.controller, {Key? key}) : super(key: key);
 
   final VideoPlayerController? controller;
 

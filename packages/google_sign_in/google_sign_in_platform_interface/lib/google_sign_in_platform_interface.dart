@@ -63,8 +63,7 @@ abstract class GoogleSignInPlatform {
   /// if the provided instance is a class implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
 
-  /// Initializes the plugin. You must call this method before calling other
-  /// methods.
+  /// Initializes the plugin. Deprecated: call [initWithParams] instead.
   ///
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
@@ -92,38 +91,19 @@ abstract class GoogleSignInPlatform {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// Initializes the plugin. You must call this method before calling other
-  /// methods.
-  ///
-  /// The [hostedDomain] argument specifies a hosted domain restriction. By
-  /// setting this, sign in will be restricted to accounts of the user in the
-  /// specified domain. By default, the list of accounts will not be restricted.
-  ///
-  /// The list of [scopes] are OAuth scope codes to request when signing in.
-  /// These scope codes will determine the level of data access that is granted
-  /// to your application by the user. The full list of available scopes can be
-  /// found here: <https://developers.google.com/identity/protocols/googlescopes>
-  ///
-  /// The [signInOption] determines the user experience. [SigninOption.games] is
-  /// only supported on Android.
-  ///
-  /// The [forceCodeForRefreshToken] is used on Android to ensure the authentication
-  /// code can be exchanged for a refresh token after the first request.
+  /// Initializes the plugin with specified [params]. You must call this method
+  /// before calling other methods.
   ///
   /// See:
-  /// https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams
-  Future<void> initWithForceCodeForRefreshToken({
-    List<String> scopes = const <String>[],
-    SignInOption signInOption = SignInOption.standard,
-    String? hostedDomain,
-    String? clientId,
-    bool forceCodeForRefreshToken = false,
-  }) async {
+  ///
+  /// * [SignInInitParameters]
+  Future<void> initWithParams(SignInInitParameters params) async {
     await init(
-        scopes: scopes,
-        signInOption: signInOption,
-        hostedDomain: hostedDomain,
-        clientId: clientId);
+      scopes: params.scopes,
+      signInOption: params.signInOption,
+      hostedDomain: params.hostedDomain,
+      clientId: params.clientId,
+    );
   }
 
   /// Attempts to reuse pre-existing credentials to sign in again, without user interaction.

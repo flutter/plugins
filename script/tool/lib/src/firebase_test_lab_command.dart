@@ -119,9 +119,34 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final RepositoryPackage example = package.getSingleExampleDeprecated();
+    final List<PackageResult> results = <PackageResult>[];
+    for (final RepositoryPackage example in package.getExamples()) {
+      results.add(await _runForExample(example, package: package));
+    }
+
+    // If all results skipped, report skip overall.
+    if (results
+        .every((PackageResult result) => result.state == RunState.skipped)) {
+      return PackageResult.skip('No examples support Android.');
+    }
+    // Otherwise, report failure if there were any failures.
+    final List<String> allErrors = results
+        .map((PackageResult result) =>
+            result.state == RunState.failed ? result.details : <String>[])
+        .expand((List<String> list) => list)
+        .toList();
+    return allErrors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(allErrors);
+  }
+
+  /// Runs the test for the given example of [package].
+  Future<PackageResult> _runForExample(
+    RepositoryPackage example, {
+    required RepositoryPackage package,
+  }) async {
     final Directory androidDirectory =
-        example.directory.childDirectory('android');
+        example.platformDirectory(FlutterPlatform.android);
     if (!androidDirectory.existsSync()) {
       return PackageResult.skip(
           '${example.displayName} does not support Android.');
@@ -146,7 +171,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     }
 
     // Ensures that gradle wrapper exists
-    final GradleProject project = GradleProject(example.directory,
+    final GradleProject project = GradleProject(example,
         processRunner: processRunner, platform: platform);
     if (!await _ensureGradleWrapperExists(project)) {
       return PackageResult.fail(<String>['Unable to build example apk']);
@@ -163,7 +188,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // Used within the loop to ensure a unique GCS output location for each
     // test file's run.
     int resultsCounter = 0;
-    for (final File test in _findIntegrationTestFiles(package)) {
+    for (final File test in _findIntegrationTestFiles(example)) {
       final String testName =
           getRelativePosixPath(test, from: package.directory);
       print('Testing $testName...');
@@ -175,7 +200,8 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       final String buildId = getStringArg('build-id');
       final String testRunId = getStringArg('test-run-id');
       final String resultsDir =
-          'plugins_android_test/${package.displayName}/$buildId/$testRunId/${resultsCounter++}/';
+          'plugins_android_test/${package.displayName}/$buildId/$testRunId/'
+          '${example.directory.basename}/${resultsCounter++}/';
 
       // Automatically retry failures; there is significant flake with these
       // tests whose cause isn't yet understood, and having to re-run the
@@ -299,12 +325,10 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return true;
   }
 
-  /// Finds and returns all integration test files for [package].
-  Iterable<File> _findIntegrationTestFiles(RepositoryPackage package) sync* {
-    final Directory integrationTestDir = package
-        .getSingleExampleDeprecated()
-        .directory
-        .childDirectory('integration_test');
+  /// Finds and returns all integration test files for [example].
+  Iterable<File> _findIntegrationTestFiles(RepositoryPackage example) sync* {
+    final Directory integrationTestDir =
+        example.directory.childDirectory('integration_test');
 
     if (!integrationTestDir.existsSync()) {
       return;

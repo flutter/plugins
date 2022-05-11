@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -39,12 +37,12 @@ void main() {
 
     test('clearCookies', () async {
       when(mockWebsiteDataStore.removeDataOfTypes(
-              <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies}, any))
+              <WKWebsiteDataType>{WKWebsiteDataType.cookies}, any))
           .thenAnswer((_) => Future<bool>.value(true));
       expect(cookieManager.clearCookies(), completion(true));
 
       when(mockWebsiteDataStore.removeDataOfTypes(
-              <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies}, any))
+              <WKWebsiteDataType>{WKWebsiteDataType.cookies}, any))
           .thenAnswer((_) => Future<bool>.value(false));
       expect(cookieManager.clearCookies(), completion(false));
     });
