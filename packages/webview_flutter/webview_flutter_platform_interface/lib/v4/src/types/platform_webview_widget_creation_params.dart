@@ -46,7 +46,7 @@ import '../platform_webview_controller.dart';
 /// {@end-tool}
 @immutable
 class PlatformWebViewWidgetCreationParams {
-  /// Used by the platform implementation to create a new [PlatformWebViewWidgetDelegate].
+  /// Used by the platform implementation to create a new [PlatformWebViewWidget].
   const PlatformWebViewWidgetCreationParams({
     this.key,
     required this.controller,

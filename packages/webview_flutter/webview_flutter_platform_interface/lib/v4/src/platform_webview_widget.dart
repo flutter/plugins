@@ -12,7 +12,7 @@ abstract class PlatformWebViewWidget extends PlatformInterface {
   /// Creates a new [PlatformWebViewWidget]
   factory PlatformWebViewWidget(PlatformWebViewWidgetCreationParams params) {
     final PlatformWebViewWidget webViewWidgetDelegate =
-        WebViewPlatform.instance!.createWebViewWidgetDelegate(params);
+        WebViewPlatform.instance!.createPlatformWebViewWidget(params);
     PlatformInterface.verify(webViewWidgetDelegate, _token);
     return webViewWidgetDelegate;
   }

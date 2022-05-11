@@ -3,7 +3,7 @@
 // Do not manually edit this file.
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_callback_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_delegate.dart'
     as _i3;
 import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart'
     as _i4;
@@ -28,8 +28,8 @@ import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
 class _FakePlatformWebViewCookieManager_0 extends _i1.Fake
     implements _i2.PlatformWebViewCookieManager {}
 
-class _FakePlatformNavigationCallbackDelegate_1 extends _i1.Fake
-    implements _i3.PlatformNavigationCallbackDelegate {}
+class _FakePlatformNavigationDelegate_1 extends _i1.Fake
+    implements _i3.PlatformNavigationDelegate {}
 
 class _FakePlatformWebViewController_2 extends _i1.Fake
     implements _i4.PlatformWebViewController {}
@@ -53,14 +53,12 @@ class MockWebViewPlatform extends _i1.Mock implements _i6.WebViewPlatform {
               returnValue: _FakePlatformWebViewCookieManager_0())
           as _i2.PlatformWebViewCookieManager);
   @override
-  _i3.PlatformNavigationCallbackDelegate
-      createPlatformNavigationCallbackDelegate(
-              _i7.PlatformNavigationCallbackDelegateCreationParams? params) =>
-          (super.noSuchMethod(
-                  Invocation.method(
-                      #createPlatformNavigationCallbackDelegate, [params]),
-                  returnValue: _FakePlatformNavigationCallbackDelegate_1())
-              as _i3.PlatformNavigationCallbackDelegate);
+  _i3.PlatformNavigationDelegate createPlatformNavigationDelegate(
+          _i7.PlatformNavigationDelegateCreationParams? params) =>
+      (super.noSuchMethod(
+              Invocation.method(#createPlatformNavigationDelegate, [params]),
+              returnValue: _FakePlatformNavigationDelegate_1())
+          as _i3.PlatformNavigationDelegate);
   @override
   _i4.PlatformWebViewController createPlatformWebViewController(
           _i7.PlatformWebViewControllerCreationParams? params) =>
@@ -69,10 +67,10 @@ class MockWebViewPlatform extends _i1.Mock implements _i6.WebViewPlatform {
               returnValue: _FakePlatformWebViewController_2())
           as _i4.PlatformWebViewController);
   @override
-  _i5.PlatformWebViewWidget createWebViewWidgetDelegate(
+  _i5.PlatformWebViewWidget createPlatformWebViewWidget(
           _i7.PlatformWebViewWidgetCreationParams? params) =>
       (super.noSuchMethod(
-              Invocation.method(#createWebViewWidgetDelegate, [params]),
+              Invocation.method(#createPlatformWebViewWidget, [params]),
               returnValue: _FakePlatformWebViewWidget_3())
           as _i5.PlatformWebViewWidget);
   @override

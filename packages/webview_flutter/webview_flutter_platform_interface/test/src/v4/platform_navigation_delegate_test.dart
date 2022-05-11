@@ -5,7 +5,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_callback_delegate.dart';
+import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_delegate.dart';
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
 
 import 'webview_platform_test.mocks.dart';
@@ -16,44 +16,41 @@ void main() {
   });
 
   test('Cannot be implemented with `implements`', () {
-    const PlatformNavigationCallbackDelegateCreationParams params =
-        PlatformNavigationCallbackDelegateCreationParams();
-    when(WebViewPlatform.instance!
-            .createPlatformNavigationCallbackDelegate(params))
-        .thenReturn(ImplementsPlatformNavigationCallbackDelegate());
+    const PlatformNavigationDelegateCreationParams params =
+        PlatformNavigationDelegateCreationParams();
+    when(WebViewPlatform.instance!.createPlatformNavigationDelegate(params))
+        .thenReturn(ImplementsPlatformNavigationDelegate());
 
     expect(() {
-      PlatformNavigationCallbackDelegate(params);
+      PlatformNavigationDelegate(params);
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
-    const PlatformNavigationCallbackDelegateCreationParams params =
-        PlatformNavigationCallbackDelegateCreationParams();
-    when(WebViewPlatform.instance!
-            .createPlatformNavigationCallbackDelegate(params))
-        .thenReturn(ExtendsPlatformNavigationCallbackDelegate(params));
+    const PlatformNavigationDelegateCreationParams params =
+        PlatformNavigationDelegateCreationParams();
+    when(WebViewPlatform.instance!.createPlatformNavigationDelegate(params))
+        .thenReturn(ExtendsPlatformNavigationDelegate(params));
 
-    expect(PlatformNavigationCallbackDelegate(params), isNotNull);
+    expect(PlatformNavigationDelegate(params), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
-    const PlatformNavigationCallbackDelegateCreationParams params =
-        PlatformNavigationCallbackDelegateCreationParams();
-    when(WebViewPlatform.instance!
-            .createPlatformNavigationCallbackDelegate(params))
-        .thenReturn(MockNavigationCallbackDelegate());
+    const PlatformNavigationDelegateCreationParams params =
+        PlatformNavigationDelegateCreationParams();
+    when(WebViewPlatform.instance!.createPlatformNavigationDelegate(params))
+        .thenReturn(MockNavigationDelegate());
 
-    expect(PlatformNavigationCallbackDelegate(params), isNotNull);
+    expect(PlatformNavigationDelegate(params), isNotNull);
   });
 
   test(
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnNavigationRequest should throw unimplemented error',
       () {
-    final PlatformNavigationCallbackDelegate callbackDelegate =
-        ExtendsPlatformNavigationCallbackDelegate(
-            const PlatformNavigationCallbackDelegateCreationParams());
+    final PlatformNavigationDelegate callbackDelegate =
+        ExtendsPlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams());
 
     expect(
       () => callbackDelegate.setOnNavigationRequest(
@@ -66,9 +63,9 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnPageStarted should throw unimplemented error',
       () {
-    final PlatformNavigationCallbackDelegate callbackDelegate =
-        ExtendsPlatformNavigationCallbackDelegate(
-            const PlatformNavigationCallbackDelegateCreationParams());
+    final PlatformNavigationDelegate callbackDelegate =
+        ExtendsPlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams());
 
     expect(
       () => callbackDelegate.setOnPageStarted((String url) {}),
@@ -80,9 +77,9 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnPageFinished should throw unimplemented error',
       () {
-    final PlatformNavigationCallbackDelegate callbackDelegate =
-        ExtendsPlatformNavigationCallbackDelegate(
-            const PlatformNavigationCallbackDelegateCreationParams());
+    final PlatformNavigationDelegate callbackDelegate =
+        ExtendsPlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams());
 
     expect(
       () => callbackDelegate.setOnPageFinished((String url) {}),
@@ -94,9 +91,9 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnProgress should throw unimplemented error',
       () {
-    final PlatformNavigationCallbackDelegate callbackDelegate =
-        ExtendsPlatformNavigationCallbackDelegate(
-            const PlatformNavigationCallbackDelegateCreationParams());
+    final PlatformNavigationDelegate callbackDelegate =
+        ExtendsPlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams());
 
     expect(
       () => callbackDelegate.setOnProgress((int progress) {}),
@@ -108,9 +105,9 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setOnWebResourceError should throw unimplemented error',
       () {
-    final PlatformNavigationCallbackDelegate callbackDelegate =
-        ExtendsPlatformNavigationCallbackDelegate(
-            const PlatformNavigationCallbackDelegateCreationParams());
+    final PlatformNavigationDelegate callbackDelegate =
+        ExtendsPlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams());
 
     expect(
       () => callbackDelegate.setOnWebResourceError((WebResourceError error) {}),
@@ -124,22 +121,21 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ImplementsPlatformNavigationCallbackDelegate
-    implements PlatformNavigationCallbackDelegate {
+class ImplementsPlatformNavigationDelegate
+    implements PlatformNavigationDelegate {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class MockNavigationCallbackDelegate extends Mock
+class MockNavigationDelegate extends Mock
     with
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        PlatformNavigationCallbackDelegate {}
+        PlatformNavigationDelegate {}
 
-class ExtendsPlatformNavigationCallbackDelegate
-    extends PlatformNavigationCallbackDelegate {
-  ExtendsPlatformNavigationCallbackDelegate(
-      PlatformNavigationCallbackDelegateCreationParams params)
+class ExtendsPlatformNavigationDelegate extends PlatformNavigationDelegate {
+  ExtendsPlatformNavigationDelegate(
+      PlatformNavigationDelegateCreationParams params)
       : super.implementation(params);
 }

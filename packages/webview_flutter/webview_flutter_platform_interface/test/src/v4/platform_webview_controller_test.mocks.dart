@@ -5,7 +5,7 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_callback_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_delegate.dart'
     as _i3;
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
     as _i2;
@@ -19,24 +19,23 @@ import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakePlatformNavigationCallbackDelegateCreationParams_0 extends _i1.Fake
-    implements _i2.PlatformNavigationCallbackDelegateCreationParams {}
+class _FakePlatformNavigationDelegateCreationParams_0 extends _i1.Fake
+    implements _i2.PlatformNavigationDelegateCreationParams {}
 
-/// A class which mocks [PlatformNavigationCallbackDelegate].
+/// A class which mocks [PlatformNavigationDelegate].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPlatformNavigationCallbackDelegate extends _i1.Mock
-    implements _i3.PlatformNavigationCallbackDelegate {
-  MockPlatformNavigationCallbackDelegate() {
+class MockPlatformNavigationDelegate extends _i1.Mock
+    implements _i3.PlatformNavigationDelegate {
+  MockPlatformNavigationDelegate() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i2.PlatformNavigationCallbackDelegateCreationParams get params =>
+  _i2.PlatformNavigationDelegateCreationParams get params =>
       (super.noSuchMethod(Invocation.getter(#params),
-              returnValue:
-                  _FakePlatformNavigationCallbackDelegateCreationParams_0())
-          as _i2.PlatformNavigationCallbackDelegateCreationParams);
+              returnValue: _FakePlatformNavigationDelegateCreationParams_0())
+          as _i2.PlatformNavigationDelegateCreationParams);
   @override
   _i4.Future<void> setOnNavigationRequest(
           _i4.FutureOr<bool> Function({bool isForMainFrame, String url})?

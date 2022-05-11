@@ -8,7 +8,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'platform_navigation_callback_delegate.dart';
+import 'platform_navigation_delegate.dart';
 import 'webview_platform.dart';
 
 /// Interface for a platform implementation of a web view controller.
@@ -18,7 +18,7 @@ import 'webview_platform.dart';
 /// changes. Extending this class (using `extends`) ensures that the subclass
 /// will get the default implementation, while platform implementations that
 /// `implements` this interface will be broken by newly added
-/// [WebViewCookieManagerDelegate] methods.
+/// [PlatformWebViewCookieManager] methods.
 abstract class PlatformWebViewController extends PlatformInterface {
   /// Creates a new [PlatformWebViewController]
   factory PlatformWebViewController(
@@ -157,10 +157,10 @@ abstract class PlatformWebViewController extends PlatformInterface {
         'clearLocalStorage is not implemented on the current platform');
   }
 
-  /// Sets the [PlatformNavigationCallbackDelegate] containing the callback methods that
+  /// Sets the [PlatformNavigationDelegate] containing the callback methods that
   /// are called during navigation events.
   Future<void> setPlatformNavigationCallbackDelegate(
-      PlatformNavigationCallbackDelegate handler) {
+      PlatformNavigationDelegate handler) {
     throw UnimplementedError(
         'setPlatformNavigationCallbackDelegate is not implemented on the current platform');
   }

@@ -22,7 +22,7 @@ void main() {
         MockWebViewControllerDelegate();
     final PlatformWebViewWidgetCreationParams params =
         PlatformWebViewWidgetCreationParams(controller: controller);
-    when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
+    when(WebViewPlatform.instance!.createPlatformWebViewWidget(params))
         .thenReturn(ImplementsWebViewWidgetDelegate());
 
     expect(() {
@@ -35,7 +35,7 @@ void main() {
         MockWebViewControllerDelegate();
     final PlatformWebViewWidgetCreationParams params =
         PlatformWebViewWidgetCreationParams(controller: controller);
-    when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
+    when(WebViewPlatform.instance!.createPlatformWebViewWidget(params))
         .thenReturn(ExtendsWebViewWidgetDelegate(params));
 
     expect(PlatformWebViewWidget(params), isNotNull);
@@ -46,7 +46,7 @@ void main() {
         MockWebViewControllerDelegate();
     final PlatformWebViewWidgetCreationParams params =
         PlatformWebViewWidgetCreationParams(controller: controller);
-    when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
+    when(WebViewPlatform.instance!.createPlatformWebViewWidget(params))
         .thenReturn(MockWebViewWidgetDelegate());
 
     expect(PlatformWebViewWidget(params), isNotNull);

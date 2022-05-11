@@ -54,8 +54,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform.createPlatformNavigationCallbackDelegate(
-          const PlatformNavigationCallbackDelegateCreationParams()),
+      () => webViewPlatform.createPlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -82,7 +82,7 @@ void main() {
         MockWebViewControllerDelegate();
 
     expect(
-      () => webViewPlatform.createWebViewWidgetDelegate(
+      () => webViewPlatform.createPlatformWebViewWidget(
           PlatformWebViewWidgetCreationParams(controller: controller)),
       throwsUnimplementedError,
     );

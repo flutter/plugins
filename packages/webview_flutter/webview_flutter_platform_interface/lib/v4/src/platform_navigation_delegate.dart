@@ -11,32 +11,30 @@ import 'webview_platform.dart';
 
 /// An interface defining navigation events that occur on the native platform.
 ///
-/// The [WebViewControllerDelegate] is notifying this delegate on events that
+/// The [PlatformWebViewController] is notifying this delegate on events that
 /// happened on the platform's webview. Platform implementations should
-/// implement this class and pass an instance to the [WebViewControllerDelegate].
-abstract class PlatformNavigationCallbackDelegate extends PlatformInterface {
-  /// Creates a new [PlatformNavigationCallbackDelegate]
-  factory PlatformNavigationCallbackDelegate(
-      PlatformNavigationCallbackDelegateCreationParams params) {
-    final PlatformNavigationCallbackDelegate callbackDelegate = WebViewPlatform
-        .instance!
-        .createPlatformNavigationCallbackDelegate(params);
+/// implement this class and pass an instance to the [PlatformWebViewController].
+abstract class PlatformNavigationDelegate extends PlatformInterface {
+  /// Creates a new [PlatformNavigationDelegate]
+  factory PlatformNavigationDelegate(
+      PlatformNavigationDelegateCreationParams params) {
+    final PlatformNavigationDelegate callbackDelegate =
+        WebViewPlatform.instance!.createPlatformNavigationDelegate(params);
     PlatformInterface.verify(callbackDelegate, _token);
     return callbackDelegate;
   }
 
-  /// Used by the platform implementation to create a new [PlatformNavigationCallbackDelegate].
+  /// Used by the platform implementation to create a new [PlatformNavigationDelegate].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  PlatformNavigationCallbackDelegate.implementation(this.params)
-      : super(token: _token);
+  PlatformNavigationDelegate.implementation(this.params) : super(token: _token);
 
   static final Object _token = Object();
 
-  /// The parameters used to initialize the [PlatformNavigationCallbackDelegate].
-  final PlatformNavigationCallbackDelegateCreationParams params;
+  /// The parameters used to initialize the [PlatformNavigationDelegate].
+  final PlatformNavigationDelegateCreationParams params;
 
   /// Invoked when a navigation request is pending.
   ///
