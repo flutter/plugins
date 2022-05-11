@@ -82,7 +82,7 @@ class CameraService {
           throw CameraWebException(
             cameraId,
             CameraErrorCode.type,
-            'The camera options are incorrect or attempted'
+            'The camera options are incorrect or attempted '
             'to access the media input from an insecure context.',
           );
         case 'AbortError':

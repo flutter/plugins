@@ -167,7 +167,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     webView.setNavigationDelegate(navigationDelegate);
 
     if (params.userAgent != null) {
-      webView.setCustomUserAgent(params.userAgent!);
+      webView.setCustomUserAgent(params.userAgent);
     }
 
     if (params.webSettings != null) {
@@ -177,7 +177,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     if (params.backgroundColor != null) {
       webView.setOpaque(false);
       webView.setBackgroundColor(Colors.transparent);
-      webView.scrollView.setBackgroundColor(params.backgroundColor!);
+      webView.scrollView.setBackgroundColor(params.backgroundColor);
     }
 
     if (params.initialUrl != null) {
@@ -496,10 +496,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   Future<void> _disableZoom() {
     const WKUserScript userScript = WKUserScript(
-      "var meta = document.createElement('meta');"
-      "meta.name = 'viewport';"
-      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-      "user-scalable=no';"
+      "var meta = document.createElement('meta');\n"
+      "meta.name = 'viewport';\n"
+      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+      "user-scalable=no';\n"
       "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
       WKUserScriptInjectionTime.atDocumentEnd,
       isMainFrameOnly: true,

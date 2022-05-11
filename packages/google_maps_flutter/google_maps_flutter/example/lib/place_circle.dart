@@ -48,6 +48,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   int widthsIndex = 0;
   List<int> widths = <int>[10, 20, 5];
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }

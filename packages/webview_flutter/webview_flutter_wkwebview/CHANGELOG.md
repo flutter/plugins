@@ -1,3 +1,7 @@
+## 2.7.5
+
+* Minor fixes for new analysis options.
+
 ## 2.7.4
 
 * Removes unnecessary imports.

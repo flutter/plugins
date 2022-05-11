@@ -134,6 +134,7 @@ class VideoPlayer {
   }
 
   /// Controls whether the video should start again after it finishes.
+  // ignore: use_setters_to_change_properties
   void setLooping(bool value) {
     _videoElement.loop = value;
   }
