@@ -39,6 +39,7 @@ class ImageResizer {
     final Completer<html.ImageElement> imageLoadCompleter =
         Completer<html.ImageElement>();
     final html.ImageElement imageElement = html.ImageElement();
+    // ignore: unsafe_html
     imageElement.src = blobUrl;
 
     imageElement.onLoad.listen((html.Event event) {
@@ -81,7 +82,7 @@ class ImageResizer {
         await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
     return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: originalFile.mimeType,
-        name: 'scaled_' + originalFile.name,
+        name: 'scaled_${originalFile.name}',
         lastModified: DateTime.now(),
         length: blob.size);
   }

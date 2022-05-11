@@ -2,6 +2,7 @@
 
 - Adds `update-release-info` to apply changelog and optional version changes
   across multiple packages.
+- Fixes changelog validation when reverting to a `NEXT` state.
 
 ## 0.8.5
 

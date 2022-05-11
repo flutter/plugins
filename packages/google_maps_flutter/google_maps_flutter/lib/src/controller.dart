@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: library_private_types_in_public_api
+
 part of google_maps_flutter;
 
 /// Controller for a single GoogleMap instance running on the host platform.

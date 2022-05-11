@@ -25,7 +25,9 @@ class InAppPurchaseAndroidPlatformAddition
   // ignore: deprecated_member_use_from_same_package
   /// See also [enablePendingPurchases] for more on pending purchases.
   @Deprecated(
-      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
+      'The requirement to call `enablePendingPurchases()` has become obsolete '
+      "since Google Play no longer accepts app submissions that don't support "
+      'pending purchases.')
   static bool get enablePendingPurchase => true;
 
   /// Enable the [InAppPurchaseConnection] to handle pending purchases.
@@ -33,7 +35,9 @@ class InAppPurchaseAndroidPlatformAddition
   /// **Deprecation warning:** it is no longer required to call
   /// [enablePendingPurchases] when initializing your application.
   @Deprecated(
-      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
+      'The requirement to call `enablePendingPurchases()` has become obsolete '
+      "since Google Play no longer accepts app submissions that don't support "
+      'pending purchases.')
   static void enablePendingPurchases() {
     // No-op, until it is time to completely remove this method from the API.
   }

@@ -31,7 +31,7 @@ HtmlViewFactory get linkViewFactory => LinkViewController._viewFactory;
 /// It uses a platform view to render an anchor element in the DOM.
 class WebLinkDelegate extends StatefulWidget {
   /// Creates a delegate for the given [link].
-  const WebLinkDelegate(this.link);
+  const WebLinkDelegate(this.link, {Key? key}) : super(key: key);
 
   /// Information about the link built by the app.
   final LinkInfo link;

@@ -313,7 +313,7 @@ String _pluginPlatformSection(
         assert(false, 'Unrecognized platform: $platform');
         break;
     }
-    entry = lines.join('\n') + '\n';
+    entry = '${lines.join('\n')}\n';
   }
 
   return entry;

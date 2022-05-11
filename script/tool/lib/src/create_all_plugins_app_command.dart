@@ -110,7 +110,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
         newGradle.writeln('        multiDexEnabled true');
       } else if (line.contains('dependencies {')) {
         newGradle.writeln(
-          '    implementation \'com.google.guava:guava:27.0.1-android\'\n',
+          "    implementation 'com.google.guava:guava:27.0.1-android'\n",
         );
         // Tests for https://github.com/flutter/flutter/issues/43383
         newGradle.writeln(

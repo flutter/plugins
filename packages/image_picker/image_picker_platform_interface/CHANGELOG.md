@@ -1,3 +1,7 @@
+## NEXT
+
+* Minor fixes for new analysis options.
+
 ## 2.4.4
 
 * Internal code cleanup for stricter analysis options.

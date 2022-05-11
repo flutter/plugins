@@ -15,8 +15,9 @@ const CameraPosition _kInitialPosition =
     CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
 
 class SnapshotPage extends GoogleMapExampleAppPage {
-  const SnapshotPage()
-      : super(const Icon(Icons.camera_alt), 'Take a snapshot of the map');
+  const SnapshotPage({Key? key})
+      : super(const Icon(Icons.camera_alt), 'Take a snapshot of the map',
+            key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +68,7 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
     );
   }
 
+  // ignore: use_setters_to_change_properties
   void onMapCreated(GoogleMapController controller) {
     _mapController = controller;
   }
