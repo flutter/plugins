@@ -1,3 +1,7 @@
+## 2.8.8
+
+* Minor fixes for new analysis options.
+
 ## 2.8.7
 
 * Removes unnecessary imports.

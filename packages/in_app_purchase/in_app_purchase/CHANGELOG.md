@@ -1,3 +1,7 @@
+## 3.0.4
+
+* Minor fixes for new analysis options.
+
 ## 3.0.3
 
 * Removes unnecessary imports.

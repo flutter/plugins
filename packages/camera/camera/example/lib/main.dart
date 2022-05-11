@@ -575,14 +575,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Widget _cameraTogglesRowWidget() {
     final List<Widget> toggles = <Widget>[];
 
-    final Null Function(CameraDescription? description) onChanged =
-        (CameraDescription? description) {
+    void onChanged(CameraDescription? description) {
       if (description == null) {
         return;
       }
 
       onNewCameraSelected(description);
-    };
+    }
 
     if (_cameras.isEmpty) {
       _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
