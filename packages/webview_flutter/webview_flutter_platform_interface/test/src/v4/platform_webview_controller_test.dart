@@ -7,14 +7,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/v4/src/navigation_callback_delegate.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_controller_delegate.dart';
+import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_callback_delegate.dart';
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart';
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
 
-import 'navigation_callback_delegate_test.dart';
+import 'platform_navigation_callback_delegate_test.dart';
 import 'webview_platform_test.mocks.dart';
 
-@GenerateMocks(<Type>[NavigationCallbackDelegate])
+@GenerateMocks(<Type>[PlatformNavigationCallbackDelegate])
 void main() {
   setUp(() {
     WebViewPlatform.instance = MockWebViewPlatformWithMixin();
@@ -22,11 +22,11 @@ void main() {
 
   test('Cannot be implemented with `implements`', () {
     when((WebViewPlatform.instance! as MockWebViewPlatform)
-            .createWebViewControllerDelegate(any))
-        .thenReturn(ImplementsWebViewControllerDelegate());
+            .createPlatformWebViewController(any))
+        .thenReturn(ImplementsPlatformWebViewController());
 
     expect(() {
-      WebViewControllerDelegate(const WebViewControllerCreationParams());
+      PlatformWebViewController(const WebViewControllerCreationParams());
     }, throwsNoSuchMethodError);
   });
 
@@ -34,18 +34,18 @@ void main() {
     const WebViewControllerCreationParams params =
         WebViewControllerCreationParams();
     when((WebViewPlatform.instance! as MockWebViewPlatform)
-            .createWebViewControllerDelegate(any))
-        .thenReturn(ExtendsWebViewControllerDelegate(params));
+            .createPlatformWebViewController(any))
+        .thenReturn(ExtendsPlatformWebViewController(params));
 
-    expect(WebViewControllerDelegate(params), isNotNull);
+    expect(PlatformWebViewController(params), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
     when((WebViewPlatform.instance! as MockWebViewPlatform)
-            .createWebViewControllerDelegate(any))
+            .createPlatformWebViewController(any))
         .thenReturn(MockWebViewControllerDelegate());
 
-    expect(WebViewControllerDelegate(const WebViewControllerCreationParams()),
+    expect(PlatformWebViewController(const WebViewControllerCreationParams()),
         isNotNull);
   });
 
@@ -53,8 +53,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of loadFile should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -67,8 +67,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of loadFlutterAsset should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -81,8 +81,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of loadHtmlString should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -95,8 +95,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of loadRequest should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -109,8 +109,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of currentUrl should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -123,8 +123,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of canGoBack should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -137,8 +137,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of canGoForward should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -150,8 +150,8 @@ void main() {
   test(
       // ignore: lines_longer_than_80_chars
       'Default implementation of goBack should throw unimplemented error', () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -164,8 +164,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of goForward should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -177,8 +177,8 @@ void main() {
   test(
       // ignore: lines_longer_than_80_chars
       'Default implementation of reload should throw unimplemented error', () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -191,8 +191,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of clearCache should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -205,8 +205,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of clearLocalStorage should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -218,8 +218,8 @@ void main() {
   test(
     'Default implementation of the setNavigationCallback should throw unimplemented error',
     () {
-      final WebViewControllerDelegate controller =
-          ExtendsWebViewControllerDelegate(
+      final PlatformWebViewController controller =
+          ExtendsPlatformWebViewController(
               const WebViewControllerCreationParams());
 
       expect(
@@ -234,8 +234,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of runJavaScript should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -248,8 +248,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of runJavaScriptReturningResult should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -262,8 +262,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of addJavaScriptChannel should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -281,8 +281,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of removeJavaScriptChannel should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -295,8 +295,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of getTitle should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -309,8 +309,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of scrollTo should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -323,8 +323,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of scrollBy should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -337,8 +337,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of getScrollPosition should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -351,8 +351,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of enableDebugging should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -365,8 +365,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of enableGestureNavigation should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -379,8 +379,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of enableZoom should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -393,8 +393,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setBackgroundColor should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -407,8 +407,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setJavaScriptMode should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -421,8 +421,8 @@ void main() {
       // ignore: lines_longer_than_80_chars
       'Default implementation of setUserAgent should throw unimplemented error',
       () {
-    final WebViewControllerDelegate controller =
-        ExtendsWebViewControllerDelegate(
+    final PlatformWebViewController controller =
+        ExtendsPlatformWebViewController(
             const WebViewControllerCreationParams());
 
     expect(
@@ -437,7 +437,7 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ImplementsWebViewControllerDelegate implements WebViewControllerDelegate {
+class ImplementsPlatformWebViewController implements PlatformWebViewController {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -447,10 +447,10 @@ class MockWebViewControllerDelegate extends Mock
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        WebViewControllerDelegate {}
+        PlatformWebViewController {}
 
-class ExtendsWebViewControllerDelegate extends WebViewControllerDelegate {
-  ExtendsWebViewControllerDelegate(WebViewControllerCreationParams params)
+class ExtendsPlatformWebViewController extends PlatformWebViewController {
+  ExtendsPlatformWebViewController(WebViewControllerCreationParams params)
       : super.implementation(params);
 }
 

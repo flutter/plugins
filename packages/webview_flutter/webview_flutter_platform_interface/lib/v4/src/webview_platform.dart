@@ -4,11 +4,11 @@
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'navigation_callback_delegate.dart';
+import 'platform_navigation_callback_delegate.dart';
+import 'platform_webview_controller.dart';
+import 'platform_webview_cookie_manager.dart';
+import 'platform_webview_widget.dart';
 import 'types/types.dart';
-import 'webview_controller_delegate.dart';
-import 'webview_cookie_manager_delegate.dart';
-import 'webview_widget_delegate.dart';
 
 export 'types/types.dart';
 
@@ -36,45 +36,45 @@ abstract class WebViewPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Creates a new [WebViewCookieManagerDelegate].
+  /// Creates a new [PlatformWebViewCookieManager].
   ///
   /// This function should only be called by the app-facing package.
   /// Look at using [WebViewCookieManager] in `webview_flutter` instead.
-  WebViewCookieManagerDelegate createCookieManagerDelegate(
-    WebViewCookieManagerCreationParams params,
+  PlatformWebViewCookieManager createPlatformCookieManager(
+    PlatformWebViewCookieManagerCreationParams params,
   ) {
     throw UnimplementedError(
         'createCookieManagerDelegate is not implemented on the current platform.');
   }
 
-  /// Creates a new [NavigationCallbackDelegate].
+  /// Creates a new [PlatformNavigationCallbackDelegate].
   ///
   /// This function should only be called by the app-facing package.
-  /// Look at using [NavigationCallbackHandler] in `webview_flutter` instead.
-  NavigationCallbackDelegate createNavigationCallbackDelegate(
-    NavigationCallbackCreationParams params,
+  /// Look at using [PlatformNavigationCallbackDelegate] in `webview_flutter` instead.
+  PlatformNavigationCallbackDelegate createPlatformNavigationCallbackDelegate(
+    PlatformNavigationCallbackDelegateCreationParams params,
   ) {
     throw UnimplementedError(
         'createNavigationCallbackDelegate is not implemented on the current platform.');
   }
 
-  /// Create a new [WebViewControllerDelegate].
+  /// Create a new [PlatformWebViewController].
   ///
   /// This function should only be called by the app-facing package.
   /// Look at using [WebViewController] in `webview_flutter` instead.
-  WebViewControllerDelegate createWebViewControllerDelegate(
+  PlatformWebViewController createPlatformWebViewController(
     WebViewControllerCreationParams params,
   ) {
     throw UnimplementedError(
         'createWebViewControllerDelegate is not implemented on the current platform.');
   }
 
-  /// Create a new [WebViewWidgetDelegate].
+  /// Create a new [PlatformWebViewWidget].
   ///
   /// This function should only be called by the app-facing package.
   /// Look at using [WebViewWidget] in `webview_flutter` instead.
-  WebViewWidgetDelegate createWebViewWidgetDelegate(
-    WebViewWidgetCreationParams params,
+  PlatformWebViewWidget createWebViewWidgetDelegate(
+    PlatformWebViewWidgetCreationParams params,
   ) {
     throw UnimplementedError(
         'createWebViewWidgetDelegate is not implemented on the current platform.');

@@ -5,7 +5,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'types/types.dart';
 import 'webview_platform.dart';
 
 /// Interface for a platform implementation of a cookie manager.
@@ -15,30 +14,30 @@ import 'webview_platform.dart';
 /// changes. Extending this class (using `extends`) ensures that the subclass
 /// will get the default implementation, while platform implementations that
 /// `implements` this interface will be broken by newly added
-/// [WebViewCookieManagerDelegate] methods.
-abstract class WebViewCookieManagerDelegate extends PlatformInterface {
-  /// Creates a new [WebViewCookieManagerDelegate]
-  factory WebViewCookieManagerDelegate(
-      WebViewCookieManagerCreationParams params) {
-    final WebViewCookieManagerDelegate cookieManagerDelegate =
-        WebViewPlatform.instance!.createCookieManagerDelegate(params);
+/// [PlatformWebViewCookieManager] methods.
+abstract class PlatformWebViewCookieManager extends PlatformInterface {
+  /// Creates a new [PlatformWebViewCookieManager]
+  factory PlatformWebViewCookieManager(
+      PlatformWebViewCookieManagerCreationParams params) {
+    final PlatformWebViewCookieManager cookieManagerDelegate =
+        WebViewPlatform.instance!.createPlatformCookieManager(params);
     PlatformInterface.verify(cookieManagerDelegate, _token);
     return cookieManagerDelegate;
   }
 
   /// Used by the platform implementation to create a new
-  /// [WebViewCookieManagerDelegate].
+  /// [PlatformWebViewCookieManager].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  WebViewCookieManagerDelegate.implementation(this.params)
+  PlatformWebViewCookieManager.implementation(this.params)
       : super(token: _token);
 
   static final Object _token = Object();
 
-  /// The parameters used to initialize the [WebViewCookieManagerDelegate].
-  final WebViewCookieManagerCreationParams params;
+  /// The parameters used to initialize the [PlatformWebViewCookieManager].
+  final PlatformWebViewCookieManagerCreationParams params;
 
   /// Clears all cookies for all [WebView] instances.
   ///

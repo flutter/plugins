@@ -3,18 +3,18 @@
 // Do not manually edit this file.
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_platform_interface/v4/src/navigation_callback_delegate.dart'
+import 'package:webview_flutter_platform_interface/v4/src/platform_navigation_callback_delegate.dart'
     as _i3;
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart'
+    as _i4;
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_cookie_manager.dart'
+    as _i2;
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_widget.dart'
+    as _i5;
 import 'package:webview_flutter_platform_interface/v4/src/types/types.dart'
     as _i7;
-import 'package:webview_flutter_platform_interface/v4/src/webview_controller_delegate.dart'
-    as _i4;
-import 'package:webview_flutter_platform_interface/v4/src/webview_cookie_manager_delegate.dart'
-    as _i2;
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart'
     as _i6;
-import 'package:webview_flutter_platform_interface/v4/src/webview_widget_delegate.dart'
-    as _i5;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -25,17 +25,17 @@ import 'package:webview_flutter_platform_interface/v4/src/webview_widget_delegat
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeWebViewCookieManagerDelegate_0 extends _i1.Fake
-    implements _i2.WebViewCookieManagerDelegate {}
+class _FakePlatformWebViewCookieManager_0 extends _i1.Fake
+    implements _i2.PlatformWebViewCookieManager {}
 
-class _FakeNavigationCallbackDelegate_1 extends _i1.Fake
-    implements _i3.NavigationCallbackDelegate {}
+class _FakePlatformNavigationCallbackDelegate_1 extends _i1.Fake
+    implements _i3.PlatformNavigationCallbackDelegate {}
 
-class _FakeWebViewControllerDelegate_2 extends _i1.Fake
-    implements _i4.WebViewControllerDelegate {}
+class _FakePlatformWebViewController_2 extends _i1.Fake
+    implements _i4.PlatformWebViewController {}
 
-class _FakeWebViewWidgetDelegate_3 extends _i1.Fake
-    implements _i5.WebViewWidgetDelegate {}
+class _FakePlatformWebViewWidget_3 extends _i1.Fake
+    implements _i5.PlatformWebViewWidget {}
 
 /// A class which mocks [WebViewPlatform].
 ///
@@ -46,33 +46,35 @@ class MockWebViewPlatform extends _i1.Mock implements _i6.WebViewPlatform {
   }
 
   @override
-  _i2.WebViewCookieManagerDelegate createCookieManagerDelegate(
-          _i7.WebViewCookieManagerCreationParams? params) =>
+  _i2.PlatformWebViewCookieManager createPlatformCookieManager(
+          _i7.PlatformWebViewCookieManagerCreationParams? params) =>
       (super.noSuchMethod(
-              Invocation.method(#createCookieManagerDelegate, [params]),
-              returnValue: _FakeWebViewCookieManagerDelegate_0())
-          as _i2.WebViewCookieManagerDelegate);
+              Invocation.method(#createPlatformCookieManager, [params]),
+              returnValue: _FakePlatformWebViewCookieManager_0())
+          as _i2.PlatformWebViewCookieManager);
   @override
-  _i3.NavigationCallbackDelegate createNavigationCallbackDelegate(
-          _i7.NavigationCallbackCreationParams? params) =>
-      (super.noSuchMethod(
-              Invocation.method(#createNavigationCallbackDelegate, [params]),
-              returnValue: _FakeNavigationCallbackDelegate_1())
-          as _i3.NavigationCallbackDelegate);
+  _i3.PlatformNavigationCallbackDelegate
+      createPlatformNavigationCallbackDelegate(
+              _i7.PlatformNavigationCallbackDelegateCreationParams? params) =>
+          (super.noSuchMethod(
+                  Invocation.method(
+                      #createPlatformNavigationCallbackDelegate, [params]),
+                  returnValue: _FakePlatformNavigationCallbackDelegate_1())
+              as _i3.PlatformNavigationCallbackDelegate);
   @override
-  _i4.WebViewControllerDelegate createWebViewControllerDelegate(
+  _i4.PlatformWebViewController createPlatformWebViewController(
           _i7.WebViewControllerCreationParams? params) =>
       (super.noSuchMethod(
-              Invocation.method(#createWebViewControllerDelegate, [params]),
-              returnValue: _FakeWebViewControllerDelegate_2())
-          as _i4.WebViewControllerDelegate);
+              Invocation.method(#createPlatformWebViewController, [params]),
+              returnValue: _FakePlatformWebViewController_2())
+          as _i4.PlatformWebViewController);
   @override
-  _i5.WebViewWidgetDelegate createWebViewWidgetDelegate(
-          _i7.WebViewWidgetCreationParams? params) =>
+  _i5.PlatformWebViewWidget createWebViewWidgetDelegate(
+          _i7.PlatformWebViewWidgetCreationParams? params) =>
       (super.noSuchMethod(
               Invocation.method(#createWebViewWidgetDelegate, [params]),
-              returnValue: _FakeWebViewWidgetDelegate_3())
-          as _i5.WebViewWidgetDelegate);
+              returnValue: _FakePlatformWebViewWidget_3())
+          as _i5.PlatformWebViewWidget);
   @override
   String toString() => super.toString();
 }

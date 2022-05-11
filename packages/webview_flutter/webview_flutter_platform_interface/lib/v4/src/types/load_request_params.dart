@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 
-import '../webview_controller_delegate.dart';
+import '../platform_webview_controller.dart';
 
-/// Defines the supported HTTP methods for loading a page in [WebViewControllerDelegate].
+/// Defines the supported HTTP methods for loading a page in [PlatformWebViewController].
 enum LoadRequestMethod {
   /// HTTP GET method.
   get,
@@ -29,7 +30,7 @@ extension LoadRequestMethodExtensions on LoadRequestMethod {
   }
 }
 
-/// Defines the parameters that can be used to load a page with the [WebViewControllerDelegate].
+/// Defines the parameters that can be used to load a page with the [PlatformWebViewController].
 ///
 /// Platform specific implementations can add additional fields by extending
 /// this class.

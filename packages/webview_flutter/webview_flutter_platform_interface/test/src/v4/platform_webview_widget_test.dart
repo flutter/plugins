@@ -6,9 +6,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_controller_delegate.dart';
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart';
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_widget.dart';
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_widget_delegate.dart';
 
 import 'webview_platform_test.mocks.dart';
 
@@ -20,36 +20,36 @@ void main() {
   test('Cannot be implemented with `implements`', () {
     final MockWebViewControllerDelegate controller =
         MockWebViewControllerDelegate();
-    final WebViewWidgetCreationParams params =
-        WebViewWidgetCreationParams(controller: controller);
+    final PlatformWebViewWidgetCreationParams params =
+        PlatformWebViewWidgetCreationParams(controller: controller);
     when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
         .thenReturn(ImplementsWebViewWidgetDelegate());
 
     expect(() {
-      WebViewWidgetDelegate(params);
+      PlatformWebViewWidget(params);
     }, throwsNoSuchMethodError);
   });
 
   test('Can be extended', () {
     final MockWebViewControllerDelegate controller =
         MockWebViewControllerDelegate();
-    final WebViewWidgetCreationParams params =
-        WebViewWidgetCreationParams(controller: controller);
+    final PlatformWebViewWidgetCreationParams params =
+        PlatformWebViewWidgetCreationParams(controller: controller);
     when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
         .thenReturn(ExtendsWebViewWidgetDelegate(params));
 
-    expect(WebViewWidgetDelegate(params), isNotNull);
+    expect(PlatformWebViewWidget(params), isNotNull);
   });
 
   test('Can be mocked with `implements`', () {
     final MockWebViewControllerDelegate controller =
         MockWebViewControllerDelegate();
-    final WebViewWidgetCreationParams params =
-        WebViewWidgetCreationParams(controller: controller);
+    final PlatformWebViewWidgetCreationParams params =
+        PlatformWebViewWidgetCreationParams(controller: controller);
     when(WebViewPlatform.instance!.createWebViewWidgetDelegate(params))
         .thenReturn(MockWebViewWidgetDelegate());
 
-    expect(WebViewWidgetDelegate(params), isNotNull);
+    expect(PlatformWebViewWidget(params), isNotNull);
   });
 }
 
@@ -58,7 +58,7 @@ class MockWebViewPlatformWithMixin extends MockWebViewPlatform
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin {}
 
-class ImplementsWebViewWidgetDelegate implements WebViewWidgetDelegate {
+class ImplementsWebViewWidgetDelegate implements PlatformWebViewWidget {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -68,10 +68,10 @@ class MockWebViewWidgetDelegate extends Mock
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        WebViewWidgetDelegate {}
+        PlatformWebViewWidget {}
 
-class ExtendsWebViewWidgetDelegate extends WebViewWidgetDelegate {
-  ExtendsWebViewWidgetDelegate(WebViewWidgetCreationParams params)
+class ExtendsWebViewWidgetDelegate extends PlatformWebViewWidget {
+  ExtendsWebViewWidgetDelegate(PlatformWebViewWidgetCreationParams params)
       : super.implementation(params);
 
   @override
@@ -86,4 +86,4 @@ class MockWebViewControllerDelegate extends Mock
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        WebViewControllerDelegate {}
+        PlatformWebViewController {}

@@ -14,26 +14,29 @@ import 'webview_platform.dart';
 /// The [WebViewControllerDelegate] is notifying this delegate on events that
 /// happened on the platform's webview. Platform implementations should
 /// implement this class and pass an instance to the [WebViewControllerDelegate].
-abstract class NavigationCallbackDelegate extends PlatformInterface {
-  /// Creates a new [NavigationCallbackDelegate]
-  factory NavigationCallbackDelegate(NavigationCallbackCreationParams params) {
-    final NavigationCallbackDelegate callbackDelegate =
-        WebViewPlatform.instance!.createNavigationCallbackDelegate(params);
+abstract class PlatformNavigationCallbackDelegate extends PlatformInterface {
+  /// Creates a new [PlatformNavigationCallbackDelegate]
+  factory PlatformNavigationCallbackDelegate(
+      PlatformNavigationCallbackDelegateCreationParams params) {
+    final PlatformNavigationCallbackDelegate callbackDelegate = WebViewPlatform
+        .instance!
+        .createPlatformNavigationCallbackDelegate(params);
     PlatformInterface.verify(callbackDelegate, _token);
     return callbackDelegate;
   }
 
-  /// Used by the platform implementation to create a new [NavigationCallbackDelegate].
+  /// Used by the platform implementation to create a new [PlatformNavigationCallbackDelegate].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  NavigationCallbackDelegate.implementation(this.params) : super(token: _token);
+  PlatformNavigationCallbackDelegate.implementation(this.params)
+      : super(token: _token);
 
   static final Object _token = Object();
 
-  /// The parameters used to initialize the [NavigationCallbackDelegate].
-  final NavigationCallbackCreationParams params;
+  /// The parameters used to initialize the [PlatformNavigationCallbackDelegate].
+  final PlatformNavigationCallbackDelegateCreationParams params;
 
   /// Invoked when a navigation request is pending.
   ///

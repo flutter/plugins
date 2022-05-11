@@ -8,8 +8,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'navigation_callback_delegate.dart';
-import 'types/types.dart';
+import 'platform_navigation_callback_delegate.dart';
 import 'webview_platform.dart';
 
 /// Interface for a platform implementation of a web view controller.
@@ -20,25 +19,25 @@ import 'webview_platform.dart';
 /// will get the default implementation, while platform implementations that
 /// `implements` this interface will be broken by newly added
 /// [WebViewCookieManagerDelegate] methods.
-abstract class WebViewControllerDelegate extends PlatformInterface {
-  /// Creates a new [WebViewControllerDelegate]
-  factory WebViewControllerDelegate(WebViewControllerCreationParams params) {
-    final WebViewControllerDelegate webViewControllerDelegate =
-        WebViewPlatform.instance!.createWebViewControllerDelegate(params);
+abstract class PlatformWebViewController extends PlatformInterface {
+  /// Creates a new [PlatformWebViewController]
+  factory PlatformWebViewController(WebViewControllerCreationParams params) {
+    final PlatformWebViewController webViewControllerDelegate =
+        WebViewPlatform.instance!.createPlatformWebViewController(params);
     PlatformInterface.verify(webViewControllerDelegate, _token);
     return webViewControllerDelegate;
   }
 
-  /// Used by the platform implementation to create a new [WebViewControllerDelegate].
+  /// Used by the platform implementation to create a new [PlatformWebViewController].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  WebViewControllerDelegate.implementation(this.params) : super(token: _token);
+  PlatformWebViewController.implementation(this.params) : super(token: _token);
 
   static final Object _token = Object();
 
-  /// The parameters used to initialize the [WebViewControllerDelegate].
+  /// The parameters used to initialize the [PlatformWebViewController].
   final WebViewControllerCreationParams params;
 
   /// Loads the file located on the specified [absoluteFilePath].
@@ -160,7 +159,7 @@ abstract class WebViewControllerDelegate extends PlatformInterface {
   /// Sets the [NavigationCallbackDelegate] containing the callback methods that
   /// are called during navigation events.
   Future<void> setNavigationCallbackDelegate(
-      NavigationCallbackDelegate handler) {
+      PlatformNavigationCallbackDelegate handler) {
     throw UnimplementedError(
         'setNavigationCallbackDelegate is not implemented on the current platform');
   }

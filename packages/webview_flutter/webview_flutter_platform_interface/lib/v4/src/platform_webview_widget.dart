@@ -2,34 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'webview_platform.dart';
 
 /// Interface for a platform implementation of a web view widget.
-abstract class WebViewWidgetDelegate extends PlatformInterface {
-  /// Creates a new [WebViewWidgetDelegate]
-  factory WebViewWidgetDelegate(WebViewWidgetCreationParams params) {
-    final WebViewWidgetDelegate webViewWidgetDelegate =
+abstract class PlatformWebViewWidget extends PlatformInterface {
+  /// Creates a new [PlatformWebViewWidget]
+  factory PlatformWebViewWidget(PlatformWebViewWidgetCreationParams params) {
+    final PlatformWebViewWidget webViewWidgetDelegate =
         WebViewPlatform.instance!.createWebViewWidgetDelegate(params);
     PlatformInterface.verify(webViewWidgetDelegate, _token);
     return webViewWidgetDelegate;
   }
 
   /// Used by the platform implementation to create a new
-  /// [WebViewWidgetDelegate].
+  /// [PlatformWebViewWidget].
   ///
   /// Should only be used by platform implementations because they can't extend
   /// a class that only contains a factory constructor.
   @protected
-  WebViewWidgetDelegate.implementation(this.params) : super(token: _token);
+  PlatformWebViewWidget.implementation(this.params) : super(token: _token);
 
   static final Object _token = Object();
 
-  /// The parameters used to initialize the [WebViewWidgetDelegate].
-  final WebViewWidgetCreationParams params;
+  /// The parameters used to initialize the [PlatformWebViewWidget].
+  final PlatformWebViewWidgetCreationParams params;
 
   /// Builds a new WebView.
   ///

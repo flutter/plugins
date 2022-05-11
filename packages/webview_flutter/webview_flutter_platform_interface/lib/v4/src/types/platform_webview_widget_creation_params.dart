@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 
-import '../webview_controller_delegate.dart';
+import '../platform_webview_controller.dart';
 
 /// Object specifying creation parameters for creating a [WebViewWidgetDelegate].
 ///
@@ -13,19 +13,19 @@ import '../webview_controller_delegate.dart';
 /// this class.
 ///
 /// {@tool sample}
-/// This example demonstrates how to extend the [WebViewWidgetCreationParams] to
+/// This example demonstrates how to extend the [PlatformWebViewWidgetCreationParams] to
 /// provide additional platform specific parameters.
 ///
-/// When extending [WebViewWidgetCreationParams] additional parameters
+/// When extending [PlatformWebViewWidgetCreationParams] additional parameters
 /// should always accept `null` or have a default value to prevent breaking
 /// changes.
 ///
 /// ```dart
-/// class WKWebViewWidgetCreationParams extends WebViewWidgetCreationParams {
+/// class WKWebViewWidgetCreationParams extends PlatformWebViewWidgetCreationParams {
 ///   WKWebViewWidgetCreationParams._(
 ///     // This parameter prevents breaking changes later.
 ///     // ignore: avoid_unused_constructor_parameters
-///     WebViewWidgetCreationParams params, {
+///     PlatformWebViewWidgetCreationParams params, {
 ///     this.domain,
 ///   }) : super(
 ///           key: params.key,
@@ -33,8 +33,8 @@ import '../webview_controller_delegate.dart';
 ///           gestureRecognizers: params.gestureRecognizers,
 ///         );
 ///
-///   factory WKWebViewWidgetCreationParams.fromWebViewWidgetCreationParams(
-///     WebViewWidgetCreationParams params, {
+///   factory WKWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
+///     PlatformWebViewWidgetCreationParams params, {
 ///     String? domain,
 ///   }) {
 ///     return WKWebViewWidgetCreationParams._(params, domain: domain);
@@ -45,9 +45,9 @@ import '../webview_controller_delegate.dart';
 /// ```
 /// {@end-tool}
 @immutable
-class WebViewWidgetCreationParams {
-  /// Used by the platform implementation to create a new [WebViewWidgetDelegate].
-  const WebViewWidgetCreationParams({
+class PlatformWebViewWidgetCreationParams {
+  /// Used by the platform implementation to create a new [PlatformWebViewWidgetDelegate].
+  const PlatformWebViewWidgetCreationParams({
     this.key,
     required this.controller,
     this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
@@ -60,9 +60,9 @@ class WebViewWidgetCreationParams {
   ///  * The discussions at [Key] and [GlobalKey].
   final Key? key;
 
-  /// The [WebViewControllerDelegate] that allows controlling the native web
+  /// The [PlatformWebViewController] that allows controlling the native web
   /// view.
-  final WebViewControllerDelegate controller;
+  final PlatformWebViewController controller;
 
   /// The `gestureRecognizers` specifies which gestures should be consumed by the
   /// web view.

@@ -4,31 +4,31 @@
 
 import 'package:flutter/material.dart';
 
-/// Object specifying creation parameters for creating a [WebViewCookieManagerDelegate].
+/// Object specifying creation parameters for creating a [PlatformWebViewCookieManager].
 ///
 /// Platform specific implementations can add additional fields by extending
 /// this class.
 ///
 /// {@tool sample}
-/// This example demonstrates how to extend the [WebViewCookieManagerCreationParams] to
+/// This example demonstrates how to extend the [PlatformWebViewCookieManagerCreationParams] to
 /// provide additional platform specific parameters.
 ///
-/// When extending [WebViewCookieManagerCreationParams] additional
+/// When extending [PlatformWebViewCookieManagerCreationParams] additional
 /// parameters should always accept `null` or have a default value to prevent
 /// breaking changes.
 ///
 /// ```dart
 /// class WKWebViewCookieManagerCreationParams
-///     extends WebViewCookieManagerCreationParams {
+///     extends PlatformWebViewCookieManagerCreationParams {
 ///   WKWebViewCookieManagerCreationParams._(
 ///     // This parameter prevents breaking changes later.
 ///     // ignore: avoid_unused_constructor_parameters
-///     WebViewCookieManagerCreationParams params, {
+///     PlatformWebViewCookieManagerCreationParams params, {
 ///     this.uri,
 ///   }) : super();
 ///
-///   factory WKWebViewCookieManagerCreationParams.fromWebViewCookieManagerCreationParams(
-///     WebViewCookieManagerCreationParams params, {
+///   factory WKWebViewCookieManagerCreationParams.fromPlatformWebViewCookieManagerCreationParams(
+///     PlatformWebViewCookieManagerCreationParams params, {
 ///     Uri? uri,
 ///   }) {
 ///     return WKWebViewCookieManagerCreationParams._(params, uri: uri);
@@ -39,7 +39,7 @@ import 'package:flutter/material.dart';
 /// ```
 /// {@end-tool}
 @immutable
-class WebViewCookieManagerCreationParams {
-  /// Used by the platform implementation to create a new [WebViewCookieManagerDelegate].
-  const WebViewCookieManagerCreationParams();
+class PlatformWebViewCookieManagerCreationParams {
+  /// Used by the platform implementation to create a new [PlatformWebViewCookieManagerDelegate].
+  const PlatformWebViewCookieManagerCreationParams();
 }

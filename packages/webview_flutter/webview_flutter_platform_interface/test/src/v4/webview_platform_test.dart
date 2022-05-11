@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:webview_flutter_platform_interface/v4/src/webview_controller_delegate.dart';
+import 'package:webview_flutter_platform_interface/v4/src/platform_webview_controller.dart';
 import 'package:webview_flutter_platform_interface/v4/src/webview_platform.dart';
 
 import 'webview_platform_test.mocks.dart';
@@ -41,8 +41,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform.createCookieManagerDelegate(
-          const WebViewCookieManagerCreationParams()),
+      () => webViewPlatform.createPlatformCookieManager(
+          const PlatformWebViewCookieManagerCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -54,8 +54,8 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform.createNavigationCallbackDelegate(
-          const NavigationCallbackCreationParams()),
+      () => webViewPlatform.createPlatformNavigationCallbackDelegate(
+          const PlatformNavigationCallbackDelegateCreationParams()),
       throwsUnimplementedError,
     );
   });
@@ -67,7 +67,7 @@ void main() {
     final WebViewPlatform webViewPlatform = ExtendsWebViewPlatform();
 
     expect(
-      () => webViewPlatform.createWebViewControllerDelegate(
+      () => webViewPlatform.createPlatformWebViewController(
           const WebViewControllerCreationParams()),
       throwsUnimplementedError,
     );
@@ -83,7 +83,7 @@ void main() {
 
     expect(
       () => webViewPlatform.createWebViewWidgetDelegate(
-          WebViewWidgetCreationParams(controller: controller)),
+          PlatformWebViewWidgetCreationParams(controller: controller)),
       throwsUnimplementedError,
     );
   });
@@ -106,4 +106,4 @@ class MockWebViewControllerDelegate extends Mock
         // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
-        WebViewControllerDelegate {}
+        PlatformWebViewController {}
