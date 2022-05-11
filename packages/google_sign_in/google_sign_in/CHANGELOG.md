@@ -1,6 +1,6 @@
 ## 5.3.2
 
-* Adds `forceCodeForRefreshToken` parameter to `GoogleSignIn`.
+* Adds override for `GoogleSignInPlatform.initWithParams`.
 
 ## 5.3.1
 
