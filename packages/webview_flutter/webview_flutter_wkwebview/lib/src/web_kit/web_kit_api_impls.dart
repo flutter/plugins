@@ -537,27 +537,19 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKNavigationDelegate instance) async {
+  Future<void> createForInstances(
+    WKNavigationDelegate instance,
+    void Function(WKWebView webView, String? url)? didFinishNavigation,
+  ) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      await create(instanceId);
+      await create(
+        instanceId,
+        didFinishNavigation != null
+            ? _getOrAddFunctionInstanceId(instanceManager, didFinishNavigation)
+            : null,
+      );
     }
-  }
-
-  /// Calls [setDidFinishNavigation] with the ids of the provided object instances.
-  Future<void> setDidFinishNavigationFromInstance(
-    WKNavigationDelegate instance,
-    void Function(WKWebView, String?)? didFinishNavigation,
-  ) {
-    int? functionInstanceId;
-    if (didFinishNavigation != null) {
-      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation) ??
-          instanceManager.tryAddInstance(didFinishNavigation)!;
-    }
-    return setDidFinishNavigation(
-      instanceManager.getInstanceId(instance)!,
-      functionInstanceId,
-    );
   }
 }
 
@@ -749,4 +741,12 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
       delegate != null ? instanceManager.getInstanceId(delegate)! : null,
     );
   }
+}
+
+int _getOrAddFunctionInstanceId(
+  InstanceManager instanceManager,
+  Function function,
+) {
+  return instanceManager.getInstanceId(function) ??
+      instanceManager.tryAddInstance(function)!;
 }

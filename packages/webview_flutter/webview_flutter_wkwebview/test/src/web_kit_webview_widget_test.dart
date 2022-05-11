@@ -64,8 +64,9 @@ void main() {
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
       when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
-      when(mockWebViewWidgetProxy.createNavigationDelegate())
-          .thenReturn(mockNavigationDelegate);
+      when(mockWebViewWidgetProxy.createNavigationDelegate(
+        didFinishNavigation: anyNamed('didFinishNavigation'),
+      )).thenReturn(mockNavigationDelegate);
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
@@ -919,9 +920,9 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFinishNavigation =
-            verify(mockNavigationDelegate.setDidFinishNavigation(captureAny))
-                .captured
-                .single as void Function(WKWebView, String);
+            verify(mockWebViewWidgetProxy.createNavigationDelegate(
+          didFinishNavigation: captureAnyNamed('didFinishNavigation'),
+        )).captured.single as void Function(WKWebView, String);
         didFinishNavigation(mockWebView, 'https://google.com');
 
         verify(mockCallbacksHandler.onPageFinished('https://google.com'));

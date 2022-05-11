@@ -378,13 +378,8 @@ abstract class WKScriptMessageHandlerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKNavigationDelegateHostApi')
 abstract class WKNavigationDelegateHostApi {
-  @ObjCSelector('createWithIdentifier:')
-  void create(int instanceId);
-
-  @ObjCSelector(
-    'setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:',
-  )
-  void setDidFinishNavigation(int instanceId, int? functionInstanceId);
+  @ObjCSelector('createWithIdentifier:didFinishNavigationIdentifier:')
+  void create(int instanceId, int? didFinishNavigationInstanceId);
 }
 
 /// Mirror of WKNavigationDelegate.
@@ -393,7 +388,7 @@ abstract class WKNavigationDelegateHostApi {
 @FlutterApi()
 abstract class WKNavigationDelegateFlutterApi {
   @ObjCSelector(
-    'didFinishNavigationForDelegateWithIdentifier:webViewIdentifier:URL:',
+    'didFinishNavigationFunctionWithIdentifier:webViewIdentifier:URL:',
   )
   void didFinishNavigation(
     int functionInstanceId,

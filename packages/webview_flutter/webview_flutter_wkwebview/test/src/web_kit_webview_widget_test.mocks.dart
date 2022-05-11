@@ -139,13 +139,6 @@ class MockWKNavigationDelegate extends _i1.Mock
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
-  _i5.Future<void> setDidFinishNavigation(
-          void Function(_i3.WKWebView, String?)? didFinishNavigation) =>
-      (super.noSuchMethod(
-          Invocation.method(#setDidFinishNavigation, [didFinishNavigation]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
-  @override
   _i5.Future<void> setDecidePolicyForNavigationAction(
           _i5.Future<_i3.WKNavigationActionPolicy> Function(
                   _i3.WKWebView, _i3.WKNavigationAction)?
@@ -578,7 +571,11 @@ class MockWebViewWidgetProxy extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#createUIDelgate, []),
           returnValue: _FakeWKUIDelegate_9()) as _i3.WKUIDelegate);
   @override
-  _i3.WKNavigationDelegate createNavigationDelegate() => (super.noSuchMethod(
-      Invocation.method(#createNavigationDelegate, []),
-      returnValue: _FakeWKNavigationDelegate_10()) as _i3.WKNavigationDelegate);
+  _i3.WKNavigationDelegate createNavigationDelegate(
+          {void Function(_i3.WKWebView, String?)? didFinishNavigation}) =>
+      (super.noSuchMethod(
+              Invocation.method(#createNavigationDelegate, [],
+                  {#didFinishNavigation: didFinishNavigation}),
+              returnValue: _FakeWKNavigationDelegate_10())
+          as _i3.WKNavigationDelegate);
 }

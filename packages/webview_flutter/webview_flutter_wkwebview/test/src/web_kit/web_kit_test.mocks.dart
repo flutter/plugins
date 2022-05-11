@@ -53,14 +53,10 @@ class MockTestWKNavigationDelegateHostApi extends _i1.Mock
   }
 
   @override
-  void create(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#create, [instanceId]),
-          returnValueForMissingStub: null);
-  @override
-  void setDidFinishNavigation(int? instanceId, int? functionInstanceId) =>
+  void create(int? instanceId, int? didFinishNavigationInstanceId) =>
       super.noSuchMethod(
           Invocation.method(
-              #setDidFinishNavigation, [instanceId, functionInstanceId]),
+              #create, [instanceId, didFinishNavigationInstanceId]),
           returnValueForMissingStub: null);
 }
 
@@ -311,9 +307,9 @@ class MockTestWKWebsiteDataStoreHostApi extends _i1.Mock
   _i3.Future<bool> removeDataOfTypes(
           int? instanceId,
           List<_i4.WKWebsiteDataTypeEnumData?>? dataTypes,
-          double? secondsModifiedSinceEpoch) =>
+          double? modificationTimeInSecondsSinceEpoch) =>
       (super.noSuchMethod(
           Invocation.method(#removeDataOfTypes,
-              [instanceId, dataTypes, secondsModifiedSinceEpoch]),
+              [instanceId, dataTypes, modificationTimeInSecondsSinceEpoch]),
           returnValue: Future<bool>.value(false)) as _i3.Future<bool>);
 }

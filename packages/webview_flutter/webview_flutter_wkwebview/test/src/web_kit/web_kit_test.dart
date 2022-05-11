@@ -438,23 +438,28 @@ void main() {
       });
 
       test('create', () async {
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+        );
+
         verify(mockPlatformHostApi.create(
           instanceManager.getInstanceId(navigationDelegate),
+          null,
         ));
       });
 
-      test('setDidFinishNavigation', () async {
+      test('didFinishNavigation', () async {
         final Completer<List<Object?>> argsCompleter =
             Completer<List<Object?>>();
 
-        navigationDelegate.setDidFinishNavigation(
-          (WKWebView webView, String? url) {
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didFinishNavigation: (WKWebView webView, String? url) {
             argsCompleter.complete(<Object?>[webView, url]);
           },
         );
 
-        final int functionInstanceId =
-            verify(mockPlatformHostApi.setDidFinishNavigation(
+        final int functionInstanceId = verify(mockPlatformHostApi.create(
           instanceManager.getInstanceId(navigationDelegate),
           captureAny,
         )).captured.single as int;
