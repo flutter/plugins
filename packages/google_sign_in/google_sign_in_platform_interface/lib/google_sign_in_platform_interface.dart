@@ -77,9 +77,6 @@ abstract class GoogleSignInPlatform {
   /// The [signInOption] determines the user experience. [SigninOption.games] is
   /// only supported on Android.
   ///
-  /// This method is deprecated in favor of [initWithForceFodeForRefreshToken] and
-  /// will be removed in a future update.
-  ///
   /// See:
   /// https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams
   Future<void> init({

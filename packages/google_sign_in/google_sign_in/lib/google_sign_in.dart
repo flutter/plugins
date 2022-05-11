@@ -238,7 +238,6 @@ class GoogleSignIn {
   /// Force the authorization code to be valid for a refresh token every time. Only needed on Android.
   final bool forceCodeForRefreshToken;
 
-  StreamController<GoogleSignInAccount?> _currentUserController =
   final StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
 
@@ -268,17 +267,17 @@ class GoogleSignIn {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??=
-        GoogleSignInPlatform.instance.initWithForceCodeForRefreshToken(
-      signInOption: signInOption,
-      scopes: scopes,
-      hostedDomain: hostedDomain,
-      clientId: clientId,
-      forceCodeForRefreshToken: forceCodeForRefreshToken,
-    )..catchError((dynamic _) {
-            // Invalidate initialization if it errors out.
-            _initialization = null;
-          });
+    return _initialization ??= GoogleSignInPlatform.instance.initWithParams(
+        SignInInitParameters(
+            signInOption: signInOption,
+            scopes: scopes,
+            hostedDomain: hostedDomain,
+            clientId: clientId,
+            forceCodeForRefreshToken: forceCodeForRefreshToken))
+      ..catchError((dynamic _) {
+        // Invalidate initialization if it errors out.
+        _initialization = null;
+      });
   }
 
   /// The most recently scheduled method call.

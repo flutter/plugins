@@ -104,7 +104,7 @@ void main() {
     });
 
     test('forceCodeForRefreshToken sent with init method call', () async {
-      final fakeClientId = 'fakeClientId';
+      const String fakeClientId = 'fakeClientId';
       googleSignIn =
           GoogleSignIn(clientId: fakeClientId, forceCodeForRefreshToken: true);
       await googleSignIn.signIn();

@@ -116,10 +116,10 @@ void main() {
   test('Other functions pass through arguments to the channel', () async {
     final Map<Function, Matcher> tests = <Function, Matcher>{
       () {
-        googleSignIn.init(
+        googleSignIn.initWithParams(const SignInInitParameters(
             hostedDomain: 'example.com',
             scopes: <String>['two', 'scopes'],
-            clientId: 'fakeClientId');
+            clientId: 'fakeClientId'));
       }: isMethodCall('init', arguments: <String, dynamic>{
         'hostedDomain': 'example.com',
         'scopes': <String>['two', 'scopes'],
