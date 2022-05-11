@@ -88,11 +88,8 @@ abstract class GoogleSignInPlatform {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// Initializes the plugin with [params]. You must call this method before
-  /// calling other methods.
-  ///
-  /// The [params] argument specifies the parameters that will be used to
-  /// initialize the plugin.
+  /// Initializes the plugin with specified [params]. You must call this method
+  /// before calling other methods.
   ///
   /// See:
   ///
