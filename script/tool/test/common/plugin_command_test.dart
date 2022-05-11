@@ -162,7 +162,7 @@ void main() {
       expect(command.plugins, unorderedEquals(<String>[plugin2.path]));
     });
 
-    test('exclude packages when packages flag isn\'t specified', () async {
+    test("exclude packages when packages flag isn't specified", () async {
       createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
       await runCapturingPrint(

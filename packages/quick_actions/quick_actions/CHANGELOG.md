@@ -1,3 +1,7 @@
+## NEXT
+
+* Minor fixes for new analysis options.
+
 ## 0.6.0+11
 
 * Removes unnecessary imports.

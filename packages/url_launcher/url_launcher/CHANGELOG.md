@@ -1,3 +1,7 @@
+## 6.1.2
+
+* Minor fixes for new analysis options.
+
 ## 6.1.1
 
 * Removes unnecessary imports.
