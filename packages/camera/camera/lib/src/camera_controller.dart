@@ -359,8 +359,8 @@ class CameraController extends ValueNotifier<CameraValue> {
       await CameraPlatform.instance.pausePreview(_cameraId);
       value = value.copyWith(
           isPreviewPaused: true,
-          previewPauseOrientation:
-              Optional<DeviceOrientation>.of(value.deviceOrientation));
+          previewPauseOrientation: Optional<DeviceOrientation>.of(
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -520,7 +520,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       value = value.copyWith(
           isRecordingVideo: true,
           isRecordingPaused: false,
-          recordingOrientation: Optional<DeviceOrientation>.fromNullable(
+          recordingOrientation: Optional<DeviceOrientation>.of(
               value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -762,7 +762,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       await CameraPlatform.instance.lockCaptureOrientation(
           _cameraId, orientation ?? value.deviceOrientation);
       value = value.copyWith(
-          lockedCaptureOrientation: Optional<DeviceOrientation>.fromNullable(
+          lockedCaptureOrientation: Optional<DeviceOrientation>.of(
               orientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
