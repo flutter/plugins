@@ -685,7 +685,26 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .then((double value) => _minAvailableZoom = value),
       ]);
     } on CameraException catch (e) {
-      _showCameraException(e);
+      switch (e.code) {
+        case 'CameraAccessDenied':
+          showInSnackBar('You have denied camera access.');
+          break;
+        case 'CameraAccessDeniedWithoutPrompt':
+          // iOS only
+          showInSnackBar('Please go to Settings app to enable camera access.');
+          break;
+        case 'CameraAccessRestricted':
+          // iOS only
+          showInSnackBar('Camera access is restricted.');
+          break;
+        case 'cameraPermission':
+          // Android & web only
+          showInSnackBar('Legacy error code for all kinds of permission errors');
+          break;
+        default:
+          _showCameraException(e);
+          break;
+      }
     }
 
     if (mounted) {
