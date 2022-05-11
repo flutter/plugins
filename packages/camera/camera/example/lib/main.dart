@@ -699,7 +699,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           break;
         case 'cameraPermission':
           // Android & web only
-          showInSnackBar('Legacy error code for all kinds of permission errors');
+          showInSnackBar(
+              'Legacy error code for all kinds of permission errors');
           break;
         default:
           _showCameraException(e);
