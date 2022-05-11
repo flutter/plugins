@@ -12,6 +12,9 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened, closed]
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   label:
     permissions:

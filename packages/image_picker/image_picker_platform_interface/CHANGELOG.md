@@ -4,7 +4,8 @@
     * Adds `requestFullMetadata` option that allows disabling extra permission requests
       on certain platforms.
     * Moves optional image picking parameters to `ImagePickerOptions` class.
-  
+* Minor fixes for new analysis options. 
+
 ## 2.4.4
 
 * Internal code cleanup for stricter analysis options.
