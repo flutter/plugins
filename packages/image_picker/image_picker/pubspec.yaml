@@ -29,6 +29,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.1.10
+  cross_file: ^0.3.1+1 # Mockito generates a direct include.
   flutter_test:
     sdk: flutter
   mockito: ^5.0.0
