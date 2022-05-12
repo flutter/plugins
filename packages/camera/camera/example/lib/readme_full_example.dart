@@ -36,6 +36,15 @@ class _CameraAppState extends State<CameraApp> {
         return;
       }
       setState(() {});
+    }).catchError((e) {
+      switch (e.code) {
+        case 'CameraAccessDenied':
+          print('User denied camera access.');
+          break;
+        default:
+          print('Handle other errors.');
+          break;
+      }
     });
   }
 
