@@ -189,6 +189,7 @@
   XCTAssertNotNil(player);
 
   XCTestExpectation *initializedExpectation = [self expectationWithDescription:@"initialized"];
+  initializedExpectation.assertForOverFulfill = false;
   __block NSDictionary<NSString *, id> *initializationEvent;
   [player onListenWithArguments:nil
                       eventSink:^(id event) {
