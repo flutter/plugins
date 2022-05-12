@@ -171,12 +171,6 @@ void main() {
           await picker.getVideo(
               source: ImageSource.camera,
               maxDuration: const Duration(seconds: 10));
-          await picker.getVideo(
-              source: ImageSource.camera,
-              maxDuration: const Duration(minutes: 1));
-          await picker.getVideo(
-              source: ImageSource.camera,
-              maxDuration: const Duration(hours: 1));
 
           verifyInOrder(<Object>[
             mockPlatform.pickVideo(
