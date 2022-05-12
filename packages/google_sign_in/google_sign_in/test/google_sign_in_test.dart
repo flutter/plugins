@@ -453,6 +453,6 @@ Matcher _isSignInMethodCall({String signInOption = 'SignInOption.standard'}) {
     'scopes': <String>[],
     'hostedDomain': null,
     'clientId': null,
-    'forceCodeForRefreshToken': false
+    'forceCodeForRefreshToken': false,
   });
 }

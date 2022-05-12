@@ -1,6 +1,7 @@
 ## 5.3.2
 
 * Adds override for `GoogleSignInPlatform.initWithParams`.
+* Fixes tests to recognize new default `forceCodeForRefreshToken` request attribute.
 
 ## 5.3.1
 
