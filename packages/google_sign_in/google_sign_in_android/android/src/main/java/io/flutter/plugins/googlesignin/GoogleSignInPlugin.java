@@ -42,8 +42,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import android.content.res.Resources;
-import android.util.Log;
 
 /** Google sign-in plugin for Flutter. */
 public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
@@ -260,26 +258,25 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   }
 
   /**
-   * Factory class that generates the GoogleSignInOptions.Builder. This is exposed so that tests
-   * can inject a mock instance of the GoogleSignInOptions.Builder.
+   * Factory class that generates the GoogleSignInOptions.Builder. This is exposed so that tests can
+   * inject a mock instance of the GoogleSignInOptions.Builder.
    */
   public static class OptionsBuilderFactory {
     public static final String DEFAULT_SIGN_IN = "SignInOption.standard";
     public static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
 
-    /**
-     * Returns an instance of GoogleSignInOptions.Builder with the passed signInOption.
-     */
+    /** Returns an instance of GoogleSignInOptions.Builder with the passed signInOption. */
     public GoogleSignInOptions.Builder get(String signInOption) {
       switch (signInOption) {
-          case DEFAULT_GAMES_SIGN_IN:
-            return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        case DEFAULT_GAMES_SIGN_IN:
+          return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
 
-          case DEFAULT_SIGN_IN:
-            return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
-          default:
-            throw new IllegalStateException("Unknown signInOption");
-        }
+        case DEFAULT_SIGN_IN:
+          return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+              .requestEmail();
+        default:
+          throw new IllegalStateException("Unknown signInOption");
+      }
     }
   }
 
@@ -365,8 +362,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         return clientIdIdentifierOverride;
       }
       return context
-                .getResources()
-                .getIdentifier("default_web_client_id", "string", context.getPackageName());
+          .getResources()
+          .getIdentifier("default_web_client_id", "string", context.getPackageName());
     }
 
     /**

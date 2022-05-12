@@ -47,8 +47,10 @@ public class GoogleSignInTest {
     when(mockRegistrar.messenger()).thenReturn(mockMessenger);
     when(mockRegistrar.context()).thenReturn(mockContext);
     when(mockRegistrar.activity()).thenReturn(mockActivity);
-    when(optionsBuilderFactory.get(GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN)).thenReturn(optionsBuilder);
-    when(optionsBuilderFactory.get(GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_GAMES_SIGN_IN)).thenReturn(optionsBuilder);
+    when(optionsBuilderFactory.get(GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN))
+        .thenReturn(optionsBuilder);
+    when(optionsBuilderFactory.get(GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_GAMES_SIGN_IN))
+        .thenReturn(optionsBuilder);
     plugin = new GoogleSignInPlugin();
     plugin.initInstance(mockRegistrar.messenger(), mockRegistrar.context(), mockGoogleSignIn);
     plugin.setUpRegistrar(mockRegistrar);
