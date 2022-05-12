@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:yaml/yaml.dart';
 
@@ -37,7 +36,6 @@ bool pluginSupportsPlatform(
   String platform,
   RepositoryPackage plugin, {
   PlatformSupport? requiredMode,
-  String? variant,
 }) {
   assert(platform == platformIOS ||
       platform == platformAndroid ||
@@ -58,26 +56,6 @@ bool pluginSupportsPlatform(
     final bool federated = platformEntry.containsKey('default_package');
     if (federated != (requiredMode == PlatformSupport.federated)) {
       return false;
-    }
-  }
-
-  // If a variant is specified, check for that variant.
-  if (variant != null) {
-    const String variantsKey = 'supportedVariants';
-    if (platformEntry.containsKey(variantsKey)) {
-      if (!(platformEntry['supportedVariants']! as YamlList)
-          .contains(variant)) {
-        return false;
-      }
-    } else {
-      // Platforms with variants have a default variant when unspecified for
-      // backward compatibility. Must match the flutter tool logic.
-      const Map<String, String> defaultVariants = <String, String>{
-        platformWindows: platformVariantWin32,
-      };
-      if (variant != defaultVariants[platform]) {
-        return false;
-      }
     }
   }
 
@@ -132,13 +110,8 @@ YamlMap? _readPlatformPubspecSectionForPlugin(
 /// section from [plugin]'s pubspec.yaml, or null if either it is not present,
 /// or the pubspec couldn't be read.
 YamlMap? _readPluginPubspecSection(RepositoryPackage package) {
-  final File pubspecFile = package.pubspecFile;
-  if (!pubspecFile.existsSync()) {
-    return null;
-  }
-  final YamlMap pubspecYaml =
-      loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
-  final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
+  final Pubspec pubspec = package.parsePubspec();
+  final Map<String, dynamic>? flutterSection = pubspec.flutter;
   if (flutterSection == null) {
     return null;
   }

@@ -259,14 +259,16 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
-  /// The `options` argument controls additional settings that can be used when picking an image. See [ImagePickerOptions]
-  /// for more details.
+  /// The `options` argument controls additional settings that can be used when
+  /// picking an image. See [ImagePickerOptions] for more details.
   ///
-  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
-  /// in addition to a size modification, of which the usage is explained in [ImagePickerOptions].
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and
+  /// above only support HEIC images if used in addition to a size modification,
+  /// of which the usage is explained in [ImagePickerOptions].
   ///
-  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
-  /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  /// In Android, the MainActivity can be destroyed for various reasons. If that
+  /// happens, the result will be lost in this call. You can then call [getLostData]
+  /// when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
   Future<XFile?> getImageFromSource({

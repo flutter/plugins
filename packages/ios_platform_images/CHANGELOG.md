@@ -1,3 +1,13 @@
+## 0.2.0+7
+
+* Ignores the warning for the upcoming deprecation of `ImageProvider.load`.
+
+## 0.2.0+6
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 0.2.0+5
 
 * Migrates from `ui.hash*` to `Object.hash*`.

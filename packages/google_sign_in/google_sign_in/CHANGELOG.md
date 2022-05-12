@@ -1,3 +1,12 @@
+## NEXT
+
+* Fixes tests to recognize new default `forceCodeForRefreshToken` request attribute.
+
+## 5.3.1
+
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 5.3.0
 
 * Moves Android and iOS implementations to federated packages.

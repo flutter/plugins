@@ -1,7 +1,10 @@
 ## 2.5.0
 
-* Re-adds `requestFullMetadata` option, but as a parameter of a new `pickImageFromSource` 
-  method.
+* Deprecates `getImage` in favor of a new method `getImageFromSource`.
+    * Adds `requestFullMetadata` option that allows disabling extra permission requests
+      on certain platforms.
+    * Moves optional image picking parameters to `ImagePickerOptions` class.
+* Minor fixes for new analysis options. 
 
 ## 2.4.4
 
@@ -22,10 +25,10 @@
 
 ## 2.4.0
 
-* Add `requestFullMetadata` option to `pickImage`.
-  * To keep this non-breaking `requestFullMetadata` defaults to `true`, so the plugin tries
+* Add `forceFullMetadata` option to `pickImage`.
+  * To keep this non-breaking `forceFullMetadata` defaults to `true`, so the plugin tries
    to get the full image metadata which may require extra permission requests on certain platforms.
-  * If `requestFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces
+  * If `forceFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces
    permission requests from the platform (e.g on iOS the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
 
 ## 2.3.0
