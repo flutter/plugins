@@ -255,20 +255,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     switch (item.status) {
       case AVPlayerItemStatusFailed:
         if (_eventSink != nil) {
-          // DO NOT LAND. For debugging CI failures.
-          NSLog(@"AVPlayer error '%@' (%@ %ld) [%@]", item.error.localizedDescription,
-                item.error.domain, item.error.code, item.error.userInfo);
-          if (@available(iOS 14.5, *)) {
-            for (NSError *error in item.error.underlyingErrors) {
-              NSLog(@"- underlying error '%@' (%@ %ld) [%@]", error.localizedDescription,
-                    error.domain, error.code, error.userInfo);
-            }
-          }
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
                     message:[@"Failed to load video: "
                                 stringByAppendingString:[item.error localizedDescription]]
-                    details:nil]);
+                    details:[NSString
+                                stringWithFormat:@"%@:%ld", item.error.domain, item.error.code]]);
         }
         break;
       case AVPlayerItemStatusUnknown:
