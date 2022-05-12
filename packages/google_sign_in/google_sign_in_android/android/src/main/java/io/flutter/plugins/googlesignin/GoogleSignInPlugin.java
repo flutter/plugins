@@ -42,7 +42,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-
 /** Google sign-in plugin for Flutter. */
 public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
   private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in_android";
