@@ -9,11 +9,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Flutter api implementation for NSObject.
+ *
+ * Handles making callbacks to Dart for an NSObject.
+ */
 @interface FWFObjectFlutterApi : FWFNSObjectFlutterApi
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
+/**
+ * Implementation of NSObject for FWFObjectHostApiImpl.
+ */
 @interface FWFObject : NSObject
 @property(readonly, nonnull) FWFObjectFlutterApi *objectApi;
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger

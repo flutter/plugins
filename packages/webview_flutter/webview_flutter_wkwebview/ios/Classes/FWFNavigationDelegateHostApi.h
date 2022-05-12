@@ -11,6 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Flutter api implementation for WKNavigationDelegate.
+ *
+ * Handles making callbacks to Dart for a WKNavigationDelegate.
+ */
 @interface FWFNavigationDelegateFlutterApiImpl : FWFWKNavigationDelegateFlutterApi
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
