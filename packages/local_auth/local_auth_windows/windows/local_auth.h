@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include <UserConsentVerifierInterop.h>
-
-#include "include/local_auth_windows/local_auth_plugin.h"
-
-// This must be included before many other Windows headers.
 #include <flutter/encodable_value.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
 #include <pplawait.h>
 #include <ppltasks.h>
+
+#include "include/local_auth_windows/local_auth_plugin.h"
+
+// Include prior to C++/WinRT Headers
+#include <wil/cppwinrt.h>
 #include <windows.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Security.Credentials.UI.h>
@@ -24,19 +25,17 @@
 
 namespace local_auth_windows {
 
-using namespace flutter;
-using namespace winrt;
-
 class UserConsentVerifier {
  public:
   UserConsentVerifier() {}
   virtual ~UserConsentVerifier() = default;
 
-  virtual Windows::Foundation::IAsyncOperation<
-      Windows::Security::Credentials::UI::UserConsentVerificationResult>
-  RequestVerificationForWindowAsync(std::wstring localizedReason) = 0;
-  virtual Windows::Foundation::IAsyncOperation<
-      Windows::Security::Credentials::UI::UserConsentVerifierAvailability>
+  virtual winrt::Windows::Foundation::IAsyncOperation<
+      winrt::Windows::Security::Credentials::UI::UserConsentVerificationResult>
+  RequestVerificationForWindowAsync(std::wstring localized_reason) = 0;
+  virtual winrt::Windows::Foundation::IAsyncOperation<
+      winrt::Windows::Security::Credentials::UI::
+          UserConsentVerifierAvailability>
   CheckAvailabilityAsync() = 0;
 
   // Disallow copy and move.
@@ -44,16 +43,17 @@ class UserConsentVerifier {
   UserConsentVerifier& operator=(const UserConsentVerifier&) = delete;
 };
 
-class LocalAuthPlugin : public Plugin {
+class LocalAuthPlugin : public flutter::Plugin {
  public:
-  static void RegisterWithRegistrar(PluginRegistrarWindows* registrar);
+  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
   LocalAuthPlugin(std::function<HWND()> window_provider);
   LocalAuthPlugin(std::unique_ptr<UserConsentVerifier> user_consent_verifier);
 
   // Called when a method is called on this plugin's channel from Dart.
-  void HandleMethodCall(const MethodCall<EncodableValue>& method_call,
-                        std::unique_ptr<MethodResult<EncodableValue>> result);
+  void HandleMethodCall(
+      const flutter::MethodCall<flutter::EncodableValue>& method_call,
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
   virtual ~LocalAuthPlugin();
 
@@ -61,12 +61,12 @@ class LocalAuthPlugin : public Plugin {
   std::unique_ptr<UserConsentVerifier> user_consent_verifier_;
 
   winrt::fire_and_forget Authenticate(
-      const MethodCall<EncodableValue>& method_call,
-      std::unique_ptr<MethodResult<EncodableValue>> result);
-  winrt::fire_and_forget GetAvailableBiometrics(
-      std::unique_ptr<MethodResult<EncodableValue>> result);
+      const flutter::MethodCall<flutter::EncodableValue>& method_call,
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+  winrt::fire_and_forget GetEnrolledBiometrics(
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   winrt::fire_and_forget IsDeviceSupported(
-      std::unique_ptr<MethodResult<EncodableValue>> result);
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
 
 }  // namespace local_auth_windows

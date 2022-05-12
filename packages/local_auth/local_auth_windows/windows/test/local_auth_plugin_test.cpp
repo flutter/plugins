@@ -21,6 +21,7 @@
 namespace local_auth_windows {
 namespace test {
 
+using flutter::EncodableList;
 using flutter::EncodableMap;
 using flutter::EncodableValue;
 using ::testing::_;
@@ -39,7 +40,7 @@ TEST(LocalAuthPlugin, IsDeviceSupportedHandlerSuccessIfVerifierAvailable) {
 
   EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
       .Times(1)
-      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+      .WillOnce([]() -> winrt::Windows::Foundation::IAsyncOperation<
                          winrt::Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability> {
         co_return winrt::Windows::Security::Credentials::UI::
@@ -66,7 +67,7 @@ TEST(LocalAuthPlugin, IsDeviceSupportedHandlerSuccessIfVerifierNotAvailable) {
 
   EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
       .Times(1)
-      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+      .WillOnce([]() -> winrt::Windows::Foundation::IAsyncOperation<
                          winrt::Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability> {
         co_return winrt::Windows::Security::Credentials::UI::
@@ -85,7 +86,7 @@ TEST(LocalAuthPlugin, IsDeviceSupportedHandlerSuccessIfVerifierNotAvailable) {
 }
 
 TEST(LocalAuthPlugin,
-     GetAvailableBiometricsHandlerReturnEmptyListIfVerifierNotAvailable) {
+     GetEnrolledBiometricsHandlerReturnEmptyListIfVerifierNotAvailable) {
   std::unique_ptr<MockMethodResult> result =
       std::make_unique<MockMethodResult>();
 
@@ -94,7 +95,7 @@ TEST(LocalAuthPlugin,
 
   EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
       .Times(1)
-      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+      .WillOnce([]() -> winrt::Windows::Foundation::IAsyncOperation<
                          winrt::Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability> {
         co_return winrt::Windows::Security::Credentials::UI::
@@ -107,13 +108,13 @@ TEST(LocalAuthPlugin,
   EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableList())));
 
   plugin.HandleMethodCall(
-      flutter::MethodCall("getAvailableBiometrics",
+      flutter::MethodCall("getEnrolledBiometrics",
                           std::make_unique<EncodableValue>()),
       std::move(result));
 }
 
 TEST(LocalAuthPlugin,
-     GetAvailableBiometricsHandlerReturnNonEmptyListIfVerifierAvailable) {
+     GetEnrolledBiometricsHandlerReturnNonEmptyListIfVerifierAvailable) {
   std::unique_ptr<MockMethodResult> result =
       std::make_unique<MockMethodResult>();
 
@@ -122,7 +123,7 @@ TEST(LocalAuthPlugin,
 
   EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
       .Times(1)
-      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+      .WillOnce([]() -> winrt::Windows::Foundation::IAsyncOperation<
                          winrt::Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability> {
         co_return winrt::Windows::Security::Credentials::UI::
@@ -132,12 +133,12 @@ TEST(LocalAuthPlugin,
   LocalAuthPlugin plugin(std::move(mockConsentVerifier));
 
   EXPECT_CALL(*result, ErrorInternal).Times(0);
-  EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableList(
-                           {EncodableValue("fingerprint"),
-                            EncodableValue("face"), EncodableValue("iris")}))));
+  EXPECT_CALL(*result,
+              SuccessInternal(Pointee(EncodableList(
+                  {EncodableValue("weak"), EncodableValue("strong")}))));
 
   plugin.HandleMethodCall(
-      flutter::MethodCall("getAvailableBiometrics",
+      flutter::MethodCall("getEnrolledBiometrics",
                           std::make_unique<EncodableValue>()),
       std::move(result));
 }
@@ -173,7 +174,7 @@ TEST(LocalAuthPlugin, AuthenticateHandlerWorksWhenAuthorized) {
 
   EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
       .Times(1)
-      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+      .WillOnce([]() -> winrt::Windows::Foundation::IAsyncOperation<
                          winrt::Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability> {
         co_return winrt::Windows::Security::Credentials::UI::
@@ -183,7 +184,7 @@ TEST(LocalAuthPlugin, AuthenticateHandlerWorksWhenAuthorized) {
   EXPECT_CALL(*mockConsentVerifier, RequestVerificationForWindowAsync)
       .Times(1)
       .WillOnce([](std::wstring localizedReason)
-                    -> Windows::Foundation::IAsyncOperation<
+                    -> winrt::Windows::Foundation::IAsyncOperation<
                         winrt::Windows::Security::Credentials::UI::
                             UserConsentVerificationResult> {
         EXPECT_EQ(localizedReason, L"My Reason");
@@ -215,7 +216,7 @@ TEST(LocalAuthPlugin, AuthenticateHandlerWorksWhenNotAuthorized) {
 
   EXPECT_CALL(*mockConsentVerifier, CheckAvailabilityAsync)
       .Times(1)
-      .WillOnce([]() -> Windows::Foundation::IAsyncOperation<
+      .WillOnce([]() -> winrt::Windows::Foundation::IAsyncOperation<
                          winrt::Windows::Security::Credentials::UI::
                              UserConsentVerifierAvailability> {
         co_return winrt::Windows::Security::Credentials::UI::
@@ -225,7 +226,7 @@ TEST(LocalAuthPlugin, AuthenticateHandlerWorksWhenNotAuthorized) {
   EXPECT_CALL(*mockConsentVerifier, RequestVerificationForWindowAsync)
       .Times(1)
       .WillOnce([](std::wstring localizedReason)
-                    -> Windows::Foundation::IAsyncOperation<
+                    -> winrt::Windows::Foundation::IAsyncOperation<
                         winrt::Windows::Security::Credentials::UI::
                             UserConsentVerificationResult> {
         EXPECT_EQ(localizedReason, L"My Reason");

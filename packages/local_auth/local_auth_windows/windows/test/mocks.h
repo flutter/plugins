@@ -41,15 +41,15 @@ class MockUserConsentVerifier : public UserConsentVerifier {
   explicit MockUserConsentVerifier(){};
   virtual ~MockUserConsentVerifier() = default;
 
-  MOCK_METHOD(
-      Windows::Foundation::IAsyncOperation<
-          Windows::Security::Credentials::UI::UserConsentVerificationResult>,
-      RequestVerificationForWindowAsync, (std::wstring localizedReason),
-      (override));
-  MOCK_METHOD(
-      Windows::Foundation::IAsyncOperation<
-          Windows::Security::Credentials::UI::UserConsentVerifierAvailability>,
-      CheckAvailabilityAsync, (), (override));
+  MOCK_METHOD(winrt::Windows::Foundation::IAsyncOperation<
+                  winrt::Windows::Security::Credentials::UI::
+                      UserConsentVerificationResult>,
+              RequestVerificationForWindowAsync, (std::wstring localizedReason),
+              (override));
+  MOCK_METHOD(winrt::Windows::Foundation::IAsyncOperation<
+                  winrt::Windows::Security::Credentials::UI::
+                      UserConsentVerifierAvailability>,
+              CheckAvailabilityAsync, (), (override));
 
   // Disallow copy and move.
   MockUserConsentVerifier(const MockUserConsentVerifier&) = delete;

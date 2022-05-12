@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME "local_auth_windows")
-set(CPPWINRT_VERSION "2.0.210806.1")
+set(WIL_VERSION "1.0.220201.1")
+set(CPPWINRT_VERSION "2.0.220418.1")
 project(${PROJECT_NAME} LANGUAGES CXX)
 include(FetchContent)
 
@@ -17,6 +18,14 @@ if (NOT NUGET)
     message("Nuget.exe not found, trying to download or use cached version.")
     FetchContent_MakeAvailable(nuget)
     set(NUGET ${nuget_SOURCE_DIR}/nuget.exe)
+endif()
+
+execute_process(COMMAND
+    ${NUGET} install Microsoft.Windows.ImplementationLibrary -Version ${WIL_VERSION} -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    RESULT_VARIABLE ret)
+if (NOT ret EQUAL 0)
+    message(FATAL_ERROR "Failed to install nuget package Microsoft.Windows.ImplementationLibrary.${WIL_VERSION}")
 endif()
 
 execute_process(COMMAND
@@ -55,6 +64,7 @@ target_compile_options(${PLUGIN_NAME} PRIVATE /await)
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(${PLUGIN_NAME} PRIVATE ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary.${WIL_VERSION}/build/native/Microsoft.Windows.ImplementationLibrary.targets)
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin windowsapp)
 
 # List of absolute paths to libraries that should be bundled with the plugin
@@ -94,6 +104,7 @@ apply_standard_settings(${TEST_RUNNER})
 target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_features(${TEST_RUNNER} PRIVATE cxx_std_20)
 target_compile_options(${TEST_RUNNER} PRIVATE /await)
+target_link_libraries(${TEST_RUNNER} PRIVATE ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary.${WIL_VERSION}/build/native/Microsoft.Windows.ImplementationLibrary.targets)
 target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
 target_link_libraries(${TEST_RUNNER} PRIVATE windowsapp)
 target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)
