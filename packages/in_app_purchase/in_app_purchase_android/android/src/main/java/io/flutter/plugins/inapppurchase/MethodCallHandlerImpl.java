@@ -329,6 +329,8 @@ class MethodCallHandlerImpl
           public void onPurchaseHistoryResponse(
               BillingResult billingResult, List<PurchaseHistoryRecord> purchasesList) {
             final Map<String, Object> serialized = new HashMap<>();
+            // The response code is no longer passed, as part of billing 4.1.0, so we pass OK here.
+            serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
             serialized.put("billingResult", Translator.fromBillingResult(billingResult));
             serialized.put(
                 "purchaseHistoryRecordList", fromPurchaseHistoryRecordList(purchasesList));
