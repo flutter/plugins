@@ -35,7 +35,7 @@ class SourceSpecification {
 @HostApi(dartHostTestHandler: 'TestHostImagePickerApi')
 abstract class ImagePickerApi {
   @async
-  @ObjCSelector('pickImageWithSource:maxSize:quality:requestFullMetadata:')
+  @ObjCSelector('pickImageWithSource:maxSize:quality:fullMetadata:')
   String? pickImage(SourceSpecification source, MaxSize maxSize,
       int? imageQuality, bool requestFullMetadata);
   @async
