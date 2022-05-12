@@ -26,9 +26,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.0.0
-
-# FOR TESTING ONLY. DO NOT MERGE.
-dependency_overrides:
-  image_picker_platform_interface:
-    path:
-      ../image_picker_platform_interface
