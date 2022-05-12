@@ -189,7 +189,6 @@
   XCTAssertNotNil(player);
 
   XCTestExpectation *initializedExpectation = [self expectationWithDescription:@"initialized"];
-  initializedExpectation.assertForOverFulfill = false;
   __block NSDictionary<NSString *, id> *initializationEvent;
   [player onListenWithArguments:nil
                       eventSink:^(id event) {
@@ -200,13 +199,12 @@
                           if ([eventDictionary[@"event"] isEqualToString:@"initialized"]) {
                             initializationEvent = eventDictionary;
                             XCTAssertEqual(eventDictionary.count, 4);
+                            [initializedExpectation fulfill];
                           }
                         } else if ([event isKindOfClass:[FlutterError class]]) {
                           FlutterError *error = event;
                           XCTFail(@"%@: %@ (%@)", error.code, error.message, error.details);
                         }
-
-                        [initializedExpectation fulfill];
                       }];
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 
