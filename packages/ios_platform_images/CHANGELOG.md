@@ -1,3 +1,7 @@
+## 0.2.0+7
+
+* Ignores the warning for the upcoming deprecation of `ImageProvider.load`.
+
 ## 0.2.0+6
 
 * Removes unnecessary imports.

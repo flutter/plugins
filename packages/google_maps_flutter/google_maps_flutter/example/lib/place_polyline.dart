@@ -77,6 +77,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     <PatternItem>[PatternItem.dot, PatternItem.gap(10.0)],
   ];
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }

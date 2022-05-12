@@ -187,6 +187,6 @@ String get androidDeviceCredentialsSetupDescription =>
 /// biometric on their device.
 String get androidGoToSettingsDescription => Intl.message(
     'Biometric authentication is not set up on your device. Go to '
-    '\'Settings > Security\' to add biometric authentication.',
+    "'Settings > Security' to add biometric authentication.",
     desc: 'Message advising the user to go to the settings and configure '
         'biometric on their device.');

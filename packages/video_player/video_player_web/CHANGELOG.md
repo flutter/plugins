@@ -1,3 +1,7 @@
+## 2.0.10
+
+* Minor fixes for new analysis options.
+
 ## 2.0.9
 
 * Removes unnecessary imports.

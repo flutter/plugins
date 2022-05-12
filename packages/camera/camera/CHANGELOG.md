@@ -1,3 +1,11 @@
+## 0.9.4+24
+
+* Fixes preview orientation when pausing preview with locked orientation.
+
+## 0.9.4+23
+
+* Minor fixes for new analysis options.
+
 ## 0.9.4+22
 
 * Removes unnecessary imports.
