@@ -7,13 +7,20 @@
 
 #import "FWFGeneratedWebKitApis.h"
 #import "FWFInstanceManager.h"
+#import "FWFObjectHostApi.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface FWFNavigationDelegateFlutterApiImpl : FWFWKNavigationDelegateFlutterApi
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
+@end
 
 /**
  * Implementation of WKNavigationDelegate for FWFNavigationDelegateHostApiImpl.
  */
-@interface FWFNavigationDelegate : NSObject <WKNavigationDelegate>
+@interface FWFNavigationDelegate : FWFObject <WKNavigationDelegate>
+@property(readonly, nonnull) FWFNavigationDelegateFlutterApiImpl *navigationDelegateApi;
 @end
 
 /**
@@ -22,7 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles creating WKNavigationDelegate that intercommunicate with a paired Dart object.
  */
 @interface FWFNavigationDelegateHostApiImpl : NSObject <FWFWKNavigationDelegateHostApi>
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 NS_ASSUME_NONNULL_END

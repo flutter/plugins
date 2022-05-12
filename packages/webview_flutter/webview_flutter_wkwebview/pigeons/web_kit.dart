@@ -421,6 +421,12 @@ abstract class NSObjectHostApi {
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
 }
 
+/// FlutterApi for NSObject.
+///
+/// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
+@FlutterApi()
+abstract class NSObjectFlutterApi {}
+
 /// Disposes references to functions.
 @FlutterApi()
 abstract class FunctionFlutterApi {

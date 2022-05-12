@@ -94,8 +94,7 @@ class NSKeyValueObservingOptionsEnumData {
   static NSKeyValueObservingOptionsEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSKeyValueObservingOptionsEnumData(
-      value: NSKeyValueObservingOptionsEnum.values[pigeonMap['value']! as int]
-,
+      value: NSKeyValueObservingOptionsEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -116,8 +115,7 @@ class WKUserScriptInjectionTimeEnumData {
   static WKUserScriptInjectionTimeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKUserScriptInjectionTimeEnumData(
-      value: WKUserScriptInjectionTimeEnum.values[pigeonMap['value']! as int]
-,
+      value: WKUserScriptInjectionTimeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -138,8 +136,7 @@ class WKAudiovisualMediaTypeEnumData {
   static WKAudiovisualMediaTypeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKAudiovisualMediaTypeEnumData(
-      value: WKAudiovisualMediaTypeEnum.values[pigeonMap['value']! as int]
-,
+      value: WKAudiovisualMediaTypeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -160,8 +157,7 @@ class WKWebsiteDataTypeEnumData {
   static WKWebsiteDataTypeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKWebsiteDataTypeEnumData(
-      value: WKWebsiteDataTypeEnum.values[pigeonMap['value']! as int]
-,
+      value: WKWebsiteDataTypeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -182,8 +178,7 @@ class NSHttpCookiePropertyKeyEnumData {
   static NSHttpCookiePropertyKeyEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSHttpCookiePropertyKeyEnumData(
-      value: NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int]
-,
+      value: NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -216,7 +211,9 @@ class NSUrlRequestData {
       url: pigeonMap['url']! as String,
       httpMethod: pigeonMap['httpMethod'] as String?,
       httpBody: pigeonMap['httpBody'] as Uint8List?,
-      allHttpHeaderFields: (pigeonMap['allHttpHeaderFields'] as Map<Object?, Object?>?)!.cast<String?, String?>(),
+      allHttpHeaderFields:
+          (pigeonMap['allHttpHeaderFields'] as Map<Object?, Object?>?)!
+              .cast<String?, String?>(),
     );
   }
 }
@@ -245,7 +242,8 @@ class WKUserScriptData {
     return WKUserScriptData(
       source: pigeonMap['source']! as String,
       injectionTime: pigeonMap['injectionTime'] != null
-          ? WKUserScriptInjectionTimeEnumData.decode(pigeonMap['injectionTime']!)
+          ? WKUserScriptInjectionTimeEnumData.decode(
+              pigeonMap['injectionTime']!)
           : null,
       isMainFrameOnly: pigeonMap['isMainFrameOnly']! as bool,
     );
@@ -271,8 +269,10 @@ class NSHttpCookieData {
   static NSHttpCookieData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSHttpCookieData(
-      propertyKeys: (pigeonMap['propertyKeys'] as List<Object?>?)!.cast<NSHttpCookiePropertyKeyEnumData?>(),
-      propertyValues: (pigeonMap['propertyValues'] as List<Object?>?)!.cast<Object?>(),
+      propertyKeys: (pigeonMap['propertyKeys'] as List<Object?>?)!
+          .cast<NSHttpCookiePropertyKeyEnumData?>(),
+      propertyValues:
+          (pigeonMap['propertyValues'] as List<Object?>?)!.cast<Object?>(),
     );
   }
 }
@@ -284,20 +284,19 @@ class _WKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
     if (value is WKWebsiteDataTypeEnumData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return WKWebsiteDataTypeEnumData.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -306,24 +305,30 @@ class WKWebsiteDataStoreHostApi {
   /// Constructor for [WKWebsiteDataStoreHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKWebsiteDataStoreHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKWebsiteDataStoreHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _WKWebsiteDataStoreHostApiCodec();
 
-  Future<void> createFromWebViewConfiguration(int arg_instanceId, int arg_configurationInstanceId) async {
+  Future<void> createFromWebViewConfiguration(
+      int arg_instanceId, int arg_configurationInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createFromWebViewConfiguration', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_configurationInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createFromWebViewConfiguration',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_configurationInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -336,7 +341,9 @@ class WKWebsiteDataStoreHostApi {
 
   Future<void> createDefaultDataStore(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createDefaultDataStore', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.createDefaultDataStore',
+        codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -345,7 +352,8 @@ class WKWebsiteDataStoreHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -356,18 +364,26 @@ class WKWebsiteDataStoreHostApi {
     }
   }
 
-  Future<bool> removeDataOfTypes(int arg_instanceId, List<WKWebsiteDataTypeEnumData?> arg_dataTypes, double arg_modificationTimeInSecondsSinceEpoch) async {
+  Future<bool> removeDataOfTypes(
+      int arg_instanceId,
+      List<WKWebsiteDataTypeEnumData?> arg_dataTypes,
+      double arg_modificationTimeInSecondsSinceEpoch) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_dataTypes, arg_modificationTimeInSecondsSinceEpoch]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_instanceId,
+      arg_dataTypes,
+      arg_modificationTimeInSecondsSinceEpoch
+    ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -392,7 +408,8 @@ class UIViewHostApi {
   /// Constructor for [UIViewHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  UIViewHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  UIViewHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
@@ -400,16 +417,18 @@ class UIViewHostApi {
 
   Future<void> setBackgroundColor(int arg_instanceId, int? arg_value) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIViewHostApi.setBackgroundColor', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_value]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.UIViewHostApi.setBackgroundColor', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_value]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -422,16 +441,18 @@ class UIViewHostApi {
 
   Future<void> setOpaque(int arg_instanceId, bool arg_opaque) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIViewHostApi.setOpaque', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_opaque]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.UIViewHostApi.setOpaque', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_opaque]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -451,24 +472,29 @@ class UIScrollViewHostApi {
   /// Constructor for [UIScrollViewHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  UIScrollViewHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  UIScrollViewHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _UIScrollViewHostApiCodec();
 
-  Future<void> createFromWebView(int arg_instanceId, int arg_webViewInstanceId) async {
+  Future<void> createFromWebView(
+      int arg_instanceId, int arg_webViewInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIScrollViewHostApi.createFromWebView', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.UIScrollViewHostApi.createFromWebView', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_webViewInstanceId]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_webViewInstanceId])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -481,7 +507,8 @@ class UIScrollViewHostApi {
 
   Future<List<double?>> getContentOffset(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIScrollViewHostApi.getContentOffset', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.UIScrollViewHostApi.getContentOffset', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -490,7 +517,8 @@ class UIScrollViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -508,16 +536,19 @@ class UIScrollViewHostApi {
 
   Future<void> scrollBy(int arg_instanceId, double arg_x, double arg_y) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIScrollViewHostApi.scrollBy', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.UIScrollViewHostApi.scrollBy', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_x, arg_y]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_x, arg_y])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -528,18 +559,22 @@ class UIScrollViewHostApi {
     }
   }
 
-  Future<void> setContentOffset(int arg_instanceId, double arg_x, double arg_y) async {
+  Future<void> setContentOffset(
+      int arg_instanceId, double arg_x, double arg_y) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIScrollViewHostApi.setContentOffset', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.UIScrollViewHostApi.setContentOffset', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_x, arg_y]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_x, arg_y])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -558,20 +593,19 @@ class _WKWebViewConfigurationHostApiCodec extends StandardMessageCodec {
     if (value is WKAudiovisualMediaTypeEnumData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return WKAudiovisualMediaTypeEnumData.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -580,15 +614,18 @@ class WKWebViewConfigurationHostApi {
   /// Constructor for [WKWebViewConfigurationHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKWebViewConfigurationHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKWebViewConfigurationHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = _WKWebViewConfigurationHostApiCodec();
+  static const MessageCodec<Object?> codec =
+      _WKWebViewConfigurationHostApiCodec();
 
   Future<void> create(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.create', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -597,7 +634,8 @@ class WKWebViewConfigurationHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -608,18 +646,23 @@ class WKWebViewConfigurationHostApi {
     }
   }
 
-  Future<void> createFromWebView(int arg_instanceId, int arg_webViewInstanceId) async {
+  Future<void> createFromWebView(
+      int arg_instanceId, int arg_webViewInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.createFromWebView', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.createFromWebView',
+        codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_webViewInstanceId]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_webViewInstanceId])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -630,18 +673,22 @@ class WKWebViewConfigurationHostApi {
     }
   }
 
-  Future<void> setAllowsInlineMediaPlayback(int arg_instanceId, bool arg_allow) async {
+  Future<void> setAllowsInlineMediaPlayback(
+      int arg_instanceId, bool arg_allow) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.setAllowsInlineMediaPlayback', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_allow]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.setAllowsInlineMediaPlayback',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_allow]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -652,18 +699,22 @@ class WKWebViewConfigurationHostApi {
     }
   }
 
-  Future<void> setMediaTypesRequiringUserActionForPlayback(int arg_instanceId, List<WKAudiovisualMediaTypeEnumData?> arg_types) async {
+  Future<void> setMediaTypesRequiringUserActionForPlayback(int arg_instanceId,
+      List<WKAudiovisualMediaTypeEnumData?> arg_types) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.setMediaTypesRequiringUserActionForPlayback', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_types]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewConfigurationHostApi.setMediaTypesRequiringUserActionForPlayback',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_types]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -682,27 +733,25 @@ class _WKUserContentControllerHostApiCodec extends StandardMessageCodec {
     if (value is WKUserScriptData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is WKUserScriptInjectionTimeEnumData) {
+    } else if (value is WKUserScriptInjectionTimeEnumData) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return WKUserScriptData.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return WKUserScriptInjectionTimeEnumData.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -711,24 +760,31 @@ class WKUserContentControllerHostApi {
   /// Constructor for [WKUserContentControllerHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKUserContentControllerHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKUserContentControllerHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = _WKUserContentControllerHostApiCodec();
+  static const MessageCodec<Object?> codec =
+      _WKUserContentControllerHostApiCodec();
 
-  Future<void> createFromWebViewConfiguration(int arg_instanceId, int arg_configurationInstanceId) async {
+  Future<void> createFromWebViewConfiguration(
+      int arg_instanceId, int arg_configurationInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.createFromWebViewConfiguration', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_configurationInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKUserContentControllerHostApi.createFromWebViewConfiguration',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_configurationInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -739,18 +795,23 @@ class WKUserContentControllerHostApi {
     }
   }
 
-  Future<void> addScriptMessageHandler(int arg_instanceId, int arg_handlerInstanceid, String arg_name) async {
+  Future<void> addScriptMessageHandler(
+      int arg_instanceId, int arg_handlerInstanceid, String arg_name) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.addScriptMessageHandler', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_handlerInstanceid, arg_name]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKUserContentControllerHostApi.addScriptMessageHandler',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_handlerInstanceid, arg_name])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -761,18 +822,22 @@ class WKUserContentControllerHostApi {
     }
   }
 
-  Future<void> removeScriptMessageHandler(int arg_instanceId, String arg_name) async {
+  Future<void> removeScriptMessageHandler(
+      int arg_instanceId, String arg_name) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.removeScriptMessageHandler', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_name]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKUserContentControllerHostApi.removeScriptMessageHandler',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_name]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -785,7 +850,9 @@ class WKUserContentControllerHostApi {
 
   Future<void> removeAllScriptMessageHandlers(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.removeAllScriptMessageHandlers', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKUserContentControllerHostApi.removeAllScriptMessageHandlers',
+        codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -794,7 +861,8 @@ class WKUserContentControllerHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -805,18 +873,23 @@ class WKUserContentControllerHostApi {
     }
   }
 
-  Future<void> addUserScript(int arg_instanceId, WKUserScriptData arg_userScript) async {
+  Future<void> addUserScript(
+      int arg_instanceId, WKUserScriptData arg_userScript) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.addUserScript', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKUserContentControllerHostApi.addUserScript',
+        codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_userScript]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_userScript])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -829,7 +902,9 @@ class WKUserContentControllerHostApi {
 
   Future<void> removeAllUserScripts(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUserContentControllerHostApi.removeAllUserScripts', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKUserContentControllerHostApi.removeAllUserScripts',
+        codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -838,7 +913,8 @@ class WKUserContentControllerHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -858,24 +934,30 @@ class WKPreferencesHostApi {
   /// Constructor for [WKPreferencesHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKPreferencesHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKPreferencesHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _WKPreferencesHostApiCodec();
 
-  Future<void> createFromWebViewConfiguration(int arg_instanceId, int arg_configurationInstanceId) async {
+  Future<void> createFromWebViewConfiguration(
+      int arg_instanceId, int arg_configurationInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKPreferencesHostApi.createFromWebViewConfiguration', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_configurationInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKPreferencesHostApi.createFromWebViewConfiguration',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_configurationInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -886,18 +968,21 @@ class WKPreferencesHostApi {
     }
   }
 
-  Future<void> setJavaScriptEnabled(int arg_instanceId, bool arg_enabled) async {
+  Future<void> setJavaScriptEnabled(
+      int arg_instanceId, bool arg_enabled) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKPreferencesHostApi.setJavaScriptEnabled', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_enabled]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKPreferencesHostApi.setJavaScriptEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_enabled]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -917,15 +1002,18 @@ class WKScriptMessageHandlerHostApi {
   /// Constructor for [WKScriptMessageHandlerHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKScriptMessageHandlerHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKScriptMessageHandlerHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = _WKScriptMessageHandlerHostApiCodec();
+  static const MessageCodec<Object?> codec =
+      _WKScriptMessageHandlerHostApiCodec();
 
   Future<void> create(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKScriptMessageHandlerHostApi.create', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKScriptMessageHandlerHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -934,7 +1022,8 @@ class WKScriptMessageHandlerHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -954,24 +1043,30 @@ class WKNavigationDelegateHostApi {
   /// Constructor for [WKNavigationDelegateHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKNavigationDelegateHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKNavigationDelegateHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = _WKNavigationDelegateHostApiCodec();
+  static const MessageCodec<Object?> codec =
+      _WKNavigationDelegateHostApiCodec();
 
-  Future<void> create(int arg_instanceId, int? arg_didFinishNavigationInstanceId) async {
+  Future<void> create(
+      int arg_instanceId, int? arg_didFinishNavigationInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKNavigationDelegateHostApi.create', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_didFinishNavigationInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKNavigationDelegateHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_didFinishNavigationInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -986,26 +1081,36 @@ class WKNavigationDelegateHostApi {
 class _WKNavigationDelegateFlutterApiCodec extends StandardMessageCodec {
   const _WKNavigationDelegateFlutterApiCodec();
 }
-abstract class WKNavigationDelegateFlutterApi {
-  static const MessageCodec<Object?> codec = _WKNavigationDelegateFlutterApiCodec();
 
-  void didFinishNavigation(int functionInstanceId, int webViewInstanceId, String? url);
-  static void setup(WKNavigationDelegateFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
+abstract class WKNavigationDelegateFlutterApi {
+  static const MessageCodec<Object?> codec =
+      _WKNavigationDelegateFlutterApiCodec();
+
+  void didFinishNavigation(
+      int functionInstanceId, int webViewInstanceId, String? url);
+  static void setup(WKNavigationDelegateFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation', codec, binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation',
+          codec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null.');
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_functionInstanceId = (args[0] as int?);
-          assert(arg_functionInstanceId != null, 'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
+          assert(arg_functionInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
           final int? arg_webViewInstanceId = (args[1] as int?);
-          assert(arg_webViewInstanceId != null, 'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
+          assert(arg_webViewInstanceId != null,
+              'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
           final String? arg_url = (args[2] as String?);
-          api.didFinishNavigation(arg_functionInstanceId!, arg_webViewInstanceId!, arg_url);
+          api.didFinishNavigation(
+              arg_functionInstanceId!, arg_webViewInstanceId!, arg_url);
           return;
         });
       }
@@ -1020,20 +1125,19 @@ class _NSObjectHostApiCodec extends StandardMessageCodec {
     if (value is NSKeyValueObservingOptionsEnumData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return NSKeyValueObservingOptionsEnumData.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -1042,7 +1146,8 @@ class NSObjectHostApi {
   /// Constructor for [NSObjectHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  NSObjectHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  NSObjectHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
@@ -1050,7 +1155,8 @@ class NSObjectHostApi {
 
   Future<void> dispose(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.NSObjectHostApi.dispose', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.NSObjectHostApi.dispose', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1059,7 +1165,8 @@ class NSObjectHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1070,18 +1177,28 @@ class NSObjectHostApi {
     }
   }
 
-  Future<void> addObserver(int arg_instanceId, int arg_observerInstanceId, String arg_keyPath, List<NSKeyValueObservingOptionsEnumData?> arg_options) async {
+  Future<void> addObserver(
+      int arg_instanceId,
+      int arg_observerInstanceId,
+      String arg_keyPath,
+      List<NSKeyValueObservingOptionsEnumData?> arg_options) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.NSObjectHostApi.addObserver', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_observerInstanceId, arg_keyPath, arg_options]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.NSObjectHostApi.addObserver', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_instanceId,
+      arg_observerInstanceId,
+      arg_keyPath,
+      arg_options
+    ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1092,18 +1209,22 @@ class NSObjectHostApi {
     }
   }
 
-  Future<void> removeObserver(int arg_instanceId, int arg_observerInstanceId, String arg_keyPath) async {
+  Future<void> removeObserver(int arg_instanceId, int arg_observerInstanceId,
+      String arg_keyPath) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.NSObjectHostApi.removeObserver', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_observerInstanceId, arg_keyPath]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.NSObjectHostApi.removeObserver', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(
+            <Object?>[arg_instanceId, arg_observerInstanceId, arg_keyPath])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1113,27 +1234,43 @@ class NSObjectHostApi {
       return;
     }
   }
+}
+
+class _NSObjectFlutterApiCodec extends StandardMessageCodec {
+  const _NSObjectFlutterApiCodec();
+}
+
+abstract class NSObjectFlutterApi {
+  static const MessageCodec<Object?> codec = _NSObjectFlutterApiCodec();
+
+  static void setup(NSObjectFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {}
 }
 
 class _FunctionFlutterApiCodec extends StandardMessageCodec {
   const _FunctionFlutterApiCodec();
 }
+
 abstract class FunctionFlutterApi {
   static const MessageCodec<Object?> codec = _FunctionFlutterApiCodec();
 
   void dispose(int instanceId);
-  static void setup(FunctionFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
+  static void setup(FunctionFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FunctionFlutterApi.dispose', codec, binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.FunctionFlutterApi.dispose', codec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null.');
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null, expected non-null int.');
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null, expected non-null int.');
           api.dispose(arg_instanceId!);
           return;
         });
@@ -1149,69 +1286,61 @@ class _WKWebViewHostApiCodec extends StandardMessageCodec {
     if (value is NSHttpCookieData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is NSHttpCookiePropertyKeyEnumData) {
+    } else if (value is NSHttpCookiePropertyKeyEnumData) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is NSKeyValueObservingOptionsEnumData) {
+    } else if (value is NSKeyValueObservingOptionsEnumData) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is NSUrlRequestData) {
+    } else if (value is NSUrlRequestData) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is WKAudiovisualMediaTypeEnumData) {
+    } else if (value is WKAudiovisualMediaTypeEnumData) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is WKUserScriptData) {
+    } else if (value is WKUserScriptData) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is WKUserScriptInjectionTimeEnumData) {
+    } else if (value is WKUserScriptInjectionTimeEnumData) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is WKWebsiteDataTypeEnumData) {
+    } else if (value is WKWebsiteDataTypeEnumData) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return NSHttpCookieData.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return NSHttpCookiePropertyKeyEnumData.decode(readValue(buffer)!);
-      
-      case 130:       
+
+      case 130:
         return NSKeyValueObservingOptionsEnumData.decode(readValue(buffer)!);
-      
-      case 131:       
+
+      case 131:
         return NSUrlRequestData.decode(readValue(buffer)!);
-      
-      case 132:       
+
+      case 132:
         return WKAudiovisualMediaTypeEnumData.decode(readValue(buffer)!);
-      
-      case 133:       
+
+      case 133:
         return WKUserScriptData.decode(readValue(buffer)!);
-      
-      case 134:       
+
+      case 134:
         return WKUserScriptInjectionTimeEnumData.decode(readValue(buffer)!);
-      
-      case 135:       
+
+      case 135:
         return WKWebsiteDataTypeEnumData.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -1220,24 +1349,29 @@ class WKWebViewHostApi {
   /// Constructor for [WKWebViewHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKWebViewHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKWebViewHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _WKWebViewHostApiCodec();
 
-  Future<void> create(int arg_instanceId, int arg_configurationInstanceId) async {
+  Future<void> create(
+      int arg_instanceId, int arg_configurationInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.create', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_configurationInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_configurationInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1248,18 +1382,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> setUIDelegate(int arg_instanceId, int? arg_uiDelegateInstanceId) async {
+  Future<void> setUIDelegate(
+      int arg_instanceId, int? arg_uiDelegateInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.setUIDelegate', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.setUIDelegate', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_uiDelegateInstanceId]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_uiDelegateInstanceId])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1270,18 +1408,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> setNavigationDelegate(int arg_instanceId, int? arg_navigationDelegateInstanceId) async {
+  Future<void> setNavigationDelegate(
+      int arg_instanceId, int? arg_navigationDelegateInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.setNavigationDelegate', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_navigationDelegateInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewHostApi.setNavigationDelegate', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_navigationDelegateInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1294,7 +1436,8 @@ class WKWebViewHostApi {
 
   Future<String?> getUrl(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.getUrl', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.getUrl', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1303,7 +1446,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1316,7 +1460,8 @@ class WKWebViewHostApi {
 
   Future<double> getEstimatedProgress(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.getEstimatedProgress', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.getEstimatedProgress', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1325,7 +1470,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1341,18 +1487,21 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> loadRequest(int arg_instanceId, NSUrlRequestData arg_request) async {
+  Future<void> loadRequest(
+      int arg_instanceId, NSUrlRequestData arg_request) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.loadRequest', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_request]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewHostApi.loadRequest', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_request]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1363,18 +1512,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> loadHtmlString(int arg_instanceId, String arg_string, String? arg_baseUrl) async {
+  Future<void> loadHtmlString(
+      int arg_instanceId, String arg_string, String? arg_baseUrl) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.loadHtmlString', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.loadHtmlString', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_string, arg_baseUrl]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_string, arg_baseUrl])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1385,18 +1538,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> loadFileUrl(int arg_instanceId, String arg_url, String arg_readAccessUrl) async {
+  Future<void> loadFileUrl(
+      int arg_instanceId, String arg_url, String arg_readAccessUrl) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.loadFileUrl', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_url, arg_readAccessUrl]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewHostApi.loadFileUrl', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_url, arg_readAccessUrl])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1409,16 +1566,18 @@ class WKWebViewHostApi {
 
   Future<void> loadFlutterAsset(int arg_instanceId, String arg_key) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.loadFlutterAsset', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_key]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewHostApi.loadFlutterAsset', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_key]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1431,7 +1590,8 @@ class WKWebViewHostApi {
 
   Future<bool> canGoBack(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.canGoBack', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.canGoBack', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1440,7 +1600,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1458,7 +1619,8 @@ class WKWebViewHostApi {
 
   Future<bool> canGoForward(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.canGoForward', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.canGoForward', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1467,7 +1629,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1485,7 +1648,8 @@ class WKWebViewHostApi {
 
   Future<void> goBack(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.goBack', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.goBack', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1494,7 +1658,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1507,7 +1672,8 @@ class WKWebViewHostApi {
 
   Future<void> goForward(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.goForward', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.goForward', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1516,7 +1682,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1529,7 +1696,8 @@ class WKWebViewHostApi {
 
   Future<void> reload(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.reload', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.reload', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1538,7 +1706,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1551,7 +1720,8 @@ class WKWebViewHostApi {
 
   Future<String?> getTitle(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.getTitle', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.getTitle', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1560,7 +1730,8 @@ class WKWebViewHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1571,18 +1742,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> setAllowsBackForwardNavigationGestures(int arg_instanceId, bool arg_allow) async {
+  Future<void> setAllowsBackForwardNavigationGestures(
+      int arg_instanceId, bool arg_allow) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.setAllowsBackForwardNavigationGestures', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_allow]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKWebViewHostApi.setAllowsBackForwardNavigationGestures',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_allow]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1593,18 +1768,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<void> setCustomUserAgent(int arg_instanceId, String? arg_userAgent) async {
+  Future<void> setCustomUserAgent(
+      int arg_instanceId, String? arg_userAgent) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.setCustomUserAgent', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.setCustomUserAgent', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_userAgent]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_userAgent])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1615,18 +1794,22 @@ class WKWebViewHostApi {
     }
   }
 
-  Future<Object?> evaluateJavaScript(int arg_instanceId, String arg_javaScriptString) async {
+  Future<Object?> evaluateJavaScript(
+      int arg_instanceId, String arg_javaScriptString) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKWebViewHostApi.evaluateJavaScript', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKWebViewHostApi.evaluateJavaScript', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_javaScriptString]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_javaScriptString])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1646,7 +1829,8 @@ class WKUIDelegateHostApi {
   /// Constructor for [WKUIDelegateHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKUIDelegateHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKUIDelegateHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
@@ -1654,7 +1838,8 @@ class WKUIDelegateHostApi {
 
   Future<void> create(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKUIDelegateHostApi.create', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WKUIDelegateHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1663,7 +1848,8 @@ class WKUIDelegateHostApi {
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1682,27 +1868,25 @@ class _WKHttpCookieStoreHostApiCodec extends StandardMessageCodec {
     if (value is NSHttpCookieData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is NSHttpCookiePropertyKeyEnumData) {
+    } else if (value is NSHttpCookiePropertyKeyEnumData) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return NSHttpCookieData.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return NSHttpCookiePropertyKeyEnumData.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -1711,24 +1895,30 @@ class WKHttpCookieStoreHostApi {
   /// Constructor for [WKHttpCookieStoreHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WKHttpCookieStoreHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WKHttpCookieStoreHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _WKHttpCookieStoreHostApiCodec();
 
-  Future<void> createFromWebsiteDataStore(int arg_instanceId, int arg_websiteDataStoreInstanceId) async {
+  Future<void> createFromWebsiteDataStore(
+      int arg_instanceId, int arg_websiteDataStoreInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_websiteDataStoreInstanceId]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKHttpCookieStoreHostApi.createFromWebsiteDataStore',
+        codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object?>[arg_instanceId, arg_websiteDataStoreInstanceId])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1739,18 +1929,21 @@ class WKHttpCookieStoreHostApi {
     }
   }
 
-  Future<void> setCookie(int arg_instanceId, NSHttpCookieData arg_cookie) async {
+  Future<void> setCookie(
+      int arg_instanceId, NSHttpCookieData arg_cookie) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId, arg_cookie]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object?>[arg_instanceId, arg_cookie]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
