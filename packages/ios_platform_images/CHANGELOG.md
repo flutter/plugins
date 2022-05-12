@@ -1,3 +1,8 @@
+## 0.2.0+7
+
+* Ignore deprecation of `load` method in [ImageProvider] so it can be
+  deprecated at the framework level, without breaking CI.
+
 ## 0.2.0+6
 
 * Removes unnecessary imports.

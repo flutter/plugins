@@ -64,6 +64,7 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
 
   /// See [ImageProvider.load].
   @override
+  // ignore:deprecated_member_use
   ImageStreamCompleter load(_FutureMemoryImage key, DecoderCallback decode) {
     return _FutureImageStreamCompleter(
       codec: _loadAsync(key, decode),
