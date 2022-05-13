@@ -36,7 +36,7 @@ class _CameraAppState extends State<CameraApp> {
         return;
       }
       setState(() {});
-    }).catchError((dynamic e) {
+    }).catchError((Object e) {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
