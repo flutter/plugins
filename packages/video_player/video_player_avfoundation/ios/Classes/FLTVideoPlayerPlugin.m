@@ -259,8 +259,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
               errorWithCode:@"VideoError"
                     message:[@"Failed to load video: "
                                 stringByAppendingString:[item.error localizedDescription]]
-                    details:[NSString
-                                stringWithFormat:@"%@:%ld", item.error.domain, item.error.code]]);
+                    details:nil]);
         }
         break;
       case AVPlayerItemStatusUnknown:
