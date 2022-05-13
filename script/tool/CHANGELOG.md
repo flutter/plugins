@@ -1,3 +1,7 @@
+## NEXT
+
+- Fixes changelog validation when reverting to a `NEXT` state.
+
 ## 0.8.5
 
 - Updates `test` to inculde the Dart unit tests of examples, if any.
@@ -322,7 +326,7 @@ and `firebase-test-lab`.
 
 ## v.0.0.36+2
 
-- Default to showing podspec lint warnings.
+- Default to showing podspec lint warnings
 
 ## v.0.0.36+1
 

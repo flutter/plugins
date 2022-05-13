@@ -1,3 +1,7 @@
+## 0.2.2+5
+
+* Minor fixes for new analysis options.
+
 ## 0.2.2+4
 
 * Removes unnecessary imports.

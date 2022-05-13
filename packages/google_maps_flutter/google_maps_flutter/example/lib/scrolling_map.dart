@@ -66,7 +66,7 @@ class ScrollingMapBody extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 30.0),
             child: Column(
               children: <Widget>[
-                const Text('This map doesn\'t consume the vertical drags.'),
+                const Text("This map doesn't consume the vertical drags."),
                 const Padding(
                   padding: EdgeInsets.only(bottom: 12.0),
                   child:

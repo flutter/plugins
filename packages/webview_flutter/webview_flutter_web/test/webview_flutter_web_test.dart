@@ -64,7 +64,7 @@ void main() {
       // Run
       controller.loadHtmlString('test html');
       // Verify
-      verify(mockElement.src = 'data:text/html,' + Uri.encodeFull('test html'));
+      verify(mockElement.src = 'data:text/html,${Uri.encodeFull('test html')}');
     });
 
     group('loadRequest', () {
@@ -123,7 +123,7 @@ void main() {
           sendData: Uint8List.fromList('test body'.codeUnits),
         ));
         verify(
-            mockElement.src = 'data:text/plain,' + Uri.encodeFull('test data'));
+            mockElement.src = 'data:text/plain,${Uri.encodeFull('test data')}');
       });
     });
   });

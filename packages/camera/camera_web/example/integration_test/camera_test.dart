@@ -1477,7 +1477,7 @@ void main() {
     });
 
     group('dispose', () {
-      testWidgets('resets the video element\'s source',
+      testWidgets("resets the video element's source",
           (WidgetTester tester) async {
         final Camera camera = Camera(
           textureId: textureId,
