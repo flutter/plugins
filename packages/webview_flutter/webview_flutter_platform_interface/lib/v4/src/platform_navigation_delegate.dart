@@ -38,7 +38,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
 
   /// Invoked when a navigation request is pending.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
+  /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnNavigationRequest(
     FutureOr<bool> Function({required String url, required bool isForMainFrame})
         onNavigationRequest,
@@ -49,7 +49,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
 
   /// Invoked when a page has started loading.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
+  /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnPageStarted(
     void Function(String url) onPageStarted,
   ) {
@@ -59,7 +59,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
 
   /// Invoked when a page has finished loading.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
+  /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnPageFinished(
     void Function(String url) onPageFinished,
   ) {
@@ -69,7 +69,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
 
   /// Invoked when a page is loading to report the progress.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
+  /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnProgress(
     void Function(int progress) onProgress,
   ) {
@@ -79,7 +79,7 @@ abstract class PlatformNavigationDelegate extends PlatformInterface {
 
   /// Invoked when a resource loading error occurred.
   ///
-  /// See [WebViewControllerDelegate.setNavigationCallbackDelegate].
+  /// See [PlatformWebViewController.setPlatformNavigationDelegate].
   Future<void> setOnWebResourceError(
     void Function(WebResourceError error) onWebResourceError,
   ) {

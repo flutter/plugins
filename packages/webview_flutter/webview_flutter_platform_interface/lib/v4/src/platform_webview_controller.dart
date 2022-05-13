@@ -159,10 +159,10 @@ abstract class PlatformWebViewController extends PlatformInterface {
 
   /// Sets the [PlatformNavigationDelegate] containing the callback methods that
   /// are called during navigation events.
-  Future<void> setPlatformNavigationCallbackDelegate(
+  Future<void> setPlatformNavigationDelegate(
       PlatformNavigationDelegate handler) {
     throw UnimplementedError(
-        'setPlatformNavigationCallbackDelegate is not implemented on the current platform');
+        'setPlatformNavigationDelegate is not implemented on the current platform');
   }
 
   /// Runs the given JavaScript in the context of the current page.
@@ -262,12 +262,6 @@ abstract class PlatformWebViewController extends PlatformInterface {
   }
 
   /// Sets the value used for the HTTP `User-Agent:` request header.
-  ///
-  /// If [userAgent.value] is null the platform's default user agent should be
-  /// used.
-  ///
-  /// An absent value ([userAgent.isPresent] is false) represents no change to
-  /// this setting from the last time it was set.
   Future<void> setUserAgent(String? userAgent) {
     throw UnimplementedError(
         'setUserAgent is not implemented on the current platform');

@@ -226,8 +226,8 @@ void main() {
               const PlatformWebViewControllerCreationParams());
 
       expect(
-        () => controller
-            .setPlatformNavigationCallbackDelegate(MockNavigationDelegate()),
+        () =>
+            controller.setPlatformNavigationDelegate(MockNavigationDelegate()),
         throwsUnimplementedError,
       );
     },
