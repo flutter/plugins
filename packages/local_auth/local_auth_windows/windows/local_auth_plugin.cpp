@@ -8,7 +8,7 @@
 namespace {
 
 template <typename T>
-// Helper method for getting an argument from an EncodableValue
+// Helper method for getting an argument from an EncodableValue.
 T GetArgument(const std::string arg, const flutter::EncodableValue* args,
               T fallback) {
   T result{fallback};
@@ -22,7 +22,7 @@ T GetArgument(const std::string arg, const flutter::EncodableValue* args,
   return result;
 }
 
-// Returns the window's HWND for a given FlutterView
+// Returns the window's HWND for a given FlutterView.
 HWND GetRootWindow(flutter::FlutterView* view) {
   return ::GetAncestor(view->GetNativeWindow(), GA_ROOT);
 }
@@ -54,8 +54,8 @@ std::wstring Utf16FromUtf8(const std::string& utf8_string) {
 
 namespace local_auth_windows {
 
-// Real implementation of the UserConsentVerifier that
-// calls the native Windows APIs to get the user's consent
+// Creates an instance of the UserConsentVerifier that
+// calls the native Windows APIs to get the user's consent.
 class UserConsentVerifierImpl : public UserConsentVerifier {
  public:
   explicit UserConsentVerifierImpl(std::function<HWND()> window_provider)
@@ -89,7 +89,7 @@ class UserConsentVerifierImpl : public UserConsentVerifier {
     return consent_result;
   }
 
-  // Calls the native Windows API to check for the Windows Hello availability
+  // Calls the native Windows API to check for the Windows Hello availability.
   winrt::Windows::Foundation::IAsyncOperation<
       winrt::Windows::Security::Credentials::UI::
           UserConsentVerifierAvailability>
@@ -126,7 +126,7 @@ void LocalAuthPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-// Default constructor for LocalAuthPlugin
+// Default constructor for LocalAuthPlugin.
 LocalAuthPlugin::LocalAuthPlugin(std::function<HWND()> window_provider)
     : user_consent_verifier_(std::make_unique<UserConsentVerifierImpl>(
           std::move(window_provider))) {}
@@ -153,7 +153,7 @@ void LocalAuthPlugin::HandleMethodCall(
   }
 }
 
-// Starts authentication process
+// Starts authentication process.
 winrt::fire_and_forget LocalAuthPlugin::Authenticate(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
@@ -203,7 +203,7 @@ winrt::fire_and_forget LocalAuthPlugin::Authenticate(
   }
 }
 
-// Returns biometric types available on device
+// Returns biometric types available on device.
 winrt::fire_and_forget LocalAuthPlugin::GetEnrolledBiometrics(
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   try {
@@ -222,7 +222,7 @@ winrt::fire_and_forget LocalAuthPlugin::GetEnrolledBiometrics(
   }
 }
 
-// Returns whether the device supports Windows Hello or not
+// Returns whether the device supports Windows Hello or not.
 winrt::fire_and_forget LocalAuthPlugin::IsDeviceSupported(
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   winrt::Windows::Security::Credentials::UI::UserConsentVerifierAvailability

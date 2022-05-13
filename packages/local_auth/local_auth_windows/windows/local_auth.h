@@ -54,15 +54,15 @@ class LocalAuthPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
-  // Real implementation that creates a plugin instance that will create the
-  // dialog and associate it with the HWND returned from the provided function
+  // Creates a plugin instance that will create the dialog and associate
+  // it with the HWND returned from the provided function.
   LocalAuthPlugin(std::function<HWND()> window_provider);
 
   // Creates a plugin instance with the given UserConsentVerifier instance.
   // Exists for unit testing with mock implementations.
   LocalAuthPlugin(std::unique_ptr<UserConsentVerifier> user_consent_verifier);
 
-  // Called when a method is called on this plugin's channel from Dart.
+  // Handles method calls from Dart on this plugin's channel.
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
@@ -72,7 +72,7 @@ class LocalAuthPlugin : public flutter::Plugin {
  private:
   std::unique_ptr<UserConsentVerifier> user_consent_verifier_;
 
-  // Starts authentication process
+  // Starts authentication process.
   winrt::fire_and_forget Authenticate(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
