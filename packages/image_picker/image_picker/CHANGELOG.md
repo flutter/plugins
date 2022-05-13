@@ -2,6 +2,13 @@
 
 * Adds `requestFullMetadata` option to `pickImage`, so images on iOS can be picked without `Photo Library Usage` permission.
 
+## 0.8.5+3
+
+* Adds argument error assertions to the app-facing package, to ensure
+  consistency across platform implementations.
+* Updates tests to use a mock platform instead of relying on default
+  method channel implementation internals.
+
 ## 0.8.5+2
 
 * Minor fixes for new analysis options.
