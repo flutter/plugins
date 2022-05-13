@@ -19,7 +19,6 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.17.0
   local_auth_platform_interface: ^1.0.0
 
 dev_dependencies:
