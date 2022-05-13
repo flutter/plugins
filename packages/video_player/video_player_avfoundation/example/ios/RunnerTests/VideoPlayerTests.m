@@ -192,7 +192,6 @@
   __block NSDictionary<NSString *, id> *initializationEvent;
   [player onListenWithArguments:nil
                       eventSink:^(id event) {
-                        NSLog(@"event: %@", event);
                         XCTAssertTrue([event isKindOfClass:[NSDictionary class]],
                                       @"Unexpected event type: %@", event);
                         if ([event isKindOfClass:[NSDictionary class]]) {
