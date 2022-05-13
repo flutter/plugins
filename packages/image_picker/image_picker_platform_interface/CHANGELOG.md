@@ -1,6 +1,10 @@
-## NEXT
+## 2.5.0
 
-* Minor fixes for new analysis options.
+* Deprecates `getImage` in favor of a new method `getImageFromSource`.
+    * Adds `requestFullMetadata` option that allows disabling extra permission requests
+      on certain platforms.
+    * Moves optional image picking parameters to `ImagePickerOptions` class.
+* Minor fixes for new analysis options. 
 
 ## 2.4.4
 
