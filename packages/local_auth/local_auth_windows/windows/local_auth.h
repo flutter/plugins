@@ -14,10 +14,10 @@
 
 // Include prior to C++/WinRT Headers
 #include <wil/cppwinrt.h>
+#include <wil/win32_helpers.h>
 #include <windows.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Security.Credentials.UI.h>
-#include <winstring.h>
 
 #include <map>
 #include <memory>
