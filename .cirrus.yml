@@ -311,6 +311,10 @@ task:
   << : *MACOS_ARM_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
+    ### iOS+macOS tasks ***
+    - name: darwin-lint_podspecs
+      script:
+        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
     - name: ios-platform_tests
       env:
@@ -360,12 +364,6 @@ task:
   << : *MACOS_INTEL_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
-    ### iOS+macOS tasks ***
-    # TODO(stuartmorgan): Move this to M1 once
-    # https://github.com/flutter/flutter/issues/103515 is resolved.
-    - name: darwin-lint_podspecs
-      script:
-        - ./script/tool_runner.sh podspecs
     ### macOS desktop tasks ###
     # macos-platform_tests builds all the plugins on M1, so this build is run
     # on Intel to give us build coverage of both host types.
