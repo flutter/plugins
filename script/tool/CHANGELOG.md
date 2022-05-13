@@ -1,3 +1,7 @@
+## NEXT
+
+- Fixes changelog validation when reverting to a `NEXT` state.
+
 ## 0.8.5
 
 - Updates `test` to inculde the Dart unit tests of examples, if any.

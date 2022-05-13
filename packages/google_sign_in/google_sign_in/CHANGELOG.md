@@ -1,6 +1,13 @@
+## 5.3.2
+
+* Updates tests to use a mock platform instead of relying on default
+  method channel implementation internals.
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
+
 ## 5.3.1
 
-* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
 
 ## 5.3.0
 

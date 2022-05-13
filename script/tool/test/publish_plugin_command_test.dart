@@ -103,7 +103,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('There are files in the package directory that haven\'t '
+            contains("There are files in the package directory that haven't "
                 'been saved in git. Refusing to publish these files:\n\n'
                 '?? /packages/foo/tmp\n\n'
                 'If the directory should be clean, you can run `git clean -xdf && '
@@ -113,7 +113,7 @@ void main() {
           ]));
     });
 
-    test('fails immediately if the remote doesn\'t exist', () async {
+    test("fails immediately if the remote doesn't exist", () async {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
@@ -877,8 +877,8 @@ class MockStdin extends Mock implements io.Stdin {
   }
 
   @override
-  StreamSubscription<List<int>> listen(void onData(List<int> event)?,
-      {Function? onError, void onDone()?, bool? cancelOnError}) {
+  StreamSubscription<List<int>> listen(void Function(List<int> event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
