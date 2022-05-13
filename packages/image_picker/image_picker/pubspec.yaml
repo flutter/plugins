@@ -25,7 +25,7 @@ dependencies:
   image_picker_android: ^0.8.4+11
   image_picker_for_web: ^2.1.0
   image_picker_ios: ^0.8.4+11
-  image_picker_platform_interface: ^2.3.0
+  image_picker_platform_interface: ^2.5.0
 
 dev_dependencies:
   flutter_test:
