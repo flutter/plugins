@@ -54,12 +54,16 @@ std::wstring Utf16FromUtf8(const std::string& utf8_string) {
 
 namespace local_auth_windows {
 
+// Real implementation of the UserConsentVerifier that
+// calls the native Windows APIs to get the user's consent
 class UserConsentVerifierImpl : public UserConsentVerifier {
  public:
   explicit UserConsentVerifierImpl(std::function<HWND()> window_provider)
       : get_root_window_(std::move(window_provider)){};
   virtual ~UserConsentVerifierImpl() = default;
 
+  // Calls the native Windows API to get the user's consent
+  // with the provided reason.
   winrt::Windows::Foundation::IAsyncOperation<
       winrt::Windows::Security::Credentials::UI::UserConsentVerificationResult>
   RequestVerificationForWindowAsync(std::wstring localized_reason) override {
@@ -85,6 +89,7 @@ class UserConsentVerifierImpl : public UserConsentVerifier {
     return consent_result;
   }
 
+  // Calls the native Windows API to check for the Windows Hello availability
   winrt::Windows::Foundation::IAsyncOperation<
       winrt::Windows::Security::Credentials::UI::
           UserConsentVerifierAvailability>

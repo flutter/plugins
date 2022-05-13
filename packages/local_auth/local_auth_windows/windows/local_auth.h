@@ -25,14 +25,21 @@
 
 namespace local_auth_windows {
 
+// Abstract class that is used to determine whether a user
+// has given consent to a particular action, and if the system
+// supports asking this question.
 class UserConsentVerifier {
  public:
   UserConsentVerifier() {}
   virtual ~UserConsentVerifier() = default;
 
+  // Abstract method that request the user's verification
+  // given the provided reason.
   virtual winrt::Windows::Foundation::IAsyncOperation<
       winrt::Windows::Security::Credentials::UI::UserConsentVerificationResult>
   RequestVerificationForWindowAsync(std::wstring localized_reason) = 0;
+
+  // Abstract method that returns weather the system supports Windows Hello.
   virtual winrt::Windows::Foundation::IAsyncOperation<
       winrt::Windows::Security::Credentials::UI::
           UserConsentVerifierAvailability>
@@ -47,7 +54,12 @@ class LocalAuthPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
+  // Real implementation that creates a plugin instance that will create the
+  // dialog and associate it with the HWND returned from the provided function
   LocalAuthPlugin(std::function<HWND()> window_provider);
+
+  // Creates a plugin instance with the given UserConsentVerifier instance.
+  // Exists for unit testing with mock implementations.
   LocalAuthPlugin(std::unique_ptr<UserConsentVerifier> user_consent_verifier);
 
   // Called when a method is called on this plugin's channel from Dart.
@@ -60,11 +72,16 @@ class LocalAuthPlugin : public flutter::Plugin {
  private:
   std::unique_ptr<UserConsentVerifier> user_consent_verifier_;
 
+  // Starts authentication process
   winrt::fire_and_forget Authenticate(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+  // Returns enrolled biometric types available on device.
   winrt::fire_and_forget GetEnrolledBiometrics(
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+  // Returns whether the system supports Windows Hello.
   winrt::fire_and_forget IsDeviceSupported(
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
