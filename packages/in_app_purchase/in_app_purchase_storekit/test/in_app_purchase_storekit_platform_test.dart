@@ -427,6 +427,64 @@ void main() {
       final PurchaseStatus purchaseStatus = await completer.future;
       expect(purchaseStatus, PurchaseStatus.canceled);
     });
+
+    test('buying non consumable, should be able to purchase multiple quantity of one product', () async {
+      final List<PurchaseDetails> details = <PurchaseDetails>[];
+      final Completer<List<PurchaseDetails>> completer =
+      Completer<List<PurchaseDetails>>();
+      final Stream<List<PurchaseDetails>> stream =
+          iapStoreKitPlatform.purchaseStream;
+      late StreamSubscription<List<PurchaseDetails>> subscription;
+      subscription = stream.listen((List<PurchaseDetails> purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+          if (purchaseDetails.pendingCompletePurchase) {
+            iapStoreKitPlatform.completePurchase(purchaseDetails);
+            completer.complete(details);
+            subscription.cancel();
+          }
+        }
+      });
+      final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
+          productDetails:
+          AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          applicationUserName: 'appName');
+      await iapStoreKitPlatform.buyNonConsumable(
+          purchaseParam: purchaseParam,
+          quantity: 5
+      );
+      await completer.future;
+      expect(fakeStoreKitPlatform.finishedTransactions.first.payment.quantity, 5);
+    });
+
+    test('buying consumable, should be able to purchase multiple quantity of one product', () async {
+      final List<PurchaseDetails> details = <PurchaseDetails>[];
+      final Completer<List<PurchaseDetails>> completer =
+      Completer<List<PurchaseDetails>>();
+      final Stream<List<PurchaseDetails>> stream =
+          iapStoreKitPlatform.purchaseStream;
+      late StreamSubscription<List<PurchaseDetails>> subscription;
+      subscription = stream.listen((List<PurchaseDetails> purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+          if (purchaseDetails.pendingCompletePurchase) {
+            iapStoreKitPlatform.completePurchase(purchaseDetails);
+            completer.complete(details);
+            subscription.cancel();
+          }
+        }
+      });
+      final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
+          productDetails:
+          AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          applicationUserName: 'appName');
+      await iapStoreKitPlatform.buyConsumable(
+          purchaseParam: purchaseParam,
+          quantity: 5
+      );
+      await completer.future;
+      expect(fakeStoreKitPlatform.finishedTransactions.first.payment.quantity, 5);
+    });
   });
 
   group('complete purchase', () {
