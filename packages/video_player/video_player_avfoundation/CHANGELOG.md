@@ -1,3 +1,7 @@
+## NEXT
+
+* Improves unit test handling of error cases.
+
 ## 2.3.4
 
 * Removes unnecessary imports.
