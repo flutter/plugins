@@ -1,6 +1,7 @@
 ## NEXT
 
-* Fixes tests to recognize new default `forceCodeForRefreshToken` request attribute.
+* Updates tests to use a mock platform instead of relying on default
+  method channel implementation internals.
 
 ## 5.3.1
 
