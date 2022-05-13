@@ -46,6 +46,9 @@ typedef void (^FlutterResultAdapter)(NSArray<NSString *> *_Nullable, FlutterErro
 /** Maximum number of images to select. 0 indicates no maximum. */
 @property(nonatomic, assign) int maxImageCount;
 
+/** Whether the image should be picked with full metadata (requires gallery permissions) */
+@property(nonatomic, assign) BOOL requestFullMetadata;
+
 @end
 
 #pragma mark -

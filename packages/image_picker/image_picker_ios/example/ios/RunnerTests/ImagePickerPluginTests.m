@@ -54,6 +54,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
+                      fullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -86,6 +87,7 @@
                                                             camera:FLTSourceCameraFront]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
+                      fullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -177,6 +179,28 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
+- (void)testPickImageWithoutFullMetadataPreiOS14 {
+  if (@available(iOS 14, *)) {
+    return;
+  }
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                                              arguments:@{
+                                                                @"source" : @(1),
+                                                                @"requestFullMetadata" : @(NO),
+                                                              }];
+
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+
+  OCMVerify(times(1),
+            [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
+}
+
+
 #pragma mark - Test camera devices, no op on simulators
 
 - (void)testPluginPickImageDeviceCancelClickMultipleTimes {
@@ -191,6 +215,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
+                      fullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
