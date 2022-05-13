@@ -54,7 +54,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                      fullMetadata:@(YES)
+                 fullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -87,7 +87,7 @@
                                                             camera:FLTSourceCameraFront]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                      fullMetadata:@(YES)
+                 fullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 
@@ -200,7 +200,6 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
-
 #pragma mark - Test camera devices, no op on simulators
 
 - (void)testPluginPickImageDeviceCancelClickMultipleTimes {
@@ -215,7 +214,7 @@
                                                             camera:FLTSourceCameraRear]
                       maxSize:[[FLTMaxSize alloc] init]
                       quality:nil
-                      fullMetadata:@(YES)
+                 fullMetadata:@(YES)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
 

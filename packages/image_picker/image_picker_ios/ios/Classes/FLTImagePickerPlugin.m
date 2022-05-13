@@ -166,7 +166,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)pickImageWithSource:(nonnull FLTSourceSpecification *)source
                     maxSize:(nonnull FLTMaxSize *)maxSize
                     quality:(nullable NSNumber *)imageQuality
-                    fullMetadata:(NSNumber *)fullMetadata
+               fullMetadata:(NSNumber *)fullMetadata
                  completion:
                      (nonnull void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
   [self cancelInProgressCall];
