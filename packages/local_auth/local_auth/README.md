@@ -1,10 +1,12 @@
 # local_auth
 
+<?code-excerpt path-base="excerpts/packages/local_auth_example"?>
+
 This Flutter plugin provides means to perform local, on-device authentication of
 the user.
 
-This means referring to biometric authentication on iOS (Touch ID or lock code)
-and the fingerprint APIs on Android (introduced in Android 6.0).
+On supported devices, this includes authentication with biometrics such as
+fingerprint or facial recognition.
 
 |             | Android   | iOS  |
 |-------------|-----------|------|
@@ -12,136 +14,174 @@ and the fingerprint APIs on Android (introduced in Android 6.0).
 
 ## Usage
 
-Import the relevant file:
+### Device Capabilities
 
+To check whether there is local authentication available on this device or not,
+call `canCheckBiometrics` (if you need biometrics support) and/or
+`isDeviceSupported()` (if you just need some device-level authentication):
+
+<?code-excerpt "readme_excerpts.dart (CanCheck)"?>
 ```dart
 import 'package:local_auth/local_auth.dart';
-```
-
-To check whether there is local authentication available on this device or not, call canCheckBiometrics:
-
-```dart
-bool canCheckBiometrics =
-    await localAuth.canCheckBiometrics;
+// ···
+  final LocalAuthentication auth = LocalAuthentication();
+  // ···
+    final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+    final bool canAuthenticate =
+        canAuthenticateWithBiometrics || await auth.isDeviceSupported();
 ```
 
 Currently the following biometric types are implemented:
 
 - BiometricType.face
 - BiometricType.fingerprint
+- BiometricType.weak
+- BiometricType.strong
 
-To get a list of enrolled biometrics, call getAvailableBiometrics:
+### Enrolled Biometrics
 
+`canCheckBiometrics` only indicates whether hardware support is available, not
+whether the device has any biometrics enrolled. To get a list of enrolled
+biometrics, call `getAvailableBiometrics()`.
+
+The types are device-specific and platform-specific, and other types may be
+added in the future, so when possible you should not rely on specific biometric
+types and only check that some biometric is enrolled:
+
+<?code-excerpt "readme_excerpts.dart (Enrolled)"?>
 ```dart
-List<BiometricType> availableBiometrics =
+final List<BiometricType> availableBiometrics =
     await auth.getAvailableBiometrics();
 
-if (Platform.isIOS) {
-    if (availableBiometrics.contains(BiometricType.face)) {
-        // Face ID.
-    } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-        // Touch ID.
-    }
+if (availableBiometrics.isNotEmpty) {
+  // Some biometrics are enrolled.
+}
+
+if (availableBiometrics.contains(BiometricType.strong) ||
+    availableBiometrics.contains(BiometricType.face)) {
+  // Specific types of biometrics are available.
+  // Use checks like this with caution!
 }
 ```
 
-We have default dialogs with an 'OK' button to show authentication error
-messages for the following 2 cases:
+### Options
 
-1. Passcode/PIN/Pattern Not Set. The user has not yet configured a passcode on
-   iOS or PIN/pattern on Android.
-2. Touch ID/Fingerprint Not Enrolled. The user has not enrolled any
-   fingerprints on the device.
+The `authenticate()` method uses biometric authentication when possible, but
+also allows fallback to pin, pattern, or passcode.
 
-Which means, if there's no fingerprint on the user's device, a dialog with
-instructions will pop up to let the user set up fingerprint. If the user clicks
-'OK' button, it will return 'false'.
-
-Use the exported APIs to trigger local authentication with default dialogs:
-
-The `authenticate()` method uses biometric authentication, but also allows
-users to use pin, pattern, or passcode.
-
+<?code-excerpt "readme_excerpts.dart (AuthAny)"?>
 ```dart
-var localAuth = LocalAuthentication();
-bool didAuthenticate =
-    await localAuth.authenticate(
-        localizedReason: 'Please authenticate to show account balance');
+try {
+  final bool didAuthenticate = await auth.authenticate(
+      localizedReason: 'Please authenticate to show account balance');
+  // ···
+} on PlatformException {
+  // ...
+}
 ```
 
-To authenticate using biometric authentication only, set `biometricOnly` to `true`.
+To require biometric authentication, pass `AuthenticationOptions` with
+`biometricOnly` set to `true`.
 
+<?code-excerpt "readme_excerpts.dart (AuthBioOnly)"?>
 ```dart
-var localAuth = LocalAuthentication();
-bool didAuthenticate =
-    await localAuth.authenticate(
-        localizedReason: 'Please authenticate to show account balance',
-        biometricOnly: true);
-```
-
-If you don't want to use the default dialogs, call this API with
-'useErrorDialogs = false'. In this case, it will throw the error message back
-and you need to handle them in your dart code:
-
-```dart
-bool didAuthenticate =
-    await localAuth.authenticate(
-        localizedReason: 'Please authenticate to show account balance',
-        useErrorDialogs: false);
-```
-
-You can use our default dialog messages, or you can use your own messages by
-passing in IOSAuthMessages and AndroidAuthMessages:
-
-```dart
-import 'package:local_auth/auth_strings.dart';
-
-const iosStrings = const IOSAuthMessages(
-    cancelButton: 'cancel',
-    goToSettingsButton: 'settings',
-    goToSettingsDescription: 'Please set up your Touch ID.',
-    lockOut: 'Please reenable your Touch ID');
-await localAuth.authenticate(
+final bool didAuthenticate = await auth.authenticate(
     localizedReason: 'Please authenticate to show account balance',
-    useErrorDialogs: false,
-    iOSAuthStrings: iosStrings);
-
+    options: const AuthenticationOptions(biometricOnly: true));
 ```
 
-If needed, you can manually stop authentication for android:
+#### Dialogs
 
+The plugin provides default dialogs for the following cases:
+
+1. Passcode/PIN/Pattern Not Set: The user has not yet configured a passcode on
+   iOS or PIN/pattern on Android.
+2. Biometrics Not Enrolled: The user has not enrolled any biometrics on the
+   device.
+
+If a user does not have the necessary authentication enrolled when
+`authenticate` is called, they will be given the option to enroll at that point,
+or cancel authentication.
+
+If you don't want to use the default dialogs, set the `useErrorDialogs` option
+to `false` to have `authenticate` immediately return an error in those cases.
+
+<?code-excerpt "readme_excerpts.dart (NoErrorDialogs)"?>
 ```dart
-
-void _cancelAuthentication() {
-    localAuth.stopAuthentication();
-}
-
+import 'package:local_auth/error_codes.dart' as auth_error;
+// ···
+    try {
+      final bool didAuthenticate = await auth.authenticate(
+          localizedReason: 'Please authenticate to show account balance',
+          options: const AuthenticationOptions(useErrorDialogs: false));
+      // ···
+    } on PlatformException catch (e) {
+      if (e.code == auth_error.notAvailable) {
+        // Add handling of no hardware here.
+      } else if (e.code == auth_error.notEnrolled) {
+        // ...
+      } else {
+        // ...
+      }
+    }
 ```
+
+If you want to customize the messages in the dialogs, you can pass
+`AuthMessages` for each platform you support. These are platform-specific, so
+you will need to import the platform-specific implementation packages. For
+instance, to customize Android and iOS:
+
+<?code-excerpt "readme_excerpts.dart (CustomMessages)"?>
+```dart
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_ios/local_auth_ios.dart';
+// ···
+    final bool didAuthenticate = await auth.authenticate(
+        localizedReason: 'Please authenticate to show account balance',
+        authMessages: const <AuthMessages>[
+          AndroidAuthMessages(
+            signInTitle: 'Oops! Biometric authentication required!',
+            cancelButton: 'No thanks',
+          ),
+          IOSAuthMessages(
+            cancelButton: 'No thanks',
+          ),
+        ]);
+```
+
+See the platform-specific classes for details about what can be customized on
+each platform.
 
 ### Exceptions
 
-There are 6 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable, OtherOperatingSystem, LockedOut and PermanentlyLockedOut.
-They are wrapped in LocalAuthenticationError class. You can
-catch the exception and handle them by different types. For example:
+`authenticate` throws `PlatformException`s in many error cases. See
+`error_codes.dart` for known error codes that you may want to have specific
+handling for. For example:
 
+<?code-excerpt "readme_excerpts.dart (ErrorHandling)"?>
 ```dart
 import 'package:flutter/services.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
-
-try {
-  bool didAuthenticate = await local_auth.authenticate(
-      localizedReason: 'Please authenticate to show account balance');
-} on PlatformException catch (e) {
-  if (e.code == auth_error.notAvailable) {
-    // Handle this exception here.
-  }
-}
+import 'package:local_auth/local_auth.dart';
+// ···
+  final LocalAuthentication auth = LocalAuthentication();
+  // ···
+    try {
+      final bool didAuthenticate = await auth.authenticate(
+          localizedReason: 'Please authenticate to show account balance',
+          options: const AuthenticationOptions(useErrorDialogs: false));
+      // ···
+    } on PlatformException catch (e) {
+      if (e.code == auth_error.notEnrolled) {
+        // Add handling of no hardware here.
+      } else if (e.code == auth_error.lockedOut ||
+          e.code == auth_error.permanentlyLockedOut) {
+        // ...
+      } else {
+        // ...
+      }
+    }
 ```
-
-### Android
-
-\* The plugin will build and run on SDK 16+, but `isDeviceSupported()` will
-always return false before SDK 23 (Android 6.0).
 
 ## iOS Integration
 
@@ -158,46 +198,39 @@ app has not been updated to use Face ID.
 
 ## Android Integration
 
-Note that local_auth plugin requires the use of a FragmentActivity as
-opposed to Activity. This can be easily done by switching to use
-`FlutterFragmentActivity` as opposed to `FlutterActivity` in your
-manifest (or your own Activity class if you are extending the base class).
+\* The plugin will build and run on SDK 16+, but `isDeviceSupported()` will
+always return false before SDK 23 (Android 6.0).
 
-Update your MainActivity.java:
+### Activity Changes
 
-```java
-import android.os.Bundle;
-import io.flutter.app.FlutterFragmentActivity;
-import io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin;
-import io.flutter.plugins.localauth.LocalAuthPlugin;
+Note that `local_auth` requires the use of a `FragmentActivity` instead of an
+`Activity`. To update your application:
 
-public class MainActivity extends FlutterFragmentActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        FlutterAndroidLifecyclePlugin.registerWith(
-                registrarFor(
-                        "io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin"));
-        LocalAuthPlugin.registerWith(registrarFor("io.flutter.plugins.localauth.LocalAuthPlugin"));
+* If you are using `FlutterActivity` directly, change it to
+`FlutterFragmentActivity` in your `AndroidManifest.xml`.
+* If you are using a custom activity, update your `MainActivity.java`:
+
+    ```java
+    import io.flutter.embedding.android.FlutterFragmentActivity;
+
+    public class MainActivity extends FlutterFragmentActivity {
+        // ...
     }
-}
-```
+    ```
 
-OR
+    or MainActivity.kt:
 
-Update your MainActivity.kt:
+    ```kotlin
+    import io.flutter.embedding.android.FlutterFragmentActivity
 
-```kotlin
-import io.flutter.embedding.android.FlutterFragmentActivity
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugins.GeneratedPluginRegistrant
-
-class MainActivity: FlutterFragmentActivity() {
-    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        GeneratedPluginRegistrant.registerWith(flutterEngine)
+    class MainActivity: FlutterFragmentActivity() {
+        // ...
     }
-}
-```
+    ```
+
+    to inherit from `FlutterFragmentActivity`.
+
+### Permissions
 
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
@@ -208,6 +241,8 @@ Update your project's `AndroidManifest.xml` file to include the
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 <manifest>
 ```
+
+### Compatibility
 
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
@@ -223,10 +258,3 @@ if the user receives a phone call before they get a chance to authenticate. With
 `stickyAuth` set to false, this would result in plugin returning failure result
 to the Dart app. If set to true, the plugin will retry authenticating when the
 app resumes.
-
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.dev/).
-
-For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).

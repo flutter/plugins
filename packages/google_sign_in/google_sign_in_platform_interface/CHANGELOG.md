@@ -1,3 +1,8 @@
+## 2.1.3
+
+* Removes unnecessary imports.
+* Adds `SignInInitParameters` class to hold all sign in params, including the new `forceCodeForRefreshToken`.
+
 ## 2.1.2
 
 * Internal code cleanup for stricter analysis options.

@@ -140,12 +140,12 @@ class MockTestWKWebViewHostApi extends _i1.Mock
           Invocation.method(#setCustomUserAgent, [instanceId, userAgent]),
           returnValueForMissingStub: null);
   @override
-  _i4.Future<String> evaluateJavaScript(
-          int? instanceId, String? javascriptString) =>
+  _i4.Future<Object?> evaluateJavaScript(
+          int? instanceId, String? javaScriptString) =>
       (super.noSuchMethod(
           Invocation.method(
-              #evaluateJavaScript, [instanceId, javascriptString]),
-          returnValue: Future<String>.value('')) as _i4.Future<String>);
+              #evaluateJavaScript, [instanceId, javaScriptString]),
+          returnValue: Future<Object?>.value()) as _i4.Future<Object?>);
 }
 
 /// A class which mocks [TestUIScrollViewHostApi].
@@ -185,10 +185,6 @@ class MockTestUIViewHostApi extends _i1.Mock implements _i2.TestUIViewHostApi {
     _i1.throwOnMissingStub(this);
   }
 
-  @override
-  List<double?> getContentOffset(int? instanceId) =>
-      (super.noSuchMethod(Invocation.method(#getContentOffset, [instanceId]),
-          returnValue: <double?>[]) as List<double?>);
   @override
   void setBackgroundColor(int? instanceId, int? value) => super.noSuchMethod(
       Invocation.method(#setBackgroundColor, [instanceId, value]),

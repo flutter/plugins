@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
-import 'package:local_auth_platform_interface/types/auth_options.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +21,7 @@ void main() {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
         switch (methodCall.method) {
-          case 'getAvailableBiometrics':
+          case 'getEnrolledBiometrics':
             return Future<List<String>>.value(
                 <String>['face', 'fingerprint', 'iris', 'undefined']);
           default:
@@ -35,13 +32,13 @@ void main() {
       log.clear();
     });
 
-    test('deviceSupportsBiometrics calls getEnrolledBiometrics', () async {
+    test('deviceSupportsBiometrics calls platform', () async {
       final bool result = await localAuthentication.deviceSupportsBiometrics();
 
       expect(
         log,
         <Matcher>[
-          isMethodCall('getAvailableBiometrics', arguments: null),
+          isMethodCall('deviceSupportsBiometrics', arguments: null),
         ],
       );
       expect(result, true);
@@ -54,7 +51,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('getAvailableBiometrics', arguments: null),
+          isMethodCall('getEnrolledBiometrics', arguments: null),
         ],
       );
       expect(result, <BiometricType>[

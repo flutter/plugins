@@ -1,8 +1,9 @@
 gcp_credentials: ENCRYPTED[!2c88dee9c9d9805b214c9f7ad8f3bc8fae936cdb0f881d562101151c408c7e024a41222677d5831df90c60d2dd6cd80a!]
 
 # Don't run on release tags since it creates O(n^2) tasks where n is the
-# number of plugins
-only_if: $CIRRUS_TAG == ''
+# number of plugins.
+# Don't run on 'master' since it's a mirror of 'main'.
+only_if: $CIRRUS_TAG == '' && $CIRRUS_BRANCH != 'master'
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
@@ -101,7 +102,13 @@ task:
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
         pubspec_script: ./script/tool_runner.sh pubspec-check
-        readme_script: ./script/tool_runner.sh readme-check
+        readme_script:
+          - ./script/tool_runner.sh readme-check
+          # Re-run with --require-excerpts, skipping packages that still need
+          # to be converted. Once https://github.com/flutter/flutter/issues/102679
+          # has been fixed, this can be removed and there can just be a single
+          # run with --require-excerpts and no exclusions.
+          - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
@@ -155,6 +162,10 @@ task:
       analyze_script:
         - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
         - echo "If this test fails, the minumum Flutter version should be updated"
+    - name: readme_excerpts
+      env:
+        CIRRUS_CLONE_SUBMODULES: true
+      script: ./script/tool_runner.sh update-excerpts --fail-on-change
     ### Web tasks ###
     - name: web-build_all_plugins
       env:

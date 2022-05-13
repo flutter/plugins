@@ -9,7 +9,6 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/git_version_finder.dart';
@@ -40,8 +39,11 @@ enum _CurrentVersionState {
   /// The version is unchanged.
   unchanged,
 
-  /// The version has changed, and the transition is valid.
-  validChange,
+  /// The version has increased, and the transition is valid.
+  validIncrease,
+
+  /// The version has decrease, and the transition is a valid revert.
+  validRevert,
 
   /// The version has changed, and the transition is invalid.
   invalidChange,
@@ -219,7 +221,8 @@ class VersionCheckCommand extends PackageLoopingCommand {
       case _CurrentVersionState.unchanged:
         versionChanged = false;
         break;
-      case _CurrentVersionState.validChange:
+      case _CurrentVersionState.validIncrease:
+      case _CurrentVersionState.validRevert:
         versionChanged = true;
         break;
       case _CurrentVersionState.invalidChange:
@@ -233,7 +236,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
     }
 
     if (!(await _validateChangelogVersion(package,
-        pubspec: pubspec, pubspecVersionChanged: versionChanged))) {
+        pubspec: pubspec, pubspecVersionState: versionState))) {
       errors.add('CHANGELOG.md failed validation.');
     }
 
@@ -323,7 +326,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
       logWarning(
           '${indentation}If this plugin is not new, something has gone wrong.');
-      return _CurrentVersionState.validChange; // Assume new, thus valid.
+      return _CurrentVersionState.validIncrease; // Assume new, thus valid.
     }
 
     if (previousVersion == currentVersion) {
@@ -341,7 +344,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
         logWarning('${indentation}New version is lower than previous version. '
             'This is assumed to be a revert.');
-        return _CurrentVersionState.validChange;
+        return _CurrentVersionState.validRevert;
       }
     }
 
@@ -368,7 +371,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       return _CurrentVersionState.invalidChange;
     }
 
-    return _CurrentVersionState.validChange;
+    return _CurrentVersionState.validIncrease;
   }
 
   /// Checks whether or not [package]'s CHANGELOG's versioning is correct,
@@ -379,13 +382,13 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   Future<bool> _validateChangelogVersion(
     RepositoryPackage package, {
     required Pubspec pubspec,
-    required bool pubspecVersionChanged,
+    required _CurrentVersionState pubspecVersionState,
   }) async {
     // This method isn't called unless `version` is non-null.
     final Version fromPubspec = pubspec.version!;
 
     // get first version from CHANGELOG
-    final File changelog = package.directory.childFile('CHANGELOG.md');
+    final File changelog = package.changelogFile;
     final List<String> lines = changelog.readAsLinesSync();
     String? firstLineWithText;
     final Iterator<String> iterator = lines.iterator;
@@ -400,14 +403,15 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
     final String badNextErrorMessage = '${indentation}When bumping the version '
         'for release, the NEXT section should be incorporated into the new '
-        'version\'s release notes.';
+        "version's release notes.";
 
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
     final bool hasNextSection = versionString == 'NEXT';
     if (hasNextSection) {
-      // NEXT should not be present in a commit that changes the version.
-      if (pubspecVersionChanged) {
+      // NEXT should not be present in a commit that increases the version.
+      if (pubspecVersionState == _CurrentVersionState.validIncrease ||
+          pubspecVersionState == _CurrentVersionState.invalidChange) {
         printError(badNextErrorMessage);
         return false;
       }
@@ -527,7 +531,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     final Directory gitRoot =
         packagesDir.fileSystem.directory((await gitDir).path);
     final String relativePackagePath =
-        getRelativePosixPath(package.directory, from: gitRoot) + '/';
+        '${getRelativePosixPath(package.directory, from: gitRoot)}/';
     bool hasChanges = false;
     bool needsVersionChange = false;
     bool hasChangelogChange = false;
@@ -590,7 +594,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
             'change description.');
       } else {
         printError(
-            'No CHANGELOG change found. If this PR needs an exemption from'
+            'No CHANGELOG change found. If this PR needs an exemption from '
             'the standard policy of listing all changes in the CHANGELOG, '
             'please add a line starting with\n'
             '$_missingChangelogChangeJustificationMarker\n'

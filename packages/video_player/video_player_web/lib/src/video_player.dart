@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
@@ -135,6 +134,7 @@ class VideoPlayer {
   }
 
   /// Controls whether the video should start again after it finishes.
+  // ignore: use_setters_to_change_properties
   void setLooping(bool value) {
     _videoElement.loop = value;
   }

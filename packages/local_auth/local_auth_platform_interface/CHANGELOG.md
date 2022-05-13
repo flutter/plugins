@@ -1,3 +1,7 @@
+## NEXT
+
+* Removes unnecessary imports.
+
 ## 1.0.3
 
 * Fixes regression in the default method channel implementation of
