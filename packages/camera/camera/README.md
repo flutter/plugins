@@ -86,21 +86,13 @@ Permission errors may be thrown when initializing the camera controller, and you
 
 Here is a list of all permission error codes that can be thrown:
 
-- CameraAccessDenied
-Thrown when user denied the camera access permission.
+- `CameraAccessDenied`: Thrown when user denies the camera access permission.
 
-- CameraAccessDeniedWithoutPrompt
-iOS only for now.
-Thrown when user has previously denied the permission.
-iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy in order to enable camera access.
+- `CameraAccessDeniedWithoutPrompt`: iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy in order to enable camera access.
 
-- CameraAccessRestricted
-iOS only for now.
-Thrown when camera access is restricted and users cannot grant permission (parental control).
+- `CameraAccessRestricted`: iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
 
-- cameraPermission
-Android and Web only.
-A legacy error code for all kinds of camera permission errors.
+- `cameraPermission`: Android and Web only. A legacy error code for all kinds of camera permission errors.
 
 ### Example
 
@@ -141,14 +133,16 @@ class _CameraAppState extends State<CameraApp> {
         return;
       }
       setState(() {});
-    }).catchError((e) {
-      switch (e.code) {
-        case 'CameraAccessDenied':
-          print('User denied camera access.');
-          break;
-        default:
-          print('Handle other errors.');
-          break;
+    }).catchError((dynamic e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print('User denied camera access.');
+            break;
+          default:
+            print('Handle other errors.');
+            break;
+        }
       }
     });
   }

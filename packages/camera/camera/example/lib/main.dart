@@ -699,8 +699,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           break;
         case 'cameraPermission':
           // Android & web only
-          showInSnackBar(
-              'Legacy error code for all kinds of permission errors');
+          showInSnackBar('Unknown permission error.');
           break;
         default:
           _showCameraException(e);
