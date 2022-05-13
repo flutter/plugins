@@ -111,6 +111,7 @@ class WindowsAuthMessages extends AuthMessages {
 
   @override
   int get hashCode => Object.hash(
+      super.hashCode,
       biometricHint,
       biometricNotRecognized,
       biometricRequiredTitle,
@@ -186,6 +187,6 @@ String get windowsDeviceCredentialsSetupDescription =>
 /// biometric on their device.
 String get windowsGoToSettingsDescription => Intl.message(
     'Biometric authentication is not set up on your device. Go to '
-    '\'Settings > Security\' to add biometric authentication.',
+    "'Settings > Security' to add biometric authentication.",
     desc: 'Message advising the user to go to the settings and configure '
         'biometric on their device.');
