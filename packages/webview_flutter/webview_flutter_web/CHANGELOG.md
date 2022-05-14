@@ -1,3 +1,7 @@
+## 0.1.0+4
+
+* Fixes unreliable encoding of HTML to the iframe element.
+
 ## 0.1.0+3
 
 * Minor fixes for new analysis options.
