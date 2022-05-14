@@ -1,6 +1,7 @@
 ## NEXT
 
 - Fixes changelog validation when reverting to a `NEXT` state.
+- Fixes multiplication of `--force` flag when publishing multiple packages.
 
 ## 0.8.5
 
