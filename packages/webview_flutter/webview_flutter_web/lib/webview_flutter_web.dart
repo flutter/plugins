@@ -86,7 +86,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
       [this._viewId = 1, this._javascriptChannelRegistry]);
 
   /// The IFrame's Window object.
-  late js.JsObject window;
+  js.JsObject? window;
 
   final JavascriptChannelRegistry? _javascriptChannelRegistry;
   final int _viewId;
@@ -173,14 +173,26 @@ class WebWebViewPlatformController implements WebViewPlatformController {
 
   @override
   Future<void> runJavascript(String javascript) {
+    if (window == null) {
+      throw UnsupportedError(
+        'Running Javascript is available only by loading the Html as a string',
+      );
+    }
+
     return Future<dynamic>.value(
-        window.callMethod('eval', <String>[javascript]));
+        window!.callMethod('eval', <String>[javascript]));
   }
 
   @override
   Future<String> runJavascriptReturningResult(String javascript) {
+    if (window == null) {
+      throw UnsupportedError(
+        'Running Javascript is available only by loading the Html as a string',
+      );
+    }
+
     return Future<dynamic>.value(
-            window.callMethod('eval', <String>[javascript]))
+            window?.callMethod('eval', <String>[javascript]))
         .then((dynamic value) => value.toString());
   }
 
@@ -255,7 +267,8 @@ class WebWebViewPlatformController implements WebViewPlatformController {
       final String funcName = 'parent.webview${_viewId}_channel';
 
       scriptContent.writeln(
-          'window.${channel.name} = { postMessage: (message) => $funcName("${channel.name}", message) };');
+        'window.${channel.name} = { postMessage: (message) => $funcName("${channel.name}", message) };',
+      );
     });
 
     scriptElement.text = scriptContent.toString();
