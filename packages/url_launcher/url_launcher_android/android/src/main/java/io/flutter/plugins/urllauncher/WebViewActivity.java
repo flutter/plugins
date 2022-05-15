@@ -15,10 +15,10 @@ import android.os.Bundle;
 import android.os.Message;
 import android.provider.Browser;
 import android.view.KeyEvent;
+import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.PermissionRequest;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,7 +85,7 @@ public class WebViewActivity extends Activity {
     @Override
     public void onPermissionRequest(PermissionRequest request) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          request.grant(request.getResources());
+        request.grant(request.getResources());
       }
     }
 
