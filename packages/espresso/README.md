@@ -85,13 +85,13 @@ void main() {
 
 The following command line command runs the test locally:
 
-```
+```sh
 ./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/example.dart
 ```
 
 Espresso tests can also be run on [Firebase Test Lab](https://firebase.google.com/docs/test-lab):
 
-```
+```sh
 ./gradlew app:assembleAndroidTest
 ./gradlew app:assembleDebug -Ptarget=<path_to_test>.dart
 gcloud auth activate-service-account --key-file=<PATH_TO_KEY_FILE>

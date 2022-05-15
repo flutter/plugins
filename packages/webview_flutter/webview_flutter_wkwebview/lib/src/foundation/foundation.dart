@@ -146,6 +146,9 @@ enum NSHttpCookiePropertyKey {
 
   /// A String indicating the same-site policy for the cookie.
   ///
+  /// This is only supported on iOS version 13+. This value will be ignored on
+  /// versions < 13.
+  ///
   /// See https://developer.apple.com/documentation/foundation/nshttpcookiesamesitepolicy.
   sameSitePolicy,
 

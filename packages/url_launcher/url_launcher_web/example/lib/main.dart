@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/link.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class _HorizontalScrollBehavior extends MaterialScrollBehavior {
@@ -22,6 +22,9 @@ class _HorizontalScrollBehavior extends MaterialScrollBehavior {
 
 /// App for testing
 class MyApp extends StatelessWidget {
+  /// Default Constructor
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) => MaterialApp(
         home: Scaffold(
