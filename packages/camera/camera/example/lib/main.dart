@@ -658,7 +658,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       }
       if (cameraController.value.hasError) {
         showInSnackBar(
-            'Camera error ${cameraController.value.errorDescription}');
+          'Camera error ${cameraController.value.errorDescription}',
+        );
       }
     });
 
@@ -672,15 +673,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       }
       await Future.wait(<Future<Object?>>[
         // The exposure mode is currently not supported on the web.
-        ...!kIsWeb
-            ? <Future<Object?>>[
-                cameraController.getMinExposureOffset().then(
-                    (double value) => _minAvailableExposureOffset = value),
-                cameraController
-                    .getMaxExposureOffset()
-                    .then((double value) => _maxAvailableExposureOffset = value)
-              ]
-            : <Future<Object?>>[],
+        if (kIsWeb) ...<Future<Object?>>[
+          cameraController
+              .getMinExposureOffset()
+              .then((double value) => _minAvailableExposureOffset = value),
+          cameraController
+              .getMaxExposureOffset()
+              .then((double value) => _maxAvailableExposureOffset = value)
+        ],
         cameraController
             .getMaxZoomLevel()
             .then((double value) => _maxAvailableZoom = value),
