@@ -5,10 +5,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
+import 'dart:js' as js;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'shims/dart_ui.dart' as ui;
 
@@ -44,13 +47,19 @@ class WebWebViewPlatform implements WebViewPlatform {
         }
         final IFrameElement element =
             document.getElementById('webview-$viewId')! as IFrameElement;
+
+        final WebWebViewPlatformController controller =
+            WebWebViewPlatformController(element, viewId);
+
+        js.context['webview${viewId}_getWindow'] = (js.JsObject window) {
+          controller.window = window;
+        };
+
         if (creationParams.initialUrl != null) {
           // ignore: unsafe_html
           element.src = creationParams.initialUrl;
         }
-        onWebViewPlatformCreated(WebWebViewPlatformController(
-          element,
-        ));
+        onWebViewPlatformCreated(controller);
       },
     );
   }
@@ -65,8 +74,11 @@ class WebWebViewPlatform implements WebViewPlatform {
 /// Implementation of [WebViewPlatformController] for web.
 class WebWebViewPlatformController implements WebViewPlatformController {
   /// Constructs a [WebWebViewPlatformController].
-  WebWebViewPlatformController(this._element);
+  WebWebViewPlatformController(this._element, [this._viewId = 1]);
 
+  /// The IFrame's Window object.
+  late js.JsObject window;
+  final int _viewId;
   final IFrameElement _element;
   HttpRequestFactory _httpRequestFactory = HttpRequestFactory();
 
@@ -150,12 +162,15 @@ class WebWebViewPlatformController implements WebViewPlatformController {
 
   @override
   Future<void> runJavascript(String javascript) {
-    throw UnimplementedError();
+    return Future<dynamic>.value(
+        window.callMethod('eval', <String>[javascript]));
   }
 
   @override
   Future<String> runJavascriptReturningResult(String javascript) {
-    throw UnimplementedError();
+    return Future<dynamic>.value(
+            window.callMethod('eval', <String>[javascript]))
+        .then((dynamic value) => value.toString());
   }
 
   @override
@@ -184,11 +199,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     String? baseUrl,
   }) async {
     // ignore: unsafe_html
-    _element.src = Uri.dataFromString(
-      html,
-      mimeType: 'text/html',
-      encoding: Encoding.getByName('utf-8'),
-    ).toString();
+    _element.srcdoc = preprocessHtml(html);
   }
 
   @override
@@ -214,6 +225,22 @@ class WebWebViewPlatformController implements WebViewPlatformController {
   @override
   Future<void> loadFlutterAsset(String key) {
     throw UnimplementedError();
+  }
+
+  String preprocessHtml(String html) {
+    final dom.Document document = parse(html);
+
+    final dom.Element scriptElement = document.createElement('script');
+    scriptElement.text = 'parent.webview${_viewId}_getWindow(window)';
+
+    document.head?.insertBefore(scriptElement, document.head!.firstChild);
+
+    String outputHtml = document.outerHtml;
+    if (!outputHtml.trim().startsWith('<!DOCTYPE html>')) {
+      outputHtml = '<!DOCTYPE html>$outputHtml';
+    }
+
+    return outputHtml;
   }
 }
 
