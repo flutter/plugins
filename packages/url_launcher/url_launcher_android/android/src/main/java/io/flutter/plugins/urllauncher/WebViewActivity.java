@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.PermissionRequest;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -80,6 +81,14 @@ public class WebViewActivity extends Activity {
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
+    // For correct getUserMedia access
+    @Override
+    public void onPermissionRequest(PermissionRequest request) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            request.grant(request.getResources());
+        }
+    }
+
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
