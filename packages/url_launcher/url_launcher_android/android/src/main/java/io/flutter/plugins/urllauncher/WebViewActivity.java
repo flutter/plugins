@@ -84,9 +84,9 @@ public class WebViewActivity extends Activity {
     // For correct getUserMedia access
     @Override
     public void onPermissionRequest(PermissionRequest request) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            request.grant(request.getResources());
-        }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          request.grant(request.getResources());
+      }
     }
 
     @Override
