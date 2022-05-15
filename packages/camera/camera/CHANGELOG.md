@@ -1,3 +1,7 @@
+## 0.9.5+1
+
+* Improve the example to update the controller only if it's initialized successfully.
+
 ## 0.9.5
 
 * Adds camera access permission handling logic on iOS to fix a related crash when using the camera for the first time.
