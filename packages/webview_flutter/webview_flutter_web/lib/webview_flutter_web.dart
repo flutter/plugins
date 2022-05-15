@@ -211,6 +211,9 @@ class WebWebViewPlatformController implements WebViewPlatformController {
   }) async {
     // ignore: unsafe_html
     _element.srcdoc = preprocessHtml(html);
+    final Completer<void> loaded = Completer<void>();
+    _element.addEventListener('load', (Event event) => loaded.complete());
+    return loaded.future;
   }
 
   @override
