@@ -6,7 +6,7 @@
 
 #import <image_picker_ios/FLTImagePickerPlugin.h>
 
-#import "messages.g.h"
+#import <image_picker_ios/messages.g.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
