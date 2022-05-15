@@ -76,7 +76,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
           child: PlatformViewLink(
             viewType: linkViewType,
             onCreatePlatformView: (PlatformViewCreationParams params) {
-              _controller = LinkViewController.fromParams(params, context);
+              _controller = LinkViewController.fromParams(params);
               return _controller
                 ..setUri(widget.link.uri)
                 ..setTarget(widget.link.target);
@@ -100,7 +100,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
 /// Controls link views.
 class LinkViewController extends PlatformViewController {
   /// Creates a [LinkViewController] instance with the unique [viewId].
-  LinkViewController(this.viewId, this.context) {
+  LinkViewController(this.viewId) : _element = _makeElement(viewId) {
     if (_instances.isEmpty) {
       // This is the first controller being created, attach the global click
       // listener.
@@ -113,14 +113,17 @@ class LinkViewController extends PlatformViewController {
   /// platform view [params].
   factory LinkViewController.fromParams(
     PlatformViewCreationParams params,
-    BuildContext context,
   ) =>
-      LinkViewController(params.id, context).._asyncInit(params);
+      LinkViewController(params.id).._asyncInitialize(params);
 
-  Future<void> _asyncInit(PlatformViewCreationParams params) async {
+  Future<void> _asyncInitialize(PlatformViewCreationParams params) async {
     try {
-      await _initialize();
-      if (context == null) {
+      await SystemChannels.platform_views
+          .invokeMethod<void>('create', <String, dynamic>{
+        'id': viewId,
+        'viewType': linkViewType,
+      });
+      if (_isDisposed) {
         return;
       }
       params.onPlatformViewCreated(viewId);
@@ -170,33 +173,9 @@ class LinkViewController extends PlatformViewController {
   @override
   final int viewId;
 
-  /// The context of the [Link] widget that created this controller.
-  BuildContext? context;
+  html.Element _element;
 
-  late html.Element _element;
-
-  bool get _isInitialized => _element != null;
-
-  Future<void> _initialize() async {
-    _element = html.Element.tag('a');
-    setProperty(_element, linkViewIdProperty, viewId);
-    _element.style
-      ..opacity = '0'
-      ..display = 'block'
-      ..width = '100%'
-      ..height = '100%'
-      ..cursor = 'unset';
-
-    // This is recommended on MDN:
-    // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target
-    _element.setAttribute('rel', 'noreferrer noopener');
-
-    final Map<String, dynamic> args = <String, dynamic>{
-      'id': viewId,
-      'viewType': linkViewType,
-    };
-    await SystemChannels.platform_views.invokeMethod<void>('create', args);
-  }
+  bool _isDisposed = false;
 
   void _onDomClick(html.MouseEvent event) {
     final bool isHitTested = _hitTestedViewId == viewId;
@@ -219,7 +198,7 @@ class LinkViewController extends PlatformViewController {
     // browser handle it.
     event.preventDefault();
     final String routeName = _uri.toString();
-    pushRouteNameToFramework(context, routeName);
+    pushRouteNameToFramework(null, routeName);
   }
 
   Uri? _uri;
@@ -228,7 +207,6 @@ class LinkViewController extends PlatformViewController {
   ///
   /// When Uri is null, the `href` attribute of the link is removed.
   void setUri(Uri? uri) {
-    assert(_isInitialized);
     _uri = uri;
     if (uri == null) {
       _element.removeAttribute('href');
@@ -245,7 +223,6 @@ class LinkViewController extends PlatformViewController {
 
   /// Set the [LinkTarget] value for this link.
   void setTarget(LinkTarget target) {
-    assert(_isInitialized);
     _element.setAttribute('target', _getHtmlTarget(target));
   }
 
@@ -275,10 +252,10 @@ class LinkViewController extends PlatformViewController {
 
   @override
   Future<void> dispose() {
-    context = null;
-    if (_isInitialized) {
+    if (!_isDisposed) {
       assert(_instances[viewId] == this);
       _instances.remove(viewId);
+      _isDisposed = true;
       return _asyncDispose();
     }
     return Future<void>.value();
@@ -299,6 +276,22 @@ class LinkViewController extends PlatformViewController {
       ));
     }
   }
+}
+
+html.Element _makeElement(int viewId) {
+  final html.Element element = html.Element.tag('a');
+  setProperty(element, linkViewIdProperty, viewId);
+  element.style
+    ..opacity = '0'
+    ..display = 'block'
+    ..width = '100%'
+    ..height = '100%'
+    ..cursor = 'unset';
+
+  // This is recommended on MDN:
+  // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target
+  element.setAttribute('rel', 'noreferrer noopener');
+  return element;
 }
 
 /// Finds the view id of the DOM element targeted by the [event].
