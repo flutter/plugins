@@ -59,7 +59,7 @@ class WebWebViewPlatform implements WebViewPlatform {
 
         js.context['webview${viewId}_channel'] = (String name, String message) {
           javascriptChannelRegistry?.channels.values
-              .firstWhere((channel) => channel.name == name)
+              .firstWhere((JavascriptChannel channel) => channel.name == name)
               .onMessageReceived(JavascriptMessage(message));
         };
 
@@ -238,12 +238,12 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     throw UnimplementedError();
   }
 
-  /// Change and process the Html before passing it to the iframe.
+  /// Change the Html before passing it to the iframe.
   String preprocessHtml(String html) {
     final dom.Document document = parse(html);
 
     final dom.Element scriptElement = document.createElement('script');
-    final scriptContent = StringBuffer();
+    final StringBuffer scriptContent = StringBuffer();
 
     scriptContent.writeln('parent.webview${_viewId}_getWindow(window);');
 
