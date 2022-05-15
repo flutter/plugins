@@ -1,3 +1,7 @@
+## 2.0.12
+
+* Fixed call to `setState` after dispose.
+
 ## 2.0.11
 
 * Minor fixes for new analysis options.
