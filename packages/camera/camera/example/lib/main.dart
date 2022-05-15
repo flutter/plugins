@@ -651,8 +651,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
-    controller = cameraController;
-
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
       if (mounted) {
@@ -666,6 +664,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await cameraController.initialize();
+      if (cameraController.value.hasError) {
+        showInSnackBar(
+          'Camera error ${cameraController.value.errorDescription}',
+        );
+        return;
+      }
       await Future.wait(<Future<Object?>>[
         // The exposure mode is currently not supported on the web.
         ...!kIsWeb
@@ -684,6 +688,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .getMinZoomLevel()
             .then((double value) => _minAvailableZoom = value),
       ]);
+      controller = cameraController;
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':
