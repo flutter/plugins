@@ -310,7 +310,6 @@ task:
 task:
   << : *MACOS_ARM_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
-  timeout_in: 30m
   matrix:
     ### iOS+macOS tasks ***
     - name: darwin-lint_podspecs
@@ -331,7 +330,7 @@ task:
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
-        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-15-5 | xargs xcrun simctl boot
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-15-4 | xargs xcrun simctl boot
       build_script:
         - ./script/tool_runner.sh build-examples --ios
       xcode_analyze_script:
@@ -340,7 +339,7 @@ task:
         # Ensure we don't accidentally introduce deprecated code.
         - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=13.0
       native_test_script:
-        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=Flutter-iPhone,OS=latest"
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
