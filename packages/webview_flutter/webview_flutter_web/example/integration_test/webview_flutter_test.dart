@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_web_example/web_view.dart';
 
 void main() {
@@ -68,5 +69,67 @@ void main() {
         html.document.querySelector('iframe') as html.IFrameElement?;
     expect(element, isNotNull);
     expect(element!.src, secondaryUrl);
+  });
+
+  testWidgets('loadHtml', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller.loadHtmlString('<div>Te#st</div>');
+
+    // Assert an iframe has been rendered to the DOM with the correct src attribute.
+    final html.IFrameElement? element =
+        html.document.querySelector('iframe') as html.IFrameElement?;
+    expect(element, isNotNull);
+    expect(
+        element!.srcdoc,
+        '<!DOCTYPE html><html><head><script>parent.webview2_getWindow(window);\n'
+        '</script></head><body><div>Te#st</div></body></html>');
+  });
+
+  testWidgets('JavascriptChannel', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final List<String> messagesReceived = <String>[];
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptChannels: <JavascriptChannel>{
+            JavascriptChannel(
+              name: 'Echo',
+              onMessageReceived: (JavascriptMessage message) {
+                messagesReceived.add(message.message);
+              },
+            ),
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller.loadHtmlString('<div></div>');
+
+    // Assert an iframe has been rendered to the DOM with the correct src attribute.
+    final html.IFrameElement? element =
+        html.document.querySelector('iframe') as html.IFrameElement?;
+    expect(element, isNotNull);
+
+    await controller.runJavascript('Echo.postMessage("hello");');
+    expect(messagesReceived, equals(<String>['hello']));
   });
 }

@@ -30,6 +30,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.javascriptChannels,
   }) : super(key: key);
 
   /// The WebView platform that's used by this WebView.
@@ -44,6 +45,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
+  final Set<JavascriptChannel>? javascriptChannels;
 
   @override
   State<WebView> createState() => _WebViewState();
@@ -90,7 +94,7 @@ class _WebViewState extends State<WebView> {
         webSettings: _webSettingsFromWidget(widget),
       ),
       javascriptChannelRegistry:
-          JavascriptChannelRegistry(<JavascriptChannel>{}),
+          JavascriptChannelRegistry(widget.javascriptChannels),
     );
   }
 }
@@ -157,6 +161,11 @@ class WebViewController {
   /// Loads a page by making the specified request.
   Future<void> loadRequest(WebViewRequest request) async {
     return _webViewPlatformController.loadRequest(request);
+  }
+
+  /// Loads an Html document.
+  Future<void> loadHtmlString(String html) async {
+    return _webViewPlatformController.loadHtmlString(html);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
