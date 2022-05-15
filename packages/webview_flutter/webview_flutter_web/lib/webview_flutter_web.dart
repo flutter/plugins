@@ -45,14 +45,22 @@ class WebWebViewPlatform implements WebViewPlatform {
         if (onWebViewPlatformCreated == null) {
           return;
         }
+
         final IFrameElement element =
             document.getElementById('webview-$viewId')! as IFrameElement;
 
         final WebWebViewPlatformController controller =
-            WebWebViewPlatformController(element, viewId);
+            WebWebViewPlatformController(
+                element, viewId, javascriptChannelRegistry);
 
         js.context['webview${viewId}_getWindow'] = (js.JsObject window) {
           controller.window = window;
+        };
+
+        js.context['webview${viewId}_channel'] = (String name, String message) {
+          javascriptChannelRegistry?.channels.values
+              .firstWhere((channel) => channel.name == name)
+              .onMessageReceived(JavascriptMessage(message));
         };
 
         if (creationParams.initialUrl != null) {
@@ -74,10 +82,13 @@ class WebWebViewPlatform implements WebViewPlatform {
 /// Implementation of [WebViewPlatformController] for web.
 class WebWebViewPlatformController implements WebViewPlatformController {
   /// Constructs a [WebWebViewPlatformController].
-  WebWebViewPlatformController(this._element, [this._viewId = 1]);
+  WebWebViewPlatformController(this._element,
+      [this._viewId = 1, this._javascriptChannelRegistry]);
 
   /// The IFrame's Window object.
   late js.JsObject window;
+
+  final JavascriptChannelRegistry? _javascriptChannelRegistry;
   final int _viewId;
   final IFrameElement _element;
   HttpRequestFactory _httpRequestFactory = HttpRequestFactory();
@@ -227,12 +238,24 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     throw UnimplementedError();
   }
 
+  /// Change and process the Html before passing it to the iframe.
   String preprocessHtml(String html) {
     final dom.Document document = parse(html);
 
     final dom.Element scriptElement = document.createElement('script');
-    scriptElement.text = 'parent.webview${_viewId}_getWindow(window)';
+    final scriptContent = StringBuffer();
 
+    scriptContent.writeln('parent.webview${_viewId}_getWindow(window);');
+
+    _javascriptChannelRegistry?.channels
+        .forEach((String _, JavascriptChannel channel) {
+      final String funcName = 'parent.webview${_viewId}_channel';
+
+      scriptContent.writeln(
+          'window.${channel.name} = { postMessage: (message) => $funcName("${channel.name}", message) };');
+    });
+
+    scriptElement.text = scriptContent.toString();
     document.head?.insertBefore(scriptElement, document.head!.firstChild);
 
     String outputHtml = document.outerHtml;
