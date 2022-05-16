@@ -38,6 +38,7 @@ please review our [contribution guide](https://github.com/flutter/plugins/blob/m
 and send a [pull request](https://github.com/flutter/plugins/pulls).
 
 ## Plugins
+
 These are the available plugins in this repository.
 
 | Plugin | Pub | Points | Popularity | Likes | Issues | Pull requests |
