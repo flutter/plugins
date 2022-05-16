@@ -24,18 +24,18 @@
 }
 
 - (void)didFinishNavigationForDelegate:(FWFNavigationDelegate *)instance
-                            webView:(WKWebView *)webView
-                                URL:(NSString *)URL {
-    [self didFinishNavigationForDelegateWithIdentifier:@([self.instanceManager
-                                                          identifierForInstance:instance])
-                                  webViewIdentifier:@([self.instanceManager
-                                                        identifierForInstance:webView])
-                                                URL:URL
-                                         completion:^(NSError *error) {
-                                           if (error) {
-                                             NSLog(@"%@", error.description);
-                                           }
-                                         }];
+                               webView:(WKWebView *)webView
+                                   URL:(NSString *)URL {
+  [self didFinishNavigationForDelegateWithIdentifier:@([self.instanceManager
+                                                         identifierForInstance:instance])
+                                   webViewIdentifier:@([self.instanceManager
+                                                         identifierForInstance:webView])
+                                                 URL:URL
+                                          completion:^(NSError *error) {
+                                            if (error) {
+                                              NSLog(@"%@", error.description);
+                                            }
+                                          }];
 }
 @end
 
@@ -52,7 +52,9 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-  [self.navigationDelegateApi didFinishNavigationForDelegate:self webView:webView URL:webView.URL.absoluteString];
+  [self.navigationDelegateApi didFinishNavigationForDelegate:self
+                                                     webView:webView
+                                                         URL:webView.URL.absoluteString];
 }
 @end
 
@@ -77,7 +79,7 @@
 }
 
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
-                            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+                       error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];

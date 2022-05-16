@@ -77,9 +77,9 @@
 
   [mockDelegate webView:mockWebView didFinishNavigation:OCMClassMock([WKNavigation class])];
   OCMVerify([mockFlutterApi didFinishNavigationForDelegateWithIdentifier:@1
-                                                    webViewIdentifier:@2
-                                                                  URL:@"https://flutter.dev/"
-                                                           completion:OCMOCK_ANY]);
+                                                       webViewIdentifier:@2
+                                                                     URL:@"https://flutter.dev/"
+                                                              completion:OCMOCK_ANY]);
 }
 
 - (void)testInstanceCanBeReleasedWhenInstanceManagerIsReleased {
