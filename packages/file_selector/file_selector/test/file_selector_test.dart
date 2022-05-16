@@ -284,10 +284,12 @@ class FakeFileSelector extends Fake
     this.confirmButtonText = confirmButtonText;
   }
 
+  // ignore: use_setters_to_change_properties
   void setFileResponse(List<XFile> files) {
     this.files = files;
   }
 
+  // ignore: use_setters_to_change_properties
   void setPathResponse(String path) {
     this.path = path;
   }
