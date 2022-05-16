@@ -101,7 +101,9 @@
                        result:(FLTThreadSafeFlutterResult *)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     if (@available(iOS 10.0, *)) {
-      NSMutableArray *discoveryDevices = [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ] mutableCopy];
+      NSMutableArray *discoveryDevices =
+          [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ]
+              mutableCopy];
       if (@available(iOS 13.0, *)) {
         [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
       }

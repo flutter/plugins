@@ -36,7 +36,9 @@
   OCMStub([telephotoCamera uniqueID]).andReturn(@"3");
   OCMStub([telephotoCamera position]).andReturn(AVCaptureDevicePositionBack);
 
-  NSMutableArray *requiredTypes = [@[AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera] mutableCopy];
+  NSMutableArray *requiredTypes =
+      [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ]
+          mutableCopy];
   if (@available(iOS 13.0, *)) {
     [requiredTypes addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
   }
@@ -85,7 +87,9 @@
   OCMStub([frontFacingCamera uniqueID]).andReturn(@"1");
   OCMStub([frontFacingCamera position]).andReturn(AVCaptureDevicePositionFront);
 
-  NSMutableArray *requiredTypes = [@[AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera] mutableCopy];
+  NSMutableArray *requiredTypes =
+      [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ]
+          mutableCopy];
   if (@available(iOS 13.0, *)) {
     [requiredTypes addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
   }
