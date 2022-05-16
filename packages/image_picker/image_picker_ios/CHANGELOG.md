@@ -1,3 +1,7 @@
+## 0.8.5+4
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
 ## 0.8.5+3
 
 * Fixes 'messages.g.h' file not found.
