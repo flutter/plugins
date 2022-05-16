@@ -1,3 +1,7 @@
+## 0.8.5+3
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
 ## 0.8.5+2
 
 * Minor fixes for new analysis options.
