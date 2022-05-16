@@ -137,7 +137,7 @@
       if (error) {
         [result sendFlutterError:error];
       } else {
-        [self createCameraOnCaptureSessionQueueWithCreateMethodCall:call result:result];
+        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
       }
     });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
@@ -194,11 +194,13 @@
       [_camera close];
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
+      // Setup audio capture session only if granted audio access.
       FLTRequestCameraPermission(/*forAudio*/ true, ^(FlutterError *error) {
-        // Setup audio capture session only if granted audio access
         if (error) {
           [result sendFlutterError:error];
         } else {
+          // Permission completion handler may be called on arbitrary queue.
+          // Dispatch to `captureSessionQueue` to setup audio capture session.
           dispatch_async(self.captureSessionQueue, ^{
             [self.camera setUpCaptureSessionForAudio];
             [result sendSuccess];
@@ -267,8 +269,8 @@
   }
 }
 
-- (void)createCameraOnCaptureSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
-                                                       result:(FLTThreadSafeFlutterResult *)result {
+- (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
+                                                result:(FLTThreadSafeFlutterResult *)result {
   dispatch_async(self.captureSessionQueue, ^{
     NSString *cameraName = createMethodCall.arguments[@"cameraName"];
     NSString *resolutionPreset = createMethodCall.arguments[@"resolutionPreset"];
