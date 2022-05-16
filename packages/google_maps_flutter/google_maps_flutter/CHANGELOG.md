@@ -1,3 +1,7 @@
+## NEXT
+
+* Minor fixes for new analysis options.
+
 ## 2.1.5
 
 * Removes unnecessary imports.

@@ -44,7 +44,7 @@ class MockProcessResult extends Mock implements io.ProcessResult {}
 
 void main() {
   const String indentation = '  ';
-  group('$VersionCheckCommand', () {
+  group('VersionCheckCommand', () {
     late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
@@ -561,7 +561,7 @@ This is necessary because of X, Y, and Z
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.')
+              "should be incorporated into the new version's release notes.")
         ]),
       );
     });
@@ -595,14 +595,14 @@ This is necessary because of X, Y, and Z
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.'),
+              "should be incorporated into the new version's release notes."),
           contains('plugin:\n'
               '    CHANGELOG.md failed validation.'),
         ]),
       );
     });
 
-    test('Fail if the version changes without replacing NEXT', () async {
+    test('fails if the version increases without replacing NEXT', () async {
       final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, version: '1.0.1');
 
@@ -627,7 +627,34 @@ This is necessary because of X, Y, and Z
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.')
+              "should be incorporated into the new version's release notes.")
+        ]),
+      );
+    });
+
+    test('allows NEXT for a revert', () async {
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+      const String changelog = '''
+## NEXT
+* Some changes that should be listed as part of 1.0.1.
+## 1.0.0
+* Some other changes.
+''';
+      createFakeCHANGELOG(plugin, changelog);
+      createFakeCHANGELOG(plugin, changelog);
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.1'),
+      ];
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main']);
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('New version is lower than previous version. '
+              'This is assumed to be a revert.'),
         ]),
       );
     });

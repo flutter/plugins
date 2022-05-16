@@ -28,6 +28,7 @@ class MoveCamera extends StatefulWidget {
 class MoveCameraState extends State<MoveCamera> {
   GoogleMapController? mapController;
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }

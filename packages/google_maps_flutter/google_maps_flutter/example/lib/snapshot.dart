@@ -68,6 +68,7 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
     );
   }
 
+  // ignore: use_setters_to_change_properties
   void onMapCreated(GoogleMapController controller) {
     _mapController = controller;
   }

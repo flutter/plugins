@@ -18,7 +18,7 @@ class _TestWKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
   const _TestWKWebsiteDataStoreHostApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is WKWebsiteDataTypesEnumData) {
+    if (value is WKWebsiteDataTypeEnumData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else {
@@ -30,7 +30,7 @@ class _TestWKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return WKWebsiteDataTypesEnumData.decode(readValue(buffer)!);
+        return WKWebsiteDataTypeEnumData.decode(readValue(buffer)!);
 
       default:
         return super.readValueOfType(type, buffer);
@@ -47,8 +47,8 @@ abstract class TestWKWebsiteDataStoreHostApi {
   void createDefaultDataStore(int instanceId);
   Future<bool> removeDataOfTypes(
       int instanceId,
-      List<WKWebsiteDataTypesEnumData?> dataTypes,
-      double secondsModifiedSinceEpoch);
+      List<WKWebsiteDataTypeEnumData?> dataTypes,
+      double modificationTimeInSecondsSinceEpoch);
   static void setup(TestWKWebsiteDataStoreHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -110,15 +110,16 @@ abstract class TestWKWebsiteDataStoreHostApi {
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes was null, expected non-null int.');
-          final List<WKWebsiteDataTypesEnumData?>? arg_dataTypes =
-              (args[1] as List<Object?>?)?.cast<WKWebsiteDataTypesEnumData?>();
+          final List<WKWebsiteDataTypeEnumData?>? arg_dataTypes =
+              (args[1] as List<Object?>?)?.cast<WKWebsiteDataTypeEnumData?>();
           assert(arg_dataTypes != null,
-              'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes was null, expected non-null List<WKWebsiteDataTypesEnumData?>.');
-          final double? arg_secondsModifiedSinceEpoch = (args[2] as double?);
-          assert(arg_secondsModifiedSinceEpoch != null,
+              'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes was null, expected non-null List<WKWebsiteDataTypeEnumData?>.');
+          final double? arg_modificationTimeInSecondsSinceEpoch =
+              (args[2] as double?);
+          assert(arg_modificationTimeInSecondsSinceEpoch != null,
               'Argument for dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes was null, expected non-null double.');
-          final bool output = await api.removeDataOfTypes(
-              arg_instanceId!, arg_dataTypes!, arg_secondsModifiedSinceEpoch!);
+          final bool output = await api.removeDataOfTypes(arg_instanceId!,
+              arg_dataTypes!, arg_modificationTimeInSecondsSinceEpoch!);
           return <Object?, Object?>{'result': output};
         });
       }
@@ -133,30 +134,10 @@ class _TestUIViewHostApiCodec extends StandardMessageCodec {
 abstract class TestUIViewHostApi {
   static const MessageCodec<Object?> codec = _TestUIViewHostApiCodec();
 
-  List<double?> getContentOffset(int instanceId);
   void setBackgroundColor(int instanceId, int? value);
   void setOpaque(int instanceId, bool opaque);
   static void setup(TestUIViewHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.UIViewHostApi.getContentOffset', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.UIViewHostApi.getContentOffset was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.UIViewHostApi.getContentOffset was null, expected non-null int.');
-          final List<double?> output = api.getContentOffset(arg_instanceId!);
-          return <Object?, Object?>{'result': output};
-        });
-      }
-    }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
           'dev.flutter.pigeon.UIViewHostApi.setBackgroundColor', codec,
@@ -909,7 +890,7 @@ class _TestWKWebViewHostApiCodec extends StandardMessageCodec {
     } else if (value is WKUserScriptInjectionTimeEnumData) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is WKWebsiteDataTypesEnumData) {
+    } else if (value is WKWebsiteDataTypeEnumData) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
     } else {
@@ -942,7 +923,7 @@ class _TestWKWebViewHostApiCodec extends StandardMessageCodec {
         return WKUserScriptInjectionTimeEnumData.decode(readValue(buffer)!);
 
       case 135:
-        return WKWebsiteDataTypesEnumData.decode(readValue(buffer)!);
+        return WKWebsiteDataTypeEnumData.decode(readValue(buffer)!);
 
       default:
         return super.readValueOfType(type, buffer);
@@ -1418,7 +1399,7 @@ abstract class TestWKHttpCookieStoreHostApi {
 
   void createFromWebsiteDataStore(
       int instanceId, int websiteDataStoreInstanceId);
-  void setCookie(int instanceId, NSHttpCookieData cookie);
+  Future<void> setCookie(int instanceId, NSHttpCookieData cookie);
   static void setup(TestWKHttpCookieStoreHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1462,7 +1443,7 @@ abstract class TestWKHttpCookieStoreHostApi {
           final NSHttpCookieData? arg_cookie = (args[1] as NSHttpCookieData?);
           assert(arg_cookie != null,
               'Argument for dev.flutter.pigeon.WKHttpCookieStoreHostApi.setCookie was null, expected non-null NSHttpCookieData.');
-          api.setCookie(arg_instanceId!, arg_cookie!);
+          await api.setCookie(arg_instanceId!, arg_cookie!);
           return <Object?, Object?>{};
         });
       }

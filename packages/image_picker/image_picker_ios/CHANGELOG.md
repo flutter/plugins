@@ -1,6 +1,10 @@
-## 0.8.5+2
+## 0.8.5+3
 
 * Fixes 'messages.g.h' file not found.
+
+## 0.8.5+2
+
+* Minor fixes for new analysis options.
 
 ## 0.8.5+1
 
