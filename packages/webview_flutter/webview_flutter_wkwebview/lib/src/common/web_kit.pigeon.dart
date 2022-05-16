@@ -1051,14 +1051,12 @@ class WKNavigationDelegateHostApi {
   static const MessageCodec<Object?> codec =
       _WKNavigationDelegateHostApiCodec();
 
-  Future<void> create(
-      int arg_instanceId, int? arg_didFinishNavigationInstanceId) async {
+  Future<void> create(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WKNavigationDelegateHostApi.create', codec,
         binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap = await channel
-            .send(<Object?>[arg_instanceId, arg_didFinishNavigationInstanceId])
-        as Map<Object?, Object?>?;
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1086,8 +1084,7 @@ abstract class WKNavigationDelegateFlutterApi {
   static const MessageCodec<Object?> codec =
       _WKNavigationDelegateFlutterApiCodec();
 
-  void didFinishNavigation(
-      int functionInstanceId, int webViewInstanceId, String? url);
+  void didFinishNavigation(int instanceId, int webViewInstanceId, String? url);
   static void setup(WKNavigationDelegateFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1102,15 +1099,15 @@ abstract class WKNavigationDelegateFlutterApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_functionInstanceId = (args[0] as int?);
-          assert(arg_functionInstanceId != null,
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
           final int? arg_webViewInstanceId = (args[1] as int?);
           assert(arg_webViewInstanceId != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
           final String? arg_url = (args[2] as String?);
           api.didFinishNavigation(
-              arg_functionInstanceId!, arg_webViewInstanceId!, arg_url);
+              arg_instanceId!, arg_webViewInstanceId!, arg_url);
           return;
         });
       }
@@ -1245,38 +1242,6 @@ abstract class NSObjectFlutterApi {
 
   static void setup(NSObjectFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {}
-}
-
-class _FunctionFlutterApiCodec extends StandardMessageCodec {
-  const _FunctionFlutterApiCodec();
-}
-
-abstract class FunctionFlutterApi {
-  static const MessageCodec<Object?> codec = _FunctionFlutterApiCodec();
-
-  void dispose(int instanceId);
-  static void setup(FunctionFlutterApi? api,
-      {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FunctionFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = (args[0] as int?);
-          assert(arg_instanceId != null,
-              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_instanceId!);
-          return;
-        });
-      }
-    }
-  }
 }
 
 class _WKWebViewHostApiCodec extends StandardMessageCodec {

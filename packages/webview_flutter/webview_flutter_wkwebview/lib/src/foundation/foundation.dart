@@ -232,8 +232,16 @@ class NSHttpCookie {
   final Map<NSHttpCookiePropertyKey, Object> properties;
 }
 
+/// An object that can provide functional copies of themselves.
+@immutable
+mixin Copyable {
+  /// Instantiates and returns a functionally identical object to oneself.
+  Copyable copy();
+}
+
 /// The root class of most Objective-C class hierarchies.
-class NSObject {
+@immutable
+class NSObject with Copyable {
   /// Constructs an [NSObject].
   NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
       : _api = NSObjectHostApiImpl(
@@ -282,5 +290,28 @@ class NSObject {
         observeValue,
   ) {
     throw UnimplementedError();
+  }
+
+  @override
+  Copyable copy() {
+    final NSObject copy = NSObject(
+      binaryMessenger: _api.binaryMessenger,
+      instanceManager: _api.instanceManager,
+    );
+    _api.instanceManager.addCopy(this, copy);
+    return copy;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(_api, _api.instanceManager.getInstanceId(this));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NSObject &&
+        _api == other._api &&
+        _api.instanceManager.getInstanceId(this) ==
+            other._api.instanceManager.getInstanceId(other);
   }
 }

@@ -5,7 +5,7 @@
 /// Maintains instances stored to communicate with Objective-C objects.
 class InstanceManager {
   final Map<int, Object> _instanceIdsToInstances = <int, Object>{};
-  final Map<Object, int> _instancesToInstanceIds = <Object, int>{};
+  final Expando<Object> _instancesToInstanceIds = Expando<Object>();
 
   int _nextInstanceId = 0;
 
@@ -17,7 +17,7 @@ class InstanceManager {
   /// Returns new if [instance] has already been added. Otherwise, it is added
   /// with a new instance id.
   int? tryAddInstance(Object instance) {
-    if (_instancesToInstanceIds.containsKey(instance)) {
+    if (getInstanceId(instance) != null) {
       return null;
     }
 
@@ -27,14 +27,21 @@ class InstanceManager {
     return instanceId;
   }
 
+  /// Store a copy of an instance with the same instance id.
+  void addCopy(Object original, Object copy) {
+    assert(original.runtimeType == copy.runtimeType);
+    _instancesToInstanceIds[copy] = _instancesToInstanceIds[original];
+    assert(original == copy);
+  }
+
   /// Remove the instance from the manager.
   ///
   /// Returns null if the instance is removed. Otherwise, return the instanceId
   /// of the removed instance.
   int? removeInstance<T extends Object>(T instance) {
-    final int? instanceId = _instancesToInstanceIds[instance];
+    final int? instanceId = _instancesToInstanceIds[instance] as int?;
     if (instanceId != null) {
-      _instancesToInstanceIds.remove(instance);
+      _instancesToInstanceIds[instance] = null;
       _instanceIdsToInstances.remove(instanceId);
     }
     return instanceId;
@@ -47,6 +54,6 @@ class InstanceManager {
 
   /// Retrieve the instanceId paired with instance.
   int? getInstanceId(Object instance) {
-    return _instancesToInstanceIds[instance];
+    return _instancesToInstanceIds[instance] as int?;
   }
 }

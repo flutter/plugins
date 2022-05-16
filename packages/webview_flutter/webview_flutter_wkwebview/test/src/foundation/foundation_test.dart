@@ -42,6 +42,10 @@ void main() {
         TestNSObjectHostApi.setup(null);
       });
 
+      test('copy', () {
+        expect(object, equals(object.copy()));
+      });
+
       test('addObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
         instanceManager.tryAddInstance(observer);

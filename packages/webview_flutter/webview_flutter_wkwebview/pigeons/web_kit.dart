@@ -378,20 +378,20 @@ abstract class WKScriptMessageHandlerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKNavigationDelegateHostApi')
 abstract class WKNavigationDelegateHostApi {
-  @ObjCSelector('createWithIdentifier:didFinishNavigationIdentifier:')
-  void create(int instanceId, int? didFinishNavigationInstanceId);
+  @ObjCSelector('createWithIdentifier:')
+  void create(int instanceId);
 }
 
-/// Mirror of WKNavigationDelegate.
+/// Handling callbacks from an WKNavigationDelegate.
 ///
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @FlutterApi()
 abstract class WKNavigationDelegateFlutterApi {
   @ObjCSelector(
-    'didFinishNavigationFunctionWithIdentifier:webViewIdentifier:URL:',
+    'didFinishNavigationForDelegateWithIdentifier:webViewIdentifier:URL:',
   )
   void didFinishNavigation(
-    int functionInstanceId,
+    int instanceId,
     int webViewInstanceId,
     String? url,
   );
@@ -421,18 +421,11 @@ abstract class NSObjectHostApi {
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
 }
 
-/// FlutterApi for NSObject.
+/// Handling callbacks from an NSObject.
 ///
-/// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
+/// See https://developer.apple.com/documentation/objectivec/nsobject.
 @FlutterApi()
 abstract class NSObjectFlutterApi {}
-
-/// Disposes references to functions.
-@FlutterApi()
-abstract class FunctionFlutterApi {
-  @ObjCSelector('disposeFunctionWithIdentifier:')
-  void dispose(int instanceId);
-}
 
 /// Mirror of WKWebView.
 ///

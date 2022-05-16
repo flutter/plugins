@@ -706,7 +706,7 @@ abstract class TestWKNavigationDelegateHostApi {
   static const MessageCodec<Object?> codec =
       _TestWKNavigationDelegateHostApiCodec();
 
-  void create(int instanceId, int? didFinishNavigationInstanceId);
+  void create(int instanceId);
   static void setup(TestWKNavigationDelegateHostApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -723,8 +723,7 @@ abstract class TestWKNavigationDelegateHostApi {
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateHostApi.create was null, expected non-null int.');
-          final int? arg_didFinishNavigationInstanceId = (args[1] as int?);
-          api.create(arg_instanceId!, arg_didFinishNavigationInstanceId);
+          api.create(arg_instanceId!);
           return <Object?, Object?>{};
         });
       }

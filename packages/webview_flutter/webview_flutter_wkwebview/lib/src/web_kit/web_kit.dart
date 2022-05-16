@@ -597,6 +597,7 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
+@immutable
 class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
@@ -661,6 +662,32 @@ class WKNavigationDelegate extends NSObject {
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   ) {
     throw UnimplementedError();
+  }
+
+  @override
+  Copyable copy() {
+    final WKNavigationDelegate copy = WKNavigationDelegate(
+      didFinishNavigation: didFinishNavigation,
+      binaryMessenger: _navigationDelegateApi.binaryMessenger,
+      instanceManager: _navigationDelegateApi.instanceManager,
+    );
+    _navigationDelegateApi.instanceManager.addCopy(this, copy);
+    return copy;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(didFinishNavigation, _navigationDelegateApi,
+        _navigationDelegateApi.instanceManager.getInstanceId(this));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WKNavigationDelegate &&
+        didFinishNavigation == other.didFinishNavigation &&
+        _navigationDelegateApi == other._navigationDelegateApi &&
+        _navigationDelegateApi.instanceManager.getInstanceId(this) ==
+            other._navigationDelegateApi.instanceManager.getInstanceId(other);
   }
 }
 

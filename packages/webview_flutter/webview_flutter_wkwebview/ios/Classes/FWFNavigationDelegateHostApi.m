@@ -50,7 +50,7 @@
         [[FWFNavigationDelegateFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
                                                              instanceManager:instanceManager];
 
-    FWFNavigationDelegate __weak __block *weakSelf = self;
+    FWFNavigationDelegate __weak *weakSelf = self;
     _didFinishNavigation = ^(WKWebView *webView, NSString *URL) {
       [weakSelf.navigationDelegateApi didFinishNavigationFunction:weakSelf.didFinishNavigation
                                                           webView:webView

@@ -437,6 +437,10 @@ void main() {
         TestWKWebViewHostApi.setup(null);
       });
 
+      test('copy', () {
+        expect(navigationDelegate, equals(navigationDelegate.copy()));
+      });
+
       test('create', () async {
         navigationDelegate = WKNavigationDelegate(
           instanceManager: instanceManager,
@@ -444,13 +448,16 @@ void main() {
 
         verify(mockPlatformHostApi.create(
           instanceManager.getInstanceId(navigationDelegate),
-          null,
         ));
       });
 
       test('didFinishNavigation', () async {
         final Completer<List<Object?>> argsCompleter =
             Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
 
         navigationDelegate = WKNavigationDelegate(
           instanceManager: instanceManager,
@@ -459,13 +466,9 @@ void main() {
           },
         );
 
-        final int functionInstanceId = verify(mockPlatformHostApi.create(
-          instanceManager.getInstanceId(navigationDelegate),
-          captureAny,
-        )).captured.single as int;
-
-        flutterApis.navigationDelegateFlutterApi.didFinishNavigation(
-          functionInstanceId,
+        WebKitFlutterApis.instance.navigationDelegateFlutterApi
+            .didFinishNavigation(
+          instanceManager.getInstanceId(navigationDelegate)!,
           instanceManager.getInstanceId(webView)!,
           'url',
         );

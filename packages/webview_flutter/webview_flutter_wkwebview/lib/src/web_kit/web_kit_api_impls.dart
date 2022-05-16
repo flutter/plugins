@@ -525,13 +525,20 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
 }
 
 /// Host api implementation for [WKNavigationDelegate].
+@immutable
 class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   /// Constructs a [WKNavigationDelegateHostApiImpl].
   WKNavigationDelegateHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? InstanceManager.instance,
         super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -543,13 +550,20 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   ) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      await create(
-        instanceId,
-        didFinishNavigation != null
-            ? _getOrAddFunctionInstanceId(instanceManager, didFinishNavigation)
-            : null,
-      );
+      await create(instanceId);
     }
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(binaryMessenger, instanceManager);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WKNavigationDelegateHostApiImpl &&
+        binaryMessenger == other.binaryMessenger &&
+        instanceManager == other.instanceManager;
   }
 }
 
@@ -564,17 +578,20 @@ class WKNavigationDelegateFlutterApiImpl
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
 
+  WKNavigationDelegate _getDelegate(int instanceId) {
+    return instanceManager.getInstance(instanceId)!;
+  }
+
   @override
   void didFinishNavigation(
-    int functionInstanceId,
+    int instanceId,
     int webViewInstanceId,
     String? url,
   ) {
-    final void Function(
-      WKWebView webView,
-      String? url,
-    ) function = instanceManager.getInstance(functionInstanceId)!;
-    function(instanceManager.getInstance(webViewInstanceId)!, url);
+    _getDelegate(instanceId).didFinishNavigation!(
+      instanceManager.getInstance(webViewInstanceId)!,
+      url,
+    );
   }
 }
 
@@ -741,12 +758,4 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
       delegate != null ? instanceManager.getInstanceId(delegate)! : null,
     );
   }
-}
-
-int _getOrAddFunctionInstanceId(
-  InstanceManager instanceManager,
-  Function function,
-) {
-  return instanceManager.getInstanceId(function) ??
-      instanceManager.tryAddInstance(function)!;
 }
