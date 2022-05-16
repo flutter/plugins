@@ -13,8 +13,11 @@ typedef void (^FLTCameraPermissionRequestCompletionHandler)(FlutterError *);
 /// screen. Otherwise AVFoundation simply returns the user's previous choice, and in this case the
 /// user will have to update the choice in Settings app.
 ///
+///
+/// @param forAudio Requests for `AVMediaTypeAudio` permission if `forAudio` is true, and
+/// `AVMediaTypeVideo` permission otherwise.
 /// @param handler if access permission is (or was previously) granted, completion handler will be
 /// called without error; Otherwise completion handler will be called with error. Handler can be
 /// called on an arbitrary dispatch queue.
-extern void FLTRequestCameraPermissionWithCompletionHandler(
-    FLTCameraPermissionRequestCompletionHandler handler);
+extern void FLTRequestCameraPermission(BOOL forAudio,
+                                       FLTCameraPermissionRequestCompletionHandler handler);

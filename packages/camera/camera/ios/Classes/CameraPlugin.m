@@ -132,12 +132,12 @@
       [result sendNotImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
-    FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
+    FLTRequestCameraPermission(/*forAudio*/ false, ^(FlutterError *error) {
       // Create FLTCam only if granted camera access.
       if (error) {
         [result sendFlutterError:error];
       } else {
-        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+        [self createCameraOnCaptureSessionQueueWithCreateMethodCall:call result:result];
       }
     });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
@@ -194,8 +194,17 @@
       [_camera close];
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
-      [_camera setUpCaptureSessionForAudio];
-      [result sendSuccess];
+      FLTRequestCameraPermission(/*forAudio*/ true, ^(FlutterError *error) {
+        // Setup audio capture session only if granted audio access
+        if (error) {
+          [result sendFlutterError:error];
+        } else {
+          dispatch_async(self.captureSessionQueue, ^{
+            [self.camera setUpCaptureSessionForAudio];
+            [result sendSuccess];
+          });
+        }
+      });
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingWithResult:result];
     } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
@@ -258,8 +267,8 @@
   }
 }
 
-- (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
-                                                result:(FLTThreadSafeFlutterResult *)result {
+- (void)createCameraOnCaptureSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
+                                                       result:(FLTThreadSafeFlutterResult *)result {
   dispatch_async(self.captureSessionQueue, ^{
     NSString *cameraName = createMethodCall.arguments[@"cameraName"];
     NSString *resolutionPreset = createMethodCall.arguments[@"resolutionPreset"];

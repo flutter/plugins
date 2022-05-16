@@ -36,7 +36,7 @@
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
 
-  [camera createCameraOnSessionQueueWithCreateMethodCall:call result:resultObject];
+  [camera createCameraOnCaptureSessionQueueWithCreateMethodCall:call result:resultObject];
   [self waitForExpectationsWithTimeout:1 handler:nil];
 
   // Verify the result
