@@ -44,7 +44,7 @@
               instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 didFinishNavigationIdentifier:nil error:&error];
+  [hostApi createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
 
@@ -59,7 +59,7 @@
               instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 didFinishNavigationIdentifier:@1 error:&error];
+  [hostApi createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
   id mockDelegate = OCMPartialMock(navigationDelegate);
@@ -76,7 +76,7 @@
   [instanceManager addInstance:mockWebView withIdentifier:2];
 
   [mockDelegate webView:mockWebView didFinishNavigation:OCMClassMock([WKNavigation class])];
-  OCMVerify([mockFlutterApi didFinishNavigationFunctionWithIdentifier:@1
+  OCMVerify([mockFlutterApi didFinishNavigationForDelegateWithIdentifier:@1
                                                     webViewIdentifier:@2
                                                                   URL:@"https://flutter.dev/"
                                                            completion:OCMOCK_ANY]);
@@ -92,7 +92,7 @@
   testMessenger.hostApi = hostApi;
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 didFinishNavigationIdentifier:nil error:&error];
+  [hostApi createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate __weak *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
 

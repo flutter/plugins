@@ -19,12 +19,15 @@
   return self;
 }
 
-- (void)didFinishNavigationFunction:(void (^)(WKWebView *, NSString *))function
+- (long)identifierForNavigationDelegate:(FWFNavigationDelegate *)instance {
+  return [self.instanceManager identifierForInstance:instance];
+}
+
+- (void)didFinishNavigationForDelegate:(FWFNavigationDelegate *)instance
                             webView:(WKWebView *)webView
                                 URL:(NSString *)URL {
-  long functionIdentifier = [self.instanceManager identifierForInstance:function];
-  if (functionIdentifier != NSNotFound) {
-    [self didFinishNavigationFunctionWithIdentifier:@(functionIdentifier)
+    [self didFinishNavigationForDelegateWithIdentifier:@([self.instanceManager
+                                                          identifierForInstance:instance])
                                   webViewIdentifier:@([self.instanceManager
                                                         identifierForInstance:webView])
                                                 URL:URL
@@ -33,12 +36,7 @@
                                              NSLog(@"%@", error.description);
                                            }
                                          }];
-  }
 }
-@end
-
-@interface FWFNavigationDelegate ()
-@property void (^didFinishNavigation)(WKWebView *, NSString *);
 @end
 
 @implementation FWFNavigationDelegate
@@ -49,19 +47,12 @@
     _navigationDelegateApi =
         [[FWFNavigationDelegateFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
                                                              instanceManager:instanceManager];
-
-    FWFNavigationDelegate __weak *weakSelf = self;
-    _didFinishNavigation = ^(WKWebView *webView, NSString *URL) {
-      [weakSelf.navigationDelegateApi didFinishNavigationFunction:weakSelf.didFinishNavigation
-                                                          webView:webView
-                                                              URL:URL];
-    };
   }
   return self;
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-  self.didFinishNavigation(webView, webView.URL.absoluteString);
+  [self.navigationDelegateApi didFinishNavigationForDelegate:self webView:webView URL:webView.URL.absoluteString];
 }
 @end
 
@@ -86,15 +77,10 @@
 }
 
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
-    didFinishNavigationIdentifier:(nullable NSNumber *)didFinishNavigationInstanceId
                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
   [self.instanceManager addInstance:navigationDelegate withIdentifier:instanceId.longValue];
-  if (didFinishNavigationInstanceId) {
-    [self.instanceManager addInstance:navigationDelegate.didFinishNavigation
-                       withIdentifier:didFinishNavigationInstanceId.longValue];
-  }
 }
 @end
