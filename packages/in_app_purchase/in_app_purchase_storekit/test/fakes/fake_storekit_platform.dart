@@ -167,7 +167,7 @@ class FakeStoreKitPlatform {
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin addPayment:result:]':
         final String id = call.arguments['productIdentifier'] as String;
-        int quantity = call.arguments['quantity'] as int;
+        final int quantity = call.arguments['quantity'] as int;
         final SKPaymentTransactionWrapper transaction =
             createPendingTransaction(id, quantity: quantity);
         transactions.add(transaction);

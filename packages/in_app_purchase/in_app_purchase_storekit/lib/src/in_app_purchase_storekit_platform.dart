@@ -68,10 +68,10 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
 
   @override
-  Future<bool> buyNonConsumable({required PurchaseParam purchaseParam, int quantity = 1}) async {
+  Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) async {
     await _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
         productIdentifier: purchaseParam.productDetails.id,
-        quantity: quantity,
+        quantity: purchaseParam is AppStorePurchaseParam ? purchaseParam.quantity : 1,
         applicationUsername: purchaseParam.applicationUserName,
         simulatesAskToBuyInSandbox: purchaseParam is AppStorePurchaseParam &&
             purchaseParam.simulatesAskToBuyInSandbox,
@@ -82,9 +82,9 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
 
   @override
   Future<bool> buyConsumable(
-      {required PurchaseParam purchaseParam, bool autoConsume = true, int quantity = 1}) {
+      {required PurchaseParam purchaseParam, bool autoConsume = true}) {
     assert(autoConsume == true, 'On iOS, we should always auto consume');
-    return buyNonConsumable(purchaseParam: purchaseParam, quantity: quantity);
+    return buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   @override

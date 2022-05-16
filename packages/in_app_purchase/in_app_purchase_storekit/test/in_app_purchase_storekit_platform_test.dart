@@ -448,10 +448,10 @@ void main() {
       final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
           productDetails:
           AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          quantity: 5,
           applicationUserName: 'appName');
       await iapStoreKitPlatform.buyNonConsumable(
-          purchaseParam: purchaseParam,
-          quantity: 5
+          purchaseParam: purchaseParam
       );
       await completer.future;
       expect(fakeStoreKitPlatform.finishedTransactions.first.payment.quantity, 5);
@@ -477,10 +477,10 @@ void main() {
       final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
           productDetails:
           AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          quantity: 5,
           applicationUserName: 'appName');
       await iapStoreKitPlatform.buyConsumable(
-          purchaseParam: purchaseParam,
-          quantity: 5
+          purchaseParam: purchaseParam
       );
       await completer.future;
       expect(fakeStoreKitPlatform.finishedTransactions.first.payment.quantity, 5);
