@@ -127,7 +127,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
 
   @override
   Future<String> evaluateJavascript(String javascript) {
-    throw UnimplementedError();
+    return runJavascriptReturningResult(javascript);
   }
 
   @override
