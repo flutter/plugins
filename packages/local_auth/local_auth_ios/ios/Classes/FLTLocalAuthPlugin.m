@@ -85,7 +85,9 @@
                   if (UIApplicationOpenSettingsURLString != NULL) {
                     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
                     if (@available(iOS 10, *)) {
-                      [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:NULL];
+                      [[UIApplication sharedApplication] openURL:url
+                                                         options:@{}
+                                               completionHandler:NULL];
                     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
