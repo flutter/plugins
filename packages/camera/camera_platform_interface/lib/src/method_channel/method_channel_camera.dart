@@ -26,6 +26,12 @@ class MethodChannelCamera extends CameraPlatform {
 
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
 
+  /// Error code used to detect multiple requests for camera permissions on Android.
+  ///
+  /// See [CameraPermissions] in [camera/camera] for details.
+  static final String cameraPermissionsRequestOngoingErrorCode =
+      "CameraPermissionsRequestOngoing";
+
   /// The controller we need to broadcast the different events coming
   /// from handleMethodCall, specific to camera events.
   ///
@@ -93,6 +99,9 @@ class MethodChannelCamera extends CameraPlatform {
 
       return reply!['cameraId']! as int;
     } on PlatformException catch (e) {
+      if (e.code == cameraPermissionsRequestOngoingErrorCode) {
+        throw StateError(e.message!);
+      }
       throw CameraException(e.code, e.message);
     }
   }

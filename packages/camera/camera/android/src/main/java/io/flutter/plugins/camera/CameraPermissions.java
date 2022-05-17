@@ -8,7 +8,6 @@ import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -24,7 +23,20 @@ final class CameraPermissions {
     void onResult(String errorCode, String errorDescription);
   }
 
-  private static final String TAG = "CameraPermissions";
+  /**
+   * Camera access permission errors handled when camera is created. See {@code MethodChannelCamera}
+   * in {@code camera/camera_platform_interface} for details.
+   */
+  private static final String CAMERA_PERMISSIONS_REQUEST_ONGOING =
+      "CameraPermissionsRequestOngoing";
+
+  private static final String CAMERA_PERMISSIONS_REQUEST_ONGOING_MESSAGE =
+      "Another request is ongoing and multiple requests cannot be handled at once.";
+  private static final String CAMERA_ACCESS_DENIED = "CameraAccessDenied";
+  private static final String CAMERA_ACCESS_DENIED_MESSAGE = "Camera access permission was denied.";
+  private static final String AUDIO_ACCESS_DENIED = "AudioAccessDenied";
+  private static final String AUDIO_ACCESS_DENIED_MESSAGE = "Audio access permission was denied.";
+
   private static final int CAMERA_REQUEST_ID = 9796;
   @VisibleForTesting boolean ongoing = false;
 
@@ -34,7 +46,8 @@ final class CameraPermissions {
       boolean enableAudio,
       ResultCallback callback) {
     if (ongoing) {
-      Log.e(TAG, "Another request is ongoing and multiple requests cannot be handled at once.");
+      callback.onResult(
+          CAMERA_PERMISSIONS_REQUEST_ONGOING, CAMERA_PERMISSIONS_REQUEST_ONGOING_MESSAGE);
       return;
     }
     if (!hasCameraPermission(activity) || (enableAudio && !hasAudioPermission(activity))) {
@@ -93,9 +106,9 @@ final class CameraPermissions {
 
       alreadyCalled = true;
       if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-        callback.onResult("CameraAccessDenied", "Camera access permission was denied.");
+        callback.onResult(CAMERA_ACCESS_DENIED, CAMERA_ACCESS_DENIED_MESSAGE);
       } else if (grantResults.length > 1 && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-        callback.onResult("AudioAccessDenied", "Audio access permission was denied.");
+        callback.onResult(AUDIO_ACCESS_DENIED, AUDIO_ACCESS_DENIED_MESSAGE);
       } else {
         callback.onResult(null, null);
       }
