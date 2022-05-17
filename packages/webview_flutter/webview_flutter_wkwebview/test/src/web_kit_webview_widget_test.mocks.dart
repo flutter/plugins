@@ -434,7 +434,7 @@ class MockWKWebsiteDataStore extends _i1.Mock
           returnValue: _FakeWKHttpCookieStore_6()) as _i3.WKHttpCookieStore);
   @override
   _i5.Future<bool> removeDataOfTypes(
-          Set<_i3.WKWebsiteDataTypes>? dataTypes, DateTime? since) =>
+          Set<_i3.WKWebsiteDataType>? dataTypes, DateTime? since) =>
       (super.noSuchMethod(
           Invocation.method(#removeDataOfTypes, [dataTypes, since]),
           returnValue: Future<bool>.value(false)) as _i5.Future<bool>);

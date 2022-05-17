@@ -12,6 +12,20 @@
 @end
 
 @implementation FWFWebViewHostApiTests
+- (void)testCreateWithIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFWebViewHostApiImpl *hostApi =
+      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+
+  [instanceManager addInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+
+  FlutterError *error;
+  [hostApi createWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  WKWebView *webView = (WKWebView *)[instanceManager instanceForIdentifier:1];
+  XCTAssertTrue([webView isKindOfClass:[WKWebView class]]);
+  XCTAssertNil(error);
+}
+
 - (void)testLoadRequest {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 

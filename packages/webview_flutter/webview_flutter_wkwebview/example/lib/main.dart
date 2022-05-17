@@ -232,8 +232,8 @@ class _SampleMenu extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
             PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.showUserAgent,
-              child: const Text('Show user agent'),
               enabled: controller.hasData,
+              child: const Text('Show user agent'),
             ),
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.listCookies,
@@ -326,6 +326,7 @@ class _SampleMenu extends StatelessWidget {
   Future<void> _onListCache(
       WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
+        // ignore: missing_whitespace_between_adjacent_strings
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Snackbar.postMessage(caches))');
   }

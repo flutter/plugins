@@ -29,6 +29,7 @@ Future<void> injectJSLibraries(
     final html.ScriptElement script = html.ScriptElement()
       ..async = true
       ..defer = true
+      // ignore: unsafe_html
       ..src = library;
     // TODO(ditman): add a timeout race to fail this future
     loading.add(script.onLoad.first);

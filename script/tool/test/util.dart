@@ -313,20 +313,20 @@ String _pluginPlatformSection(
         assert(false, 'Unrecognized platform: $platform');
         break;
     }
-    entry = lines.join('\n') + '\n';
+    entry = '${lines.join('\n')}\n';
   }
 
   return entry;
 }
 
-typedef _ErrorHandler = void Function(Error error);
+typedef ErrorHandler = void Function(Error error);
 
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
 /// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
     CommandRunner<void> runner, List<String> args,
-    {_ErrorHandler? errorHandler}) async {
+    {ErrorHandler? errorHandler}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
