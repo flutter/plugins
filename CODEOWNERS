@@ -67,6 +67,7 @@ packages/url_launcher/url_launcher_macos/**              @cbracken
 packages/camera/camera_windows/**                        @cbracken
 packages/file_selector/file_selector_windows/**          @cbracken
 packages/image_picker/image_picker_windows/**            @cbracken
+packages/local_auth/local_auth_windows/**                @cbracken
 packages/path_provider/path_provider_windows/**          @cbracken
 packages/shared_preferences/shared_preferences_windows/** @cbracken
 packages/url_launcher/url_launcher_windows/**            @cbracken
