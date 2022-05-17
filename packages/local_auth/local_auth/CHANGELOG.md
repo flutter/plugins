@@ -1,6 +1,6 @@
 ## 2.1.0
 
-* Adds federated Windows support.
+* Adds Windows support.
 
 ## 2.0.2
 

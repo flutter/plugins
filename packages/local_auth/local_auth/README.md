@@ -90,6 +90,8 @@ final bool didAuthenticate = await auth.authenticate(
     options: const AuthenticationOptions(biometricOnly: true));
 ```
 
+*Note*: `biometricOnly` is not supported on Windows since the Windows implementation's underlying API (Windows Hello) doesn't support selecting the authentication method.
+
 #### Dialogs
 
 The plugin provides default dialogs for the following cases:
