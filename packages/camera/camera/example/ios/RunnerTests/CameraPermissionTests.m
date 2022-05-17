@@ -26,7 +26,7 @@
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusAuthorized);
 
-  FLTRequestCameraPermission(^(FlutterError *error) {
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
     if (error == nil) {
       [expectation fulfill];
     }
@@ -46,7 +46,7 @@
   id mockDevice = OCMClassMock([AVCaptureDevice class]);
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusDenied);
-  FLTRequestCameraPermission(^(FlutterError *error) {
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
     if ([error isEqual:expectedError]) {
       [expectation fulfill];
     }
@@ -65,7 +65,7 @@
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeVideo])
       .andReturn(AVAuthorizationStatusRestricted);
 
-  FLTRequestCameraPermission(^(FlutterError *error) {
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
     if ([error isEqual:expectedError]) {
       [expectation fulfill];
     }
@@ -87,7 +87,7 @@
                                 return YES;
                               }]]);
 
-  FLTRequestCameraPermission(^(FlutterError *error) {
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
     if (error == nil) {
       [grantedExpectation fulfill];
     }
@@ -113,7 +113,7 @@
                                 block(NO);
                                 return YES;
                               }]]);
-  FLTRequestCameraPermission(^(FlutterError *error) {
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
     if ([error isEqual:expectedError]) {
       [expectation fulfill];
     }
@@ -133,7 +133,7 @@
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeAudio])
       .andReturn(AVAuthorizationStatusAuthorized);
 
-  FLTRequestAudioPermission(^(FlutterError *error) {
+  FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
     if (error == nil) {
       [expectation fulfill];
     }
@@ -153,7 +153,7 @@
   id mockDevice = OCMClassMock([AVCaptureDevice class]);
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeAudio])
       .andReturn(AVAuthorizationStatusDenied);
-  FLTRequestAudioPermission(^(FlutterError *error) {
+  FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
     if ([error isEqual:expectedError]) {
       [expectation fulfill];
     }
@@ -172,7 +172,7 @@
   OCMStub([mockDevice authorizationStatusForMediaType:AVMediaTypeAudio])
       .andReturn(AVAuthorizationStatusRestricted);
 
-  FLTRequestAudioPermission(^(FlutterError *error) {
+  FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
     if ([error isEqual:expectedError]) {
       [expectation fulfill];
     }
@@ -194,7 +194,7 @@
                                 return YES;
                               }]]);
 
-  FLTRequestAudioPermission(^(FlutterError *error) {
+  FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
     if (error == nil) {
       [grantedExpectation fulfill];
     }
@@ -219,7 +219,7 @@
                                 block(NO);
                                 return YES;
                               }]]);
-  FLTRequestAudioPermission(^(FlutterError *error) {
+  FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
     if ([error isEqual:expectedError]) {
       [expectation fulfill];
     }

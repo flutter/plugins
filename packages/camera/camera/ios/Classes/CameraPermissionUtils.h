@@ -16,7 +16,8 @@ typedef void (^FLTCameraPermissionRequestCompletionHandler)(FlutterError *);
 /// @param handler if access permission is (or was previously) granted, completion handler will be
 /// called without error; Otherwise completion handler will be called with error. Handler can be
 /// called on an arbitrary dispatch queue.
-extern void FLTRequestCameraPermission(FLTCameraPermissionRequestCompletionHandler handler);
+extern void FLTRequestCameraPermissionWithCompletionHandler(
+    FLTCameraPermissionRequestCompletionHandler handler);
 
 /// Requests audio access permission.
 ///
@@ -27,4 +28,5 @@ extern void FLTRequestCameraPermission(FLTCameraPermissionRequestCompletionHandl
 /// @param handler if access permission is (or was previously) granted, completion handler will be
 /// called without error; Otherwise completion handler will be called with error. Handler can be
 /// called on an arbitrary dispatch queue.
-extern void FLTRequestAudioPermission(FLTCameraPermissionRequestCompletionHandler handler);
+extern void FLTRequestAudioPermissionWithCompletionHandler(
+    FLTCameraPermissionRequestCompletionHandler handler);
