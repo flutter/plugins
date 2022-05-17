@@ -132,6 +132,11 @@ class RepositoryPackage {
       !isPlatformInterface &&
       directory.basename != directory.parent.basename;
 
+  bool get isExample =>
+      (directory.basename == 'example' && isPackage(directory.parent)) ||
+      (directory.parent.basename == 'example' &&
+          isPackage(directory.parent.parent));
+
   /// Returns the Flutter example packages contained in the package, if any.
   Iterable<RepositoryPackage> getExamples() {
     final Directory exampleDirectory = directory.childDirectory('example');

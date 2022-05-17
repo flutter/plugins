@@ -37,8 +37,10 @@ void main() {
     runner.addCommand(command);
   });
 
-  test('fails when README is missing', () async {
-    createFakePackage('a_package', packagesDir);
+  test('fails when package README is missing', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.readmeFile.deleteSync();
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -55,9 +57,23 @@ void main() {
     );
   });
 
-  test('fails when README still has plugin template boilerplate', () async {
+  test('skips when example README is missing', () async {
     final RepositoryPackage package =
         createFakePackage('a_package', packagesDir);
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('No README.md for example'),
+      ]),
+    );
+  });
+
+  test('fails when README still has plugin template boilerplate', () async {
+    final RepositoryPackage package = createFakePlugin('a_plugin', packagesDir);
     package.readmeFile.writeAsStringSync('''
 ## Getting Started
 
@@ -88,11 +104,11 @@ samples, guidance on mobile development, and a full API reference.
     );
   });
 
-  test('fails when README still has application template boilerplate',
+  test('fails when example README still has application template boilerplate',
       () async {
     final RepositoryPackage package =
         createFakePackage('a_package', packagesDir);
-    package.readmeFile.writeAsStringSync('''
+    package.getExamples().first.readmeFile.writeAsStringSync('''
 ## Getting Started
 
 This project is a starting point for a Flutter application.
@@ -131,20 +147,12 @@ samples, guidance on mobile development, and a full API reference.
       const String federatedPluginName = 'a_federated_plugin';
       final Directory federatedDir =
           packagesDir.childDirectory(federatedPluginName);
-      final List<RepositoryPackage> packages = <RepositoryPackage>[
-        // A non-plugin package.
-        createFakePackage('a_package', packagesDir),
-        // Non-app-facing parts of a federated plugin.
-        createFakePlugin(
-            '${federatedPluginName}_platform_interface', federatedDir),
-        createFakePlugin('${federatedPluginName}_android', federatedDir),
-      ];
-
-      for (final RepositoryPackage package in packages) {
-        package.readmeFile.writeAsStringSync('''
-A very useful package.
-''');
-      }
+      // A non-plugin package.
+      createFakePackage('a_package', packagesDir);
+      // Non-app-facing parts of a federated plugin.
+      createFakePlugin(
+          '${federatedPluginName}_platform_interface', federatedDir);
+      createFakePlugin('${federatedPluginName}_android', federatedDir);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'readme-check',
@@ -166,10 +174,6 @@ A very useful package.
       final RepositoryPackage plugin =
           createFakePlugin('a_plugin', packagesDir);
 
-      plugin.readmeFile.writeAsStringSync('''
-A very useful plugin.
-''');
-
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['readme-check'], errorHandler: (Error e) {
@@ -190,10 +194,6 @@ A very useful plugin.
         () async {
       final RepositoryPackage plugin =
           createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
-
-      plugin.readmeFile.writeAsStringSync('''
-A very useful plugin.
-''');
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(

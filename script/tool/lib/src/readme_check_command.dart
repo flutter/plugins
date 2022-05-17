@@ -53,11 +53,18 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
+  bool get includeSubpackages => true;
+
+  @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final File readme = package.readmeFile;
 
     if (!readme.existsSync()) {
-      return PackageResult.fail(<String>['Missing README.md']);
+      if (package.isExample) {
+        return PackageResult.skip('No README.md for example');
+      } else {
+        return PackageResult.fail(<String>['Missing README.md']);
+      }
     }
 
     final List<String> errors = <String>[];
