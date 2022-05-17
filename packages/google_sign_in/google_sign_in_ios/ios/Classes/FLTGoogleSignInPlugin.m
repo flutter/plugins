@@ -38,8 +38,18 @@ static FlutterError *getFlutterError(NSError *error) {
 
 @interface FLTGoogleSignInPlugin ()
 
+// Configuration wrapping Google Cloud Console, Google Apps, OpenID,
+// and other initialization metadata.
 @property(strong) GIDConfiguration *configuration;
+
+// Permissions requested during at sign in "init" method call
+// unioned with scopes requested later with incremental authorization
+// "requestScopes" method call.
+// The "email" and "profile" base scopes are always implicitly requested.
 @property(copy) NSSet<NSString *> *requestedScopes;
+
+// Instance used to manage Google Sign In authentication including
+// sign in, sign out, and requesting additional scopes.
 @property(strong, readonly) GIDSignIn *signIn;
 
 // Redeclared as not a designated initializer.
@@ -80,8 +90,8 @@ static FlutterError *getFlutterError(NSError *error) {
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
     GIDConfiguration *configuration =
-        [self configurationClientIdArgument:call.arguments[@"clientId"]
-                       hostedDomainArgument:call.arguments[@"hostedDomain"]];
+        [self configurationWithClientIdArgument:call.arguments[@"clientId"]
+                           hostedDomainArgument:call.arguments[@"hostedDomain"]];
     if (configuration != nil) {
       if ([call.arguments[@"scopes"] isKindOfClass:[NSArray class]]) {
         self.requestedScopes = [NSSet setWithArray:call.arguments[@"scopes"]];
@@ -101,8 +111,9 @@ static FlutterError *getFlutterError(NSError *error) {
     result(@([self.signIn hasPreviousSignIn]));
   } else if ([call.method isEqualToString:@"signIn"]) {
     @try {
-      GIDConfiguration *configuration =
-          self.configuration ?: [self configurationClientIdArgument:nil hostedDomainArgument:nil];
+      GIDConfiguration *configuration = self.configuration
+                                            ?: [self configurationWithClientIdArgument:nil
+                                                                  hostedDomainArgument:nil];
       [self.signIn signInWithConfiguration:configuration
                   presentingViewController:[self topViewController]
                                       hint:nil
@@ -188,8 +199,8 @@ static FlutterError *getFlutterError(NSError *error) {
 #pragma mark - private methods
 
 /// @return @c nil if GoogleService-Info.plist not found.
-- (GIDConfiguration *)configurationClientIdArgument:(id)clientIDArg
-                               hostedDomainArgument:(id)hostedDomainArg {
+- (GIDConfiguration *)configurationWithClientIdArgument:(id)clientIDArg
+                                   hostedDomainArgument:(id)hostedDomainArg {
   NSString *plistPath = [NSBundle.mainBundle pathForResource:@"GoogleService-Info" ofType:@"plist"];
   if (plistPath == nil) {
     return nil;
@@ -219,8 +230,7 @@ static FlutterError *getFlutterError(NSError *error) {
   } else {
     NSURL *photoUrl;
     if (user.profile.hasImage) {
-      // Placeholder that will be replaced by on the Dart side based on screen
-      // size
+      // Placeholder that will be replaced by on the Dart side based on screen size.
       photoUrl = [user.profile imageURLWithDimension:1337];
     }
     [self respondWithAccount:@{
