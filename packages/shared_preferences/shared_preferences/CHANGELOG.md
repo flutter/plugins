@@ -1,3 +1,7 @@
+## 2.0.15
+
+* Minor fixes for new analysis options.
+
 ## 2.0.14
 
 * Adds OS version support information to README.

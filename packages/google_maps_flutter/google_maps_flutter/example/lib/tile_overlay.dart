@@ -35,6 +35,7 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
   GoogleMapController? controller;
   TileOverlay? _tileOverlay;
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }

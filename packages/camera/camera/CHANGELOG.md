@@ -2,6 +2,22 @@
 
 * Updates Android camera access permission error codes to be consistent with other platforms.
 
+## 0.9.5+1
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
+## 0.9.5
+
+* Adds camera access permission handling logic on iOS to fix a related crash when using the camera for the first time.
+
+## 0.9.4+24
+
+* Fixes preview orientation when pausing preview with locked orientation.
+
+## 0.9.4+23
+
+* Minor fixes for new analysis options.
+
 ## 0.9.4+22
 
 * Removes unnecessary imports.

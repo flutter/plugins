@@ -45,14 +45,14 @@ enum WKAudiovisualMediaTypeEnum {
   all,
 }
 
-enum WKWebsiteDataTypesEnum {
+enum WKWebsiteDataTypeEnum {
   cookies,
   memoryCache,
   diskCache,
   offlineWebApplicationCache,
-  localStroage,
+  localStorage,
   sessionStorage,
-  sqlDatabases,
+  webSQLDatabases,
   indexedDBDatabases,
 }
 
@@ -80,115 +80,105 @@ enum NSHttpCookiePropertyKeyEnum {
 
 class NSKeyValueObservingOptionsEnumData {
   NSKeyValueObservingOptionsEnumData({
-    this.value,
+    required this.value,
   });
 
-  NSKeyValueObservingOptionsEnum? value;
+  NSKeyValueObservingOptionsEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static NSKeyValueObservingOptionsEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSKeyValueObservingOptionsEnumData(
-      value: pigeonMap['value'] != null
-          ? NSKeyValueObservingOptionsEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: NSKeyValueObservingOptionsEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class WKUserScriptInjectionTimeEnumData {
   WKUserScriptInjectionTimeEnumData({
-    this.value,
+    required this.value,
   });
 
-  WKUserScriptInjectionTimeEnum? value;
+  WKUserScriptInjectionTimeEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static WKUserScriptInjectionTimeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKUserScriptInjectionTimeEnumData(
-      value: pigeonMap['value'] != null
-          ? WKUserScriptInjectionTimeEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: WKUserScriptInjectionTimeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class WKAudiovisualMediaTypeEnumData {
   WKAudiovisualMediaTypeEnumData({
-    this.value,
+    required this.value,
   });
 
-  WKAudiovisualMediaTypeEnum? value;
+  WKAudiovisualMediaTypeEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static WKAudiovisualMediaTypeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return WKAudiovisualMediaTypeEnumData(
-      value: pigeonMap['value'] != null
-          ? WKAudiovisualMediaTypeEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: WKAudiovisualMediaTypeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
-class WKWebsiteDataTypesEnumData {
-  WKWebsiteDataTypesEnumData({
-    this.value,
+class WKWebsiteDataTypeEnumData {
+  WKWebsiteDataTypeEnumData({
+    required this.value,
   });
 
-  WKWebsiteDataTypesEnum? value;
+  WKWebsiteDataTypeEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
-  static WKWebsiteDataTypesEnumData decode(Object message) {
+  static WKWebsiteDataTypeEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return WKWebsiteDataTypesEnumData(
-      value: pigeonMap['value'] != null
-          ? WKWebsiteDataTypesEnum.values[pigeonMap['value']! as int]
-          : null,
+    return WKWebsiteDataTypeEnumData(
+      value: WKWebsiteDataTypeEnum.values[pigeonMap['value']! as int],
     );
   }
 }
 
 class NSHttpCookiePropertyKeyEnumData {
   NSHttpCookiePropertyKeyEnumData({
-    this.value,
+    required this.value,
   });
 
-  NSHttpCookiePropertyKeyEnum? value;
+  NSHttpCookiePropertyKeyEnum value;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['value'] = value?.index;
+    pigeonMap['value'] = value.index;
     return pigeonMap;
   }
 
   static NSHttpCookiePropertyKeyEnumData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSHttpCookiePropertyKeyEnumData(
-      value: pigeonMap['value'] != null
-          ? NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int]
-          : null,
+      value: NSHttpCookiePropertyKeyEnum.values[pigeonMap['value']! as int],
     );
   }
 }
@@ -262,22 +252,27 @@ class WKUserScriptData {
 
 class NSHttpCookieData {
   NSHttpCookieData({
-    required this.properties,
+    required this.propertyKeys,
+    required this.propertyValues,
   });
 
-  Map<NSHttpCookiePropertyKeyEnumData?, String?> properties;
+  List<NSHttpCookiePropertyKeyEnumData?> propertyKeys;
+  List<Object?> propertyValues;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['properties'] = properties;
+    pigeonMap['propertyKeys'] = propertyKeys;
+    pigeonMap['propertyValues'] = propertyValues;
     return pigeonMap;
   }
 
   static NSHttpCookieData decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return NSHttpCookieData(
-      properties: (pigeonMap['properties'] as Map<Object?, Object?>?)!
-          .cast<NSHttpCookiePropertyKeyEnumData?, String?>(),
+      propertyKeys: (pigeonMap['propertyKeys'] as List<Object?>?)!
+          .cast<NSHttpCookiePropertyKeyEnumData?>(),
+      propertyValues:
+          (pigeonMap['propertyValues'] as List<Object?>?)!.cast<Object?>(),
     );
   }
 }
@@ -286,7 +281,7 @@ class _WKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
   const _WKWebsiteDataStoreHostApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is WKWebsiteDataTypesEnumData) {
+    if (value is WKWebsiteDataTypeEnumData) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else {
@@ -298,7 +293,7 @@ class _WKWebsiteDataStoreHostApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return WKWebsiteDataTypesEnumData.decode(readValue(buffer)!);
+        return WKWebsiteDataTypeEnumData.decode(readValue(buffer)!);
 
       default:
         return super.readValueOfType(type, buffer);
@@ -371,15 +366,15 @@ class WKWebsiteDataStoreHostApi {
 
   Future<bool> removeDataOfTypes(
       int arg_instanceId,
-      List<WKWebsiteDataTypesEnumData?> arg_dataTypes,
-      double arg_secondsModifiedSinceEpoch) async {
+      List<WKWebsiteDataTypeEnumData?> arg_dataTypes,
+      double arg_modificationTimeInSecondsSinceEpoch) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WKWebsiteDataStoreHostApi.removeDataOfTypes', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
       arg_instanceId,
       arg_dataTypes,
-      arg_secondsModifiedSinceEpoch
+      arg_modificationTimeInSecondsSinceEpoch
     ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
@@ -419,35 +414,6 @@ class UIViewHostApi {
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _UIViewHostApiCodec();
-
-  Future<List<double?>> getContentOffset(int arg_instanceId) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.UIViewHostApi.getContentOffset', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else if (replyMap['result'] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyMap['result'] as List<Object?>?)!.cast<double?>();
-    }
-  }
 
   Future<void> setBackgroundColor(int arg_instanceId, int? arg_value) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -1352,7 +1318,7 @@ class _WKWebViewHostApiCodec extends StandardMessageCodec {
     } else if (value is WKUserScriptInjectionTimeEnumData) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is WKWebsiteDataTypesEnumData) {
+    } else if (value is WKWebsiteDataTypeEnumData) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
     } else {
@@ -1385,7 +1351,7 @@ class _WKWebViewHostApiCodec extends StandardMessageCodec {
         return WKUserScriptInjectionTimeEnumData.decode(readValue(buffer)!);
 
       case 135:
-        return WKWebsiteDataTypesEnumData.decode(readValue(buffer)!);
+        return WKWebsiteDataTypeEnumData.decode(readValue(buffer)!);
 
       default:
         return super.readValueOfType(type, buffer);

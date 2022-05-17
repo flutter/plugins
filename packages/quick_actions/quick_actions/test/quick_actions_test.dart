@@ -21,7 +21,7 @@ void main() {
 
     test('initialize() PlatformInterface', () async {
       const QuickActions quickActions = QuickActions();
-      final QuickActionHandler handler = (String type) {};
+      void handler(String type) {}
 
       await quickActions.initialize(handler);
       verify(QuickActionsPlatform.instance.initialize(handler)).called(1);
@@ -29,7 +29,7 @@ void main() {
 
     test('setShortcutItems() PlatformInterface', () {
       const QuickActions quickActions = QuickActions();
-      final QuickActionHandler handler = (String type) {};
+      void handler(String type) {}
       quickActions.initialize(handler);
       quickActions.setShortcutItems(<ShortcutItem>[]);
 
@@ -40,7 +40,7 @@ void main() {
 
     test('clearShortcutItems() PlatformInterface', () {
       const QuickActions quickActions = QuickActions();
-      final QuickActionHandler handler = (String type) {};
+      void handler(String type) {}
 
       quickActions.initialize(handler);
       quickActions.clearShortcutItems();

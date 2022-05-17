@@ -40,8 +40,8 @@ const String kLocalExamplePage = '''
 
 <h1>Local demo page</h1>
 <p>
-  This is an example page used to demonstrate how to load a local file or HTML 
-  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
+  This is an example page used to demonstrate how to load a local file or HTML
+  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter
   webview</a> plugin.
 </p>
 
@@ -155,7 +155,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             onPressed: () async {
               String? url;
               if (controller.hasData) {
-                url = (await controller.data!.currentUrl())!;
+                url = await controller.data!.currentUrl();
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -345,6 +345,7 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onListCache(
       WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
+        // ignore: missing_whitespace_between_adjacent_strings
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Toaster.postMessage(caches))');
   }

@@ -103,7 +103,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('There are files in the package directory that haven\'t '
+            contains("There are files in the package directory that haven't "
                 'been saved in git. Refusing to publish these files:\n\n'
                 '?? /packages/foo/tmp\n\n'
                 'If the directory should be clean, you can run `git clean -xdf && '
@@ -113,7 +113,7 @@ void main() {
           ]));
     });
 
-    test('fails immediately if the remote doesn\'t exist', () async {
+    test("fails immediately if the remote doesn't exist", () async {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
@@ -222,6 +222,35 @@ void main() {
               flutterCommand,
               const <String>['pub', 'publish', '--server=bar', '--force'],
               plugin.path)));
+    });
+
+    test('--force is only added once, regardless of plugin count', () async {
+      _createMockCredentialFile();
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin_a', packagesDir, examples: <String>[]);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin_b', packagesDir, examples: <String>[]);
+
+      await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=plugin_a,plugin_b',
+        '--skip-confirmation',
+        '--pub-publish-flags',
+        '--server=bar'
+      ]);
+
+      expect(
+          processRunner.recordedCalls,
+          containsAllInOrder(<ProcessCall>[
+            ProcessCall(
+                flutterCommand,
+                const <String>['pub', 'publish', '--server=bar', '--force'],
+                plugin1.path),
+            ProcessCall(
+                flutterCommand,
+                const <String>['pub', 'publish', '--server=bar', '--force'],
+                plugin2.path),
+          ]));
     });
 
     test('throws if pub publish fails', () async {
@@ -877,8 +906,8 @@ class MockStdin extends Mock implements io.Stdin {
   }
 
   @override
-  StreamSubscription<List<int>> listen(void onData(List<int> event)?,
-      {Function? onError, void onDone()?, bool? cancelOnError}) {
+  StreamSubscription<List<int>> listen(void Function(List<int> event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
