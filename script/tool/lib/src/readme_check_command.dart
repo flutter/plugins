@@ -61,6 +61,15 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
           mainPackage: package, isExample: true));
     }
 
+    // If there's an example/README.md for a multi-example package, validate
+    // that as well, as it will be shown on pub.dev.
+    final Directory exampleDir = package.directory.childDirectory('example');
+    final File exampleDirReadme = exampleDir.childFile('README.md');
+    if (exampleDir.existsSync() && !isPackage(exampleDir)) {
+      errors.addAll(_validateReadme(exampleDirReadme,
+          mainPackage: package, isExample: true));
+    }
+
     return errors.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(errors);
@@ -70,15 +79,18 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       {required RepositoryPackage mainPackage, required bool isExample}) {
     if (!readme.existsSync()) {
       if (isExample) {
-        printError('No README for '
+        print('${indentation}No README for '
             '${getRelativePosixPath(readme.parent, from: mainPackage.directory)}');
         return <String>[];
       } else {
-        printError('No README found at '
+        printError('${indentation}No README found at '
             '${getRelativePosixPath(readme, from: mainPackage.directory)}');
         return <String>['Missing README.md'];
       }
     }
+
+    print('${indentation}Checking '
+        '${getRelativePosixPath(readme, from: mainPackage.directory)}...');
 
     final List<String> readmeLines = readme.readAsLinesSync();
     final List<String> errors = <String>[];
@@ -89,8 +101,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     }
 
     if (_containsTemplateBoilerplate(readmeLines)) {
-      printError('The boilerplate section about getting started with Flutter '
-          'should not be left in.');
+      printError('${indentation}The boilerplate section about getting started '
+          'with Flutter should not be left in.');
       errors.add('Contains template boilerplate');
     }
 
