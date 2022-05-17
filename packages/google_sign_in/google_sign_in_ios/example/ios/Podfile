@@ -25,6 +25,9 @@ end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
+# Suppress warnings from transitive dependencies that cause analysis to fail.
+pod 'AppAuth', :inhibit_warnings => true
+
 flutter_ios_podfile_setup
 
 target 'Runner' do
