@@ -57,7 +57,7 @@ void main() {
     );
   });
 
-  test('skips when example README is missing', () async {
+  test('passes when example README is missing', () async {
     createFakePackage('a_package', packagesDir);
 
     final List<String> output =
@@ -66,7 +66,7 @@ void main() {
     expect(
       output,
       containsAllInOrder(<Matcher>[
-        contains('No README.md for example'),
+        contains('No README for example'),
       ]),
     );
   });

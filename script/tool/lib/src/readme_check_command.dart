@@ -53,27 +53,35 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  PackageLoopingType get packageLoopingType =>
-      PackageLoopingType.includeExamples;
-
-  @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final File readme = package.readmeFile;
+    final List<String> errors = _validateReadme(package.readmeFile,
+        mainPackage: package, isExample: false);
+    for (final RepositoryPackage packageToCheck in package.getExamples()) {
+      errors.addAll(_validateReadme(packageToCheck.readmeFile,
+          mainPackage: package, isExample: true));
+    }
 
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
+  }
+
+  List<String> _validateReadme(File readme,
+      {required RepositoryPackage mainPackage, required bool isExample}) {
     if (!readme.existsSync()) {
-      if (package.isExample) {
-        return PackageResult.skip('No README.md for example');
+      if (isExample) {
+        printError('No README for '
+            '${getRelativePosixPath(readme.parent, from: mainPackage.directory)}');
+        return <String>[];
       } else {
-        return PackageResult.fail(<String>['Missing README.md']);
+        printError('No README found at '
+            '${getRelativePosixPath(readme, from: mainPackage.directory)}');
+        return <String>['Missing README.md'];
       }
     }
 
+    final List<String> readmeLines = readme.readAsLinesSync();
     final List<String> errors = <String>[];
-
-    final Pubspec pubspec = package.parsePubspec();
-    final bool isPlugin = pubspec.flutter?['plugin'] != null;
-
-    final List<String> readmeLines = package.readmeFile.readAsLinesSync();
 
     final String? blockValidationError = _validateCodeBlocks(readmeLines);
     if (blockValidationError != null) {
@@ -86,16 +94,20 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       errors.add('Contains template boilerplate');
     }
 
-    if (isPlugin && (!package.isFederated || package.isAppFacing)) {
-      final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
-      if (error != null) {
-        errors.add(error);
+    // Check if this is the main readme for a plugin, and if so enforce extra
+    // checks.
+    if (!isExample) {
+      final Pubspec pubspec = mainPackage.parsePubspec();
+      final bool isPlugin = pubspec.flutter?['plugin'] != null;
+      if (isPlugin && (!mainPackage.isFederated || mainPackage.isAppFacing)) {
+        final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
+        if (error != null) {
+          errors.add(error);
+        }
       }
     }
 
-    return errors.isEmpty
-        ? PackageResult.success()
-        : PackageResult.fail(errors);
+    return errors;
   }
 
   /// Validates that code blocks (``` ... ```) follow repository standards.
