@@ -132,6 +132,7 @@ class RepositoryPackage {
       !isPlatformInterface &&
       directory.basename != directory.parent.basename;
 
+  /// True if the package is an example for another package.
   bool get isExample =>
       (directory.basename == 'example' && isPackage(directory.parent)) ||
       (directory.parent.basename == 'example' &&

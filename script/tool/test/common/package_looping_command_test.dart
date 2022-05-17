@@ -98,7 +98,7 @@ void main() {
   TestPackageLoopingCommand createTestCommand({
     String gitDiffResponse = '',
     bool hasLongOutput = true,
-    bool includeSubpackages = false,
+    PackageLoopingType packageLoopingType = PackageLoopingType.topLevelOnly,
     bool failsDuringInit = false,
     bool warnsDuringInit = false,
     bool warnsDuringCleanup = false,
@@ -122,7 +122,7 @@ void main() {
       packagesDir,
       platform: mockPlatform,
       hasLongOutput: hasLongOutput,
-      includeSubpackages: includeSubpackages,
+      packageLoopingType: packageLoopingType,
       failsDuringInit: failsDuringInit,
       warnsDuringInit: warnsDuringInit,
       warnsDuringCleanup: warnsDuringCleanup,
@@ -236,14 +236,41 @@ void main() {
           unorderedEquals(<String>[package1.path, package2.path]));
     });
 
-    test('includes subpackages when requested', () async {
+    test('includes all subpackages when requested', () async {
       final RepositoryPackage plugin = createFakePlugin('a_plugin', packagesDir,
           examples: <String>['example1', 'example2']);
       final RepositoryPackage package =
           createFakePackage('a_package', packagesDir);
+      final RepositoryPackage subPackage = createFakePackage(
+          'sub_package', package.directory,
+          examples: <String>[]);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand(includeSubpackages: true);
+      final TestPackageLoopingCommand command = createTestCommand(
+          packageLoopingType: PackageLoopingType.includeAllSubpackages);
+      await runCommand(command);
+
+      expect(
+          command.checkedPackages,
+          unorderedEquals(<String>[
+            plugin.path,
+            getExampleDir(plugin).childDirectory('example1').path,
+            getExampleDir(plugin).childDirectory('example2').path,
+            package.path,
+            getExampleDir(package).path,
+            subPackage.path,
+          ]));
+    });
+
+    test('includes examples when requested', () async {
+      final RepositoryPackage plugin = createFakePlugin('a_plugin', packagesDir,
+          examples: <String>['example1', 'example2']);
+      final RepositoryPackage package =
+          createFakePackage('a_package', packagesDir);
+      final RepositoryPackage subPackage =
+          createFakePackage('sub_package', package.directory);
+
+      final TestPackageLoopingCommand command = createTestCommand(
+          packageLoopingType: PackageLoopingType.includeExamples);
       await runCommand(command);
 
       expect(
@@ -255,6 +282,7 @@ void main() {
             package.path,
             getExampleDir(package).path,
           ]));
+      expect(command.checkedPackages, isNot(contains(subPackage.path)));
     });
 
     test('excludes subpackages when main package is excluded', () async {
@@ -263,9 +291,38 @@ void main() {
           examples: <String>['example1', 'example2']);
       final RepositoryPackage included =
           createFakePackage('a_package', packagesDir);
+      final RepositoryPackage subpackage =
+          createFakePackage('sub_package', excluded.directory);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand(includeSubpackages: true);
+      final TestPackageLoopingCommand command = createTestCommand(
+          packageLoopingType: PackageLoopingType.includeAllSubpackages);
+      await runCommand(command, arguments: <String>['--exclude=a_plugin']);
+
+      final Iterable<RepositoryPackage> examples = excluded.getExamples();
+
+      expect(
+          command.checkedPackages,
+          unorderedEquals(<String>[
+            included.path,
+            getExampleDir(included).path,
+          ]));
+      expect(command.checkedPackages, isNot(contains(excluded.path)));
+      expect(examples.length, 2);
+      for (final RepositoryPackage example in examples) {
+        expect(command.checkedPackages, isNot(contains(example.path)));
+      }
+      expect(command.checkedPackages, isNot(contains(subpackage.path)));
+    });
+
+    test('excludes examples when main package is excluded', () async {
+      final RepositoryPackage excluded = createFakePlugin(
+          'a_plugin', packagesDir,
+          examples: <String>['example1', 'example2']);
+      final RepositoryPackage included =
+          createFakePackage('a_package', packagesDir);
+
+      final TestPackageLoopingCommand command = createTestCommand(
+          packageLoopingType: PackageLoopingType.includeExamples);
       await runCommand(command, arguments: <String>['--exclude=a_plugin']);
 
       final Iterable<RepositoryPackage> examples = excluded.getExamples();
@@ -290,8 +347,9 @@ void main() {
       final RepositoryPackage included =
           createFakePackage('a_package', packagesDir);
 
-      final TestPackageLoopingCommand command =
-          createTestCommand(includeSubpackages: true, hasLongOutput: false);
+      final TestPackageLoopingCommand command = createTestCommand(
+          packageLoopingType: PackageLoopingType.includeAllSubpackages,
+          hasLongOutput: false);
       final List<String> output = await runCommand(command, arguments: <String>[
         '--skip-if-not-supporting-flutter-version=2.5.0'
       ]);
@@ -769,7 +827,7 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     required Platform platform,
     this.hasLongOutput = true,
-    this.includeSubpackages = false,
+    this.packageLoopingType = PackageLoopingType.topLevelOnly,
     this.customFailureListHeader,
     this.customFailureListFooter,
     this.failsDuringInit = false,
@@ -795,7 +853,7 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   bool hasLongOutput;
 
   @override
-  bool includeSubpackages;
+  PackageLoopingType packageLoopingType;
 
   @override
   String get failureListHeader =>

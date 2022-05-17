@@ -53,7 +53,8 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  bool get includeSubpackages => true;
+  PackageLoopingType get packageLoopingType =>
+      PackageLoopingType.includeExamples;
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {

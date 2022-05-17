@@ -58,8 +58,7 @@ void main() {
   });
 
   test('skips when example README is missing', () async {
-    final RepositoryPackage package =
-        createFakePackage('a_package', packagesDir);
+    createFakePackage('a_package', packagesDir);
 
     final List<String> output =
         await runCapturingPrint(runner, <String>['readme-check']);
@@ -70,6 +69,20 @@ void main() {
         contains('No README.md for example'),
       ]),
     );
+  });
+
+  test('does not inculde non-example subpackages', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    const String subpackageName = 'special_test';
+    final RepositoryPackage miscSubpackage =
+        createFakePackage(subpackageName, package.directory);
+    miscSubpackage.readmeFile.delete();
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(output, isNot(contains(subpackageName)));
   });
 
   test('fails when README still has plugin template boilerplate', () async {
@@ -171,8 +184,7 @@ samples, guidance on mobile development, and a full API reference.
 
     test('fails when non-federated plugin is missing an OS support table',
         () async {
-      final RepositoryPackage plugin =
-          createFakePlugin('a_plugin', packagesDir);
+      createFakePlugin('a_plugin', packagesDir);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -192,8 +204,7 @@ samples, guidance on mobile development, and a full API reference.
     test(
         'fails when app-facing part of a federated plugin is missing an OS support table',
         () async {
-      final RepositoryPackage plugin =
-          createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
+      createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
