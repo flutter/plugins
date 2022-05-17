@@ -18,6 +18,8 @@ packages/**/*_web/**                                     @ditman
 
 # - Android
 packages/camera/camera/android/**                        @camsim99
+packages/espresso/**                                     @blasten
+packages/flutter_plugin_android_lifecycle/**             @blasten
 packages/google_maps_flutter/google_maps_flutter/android/**  @GaryQian
 packages/google_sign_in/google_sign_in_android/**        @camsim99
 packages/image_picker/image_picker_android/**            @GaryQian
