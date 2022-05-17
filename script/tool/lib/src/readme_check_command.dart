@@ -72,6 +72,12 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
       errors.add(blockValidationError);
     }
 
+    if (_containsTemplateBoilerplate(readmeLines)) {
+      printError('The boilerplate section about getting started with Flutter '
+          'should not be left in.');
+      errors.add('Contains template boilerplate');
+    }
+
     if (isPlugin && (!package.isFederated || package.isAppFacing)) {
       final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
       if (error != null) {
@@ -222,5 +228,12 @@ ${indentation * 2}Please use standard capitalizations: ${sortedListString(expect
     // consistent with what the current implementations require. See
     // https://github.com/flutter/flutter/issues/84200
     return null;
+  }
+
+  /// Returns true if the README still has the boilerplate from the
+  /// `flutter create` templates.
+  bool _containsTemplateBoilerplate(List<String> readmeLines) {
+    return readmeLines.any((String line) =>
+        line.contains('For help getting started with Flutter'));
   }
 }

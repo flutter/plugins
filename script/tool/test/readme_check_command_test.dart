@@ -55,6 +55,75 @@ void main() {
     );
   });
 
+  test('fails when README still has plugin template boilerplate', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.readmeFile.writeAsStringSync('''
+## Getting Started
+
+This project is a starting point for a Flutter
+[plug-in package](https://flutter.dev/developing-packages/),
+a specialized package that includes platform-specific implementation code for
+Android and/or iOS.
+
+For help getting started with Flutter development, view the
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The boilerplate section about getting started with Flutter '
+            'should not be left in.'),
+        contains('Contains template boilerplate'),
+      ]),
+    );
+  });
+
+  test('fails when README still has application template boilerplate',
+      () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.readmeFile.writeAsStringSync('''
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The boilerplate section about getting started with Flutter '
+            'should not be left in.'),
+        contains('Contains template boilerplate'),
+      ]),
+    );
+  });
+
   group('plugin OS support', () {
     test(
         'does not check support table for anything other than app-facing plugin packages',
