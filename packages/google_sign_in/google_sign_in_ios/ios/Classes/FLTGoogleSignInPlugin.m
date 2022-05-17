@@ -235,7 +235,9 @@ static FlutterError *getFlutterError(NSError *error) {
   }
 }
 
-- (void)respondWithAccount:(id)account result:(FlutterResult)result error:(NSError *)error {
+- (void)respondWithAccount:(NSDictionary<NSString *, id> *)account
+                    result:(FlutterResult)result
+                     error:(NSError *)error {
   result(error != nil ? getFlutterError(error) : account);
 }
 
