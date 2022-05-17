@@ -1,6 +1,6 @@
 ## 0.3.0+8
 
-* Fixes a memory leak error For iOS.
+* Fixes a memory leak on iOS.
 
 ## 0.3.0+7
 
