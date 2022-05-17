@@ -24,3 +24,6 @@ const String lockedOut = 'LockedOut';
 /// Indicates the API is locked out more persistently than [lockedOut].
 /// Strong authentication like PIN/Pattern/Password is required to unlock.
 const String permanentlyLockedOut = 'PermanentlyLockedOut';
+
+/// Indicates that the biometricOnly parameter can't be true on Windows
+const String biometricOnlyNotSupported = 'biometricOnlyNotSupported';
