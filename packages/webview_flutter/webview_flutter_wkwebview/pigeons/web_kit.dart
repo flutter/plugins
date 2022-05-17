@@ -382,7 +382,7 @@ abstract class WKNavigationDelegateHostApi {
   void create(int instanceId);
 }
 
-/// Handling callbacks from an WKNavigationDelegate.
+/// Handles callbacks from an WKNavigationDelegate instance.
 ///
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @FlutterApi()
@@ -421,7 +421,7 @@ abstract class NSObjectHostApi {
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
 }
 
-/// Handling callbacks from an NSObject.
+/// Handles callbacks from an NSObject instance.
 ///
 /// See https://developer.apple.com/documentation/objectivec/nsobject.
 @FlutterApi()
