@@ -157,8 +157,8 @@ void main() {
                     'Debug',
                     '-destination',
                     'generic/platform=iOS Simulator',
+                    'IPHONEOS_DEPLOYMENT_TARGET=14.0',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                    'IOS_DEPLOYMENT_TARGET=14.0',
                   ],
                   pluginExampleDirectory.path),
             ]));
@@ -287,8 +287,8 @@ void main() {
                     'Runner',
                     '-configuration',
                     'Debug',
+                    'MACOSX_DEPLOYMENT_TARGET=12.0',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                    'MACOSX_DEPLOYMENT_VERSION=12.0',
                   ],
                   pluginExampleDirectory.path),
             ]));
