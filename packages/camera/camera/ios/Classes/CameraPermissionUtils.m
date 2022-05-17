@@ -5,8 +5,7 @@
 @import AVFoundation;
 #import "CameraPermissionUtils.h"
 
-void FLTRequestCameraPermission(BOOL forAudio,
-                                FLTCameraPermissionRequestCompletionHandler handler) {
+void RequestPermission(BOOL forAudio, FLTCameraPermissionRequestCompletionHandler handler) {
   AVMediaType mediaType;
   if (forAudio) {
     mediaType = AVMediaTypeAudio;
@@ -75,4 +74,12 @@ void FLTRequestCameraPermission(BOOL forAudio,
       break;
     }
   }
+}
+
+void FLTRequestCameraPermission(FLTCameraPermissionRequestCompletionHandler handler) {
+  RequestPermission(/*forAudio*/ NO, handler);
+}
+
+void FLTRequestAudioPermission(FLTCameraPermissionRequestCompletionHandler handler) {
+  RequestPermission(/*forAudio*/ YES, handler);
 }

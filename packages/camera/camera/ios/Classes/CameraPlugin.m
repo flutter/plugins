@@ -132,7 +132,7 @@
       [result sendNotImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
-    FLTRequestCameraPermission(/*forAudio*/ false, ^(FlutterError *error) {
+    FLTRequestCameraPermission(^(FlutterError *error) {
       // Create FLTCam only if granted camera access.
       if (error) {
         [result sendFlutterError:error];
@@ -195,7 +195,7 @@
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       // Setup audio capture session only if granted audio access.
-      FLTRequestCameraPermission(/*forAudio*/ true, ^(FlutterError *error) {
+      FLTRequestAudioPermission(^(FlutterError *error) {
         if (error) {
           [result sendFlutterError:error];
         } else {
