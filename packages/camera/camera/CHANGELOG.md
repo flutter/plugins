@@ -1,3 +1,7 @@
+## 0.9.5+2
+
+* Moves streaming implementation to the platform interface package.
+
 ## 0.9.5+1
 
 * Suppresses warnings for pre-iOS-11 codepaths.

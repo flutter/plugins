@@ -1,5 +1,6 @@
-## NEXT
+## 2.2.0
 
+* Adds image streaming to the platform interface.
 * Removes unnecessary imports.
 
 ## 2.1.6
