@@ -11,7 +11,7 @@
 // Used to test that a FlutterBinaryMessenger with a strong reference to a host api won't
 // lead to a circular reference.
 @interface FWFTestMessenger : NSObject <FlutterBinaryMessenger>
-@property(strong, nullable) id hostApi;
+@property(strong, nullable) id hostAPI;
 @end
 
 @implementation FWFTestMessenger
@@ -39,12 +39,12 @@
 @implementation FWFNavigationDelegateHostApiTests
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFNavigationDelegateHostApiImpl *hostApi = [[FWFNavigationDelegateHostApiImpl alloc]
+  FWFNavigationDelegateHostApiImpl *hostAPI = [[FWFNavigationDelegateHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
 
@@ -54,12 +54,12 @@
 
 - (void)testDidFinishNavigation {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFNavigationDelegateHostApiImpl *hostApi = [[FWFNavigationDelegateHostApiImpl alloc]
+  FWFNavigationDelegateHostApiImpl *hostAPI = [[FWFNavigationDelegateHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
   id mockDelegate = OCMPartialMock(navigationDelegate);
@@ -85,14 +85,14 @@
 - (void)testInstanceCanBeReleasedWhenInstanceManagerIsReleased {
   FWFTestMessenger *testMessenger = [[FWFTestMessenger alloc] init];
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFNavigationDelegateHostApiImpl *hostApi =
+  FWFNavigationDelegateHostApiImpl *hostAPI =
       [[FWFNavigationDelegateHostApiImpl alloc] initWithBinaryMessenger:testMessenger
                                                         instanceManager:instanceManager];
 
-  testMessenger.hostApi = hostApi;
+  testMessenger.hostAPI = hostAPI;
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate __weak *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
 

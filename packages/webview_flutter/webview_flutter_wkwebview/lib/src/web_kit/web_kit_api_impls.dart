@@ -588,10 +588,9 @@ class WKNavigationDelegateFlutterApiImpl
     int webViewInstanceId,
     String? url,
   ) {
-    _getDelegate(instanceId).didFinishNavigation!(
-      instanceManager.getInstance(webViewInstanceId)!,
-      url,
-    );
+    final void Function(WKWebView, String?)? function =
+        _getDelegate(instanceId).didFinishNavigation;
+    function?.call(instanceManager.getInstance(webViewInstanceId)!, url);
   }
 }
 
