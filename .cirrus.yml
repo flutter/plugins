@@ -310,6 +310,7 @@ task:
 task:
   << : *MACOS_ARM_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
+  timeout_in: 30m
   matrix:
     ### iOS+macOS tasks ***
     - name: darwin-lint_podspecs
