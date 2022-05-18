@@ -1,5 +1,7 @@
-## NEXT
+## 0.8.6
 
+- Adds `update-release-info` to apply changelog and optional version changes
+  across multiple packages.
 - Fixes changelog validation when reverting to a `NEXT` state.
 - Fixes multiplication of `--force` flag when publishing multiple packages.
 - Adds minimum deployment target flags to `xcode-analyze` to allow

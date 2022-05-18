@@ -310,14 +310,15 @@ String _pluginPlatformSection(
   return entry;
 }
 
-typedef ErrorHandler = void Function(Error error);
-
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
 /// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<void> runner, List<String> args,
-    {ErrorHandler? errorHandler}) async {
+  CommandRunner<void> runner,
+  List<String> args, {
+  Function(Error error)? errorHandler,
+  Function(Exception error)? exceptionHandler,
+}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
@@ -333,6 +334,11 @@ Future<List<String>> runCapturingPrint(
       rethrow;
     }
     errorHandler(e);
+  } on Exception catch (e) {
+    if (exceptionHandler == null) {
+      rethrow;
+    }
+    exceptionHandler(e);
   }
 
   return prints;
