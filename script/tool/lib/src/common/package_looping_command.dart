@@ -16,6 +16,20 @@ import 'plugin_command.dart';
 import 'process_runner.dart';
 import 'repository_package.dart';
 
+/// Enumeration options for package looping commands.
+enum PackageLoopingType {
+  /// Only enumerates the top level packages, without including any of their
+  /// subpackages.
+  topLevelOnly,
+
+  /// Enumerates the top level packages and any example packages they contain.
+  includeExamples,
+
+  /// Enumerates all packages recursively, including both example and
+  /// non-example subpackages.
+  includeAllSubpackages,
+}
+
 /// Possible outcomes of a command run for a package.
 enum RunState {
   /// The command succeeded for the package.
@@ -109,9 +123,26 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// Note: Consistent behavior across commands whenever possibel is a goal for
   /// this tool, so this should be overridden only in rare cases.
   Stream<PackageEnumerationEntry> getPackagesToProcess() async* {
-    yield* includeSubpackages
-        ? getTargetPackagesAndSubpackages(filterExcluded: false)
-        : getTargetPackages(filterExcluded: false);
+    switch (packageLoopingType) {
+      case PackageLoopingType.topLevelOnly:
+        yield* getTargetPackages(filterExcluded: false);
+        break;
+      case PackageLoopingType.includeExamples:
+        await for (final PackageEnumerationEntry packageEntry
+            in getTargetPackages(filterExcluded: false)) {
+          yield packageEntry;
+          yield* Stream<PackageEnumerationEntry>.fromIterable(packageEntry
+              .package
+              .getExamples()
+              .map((RepositoryPackage package) => PackageEnumerationEntry(
+                  package,
+                  excluded: packageEntry.excluded)));
+        }
+        break;
+      case PackageLoopingType.includeAllSubpackages:
+        yield* getTargetPackagesAndSubpackages(filterExcluded: false);
+        break;
+    }
   }
 
   /// Runs the command for [package], returning a list of errors.
@@ -140,9 +171,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// to make the output structure easier to follow.
   bool get hasLongOutput => true;
 
-  /// Whether to loop over all packages (e.g., including example/), rather than
-  /// only top-level packages.
-  bool get includeSubpackages => false;
+  /// Whether to loop over top-level packages only, or some or all of their
+  /// sub-packages as well.
+  PackageLoopingType get packageLoopingType => PackageLoopingType.topLevelOnly;
 
   /// The text to output at the start when reporting one or more failures.
   /// This will be followed by a list of packages that reported errors, with

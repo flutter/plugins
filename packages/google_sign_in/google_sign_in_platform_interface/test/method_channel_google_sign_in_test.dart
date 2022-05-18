@@ -107,6 +107,7 @@ void main() {
           'scopes': <String>['two', 'scopes'],
           'signInOption': 'SignInOption.games',
           'clientId': 'fakeClientId',
+          'forceCodeForRefreshToken': false,
         }),
         () {
           googleSignIn.getTokens(
@@ -135,6 +136,24 @@ void main() {
       }
 
       expect(log, tests.values);
+    });
+
+    test('initWithParams passes through arguments to the channel', () async {
+      await googleSignIn.initWithParams(const SignInInitParameters(
+          hostedDomain: 'example.com',
+          scopes: <String>['two', 'scopes'],
+          signInOption: SignInOption.games,
+          clientId: 'fakeClientId',
+          forceCodeForRefreshToken: true));
+      expect(log, <Matcher>[
+        isMethodCall('init', arguments: <String, dynamic>{
+          'hostedDomain': 'example.com',
+          'scopes': <String>['two', 'scopes'],
+          'signInOption': 'SignInOption.games',
+          'clientId': 'fakeClientId',
+          'forceCodeForRefreshToken': true,
+        }),
+      ]);
     });
   });
 }

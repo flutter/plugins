@@ -1,5 +1,6 @@
 ## NEXT
 
+* Fixes iOS native unit tests on M1 devices.
 * Minor fixes for new analysis options.
 
 ## 2.1.5
