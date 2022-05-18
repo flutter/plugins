@@ -25,11 +25,21 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) {
+    return initWithParams(SignInInitParameters(
+        scopes: scopes,
+        signInOption: signInOption,
+        hostedDomain: hostedDomain,
+        clientId: clientId));
+  }
+
+  @override
+  Future<void> initWithParams(SignInInitParameters params) {
     return channel.invokeMethod<void>('init', <String, dynamic>{
-      'signInOption': signInOption.toString(),
-      'scopes': scopes,
-      'hostedDomain': hostedDomain,
-      'clientId': clientId,
+      'signInOption': params.signInOption.toString(),
+      'scopes': params.scopes,
+      'hostedDomain': params.hostedDomain,
+      'clientId': params.clientId,
+      'forceCodeForRefreshToken': params.forceCodeForRefreshToken,
     });
   }
 

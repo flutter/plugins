@@ -125,7 +125,7 @@ RepositoryPackage createFakePlugin(
 /// separators, of extra files to create in the package.
 ///
 /// If [includeCommonFiles] is true, common but non-critical files like
-/// CHANGELOG.md and AUTHORS will be included.
+/// CHANGELOG.md, README.md, and AUTHORS will be included.
 ///
 /// If non-null, [directoryName] will be used for the directory instead of
 /// [name].
@@ -152,11 +152,12 @@ RepositoryPackage createFakePackage(
       version: version,
       flutterConstraint: flutterConstraint);
   if (includeCommonFiles) {
-    createFakeCHANGELOG(package, '''
+    package.changelogFile.writeAsStringSync('''
 ## $version
   * Some changes.
   ''');
-    createFakeAuthors(package);
+    package.readmeFile.writeAsStringSync('A very useful package');
+    package.authorsFile.writeAsStringSync('Google Inc.');
   }
 
   if (examples.length == 1) {
@@ -186,11 +187,6 @@ RepositoryPackage createFakePackage(
   }
 
   return package;
-}
-
-void createFakeCHANGELOG(RepositoryPackage package, String texts) {
-  package.changelogFile.createSync();
-  package.changelogFile.writeAsStringSync(texts);
 }
 
 /// Creates a `pubspec.yaml` file with a flutter dependency.
@@ -265,11 +261,6 @@ $pluginSection
 
   package.pubspecFile.createSync();
   package.pubspecFile.writeAsStringSync(yaml);
-}
-
-void createFakeAuthors(RepositoryPackage package) {
-  package.authorsFile.createSync();
-  package.authorsFile.writeAsStringSync('Google Inc.');
 }
 
 String _pluginPlatformSection(
