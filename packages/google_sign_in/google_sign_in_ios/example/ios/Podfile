@@ -31,8 +31,6 @@ pod 'AppAuth', :inhibit_warnings => true
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  pod 'GoogleSignIn', :git => 'https://github.com/google/GoogleSignIn-iOS.git', :commit => '0dc783f36577f5bc249056f835d592ffae59d0ee'
-
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
