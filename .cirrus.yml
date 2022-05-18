@@ -339,7 +339,7 @@ task:
         # Ensure we don't accidentally introduce deprecated code.
         - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=13.0
       native_test_script:
-        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=Flutter-iPhone,OS=latest"
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
