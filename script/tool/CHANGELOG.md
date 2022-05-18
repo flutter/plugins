@@ -2,6 +2,8 @@
 
 - Fixes changelog validation when reverting to a `NEXT` state.
 - Fixes multiplication of `--force` flag when publishing multiple packages.
+- Checks for template boilerplate in `readme-check`.
+- `readme-check` now validates example READMEs when present.
 
 ## 0.8.5
 
