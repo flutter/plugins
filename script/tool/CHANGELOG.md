@@ -2,6 +2,9 @@
 
 - Fixes changelog validation when reverting to a `NEXT` state.
 - Fixes multiplication of `--force` flag when publishing multiple packages.
+- Adds minimum deployment target flags to `xcode-analyze` to allow
+  enforcing deprecation warning handling in advance of actually dropping
+  support for an OS version.
 - Checks for template boilerplate in `readme-check`.
 - `readme-check` now validates example READMEs when present.
 
