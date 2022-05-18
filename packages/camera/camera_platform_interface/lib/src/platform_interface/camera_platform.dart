@@ -157,9 +157,10 @@ abstract class CameraPlatform extends PlatformInterface {
   /// listen again later.
   ///
   ///
-  // TODO(bmparr): Add a setter method to control streaming settings (e.g.,
+  // TODO(bmparr): Add options to control streaming settings (e.g.,
   // resolution and FPS).
-  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId) {
+  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
+      {CameraImageStreamOptions? options}) {
     throw UnimplementedError('onStreamedFrameAvailable() is not implemented.');
   }
 

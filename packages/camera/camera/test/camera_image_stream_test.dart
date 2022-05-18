@@ -193,7 +193,8 @@ class MockStreamingCameraPlatform extends MockCameraPlatform {
   StreamController<CameraImageData>? _streamController;
 
   @override
-  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId) {
+  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
+      {CameraImageStreamOptions? options}) {
     streamCallLog.add('onStreamedFrameAvailable');
     _streamController = StreamController<CameraImageData>(
       onListen: _onFrameStreamListen,

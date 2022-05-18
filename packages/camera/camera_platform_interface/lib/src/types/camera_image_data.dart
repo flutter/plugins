@@ -8,6 +8,13 @@ import 'package:flutter/foundation.dart';
 
 import '../../camera_platform_interface.dart';
 
+/// Options for configuring camera streaming.
+///
+/// Currently unused; this exists for future-proofing of the platform interface
+/// API.
+@immutable
+class CameraImageStreamOptions {}
+
 /// A single color plane of image data.
 ///
 /// The number and meaning of the planes in an image are determined by its

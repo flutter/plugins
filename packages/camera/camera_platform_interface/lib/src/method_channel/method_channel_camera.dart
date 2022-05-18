@@ -276,7 +276,8 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
-  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId) {
+  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
+      {CameraImageStreamOptions? options}) {
     _frameStreamController = StreamController<CameraImageData>(
       onListen: _onFrameStreamListen,
       onPause: _onFrameStreamPauseResume,
