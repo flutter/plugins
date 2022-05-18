@@ -5,8 +5,17 @@
 # reviewed by someone else.
 
 # Plugin-level rules.
+packages/camera/**                                       @bparrishMines
+packages/file_selector/**                                @stuartmorgan
+packages/google_maps_flutter/**                          @stuartmorgan
+packages/google_sign_in/**                               @stuartmorgan
+packages/image_picker/**                                 @stuartmorgan
+packages/local_auth/**                                   @stuartmorgan
 packages/path_provider/**                                @gaaclarke
+packages/plugin_platform_interface/**                    @stuartmorgan
+packages/quick_actions/**                                @stuartmorgan
 packages/shared_preferences/**                           @gaaclarke
+packages/url_launcher/**                                 @stuartmorgan
 packages/video_player/**                                 @gaaclarke
 packages/webview_flutter/**                              @bparrishMines
 
@@ -44,3 +53,23 @@ packages/shared_preferences/shared_preferences_ios/**    @cyanglaz
 packages/url_launcher/url_launcher_ios/**                @jmagman
 packages/video_player/video_player_avfoundation/**       @hellohuanlin
 packages/webview_flutter/webview_flutter_wkwebview/**    @cyanglaz
+
+# - Linux
+packages/path_provider/path_provider_linux/**            @cbracken
+packages/shared_preferences/shared_preferences_linux/**  @cbracken
+packages/url_launcher/url_launcher_linux/**              @cbracken
+
+# - macOS
+packages/file_selector/file_selector_macos/**            @cbracken
+packages/path_provider/path_provider_macos/**            @cbracken
+packages/shared_preferences/shared_preferences_macos/**  @cbracken
+packages/url_launcher/url_launcher_macos/**              @cbracken
+
+# - Windows
+packages/camera/camera_windows/**                        @cbracken
+packages/file_selector/file_selector_windows/**          @cbracken
+packages/image_picker/image_picker_windows/**            @cbracken
+packages/local_auth/local_auth_windows/**                @cbracken
+packages/path_provider/path_provider_windows/**          @cbracken
+packages/shared_preferences/shared_preferences_windows/** @cbracken
+packages/url_launcher/url_launcher_windows/**            @cbracken
