@@ -5,11 +5,64 @@
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('$CameraImage tests', () {
+  test('translates correctly from platform interface classes', () {
+    final CameraImageData originalImage = CameraImageData(
+      format: const CameraImageFormat(ImageFormatGroup.jpeg, raw: 1234),
+      planes: <CameraImagePlane>[
+        CameraImagePlane(
+          bytes: Uint8List.fromList(<int>[1, 2, 3, 4]),
+          bytesPerRow: 20,
+          bytesPerPixel: 3,
+          width: 200,
+          height: 100,
+        ),
+        CameraImagePlane(
+          bytes: Uint8List.fromList(<int>[5, 6, 7, 8]),
+          bytesPerRow: 18,
+          bytesPerPixel: 4,
+          width: 220,
+          height: 110,
+        ),
+      ],
+      width: 640,
+      height: 480,
+      lensAperture: 2.5,
+      sensorExposureTime: 5,
+      sensorSensitivity: 1.3,
+    );
+
+    final CameraImage image = CameraImage.fromPlatformInterface(originalImage);
+    // Simple values.
+    expect(image.width, originalImage.width);
+    expect(image.height, originalImage.height);
+    expect(image.lensAperture, originalImage.lensAperture);
+    expect(image.sensorExposureTime, originalImage.sensorExposureTime);
+    expect(image.sensorSensitivity, originalImage.sensorSensitivity);
+    // Format.
+    expect(image.format.group, originalImage.format.group);
+    expect(image.format.raw, originalImage.format.raw);
+    // Planes.
+    expect(image.planes.length, originalImage.planes.length);
+    for (int i = 0; i < image.planes.length; i++) {
+      expect(
+          image.planes[i].bytes.length, originalImage.planes[i].bytes.length);
+      for (int j = 0; j < image.planes[i].bytes.length; j++) {
+        expect(image.planes[i].bytes[j], originalImage.planes[i].bytes[j]);
+      }
+      expect(
+          image.planes[i].bytesPerPixel, originalImage.planes[i].bytesPerPixel);
+      expect(image.planes[i].bytesPerRow, originalImage.planes[i].bytesPerRow);
+      expect(image.planes[i].width, originalImage.planes[i].width);
+      expect(image.planes[i].height, originalImage.planes[i].height);
+    }
+  });
+
+  group('legacy constructors', () {
     test('$CameraImage can be created', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       final CameraImage cameraImage =
