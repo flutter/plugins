@@ -113,7 +113,7 @@ void main() {
 
 * Previous changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -152,7 +152,7 @@ $originalChangelog''';
 
 * Old changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -187,7 +187,7 @@ $originalChangelog''';
 
 * Previous changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -226,7 +226,7 @@ $originalChangelog''';
 
 * Old changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -261,7 +261,7 @@ $originalChangelog''';
 
 * Previous changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -292,7 +292,7 @@ $originalChangelog''';
 
 * Previous changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -322,7 +322,7 @@ $originalChangelog''';
 
 * A version with the wrong heading format.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -357,7 +357,7 @@ $originalChangelog''';
 
  - Previous changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'update-release-info',
@@ -442,7 +442,7 @@ Some free-form text that isn't a list.
 
 - Previous changes.
 ''';
-      createFakeCHANGELOG(package, originalChangelog);
+      package.changelogFile.writeAsStringSync(originalChangelog);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
