@@ -345,11 +345,15 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           break;
         }
       case "resumePreview":
-        {
+      {
+        try {
           camera.resumePreview();
           result.success(null);
-          break;
+        } catch (Exception e) {
+          handleException(e, result);
         }
+        break;
+      }
       case "dispose":
         {
           if (camera != null) {
