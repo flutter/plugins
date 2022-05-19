@@ -85,4 +85,23 @@ public class GoogleMapControllerTest {
     argument.getValue().onMapLoaded();
     verify(mapView).invalidate();
   }
+
+  @Test
+  public void UpdateMarkersAfterControllerIsDestroyed() throws InterruptedException {
+    googleMapController.onMapReady(mockGoogleMap);
+    MethodChannel.Result result = mock(MethodChannel.Result.class);
+    googleMapController.onMethodCall(
+        new MethodCall("markers#update", new HashMap<String, Object>()), result);
+
+    ArgumentCaptor<GoogleMap.OnMapLoadedCallback> argument =
+        ArgumentCaptor.forClass(GoogleMap.OnMapLoadedCallback.class);
+    verify(mockGoogleMap).setOnMapLoadedCallback(argument.capture());
+
+    MapView mapView = mock(MapView.class);
+    googleMapController.setView(mapView);
+    googleMapController.onDestroy(activity);
+
+    argument.getValue().onMapLoaded();
+    verify(mapView, never()).invalidate();
+  }
 }
