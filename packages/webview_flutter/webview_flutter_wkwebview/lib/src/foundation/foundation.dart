@@ -232,13 +232,6 @@ class NSHttpCookie {
   final Map<NSHttpCookiePropertyKey, Object> properties;
 }
 
-/// An object that can provide functional copies of themselves.
-@immutable
-mixin Copyable {
-  /// Instantiates and returns a functionally identical object to oneself.
-  Copyable copy();
-}
-
 /// The root class of most Objective-C class hierarchies.
 @immutable
 class NSObject with Copyable {
@@ -248,10 +241,15 @@ class NSObject with Copyable {
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    // Ensures FlutterApis for the Foundation library and FunctionFlutterApi are
-    // set up.
+    // Ensures FlutterApis for the Foundation library are set up.
     FoundationFlutterApis.instance.ensureSetUp();
   }
+
+  /// Global instance of [InstanceManager].
+  static final InstanceManager globalInstanceManager =
+      InstanceManager(onWeakReferenceRemoved: (int instanceId) {
+    NSObjectHostApiImpl().dispose(instanceId);
+  });
 
   final NSObjectHostApiImpl _api;
 
@@ -276,8 +274,8 @@ class NSObject with Copyable {
   }
 
   /// Release the reference to the Objective-C object.
-  Future<void> dispose() {
-    return _api.disposeForInstances(this);
+  static void dispose(NSObject instance) {
+    instance._api.instanceManager.removeWeakReference(instance);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.
@@ -294,24 +292,22 @@ class NSObject with Copyable {
 
   @override
   Copyable copy() {
-    final NSObject copy = NSObject(
+    return NSObject(
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
     );
-    _api.instanceManager.addCopy(this, copy);
-    return copy;
   }
 
   @override
   int get hashCode {
-    return Object.hash(_api, _api.instanceManager.getInstanceId(this));
+    return Object.hash(_api, _api.instanceManager.getIdentifier(this));
   }
 
   @override
   bool operator ==(Object other) {
     return other is NSObject &&
         _api == other._api &&
-        _api.instanceManager.getInstanceId(this) ==
-            other._api.instanceManager.getInstanceId(other);
+        _api.instanceManager.getIdentifier(this) ==
+            other._api.instanceManager.getIdentifier(other);
   }
 }

@@ -123,7 +123,7 @@ class InstanceManager {
   /// associated with identifier is a strong reference. The strong reference is
   /// returned.
   /// 4. If no instance is associated with identifier, returns null.
-  Copyable? getInstance(
+  T? getInstance<T extends Copyable>(
     int identifier, {
     required bool returnedInstanceMayBeUsed,
   }) {
@@ -136,12 +136,12 @@ class InstanceManager {
         _identifiers[copy] = identifier;
         _weakInstances[identifier] = WeakReference<Copyable>(copy);
         _finalizer.attach(copy, identifier, detach: copy);
-        return copy;
+        return copy as T;
       }
-      return strongInstance;
+      return strongInstance as T?;
     }
 
-    return weakInstance;
+    return weakInstance as T;
   }
 
   /// Retrieve the identifier paired with instance.
