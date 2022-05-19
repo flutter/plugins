@@ -95,21 +95,21 @@ void main() {
 
         expect(
           websiteDataStore.removeDataOfTypes(
-            <WKWebsiteDataTypes>{WKWebsiteDataTypes.cookies},
+            <WKWebsiteDataType>{WKWebsiteDataType.cookies},
             DateTime.fromMillisecondsSinceEpoch(5000),
           ),
           completion(true),
         );
 
-        final List<WKWebsiteDataTypesEnumData> typeData =
+        final List<WKWebsiteDataTypeEnumData> typeData =
             verify(mockPlatformHostApi.removeDataOfTypes(
           instanceManager.getInstanceId(websiteDataStore),
           captureAny,
           5.0,
-        )).captured.single.cast<WKWebsiteDataTypesEnumData>()
-                as List<WKWebsiteDataTypesEnumData>;
+        )).captured.single.cast<WKWebsiteDataTypeEnumData>()
+                as List<WKWebsiteDataTypeEnumData>;
 
-        expect(typeData.single.value, WKWebsiteDataTypesEnum.cookies);
+        expect(typeData.single.value, WKWebsiteDataTypeEnum.cookies);
       });
     });
 
@@ -163,16 +163,16 @@ void main() {
 
         final NSHttpCookieData cookie = verify(
           mockPlatformHostApi.setCookie(
-            instanceManager.getInstanceId(httpCookieStore)!,
+            instanceManager.getInstanceId(httpCookieStore),
             captureAny,
           ),
         ).captured.single as NSHttpCookieData;
 
         expect(
-          cookie.properties.entries.single.key!.value,
+          cookie.propertyKeys.single!.value,
           NSHttpCookiePropertyKeyEnum.comment,
         );
-        expect(cookie.properties.entries.single.value, 'aComment');
+        expect(cookie.propertyValues.single, 'aComment');
       });
     });
 
@@ -373,8 +373,8 @@ void main() {
           instanceManager: instanceManager,
         );
         verify(mockPlatformHostApi.createFromWebView(
-          instanceManager.getInstanceId(configurationFromWebView)!,
-          instanceManager.getInstanceId(webView)!,
+          instanceManager.getInstanceId(configurationFromWebView),
+          instanceManager.getInstanceId(webView),
         ));
       });
 

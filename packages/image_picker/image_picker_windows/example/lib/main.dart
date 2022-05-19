@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<PickedFile>? _imageFileList;
 
   // This must be called from within a setState() callback
-  set _imageFile(PickedFile? value) {
+  void _setImageFileListFromFile(PickedFile? value) {
     _imageFileList = value == null ? null : <PickedFile>[value];
   }
 
@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           imageQuality: quality,
         );
         setState(() {
-          _imageFile = pickedFile;
+          _setImageFileListFromFile(pickedFile);
         });
       } catch (e) {
         setState(() {

@@ -43,6 +43,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   int _markerIdCounter = 1;
   LatLng? markerPosition;
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }
@@ -207,7 +208,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
   Future<void> _changeInfo(MarkerId markerId) async {
     final Marker marker = markers[markerId]!;
-    final String newSnippet = marker.infoWindow.snippet! + '*';
+    final String newSnippet = '${marker.infoWindow.snippet!}*';
     setState(() {
       markers[markerId] = marker.copyWith(
         infoWindowParam: marker.infoWindow.copyWith(

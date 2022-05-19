@@ -2,6 +2,10 @@
 
 * Fixes order-dependent unit tests.
 
+## 2.4.2
+
+* Minor fixes for new analysis options.
+
 ## 2.4.1
 
 * Removes unnecessary imports.

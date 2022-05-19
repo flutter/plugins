@@ -62,7 +62,9 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
     return SynchronousFuture<_FutureMemoryImage>(this);
   }
 
+  // ignore:deprecated_member_use
   /// See [ImageProvider.load].
+  // TODO(jmagman): Implement the new API once it lands, https://github.com/flutter/flutter/issues/103556
   @override
   ImageStreamCompleter load(_FutureMemoryImage key, DecoderCallback decode) {
     return _FutureImageStreamCompleter(
