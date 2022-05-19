@@ -4,10 +4,11 @@
 
 package io.flutter.plugins.googlemaps;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.os.Build;
@@ -16,6 +17,9 @@ import androidx.test.core.app.ApplicationProvider;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,10 +29,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import java.util.HashMap;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodCall;
-import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
@@ -71,13 +71,17 @@ public class GoogleMapControllerTest {
   public void InvalidateMapAfterMarkersUpdate() throws InterruptedException {
     googleMapController.onMapReady(mockGoogleMap);
     MethodChannel.Result result = mock(MethodChannel.Result.class);
-    googleMapController.onMethodCall(new MethodCall("markers#update", new HashMap<String, Object>()), result);
+    googleMapController.onMethodCall(
+        new MethodCall("markers#update", new HashMap<String, Object>()), result);
 
-    ArgumentCaptor<GoogleMap.OnMapLoadedCallback> argument = ArgumentCaptor.forClass(GoogleMap.OnMapLoadedCallback.class);
+    ArgumentCaptor<GoogleMap.OnMapLoadedCallback> argument =
+        ArgumentCaptor.forClass(GoogleMap.OnMapLoadedCallback.class);
     verify(mockGoogleMap).setOnMapLoadedCallback(argument.capture());
 
     MapView mapView = mock(MapView.class);
     googleMapController.setView(mapView);
+
+    verify(mapView, never()).invalidate();
     argument.getValue().onMapLoaded();
     verify(mapView).invalidate();
   }
