@@ -298,10 +298,9 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
 
 gmaps.PolygonOptions _polygonOptionsFromPolygon(
     gmaps.GMap googleMap, Polygon polygon) {
-  final List<gmaps.LatLng> path = <gmaps.LatLng>[];
-
-  // Convert all points to GmLatLng, then add them to the path
-  polygon.points.map(_latLngToGmLatLng).forEach(path.add);
+  // Convert all points to GmLatLng
+  final List<gmaps.LatLng> path =
+      polygon.points.map(_latLngToGmLatLng).toList();
 
   final bool isClockwisePolygon = _isPolygonClockwise(path);
 
@@ -333,8 +332,8 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
 List<gmaps.LatLng> _ensureHoleHasReverseWinding(
   List<LatLng> hole,
   bool polyIsClockwise, {
-  int? holeId,
-  PolygonId? polygonId,
+  required int holeId,
+  required PolygonId polygonId,
 }) {
   List<gmaps.LatLng> holePath = hole.map(_latLngToGmLatLng).toList();
   final bool holeIsClockwise = _isPolygonClockwise(holePath);
@@ -342,7 +341,7 @@ List<gmaps.LatLng> _ensureHoleHasReverseWinding(
   if (holeIsClockwise == polyIsClockwise) {
     holePath = holePath.reversed.toList();
     if (kDebugMode) {
-      print('Hole [$holeId] in Polygon [${polygonId?.value}] has been reversed.'
+      print('Hole [$holeId] in Polygon [${polygonId.value}] has been reversed.'
           ' Ensure holes in polygons are "wound in the opposite direction to the outer path."'
           ' More info: https://github.com/flutter/flutter/issues/74096');
     }
@@ -374,9 +373,8 @@ bool _isPolygonClockwise(List<gmaps.LatLng> path) {
 
 gmaps.PolylineOptions _polylineOptionsFromPolyline(
     gmaps.GMap googleMap, Polyline polyline) {
-  final List<gmaps.LatLng> paths = <gmaps.LatLng>[];
-
-  polyline.points.map(_latLngToGmLatLng).forEach(paths.add);
+  final List<gmaps.LatLng> paths =
+      polyline.points.map(_latLngToGmLatLng).toList();
 
   return gmaps.PolylineOptions()
     ..path = paths
