@@ -30,3 +30,4 @@ dev_dependencies:
   json_serializable: ^6.0.0
   mockito: ^5.1.0
   test: ^1.16.0
+  
