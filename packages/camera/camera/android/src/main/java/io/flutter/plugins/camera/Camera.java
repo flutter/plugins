@@ -683,7 +683,6 @@ class Camera
         dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
       }
     }
-
     backgroundHandlerThread = null;
     backgroundHandler = null;
     stoppingBackgroundHandlerThread = false;
@@ -1174,7 +1173,7 @@ class Camera
     if (captureSession != null) {
       Log.i(TAG, "closeCaptureSession");
 
-      captureSession.close();
+      // captureSession.close();
       captureSession = null;
     }
   }
