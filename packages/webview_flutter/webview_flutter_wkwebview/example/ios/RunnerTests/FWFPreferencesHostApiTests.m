@@ -13,11 +13,11 @@
 
 @implementation FWFPreferencesHostApiTests
 - (void)testCreateFromWebViewConfigurationWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFPreferencesHostApiImpl *hostApi =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
 
   FlutterError *error;
   [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
@@ -29,8 +29,8 @@
 - (void)testSetJavaScriptEnabled {
   WKPreferences *mockPreferences = OCMClassMock([WKPreferences class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockPreferences withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockPreferences withIdentifier:0];
 
   FWFPreferencesHostApiImpl *hostApi =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];

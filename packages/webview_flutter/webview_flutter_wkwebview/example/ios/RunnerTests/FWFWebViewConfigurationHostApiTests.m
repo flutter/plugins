@@ -13,7 +13,7 @@
 
 @implementation FWFWebViewConfigurationHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFWebViewConfigurationHostApiImpl *hostApi =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -26,13 +26,13 @@
 }
 
 - (void)testCreateFromWebViewWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFWebViewConfigurationHostApiImpl *hostApi =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   OCMStub([mockWebView configuration]).andReturn(OCMClassMock([WKWebViewConfiguration class]));
-  [instanceManager addInstance:mockWebView withIdentifier:0];
+  [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FlutterError *error;
   [hostApi createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
@@ -45,8 +45,8 @@
 - (void)testSetAllowsInlineMediaPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockWebViewConfiguration withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostApi =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -62,8 +62,8 @@
 - (void)testSetMediaTypesRequiringUserActionForPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockWebViewConfiguration withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostApi =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];

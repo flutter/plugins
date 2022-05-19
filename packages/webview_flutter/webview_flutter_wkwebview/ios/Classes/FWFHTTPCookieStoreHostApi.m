@@ -7,7 +7,7 @@
 #import "FWFWebsiteDataStoreHostApi.h"
 
 @interface FWFHTTPCookieStoreHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFHTTPCookieStoreHostApiImpl
@@ -31,7 +31,7 @@
   if (@available(iOS 11.0, *)) {
     WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
         instanceForIdentifier:websiteDataStoreInstanceId.longValue];
-    [self.instanceManager addInstance:dataStore.httpCookieStore
+    [self.instanceManager addFlutterCreatedInstance:dataStore.httpCookieStore
                        withIdentifier:instanceId.longValue];
   } else {
     *error = [FlutterError

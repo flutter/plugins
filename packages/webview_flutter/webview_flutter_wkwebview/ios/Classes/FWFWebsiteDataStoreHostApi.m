@@ -7,7 +7,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFWebsiteDataStoreHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebsiteDataStoreHostApiImpl
@@ -28,14 +28,14 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addInstance:configuration.websiteDataStore
+  [self.instanceManager addFlutterCreatedInstance:configuration.websiteDataStore
                      withIdentifier:instanceId.longValue];
 }
 
 - (void)createDefaultDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                  error {
-  [self.instanceManager addInstance:[WKWebsiteDataStore defaultDataStore]
+  [self.instanceManager addFlutterCreatedInstance:[WKWebsiteDataStore defaultDataStore]
                      withIdentifier:instanceId.longValue];
 }
 

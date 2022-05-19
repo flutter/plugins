@@ -13,13 +13,13 @@
 
 @implementation FWFHTTPCookieStoreHostApiTests
 - (void)testCreateFromWebsiteDataStoreWithIdentifier API_AVAILABLE(ios(11.0)) {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFHTTPCookieStoreHostApiImpl *hostApi =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   WKWebsiteDataStore *mockDataStore = OCMClassMock([WKWebsiteDataStore class]);
   OCMStub([mockDataStore httpCookieStore]).andReturn(OCMClassMock([WKHTTPCookieStore class]));
-  [instanceManager addInstance:mockDataStore withIdentifier:0];
+  [instanceManager addFlutterCreatedInstance:mockDataStore withIdentifier:0];
 
   FlutterError *error;
   [hostApi createFromWebsiteDataStoreWithIdentifier:@1 dataStoreIdentifier:@0 error:&error];
@@ -31,8 +31,8 @@
 - (void)testSetCookie API_AVAILABLE(ios(11.0)) {
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockHttpCookieStore withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockHttpCookieStore withIdentifier:0];
 
   FWFHTTPCookieStoreHostApiImpl *hostApi =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];

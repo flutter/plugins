@@ -6,7 +6,7 @@
 #import "FWFWebViewHostApi.h"
 
 @interface FWFScrollViewHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFScrollViewHostApiImpl
@@ -27,7 +27,7 @@
                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebView *webView =
       (WKWebView *)[self.instanceManager instanceForIdentifier:webViewInstanceId.longValue];
-  [self.instanceManager addInstance:webView.scrollView withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:webView.scrollView withIdentifier:instanceId.longValue];
 }
 
 - (NSArray<NSNumber *> *)

@@ -16,8 +16,8 @@
   UIScrollView *mockScrollView = OCMClassMock([UIScrollView class]);
   OCMStub([mockScrollView contentOffset]).andReturn(CGPointMake(1.0, 2.0));
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockScrollView withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockScrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
       [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -33,8 +33,8 @@
   UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
   scrollView.contentOffset = CGPointMake(1, 2);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:scrollView withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
       [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -49,8 +49,8 @@
 - (void)testSetContentOffset {
   UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:scrollView withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostApi =
       [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];

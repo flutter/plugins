@@ -620,12 +620,12 @@ class WKNavigationDelegate extends NSObject {
     _navigationDelegateApi.createForInstances(this);
   }
 
-  // Constructs a WKNavigationDelegate with creating the associated Objective-C
-  // object.
-  //
-  // This should only be used by subclasses created by this library and for
-  // creating copies.
-  WKNavigationDelegate._implementation({
+  /// Constructs a [WKNavigationDelegate] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  WKNavigationDelegate.detached({
     this.didFinishNavigation,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -688,7 +688,7 @@ class WKNavigationDelegate extends NSObject {
 
   @override
   Copyable copy() {
-    return WKNavigationDelegate._implementation(
+    return WKNavigationDelegate.detached(
       didFinishNavigation: didFinishNavigation,
       binaryMessenger: _navigationDelegateApi.binaryMessenger,
       instanceManager: _navigationDelegateApi.instanceManager,

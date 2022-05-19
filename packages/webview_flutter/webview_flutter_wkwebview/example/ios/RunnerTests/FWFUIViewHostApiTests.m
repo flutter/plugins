@@ -15,8 +15,8 @@
 - (void)testSetBackgroundColor {
   UIView *mockUIView = OCMClassMock([UIView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUIView withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostApi =
       [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -34,8 +34,8 @@
 - (void)testSetOpaque {
   UIView *mockUIView = OCMClassMock([UIView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUIView withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostApi =
       [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -45,5 +45,4 @@
   OCMVerify([mockUIView setOpaque:YES]);
   XCTAssertNil(error);
 }
-
 @end

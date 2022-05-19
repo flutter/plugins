@@ -7,7 +7,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFWebViewConfigurationHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebViewConfigurationHostApiImpl
@@ -27,7 +27,7 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *webViewConfiguration = [[WKWebViewConfiguration alloc] init];
-  [self.instanceManager addInstance:webViewConfiguration withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:webViewConfiguration withIdentifier:instanceId.longValue];
 }
 
 - (void)createFromWebViewWithIdentifier:(nonnull NSNumber *)instanceId
@@ -35,7 +35,7 @@
                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebView *webView =
       (WKWebView *)[self.instanceManager instanceForIdentifier:webViewInstanceId.longValue];
-  [self.instanceManager addInstance:webView.configuration withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:webView.configuration withIdentifier:instanceId.longValue];
 }
 
 - (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId

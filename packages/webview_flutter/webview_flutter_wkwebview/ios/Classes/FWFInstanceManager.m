@@ -11,7 +11,7 @@
 // Callbacks are no longer made once FWFInstanceManager is inaccessible.
 @property (nonatomic, weak) FWFOnDeallocCallback callback;
 + (void)attachToInstance:(NSObject *)instance withIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback;
-+ (void)detachInstance:(NSObject *)instance;
++ (void)detachFromInstance:(NSObject *)instance;
 @end
 
 @implementation FWFFinalizer
@@ -29,7 +29,7 @@
   objc_setAssociatedObject(instance, _cmd, finalizer, OBJC_ASSOCIATION_RETAIN);
 }
 
-+ (void)detachInstance:(NSObject *)instance {
++ (void)detachFromInstance:(NSObject *)instance {
   objc_setAssociatedObject(instance, @selector(attachToInstance:withIdentifier:callback:), nil, OBJC_ASSOCIATION_ASSIGN);
 }
 

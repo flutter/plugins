@@ -20,21 +20,19 @@
 }
 
 - (long)identifierForNavigationDelegate:(FWFNavigationDelegate *)instance {
-  return [self.instanceManager identifierForInstance:instance];
+  return [self.instanceManager identifierForInstance:instance identifierWillBePassedToFlutter:NO];
 }
 
 - (void)didFinishNavigationForDelegate:(FWFNavigationDelegate *)instance
                                webView:(WKWebView *)webView
                                    URL:(NSString *)URL {
   [self didFinishNavigationForDelegateWithIdentifier:@([self.instanceManager
-                                                         identifierForInstance:instance])
+                                                         identifierForInstance:instance identifierWillBePassedToFlutter:YES])
                                    webViewIdentifier:@([self.instanceManager
-                                                         identifierForInstance:webView])
+                                                         identifierForInstance:webView identifierWillBePassedToFlutter:YES])
                                                  URL:URL
                                           completion:^(NSError *error) {
-                                            if (error) {
-                                              NSLog(@"%@", error.description);
-                                            }
+    NSAssert(!error, @"%@", error);
                                           }];
 }
 @end
@@ -83,6 +81,6 @@
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
-  [self.instanceManager addInstance:navigationDelegate withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:navigationDelegate withIdentifier:instanceId.longValue];
 }
 @end

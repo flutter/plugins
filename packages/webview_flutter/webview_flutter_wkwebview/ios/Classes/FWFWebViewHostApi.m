@@ -78,7 +78,7 @@
       instanceForIdentifier:configurationInstanceId.longValue];
   FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)
                                             configuration:configuration];
-  [self.instanceManager addInstance:webView withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:webView withIdentifier:instanceId.longValue];
 }
 
 - (void)loadRequestForWebViewWithIdentifier:(nonnull NSNumber *)instanceId

@@ -12,7 +12,7 @@
 @end
 
 @interface FWFScriptMessageHandlerHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFScriptMessageHandlerHostApiImpl
@@ -32,6 +32,6 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFScriptMessageHandler *scriptMessageHandler = [[FWFScriptMessageHandler alloc] init];
-  [self.instanceManager addInstance:scriptMessageHandler withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:scriptMessageHandler withIdentifier:instanceId.longValue];
 }
 @end

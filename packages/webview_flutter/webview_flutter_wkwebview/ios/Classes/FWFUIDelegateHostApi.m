@@ -9,7 +9,7 @@
 @end
 
 @interface FWFUIDelegateHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFUIDelegateHostApiImpl
@@ -28,6 +28,6 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] init];
-  [self.instanceManager addInstance:uIDelegate withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:uIDelegate withIdentifier:instanceId.longValue];
 }
 @end

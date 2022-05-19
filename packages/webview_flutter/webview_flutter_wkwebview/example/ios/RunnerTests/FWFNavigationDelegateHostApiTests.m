@@ -38,7 +38,7 @@
 
 @implementation FWFNavigationDelegateHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFNavigationDelegateHostApiImpl *hostAPI = [[FWFNavigationDelegateHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
@@ -53,7 +53,7 @@
 }
 
 - (void)testDidFinishNavigation {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFNavigationDelegateHostApiImpl *hostAPI = [[FWFNavigationDelegateHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
@@ -73,7 +73,7 @@
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   OCMStub([mockWebView URL]).andReturn([NSURL URLWithString:@"https://flutter.dev/"]);
-  [instanceManager addInstance:mockWebView withIdentifier:1];
+  [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:1];
 
   [mockDelegate webView:mockWebView didFinishNavigation:OCMClassMock([WKNavigation class])];
   OCMVerify([mockFlutterApi didFinishNavigationForDelegateWithIdentifier:@0
@@ -84,7 +84,7 @@
 
 - (void)testInstanceCanBeReleasedWhenInstanceManagerIsReleased {
   FWFTestMessenger *testMessenger = [[FWFTestMessenger alloc] init];
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
   FWFNavigationDelegateHostApiImpl *hostAPI =
       [[FWFNavigationDelegateHostApiImpl alloc] initWithBinaryMessenger:testMessenger
                                                         instanceManager:instanceManager];

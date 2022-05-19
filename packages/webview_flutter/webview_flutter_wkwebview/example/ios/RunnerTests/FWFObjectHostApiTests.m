@@ -15,14 +15,14 @@
 - (void)testAddObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockObject withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
-  [instanceManager addInstance:observerObject withIdentifier:1];
+  [instanceManager addFlutterCreatedInstance:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostApi
@@ -47,14 +47,14 @@
 - (void)testRemoveObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockObject withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
-  [instanceManager addInstance:observerObject withIdentifier:1];
+  [instanceManager addFlutterCreatedInstance:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostApi removeObserverForObjectWithIdentifier:@0
@@ -68,15 +68,17 @@
 - (void)testDispose {
   NSObject *object = [[NSObject alloc] init];
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:object withIdentifier:0];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
   [hostApi disposeObjectWithIdentifier:@0 error:&error];
-  XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
+  // Only the strong reference is removed, so the weak reference will remain until object is set to nil.
+  object = nil;
+  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO], NSNotFound);
   XCTAssertNil(error);
 }
 @end

@@ -7,7 +7,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFUserContentControllerHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFUserContentControllerHostApiImpl
@@ -29,7 +29,7 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addInstance:configuration.userContentController
+  [self.instanceManager addFlutterCreatedInstance:configuration.userContentController
                      withIdentifier:instanceId.longValue];
 }
 

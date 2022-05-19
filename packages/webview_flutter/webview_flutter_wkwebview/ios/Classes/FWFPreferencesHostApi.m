@@ -6,7 +6,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFPreferencesHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFPreferencesHostApiImpl
@@ -25,7 +25,7 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   WKPreferences *preferences = [[WKPreferences alloc] init];
-  [self.instanceManager addInstance:preferences withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:preferences withIdentifier:instanceId.longValue];
 }
 
 - (void)createFromWebViewConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
@@ -33,7 +33,7 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addInstance:configuration.preferences withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:configuration.preferences withIdentifier:instanceId.longValue];
 }
 
 - (void)setJavaScriptEnabledForPreferencesWithIdentifier:(nonnull NSNumber *)instanceId

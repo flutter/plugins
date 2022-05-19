@@ -235,9 +235,16 @@ class NSHttpCookie {
 /// The root class of most Objective-C class hierarchies.
 @immutable
 class NSObject with Copyable {
-  /// Constructs an [NSObject].
-  NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : _api = NSObjectHostApiImpl(
+  // TODO(bparrishMines): Change constructor name to `detached`.
+  /// Constructs a [NSObject] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  NSObject({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _api = NSObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
