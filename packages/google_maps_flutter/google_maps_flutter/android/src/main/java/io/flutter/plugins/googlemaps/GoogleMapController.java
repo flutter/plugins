@@ -16,6 +16,7 @@ import android.view.Choreographer;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
@@ -108,6 +109,11 @@ final class GoogleMapController
   @Override
   public View getView() {
     return mapView;
+  }
+
+  @VisibleForTesting
+  /*package*/ void setView(MapView view) {
+    mapView = view;
   }
 
   void init() {
@@ -272,19 +278,23 @@ final class GoogleMapController
           // To workaround this limitation, wait two frames.
           // This ensures that at least the frame budget (16.66ms at 60hz) have passed since the
           // drawing operation was issued.
-          googleMap.setOnMapLoadedCallback(
-              new GoogleMap.OnMapLoadedCallback() {
-                @Override
-                public void onMapLoaded() {
-                  postFrameCallback(
-                      () -> {
-                        postFrameCallback(
-                            () -> {
-                              mapView.invalidate();
-                            });
-                      });
-                }
-              });
+          if (googleMap != null) {
+            googleMap.setOnMapLoadedCallback(
+                new GoogleMap.OnMapLoadedCallback() {
+                  @Override
+                  public void onMapLoaded() {
+                    postFrameCallback(
+                        () -> {
+                          postFrameCallback(
+                              () -> {
+                                if (mapView != null) {
+                                  mapView.invalidate();
+                                }
+                              });
+                        });
+                  }
+                });
+          }
 
           result.success(null);
           break;
