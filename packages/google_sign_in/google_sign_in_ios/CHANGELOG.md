@@ -1,3 +1,7 @@
+## 5.3.1
+
+* Suppresses warnings for pre-iOS-13 codepaths.
+
 ## 5.3.0
 
 * Supports arm64 iOS simulators by increasing GoogleSignIn dependency to version 6.2.

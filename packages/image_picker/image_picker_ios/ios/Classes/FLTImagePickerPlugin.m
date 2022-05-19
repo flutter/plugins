@@ -567,18 +567,38 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       // Image picked without an original asset (e.g. User took a photo directly)
       [self saveImageWithPickerInfo:info image:image imageQuality:desiredImageQuality];
     } else {
-      [[PHImageManager defaultManager]
-          requestImageDataForAsset:originalAsset
-                           options:nil
-                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                       // maxWidth and maxHeight are used only for GIF images.
-                       [self saveImageWithOriginalImageData:imageData
-                                                      image:image
-                                                   maxWidth:maxWidth
-                                                  maxHeight:maxHeight
-                                               imageQuality:desiredImageQuality];
-                     }];
+      void (^resultHandler)(NSData *imageData, NSString *dataUTI, NSDictionary *info) = ^(
+          NSData *_Nullable imageData, NSString *_Nullable dataUTI, NSDictionary *_Nullable info) {
+        // maxWidth and maxHeight are used only for GIF images.
+        [self saveImageWithOriginalImageData:imageData
+                                       image:image
+                                    maxWidth:maxWidth
+                                   maxHeight:maxHeight
+                                imageQuality:desiredImageQuality];
+      };
+      if (@available(iOS 13.0, *)) {
+        [[PHImageManager defaultManager]
+            requestImageDataAndOrientationForAsset:originalAsset
+                                           options:nil
+                                     resultHandler:^(NSData *_Nullable imageData,
+                                                     NSString *_Nullable dataUTI,
+                                                     CGImagePropertyOrientation orientation,
+                                                     NSDictionary *_Nullable info) {
+                                       resultHandler(imageData, dataUTI, info);
+                                     }];
+      } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[PHImageManager defaultManager]
+            requestImageDataForAsset:originalAsset
+                             options:nil
+                       resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                       UIImageOrientation orientation,
+                                       NSDictionary *_Nullable info) {
+                         resultHandler(imageData, dataUTI, info);
+                       }];
+#pragma clang diagnostic pop
+      }
     }
   }
 }
