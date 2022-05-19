@@ -64,7 +64,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  bool get includeSubpackages => true;
+  PackageLoopingType get packageLoopingType =>
+      PackageLoopingType.includeAllSubpackages;
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
