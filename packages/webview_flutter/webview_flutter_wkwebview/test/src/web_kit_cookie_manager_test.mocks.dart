@@ -5,8 +5,10 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart'
+import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart'
     as _i2;
+import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart'
+    as _i5;
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart' as _i3;
 
 // ignore_for_file: type=lint
@@ -33,33 +35,28 @@ class MockWKHttpCookieStore extends _i1.Mock implements _i3.WKHttpCookieStore {
   }
 
   @override
-  _i4.Future<void> setCookie(_i2.NSHttpCookie? cookie) =>
+  _i4.Future<void> setCookie(_i5.NSHttpCookie? cookie) =>
       (super.noSuchMethod(Invocation.method(#setCookie, [cookie]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> addObserver(_i2.NSObject? observer,
-          {String? keyPath, Set<_i2.NSKeyValueObservingOptions>? options}) =>
+  _i4.Future<void> addObserver(_i5.NSObject? observer,
+          {String? keyPath, Set<_i5.NSKeyValueObservingOptions>? options}) =>
       (super.noSuchMethod(
           Invocation.method(
               #addObserver, [observer], {#keyPath: keyPath, #options: options}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> removeObserver(_i2.NSObject? observer, {String? keyPath}) =>
+  _i4.Future<void> removeObserver(_i5.NSObject? observer, {String? keyPath}) =>
       (super.noSuchMethod(
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> dispose() =>
-      (super.noSuchMethod(Invocation.method(#dispose, []),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
-  @override
   _i4.Future<void> setObserveValue(
           void Function(
-                  String, _i2.NSObject, Map<_i2.NSKeyValueChangeKey, Object?>)?
+                  String, _i5.NSObject, Map<_i5.NSKeyValueChangeKey, Object?>)?
               observeValue) =>
       (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
           returnValue: Future<void>.value(),
@@ -88,4 +85,29 @@ class MockWKWebsiteDataStore extends _i1.Mock
       (super.noSuchMethod(
           Invocation.method(#removeDataOfTypes, [dataTypes, since]),
           returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+  @override
+  _i4.Future<void> addObserver(_i5.NSObject? observer,
+          {String? keyPath, Set<_i5.NSKeyValueObservingOptions>? options}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #addObserver, [observer], {#keyPath: keyPath, #options: options}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> removeObserver(_i5.NSObject? observer, {String? keyPath}) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> setObserveValue(
+          void Function(
+                  String, _i5.NSObject, Map<_i5.NSKeyValueChangeKey, Object?>)?
+              observeValue) =>
+      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i2.Copyable copy() => (super.noSuchMethod(Invocation.method(#copy, []),
+      returnValue: _FakeCopyable_0()) as _i2.Copyable);
 }
