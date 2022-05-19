@@ -336,9 +336,7 @@ task:
         - ./script/tool_runner.sh xcode-analyze --ios
       xcode_analyze_deprecation_script:
         # Ensure we don't accidentally introduce deprecated code.
-        # TODO(stuartmorgan): Update this to a newer version of iOS to get
-        # ahead of upcoming deprecations.
-        - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=11.0
+        - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=13.0
       native_test_script:
         - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
