@@ -34,14 +34,16 @@ class MarkersController extends GeometryController {
       return;
     }
 
-    final gmaps.InfoWindowOptions? infoWindowOptions = _infoWindowOptionsFromMarker(marker);
+    final gmaps.InfoWindowOptions? infoWindowOptions =
+        _infoWindowOptionsFromMarker(marker);
     gmaps.InfoWindow? gmInfoWindow;
 
     if (infoWindowOptions != null) {
       gmInfoWindow = gmaps.InfoWindow(infoWindowOptions);
       // Google Maps' JS SDK does not have a click event on the InfoWindow, so
       // we make one...
-      if (infoWindowOptions.content != null && infoWindowOptions.content is HtmlElement) {
+      if (infoWindowOptions.content != null &&
+          infoWindowOptions.content is HtmlElement) {
         final HtmlElement content = infoWindowOptions.content! as HtmlElement;
         content.onClick.listen((_) {
           _onInfoWindowTap(marker.markerId);
@@ -49,11 +51,12 @@ class MarkersController extends GeometryController {
       }
     }
 
-    final gmaps.Marker? currentMarker = _markerIdToController[marker.markerId]?.marker;
+    final gmaps.Marker? currentMarker =
+        _markerIdToController[marker.markerId]?.marker;
 
-    final gmaps.MarkerOptions markerOptions = _markerOptionsFromMarker(marker, currentMarker);
-    final gmaps.Marker gmMarker = gmaps.Marker(markerOptions)
-        ..map = googleMap;
+    final gmaps.MarkerOptions markerOptions =
+        _markerOptionsFromMarker(marker, currentMarker);
+    final gmaps.Marker gmMarker = gmaps.Marker(markerOptions)..map = googleMap;
     final MarkerController controller = MarkerController(
       marker: gmMarker,
       infoWindow: gmInfoWindow,
@@ -81,13 +84,15 @@ class MarkersController extends GeometryController {
   }
 
   void _changeMarker(Marker marker) {
-    final MarkerController? markerController = _markerIdToController[marker.markerId];
+    final MarkerController? markerController =
+        _markerIdToController[marker.markerId];
     if (markerController != null) {
       final gmaps.MarkerOptions markerOptions = _markerOptionsFromMarker(
         marker,
         markerController.marker,
       );
-      final gmaps.InfoWindowOptions? infoWindow = _infoWindowOptionsFromMarker(marker);
+      final gmaps.InfoWindowOptions? infoWindow =
+          _infoWindowOptionsFromMarker(marker);
       markerController.update(
         markerOptions,
         newInfoWindowContent: infoWindow?.content as HtmlElement?,

@@ -76,7 +76,10 @@ void main() {
 
       // Trigger a drag end event...
       gmaps.Event.trigger(
-          marker, 'drag', <Object?>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
+        marker,
+        'drag',
+        <Object?>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)],
+      );
 
       expect(await methodCalled, isTrue);
     });
@@ -85,15 +88,19 @@ void main() {
       MarkerController(marker: marker, onDragEnd: onDragEnd);
 
       // Trigger a drag end event...
-      gmaps.Event.trigger(marker, 'dragend',
-          <Object?>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
+      gmaps.Event.trigger(
+        marker,
+        'dragend',
+        <Object?>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)],
+      );
 
       expect(await methodCalled, isTrue);
     });
 
     testWidgets('update', (WidgetTester tester) async {
       final MarkerController controller = MarkerController(marker: marker);
-      final gmaps.MarkerOptions options = gmaps.MarkerOptions()..draggable = true;
+      final gmaps.MarkerOptions options = gmaps.MarkerOptions()
+        ..draggable = true;
 
       expect(marker.draggable, isNull);
 
@@ -115,8 +122,10 @@ void main() {
       final gmaps.InfoWindow infoWindow = gmaps.InfoWindow();
       final gmaps.GMap map = gmaps.GMap(html.DivElement());
       marker.set('map', map);
-      final MarkerController controller =
-          MarkerController(marker: marker, infoWindow: infoWindow);
+      final MarkerController controller = MarkerController(
+        marker: marker,
+        infoWindow: infoWindow,
+      );
 
       controller.showInfoWindow();
 
@@ -128,8 +137,10 @@ void main() {
       final gmaps.InfoWindow infoWindow = gmaps.InfoWindow();
       final gmaps.GMap map = gmaps.GMap(html.DivElement());
       marker.set('map', map);
-      final MarkerController controller =
-          MarkerController(marker: marker, infoWindow: infoWindow);
+      final MarkerController controller = MarkerController(
+        marker: marker,
+        infoWindow: infoWindow,
+      );
 
       controller.hideInfoWindow();
 
@@ -155,7 +166,8 @@ void main() {
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
-        final gmaps.MarkerOptions options = gmaps.MarkerOptions()..draggable = true;
+        final gmaps.MarkerOptions options = gmaps.MarkerOptions()
+          ..draggable = true;
 
         controller.remove();
 

@@ -50,7 +50,8 @@ void main() {
 
     testWidgets('update', (WidgetTester tester) async {
       final CircleController controller = CircleController(circle: circle);
-      final gmaps.CircleOptions options = gmaps.CircleOptions()..draggable = true;
+      final gmaps.CircleOptions options = gmaps.CircleOptions()
+        ..draggable = true;
 
       expect(circle.draggable, isNull);
 
@@ -74,7 +75,8 @@ void main() {
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
-        final gmaps.CircleOptions options = gmaps.CircleOptions()..draggable = true;
+        final gmaps.CircleOptions options = gmaps.CircleOptions()
+          ..draggable = true;
 
         controller.remove();
 
@@ -104,7 +106,8 @@ void main() {
 
     testWidgets('update', (WidgetTester tester) async {
       final PolygonController controller = PolygonController(polygon: polygon);
-      final gmaps.PolygonOptions options = gmaps.PolygonOptions()..draggable = true;
+      final gmaps.PolygonOptions options = gmaps.PolygonOptions()
+        ..draggable = true;
 
       expect(polygon.draggable, isNull);
 
@@ -128,7 +131,8 @@ void main() {
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
-        final gmaps.PolygonOptions options = gmaps.PolygonOptions()..draggable = true;
+        final gmaps.PolygonOptions options = gmaps.PolygonOptions()
+          ..draggable = true;
 
         controller.remove();
 
@@ -148,7 +152,10 @@ void main() {
 
     testWidgets('onTap gets called', (WidgetTester tester) async {
       PolylineController(
-          polyline: polyline, consumeTapEvents: true, onTap: onTap);
+        polyline: polyline,
+        consumeTapEvents: true,
+        onTap: onTap,
+      );
 
       // Trigger a click event...
       gmaps.Event.trigger(polyline, 'click', <Object?>[gmaps.MapMouseEvent()]);
@@ -158,8 +165,11 @@ void main() {
     });
 
     testWidgets('update', (WidgetTester tester) async {
-      final PolylineController controller = PolylineController(polyline: polyline);
-      final gmaps.PolylineOptions options = gmaps.PolylineOptions()..draggable = true;
+      final PolylineController controller = PolylineController(
+        polyline: polyline,
+      );
+      final gmaps.PolylineOptions options = gmaps.PolylineOptions()
+        ..draggable = true;
 
       expect(polyline.draggable, isNull);
 
@@ -183,7 +193,8 @@ void main() {
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
-        final gmaps.PolylineOptions options = gmaps.PolylineOptions()..draggable = true;
+        final gmaps.PolylineOptions options = gmaps.PolylineOptions()
+          ..draggable = true;
 
         controller.remove();
 

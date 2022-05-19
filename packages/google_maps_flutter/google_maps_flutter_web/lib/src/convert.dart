@@ -63,7 +63,8 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, Object?> rawOptions) {
   }
 
   if (rawOptions['minMaxZoomPreference'] != null) {
-    final List<Object?> minMaxPreference = rawOptions['minMaxZoomPreference']! as List<Object?>;
+    final List<Object?> minMaxPreference =
+        rawOptions['minMaxZoomPreference']! as List<Object?>;
     options
       ..minZoom = minMaxPreference[0] as num?
       ..maxZoom = minMaxPreference[1] as num?;
@@ -132,18 +133,20 @@ List<gmaps.MapTypeStyle> _mapStyles(String? mapStyleJson) {
   List<gmaps.MapTypeStyle> styles = <gmaps.MapTypeStyle>[];
   if (mapStyleJson != null) {
     styles = (json.decode(mapStyleJson, reviver: (Object? key, Object? value) {
-          if (value is Map && _isJsonMapStyle(value as Map<String, Object?>)) {
-            List<Object?> stylers = <Object?>[];
-            if (value['stylers'] != null) {
-              stylers = (value['stylers']! as List<Object?>).map<Object?>((Object? e) => e != null ? jsify(e) : null).toList();
-            }
-            return gmaps.MapTypeStyle()
-              ..elementType = value['elementType'] as String?
-              ..featureType = value['featureType'] as String?
-              ..stylers = stylers;
-          }
-          return value;
-        }) as List<Object?>)
+      if (value is Map && _isJsonMapStyle(value as Map<String, Object?>)) {
+        List<Object?> stylers = <Object?>[];
+        if (value['stylers'] != null) {
+          stylers = (value['stylers']! as List<Object?>)
+              .map<Object?>((Object? e) => e != null ? jsify(e) : null)
+              .toList();
+        }
+        return gmaps.MapTypeStyle()
+          ..elementType = value['elementType'] as String?
+          ..featureType = value['featureType'] as String?
+          ..stylers = stylers;
+      }
+      return value;
+    }) as List<Object?>)
         .where((Object? element) => element != null)
         .cast<gmaps.MapTypeStyle>()
         .toList();
@@ -247,7 +250,10 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
       // iconConfig[3] may contain the [width, height] of the image, if passed!
       if (iconConfig.length >= 4 && iconConfig[3] != null) {
         final List<Object?> rawIconSize = iconConfig[3]! as List<Object?>;
-        final gmaps.Size size = gmaps.Size(rawIconSize[0] as num?, rawIconSize[1] as num?);
+        final gmaps.Size size = gmaps.Size(
+          rawIconSize[0] as num?,
+          rawIconSize[1] as num?,
+        );
         icon
           ..size = size
           ..scaledSize = size;
@@ -255,7 +261,8 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
     } else if (iconConfig[0] == 'fromBytes') {
       // Grab the bytes, and put them into a blob
       final List<int> bytes = iconConfig[1]! as List<int>;
-      final Blob blob = Blob(<dynamic>[bytes]); // Let the browser figure out the encoding
+      // Create a Blob from bytes, but let the browser figure out the encoding
+      final Blob blob = Blob(<dynamic>[bytes]);
       icon = gmaps.Icon()..url = Url.createObjectUrlFromBlob(blob);
     }
   }
@@ -302,7 +309,12 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
 
   for (int i = 0; i < polygon.holes.length; i++) {
     final List<LatLng> hole = polygon.holes[i];
-    final List<gmaps.LatLng> correctHole = _ensureHoleHasReverseWinding(hole, isClockwisePolygon, holeId: i, polygonId: polygon.polygonId);
+    final List<gmaps.LatLng> correctHole = _ensureHoleHasReverseWinding(
+      hole,
+      isClockwisePolygon,
+      holeId: i,
+      polygonId: polygon.polygonId,
+    );
     paths.add(correctHole);
   }
 
@@ -318,18 +330,22 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
     ..geodesic = polygon.geodesic;
 }
 
-List<gmaps.LatLng> _ensureHoleHasReverseWinding(List<LatLng> hole, bool polyIsClockwise, {int? holeId, PolygonId? polygonId}) {
+List<gmaps.LatLng> _ensureHoleHasReverseWinding(
+  List<LatLng> hole,
+  bool polyIsClockwise, {
+  int? holeId,
+  PolygonId? polygonId,
+}) {
   List<gmaps.LatLng> holePath = hole.map(_latLngToGmLatLng).toList();
   final bool holeIsClockwise = _isPolygonClockwise(holePath);
 
   if (holeIsClockwise == polyIsClockwise) {
     holePath = holePath.reversed.toList();
-      if (kDebugMode) {
-        print(
-            'Hole [$holeId] in Polygon [${polygonId?.value}] has been reversed.'
-            ' Ensure holes in polygons are "wound in the opposite direction to the outer path."'
-            ' More info: https://github.com/flutter/flutter/issues/74096');
-      }
+    if (kDebugMode) {
+      print('Hole [$holeId] in Polygon [${polygonId?.value}] has been reversed.'
+          ' Ensure holes in polygons are "wound in the opposite direction to the outer path."'
+          ' More info: https://github.com/flutter/flutter/issues/74096');
+    }
   }
 
   return holePath;
@@ -384,7 +400,12 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
     case 'newCameraPosition':
       map.heading = json[1]['bearing'] as num?;
       map.zoom = json[1]['zoom'] as num?;
-      map.panTo(gmaps.LatLng(json[1]['target'][0] as num?, json[1]['target'][1] as num?));
+      map.panTo(
+        gmaps.LatLng(
+          json[1]['target'][0] as num?,
+          json[1]['target'][1] as num?,
+        ),
+      );
       map.tilt = json[1]['tilt'] as num?;
       break;
     case 'newLatLng':
@@ -395,9 +416,12 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
       map.panTo(gmaps.LatLng(json[1][0] as num?, json[1][1] as num?));
       break;
     case 'newLatLngBounds':
-      map.fitBounds(gmaps.LatLngBounds(
+      map.fitBounds(
+        gmaps.LatLngBounds(
           gmaps.LatLng(json[1][0][0] as num?, json[1][0][1] as num?),
-          gmaps.LatLng(json[1][1][0] as num?, json[1][1][1] as num?)));
+          gmaps.LatLng(json[1][1][0] as num?, json[1][1][1] as num?),
+        ),
+      );
       // padding = json[2];
       // Needs package:google_maps ^4.0.0 to adjust the padding in fitBounds
       break;
@@ -408,11 +432,13 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
       gmaps.LatLng? focusLatLng;
       final double zoomDelta = json[1] as double? ?? 0;
       // Web only supports integer changes...
-      final int newZoomDelta = zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
+      final int newZoomDelta =
+          zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
       if (json.length == 3) {
         // With focus
         try {
-          focusLatLng = _pixelToLatLng(map, json[2][0] as int, json[2][1] as int);
+          focusLatLng =
+              _pixelToLatLng(map, json[2][0] as int, json[2][1] as int);
         } catch (e) {
           // https://github.com/a14n/dart-google-maps/issues/87
           // print('Error computing new focus LatLng. JS Error: ' + e.toString());

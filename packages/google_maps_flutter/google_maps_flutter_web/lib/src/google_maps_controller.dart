@@ -308,8 +308,8 @@ class GoogleMapController {
     assert(_googleMap != null, 'Cannot get the visible region of a null map.');
 
     final gmaps.LatLngBounds bounds =
-      await Future<gmaps.LatLngBounds?>.value(_googleMap!.bounds)
-      ?? _nullGmapsLatLngBounds;
+        await Future<gmaps.LatLngBounds?>.value(_googleMap!.bounds) ??
+            _nullGmapsLatLngBounds;
 
     return _gmLatLngBoundsTolatLngBounds(bounds);
   }
@@ -319,7 +319,8 @@ class GoogleMapController {
     assert(_googleMap != null,
         'Cannot get the screen coordinates with a null map.');
 
-    final gmaps.Point point = toScreenLocation(_googleMap!, _latLngToGmLatLng(latLng));
+    final gmaps.Point point =
+        toScreenLocation(_googleMap!, _latLngToGmLatLng(latLng));
 
     return ScreenCoordinate(x: point.x!.toInt(), y: point.y!.toInt());
   }

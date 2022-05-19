@@ -34,9 +34,10 @@ class PolylinesController extends GeometryController {
       return;
     }
 
-    final gmaps.PolylineOptions polylineOptions = _polylineOptionsFromPolyline(googleMap, polyline);
+    final gmaps.PolylineOptions polylineOptions =
+        _polylineOptionsFromPolyline(googleMap, polyline);
     final gmaps.Polyline gmPolyline = gmaps.Polyline(polylineOptions)
-        ..map = googleMap;
+      ..map = googleMap;
     final PolylineController controller = PolylineController(
         polyline: gmPolyline,
         consumeTapEvents: polyline.consumeTapEvents,
@@ -65,7 +66,8 @@ class PolylinesController extends GeometryController {
 
   // Removes a polyline and its controller by its [PolylineId].
   void _removePolyline(PolylineId polylineId) {
-    final PolylineController? polylineController = _polylineIdToController[polylineId];
+    final PolylineController? polylineController =
+        _polylineIdToController[polylineId];
     polylineController?.remove();
     _polylineIdToController.remove(polylineId);
   }

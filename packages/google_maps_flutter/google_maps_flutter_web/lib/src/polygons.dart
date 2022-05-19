@@ -36,9 +36,10 @@ class PolygonsController extends GeometryController {
       return;
     }
 
-    final gmaps.PolygonOptions polygonOptions = _polygonOptionsFromPolygon(googleMap, polygon);
+    final gmaps.PolygonOptions polygonOptions =
+        _polygonOptionsFromPolygon(googleMap, polygon);
     final gmaps.Polygon gmPolygon = gmaps.Polygon(polygonOptions)
-        ..map = googleMap;
+      ..map = googleMap;
     final PolygonController controller = PolygonController(
         polygon: gmPolygon,
         consumeTapEvents: polygon.consumeTapEvents,
@@ -68,7 +69,8 @@ class PolygonsController extends GeometryController {
 
   // Removes a polygon and its controller by its [PolygonId].
   void _removePolygon(PolygonId polygonId) {
-    final PolygonController? polygonController = _polygonIdToController[polygonId];
+    final PolygonController? polygonController =
+        _polygonIdToController[polygonId];
     polygonController?.remove();
     _polygonIdToController.remove(polygonId);
   }

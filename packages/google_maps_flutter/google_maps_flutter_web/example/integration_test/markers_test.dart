@@ -52,7 +52,8 @@ void main() {
       };
       controller.addMarkers(markers);
 
-      expect(controller.markers[const MarkerId('1')]?.marker?.draggable, isFalse);
+      expect(
+          controller.markers[const MarkerId('1')]?.marker?.draggable, isFalse);
 
       // Update the marker with radius 10
       final Set<Marker> updatedMarkers = <Marker>{
@@ -61,7 +62,8 @@ void main() {
       controller.changeMarkers(updatedMarkers);
 
       expect(controller.markers.length, 1);
-      expect(controller.markers[const MarkerId('1')]?.marker?.draggable, isTrue);
+      expect(
+          controller.markers[const MarkerId('1')]?.marker?.draggable, isTrue);
     });
 
     testWidgets('removeMarkers', (WidgetTester tester) async {
@@ -145,7 +147,9 @@ void main() {
       final Uint8List bytes = const Base64Decoder().convert(iconImageBase64);
       final Set<Marker> markers = <Marker>{
         Marker(
-            markerId: const MarkerId('1'), icon: BitmapDescriptor.fromBytes(bytes)),
+          markerId: const MarkerId('1'),
+          icon: BitmapDescriptor.fromBytes(bytes),
+        ),
       };
 
       controller.addMarkers(markers);
@@ -183,13 +187,14 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      final html.HtmlElement? content = controller.markers[const MarkerId('1')]?.infoWindow?.content
-          as html.HtmlElement?;
+      final html.HtmlElement? content = controller.markers[const MarkerId('1')]
+          ?.infoWindow?.content as html.HtmlElement?;
       expect(content?.innerHtml, contains('title for test'));
       expect(
           content?.innerHtml,
           contains(
-              '<a href="https://www.google.com">Go to Google &gt;&gt;&gt;</a>'));
+            '<a href="https://www.google.com">Go to Google &gt;&gt;&gt;</a>',
+          ));
     });
 
     // https://github.com/flutter/flutter/issues/67289
@@ -207,8 +212,8 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      final html.HtmlElement? content = controller.markers[const MarkerId('1')]?.infoWindow?.content
-          as html.HtmlElement?;
+      final html.HtmlElement? content = controller.markers[const MarkerId('1')]
+          ?.infoWindow?.content as html.HtmlElement?;
 
       content?.click();
 

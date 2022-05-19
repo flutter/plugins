@@ -143,7 +143,12 @@ void main() {
           controller.dispose();
 
           expect(() {
-            controller.updateCircles(CircleUpdates.from(<Circle>{}, <Circle>{}));
+            controller.updateCircles(
+              CircleUpdates.from(
+                <Circle>{},
+                <Circle>{},
+              ),
+            );
           }, throwsAssertionError);
         });
 
@@ -152,7 +157,12 @@ void main() {
           controller.dispose();
 
           expect(() {
-            controller.updatePolygons(PolygonUpdates.from(<Polygon>{}, <Polygon>{}));
+            controller.updatePolygons(
+              PolygonUpdates.from(
+                <Polygon>{},
+                <Polygon>{},
+              ),
+            );
           }, throwsAssertionError);
         });
 
@@ -161,7 +171,12 @@ void main() {
           controller.dispose();
 
           expect(() {
-            controller.updatePolylines(PolylineUpdates.from(<Polyline>{}, <Polyline>{}));
+            controller.updatePolylines(
+              PolylineUpdates.from(
+                <Polyline>{},
+                <Polyline>{},
+              ),
+            );
           }, throwsAssertionError);
         });
 
@@ -170,7 +185,12 @@ void main() {
           controller.dispose();
 
           expect(() {
-            controller.updateMarkers(MarkerUpdates.from(<Marker>{}, <Marker>{}));
+            controller.updateMarkers(
+              MarkerUpdates.from(
+                <Marker>{},
+                <Marker>{},
+              ),
+            );
           }, throwsAssertionError);
 
           expect(() {
@@ -222,10 +242,17 @@ void main() {
         final Stream<MapEvent<Object?>> capturedEvents = stream.stream.take(5);
 
         gmaps.Event.trigger(
-            map, 'click', <Object>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
-        gmaps.Event.trigger(map, 'rightclick',
-            <Object>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
-        gmaps.Event.trigger(map, 'bounds_changed', <Object>[]); // Causes 2 events
+          map,
+          'click',
+          <Object>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)],
+        );
+        gmaps.Event.trigger(
+          map,
+          'rightclick',
+          <Object>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)],
+        );
+        // The following line causes 2 events
+        gmaps.Event.trigger(map, 'bounds_changed', <Object>[]);
         gmaps.Event.trigger(map, 'idle', <Object>[]);
 
         final List<MapEvent<Object?>> events = await capturedEvents.toList();
@@ -315,10 +342,12 @@ void main() {
             verify(circles.addCircles(captureAny)).captured[0] as Set<Circle>;
         final Set<Marker> capturedMarkers =
             verify(markers.addMarkers(captureAny)).captured[0] as Set<Marker>;
-        final Set<Polygon> capturedPolygons = verify(polygons.addPolygons(captureAny))
-            .captured[0] as Set<Polygon>;
-        final Set<Polyline> capturedPolylines = verify(polylines.addPolylines(captureAny))
-            .captured[0] as Set<Polyline>;
+        final Set<Polygon> capturedPolygons =
+            verify(polygons.addPolygons(captureAny)).captured[0]
+                as Set<Polygon>;
+        final Set<Polyline> capturedPolylines =
+            verify(polylines.addPolylines(captureAny)).captured[0]
+                as Set<Polyline>;
 
         expect(capturedCircles.first.circleId.value, 'circle-1');
         expect(capturedCircles.first.zIndex, 1234);
@@ -360,7 +389,8 @@ void main() {
             'mapType': 2,
             'zoomControlsEnabled': true,
           });
-          controller.debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+          controller.debugSetOverrides(
+              createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
             return map;
           });
@@ -380,7 +410,8 @@ void main() {
           controller = _createController(options: <String, dynamic>{
             'scrollGesturesEnabled': false,
           });
-          controller.debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+          controller.debugSetOverrides(
+              createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
             return map;
           });
@@ -398,7 +429,8 @@ void main() {
           controller = _createController(options: <String, dynamic>{
             'zoomGesturesEnabled': false,
           });
-          controller.debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+          controller.debugSetOverrides(
+              createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
             return map;
           });
@@ -422,7 +454,8 @@ void main() {
             ),
           );
 
-          controller.debugSetOverrides(createMap: (_, gmaps.MapOptions options) {
+          controller.debugSetOverrides(
+              createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
             return map;
           });
@@ -516,8 +549,12 @@ void main() {
 
       group('moveCamera', () {
         testWidgets('newLatLngZoom', (WidgetTester tester) async {
-          await controller
-              .moveCamera(CameraUpdate.newLatLngZoom(const LatLng(19, 26), 12,),);
+          await controller.moveCamera(
+            CameraUpdate.newLatLngZoom(
+              const LatLng(19, 26),
+              12,
+            ),
+          );
 
           final gmaps.LatLng gmCenter = map.center!;
 
@@ -629,7 +666,10 @@ void main() {
         };
 
         final Set<Polyline> current = <Polyline>{
-          const Polyline(polylineId: PolylineId('to-be-updated'), visible: false),
+          const Polyline(
+            polylineId: PolylineId('to-be-updated'),
+            visible: false,
+          ),
           const Polyline(polylineId: PolylineId('to-be-added')),
         };
 
@@ -642,7 +682,10 @@ void main() {
           const Polyline(polylineId: PolylineId('to-be-added')),
         }));
         verify(mock.changePolylines(<Polyline>{
-          const Polyline(polylineId: PolylineId('to-be-updated'), visible: false),
+          const Polyline(
+            polylineId: PolylineId('to-be-updated'),
+            visible: false,
+          ),
         }));
       });
 
