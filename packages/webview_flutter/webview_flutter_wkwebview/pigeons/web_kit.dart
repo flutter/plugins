@@ -8,11 +8,22 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/common/web_kit.pigeon.dart',
     dartTestOut: 'test/src/common/test_web_kit.pigeon.dart',
-    dartOptions: DartOptions(isNullSafe: true, copyrightHeader: <String>[
+    dartOptions: DartOptions(copyrightHeader: <String>[
       'Copyright 2013 The Flutter Authors. All rights reserved.',
       'Use of this source code is governed by a BSD-style license that can be',
       'found in the LICENSE file.',
     ]),
+    objcHeaderOut: 'ios/Classes/FWFGeneratedWebKitApis.h',
+    objcSourceOut: 'ios/Classes/FWFGeneratedWebKitApis.m',
+    objcOptions: ObjcOptions(
+      header: 'ios/Classes/FWFGeneratedWebKitApis.h',
+      prefix: 'FWF',
+      copyrightHeader: <String>[
+        'Copyright 2013 The Flutter Authors. All rights reserved.',
+        'Use of this source code is governed by a BSD-style license that can be',
+        'found in the LICENSE file.',
+      ],
+    ),
   ),
 )
 
@@ -26,10 +37,10 @@ enum NSKeyValueObservingOptionsEnum {
   priorNotification,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSKeyValueObservingOptionsEnumData {
-  // TODO(bparrishMines): Generated code fails when enums are marked as nonnull.
-  // Change to nonnull once this is fixed: https://github.com/flutter/flutter/issues/100594
-  late NSKeyValueObservingOptionsEnum? value;
+  late NSKeyValueObservingOptionsEnum value;
 }
 
 /// Mirror of NSKeyValueChange.
@@ -42,8 +53,10 @@ enum NSKeyValueChangeEnum {
   replacement,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSKeyValueChangeEnumData {
-  late NSKeyValueChangeEnum? value;
+  late NSKeyValueChangeEnum value;
 }
 
 /// Mirror of NSKeyValueChangeKey.
@@ -57,8 +70,10 @@ enum NSKeyValueChangeKeyEnum {
   oldValue,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSKeyValueChangeKeyEnumData {
-  late NSKeyValueChangeKeyEnum? value;
+  late NSKeyValueChangeKeyEnum value;
 }
 
 /// Mirror of WKUserScriptInjectionTime.
@@ -69,8 +84,10 @@ enum WKUserScriptInjectionTimeEnum {
   atDocumentEnd,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKUserScriptInjectionTimeEnumData {
-  late WKUserScriptInjectionTimeEnum? value;
+  late WKUserScriptInjectionTimeEnum value;
 }
 
 /// Mirror of WKAudiovisualMediaTypes.
@@ -83,26 +100,30 @@ enum WKAudiovisualMediaTypeEnum {
   all,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKAudiovisualMediaTypeEnumData {
-  late WKAudiovisualMediaTypeEnum? value;
+  late WKAudiovisualMediaTypeEnum value;
 }
 
 /// Mirror of WKWebsiteDataTypes.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatarecord/data_store_record_types?language=objc.
-enum WKWebsiteDataTypesEnum {
+enum WKWebsiteDataTypeEnum {
   cookies,
   memoryCache,
   diskCache,
   offlineWebApplicationCache,
-  localStroage,
+  localStorage,
   sessionStorage,
-  sqlDatabases,
+  webSQLDatabases,
   indexedDBDatabases,
 }
 
-class WKWebsiteDataTypesEnumData {
-  late WKWebsiteDataTypesEnum? value;
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
+class WKWebsiteDataTypeEnumData {
+  late WKWebsiteDataTypeEnum value;
 }
 
 /// Mirror of WKNavigationActionPolicy.
@@ -113,8 +134,10 @@ enum WKNavigationActionPolicyEnum {
   cancel,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class WKNavigationActionPolicyEnumData {
-  late WKNavigationActionPolicyEnum? value;
+  late WKNavigationActionPolicyEnum value;
 }
 
 /// Mirror of NSHTTPCookiePropertyKey.
@@ -137,8 +160,10 @@ enum NSHttpCookiePropertyKeyEnum {
   version,
 }
 
+// TODO(bparrishMines): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
 class NSHttpCookiePropertyKeyEnumData {
-  late NSHttpCookiePropertyKeyEnum? value;
+  late NSHttpCookiePropertyKeyEnum value;
 }
 
 /// Mirror of NSURLRequest.
@@ -196,7 +221,13 @@ class WKScriptMessageData {
 ///
 /// See https://developer.apple.com/documentation/foundation/nshttpcookie?language=objc.
 class NSHttpCookieData {
-  late Map<NSHttpCookiePropertyKeyEnumData?, String?> properties;
+  // TODO(bparrishMines): Change to a map when Objective-C data classes conform
+  // to `NSCopying`. See https://github.com/flutter/flutter/issues/103383.
+  // `NSDictionary`s are unable to use data classes as keys because they don't
+  // conform to `NSCopying`. This splits the map of properties into a list of
+  // keys and values with the ordered maintained.
+  late List<NSHttpCookiePropertyKeyEnumData?> propertyKeys;
+  late List<Object?> propertyValues;
 }
 
 /// Mirror of WKWebsiteDataStore.
@@ -204,18 +235,25 @@ class NSHttpCookieData {
 /// See https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKWebsiteDataStoreHostApi')
 abstract class WKWebsiteDataStoreHostApi {
+  @ObjCSelector(
+    'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:',
+  )
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,
   );
 
+  @ObjCSelector('createDefaultDataStoreWithIdentifier:')
   void createDefaultDataStore(int instanceId);
 
+  @ObjCSelector(
+    'removeDataFromDataStoreWithIdentifier:ofTypes:modifiedSince:',
+  )
   @async
   bool removeDataOfTypes(
     int instanceId,
-    List<WKWebsiteDataTypesEnumData> dataTypes,
-    double secondsModifiedSinceEpoch,
+    List<WKWebsiteDataTypeEnumData> dataTypes,
+    double modificationTimeInSecondsSinceEpoch,
   );
 }
 
@@ -224,10 +262,10 @@ abstract class WKWebsiteDataStoreHostApi {
 /// See https://developer.apple.com/documentation/uikit/uiview?language=objc.
 @HostApi(dartHostTestHandler: 'TestUIViewHostApi')
 abstract class UIViewHostApi {
-  List<double?> getContentOffset(int instanceId);
-
+  @ObjCSelector('setBackgroundColorForViewWithIdentifier:toValue:')
   void setBackgroundColor(int instanceId, int? value);
 
+  @ObjCSelector('setOpaqueForViewWithIdentifier:isOpaque:')
   void setOpaque(int instanceId, bool opaque);
 }
 
@@ -236,12 +274,16 @@ abstract class UIViewHostApi {
 /// See https://developer.apple.com/documentation/uikit/uiscrollview?language=objc.
 @HostApi(dartHostTestHandler: 'TestUIScrollViewHostApi')
 abstract class UIScrollViewHostApi {
+  @ObjCSelector('createFromWebViewWithIdentifier:webViewIdentifier:')
   void createFromWebView(int instanceId, int webViewInstanceId);
 
+  @ObjCSelector('contentOffsetForScrollViewWithIdentifier:')
   List<double?> getContentOffset(int instanceId);
 
+  @ObjCSelector('scrollByForScrollViewWithIdentifier:x:y:')
   void scrollBy(int instanceId, double x, double y);
 
+  @ObjCSelector('setContentOffsetForScrollViewWithIdentifier:toX:y:')
   void setContentOffset(int instanceId, double x, double y);
 }
 
@@ -250,12 +292,20 @@ abstract class UIScrollViewHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKWebViewConfigurationHostApi')
 abstract class WKWebViewConfigurationHostApi {
+  @ObjCSelector('createWithIdentifier:')
   void create(int instanceId);
 
+  @ObjCSelector('createFromWebViewWithIdentifier:webViewIdentifier:')
   void createFromWebView(int instanceId, int webViewInstanceId);
 
+  @ObjCSelector(
+    'setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:isAllowed:',
+  )
   void setAllowsInlineMediaPlayback(int instanceId, bool allow);
 
+  @ObjCSelector(
+    'setMediaTypesRequiresUserActionForConfigurationWithIdentifier:forTypes:',
+  )
   void setMediaTypesRequiringUserActionForPlayback(
     int instanceId,
     List<WKAudiovisualMediaTypeEnumData> types,
@@ -267,23 +317,33 @@ abstract class WKWebViewConfigurationHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKUserContentControllerHostApi')
 abstract class WKUserContentControllerHostApi {
+  @ObjCSelector(
+    'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:',
+  )
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,
   );
 
+  @ObjCSelector(
+    'addScriptMessageHandlerForControllerWithIdentifier:handlerIdentifier:ofName:',
+  )
   void addScriptMessageHandler(
     int instanceId,
     int handlerInstanceid,
     String name,
   );
 
+  @ObjCSelector('removeScriptMessageHandlerForControllerWithIdentifier:name:')
   void removeScriptMessageHandler(int instanceId, String name);
 
+  @ObjCSelector('removeAllScriptMessageHandlersForControllerWithIdentifier:')
   void removeAllScriptMessageHandlers(int instanceId);
 
+  @ObjCSelector('addUserScriptForControllerWithIdentifier:userScript:')
   void addUserScript(int instanceId, WKUserScriptData userScript);
 
+  @ObjCSelector('removeAllUserScriptsForControllerWithIdentifier:')
   void removeAllUserScripts(int instanceId);
 }
 
@@ -292,11 +352,15 @@ abstract class WKUserContentControllerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkpreferences?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKPreferencesHostApi')
 abstract class WKPreferencesHostApi {
+  @ObjCSelector(
+    'createFromWebViewConfigurationWithIdentifier:configurationIdentifier:',
+  )
   void createFromWebViewConfiguration(
     int instanceId,
     int configurationInstanceId,
   );
 
+  @ObjCSelector('setJavaScriptEnabledForPreferencesWithIdentifier:isEnabled:')
   void setJavaScriptEnabled(int instanceId, bool enabled);
 }
 
@@ -305,6 +369,7 @@ abstract class WKPreferencesHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKScriptMessageHandlerHostApi')
 abstract class WKScriptMessageHandlerHostApi {
+  @ObjCSelector('createWithIdentifier:')
   void create(int instanceId);
 }
 
@@ -313,8 +378,12 @@ abstract class WKScriptMessageHandlerHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKNavigationDelegateHostApi')
 abstract class WKNavigationDelegateHostApi {
+  @ObjCSelector('createWithIdentifier:')
   void create(int instanceId);
 
+  @ObjCSelector(
+    'setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:',
+  )
   void setDidFinishNavigation(int instanceId, int? functionInstanceId);
 }
 
@@ -323,6 +392,9 @@ abstract class WKNavigationDelegateHostApi {
 /// See https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc.
 @FlutterApi()
 abstract class WKNavigationDelegateFlutterApi {
+  @ObjCSelector(
+    'didFinishNavigationForDelegateWithIdentifier:webViewIdentifier:URL:',
+  )
   void didFinishNavigation(
     int functionInstanceId,
     int webViewInstanceId,
@@ -335,8 +407,12 @@ abstract class WKNavigationDelegateFlutterApi {
 /// See https://developer.apple.com/documentation/objectivec/nsobject.
 @HostApi(dartHostTestHandler: 'TestNSObjectHostApi')
 abstract class NSObjectHostApi {
+  @ObjCSelector('disposeObjectWithIdentifier:')
   void dispose(int instanceId);
 
+  @ObjCSelector(
+    'addObserverForObjectWithIdentifier:observerIdentifier:keyPath:options:',
+  )
   void addObserver(
     int instanceId,
     int observerInstanceId,
@@ -344,12 +420,16 @@ abstract class NSObjectHostApi {
     List<NSKeyValueObservingOptionsEnumData> options,
   );
 
+  @ObjCSelector(
+    'removeObserverForObjectWithIdentifier:observerIdentifier:keyPath:',
+  )
   void removeObserver(int instanceId, int observerInstanceId, String keyPath);
 }
 
 /// Disposes references to functions.
 @FlutterApi()
 abstract class FunctionFlutterApi {
+  @ObjCSelector('disposeFunctionWithIdentifier:')
   void dispose(int instanceId);
 }
 
@@ -358,42 +438,62 @@ abstract class FunctionFlutterApi {
 /// See https://developer.apple.com/documentation/webkit/wkwebview?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKWebViewHostApi')
 abstract class WKWebViewHostApi {
+  @ObjCSelector('createWithIdentifier:configurationIdentifier:')
   void create(int instanceId, int configurationInstanceId);
 
+  @ObjCSelector('setUIDelegateForWebViewWithIdentifier:delegateIdentifier:')
   void setUIDelegate(int instanceId, int? uiDelegateInstanceId);
 
+  @ObjCSelector(
+    'setNavigationDelegateForWebViewWithIdentifier:delegateIdentifier:',
+  )
   void setNavigationDelegate(int instanceId, int? navigationDelegateInstanceId);
 
+  @ObjCSelector('URLForWebViewWithIdentifier:')
   String? getUrl(int instanceId);
 
+  @ObjCSelector('estimatedProgressForWebViewWithIdentifier:')
   double getEstimatedProgress(int instanceId);
 
+  @ObjCSelector('loadRequestForWebViewWithIdentifier:request:')
   void loadRequest(int instanceId, NSUrlRequestData request);
 
+  @ObjCSelector('loadHTMLForWebViewWithIdentifier:HTMLString:baseURL:')
   void loadHtmlString(int instanceId, String string, String? baseUrl);
 
+  @ObjCSelector('loadFileForWebViewWithIdentifier:fileURL:readAccessURL:')
   void loadFileUrl(int instanceId, String url, String readAccessUrl);
 
+  @ObjCSelector('loadAssetForWebViewWithIdentifier:assetKey:')
   void loadFlutterAsset(int instanceId, String key);
 
+  @ObjCSelector('canGoBackForWebViewWithIdentifier:')
   bool canGoBack(int instanceId);
 
+  @ObjCSelector('canGoForwardForWebViewWithIdentifier:')
   bool canGoForward(int instanceId);
 
+  @ObjCSelector('goBackForWebViewWithIdentifier:')
   void goBack(int instanceId);
 
+  @ObjCSelector('goForwardForWebViewWithIdentifier:')
   void goForward(int instanceId);
 
+  @ObjCSelector('reloadWebViewWithIdentifier:')
   void reload(int instanceId);
 
+  @ObjCSelector('titleForWebViewWithIdentifier:')
   String? getTitle(int instanceId);
 
+  @ObjCSelector('setAllowsBackForwardForWebViewWithIdentifier:isAllowed:')
   void setAllowsBackForwardNavigationGestures(int instanceId, bool allow);
 
+  @ObjCSelector('setUserAgentForWebViewWithIdentifier:userAgent:')
   void setCustomUserAgent(int instanceId, String? userAgent);
 
+  @ObjCSelector('evaluateJavaScriptForWebViewWithIdentifier:javaScriptString:')
   @async
-  String evaluateJavaScript(int instanceId, String javascriptString);
+  Object? evaluateJavaScript(int instanceId, String javaScriptString);
 }
 
 /// Mirror of WKUIDelegate.
@@ -401,6 +501,7 @@ abstract class WKWebViewHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKUIDelegateHostApi')
 abstract class WKUIDelegateHostApi {
+  @ObjCSelector('createWithIdentifier:')
   void create(int instanceId);
 }
 
@@ -409,10 +510,13 @@ abstract class WKUIDelegateHostApi {
 /// See https://developer.apple.com/documentation/webkit/wkhttpcookiestore?language=objc.
 @HostApi(dartHostTestHandler: 'TestWKHttpCookieStoreHostApi')
 abstract class WKHttpCookieStoreHostApi {
+  @ObjCSelector('createFromWebsiteDataStoreWithIdentifier:dataStoreIdentifier:')
   void createFromWebsiteDataStore(
     int instanceId,
     int websiteDataStoreInstanceId,
   );
 
+  @ObjCSelector('setCookieForStoreWithIdentifier:cookie:')
+  @async
   void setCookie(int instanceId, NSHttpCookieData cookie);
 }

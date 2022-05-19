@@ -6,7 +6,6 @@
 // ignore_for_file: public_member_api_docs, non_constant_identifier_names, avoid_as, unused_import, unnecessary_parenthesis
 // ignore_for_file: avoid_relative_lib_imports
 // @dart = 2.12
-import 'dart:async';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';

@@ -9,7 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PaddingPage extends GoogleMapExampleAppPage {
-  const PaddingPage() : super(const Icon(Icons.map), 'Add padding to the map');
+  const PaddingPage({Key? key})
+      : super(const Icon(Icons.map), 'Add padding to the map', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class PaddingPage extends GoogleMapExampleAppPage {
 }
 
 class MarkerIconsBody extends StatefulWidget {
-  const MarkerIconsBody();
+  const MarkerIconsBody({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MarkerIconsBodyState();

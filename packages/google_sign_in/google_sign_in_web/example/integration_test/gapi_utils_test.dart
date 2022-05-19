@@ -51,10 +51,12 @@ class FakeGoogleUser extends Fake implements gapi.GoogleUser {
   @override
   gapi.BasicProfile? getBasicProfile() => _basicProfile;
 
+  // ignore: use_setters_to_change_properties
   void setIsSignedIn(bool isSignedIn) {
     _isSignedIn = isSignedIn;
   }
 
+  // ignore: use_setters_to_change_properties
   void setBasicProfile(gapi.BasicProfile basicProfile) {
     _basicProfile = basicProfile;
   }

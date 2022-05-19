@@ -39,6 +39,10 @@
   [self send:flutterError];
 }
 
+- (void)sendFlutterError:(FlutterError *)flutterError {
+  [self send:flutterError];
+}
+
 - (void)sendNotImplemented {
   [self send:FlutterMethodNotImplemented];
 }
