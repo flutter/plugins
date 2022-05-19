@@ -79,6 +79,22 @@ void main() {
       expect(weakInstanceId, 0);
     });
 
+    test('removeWeakReference removes only weak reference', () {
+      final CopyableObject object = CopyableObject();
+
+      final InstanceManager instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (_) {});
+
+      instanceManager.addHostCreatedInstance(object, 0);
+
+      expect(instanceManager.removeWeakReference(object), 0);
+      final CopyableObject copy = instanceManager.getInstance(
+        0,
+        returnedInstanceMayBeUsed: false,
+      )!;
+      expect(identical(object, copy), isFalse);
+    });
+
     test('removeStrongReference', () {
       final CopyableObject object = CopyableObject();
 
@@ -92,6 +108,40 @@ void main() {
         instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
         isNull,
       );
+    });
+
+    test('removeStrongReference removes only strong reference', () {
+      final CopyableObject object = CopyableObject();
+
+      final InstanceManager instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (_) {});
+
+      instanceManager.addHostCreatedInstance(object, 0);
+      expect(instanceManager.removeStrongReference(0), isA<CopyableObject>());
+      expect(
+        instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
+        object,
+      );
+    });
+
+    test('getInstance can add a new weak reference', () {
+      final CopyableObject object = CopyableObject();
+
+      final InstanceManager instanceManager =
+          InstanceManager(onWeakReferenceRemoved: (_) {});
+
+      instanceManager.addHostCreatedInstance(object, 0);
+      instanceManager.removeWeakReference(object);
+
+      final CopyableObject strongCopy = instanceManager.getInstance(
+        0,
+        returnedInstanceMayBeUsed: false,
+      )!;
+      final CopyableObject newWeakCopy = instanceManager.getInstance(
+        0,
+        returnedInstanceMayBeUsed: true,
+      )!;
+      expect(identical(strongCopy, newWeakCopy), isFalse);
     });
   });
 }
