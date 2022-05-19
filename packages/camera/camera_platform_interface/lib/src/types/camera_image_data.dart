@@ -39,10 +39,10 @@ class CameraImagePlane {
   /// The distance between adjacent pixel samples in bytes, when available.
   final int? bytesPerPixel;
 
-  /// Height of the pixel buffer, when available
+  /// Height of the pixel buffer, when available.
   final int? height;
 
-  /// Width of the pixel buffer, when available
+  /// Width of the pixel buffer, when available.
   final int? width;
 }
 

@@ -38,14 +38,14 @@ void main() {
 
     final CameraImage image = CameraImage.fromPlatformInterface(originalImage);
     // Simple values.
-    expect(image.width, originalImage.width);
-    expect(image.height, originalImage.height);
-    expect(image.lensAperture, originalImage.lensAperture);
-    expect(image.sensorExposureTime, originalImage.sensorExposureTime);
-    expect(image.sensorSensitivity, originalImage.sensorSensitivity);
+    expect(image.width, 640);
+    expect(image.height, 480);
+    expect(image.lensAperture, 2.5);
+    expect(image.sensorExposureTime, 5);
+    expect(image.sensorSensitivity, 1.3);
     // Format.
-    expect(image.format.group, originalImage.format.group);
-    expect(image.format.raw, originalImage.format.raw);
+    expect(image.format.group, ImageFormatGroup.jpeg);
+    expect(image.format.raw, 1234);
     // Planes.
     expect(image.planes.length, originalImage.planes.length);
     for (int i = 0; i < image.planes.length; i++) {

@@ -8,7 +8,8 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 
 // TODO(stuartmorgan): Remove all of these classes in a breaking change, and
-// vend the platform interface versions directly.
+// vend the platform interface versions directly. See
+// https://github.com/flutter/flutter/issues/104188
 
 /// A single color plane of image data.
 ///
