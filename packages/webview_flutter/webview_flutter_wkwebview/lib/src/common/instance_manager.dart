@@ -104,7 +104,7 @@ class InstanceManager {
     return identifier;
   }
 
-  /// Removes [identifier] and its associated strong referenced instance, if
+  /// Removes [identifier] and its associated strongly referenced instance, if
   /// present, from the manager.
   ///
   /// Returns the strong referenced instance associated with [identifier] before
@@ -196,7 +196,7 @@ class InstanceManager {
   int _generateNewIdentifier() {
     late int identifier;
     do {
-      // Max must be in range 0 < max ≤ 2^16.
+      // Value must be < 2^16.
       identifier = Random().nextInt(65536);
     } while (containsIdentifier(identifier));
     return identifier;

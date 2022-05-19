@@ -3,6 +3,40 @@
 // found in the LICENSE file.
 
 #import "FWFInstanceManager.h"
+#import <objc/runtime.h>
+
+// Attach to an object to track when an object is deallocated.
+@interface FWFFinalizer : NSObject
+@property (nonatomic) long identifier;
+// Callbacks are no longer made once FWFInstanceManager is inaccessible.
+@property (nonatomic, weak) FWFOnDeallocCallback callback;
++ (void)attachToInstance:(NSObject *)instance withIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback;
++ (void)detachInstance:(NSObject *)instance;
+@end
+
+@implementation FWFFinalizer
+-(instancetype)initWithIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback {
+  self = [self init];
+  if (self) {
+    _identifier = identifier;
+    _callback = callback;
+  }
+  return self;
+}
+
++ (void)attachToInstance:(NSObject *)instance withIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback {
+  FWFFinalizer *finalizer = [[FWFFinalizer alloc] initWithIdentifier:identifier callback:callback];
+  objc_setAssociatedObject(instance, _cmd, finalizer, OBJC_ASSOCIATION_RETAIN);
+}
+
++ (void)detachInstance:(NSObject *)instance {
+  objc_setAssociatedObject(instance, @selector(attachToInstance:withIdentifier:callback:), nil, OBJC_ASSOCIATION_ASSIGN);
+}
+
+-(void) dealloc {
+  self.callback(self.identifier);
+}
+@end
 
 @interface FWFInstanceManager ()
 @property dispatch_queue_t lockQueue;
@@ -12,8 +46,10 @@
 @end
 
 @implementation FWFInstanceManager
-- (instancetype)init {
+- (instancetype)initWithDeallocCallback:(FWFOnDeallocCallback)callback {
+  self = [self init];
   if (self) {
+    _deallocCallback = callback;
     _lockQueue = dispatch_queue_create("FWFInstanceManager", DISPATCH_QUEUE_SERIAL);
     _identifiers = [NSMapTable weakToStrongObjectsMapTable];
     _weakInstances = [NSMapTable strongToWeakObjectsMapTable];
@@ -30,16 +66,20 @@
   });
 }
 
-- (void)addHostCreatedInstance:(nonnull NSObject *)instance {
+- (long)addHostCreatedInstance:(nonnull NSObject *)instance {
   NSParameterAssert(instance);
-  dispatch_async(_lockQueue, ^{
+  long identifier = NSNotFound;
+  dispatch_sync(_lockQueue, ^{
     long identifier;
     do {
+      // Identifiers are generated randomly to avoid collisions with objects
+      // created simultaneously by the Flutter.
+      // Value must be >= 2^16.
       identifier = arc4random_uniform(65536) + 65536;
-      // TODO: dfg
-    } while (YES);
+    } while ([self.weakInstances objectForKey:@(identifier)] || [self.strongInstances objectForKey:@(identifier)]);
     [self addInstance:instance withIdentifier:identifier];
   });
+  return identifier;
 }
 
 - (nullable NSObject *)removeStrongReferenceWithIdentifier:(long)instanceIdentifier {
@@ -76,6 +116,6 @@
   [self.identifiers setObject:@(instanceIdentifier) forKey:instance];
   [self.weakInstances setObject:instance forKey:@(instanceIdentifier)];
   [self.strongInstances setObject:instance forKey:@(instanceIdentifier)];
-  // TODO: Attach associated object.
+  [FWFFinalizer attachToInstance:instance withIdentifier:instanceIdentifier callback:self.deallocCallback];
 }
 @end
