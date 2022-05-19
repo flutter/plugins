@@ -153,14 +153,14 @@ final class GoogleMapController
   }
 
   private static void postFrameCallback(Runnable f) {
-    Choreographer.getInstance().postFrameCallback(
-      new Choreographer.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-          f.run();
-        }
-      }
-    );
+    Choreographer.getInstance()
+        .postFrameCallback(
+            new Choreographer.FrameCallback() {
+              @Override
+              public void doFrame(long frameTimeNanos) {
+                f.run();
+              }
+            });
   }
 
   @Override
@@ -272,16 +272,19 @@ final class GoogleMapController
           // To workaround this limitation, wait two frames.
           // This ensures that at least the frame budget (16.66ms at 60hz) have passed since the
           // drawing operation was issued.
-          googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-              postFrameCallback(() -> {
-                postFrameCallback(() -> {
-                  mapView.invalidate();
-                });
+          googleMap.setOnMapLoadedCallback(
+              new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                  postFrameCallback(
+                      () -> {
+                        postFrameCallback(
+                            () -> {
+                              mapView.invalidate();
+                            });
+                      });
+                }
               });
-            }
-          });
 
           result.success(null);
           break;
