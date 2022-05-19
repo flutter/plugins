@@ -2,6 +2,7 @@
 
 * Updates tests to use a mock platform instead of relying on default
   method channel implementation internals.
+* Removes example workaround to build for arm64 iOS simulators.
 
 ## 5.3.1
 
