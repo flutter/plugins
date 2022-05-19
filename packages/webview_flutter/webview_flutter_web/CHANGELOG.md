@@ -1,6 +1,7 @@
-## 0.1.0+4
+## 0.1.1
 
 * Fixes unreliable encoding of HTML to the iframe element.
+* Adds JavascriptChannels and running Javascript support only for loading Html as a string.
 
 ## 0.1.0+3
 
