@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Choreographer;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -151,6 +152,17 @@ final class GoogleMapController
     updateInitialTileOverlays();
   }
 
+  private static void postFrameCallback(Runnable f) {
+    Choreographer.getInstance().postFrameCallback(
+      new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+          f.run();
+        }
+      }
+    );
+  }
+
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     switch (call.method) {
@@ -250,6 +262,27 @@ final class GoogleMapController
           markersController.changeMarkers(markersToChange);
           List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers(markerIdsToRemove);
+
+          // gmscore GL renderer uses a TextureView.
+          // Android platform views that are displayed as a texture after Flutter v3.0.0.
+          // require that the view hierarchy is notified after all drawing operations have been flushed.
+          // Since the GL renderer doesn't use standard Android views, and instead uses GL directly,
+          // we notify the view hierarchy by invalidating the view.
+          // Unfortunately, when OnMapLoadedCallback is fired, the texture may not have been updated yet.
+          // To workaround this limitation, wait two frames.
+          // This ensures that at least the frame budget (16.66ms at 60hz) have passed since the
+          // drawing operation was issued.
+          googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+              postFrameCallback(() -> {
+                postFrameCallback(() -> {
+                  mapView.invalidate();
+                });
+              });
+            }
+          });
+
           result.success(null);
           break;
         }

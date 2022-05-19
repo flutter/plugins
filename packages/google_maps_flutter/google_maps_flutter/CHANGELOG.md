@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.6
 
+* Fixes issue in Flutter v3.0.0 where markers aren't updated.
 * Fixes iOS native unit tests on M1 devices.
 * Minor fixes for new analysis options.
 
