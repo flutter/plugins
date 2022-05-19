@@ -430,10 +430,8 @@ void main() {
 
     test('buying non consumable, should be able to purchase multiple quantity of one product', () async {
       final List<PurchaseDetails> details = <PurchaseDetails>[];
-      final Completer<List<PurchaseDetails>> completer =
-      Completer<List<PurchaseDetails>>();
-      final Stream<List<PurchaseDetails>> stream =
-          iapStoreKitPlatform.purchaseStream;
+      final Completer<List<PurchaseDetails>> completer = Completer<List<PurchaseDetails>>();
+      final Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
       late StreamSubscription<List<PurchaseDetails>> subscription;
       subscription = stream.listen((List<PurchaseDetails> purchaseDetailsList) {
         details.addAll(purchaseDetailsList);
@@ -445,11 +443,12 @@ void main() {
           }
         }
       });
+      final AppStoreProductDetails productDetails = AppStoreProductDetails.fromSKProduct(dummyProductWrapper);
       final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
-          productDetails:
-          AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          productDetails: productDetails,
           quantity: 5,
-          applicationUserName: 'appName');
+          applicationUserName: 'appName'
+      );
       await iapStoreKitPlatform.buyNonConsumable(
           purchaseParam: purchaseParam
       );
@@ -459,10 +458,8 @@ void main() {
 
     test('buying consumable, should be able to purchase multiple quantity of one product', () async {
       final List<PurchaseDetails> details = <PurchaseDetails>[];
-      final Completer<List<PurchaseDetails>> completer =
-      Completer<List<PurchaseDetails>>();
-      final Stream<List<PurchaseDetails>> stream =
-          iapStoreKitPlatform.purchaseStream;
+      final Completer<List<PurchaseDetails>> completer = Completer<List<PurchaseDetails>>();
+      final Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
       late StreamSubscription<List<PurchaseDetails>> subscription;
       subscription = stream.listen((List<PurchaseDetails> purchaseDetailsList) {
         details.addAll(purchaseDetailsList);
@@ -474,11 +471,12 @@ void main() {
           }
         }
       });
+      final AppStoreProductDetails productDetails = AppStoreProductDetails.fromSKProduct(dummyProductWrapper);
       final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
-          productDetails:
-          AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          productDetails: productDetails,
           quantity: 5,
-          applicationUserName: 'appName');
+          applicationUserName: 'appName'
+      );
       await iapStoreKitPlatform.buyConsumable(
           purchaseParam: purchaseParam
       );
