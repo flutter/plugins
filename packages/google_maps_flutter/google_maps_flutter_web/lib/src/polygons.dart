@@ -8,7 +8,7 @@ part of google_maps_flutter_web;
 class PolygonsController extends GeometryController {
   /// Initializes the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   PolygonsController({
-    required StreamController<MapEvent<Object>> stream,
+    required StreamController<MapEvent<Object?>> stream,
   })  : _streamController = stream,
         _polygonIdToController = <PolygonId, PolygonController>{};
 
@@ -16,7 +16,7 @@ class PolygonsController extends GeometryController {
   final Map<PolygonId, PolygonController> _polygonIdToController;
 
   // The stream over which polygons broadcast events
-  final StreamController<MapEvent<Object>> _streamController;
+  final StreamController<MapEvent<Object?>> _streamController;
 
   /// Returns the cache of [PolygonController]s. Test only.
   @visibleForTesting

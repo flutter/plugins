@@ -29,11 +29,11 @@ void main() {
   });
 
   group('CirclesController', () {
-    late StreamController<MapEvent<Object>> events;
+    late StreamController<MapEvent<Object?>> events;
     late CirclesController controller;
 
     setUp(() {
-      events = StreamController<MapEvent<Object>>();
+      events = StreamController<MapEvent<Object?>>();
       controller = CirclesController(stream: events);
       controller.bindToMap(123, map);
     });
@@ -115,11 +115,11 @@ void main() {
   });
 
   group('PolygonsController', () {
-    late StreamController<MapEvent<Object>> events;
+    late StreamController<MapEvent<Object?>> events;
     late PolygonsController controller;
 
     setUp(() {
-      events = StreamController<MapEvent<Object>>();
+      events = StreamController<MapEvent<Object?>>();
       controller = PolygonsController(stream: events);
       controller.bindToMap(123, map);
     });
@@ -284,11 +284,11 @@ void main() {
   });
 
   group('PolylinesController', () {
-    late StreamController<MapEvent<Object>> events;
+    late StreamController<MapEvent<Object?>> events;
     late PolylinesController controller;
 
     setUp(() {
-      events = StreamController<MapEvent<Object>>();
+      events = StreamController<MapEvent<Object?>>();
       controller = PolylinesController(stream: events);
       controller.bindToMap(123, map);
     });

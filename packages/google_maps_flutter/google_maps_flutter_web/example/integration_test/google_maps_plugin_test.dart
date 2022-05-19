@@ -338,9 +338,9 @@ void main() {
     // Verify all event streams are filtered correctly from the main one...
     group('Event Streams', () {
       const int mapId = 0;
-      late StreamController<MapEvent<Object>> streamController;
+      late StreamController<MapEvent<Object?>> streamController;
       setUp(() {
-        streamController = StreamController<MapEvent<Object>>.broadcast();
+        streamController = StreamController<MapEvent<Object?>>.broadcast();
         when(controller.events)
             .thenAnswer((Invocation realInvocation) => streamController.stream);
         plugin.debugSetMapById(<int, GoogleMapController>{mapId: controller});
@@ -348,7 +348,7 @@ void main() {
 
       // Dispatches a few events in the global streamController, and expects *only* the passed event to be there.
       Future<void> _testStreamFiltering(
-          Stream<MapEvent<Object>> stream, MapEvent<Object> event) async {
+          Stream<MapEvent<Object?>> stream, MapEvent<Object?> event) async {
         Timer.run(() {
           streamController.add(_OtherMapEvent(mapId));
           streamController.add(event);
@@ -356,7 +356,7 @@ void main() {
           streamController.close();
         });
 
-        final List<MapEvent<Object>> events = await stream.toList();
+        final List<MapEvent<Object?>> events = await stream.toList();
 
         expect(events.length, 1);
         expect(events[0], event);
@@ -368,7 +368,7 @@ void main() {
 
         final Stream<CameraMoveStartedEvent> stream = plugin.onCameraMoveStarted(mapId: mapId);
 
-        await _testStreamFiltering(stream as Stream<MapEvent<Object>>, event as MapEvent<Object>);
+        await _testStreamFiltering(stream, event);
       });
       testWidgets('onCameraMoveStarted', (WidgetTester tester) async {
         final CameraMoveEvent event = CameraMoveEvent(
@@ -387,7 +387,7 @@ void main() {
 
         final Stream<CameraIdleEvent> stream = plugin.onCameraIdle(mapId: mapId);
 
-        await _testStreamFiltering(stream as Stream<MapEvent<Object>>, event as MapEvent<Object>);
+        await _testStreamFiltering(stream, event);
       });
       // Marker events
       testWidgets('onMarkerTap', (WidgetTester tester) async {
@@ -465,19 +465,19 @@ void main() {
 
         final Stream<MapTapEvent> stream = plugin.onTap(mapId: mapId);
 
-        await _testStreamFiltering(stream as Stream<MapEvent<Object>>, event as MapEvent<Object>);
+        await _testStreamFiltering(stream, event);
       });
       testWidgets('onLongPress', (WidgetTester tester) async {
         final MapLongPressEvent event = MapLongPressEvent(mapId, const LatLng(43.3608, -5.8425));
 
         final Stream<MapLongPressEvent> stream = plugin.onLongPress(mapId: mapId);
 
-        await _testStreamFiltering(stream as Stream<MapEvent<Object>>, event as MapEvent<Object>);
+        await _testStreamFiltering(stream, event);
       });
     });
   });
 }
 
-class _OtherMapEvent extends MapEvent<Object> {
-  _OtherMapEvent(int mapId) : super(mapId, mapId);
+class _OtherMapEvent extends MapEvent<Object?> {
+  _OtherMapEvent(int mapId) : super(mapId, null);
 }

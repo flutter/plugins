@@ -34,7 +34,7 @@ void main() {
   group('GoogleMapController', () {
     const int mapId = 33930;
     late GoogleMapController controller;
-    late StreamController<MapEvent<Object>> stream;
+    late StreamController<MapEvent<Object?>> stream;
 
     // Creates a controller with the default mapId and stream controller, and any `options` needed.
     GoogleMapController _createController({
@@ -59,7 +59,7 @@ void main() {
     }
 
     setUp(() {
-      stream = StreamController<MapEvent<Object>>.broadcast();
+      stream = StreamController<MapEvent<Object?>>.broadcast();
     });
 
     group('construct/dispose', () {
@@ -219,7 +219,7 @@ void main() {
         controller.init();
 
         // Trigger events on the map, and verify they've been broadcast to the stream
-        final Stream<MapEvent<Object>> capturedEvents = stream.stream.take(5);
+        final Stream<MapEvent<Object?>> capturedEvents = stream.stream.take(5);
 
         gmaps.Event.trigger(
             map, 'click', <Object>[gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
@@ -228,7 +228,7 @@ void main() {
         gmaps.Event.trigger(map, 'bounds_changed', <Object>[]); // Causes 2 events
         gmaps.Event.trigger(map, 'idle', <Object>[]);
 
-        final List<MapEvent<Object>> events = await capturedEvents.toList();
+        final List<MapEvent<Object?>> events = await capturedEvents.toList();
 
         expect(events[0], isA<MapTapEvent>());
         expect(events[1], isA<MapLongPressEvent>());

@@ -14,7 +14,7 @@ class GoogleMapController {
   /// Initializes the GMap, and the sub-controllers related to it. Wires events.
   GoogleMapController({
     required int mapId,
-    required StreamController<MapEvent<Object>> streamController,
+    required StreamController<MapEvent<Object?>> streamController,
     required CameraPosition initialCameraPosition,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
@@ -88,14 +88,14 @@ class GoogleMapController {
   gmaps.GMap? _googleMap;
 
   // The StreamController used by this controller and the geometry ones.
-  final StreamController<MapEvent<Object>> _streamController;
+  final StreamController<MapEvent<Object?>> _streamController;
 
   /// The StreamController for the events of this Map. Only for integration testing.
   @visibleForTesting
-  StreamController<MapEvent<Object>> get stream => _streamController;
+  StreamController<MapEvent<Object?>> get stream => _streamController;
 
   /// The Stream over which this controller broadcasts events.
-  Stream<MapEvent<Object>> get events => _streamController.stream;
+  Stream<MapEvent<Object?>> get events => _streamController.stream;
 
   // Geometry controllers, for different features of the map.
   CirclesController? _circlesController;
@@ -189,19 +189,19 @@ class GoogleMapController {
     map.onClick.listen((gmaps.IconMouseEvent event) {
       assert(event.latLng != null);
       _streamController.add(
-        MapTapEvent(_mapId, _gmLatLngToLatLng(event.latLng!)) as MapEvent<Object>,
+        MapTapEvent(_mapId, _gmLatLngToLatLng(event.latLng!)),
       );
     });
     map.onRightclick.listen((gmaps.MapMouseEvent event) {
       assert(event.latLng != null);
       _streamController.add(
-        MapLongPressEvent(_mapId, _gmLatLngToLatLng(event.latLng!)) as MapEvent<Object>,
+        MapLongPressEvent(_mapId, _gmLatLngToLatLng(event.latLng!)),
       );
     });
     map.onBoundsChanged.listen((void _) {
       if (!_mapIsMoving) {
         _mapIsMoving = true;
-        _streamController.add(CameraMoveStartedEvent(_mapId) as MapEvent<Object>);
+        _streamController.add(CameraMoveStartedEvent(_mapId));
       }
       _streamController.add(
         CameraMoveEvent(_mapId, _gmViewportToCameraPosition(map)),
@@ -209,7 +209,7 @@ class GoogleMapController {
     });
     map.onIdle.listen((void _) {
       _mapIsMoving = false;
-      _streamController.add(CameraIdleEvent(_mapId) as MapEvent<Object>);
+      _streamController.add(CameraIdleEvent(_mapId));
     });
   }
 
@@ -425,7 +425,7 @@ class GoogleMapController {
 }
 
 /// A MapEvent event fired when a [mapId] on web is interactive.
-class WebMapReadyEvent extends MapEvent<Object> {
+class WebMapReadyEvent extends MapEvent<Object?> {
   /// Build a WebMapReady Event for the map represented by `mapId`.
-  WebMapReadyEvent(int mapId) : super(mapId, mapId);
+  WebMapReadyEvent(int mapId) : super(mapId, null);
 }

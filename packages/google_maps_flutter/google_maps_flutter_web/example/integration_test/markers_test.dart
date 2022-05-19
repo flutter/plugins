@@ -21,12 +21,12 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('MarkersController', () {
-    late StreamController<MapEvent<Object>> events;
+    late StreamController<MapEvent<Object?>> events;
     late MarkersController controller;
     late gmaps.GMap map;
 
     setUp(() {
-      events = StreamController<MapEvent<Object>>();
+      events = StreamController<MapEvent<Object?>>();
       controller = MarkersController(stream: events);
       map = gmaps.GMap(html.DivElement());
       controller.bindToMap(123, map);
@@ -212,7 +212,7 @@ void main() {
 
       content?.click();
 
-      final MapEvent<Object> event = await events.stream.first;
+      final MapEvent<Object?> event = await events.stream.first;
 
       expect(event, isA<InfoWindowTapEvent>());
       expect((event as InfoWindowTapEvent).value, equals(const MarkerId('1')));

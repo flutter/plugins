@@ -24,7 +24,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   // Convenience getter for a stream of events filtered by their mapId.
-  Stream<MapEvent<Object>> _events(int mapId) => _map(mapId).events;
+  Stream<MapEvent<Object?>> _events(int mapId) => _map(mapId).events;
 
   // Convenience getter for a map controller by its mapId.
   GoogleMapController _map(int mapId) {
@@ -307,8 +307,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       return _mapById[creationId]!.widget!;
     }
 
-    final StreamController<MapEvent<Object>> controller =
-        StreamController<MapEvent<Object>>.broadcast();
+    final StreamController<MapEvent<Object?>> controller =
+        StreamController<MapEvent<Object?>>.broadcast();
 
     final GoogleMapController mapController = GoogleMapController(
       initialCameraPosition: initialCameraPosition,

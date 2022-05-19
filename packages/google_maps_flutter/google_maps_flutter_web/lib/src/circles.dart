@@ -8,7 +8,7 @@ part of google_maps_flutter_web;
 class CirclesController extends GeometryController {
   /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   CirclesController({
-    required StreamController<MapEvent<Object>> stream,
+    required StreamController<MapEvent<Object?>> stream,
   })  : _streamController = stream,
         _circleIdToController = <CircleId, CircleController>{};
 
@@ -16,7 +16,7 @@ class CirclesController extends GeometryController {
   final Map<CircleId, CircleController> _circleIdToController;
 
   // The stream over which circles broadcast their events
-  final StreamController<MapEvent<Object>> _streamController;
+  final StreamController<MapEvent<Object?>> _streamController;
 
   /// Returns the cache of [CircleController]s. Test only.
   @visibleForTesting
