@@ -6,67 +6,76 @@
 
 @interface FWFInstanceManager ()
 @property dispatch_queue_t lockQueue;
-@property NSMapTable<NSNumber *, NSObject *> *identifiersToInstances;
-@property NSMapTable<NSObject *, NSNumber *> *instancesToIdentifiers;
+@property NSMapTable<NSObject *, NSNumber *> *identifiers;
+@property NSMapTable<NSNumber *, NSObject *> *weakInstances;
+@property NSMapTable<NSNumber *, NSObject *> *strongInstances;
 @end
 
 @implementation FWFInstanceManager
 - (instancetype)init {
   if (self) {
     _lockQueue = dispatch_queue_create("FWFInstanceManager", DISPATCH_QUEUE_SERIAL);
-    _identifiersToInstances = [NSMapTable strongToStrongObjectsMapTable];
-    _instancesToIdentifiers = [NSMapTable strongToStrongObjectsMapTable];
+    _identifiers = [NSMapTable weakToStrongObjectsMapTable];
+    _weakInstances = [NSMapTable strongToWeakObjectsMapTable];
+    _strongInstances = [NSMapTable strongToStrongObjectsMapTable];
   }
   return self;
 }
 
-- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier {
-  NSAssert(instance && instanceIdentifier >= 0,
-           @"Instance must be nonnull and identifier must be >= 0.");
+- (void)addFlutterCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier {
+  NSParameterAssert(instance);
+  NSParameterAssert(instanceIdentifier >= 0);
   dispatch_async(_lockQueue, ^{
-    [self.instancesToIdentifiers setObject:@(instanceIdentifier) forKey:instance];
-    [self.identifiersToInstances setObject:instance forKey:@(instanceIdentifier)];
+   [self addInstance:instance withIdentifier:instanceIdentifier];
   });
 }
 
-- (nullable NSObject *)removeInstanceWithIdentifier:(long)instanceIdentifier {
+- (void)addHostCreatedInstance:(nonnull NSObject *)instance {
+  NSParameterAssert(instance);
+  dispatch_async(_lockQueue, ^{
+    long identifier;
+    do {
+      identifier = arc4random_uniform(65536) + 65536;
+      // TODO: dfg
+    } while (YES);
+    [self addInstance:instance withIdentifier:identifier];
+  });
+}
+
+- (nullable NSObject *)removeStrongReferenceWithIdentifier:(long)instanceIdentifier {
   NSObject *__block instance = nil;
   dispatch_sync(_lockQueue, ^{
-    instance = [self.identifiersToInstances objectForKey:@(instanceIdentifier)];
+    instance = [self.strongInstances objectForKey:@(instanceIdentifier)];
     if (instance) {
-      [self.identifiersToInstances removeObjectForKey:@(instanceIdentifier)];
-      [self.instancesToIdentifiers removeObjectForKey:instance];
+      [self.strongInstances removeObjectForKey:@(instanceIdentifier)];
     }
   });
   return instance;
-}
-
-- (long)removeInstance:(NSObject *)instance {
-  NSAssert(instance, @"Instance must be nonnull.");
-  NSNumber *__block identifierNumber = nil;
-  dispatch_sync(_lockQueue, ^{
-    identifierNumber = [self.instancesToIdentifiers objectForKey:instance];
-    if (identifierNumber) {
-      [self.identifiersToInstances removeObjectForKey:identifierNumber];
-      [self.instancesToIdentifiers removeObjectForKey:instance];
-    }
-  });
-  return identifierNumber ? identifierNumber.longValue : NSNotFound;
 }
 
 - (nullable NSObject *)instanceForIdentifier:(long)instanceIdentifier {
   NSObject *__block instance = nil;
   dispatch_sync(_lockQueue, ^{
-    instance = [self.identifiersToInstances objectForKey:@(instanceIdentifier)];
+    instance = [self.weakInstances objectForKey:@(instanceIdentifier)];
   });
   return instance;
 }
 
-- (long)identifierForInstance:(nonnull NSObject *)instance {
+- (long)identifierForInstance:(nonnull NSObject *)instance identifierWillBePassedToFlutter:(BOOL)willBePassed {
   NSNumber *__block identifierNumber = nil;
   dispatch_sync(_lockQueue, ^{
-    identifierNumber = [self.instancesToIdentifiers objectForKey:instance];
+    identifierNumber = [self.identifiers objectForKey:instance];
+    if (identifierNumber && willBePassed) {
+      [self.strongInstances setObject:instance forKey:identifierNumber];
+    }
   });
   return identifierNumber ? identifierNumber.longValue : NSNotFound;
+}
+
+- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier {
+  [self.identifiers setObject:@(instanceIdentifier) forKey:instance];
+  [self.weakInstances setObject:instance forKey:@(instanceIdentifier)];
+  [self.strongInstances setObject:instance forKey:@(instanceIdentifier)];
+  // TODO: Attach associated object.
 }
 @end

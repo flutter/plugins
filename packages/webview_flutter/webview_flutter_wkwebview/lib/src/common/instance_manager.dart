@@ -41,7 +41,12 @@ mixin Copyable {
 // minimum dart version is bumped to 2.17.
 class InstanceManager {
   /// Constructs an [InstanceManager].
-  InstanceManager({required this.onWeakReferenceRemoved});
+  InstanceManager({required void Function(int) onWeakReferenceRemoved}) {
+    this.onWeakReferenceRemoved = (int identifier) {
+      _weakInstances.remove(identifier);
+      onWeakReferenceRemoved(identifier);
+    };
+  }
 
   // Expando is used because it doesn't prevent its keys from becoming
   // inaccessible. This allows the manager to efficiently retrieve an identifier
@@ -60,7 +65,7 @@ class InstanceManager {
 
   /// Called when a weak referenced instance is removed by [removeWeakReference]
   /// or becomes inaccessible.
-  final void Function(int) onWeakReferenceRemoved;
+  late final void Function(int) onWeakReferenceRemoved;
 
   /// Adds a new instance that was instantiated by Flutter.
   ///
@@ -93,7 +98,6 @@ class InstanceManager {
     }
 
     _identifiers[instance] = null;
-    _weakInstances.remove(identifier);
     //_finalizer.detach(instance);
     onWeakReferenceRemoved(identifier);
 
@@ -183,7 +187,8 @@ class InstanceManager {
 
   /// Whether this manager contains the given [identifier].
   bool containsIdentifier(int identifier) {
-    return getInstance(identifier, returnedInstanceMayBeUsed: false) != null;
+    return _weakInstances.containsKey(identifier) ||
+        _strongInstances.containsKey(identifier);
   }
 
   // Identifiers are generated randomly to avoid collisions with objects
@@ -191,8 +196,8 @@ class InstanceManager {
   int _generateNewIdentifier() {
     late int identifier;
     do {
-      // Max must be in range 0 < max ≤ 2^32.
-      identifier = Random().nextInt(4294967296);
+      // Max must be in range 0 < max ≤ 2^16.
+      identifier = Random().nextInt(65536);
     } while (containsIdentifier(identifier));
     return identifier;
   }
