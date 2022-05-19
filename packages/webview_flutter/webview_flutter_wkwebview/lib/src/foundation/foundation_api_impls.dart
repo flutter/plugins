@@ -37,6 +37,8 @@ Iterable<NSKeyValueObservingOptionsEnumData>
 }
 
 /// Handles initialization of Flutter APIs for the Foundation library.
+// TODO(bparrishMines): Add NSObjectFlutterApiImpl once the callback methods
+// are added.
 class FoundationFlutterApis {
   /// Constructs a [FoundationFlutterApis].
   @visibleForTesting
@@ -116,15 +118,6 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
       instanceManager.getIdentifier(observer)!,
       keyPath,
     );
-  }
-
-  /// Calls [dispose] with the ids of the provided object instances.
-  Future<void> disposeForInstances(NSObject instance) async {
-    final int? identifier = instanceManager.removeWeakReference(instance);
-    if (identifier != null) {
-      instanceManager.removeStrongReference(identifier);
-      await dispose(identifier);
-    }
   }
 
   @override

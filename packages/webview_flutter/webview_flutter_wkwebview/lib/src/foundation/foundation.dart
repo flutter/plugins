@@ -275,7 +275,14 @@ class NSObject with Copyable {
 
   /// Release the reference to the Objective-C object.
   static void dispose(NSObject instance) {
-    instance._api.instanceManager.removeWeakReference(instance);
+    final int? identifier = instance._api.instanceManager.removeWeakReference(
+      instance,
+    );
+    // TODO(bparrishMines): Remove these line once InstanceManager uses
+    // Finalizers.
+    if (identifier != null) {
+      instance._api.instanceManager.removeStrongReference(identifier);
+    }
   }
 
   /// Informs the observing object when the value at the specified key path has changed.

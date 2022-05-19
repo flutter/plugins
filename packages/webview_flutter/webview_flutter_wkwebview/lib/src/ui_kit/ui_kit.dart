@@ -12,6 +12,10 @@ import '../foundation/foundation.dart';
 import '../web_kit/web_kit.dart';
 import 'ui_kit_api_impls.dart';
 
+// TODO(bparrishMines): All subclasses of NSObject need to pass their
+// InstanceManager and BinaryMessenger to its parent. They also need to
+// override copy();
+
 /// A view that allows the scrolling and zooming of its contained views.
 ///
 /// Wraps [UIScrollView](https://developer.apple.com/documentation/uikit/uiscrollview?language=objc).

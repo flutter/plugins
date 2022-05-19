@@ -11,7 +11,8 @@ import '../ui_kit/ui_kit.dart';
 import 'web_kit_api_impls.dart';
 
 // TODO(bparrishMines): All subclasses of NSObject need to pass their
-// InstanceManager and BinaryMessenger to its parent.
+// InstanceManager and BinaryMessenger to its parent. They also need to
+// override copy();
 
 /// Times at which to inject script content into a webpage.
 ///
@@ -603,29 +604,7 @@ class WKUIDelegate extends NSObject {
 @immutable
 class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
-  factory WKNavigationDelegate({
-    void Function(
-      WKWebView webView,
-      String? url,
-    )?
-        didFinishNavigation,
-    BinaryMessenger? binaryMessenger,
-    InstanceManager? instanceManager,
-  }) {
-    final WKNavigationDelegate delegate = WKNavigationDelegate._copy(
-      didFinishNavigation: didFinishNavigation,
-      binaryMessenger: binaryMessenger,
-      instanceManager: instanceManager,
-    );
-    delegate._navigationDelegateApi.createForInstances(
-      delegate,
-      didFinishNavigation,
-    );
-    return delegate;
-  }
-
-  // Doesn't create the Objective-C associated object.
-  WKNavigationDelegate._copy({
+  WKNavigationDelegate({
     this.didFinishNavigation,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -638,7 +617,26 @@ class WKNavigationDelegate extends NSObject {
           instanceManager: instanceManager,
         ) {
     WebKitFlutterApis.instance.ensureSetUp();
+    _navigationDelegateApi.createForInstances(this);
   }
+
+  // Constructs a WKNavigationDelegate with creating the associated Objective-C
+  // object.
+  //
+  // This should only be used by subclasses created by this library and for
+  // creating copies.
+  WKNavigationDelegate._implementation({
+    this.didFinishNavigation,
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+        super(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
 
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
 
@@ -690,7 +688,7 @@ class WKNavigationDelegate extends NSObject {
 
   @override
   Copyable copy() {
-    return WKNavigationDelegate._copy(
+    return WKNavigationDelegate._implementation(
       didFinishNavigation: didFinishNavigation,
       binaryMessenger: _navigationDelegateApi.binaryMessenger,
       instanceManager: _navigationDelegateApi.instanceManager,

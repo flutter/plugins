@@ -30,14 +30,12 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   Future<void> createFromWebViewForInstances(
     UIScrollView instance,
     WKWebView webView,
-  ) async {
+  ) {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createFromWebView(
-        instanceId,
-        instanceManager.getIdentifier(webView)!,
-      );
-    }
+    return createFromWebView(
+      instanceId,
+      instanceManager.getIdentifier(webView)!,
+    );
   }
 
   /// Calls [getContentOffset] with the ids of the provided object instances.
@@ -66,7 +64,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   Future<void> setContentOffsetForInstances(
     UIScrollView instance,
     Point<double> offset,
-  ) async {
+  ) {
     return setContentOffset(
       instanceManager.getIdentifier(instance)!,
       offset.x,
@@ -91,7 +89,7 @@ class UIViewHostApiImpl extends UIViewHostApi {
   Future<void> setBackgroundColorForInstances(
     UIView instance,
     Color? color,
-  ) async {
+  ) {
     return setBackgroundColor(
       instanceManager.getIdentifier(instance)!,
       color?.value,
@@ -102,7 +100,7 @@ class UIViewHostApiImpl extends UIViewHostApi {
   Future<void> setOpaqueForInstances(
     UIView instance,
     bool opaque,
-  ) async {
+  ) {
     return setOpaque(instanceManager.getIdentifier(instance)!, opaque);
   }
 }

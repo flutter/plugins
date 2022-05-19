@@ -236,14 +236,13 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   Future<void> createFromWebViewConfigurationForInstances(
     WKWebsiteDataStore instance,
     WKWebViewConfiguration configuration,
-  ) async {
+  ) {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createFromWebViewConfiguration(
-        instanceId,
-        instanceManager.getIdentifier(configuration)!,
-      );
-    }
+
+    return createFromWebViewConfiguration(
+      instanceId,
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [createDefaultDataStore] with the ids of the provided object instances.
@@ -251,9 +250,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
     WKWebsiteDataStore instance,
   ) async {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createDefaultDataStore(instanceId);
-    }
+    return createDefaultDataStore(instanceId);
   }
 
   /// Calls [removeDataOfTypes] with the ids of the provided object instances.
@@ -285,9 +282,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   /// Calls [create] with the ids of the provided object instances.
   Future<void> createForInstances(WKScriptMessageHandler instance) async {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+    return create(instanceId);
   }
 }
 
@@ -307,14 +302,12 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   Future<void> createFromWebViewConfigurationForInstances(
     WKPreferences instance,
     WKWebViewConfiguration configuration,
-  ) async {
+  ) {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createFromWebViewConfiguration(
-        instanceId,
-        instanceManager.getIdentifier(configuration)!,
-      );
-    }
+    return createFromWebViewConfiguration(
+      instanceId,
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [setJavaScriptEnabled] with the ids of the provided object instances.
@@ -345,14 +338,12 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   Future<void> createFromWebsiteDataStoreForInstances(
     WKHttpCookieStore instance,
     WKWebsiteDataStore dataStore,
-  ) async {
+  ) {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createFromWebsiteDataStore(
-        instanceId,
-        instanceManager.getIdentifier(dataStore)!,
-      );
-    }
+    return createFromWebsiteDataStore(
+      instanceId,
+      instanceManager.getIdentifier(dataStore)!,
+    );
   }
 
   /// Calls [setCookie] with the ids of the provided object instances.
@@ -386,12 +377,10 @@ class WKUserContentControllerHostApiImpl
     WKWebViewConfiguration configuration,
   ) async {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createFromWebViewConfiguration(
-        instanceId,
-        instanceManager.getIdentifier(configuration)!,
-      );
-    }
+    return createFromWebViewConfiguration(
+      instanceId,
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [addScriptMessageHandler] with the ids of the provided object instances.
@@ -459,11 +448,9 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKWebViewConfiguration instance) async {
+  Future<void> createForInstances(WKWebViewConfiguration instance) {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+    return create(instanceId);
   }
 
   /// Calls [createFromWebView] with the ids of the provided object instances.
@@ -472,12 +459,10 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     WKWebView webView,
   ) async {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await createFromWebView(
-        instanceId,
-        instanceManager.getIdentifier(webView)!,
-      );
-    }
+    return createFromWebView(
+      instanceId,
+      instanceManager.getIdentifier(webView)!,
+    );
   }
 
   /// Calls [setAllowsInlineMediaPlayback] with the ids of the provided object instances.
@@ -518,9 +503,7 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   /// Calls [create] with the ids of the provided object instances.
   Future<void> createForInstances(WKUIDelegate instance) async {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+    return create(instanceId);
   }
 }
 
@@ -544,14 +527,9 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(
-    WKNavigationDelegate instance,
-    void Function(WKWebView webView, String? url)? didFinishNavigation,
-  ) async {
+  Future<void> createForInstances(WKNavigationDelegate instance) async {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+    return create(instanceId);
   }
 
   @override
@@ -619,19 +597,19 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   Future<void> createForInstances(
     WKWebView instance,
     WKWebViewConfiguration configuration,
-  ) async {
+  ) {
     final int instanceId = instanceManager.addFlutterCreatedInstance(instance);
-    if (instanceId != null) {
-      await create(
-        instanceId,
-        instanceManager.getIdentifier(configuration)!,
-      );
-    }
+    return create(
+      instanceId,
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [loadRequest] with the ids of the provided object instances.
   Future<void> loadRequestForInstances(
-      WKWebView webView, NSUrlRequest request) {
+    WKWebView webView,
+    NSUrlRequest request,
+  ) {
     return loadRequest(
       instanceManager.getIdentifier(webView)!,
       request.toNSUrlRequestData(),

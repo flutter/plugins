@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.17
-
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
 /// An immutable object that can provide functional copies of themselves.
+///
+/// All implementers are expected to be immutable as defined by the annotation.
 @immutable
 mixin Copyable {
   /// Instantiates and returns a functionally identical object to oneself.
   ///
-  /// This method should only ever be called outside of tests by
+  /// Outside of tests, this method should only ever be called by
   /// [InstanceManager].
   ///
-  /// Subclasses should always override their parent's implementation and all
-  /// implementers should be immutable.
+  /// Subclasses should always override their parent's implementation of this
+  /// method.
   @protected
   Copyable copy();
 }
@@ -37,24 +37,26 @@ mixin Copyable {
 /// strong reference is added as a weak reference with the same identifier. This
 /// prevents a scenario where the weak referenced instance was released and then
 /// later returned by the host platform.
+// TODO(bparrishMines): Uncomment code with Finalizers and WeakReferences once
+// minimum dart version is bumped to 2.17.
 class InstanceManager {
   /// Constructs an [InstanceManager].
-  InstanceManager({required this.onWeakReferenceRemoved})
-      : _finalizer = Finalizer<int>(onWeakReferenceRemoved);
+  InstanceManager({required this.onWeakReferenceRemoved});
 
   // Expando is used because it doesn't prevent its keys from becoming
   // inaccessible. This allows the manager to efficiently retrieve an identifier
-  // of an object without holding a strong reference to the object.
+  // of an instance without holding a strong reference to that instance.
   //
   // It also doesn't use `==` to search for identifiers, which would lead to an
   // infinite loop when comparing an object to its copy. (i.e. which was caused
   // by calling instanceManager.getInstanceId() inside of `==` while this was a
   // HashMap).
   final Expando<int> _identifiers = Expando<int>();
-  final Map<int, WeakReference<Copyable>> _weakInstances =
-      <int, WeakReference<Copyable>>{};
+  final Map<int, Copyable> _weakInstances = <int, Copyable>{};
+  // final Map<int, WeakReference<Copyable>> _weakInstances =
+  //     <int, WeakReference<Copyable>>{};
   final Map<int, Copyable> _strongInstances = <int, Copyable>{};
-  final Finalizer<int> _finalizer;
+  // final Finalizer<int> _finalizer;
 
   /// Called when a weak referenced instance is removed by [removeWeakReference]
   /// or becomes inaccessible.
@@ -92,7 +94,7 @@ class InstanceManager {
 
     _identifiers[instance] = null;
     _weakInstances.remove(identifier);
-    _finalizer.detach(instance);
+    //_finalizer.detach(instance);
     onWeakReferenceRemoved(identifier);
 
     return identifier;
@@ -114,28 +116,30 @@ class InstanceManager {
   /// Retrieve the instance associated with identifier.
   ///
   /// The value returned is chosen in this order:
-  /// 1. A weak reference asscociated with identifier.
-  /// 2. [returnedInstanceMayBeUsed] is set to true and the only instance
-  /// associated with identifier is a strong referenced instance, a copy of the
-  /// instance is added as a weak reference with the same instance id. Returning
-  /// the newly created weak reference copy.
-  /// 3. [returnedInstanceMayBeUsed] is set to false and the only instance
-  /// associated with identifier is a strong reference. The strong reference is
-  /// returned.
+  /// 1. A weakly referenced instance asscociated with identifier.
+  /// 2. When [returnedInstanceMayBeUsed] is set to `true` and the only instance
+  /// associated with identifier is a strongly referenced instance, a copy of the
+  /// instance is added as a weakly reference with the same instance id. Returning
+  /// the newly created weakly referenced copy.
+  /// 3. When [returnedInstanceMayBeUsed] is set to `false` and the only
+  /// instance associated with identifier has a strong reference. The strongly
+  /// referenced instance is returned.
   /// 4. If no instance is associated with identifier, returns null.
   T? getInstance<T extends Copyable>(
     int identifier, {
     required bool returnedInstanceMayBeUsed,
   }) {
-    final Copyable? weakInstance = _weakInstances[identifier]?.target;
+    // final Copyable? weakInstance = _weakInstances[identifier]?.target;
+    final Copyable? weakInstance = _weakInstances[identifier];
 
     if (weakInstance == null) {
       final Copyable? strongInstance = _strongInstances[identifier];
       if (strongInstance != null && returnedInstanceMayBeUsed) {
         final Copyable copy = strongInstance.copy();
         _identifiers[copy] = identifier;
-        _weakInstances[identifier] = WeakReference<Copyable>(copy);
-        _finalizer.attach(copy, identifier, detach: copy);
+        _weakInstances[identifier] = copy;
+        // _weakInstances[identifier] = WeakReference<Copyable>(copy);
+        // _finalizer.attach(copy, identifier, detach: copy);
         return copy as T;
       }
       return strongInstance as T?;
@@ -144,7 +148,7 @@ class InstanceManager {
     return weakInstance as T;
   }
 
-  /// Retrieve the identifier paired with instance.
+  /// Retrieve the identifier associated with instance.
   int? getIdentifier(Copyable instance) {
     return _identifiers[instance];
   }
@@ -159,15 +163,16 @@ class InstanceManager {
   ///
   /// Returns the randomly generated id of the [instance] added.
   void addHostCreatedInstance(Copyable instance, int identifier) {
-    assert(getInstance(identifier, returnedInstanceMayBeUsed: false) == null);
+    assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
     _addInstanceWithIdentifier(instance, identifier);
   }
 
   void _addInstanceWithIdentifier(Copyable instance, int identifier) {
     _identifiers[instance] = identifier;
-    _weakInstances[identifier] = WeakReference<Copyable>(instance);
-    _finalizer.attach(instance, identifier, detach: instance);
+    _weakInstances[identifier] = instance;
+    // _weakInstances[identifier] = WeakReference<Copyable>(instance);
+    // _finalizer.attach(instance, identifier, detach: instance);
 
     final Copyable copy = instance.copy();
     _identifiers[copy] = identifier;
@@ -176,12 +181,19 @@ class InstanceManager {
     assert(instance == copy);
   }
 
+  /// Whether this manager contains the given [identifier].
+  bool containsIdentifier(int identifier) {
+    return getInstance(identifier, returnedInstanceMayBeUsed: false) != null;
+  }
+
+  // Identifiers are generated randomly to avoid collisions with objects
+  // created simultaneously by the host platform.
   int _generateNewIdentifier() {
     late int identifier;
     do {
       // Max must be in range 0 < max ≤ 2^32.
       identifier = Random().nextInt(4294967296);
-    } while (getInstance(identifier, returnedInstanceMayBeUsed: false) != null);
+    } while (containsIdentifier(identifier));
     return identifier;
   }
 }
