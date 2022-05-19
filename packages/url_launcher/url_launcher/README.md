@@ -67,20 +67,15 @@ element must be added to your manifest as a child of the root element.
 Example:
 ``` xml
 <queries>
-  <!-- If your app checks for call support -->
-  <intent>
-    <action android:name="android.intent.action.DIAL" />
-    <data android:scheme="tel" />
-  </intent>
   <!-- If your app checks for SMS support -->
   <intent>
-    <action android:name="android.intent.action.SENDTO" />
-    <data android:scheme="smsto" />
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="sms" />
   </intent>
-  <!-- If your app checks for email support -->
+  <!-- If your app checks for call support -->
   <intent>
-    <action android:name="android.intent.action.SEND" />
-    <data android:mimeType="*/*" />
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="tel" />
   </intent>
 </queries>
 ```
