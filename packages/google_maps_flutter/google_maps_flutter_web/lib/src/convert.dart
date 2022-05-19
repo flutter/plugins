@@ -63,10 +63,10 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, Object?> rawOptions) {
   }
 
   if (rawOptions['minMaxZoomPreference'] != null) {
-    final List<num> minMaxPreference = rawOptions['minMaxZoomPreference']! as List<num>;
+    final List<Object?> minMaxPreference = rawOptions['minMaxZoomPreference']! as List<Object?>;
     options
-      ..minZoom = minMaxPreference[0]
-      ..maxZoom = minMaxPreference[1];
+      ..minZoom = minMaxPreference[0] as num?
+      ..maxZoom = minMaxPreference[1] as num?;
   }
 
   if (rawOptions['cameraTargetBounds'] != null) {
@@ -135,7 +135,7 @@ List<gmaps.MapTypeStyle> _mapStyles(String? mapStyleJson) {
           if (value is Map && _isJsonMapStyle(value as Map<String, Object?>)) {
             List<Object?> stylers = <Object?>[];
             if (value['stylers'] != null) {
-              stylers = (value['stylers']! as List<Object>).map<Object?>((Object e) => jsify(e)).toList();
+              stylers = (value['stylers']! as List<Object?>).map<Object?>((Object? e) => e != null ? jsify(e) : null).toList();
             }
             return gmaps.MapTypeStyle()
               ..elementType = value['elementType'] as String?
@@ -232,7 +232,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
   Marker marker,
   gmaps.Marker? currentMarker,
 ) {
-  final List<Object> iconConfig = marker.icon.toJson() as List<Object>;
+  final List<Object?> iconConfig = marker.icon.toJson() as List<Object?>;
   gmaps.Icon? icon;
 
   if (iconConfig != null) {
@@ -242,19 +242,19 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
       // already encoded in the iconConfig[1]
 
       icon = gmaps.Icon()
-        ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1] as String);
+        ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]! as String);
 
       // iconConfig[3] may contain the [width, height] of the image, if passed!
       if (iconConfig.length >= 4 && iconConfig[3] != null) {
-        final List<num?> rawIconSize = iconConfig[3] as List<num?>;
-        final gmaps.Size size = gmaps.Size(rawIconSize[0], rawIconSize[1]);
+        final List<Object?> rawIconSize = iconConfig[3]! as List<Object?>;
+        final gmaps.Size size = gmaps.Size(rawIconSize[0] as num?, rawIconSize[1] as num?);
         icon
           ..size = size
           ..scaledSize = size;
       }
     } else if (iconConfig[0] == 'fromBytes') {
       // Grab the bytes, and put them into a blob
-      final List<int> bytes = iconConfig[1] as List<int>;
+      final List<int> bytes = iconConfig[1]! as List<int>;
       final Blob blob = Blob(<dynamic>[bytes]); // Let the browser figure out the encoding
       icon = gmaps.Icon()..url = Url.createObjectUrlFromBlob(blob);
     }
