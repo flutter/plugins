@@ -133,6 +133,43 @@ final class GoogleMapController
     return trackCameraPosition ? googleMap.getCameraPosition() : null;
   }
 
+  /**
+   * Invalidates the map view after the map has finished rendering.
+   *
+   * <p>gmscore GL renderer uses a {@link android.view.TextureView}. Android platform views that are
+   * displayed as a texture after Flutter v3.0.0. require that the view hierarchy is notified after
+   * all drawing operations have been flushed.
+   *
+   * <p>Since the GL renderer doesn't use standard Android views, and instead uses GL directly, we
+   * notify the view hierarchy by invalidating the view.
+   *
+   * <p>Unfortunately, when {@link GoogleMap.OnMapLoadedCallback} is fired, the texture may not have
+   * been updated yet.
+   *
+   * <p>To workaround this limitation, wait two frames. This ensures that at least the frame budget
+   * (16.66ms at 60hz) have passed since the drawing operation was issued.
+   */
+  private void invalidateMapIfNeeded() {
+    if (googleMap == null) {
+      return;
+    }
+    googleMap.setOnMapLoadedCallback(
+        new GoogleMap.OnMapLoadedCallback() {
+          @Override
+          public void onMapLoaded() {
+            postFrameCallback(
+                () -> {
+                  postFrameCallback(
+                      () -> {
+                        if (mapView != null) {
+                          mapView.invalidate();
+                        }
+                      });
+                });
+          }
+        });
+  }
+
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
@@ -268,34 +305,9 @@ final class GoogleMapController
           markersController.changeMarkers(markersToChange);
           List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers(markerIdsToRemove);
-
-          // gmscore GL renderer uses a TextureView.
-          // Android platform views that are displayed as a texture after Flutter v3.0.0.
-          // require that the view hierarchy is notified after all drawing operations have been flushed.
-          // Since the GL renderer doesn't use standard Android views, and instead uses GL directly,
-          // we notify the view hierarchy by invalidating the view.
-          // Unfortunately, when OnMapLoadedCallback is fired, the texture may not have been updated yet.
-          // To workaround this limitation, wait two frames.
-          // This ensures that at least the frame budget (16.66ms at 60hz) have passed since the
-          // drawing operation was issued.
-          if (googleMap != null) {
-            googleMap.setOnMapLoadedCallback(
-                new GoogleMap.OnMapLoadedCallback() {
-                  @Override
-                  public void onMapLoaded() {
-                    postFrameCallback(
-                        () -> {
-                          postFrameCallback(
-                              () -> {
-                                if (mapView != null) {
-                                  mapView.invalidate();
-                                }
-                              });
-                        });
-                  }
-                });
-          }
-
+          // Workaround for https://github.com/flutter/flutter/issues/103686.
+          // After Flutter 3.0.0, markers aren't updated until the next view invalidation.
+          invalidateMapIfNeeded();
           result.success(null);
           break;
         }
