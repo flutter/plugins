@@ -308,7 +308,7 @@ task:
 
 # ARM macOS tasks.
 task:
-  << : *MACOS_TEMPLATE
+  << : *MACOS_ARM_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
     ### iOS+macOS tasks ***
