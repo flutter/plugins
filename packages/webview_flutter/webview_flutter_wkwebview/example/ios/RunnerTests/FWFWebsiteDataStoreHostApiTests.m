@@ -16,14 +16,14 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  FWFWebsiteDataStoreHostApiImpl *hostApi =
+  FWFWebsiteDataStoreHostApiImpl *hostAPI =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init]
                               withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  [hostAPI createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
   WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([dataStore isKindOfClass:[WKWebsiteDataStore class]]);
   XCTAssertNil(error);
@@ -33,11 +33,11 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  FWFWebsiteDataStoreHostApiImpl *hostApi =
+  FWFWebsiteDataStoreHostApiImpl *hostAPI =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createDefaultDataStoreWithIdentifier:@0 error:&error];
+  [hostAPI createDefaultDataStoreWithIdentifier:@0 error:&error];
   WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[instanceManager instanceForIdentifier:0];
   XCTAssertEqualObjects(dataStore, [WKWebsiteDataStore defaultDataStore]);
   XCTAssertNil(error);
@@ -61,12 +61,12 @@
       }];
   [instanceManager addFlutterCreatedInstance:mockWebsiteDataStore withIdentifier:0];
 
-  FWFWebsiteDataStoreHostApiImpl *hostApi =
+  FWFWebsiteDataStoreHostApiImpl *hostAPI =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSNumber __block *returnValue;
   FlutterError *__block blockError;
-  [hostApi removeDataFromDataStoreWithIdentifier:@0
+  [hostAPI removeDataFromDataStoreWithIdentifier:@0
                                          ofTypes:@[
                                            [FWFWKWebsiteDataTypeEnumData
                                                makeWithValue:FWFWKWebsiteDataTypeEnumLocalStorage]

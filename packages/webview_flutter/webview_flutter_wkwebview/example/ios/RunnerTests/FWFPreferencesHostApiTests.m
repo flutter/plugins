@@ -16,14 +16,14 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  FWFPreferencesHostApiImpl *hostApi =
+  FWFPreferencesHostApiImpl *hostAPI =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init]
                               withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  [hostAPI createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
   WKPreferences *preferences = (WKPreferences *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([preferences isKindOfClass:[WKPreferences class]]);
   XCTAssertNil(error);
@@ -37,11 +37,11 @@
       }];
   [instanceManager addFlutterCreatedInstance:mockPreferences withIdentifier:0];
 
-  FWFPreferencesHostApiImpl *hostApi =
+  FWFPreferencesHostApiImpl *hostAPI =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0 isEnabled:@YES error:&error];
+  [hostAPI setJavaScriptEnabledForPreferencesWithIdentifier:@0 isEnabled:@YES error:&error];
   OCMVerify([mockPreferences setJavaScriptEnabled:YES]);
   XCTAssertNil(error);
 }

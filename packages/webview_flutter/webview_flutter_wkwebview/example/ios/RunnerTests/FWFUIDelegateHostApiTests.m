@@ -16,11 +16,11 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  FWFUIDelegateHostApiImpl *hostApi =
+  FWFUIDelegateHostApiImpl *hostAPI =
       [[FWFUIDelegateHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   FWFUIDelegate *delegate = (FWFUIDelegate *)[instanceManager instanceForIdentifier:0];
 
   XCTAssertTrue([delegate conformsToProtocol:@protocol(WKUIDelegate)]);

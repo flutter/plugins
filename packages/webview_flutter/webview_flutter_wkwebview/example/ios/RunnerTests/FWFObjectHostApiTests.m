@@ -20,14 +20,14 @@
       }];
   [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
 
-  FWFObjectHostApiImpl *hostApi =
+  FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
   [instanceManager addFlutterCreatedInstance:observerObject withIdentifier:1];
 
   FlutterError *error;
-  [hostApi
+  [hostAPI
       addObserverForObjectWithIdentifier:@0
                       observerIdentifier:@1
                                  keyPath:@"myKey"
@@ -54,14 +54,14 @@
       }];
   [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
 
-  FWFObjectHostApiImpl *hostApi =
+  FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
   [instanceManager addFlutterCreatedInstance:observerObject withIdentifier:1];
 
   FlutterError *error;
-  [hostApi removeObserverForObjectWithIdentifier:@0
+  [hostAPI removeObserverForObjectWithIdentifier:@0
                               observerIdentifier:@1
                                          keyPath:@"myKey"
                                            error:&error];
@@ -77,11 +77,11 @@
       }];
   [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
 
-  FWFObjectHostApiImpl *hostApi =
+  FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi disposeObjectWithIdentifier:@0 error:&error];
+  [hostAPI disposeObjectWithIdentifier:@0 error:&error];
   // Only the strong reference is removed, so the weak reference will remain until object is set to
   // nil.
   object = nil;

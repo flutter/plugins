@@ -16,11 +16,11 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  FWFWebViewConfigurationHostApiImpl *hostApi =
+  FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   WKWebViewConfiguration *configuration =
       (WKWebViewConfiguration *)[instanceManager instanceForIdentifier:0];
   XCTAssertTrue([configuration isKindOfClass:[WKWebViewConfiguration class]]);
@@ -31,7 +31,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  FWFWebViewConfigurationHostApiImpl *hostApi =
+  FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
@@ -39,7 +39,7 @@
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
+  [hostAPI createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
   WKWebViewConfiguration *configuration =
       (WKWebViewConfiguration *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([configuration isKindOfClass:[WKWebViewConfiguration class]]);
@@ -54,11 +54,11 @@
       }];
   [instanceManager addFlutterCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
-  FWFWebViewConfigurationHostApiImpl *hostApi =
+  FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
+  [hostAPI setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
                                                             isAllowed:@NO
                                                                 error:&error];
   OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback:NO]);
@@ -73,11 +73,11 @@
       }];
   [instanceManager addFlutterCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
-  FWFWebViewConfigurationHostApiImpl *hostApi =
+  FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi
+  [hostAPI
       setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
                                                            forTypes:@[
                                                              [FWFWKAudiovisualMediaTypeEnumData

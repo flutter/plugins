@@ -43,10 +43,10 @@
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
   id mockDelegate = OCMPartialMock(navigationDelegate);
 
-  FWFNavigationDelegateFlutterApiImpl *flutterApi = [[FWFNavigationDelegateFlutterApiImpl alloc]
+  FWFNavigationDelegateFlutterApiImpl *flutterAPI = [[FWFNavigationDelegateFlutterApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
-  id mockFlutterApi = OCMPartialMock(flutterApi);
+  id mockFlutterApi = OCMPartialMock(flutterAPI);
 
   OCMStub([mockDelegate navigationDelegateApi]).andReturn(mockFlutterApi);
 
