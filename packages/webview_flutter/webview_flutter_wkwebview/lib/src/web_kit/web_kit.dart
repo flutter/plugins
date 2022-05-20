@@ -623,8 +623,8 @@ class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate] without creating the associated
   /// Objective-C object.
   ///
-  /// This should only be used by subclasses created by this library or by an
-  /// InstanceManager creating copies.
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
   WKNavigationDelegate.detached({
     this.didFinishNavigation,
     BinaryMessenger? binaryMessenger,
