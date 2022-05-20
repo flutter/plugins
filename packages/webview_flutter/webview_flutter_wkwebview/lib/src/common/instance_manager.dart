@@ -89,7 +89,7 @@ class InstanceManager {
   /// Returns the identifier associated with the removed instance. Otherwise,
   /// `null` if the instance was not found in this manager.
   ///
-  /// This does not remove the the strong referenced instance associtated with
+  /// This does not remove the the strong referenced instance associated with
   /// [instance]. This can be done with [removeStrongReference].
   int? removeWeakReference(Copyable instance) {
     final int? identifier = getIdentifier(instance);

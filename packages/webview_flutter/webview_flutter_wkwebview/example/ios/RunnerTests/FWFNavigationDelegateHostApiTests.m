@@ -8,31 +8,6 @@
 
 #import <OCMock/OCMock.h>
 
-// Used to test that a FlutterBinaryMessenger with a strong reference to a host api won't
-// lead to a circular reference.
-@interface FWFTestMessenger : NSObject <FlutterBinaryMessenger>
-@property(strong, nullable) id hostAPI;
-@end
-
-@implementation FWFTestMessenger
-- (void)cleanUpConnection:(FlutterBinaryMessengerConnection)connection {
-}
-
-- (void)sendOnChannel:(nonnull NSString *)channel message:(NSData *_Nullable)message {
-}
-
-- (void)sendOnChannel:(nonnull NSString *)channel
-              message:(NSData *_Nullable)message
-          binaryReply:(FlutterBinaryReply _Nullable)callback {
-}
-
-- (FlutterBinaryMessengerConnection)setMessageHandlerOnChannel:(nonnull NSString *)channel
-                                          binaryMessageHandler:
-                                              (FlutterBinaryMessageHandler _Nullable)handler {
-  return 0;
-}
-@end
-
 @interface FWFNavigationDelegateHostApiTests : XCTestCase
 @end
 

@@ -72,7 +72,6 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
 /**
  * Retrieves the identifier paired with an instance.
  *
- *
  * @param instance An instance that may be stored in the manager.
  * @param willBePassed Whether the identifier will be passed to Dart. If YES, the strong reference
  * to `instance` will be recreated and will need to be removed again by

@@ -5,7 +5,7 @@
 #import "FWFInstanceManager.h"
 #import <objc/runtime.h>
 
-// Attach to an object to track when an object is deallocated.
+// Attaches to an object to receive a callback when the object is deallocated.
 @interface FWFFinalizer : NSObject
 @property(nonatomic) long identifier;
 // Callbacks are no longer made once FWFInstanceManager is inaccessible.
