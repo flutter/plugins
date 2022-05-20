@@ -6,17 +6,17 @@ part of google_maps_flutter_web;
 
 /// This class manages a set of [PolygonController]s associated to a [GoogleMapController].
 class PolygonsController extends GeometryController {
+  /// Initializes the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
+  PolygonsController({
+    required StreamController<MapEvent<Object?>> stream,
+  })  : _streamController = stream,
+        _polygonIdToController = <PolygonId, PolygonController>{};
+
   // A cache of [PolygonController]s indexed by their [PolygonId].
   final Map<PolygonId, PolygonController> _polygonIdToController;
 
   // The stream over which polygons broadcast events
-  StreamController<MapEvent> _streamController;
-
-  /// Initializes the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
-  PolygonsController({
-    required StreamController<MapEvent> stream,
-  })  : _streamController = stream,
-        _polygonIdToController = Map<PolygonId, PolygonController>();
+  final StreamController<MapEvent<Object?>> _streamController;
 
   /// Returns the cache of [PolygonController]s. Test only.
   @visibleForTesting
@@ -27,9 +27,7 @@ class PolygonsController extends GeometryController {
   /// Wraps each Polygon into its corresponding [PolygonController].
   void addPolygons(Set<Polygon> polygonsToAdd) {
     if (polygonsToAdd != null) {
-      polygonsToAdd.forEach((polygon) {
-        _addPolygon(polygon);
-      });
+      polygonsToAdd.forEach(_addPolygon);
     }
   }
 
@@ -38,10 +36,11 @@ class PolygonsController extends GeometryController {
       return;
     }
 
-    final populationOptions = _polygonOptionsFromPolygon(googleMap, polygon);
-    gmaps.Polygon gmPolygon = gmaps.Polygon(populationOptions);
-    gmPolygon.map = googleMap;
-    PolygonController controller = PolygonController(
+    final gmaps.PolygonOptions polygonOptions =
+        _polygonOptionsFromPolygon(googleMap, polygon);
+    final gmaps.Polygon gmPolygon = gmaps.Polygon(polygonOptions)
+      ..map = googleMap;
+    final PolygonController controller = PolygonController(
         polygon: gmPolygon,
         consumeTapEvents: polygon.consumeTapEvents,
         onTap: () {
@@ -53,26 +52,27 @@ class PolygonsController extends GeometryController {
   /// Updates a set of [Polygon] objects with new options.
   void changePolygons(Set<Polygon> polygonsToChange) {
     if (polygonsToChange != null) {
-      polygonsToChange.forEach((polygonToChange) {
-        _changePolygon(polygonToChange);
-      });
+      polygonsToChange.forEach(_changePolygon);
     }
   }
 
   void _changePolygon(Polygon polygon) {
-    PolygonController? polygonController =
+    final PolygonController? polygonController =
         _polygonIdToController[polygon.polygonId];
     polygonController?.update(_polygonOptionsFromPolygon(googleMap, polygon));
   }
 
   /// Removes a set of [PolygonId]s from the cache.
   void removePolygons(Set<PolygonId> polygonIdsToRemove) {
-    polygonIdsToRemove.forEach((polygonId) {
-      final PolygonController? polygonController =
-          _polygonIdToController[polygonId];
-      polygonController?.remove();
-      _polygonIdToController.remove(polygonId);
-    });
+    polygonIdsToRemove.forEach(_removePolygon);
+  }
+
+  // Removes a polygon and its controller by its [PolygonId].
+  void _removePolygon(PolygonId polygonId) {
+    final PolygonController? polygonController =
+        _polygonIdToController[polygonId];
+    polygonController?.remove();
+    _polygonIdToController.remove(polygonId);
   }
 
   // Handle internal events

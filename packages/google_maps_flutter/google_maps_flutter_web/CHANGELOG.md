@@ -1,3 +1,11 @@
+## 0.3.3
+
+* Removes custom `analysis_options.yaml` (and fixes code to comply with newest rules).
+* Updates `package:google_maps` dependency to latest (`^6.1.0`).
+* Ensures that `convert.dart` sanitizes user-created HTML before passing it to the
+  Maps JS SDK with `sanitizeHtml` from `package:sanitize_html`.
+  [More info](https://pub.dev/documentation/sanitize_html/latest/sanitize_html/sanitizeHtml.html).
+
 ## 0.3.2+2
 
 * Removes unnecessary imports.
