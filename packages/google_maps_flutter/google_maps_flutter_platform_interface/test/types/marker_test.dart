@@ -30,9 +30,10 @@ void main() {
       expect(marker.onDragEnd, equals(null));
     });
     test('constructor alpha is >= 0.0 and <= 1.0', () {
-      initWithAlpha(double alpha) {
+      void initWithAlpha(double alpha) {
         Marker(markerId: const MarkerId('ABC123'), alpha: alpha);
       }
+
       expect(() => initWithAlpha(-0.5), throwsAssertionError);
       expect(() => initWithAlpha(0.0), isNot(throwsAssertionError));
       expect(() => initWithAlpha(0.5), isNot(throwsAssertionError));
@@ -110,7 +111,7 @@ void main() {
       const double testRotationParam = 100;
       final bool testVisibleParam = !marker.visible;
       const double testZIndexParam = 100;
-      final List<String> log = [];
+      final List<String> log = <String>[];
 
       final Marker copy = marker.copyWith(
         alphaParam: testAlphaParam,

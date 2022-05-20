@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable, objectRuntimeType;
 
 /// Represents a point coordinate in the [GoogleMap]'s view.
 ///
@@ -32,11 +32,11 @@ class ScreenCoordinate {
   }
 
   @override
-  String toString() => '$runtimeType($x, $y)';
+  String toString() => '${objectRuntimeType(this, 'ScreenCoordinate')}($x, $y)';
 
   @override
-  bool operator ==(Object o) {
-    return o is ScreenCoordinate && o.x == x && o.y == y;
+  bool operator ==(Object other) {
+    return other is ScreenCoordinate && other.x == x && other.y == y;
   }
 
   @override

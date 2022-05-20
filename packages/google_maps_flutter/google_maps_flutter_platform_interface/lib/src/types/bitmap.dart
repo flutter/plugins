@@ -20,23 +20,25 @@ class BitmapDescriptor {
   /// The inverse of .toJson.
   // This is needed in Web to re-hydrate BitmapDescriptors that have been
   // transformed to JSON for transport.
-  // TODO(https://github.com/flutter/flutter/issues/70330): Clean this up.
+  // TODO(stuartmorgan): Clean this up. See
+  // https://github.com/flutter/flutter/issues/70330
   BitmapDescriptor.fromJson(Object json) : _json = json {
     assert(_json is List<dynamic>);
-    final List jsonList = json as List<dynamic>;
+    final List<dynamic> jsonList = json as List<dynamic>;
     assert(_validTypes.contains(jsonList[0]));
     switch (jsonList[0]) {
       case _defaultMarker:
         assert(jsonList.length <= 2);
         if (jsonList.length == 2) {
           assert(jsonList[1] is num);
-          assert(0 <= jsonList[1] && jsonList[1] < 360);
+          final num secondElement = jsonList[1] as num;
+          assert(0 <= secondElement && secondElement < 360);
         }
         break;
       case _fromBytes:
         assert(jsonList.length == 2);
         assert(jsonList[1] != null && jsonList[1] is List<int>);
-        assert((jsonList[1] as List).isNotEmpty);
+        assert((jsonList[1] as List<int>).isNotEmpty);
         break;
       case _fromAsset:
         assert(jsonList.length <= 3);
@@ -53,8 +55,8 @@ class BitmapDescriptor {
         assert((jsonList[1] as String).isNotEmpty);
         assert(jsonList[2] != null && jsonList[2] is double);
         if (jsonList.length == 4) {
-          assert(jsonList[3] != null && jsonList[3] is List);
-          assert((jsonList[3] as List).length == 2);
+          assert(jsonList[3] != null && jsonList[3] is List<dynamic>);
+          assert((jsonList[3] as List<dynamic>).length == 2);
         }
         break;
       default:
@@ -67,7 +69,7 @@ class BitmapDescriptor {
   static const String _fromAssetImage = 'fromAssetImage';
   static const String _fromBytes = 'fromBytes';
 
-  static const Set<String> _validTypes = {
+  static const Set<String> _validTypes = <String>{
     _defaultMarker,
     _fromAsset,
     _fromAssetImage,
@@ -148,7 +150,7 @@ class BitmapDescriptor {
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
       if (kIsWeb && size != null)
-        [
+        <Object>[
           size.width,
           size.height,
         ],
