@@ -30,10 +30,12 @@ void main() {
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
       const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
-      final Set<TestMapsObject> previous =
-          <TestMapsObject>{to1, to2, to3};
-      final Set<TestMapsObject> current =
-          <TestMapsObject>{to2, to3Changed, to4};
+      final Set<TestMapsObject> previous = <TestMapsObject>{to1, to2, to3};
+      final Set<TestMapsObject> current = <TestMapsObject>{
+        to2,
+        to3Changed,
+        to4
+      };
       final TestMapsObjectUpdate updates =
           TestMapsObjectUpdate.from(previous, current);
 
@@ -46,8 +48,7 @@ void main() {
       final Set<TestMapsObject> toAdd = <TestMapsObject>{to4};
       expect(updates.objectsToAdd, toAdd);
 
-      final Set<TestMapsObject> toChange =
-          <TestMapsObject>{to3Changed};
+      final Set<TestMapsObject> toChange = <TestMapsObject>{to3Changed};
       expect(updates.objectsToChange, toChange);
     });
 
@@ -62,10 +63,12 @@ void main() {
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
       const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
-      final Set<TestMapsObject> previous =
-          <TestMapsObject>{to1, to2, to3};
-      final Set<TestMapsObject> current =
-          <TestMapsObject>{to2, to3Changed, to4};
+      final Set<TestMapsObject> previous = <TestMapsObject>{to1, to2, to3};
+      final Set<TestMapsObject> current = <TestMapsObject>{
+        to2,
+        to3Changed,
+        to4
+      };
       final TestMapsObjectUpdate updates =
           TestMapsObjectUpdate.from(previous, current);
 
@@ -90,12 +93,17 @@ void main() {
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
       const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
-      final Set<TestMapsObject> previous =
-          <TestMapsObject>{to1, to2, to3};
-      final Set<TestMapsObject> current1 =
-          <TestMapsObject>{to2, to3Changed, to4};
-      final Set<TestMapsObject> current2 =
-          <TestMapsObject>{to2, to3Changed, to4};
+      final Set<TestMapsObject> previous = <TestMapsObject>{to1, to2, to3};
+      final Set<TestMapsObject> current1 = <TestMapsObject>{
+        to2,
+        to3Changed,
+        to4
+      };
+      final Set<TestMapsObject> current2 = <TestMapsObject>{
+        to2,
+        to3Changed,
+        to4
+      };
       final Set<TestMapsObject> current3 = <TestMapsObject>{to2, to4};
       final TestMapsObjectUpdate updates1 =
           TestMapsObjectUpdate.from(previous, current1);
@@ -118,10 +126,12 @@ void main() {
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
       const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
-      final Set<TestMapsObject> previous =
-          <TestMapsObject>{to1, to2, to3};
-      final Set<TestMapsObject> current =
-          <TestMapsObject>{to2, to3Changed, to4};
+      final Set<TestMapsObject> previous = <TestMapsObject>{to1, to2, to3};
+      final Set<TestMapsObject> current = <TestMapsObject>{
+        to2,
+        to3Changed,
+        to4
+      };
       final TestMapsObjectUpdate updates =
           TestMapsObjectUpdate.from(previous, current);
       expect(
@@ -143,10 +153,12 @@ void main() {
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
       const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
-      final Set<TestMapsObject> previous =
-          <TestMapsObject>{to1, to2, to3};
-      final Set<TestMapsObject> current =
-          <TestMapsObject>{to2, to3Changed, to4};
+      final Set<TestMapsObject> previous = <TestMapsObject>{to1, to2, to3};
+      final Set<TestMapsObject> current = <TestMapsObject>{
+        to2,
+        to3Changed,
+        to4
+      };
       final TestMapsObjectUpdate updates =
           TestMapsObjectUpdate.from(previous, current);
       expect(

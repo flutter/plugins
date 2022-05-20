@@ -49,7 +49,8 @@ void main() {
           platform.buildViewWithTextDirection(
             0,
             (_) {},
-            initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
+            initialCameraPosition:
+                const CameraPosition(target: LatLng(0.0, 0.0)),
             textDirection: TextDirection.ltr,
           ),
           isA<Text>(),
