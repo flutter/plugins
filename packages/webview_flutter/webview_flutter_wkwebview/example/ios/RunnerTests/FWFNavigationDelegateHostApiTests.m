@@ -81,23 +81,4 @@
                                                                      URL:@"https://flutter.dev/"
                                                               completion:OCMOCK_ANY]);
 }
-
-- (void)testInstanceCanBeReleasedWhenInstanceManagerIsReleased {
-  FWFTestMessenger *testMessenger = [[FWFTestMessenger alloc] init];
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
-  FWFNavigationDelegateHostApiImpl *hostAPI =
-      [[FWFNavigationDelegateHostApiImpl alloc] initWithBinaryMessenger:testMessenger
-                                                        instanceManager:instanceManager];
-
-  testMessenger.hostAPI = hostAPI;
-
-  FlutterError *error;
-  [hostAPI createWithIdentifier:@0 error:&error];
-  FWFNavigationDelegate __weak *navigationDelegate =
-      (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
-
-  XCTAssertNotNil(navigationDelegate);
-  instanceManager = nil;
-  XCTAssertNil(navigationDelegate);
-}
 @end

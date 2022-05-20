@@ -9,32 +9,22 @@
 @end
 
 @implementation FWFInstanceManagerTests
-//- (void)testAddInstance {
-//  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-//  NSObject *object = [[NSObject alloc] init];
-//
-//  [instanceManager addInstance:object withIdentifier:5];
-//  XCTAssertEqualObjects([instanceManager instanceForIdentifier:5], object);
-//  XCTAssertEqual([instanceManager identifierForInstance:object], 5);
-//}
-//
-//- (void)testRemoveInstance {
-//  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-//  NSObject *object = [[NSObject alloc] init];
-//  [instanceManager addInstance:object withIdentifier:5];
-//
-//  [instanceManager removeInstance:object];
-//  XCTAssertNil([instanceManager instanceForIdentifier:5]);
-//  XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
-//}
-//
-//- (void)testRemoveInstanceWithIdentifier {
-//  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-//  NSObject *object = [[NSObject alloc] init];
-//  [instanceManager addInstance:object withIdentifier:5];
-//
-//  [instanceManager removeInstanceWithIdentifier:5];
-//  XCTAssertNil([instanceManager instanceForIdentifier:5]);
-//  XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
-//}
+- (void)testAddFlutterCreatedInstance {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  NSObject *object = [[NSObject alloc] init];
+
+  [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
+  XCTAssertEqualObjects([instanceManager instanceForIdentifier:0], object);
+  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO], 0);
+}
+
+- (void)testAddHostIdentifier {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  NSObject *object = [[NSObject alloc] init];
+  [instanceManager addHostCreatedInstance:object];
+
+  long identifier = [instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO];
+  XCTAssertNotEqual(identifier, NSNotFound);
+  XCTAssertEqualObjects([instanceManager instanceForIdentifier:identifier], object);
+}
 @end

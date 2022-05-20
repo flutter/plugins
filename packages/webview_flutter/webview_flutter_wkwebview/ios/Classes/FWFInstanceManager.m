@@ -76,7 +76,7 @@
       // created simultaneously by the Flutter.
       // Value must be >= 2^16.
       identifier = arc4random_uniform(65536) + 65536;
-    } while ([self.weakInstances objectForKey:@(identifier)] || [self.strongInstances objectForKey:@(identifier)]);
+    } while ([self.weakInstances objectForKey:@(identifier)]);
     [self addInstance:instance withIdentifier:identifier];
   });
   return identifier;
