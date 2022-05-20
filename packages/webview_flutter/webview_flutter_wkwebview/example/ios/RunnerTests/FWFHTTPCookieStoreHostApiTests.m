@@ -13,7 +13,9 @@
 
 @implementation FWFHTTPCookieStoreHostApiTests
 - (void)testCreateFromWebsiteDataStoreWithIdentifier API_AVAILABLE(ios(11.0)) {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFHTTPCookieStoreHostApiImpl *hostApi =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -31,7 +33,9 @@
 - (void)testSetCookie API_AVAILABLE(ios(11.0)) {
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockHttpCookieStore withIdentifier:0];
 
   FWFHTTPCookieStoreHostApiImpl *hostApi =

@@ -33,7 +33,8 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addFlutterCreatedInstance:configuration.preferences withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:configuration.preferences
+                                   withIdentifier:instanceId.longValue];
 }
 
 - (void)setJavaScriptEnabledForPreferencesWithIdentifier:(nonnull NSNumber *)instanceId

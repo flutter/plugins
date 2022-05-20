@@ -13,11 +13,14 @@
 
 @implementation FWFUserContentControllerHostApiTests
 - (void)testCreateFromWebViewConfigurationWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFUserContentControllerHostApiImpl *hostApi =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init]
+                              withIdentifier:0];
 
   FlutterError *error;
   [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
@@ -31,7 +34,9 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
@@ -54,7 +59,9 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
@@ -70,7 +77,9 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
@@ -86,7 +95,9 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =
@@ -113,7 +124,9 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostApi =

@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^FWFOnDeallocCallback) (long identifier);
+typedef void (^FWFOnDeallocCallback)(long identifier);
 
 /**
  * Maintains instances used to communicate with the Dart objects that represent them in Flutter.
@@ -17,14 +17,14 @@ typedef void (^FWFOnDeallocCallback) (long identifier);
  * is removed with `removeStrongReferenceWithIdentifier:` and the weak reference is deallocated,
  * the `deallocCallback` is made with the instance's identifier. However, if the strong reference is
  * removed and then the identifier is retrieved with the intention to pass the identifier to Dart
- * (e.g. calling  `identifierForInstance:identifierWillBePassedToFlutter:` with `identifierWillBePassedToFlutter`
- * set to YES), the strong reference to the instance is recreated. The strong reference will then need to be
- * removed manually again.
+ * (e.g. calling  `identifierForInstance:identifierWillBePassedToFlutter:` with
+ * `identifierWillBePassedToFlutter` set to YES), the strong reference to the instance is recreated.
+ * The strong reference will then need to be removed manually again.
  *
  * Accessing and inserting to an InstanceManager is thread safe.
  */
 @interface FWFInstanceManager : NSObject
-@property (readonly) FWFOnDeallocCallback deallocCallback;
+@property(readonly) FWFOnDeallocCallback deallocCallback;
 - (instancetype)initWithDeallocCallback:(FWFOnDeallocCallback)callback;
 // TODO(bparrishMines): Pairs should not be able to be overwritten and this feature
 // should be replaced with a call to clear the manager in the event of a hot restart.
@@ -49,7 +49,8 @@ typedef void (^FWFOnDeallocCallback) (long identifier);
 - (long)addHostCreatedInstance:(nonnull NSObject *)instance;
 
 /**
- * Removes `instanceIdentifier` and its associated strongly referenced instance, if present, from the manager.
+ * Removes `instanceIdentifier` and its associated strongly referenced instance, if present, from
+ * the manager.
  *
  * @param instanceIdentifier The identifier paired to an instance.
  *
@@ -74,11 +75,29 @@ typedef void (^FWFOnDeallocCallback) (long identifier);
  *
  * @param instance An instance that may be stored in the manager.
  * @param willBePassed Whether the identifier will be passed to Dart. If YES, the strong reference
- * to `instance` will be recreated and will need to be removed again by `removeStrongReferenceWithIdentifier:`.
+ * to `instance` will be recreated and will need to be removed again by
+ * `removeStrongReferenceWithIdentifier:`.
  *
- * @return The  identifer associated with `instance` if the manager contains the value, otherwise NSNotFound.
+ * @return The  identifer associated with `instance` if the manager contains the value, otherwise
+ * NSNotFound.
  */
-- (long)identifierForInstance:(nonnull NSObject *)instance identifierWillBePassedToFlutter:(BOOL)willBePassed;
+- (long)identifierForInstance:(nonnull NSObject *)instance
+    identifierWillBePassedToFlutter:(BOOL)willBePassed;
+
+/**
+ * The number of instances stored as a strong reference.
+ *
+ * Added for debuggingpurposes.
+ */
+- (NSUInteger)strongInstanceCount;
+
+/**
+ * The number of instances stored as a weak reference.
+ *
+ * Added for debugging purposes. NSMapTables that store keys or objects as weak reference will be
+ * reclaimed nondeterministically.
+ */
+- (NSUInteger)weakInstanceCount;
 @end
 
 NS_ASSUME_NONNULL_END

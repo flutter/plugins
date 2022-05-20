@@ -30,7 +30,7 @@
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
   [self.instanceManager addFlutterCreatedInstance:configuration.userContentController
-                     withIdentifier:instanceId.longValue];
+                                   withIdentifier:instanceId.longValue];
 }
 
 - (void)addScriptMessageHandlerForControllerWithIdentifier:(nonnull NSNumber *)instanceId

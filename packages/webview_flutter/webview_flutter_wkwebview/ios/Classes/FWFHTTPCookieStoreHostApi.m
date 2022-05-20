@@ -32,7 +32,7 @@
     WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
         instanceForIdentifier:websiteDataStoreInstanceId.longValue];
     [self.instanceManager addFlutterCreatedInstance:dataStore.httpCookieStore
-                       withIdentifier:instanceId.longValue];
+                                     withIdentifier:instanceId.longValue];
   } else {
     *error = [FlutterError
         errorWithCode:@"FWFUnsupportedVersionError"

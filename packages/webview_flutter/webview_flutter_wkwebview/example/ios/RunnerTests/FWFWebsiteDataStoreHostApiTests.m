@@ -13,11 +13,14 @@
 
 @implementation FWFWebsiteDataStoreHostApiTests
 - (void)testCreateFromWebViewConfigurationWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFWebsiteDataStoreHostApiImpl *hostApi =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init]
+                              withIdentifier:0];
 
   FlutterError *error;
   [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
@@ -27,7 +30,9 @@
 }
 
 - (void)testCreateDefaultDataStoreWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFWebsiteDataStoreHostApiImpl *hostApi =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -51,7 +56,9 @@
           modifiedSince:[NSDate dateWithTimeIntervalSince1970:45.0]
       completionHandler:([OCMArg invokeBlock])]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebsiteDataStore withIdentifier:0];
 
   FWFWebsiteDataStoreHostApiImpl *hostApi =

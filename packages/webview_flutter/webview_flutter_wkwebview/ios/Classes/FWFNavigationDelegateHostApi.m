@@ -27,12 +27,14 @@
                                webView:(WKWebView *)webView
                                    URL:(NSString *)URL {
   [self didFinishNavigationForDelegateWithIdentifier:@([self.instanceManager
-                                                         identifierForInstance:instance identifierWillBePassedToFlutter:YES])
+                                                                   identifierForInstance:instance
+                                                         identifierWillBePassedToFlutter:YES])
                                    webViewIdentifier:@([self.instanceManager
-                                                         identifierForInstance:webView identifierWillBePassedToFlutter:YES])
+                                                                   identifierForInstance:webView
+                                                         identifierWillBePassedToFlutter:YES])
                                                  URL:URL
                                           completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
+                                            NSAssert(!error, @"%@", error);
                                           }];
 }
 @end
@@ -81,6 +83,7 @@
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
-  [self.instanceManager addFlutterCreatedInstance:navigationDelegate withIdentifier:instanceId.longValue];
+  [self.instanceManager addFlutterCreatedInstance:navigationDelegate
+                                   withIdentifier:instanceId.longValue];
 }
 @end

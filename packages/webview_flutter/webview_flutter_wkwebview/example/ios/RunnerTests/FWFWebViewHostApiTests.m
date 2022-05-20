@@ -13,11 +13,14 @@
 
 @implementation FWFWebViewHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFWebViewHostApiImpl *hostApi =
       [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init]
+                              withIdentifier:0];
 
   FlutterError *error;
   [hostApi createWithIdentifier:@1 configurationIdentifier:@0 error:&error];
@@ -29,7 +32,9 @@
 - (void)testLoadRequest {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -54,7 +59,9 @@
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMReject([mockWebView loadRequest:OCMOCK_ANY]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -75,7 +82,9 @@
 - (void)testSetCustomUserAgent {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -91,7 +100,9 @@
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMStub([mockWebView URL]).andReturn([NSURL URLWithString:@"https://www.flutter.dev/"]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -107,7 +118,9 @@
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMStub([mockWebView canGoBack]).andReturn(YES);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -121,7 +134,9 @@
 - (void)testSetUIDelegate {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -139,7 +154,9 @@
 - (void)testSetNavigationDelegate {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -158,7 +175,9 @@
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMStub([mockWebView estimatedProgress]).andReturn(34.0);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -172,7 +191,9 @@
 - (void)testloadHTMLString {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -190,7 +211,9 @@
 - (void)testLoadFileURL {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -211,7 +234,9 @@
 - (void)testLoadFlutterAsset {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFAssetManager *mockAssetManager = OCMClassMock([FWFAssetManager class]);
@@ -240,7 +265,9 @@
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMStub([mockWebView canGoForward]).andReturn(NO);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -254,7 +281,9 @@
 - (void)testGoBack {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -269,7 +298,9 @@
 - (void)testGoForward {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -284,7 +315,9 @@
 - (void)testReload {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -300,7 +333,9 @@
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
   OCMStub([mockWebView title]).andReturn(@"myTitle");
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -314,7 +349,9 @@
 - (void)testSetAllowsBackForwardNavigationGestures {
   FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =
@@ -333,7 +370,9 @@
       evaluateJavaScript:@"runJavaScript"
        completionHandler:([OCMArg invokeBlockWithArgs:@"result", [NSNull null], nil])]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:0];
 
   FWFWebViewHostApiImpl *hostApi =

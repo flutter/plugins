@@ -10,21 +10,39 @@
 
 @implementation FWFInstanceManagerTests
 - (void)testAddFlutterCreatedInstance {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   NSObject *object = [[NSObject alloc] init];
 
   [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:0], object);
-  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO], 0);
+  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO],
+                 0);
 }
 
 - (void)testAddHostIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   NSObject *object = [[NSObject alloc] init];
   [instanceManager addHostCreatedInstance:object];
 
-  long identifier = [instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO];
+  long identifier = [instanceManager identifierForInstance:object
+                           identifierWillBePassedToFlutter:NO];
   XCTAssertNotEqual(identifier, NSNotFound);
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:identifier], object);
+}
+
+- (void)testRemoveStrongReferenceWithIdentifier {
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
+  NSObject *object = [[NSObject alloc] init];
+
+  [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
+
+  XCTAssertEqualObjects([instanceManager removeStrongReferenceWithIdentifier:0], object);
+  XCTAssertEqual([instanceManager strongInstanceCount], 0);
 }
 @end

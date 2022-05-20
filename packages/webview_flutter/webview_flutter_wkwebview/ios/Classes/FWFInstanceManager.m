@@ -7,15 +7,17 @@
 
 // Attach to an object to track when an object is deallocated.
 @interface FWFFinalizer : NSObject
-@property (nonatomic) long identifier;
+@property(nonatomic) long identifier;
 // Callbacks are no longer made once FWFInstanceManager is inaccessible.
-@property (nonatomic, weak) FWFOnDeallocCallback callback;
-+ (void)attachToInstance:(NSObject *)instance withIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback;
+@property(nonatomic, weak) FWFOnDeallocCallback callback;
++ (void)attachToInstance:(NSObject *)instance
+          withIdentifier:(long)identifier
+                callback:(FWFOnDeallocCallback)callback;
 + (void)detachFromInstance:(NSObject *)instance;
 @end
 
 @implementation FWFFinalizer
--(instancetype)initWithIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback {
+- (instancetype)initWithIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback {
   self = [self init];
   if (self) {
     _identifier = identifier;
@@ -24,16 +26,19 @@
   return self;
 }
 
-+ (void)attachToInstance:(NSObject *)instance withIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback {
++ (void)attachToInstance:(NSObject *)instance
+          withIdentifier:(long)identifier
+                callback:(FWFOnDeallocCallback)callback {
   FWFFinalizer *finalizer = [[FWFFinalizer alloc] initWithIdentifier:identifier callback:callback];
   objc_setAssociatedObject(instance, _cmd, finalizer, OBJC_ASSOCIATION_RETAIN);
 }
 
 + (void)detachFromInstance:(NSObject *)instance {
-  objc_setAssociatedObject(instance, @selector(attachToInstance:withIdentifier:callback:), nil, OBJC_ASSOCIATION_ASSIGN);
+  objc_setAssociatedObject(instance, @selector(attachToInstance:withIdentifier:callback:), nil,
+                           OBJC_ASSOCIATION_ASSIGN);
 }
 
--(void) dealloc {
+- (void)dealloc {
   self.callback(self.identifier);
 }
 @end
@@ -62,13 +67,13 @@
   NSParameterAssert(instance);
   NSParameterAssert(instanceIdentifier >= 0);
   dispatch_async(_lockQueue, ^{
-   [self addInstance:instance withIdentifier:instanceIdentifier];
+    [self addInstance:instance withIdentifier:instanceIdentifier];
   });
 }
 
 - (long)addHostCreatedInstance:(nonnull NSObject *)instance {
   NSParameterAssert(instance);
-  long identifier = NSNotFound;
+  long identifier = -1;
   dispatch_sync(_lockQueue, ^{
     long identifier;
     do {
@@ -101,7 +106,8 @@
   return instance;
 }
 
-- (long)identifierForInstance:(nonnull NSObject *)instance identifierWillBePassedToFlutter:(BOOL)willBePassed {
+- (long)identifierForInstance:(nonnull NSObject *)instance
+    identifierWillBePassedToFlutter:(BOOL)willBePassed {
   NSNumber *__block identifierNumber = nil;
   dispatch_sync(_lockQueue, ^{
     identifierNumber = [self.identifiers objectForKey:instance];
@@ -116,6 +122,24 @@
   [self.identifiers setObject:@(instanceIdentifier) forKey:instance];
   [self.weakInstances setObject:instance forKey:@(instanceIdentifier)];
   [self.strongInstances setObject:instance forKey:@(instanceIdentifier)];
-  [FWFFinalizer attachToInstance:instance withIdentifier:instanceIdentifier callback:self.deallocCallback];
+  [FWFFinalizer attachToInstance:instance
+                  withIdentifier:instanceIdentifier
+                        callback:self.deallocCallback];
+}
+
+- (NSUInteger)strongInstanceCount {
+  NSUInteger __block count = -1;
+  dispatch_sync(_lockQueue, ^{
+    count = self.strongInstances.count;
+  });
+  return count;
+}
+
+- (NSUInteger)weakInstanceCount {
+  NSUInteger __block count = -1;
+  dispatch_sync(_lockQueue, ^{
+    count = self.weakInstances.count;
+  });
+  return count;
 }
 @end

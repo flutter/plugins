@@ -15,7 +15,9 @@
 - (void)testAddObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
@@ -47,7 +49,9 @@
 - (void)testRemoveObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
@@ -68,7 +72,9 @@
 - (void)testDispose {
   NSObject *object = [[NSObject alloc] init];
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
 
   FWFObjectHostApiImpl *hostApi =
@@ -76,9 +82,11 @@
 
   FlutterError *error;
   [hostApi disposeObjectWithIdentifier:@0 error:&error];
-  // Only the strong reference is removed, so the weak reference will remain until object is set to nil.
+  // Only the strong reference is removed, so the weak reference will remain until object is set to
+  // nil.
   object = nil;
-  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO], NSNotFound);
+  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO],
+                 NSNotFound);
   XCTAssertNil(error);
 }
 @end

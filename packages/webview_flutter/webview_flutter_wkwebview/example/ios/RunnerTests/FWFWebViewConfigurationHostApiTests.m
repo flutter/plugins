@@ -13,7 +13,9 @@
 
 @implementation FWFWebViewConfigurationHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFWebViewConfigurationHostApiImpl *hostApi =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -26,7 +28,9 @@
 }
 
 - (void)testCreateFromWebViewWithIdentifier {
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   FWFWebViewConfigurationHostApiImpl *hostApi =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -45,7 +49,9 @@
 - (void)testSetAllowsInlineMediaPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostApi =
@@ -62,7 +68,9 @@
 - (void)testSetMediaTypesRequiringUserActionForPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
-  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier) {}];
+  FWFInstanceManager *instanceManager =
+      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
+      }];
   [instanceManager addFlutterCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostApi =
