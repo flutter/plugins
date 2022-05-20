@@ -23,3 +23,6 @@ dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+
+dev_dependencies:
+  pigeon: ^3.1.0

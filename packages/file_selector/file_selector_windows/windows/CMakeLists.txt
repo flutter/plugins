@@ -9,6 +9,8 @@ list(APPEND PLUGIN_SOURCES
   "file_dialog_controller.h"
   "file_selector_plugin.cpp"
   "file_selector_plugin.h"
+  "messages.g.cpp"
+  "messages.g.h"
   "string_utils.cpp"
   "string_utils.h"
 )
