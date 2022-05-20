@@ -1,3 +1,7 @@
+## NEXT
+
+- Supports empty custom analysis allow list files.
+
 ## 0.8.6
 
 - Adds `update-release-info` to apply changelog and optional version changes
