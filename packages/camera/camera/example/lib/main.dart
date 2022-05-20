@@ -665,12 +665,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await cameraController.initialize();
-      if (cameraController.value.hasError) {
-        showInSnackBar(
-          'Camera error ${cameraController.value.errorDescription}',
-        );
-        return;
-      }
       await Future.wait(<Future<Object?>>[
         // The exposure mode is currently not supported on the web.
         if (kIsWeb) ...<Future<Object?>>[
@@ -688,6 +682,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .getMinZoomLevel()
             .then((double value) => _minAvailableZoom = value),
       ]);
+      // `controller` needs to be set until it's fully initialized, to avoid a
+      // race condition when the lifecycle callback being called and creates a
+      // new `controller`. This happens when the camera permission dialog
+      // dismisses at the first run, which triggers `didChangeAppLifecycleState`
+      // that disposes and re-creates the controller.
       controller = cameraController;
     } on CameraException catch (e) {
       switch (e.code) {
