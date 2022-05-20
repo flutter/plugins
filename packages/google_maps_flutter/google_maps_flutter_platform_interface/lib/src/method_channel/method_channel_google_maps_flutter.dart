@@ -27,11 +27,12 @@ class UnknownMapIDError extends Error {
   /// Message describing the assertion error.
   final Object? message;
 
+  @override
   String toString() {
     if (message != null) {
-      return "Unknown map ID $mapId: ${Error.safeToString(message)}";
+      return 'Unknown map ID $mapId: ${Error.safeToString(message)}';
     }
-    return "Unknown map ID $mapId";
+    return 'Unknown map ID $mapId';
   }
 }
 
@@ -52,7 +53,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   /// Accesses the MethodChannel associated to the passed mapId.
   MethodChannel channel(int mapId) {
-    MethodChannel? channel = _channels[mapId];
+    final MethodChannel? channel = _channels[mapId];
     if (channel == null) {
       throw UnknownMapIDError(mapId);
     }
@@ -77,7 +78,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> init(int mapId) {
-    MethodChannel channel = ensureChannelInitialized(mapId);
+    final MethodChannel channel = ensureChannelInitialized(mapId);
     return channel.invokeMethod<void>('map#waitForMap');
   }
 
@@ -96,7 +97,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   // Returns a filtered view of the events in the _controller, by mapId.
   Stream<MapEvent> _events(int mapId) =>
-      _mapEventStreamController.stream.where((event) => event.mapId == mapId);
+      _mapEventStreamController.stream.where((MapEvent event) => event.mapId == mapId);
 
   @override
   Stream<CameraMoveStartedEvent> onCameraMoveStarted({required int mapId}) {
@@ -246,7 +247,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         final String tileOverlayId = call.arguments['tileOverlayId'];
         final TileOverlay? tileOverlay =
             tileOverlaysForThisMap?[TileOverlayId(tileOverlayId)];
-        TileProvider? tileProvider = tileOverlay?.tileProvider;
+        final TileProvider? tileProvider = tileOverlay?.tileProvider;
         if (tileProvider == null) {
           return TileProvider.noTile.toJson();
         }
@@ -330,7 +331,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }) {
     final Map<TileOverlayId, TileOverlay>? currentTileOverlays =
         _tileOverlays[mapId];
-    Set<TileOverlay> previousSet = currentTileOverlays != null
+    final Set<TileOverlay> previousSet = currentTileOverlays != null
         ? currentTileOverlays.values.toSet()
         : <TileOverlay>{};
     final TileOverlayUpdates updates =

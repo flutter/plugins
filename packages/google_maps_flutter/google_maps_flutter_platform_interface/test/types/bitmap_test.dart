@@ -13,13 +13,13 @@ void main() {
 
   group('$BitmapDescriptor', () {
     test('toJson / fromJson', () {
-      final descriptor =
+      final BitmapDescriptor descriptor =
           BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
-      final json = descriptor.toJson();
+      final Object json = descriptor.toJson();
 
       // Rehydrate a new bitmap descriptor...
       // ignore: deprecated_member_use_from_same_package
-      final descriptorFromJson = BitmapDescriptor.fromJson(json);
+      final BitmapDescriptor descriptorFromJson = BitmapDescriptor.fromJson(json);
 
       expect(descriptorFromJson, isNot(descriptor)); // New instance
       expect(identical(descriptorFromJson.toJson(), json), isTrue); // Same JSON

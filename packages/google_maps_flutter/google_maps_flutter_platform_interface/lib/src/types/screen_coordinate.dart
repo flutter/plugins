@@ -26,8 +26,8 @@ class ScreenCoordinate {
   /// Converts this object to something serializable in JSON.
   Object toJson() {
     return <String, int>{
-      "x": x,
-      "y": y,
+      'x': x,
+      'y': y,
     };
   }
 

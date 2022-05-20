@@ -9,6 +9,7 @@ import 'package:google_maps_flutter_platform_interface/src/types/maps_object_upd
 class TestMapsObject implements MapsObject {
   const TestMapsObject(this.mapsId, {this.data = 1});
 
+  @override
   final MapsObjectId<TestMapsObject> mapsId;
 
   final int data;

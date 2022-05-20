@@ -150,6 +150,7 @@ class Polyline implements MapsObject {
 
   /// Creates a new [Polyline] object whose values are the same as this
   /// instance.
+  @override
   Polyline clone() {
     return copyWith(
       patternsParam: List<PatternItem>.of(patterns),
@@ -158,6 +159,7 @@ class Polyline implements MapsObject {
   }
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 

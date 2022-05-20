@@ -6,11 +6,10 @@ import 'dart:async' show Future;
 import 'dart:typed_data' show Uint8List;
 import 'dart:ui' show Size;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart'
     show ImageConfiguration, AssetImage, AssetBundleImageKey;
 import 'package:flutter/services.dart' show AssetBundle;
-
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Defines a bitmap image. For a marker, this class can be used to set the
 /// image of the marker icon. For a ground overlay, it can be used to set the
@@ -24,7 +23,7 @@ class BitmapDescriptor {
   // TODO(https://github.com/flutter/flutter/issues/70330): Clean this up.
   BitmapDescriptor.fromJson(Object json) : _json = json {
     assert(_json is List<dynamic>);
-    final jsonList = json as List<dynamic>;
+    final List jsonList = json as List<dynamic>;
     assert(_validTypes.contains(jsonList[0]));
     switch (jsonList[0]) {
       case _defaultMarker:
@@ -131,7 +130,7 @@ class BitmapDescriptor {
     String? package,
     bool mipmaps = true,
   }) async {
-    double? devicePixelRatio = configuration.devicePixelRatio;
+    final double? devicePixelRatio = configuration.devicePixelRatio;
     if (!mipmaps && devicePixelRatio != null) {
       return BitmapDescriptor._(<Object>[
         _fromAssetImage,

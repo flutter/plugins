@@ -17,7 +17,7 @@ class LatLng {
       : assert(latitude != null),
         assert(longitude != null),
         latitude =
-            (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
+            latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude),
         // Avoids normalization if possible to prevent unnecessary loss of precision
         longitude = longitude >= -180 && longitude < 180
             ? longitude
@@ -40,7 +40,7 @@ class LatLng {
       return null;
     }
     assert(json is List && json.length == 2);
-    final list = json as List;
+    final List list = json as List;
     return LatLng(list[0], list[1]);
   }
 
@@ -110,7 +110,7 @@ class LatLngBounds {
       return null;
     }
     assert(json is List && json.length == 2);
-    final list = json as List;
+    final List list = json as List;
     return LatLngBounds(
       southwest: LatLng.fromJson(list[0])!,
       northeast: LatLng.fromJson(list[1])!,

@@ -123,11 +123,13 @@ class Polygon implements MapsObject {
   }
 
   /// Creates a new [Polygon] object whose values are the same as this instance.
+  @override
   Polygon clone() {
     return copyWith(pointsParam: List<LatLng>.of(points));
   }
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 

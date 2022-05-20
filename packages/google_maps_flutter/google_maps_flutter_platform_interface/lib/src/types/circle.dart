@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart' show VoidCallback;
-import 'package:flutter/material.dart' show Color, Colors;
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter/material.dart' show Color, Colors;
 
 import 'types.dart';
 
@@ -105,9 +105,11 @@ class Circle implements MapsObject<Circle> {
   }
 
   /// Creates a new [Circle] object whose values are the same as this instance.
+  @override
   Circle clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 

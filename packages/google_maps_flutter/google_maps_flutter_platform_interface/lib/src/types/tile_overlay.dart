@@ -106,9 +106,11 @@ class TileOverlay implements MapsObject {
     );
   }
 
+  @override
   TileOverlay clone() => copyWith();
 
   /// Converts this object to JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 
