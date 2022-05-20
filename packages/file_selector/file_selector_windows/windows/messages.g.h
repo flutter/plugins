@@ -6,14 +6,14 @@
 
 #ifndef PIGEON_MESSAGES_G_FILE_SELECTOR_WINDOWS_H_
 #define PIGEON_MESSAGES_G_FILE_SELECTOR_WINDOWS_H_
-#include <flutter/encodable_value.h>
 #include <flutter/basic_message_channel.h>
 #include <flutter/binary_messenger.h>
+#include <flutter/encodable_value.h>
 #include <flutter/standard_message_codec.h>
 
 #include <map>
-#include <string>
 #include <optional>
+#include <string>
 
 namespace file_selector_windows {
 
@@ -22,23 +22,23 @@ namespace file_selector_windows {
 class FlutterError {
  public:
   FlutterError();
-  FlutterError(const std::string& arg_code)
-    : code(arg_code) {};
+  FlutterError(const std::string& arg_code) : code(arg_code){};
   FlutterError(const std::string& arg_code, const std::string& arg_message)
-    : code(arg_code), message(arg_message) {};
-  FlutterError(const std::string& arg_code, const std::string& arg_message, const flutter::EncodableValue& arg_details)
-    : code(arg_code), message(arg_message), details(arg_details) {};
+      : code(arg_code), message(arg_message){};
+  FlutterError(const std::string& arg_code, const std::string& arg_message,
+               const flutter::EncodableValue& arg_details)
+      : code(arg_code), message(arg_message), details(arg_details){};
   std::string code;
   std::string message;
   flutter::EncodableValue details;
 };
-template<class T> class ErrorOr {
+template <class T>
+class ErrorOr {
   std::variant<std::unique_ptr<T>, T, FlutterError> v;
+
  public:
-  ErrorOr(const T& rhs) { new(&v) T(rhs); }
-  ErrorOr(const FlutterError& rhs) {
-    new(&v) FlutterError(rhs);
-  }
+  ErrorOr(const T& rhs) { new (&v) T(rhs); }
+  ErrorOr(const FlutterError& rhs) { new (&v) FlutterError(rhs); }
   static ErrorOr<std::unique_ptr<T>> MakeWithUniquePtr(std::unique_ptr<T> rhs) {
     ErrorOr<std::unique_ptr<T>> ret = ErrorOr<std::unique_ptr<T>>();
     ret.v = std::move(rhs);
@@ -47,11 +47,11 @@ template<class T> class ErrorOr {
   bool hasError() const { return std::holds_alternative<FlutterError>(v); }
   const T& value() const { return std::get<T>(v); };
   const FlutterError& error() const { return std::get<FlutterError>(v); };
+
  private:
   ErrorOr() = default;
   friend class ErrorOr;
 };
-
 
 /* Generated class from Pigeon that represents data sent in messages. */
 class TypeGroup {
@@ -63,7 +63,6 @@ class TypeGroup {
   const flutter::EncodableList& getExtensions() const;
   void setExtensions(const flutter::EncodableList& setterArg);
 
-
  private:
   TypeGroup(flutter::EncodableMap map);
   flutter::EncodableMap ToEncodableMap();
@@ -71,9 +70,7 @@ class TypeGroup {
   friend class FileSelectorApiCodecSerializer;
   std::string label_;
   flutter::EncodableList extensions_;
-
 };
-
 
 /* Generated class from Pigeon that represents data sent in messages. */
 class SelectionOptions {
@@ -88,7 +85,6 @@ class SelectionOptions {
   const flutter::EncodableList& getAllowedTypes() const;
   void setAllowedTypes(const flutter::EncodableList& setterArg);
 
-
  private:
   SelectionOptions(flutter::EncodableMap map);
   flutter::EncodableMap ToEncodableMap();
@@ -97,12 +93,10 @@ class SelectionOptions {
   bool allowMultiple_;
   bool selectFolders_;
   flutter::EncodableList allowedTypes_;
-
 };
 
 class FileSelectorApiCodecSerializer : public flutter::StandardCodecSerializer {
  public:
-
   inline static FileSelectorApiCodecSerializer& GetInstance() {
     static FileSelectorApiCodecSerializer sInstance;
     return sInstance;
@@ -111,32 +105,42 @@ class FileSelectorApiCodecSerializer : public flutter::StandardCodecSerializer {
   FileSelectorApiCodecSerializer();
 
  public:
-  void WriteValue(const flutter::EncodableValue& value, flutter::ByteStreamWriter* stream) const override;
+  void WriteValue(const flutter::EncodableValue& value,
+                  flutter::ByteStreamWriter* stream) const override;
 
  protected:
-  flutter::EncodableValue ReadValueOfType(uint8_t type, flutter::ByteStreamReader* stream) const override;
-
+  flutter::EncodableValue ReadValueOfType(
+      uint8_t type, flutter::ByteStreamReader* stream) const override;
 };
 
-/* Generated class from Pigeon that represents a handler of messages from Flutter. */
+/* Generated class from Pigeon that represents a handler of messages from
+ * Flutter. */
 class FileSelectorApi {
  public:
   FileSelectorApi(const FileSelectorApi&) = delete;
   FileSelectorApi& operator=(const FileSelectorApi&) = delete;
-  virtual ~FileSelectorApi() { };
-  virtual ErrorOr<std::unique_ptr<flutter::EncodableList>> showOpenDialog(const SelectionOptions& options, std::optional<std::string> initialDirectory, std::optional<std::string> confirmButtonText) = 0;
-  virtual ErrorOr<std::unique_ptr<flutter::EncodableList>> showSaveDialog(const SelectionOptions& options, std::optional<std::string> initialDirectory, std::optional<std::string> suggestedName, std::optional<std::string> confirmButtonText) = 0;
+  virtual ~FileSelectorApi(){};
+  virtual ErrorOr<std::unique_ptr<flutter::EncodableList>> showOpenDialog(
+      const SelectionOptions& options,
+      std::optional<std::string> initialDirectory,
+      std::optional<std::string> confirmButtonText) = 0;
+  virtual ErrorOr<std::unique_ptr<flutter::EncodableList>> showSaveDialog(
+      const SelectionOptions& options,
+      std::optional<std::string> initialDirectory,
+      std::optional<std::string> suggestedName,
+      std::optional<std::string> confirmButtonText) = 0;
 
   /** The codec used by FileSelectorApi. */
   static const flutter::StandardMessageCodec& GetCodec();
-  /** Sets up an instance of `FileSelectorApi` to handle messages through the `binary_messenger`. */
-  static void SetUp(flutter::BinaryMessenger* binary_messenger, FileSelectorApi* api);
+  /** Sets up an instance of `FileSelectorApi` to handle messages through the
+   * `binary_messenger`. */
+  static void SetUp(flutter::BinaryMessenger* binary_messenger,
+                    FileSelectorApi* api);
   static flutter::EncodableMap WrapError(std::string_view errorMessage);
   static flutter::EncodableMap WrapError(const FlutterError& error);
 
  protected:
   FileSelectorApi() = default;
-
 };
-} // namespace
+}  // namespace file_selector_windows
 #endif  // PIGEON_MESSAGES_G_FILE_SELECTOR_WINDOWS_H_

@@ -60,7 +60,8 @@ class SelectionOptions {
     return SelectionOptions(
       allowMultiple: pigeonMap['allowMultiple'] as bool?,
       selectFolders: pigeonMap['selectFolders'] as bool?,
-      allowedTypes: (pigeonMap['allowedTypes'] as List<Object?>?)?.cast<TypeGroup?>(),
+      allowedTypes:
+          (pigeonMap['allowedTypes'] as List<Object?>?)?.cast<TypeGroup?>(),
     );
   }
 }
@@ -72,27 +73,25 @@ class _FileSelectorApiCodec extends StandardMessageCodec {
     if (value is SelectionOptions) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is TypeGroup) {
+    } else if (value is TypeGroup) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return SelectionOptions.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return TypeGroup.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -101,24 +100,29 @@ class FileSelectorApi {
   /// Constructor for [FileSelectorApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  FileSelectorApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  FileSelectorApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _FileSelectorApiCodec();
 
-  Future<List<String?>> showOpenDialog(SelectionOptions arg_options, String? arg_initialDirectory, String? arg_confirmButtonText) async {
+  Future<List<String?>> showOpenDialog(SelectionOptions arg_options,
+      String? arg_initialDirectory, String? arg_confirmButtonText) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.FileSelectorApi.showOpenDialog', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_options, arg_initialDirectory, arg_confirmButtonText]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.FileSelectorApi.showOpenDialog', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(
+            <Object?>[arg_options, arg_initialDirectory, arg_confirmButtonText])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -134,18 +138,28 @@ class FileSelectorApi {
     }
   }
 
-  Future<List<String?>> showSaveDialog(SelectionOptions arg_options, String? arg_initialDirectory, String? arg_suggestedName, String? arg_confirmButtonText) async {
+  Future<List<String?>> showSaveDialog(
+      SelectionOptions arg_options,
+      String? arg_initialDirectory,
+      String? arg_suggestedName,
+      String? arg_confirmButtonText) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.FileSelectorApi.showSaveDialog', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_options, arg_initialDirectory, arg_suggestedName, arg_confirmButtonText]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.FileSelectorApi.showSaveDialog', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_options,
+      arg_initialDirectory,
+      arg_suggestedName,
+      arg_confirmButtonText
+    ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,

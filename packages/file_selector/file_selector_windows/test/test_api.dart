@@ -5,6 +5,7 @@
 // See also: https://pub.dev/packages/pigeon
 // ignore_for_file: public_member_api_docs, non_constant_identifier_names, avoid_as, unused_import, unnecessary_parenthesis
 // ignore_for_file: avoid_relative_lib_imports
+// ignore_for_file: directives_ordering
 // @dart = 2.12
 import 'dart:async';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
@@ -12,7 +13,7 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '..\\lib\\src\\messages.g.dart';
+import 'package:file_selector_windows/src/messages.g.dart';
 
 class _TestHostImagePickerApiCodec extends StandardMessageCodec {
   const _TestHostImagePickerApiCodec();
@@ -21,69 +22,82 @@ class _TestHostImagePickerApiCodec extends StandardMessageCodec {
     if (value is SelectionOptions) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is TypeGroup) {
+    } else if (value is TypeGroup) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return SelectionOptions.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return TypeGroup.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
+
 abstract class TestHostImagePickerApi {
   static const MessageCodec<Object?> codec = _TestHostImagePickerApiCodec();
 
-  List<String?> showOpenDialog(SelectionOptions options, String? initialDirectory, String? confirmButtonText);
-  List<String?> showSaveDialog(SelectionOptions options, String? initialDirectory, String? suggestedName, String? confirmButtonText);
-  static void setup(TestHostImagePickerApi? api, {BinaryMessenger? binaryMessenger}) {
+  List<String?> showOpenDialog(SelectionOptions options,
+      String? initialDirectory, String? confirmButtonText);
+  List<String?> showSaveDialog(
+      SelectionOptions options,
+      String? initialDirectory,
+      String? suggestedName,
+      String? confirmButtonText);
+  static void setup(TestHostImagePickerApi? api,
+      {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FileSelectorApi.showOpenDialog', codec, binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.FileSelectorApi.showOpenDialog', codec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.showOpenDialog was null.');
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FileSelectorApi.showOpenDialog was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final SelectionOptions? arg_options = (args[0] as SelectionOptions?);
-          assert(arg_options != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.showOpenDialog was null, expected non-null SelectionOptions.');
+          assert(arg_options != null,
+              'Argument for dev.flutter.pigeon.FileSelectorApi.showOpenDialog was null, expected non-null SelectionOptions.');
           final String? arg_initialDirectory = (args[1] as String?);
           final String? arg_confirmButtonText = (args[2] as String?);
-          final List<String?> output = api.showOpenDialog(arg_options!, arg_initialDirectory, arg_confirmButtonText);
+          final List<String?> output = api.showOpenDialog(
+              arg_options!, arg_initialDirectory, arg_confirmButtonText);
           return <Object?, Object?>{'result': output};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FileSelectorApi.showSaveDialog', codec, binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.FileSelectorApi.showSaveDialog', codec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.showSaveDialog was null.');
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.FileSelectorApi.showSaveDialog was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final SelectionOptions? arg_options = (args[0] as SelectionOptions?);
-          assert(arg_options != null, 'Argument for dev.flutter.pigeon.FileSelectorApi.showSaveDialog was null, expected non-null SelectionOptions.');
+          assert(arg_options != null,
+              'Argument for dev.flutter.pigeon.FileSelectorApi.showSaveDialog was null, expected non-null SelectionOptions.');
           final String? arg_initialDirectory = (args[1] as String?);
           final String? arg_suggestedName = (args[2] as String?);
           final String? arg_confirmButtonText = (args[3] as String?);
-          final List<String?> output = api.showSaveDialog(arg_options!, arg_initialDirectory, arg_suggestedName, arg_confirmButtonText);
+          final List<String?> output = api.showSaveDialog(arg_options!,
+              arg_initialDirectory, arg_suggestedName, arg_confirmButtonText);
           return <Object?, Object?>{'result': output};
         });
       }
