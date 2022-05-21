@@ -216,8 +216,9 @@ void main() {
 
     testWidgets('update', (WidgetTester tester) async {
       final HeatmapController controller = HeatmapController(heatmap: heatmap);
-      final gmaps_visualization.HeatmapLayerOptions options = gmaps_visualization.HeatmapLayerOptions()
-        ..data =<gmaps.LatLng> [gmaps.LatLng(0, 0)];
+      final gmaps_visualization.HeatmapLayerOptions options =
+          gmaps_visualization.HeatmapLayerOptions()
+            ..data = <gmaps.LatLng>[gmaps.LatLng(0, 0)];
 
       expect(heatmap.data, hasLength(0));
 
@@ -241,8 +242,8 @@ void main() {
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
-        final gmaps_visualization.HeatmapLayerOptions options = gmaps_visualization.HeatmapLayerOptions()
-          ..dissipating = true;
+        final gmaps_visualization.HeatmapLayerOptions options =
+            gmaps_visualization.HeatmapLayerOptions()..dissipating = true;
 
         controller.remove();
 

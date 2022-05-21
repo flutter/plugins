@@ -20,7 +20,7 @@ class GoogleMapController {
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
-        Set<Heatmap> heatmaps = const <Heatmap>{},
+    Set<Heatmap> heatmaps = const <Heatmap>{},
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   })  : _mapId = mapId,
         _streamController = streamController,
