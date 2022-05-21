@@ -6,11 +6,11 @@ part of google_maps_flutter_web;
 
 /// The `HeatmapController` class wraps a [gmaps_visualization.HeatmapLayer] and its `onTap` behavior.
 class HeatmapController {
-  gmaps_visualization.HeatmapLayer? _heatmap;
-
   /// Creates a `HeatmapController`, which wraps a [gmaps_visualization.HeatmapLayer] object and its `onTap` behavior.
   HeatmapController({required gmaps_visualization.HeatmapLayer heatmap})
       : _heatmap = heatmap;
+
+  gmaps_visualization.HeatmapLayer? _heatmap;
 
   /// Returns the wrapped [gmaps_visualization.HeatmapLayer]. Only used for testing.
   @visibleForTesting

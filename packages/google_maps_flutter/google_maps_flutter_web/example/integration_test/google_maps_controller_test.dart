@@ -160,7 +160,12 @@ void main() {
           controller.dispose();
 
           expect(() {
-            controller.updateHeatmaps(HeatmapUpdates.from({}, {}));
+            controller.updateHeatmaps(
+              HeatmapUpdates.from(
+                <Heatmap>{},
+                <Heatmap>{},
+              ),
+            );
           }, throwsAssertionError);
         });
 
@@ -308,16 +313,16 @@ void main() {
           ),
         }, heatmaps: <Heatmap>{
           Heatmap(
-            heatmapId: HeatmapId('heatmap-1'),
-            data: [
-              LatLng(43.355114, -5.851333),
-              LatLng(43.354797, -5.851860),
-              LatLng(43.354469, -5.851318),
-              LatLng(43.354762, -5.850824),
+            heatmapId: const HeatmapId('heatmap-1'),
+            data: <LatLng>[
+              const LatLng(43.355114, -5.851333),
+              const LatLng(43.354797, -5.851860),
+              const LatLng(43.354469, -5.851318),
+              const LatLng(43.354762, -5.850824),
             ].weighted().toList(),
           ),
         }, markers: <Marker>{
-          Marker(
+          const Marker(
             markerId: MarkerId('marker-1'),
             infoWindow: InfoWindow(
               title: 'title for test',
@@ -635,29 +640,31 @@ void main() {
       });
 
       testWidgets('updateHeatmaps', (WidgetTester tester) async {
-        final mock = MockHeatmapsController();
+        final MockHeatmapsController mock = MockHeatmapsController();
         controller.debugSetOverrides(heatmaps: mock);
 
-        final previous = {
-          Heatmap(heatmapId: HeatmapId('to-be-updated')),
-          Heatmap(heatmapId: HeatmapId('to-be-removed')),
+        final Set<Heatmap> previous = <Heatmap>{
+          const Heatmap(heatmapId: HeatmapId('to-be-updated')),
+          const Heatmap(heatmapId: HeatmapId('to-be-removed')),
         };
 
-        final current = {
-          Heatmap(heatmapId: HeatmapId('to-be-updated'), dissipating: false),
-          Heatmap(heatmapId: HeatmapId('to-be-added')),
+        final Set<Heatmap> current = <Heatmap>{
+          const Heatmap(
+              heatmapId: HeatmapId('to-be-updated'), dissipating: false),
+          const Heatmap(heatmapId: HeatmapId('to-be-added')),
         };
 
         controller.updateHeatmaps(HeatmapUpdates.from(previous, current));
 
-        verify(mock.removeHeatmaps({
-          HeatmapId('to-be-removed'),
+        verify(mock.removeHeatmaps(<HeatmapId>{
+          const HeatmapId('to-be-removed'),
         }));
-        verify(mock.addHeatmaps({
-          Heatmap(heatmapId: HeatmapId('to-be-added')),
+        verify(mock.addHeatmaps(<Heatmap>{
+          const Heatmap(heatmapId: HeatmapId('to-be-added')),
         }));
-        verify(mock.changeHeatmaps({
-          Heatmap(heatmapId: HeatmapId('to-be-updated'), dissipating: false),
+        verify(mock.changeHeatmaps(<Heatmap>{
+          const Heatmap(
+              heatmapId: HeatmapId('to-be-updated'), dissipating: false),
         }));
       });
 

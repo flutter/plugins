@@ -307,19 +307,21 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
 gmaps_visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
   Heatmap heatmap,
 ) {
-  final heatmapOptions = gmaps_visualization.HeatmapLayerOptions()
-    ..data = heatmap.data
-        .map(
-          (e) => gmaps_visualization.WeightedLocation()
-            ..location = gmaps.LatLng(e.latitude, e.longitude)
-            ..weight = e.weight,
-        )
-        .toList()
-    ..dissipating = heatmap.dissipating
-    ..gradient = heatmap.gradient?.colors.map(_getCssColorWithAlpha).toList()
-    ..maxIntensity = heatmap.maxIntensity
-    ..opacity = heatmap.opacity
-    ..radius = heatmap.radius;
+  final gmaps_visualization.HeatmapLayerOptions heatmapOptions =
+      gmaps_visualization.HeatmapLayerOptions()
+        ..data = heatmap.data
+            .map(
+              (WeightedLatLng e) => gmaps_visualization.WeightedLocation()
+                ..location = gmaps.LatLng(e.latitude, e.longitude)
+                ..weight = e.weight,
+            )
+            .toList()
+        ..dissipating = heatmap.dissipating
+        ..gradient =
+            heatmap.gradient?.colors.map(_getCssColorWithAlpha).toList()
+        ..maxIntensity = heatmap.maxIntensity
+        ..opacity = heatmap.opacity
+        ..radius = heatmap.radius;
   return heatmapOptions;
 }
 

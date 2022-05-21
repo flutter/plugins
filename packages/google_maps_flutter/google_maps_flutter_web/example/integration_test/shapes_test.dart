@@ -8,9 +8,9 @@ import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
+import 'package:google_maps/google_maps_geometry.dart' as geometry;
 import 'package:google_maps/google_maps_visualization.dart'
     as gmaps_visualization;
-import 'package:google_maps/google_maps_geometry.dart' as geometry;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:integration_test/integration_test.dart';
@@ -380,41 +380,46 @@ void main() {
     });
 
     testWidgets('addHeatmaps', (WidgetTester tester) async {
-      final heatmaps = {
-        Heatmap(heatmapId: HeatmapId('1')),
-        Heatmap(heatmapId: HeatmapId('2')),
+      final Set<Heatmap> heatmaps = <Heatmap>{
+        const Heatmap(heatmapId: HeatmapId('1')),
+        const Heatmap(heatmapId: HeatmapId('2')),
       };
 
       controller.addHeatmaps(heatmaps);
 
       expect(controller.heatmaps.length, 2);
-      expect(controller.heatmaps, contains(HeatmapId('1')));
-      expect(controller.heatmaps, contains(HeatmapId('2')));
-      expect(controller.heatmaps, isNot(contains(HeatmapId('66'))));
+      expect(controller.heatmaps, contains(const HeatmapId('1')));
+      expect(controller.heatmaps, contains(const HeatmapId('2')));
+      expect(controller.heatmaps, isNot(contains(const HeatmapId('66'))));
     });
 
     testWidgets('changeHeatmaps', (WidgetTester tester) async {
-      final heatmaps = {
-        Heatmap(heatmapId: HeatmapId('1')),
+      final Set<Heatmap> heatmaps = <Heatmap>{
+        const Heatmap(heatmapId: HeatmapId('1')),
       };
       controller.addHeatmaps(heatmaps);
 
-      expect(controller.heatmaps[HeatmapId('1')]?.heatmap?.data, hasLength(0));
+      expect(controller.heatmaps[const HeatmapId('1')]?.heatmap?.data,
+          hasLength(0));
 
-      final updatedHeatmaps = {
-        Heatmap(heatmapId: HeatmapId('1'), data: [WeightedLatLng(0, 0)]),
+      final Set<Heatmap> updatedHeatmaps = <Heatmap>{
+        Heatmap(
+          heatmapId: const HeatmapId('1'),
+          data: <WeightedLatLng>[WeightedLatLng(0, 0)],
+        ),
       };
       controller.changeHeatmaps(updatedHeatmaps);
 
       expect(controller.heatmaps.length, 1);
-      expect(controller.heatmaps[HeatmapId('1')]?.heatmap?.data, hasLength(1));
+      expect(controller.heatmaps[const HeatmapId('1')]?.heatmap?.data,
+          hasLength(1));
     });
 
     testWidgets('removeHeatmaps', (WidgetTester tester) async {
-      final heatmaps = {
-        Heatmap(heatmapId: HeatmapId('1')),
-        Heatmap(heatmapId: HeatmapId('2')),
-        Heatmap(heatmapId: HeatmapId('3')),
+      final Set<Heatmap> heatmaps = <Heatmap>{
+        const Heatmap(heatmapId: HeatmapId('1')),
+        const Heatmap(heatmapId: HeatmapId('2')),
+        const Heatmap(heatmapId: HeatmapId('3')),
       };
 
       controller.addHeatmaps(heatmaps);
@@ -422,33 +427,36 @@ void main() {
       expect(controller.heatmaps.length, 3);
 
       // Remove some polylines...
-      final heatmapIdsToRemove = {
-        HeatmapId('1'),
-        HeatmapId('3'),
+      final Set<HeatmapId> heatmapIdsToRemove = <HeatmapId>{
+        const HeatmapId('1'),
+        const HeatmapId('3'),
       };
 
       controller.removeHeatmaps(heatmapIdsToRemove);
 
       expect(controller.heatmaps.length, 1);
-      expect(controller.heatmaps, isNot(contains(HeatmapId('1'))));
-      expect(controller.heatmaps, contains(HeatmapId('2')));
-      expect(controller.heatmaps, isNot(contains(HeatmapId('3'))));
+      expect(controller.heatmaps, isNot(contains(const HeatmapId('1'))));
+      expect(controller.heatmaps, contains(const HeatmapId('2')));
+      expect(controller.heatmaps, isNot(contains(const HeatmapId('3'))));
     });
 
     testWidgets('Converts colors to CSS', (WidgetTester tester) async {
-      final heatmaps = {
+      final Set<Heatmap> heatmaps = <Heatmap>{
         Heatmap(
-          heatmapId: HeatmapId('1'),
-          gradient:
-              HeatmapGradient(colors: [Color(0xFFFABADA)], startPoints: [0]),
+          heatmapId: const HeatmapId('1'),
+          gradient: HeatmapGradient(
+            colors: <Color>[const Color(0xFFFABADA)],
+            startPoints: <double>[0],
+          ),
         ),
       };
 
       controller.addHeatmaps(heatmaps);
 
-      final heatmap = controller.heatmaps.values.first.heatmap!;
+      final gmaps_visualization.HeatmapLayer heatmap =
+          controller.heatmaps.values.first.heatmap!;
 
-      expect(heatmap.get('gradient'), ['rgba(250, 186, 218, 1)']);
+      expect(heatmap.get('gradient'), <String>['rgba(250, 186, 218, 1)']);
     });
   });
 }

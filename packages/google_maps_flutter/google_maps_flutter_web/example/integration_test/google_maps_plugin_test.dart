@@ -272,7 +272,10 @@ void main() {
         verify(controller.updateCircles(expectedUpdates));
       });
       testWidgets('updateHeatmaps', (WidgetTester tester) async {
-        final expectedUpdates = HeatmapUpdates.from({}, {});
+        final HeatmapUpdates expectedUpdates = HeatmapUpdates.from(
+          <Heatmap>{},
+          <Heatmap>{},
+        );
 
         await plugin.updateHeatmaps(expectedUpdates, mapId: mapId);
 

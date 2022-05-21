@@ -6,12 +6,12 @@ part of google_maps_flutter_web;
 
 /// This class manages all the [HeatmapController]s associated to a [GoogleMapController].
 class HeatmapsController extends GeometryController {
-  // A cache of [HeatmapController]s indexed by their [HeatmapId].
-  final Map<HeatmapId, HeatmapController> _heatmapIdToController;
-
   /// Initialize the cache
   HeatmapsController()
-      : _heatmapIdToController = Map<HeatmapId, HeatmapController>();
+      : _heatmapIdToController = <HeatmapId, HeatmapController>{};
+
+  // A cache of [HeatmapController]s indexed by their [HeatmapId].
+  final Map<HeatmapId, HeatmapController> _heatmapIdToController;
 
   /// Returns the cache of [HeatmapController]s. Test only.
   @visibleForTesting
@@ -21,9 +21,7 @@ class HeatmapsController extends GeometryController {
   ///
   /// Wraps each [Heatmap] into its corresponding [HeatmapController].
   void addHeatmaps(Set<Heatmap> heatmapsToAdd) {
-    heatmapsToAdd.forEach((heatmap) {
-      _addHeatmap(heatmap);
-    });
+    heatmapsToAdd.forEach(_addHeatmap);
   }
 
   void _addHeatmap(Heatmap heatmap) {
@@ -31,33 +29,33 @@ class HeatmapsController extends GeometryController {
       return;
     }
 
-    final populationOptions = _heatmapOptionsFromHeatmap(heatmap);
-    gmaps_visualization.HeatmapLayer gmHeatmap =
+    final gmaps_visualization.HeatmapLayerOptions populationOptions =
+        _heatmapOptionsFromHeatmap(heatmap);
+    final gmaps_visualization.HeatmapLayer gmHeatmap =
         gmaps_visualization.HeatmapLayer(populationOptions);
     gmHeatmap.map = googleMap;
-    HeatmapController controller = HeatmapController(heatmap: gmHeatmap);
+    final HeatmapController controller = HeatmapController(heatmap: gmHeatmap);
     _heatmapIdToController[heatmap.heatmapId] = controller;
   }
 
   /// Updates a set of [Heatmap] objects with new options.
   void changeHeatmaps(Set<Heatmap> heatmapsToChange) {
-    heatmapsToChange.forEach((heatmapToChange) {
-      _changeHeatmap(heatmapToChange);
-    });
+    heatmapsToChange.forEach(_changeHeatmap);
   }
 
   void _changeHeatmap(Heatmap heatmap) {
-    final heatmapController = _heatmapIdToController[heatmap.heatmapId];
+    final HeatmapController? heatmapController =
+        _heatmapIdToController[heatmap.heatmapId];
     heatmapController?.update(_heatmapOptionsFromHeatmap(heatmap));
   }
 
   /// Removes a set of [HeatmapId]s from the cache.
   void removeHeatmaps(Set<HeatmapId> heatmapIdsToRemove) {
-    heatmapIdsToRemove.forEach((heatmapId) {
+    for (final HeatmapId heatmapId in heatmapIdsToRemove) {
       final HeatmapController? heatmapController =
           _heatmapIdToController[heatmapId];
       heatmapController?.remove();
       _heatmapIdToController.remove(heatmapId);
-    });
+    }
   }
 }
