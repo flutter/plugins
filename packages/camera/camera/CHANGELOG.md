@@ -1,6 +1,14 @@
-## 0.9.6
+## 0.9.7
 
 * Returns all the available cameras on iOS.
+
+## 0.9.6
+
+* Adds audio access permission handling logic on iOS to fix an issue with `prepareForVideoRecording` not awaiting for the audio permission request result.
+
+## 0.9.5+1
+
+* Suppresses warnings for pre-iOS-11 codepaths.
 
 ## 0.9.5
 

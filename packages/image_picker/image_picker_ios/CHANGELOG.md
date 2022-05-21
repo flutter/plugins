@@ -1,3 +1,15 @@
+## 0.8.5+5
+
+* Adds non-deprecated codepaths for iOS 13+.
+
+## 0.8.5+4
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
+## 0.8.5+3
+
+* Fixes 'messages.g.h' file not found.
+
 ## 0.8.5+2
 
 * Minor fixes for new analysis options.
