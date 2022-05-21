@@ -30,20 +30,20 @@ class HeatmapBodyState extends State<HeatmapBody> {
   static const LatLng sanFrancisco = LatLng(37.774546, -122.433523);
 
   List<WeightedLatLng> enabledPoints = <WeightedLatLng>[
-    WeightedLatLng(37.782, -122.447),
-    WeightedLatLng(37.782, -122.445),
-    WeightedLatLng(37.782, -122.443),
-    WeightedLatLng(37.782, -122.441),
-    WeightedLatLng(37.782, -122.439),
-    WeightedLatLng(37.782, -122.437),
-    WeightedLatLng(37.782, -122.435),
-    WeightedLatLng(37.785, -122.447),
-    WeightedLatLng(37.785, -122.445),
-    WeightedLatLng(37.785, -122.443),
-    WeightedLatLng(37.785, -122.441),
-    WeightedLatLng(37.785, -122.439),
-    WeightedLatLng(37.785, -122.437),
-    WeightedLatLng(37.785, -122.435)
+    const WeightedLatLng(37.782, -122.447),
+    const WeightedLatLng(37.782, -122.445),
+    const WeightedLatLng(37.782, -122.443),
+    const WeightedLatLng(37.782, -122.441),
+    const WeightedLatLng(37.782, -122.439),
+    const WeightedLatLng(37.782, -122.437),
+    const WeightedLatLng(37.782, -122.435),
+    const WeightedLatLng(37.785, -122.447),
+    const WeightedLatLng(37.785, -122.445),
+    const WeightedLatLng(37.785, -122.443),
+    const WeightedLatLng(37.785, -122.441),
+    const WeightedLatLng(37.785, -122.439),
+    const WeightedLatLng(37.785, -122.437),
+    const WeightedLatLng(37.785, -122.435)
   ];
 
   List<WeightedLatLng> disabledPoints = <WeightedLatLng>[];

@@ -4,27 +4,27 @@
 
 part of google_maps_flutter_web;
 
-/// The `HeatmapController` class wraps a [gmaps_visualization.HeatmapLayer] and its `onTap` behavior.
+/// The `HeatmapController` class wraps a [visualization.HeatmapLayer] and its `onTap` behavior.
 class HeatmapController {
-  /// Creates a `HeatmapController`, which wraps a [gmaps_visualization.HeatmapLayer] object and its `onTap` behavior.
-  HeatmapController({required gmaps_visualization.HeatmapLayer heatmap})
+  /// Creates a `HeatmapController`, which wraps a [visualization.HeatmapLayer] object and its `onTap` behavior.
+  HeatmapController({required visualization.HeatmapLayer heatmap})
       : _heatmap = heatmap;
 
-  gmaps_visualization.HeatmapLayer? _heatmap;
+  visualization.HeatmapLayer? _heatmap;
 
-  /// Returns the wrapped [gmaps_visualization.HeatmapLayer]. Only used for testing.
+  /// Returns the wrapped [visualization.HeatmapLayer]. Only used for testing.
   @visibleForTesting
-  gmaps_visualization.HeatmapLayer? get heatmap => _heatmap;
+  visualization.HeatmapLayer? get heatmap => _heatmap;
 
-  /// Updates the options of the wrapped [gmaps_visualization.HeatmapLayer] object.
+  /// Updates the options of the wrapped [visualization.HeatmapLayer] object.
   ///
   /// This cannot be called after [remove].
-  void update(gmaps_visualization.HeatmapLayerOptions options) {
+  void update(visualization.HeatmapLayerOptions options) {
     assert(_heatmap != null, 'Cannot `update` Heatmap after calling `remove`.');
     _heatmap!.options = options;
   }
 
-  /// Disposes of the currently wrapped [gmaps_visualization.HeatmapLayer].
+  /// Disposes of the currently wrapped [visualization.HeatmapLayer].
   void remove() {
     if (_heatmap != null) {
       _heatmap!.map = null;

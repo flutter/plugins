@@ -312,14 +312,14 @@ void main() {
             zIndex: 1234,
           ),
         }, heatmaps: <Heatmap>{
-          Heatmap(
-            heatmapId: const HeatmapId('heatmap-1'),
-            data: <LatLng>[
-              const LatLng(43.355114, -5.851333),
-              const LatLng(43.354797, -5.851860),
-              const LatLng(43.354469, -5.851318),
-              const LatLng(43.354762, -5.850824),
-            ].weighted().toList(),
+          const Heatmap(
+            heatmapId: HeatmapId('heatmap-1'),
+            data: <WeightedLatLng>[
+              WeightedLatLng(43.355114, -5.851333),
+              WeightedLatLng(43.354797, -5.851860),
+              WeightedLatLng(43.354469, -5.851318),
+              WeightedLatLng(43.354762, -5.850824),
+            ],
           ),
         }, markers: <Marker>{
           const Marker(

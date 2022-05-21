@@ -29,10 +29,10 @@ class HeatmapsController extends GeometryController {
       return;
     }
 
-    final gmaps_visualization.HeatmapLayerOptions populationOptions =
+    final visualization.HeatmapLayerOptions heatmapOptions =
         _heatmapOptionsFromHeatmap(heatmap);
-    final gmaps_visualization.HeatmapLayer gmHeatmap =
-        gmaps_visualization.HeatmapLayer(populationOptions);
+    final visualization.HeatmapLayer gmHeatmap =
+        visualization.HeatmapLayer(heatmapOptions);
     gmHeatmap.map = googleMap;
     final HeatmapController controller = HeatmapController(heatmap: gmHeatmap);
     _heatmapIdToController[heatmap.heatmapId] = controller;

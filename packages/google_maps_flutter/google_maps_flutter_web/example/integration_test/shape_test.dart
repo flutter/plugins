@@ -6,8 +6,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
-import 'package:google_maps/google_maps_visualization.dart'
-    as gmaps_visualization;
+import 'package:google_maps/google_maps_visualization.dart' as visualization;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -208,16 +207,16 @@ void main() {
   });
 
   group('HeatmapController', () {
-    late gmaps_visualization.HeatmapLayer heatmap;
+    late visualization.HeatmapLayer heatmap;
 
     setUp(() {
-      heatmap = gmaps_visualization.HeatmapLayer();
+      heatmap = visualization.HeatmapLayer();
     });
 
     testWidgets('update', (WidgetTester tester) async {
       final HeatmapController controller = HeatmapController(heatmap: heatmap);
-      final gmaps_visualization.HeatmapLayerOptions options =
-          gmaps_visualization.HeatmapLayerOptions()
+      final visualization.HeatmapLayerOptions options =
+          visualization.HeatmapLayerOptions()
             ..data = <gmaps.LatLng>[gmaps.LatLng(0, 0)];
 
       expect(heatmap.data, hasLength(0));
@@ -242,8 +241,8 @@ void main() {
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
-        final gmaps_visualization.HeatmapLayerOptions options =
-            gmaps_visualization.HeatmapLayerOptions()..dissipating = true;
+        final visualization.HeatmapLayerOptions options =
+            visualization.HeatmapLayerOptions()..dissipating = true;
 
         controller.remove();
 

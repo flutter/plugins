@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart'
+    show objectRuntimeType, visibleForTesting;
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
@@ -45,7 +46,8 @@ class LatLng {
   }
 
   @override
-  String toString() => '$runtimeType($latitude, $longitude)';
+  String toString() =>
+      '${objectRuntimeType(this, 'LatLng')}($latitude, $longitude)';
 
   @override
   bool operator ==(Object o) {
@@ -122,9 +124,8 @@ class LatLngBounds {
   }
 
   @override
-  String toString() {
-    return '$runtimeType($southwest, $northeast)';
-  }
+  String toString() =>
+      '${objectRuntimeType(this, 'LatLngBounds')}($southwest, $northeast)';
 
   @override
   bool operator ==(Object o) {
@@ -140,12 +141,12 @@ class LatLngBounds {
 /// A data point entry for a heatmap.
 /// This is a geographical data point with a weight attribute.
 class WeightedLatLng extends LatLng {
+  /// Creates a [WeightedLatLng] with the specified [weight]
+  const WeightedLatLng(double latitude, double longitude, {this.weight = 1.0})
+      : super(latitude, longitude);
+
   /// The weighting value of the data point.
   final double weight;
-
-  /// Creates a [WeightedLatLng] with the specified [weight]
-  WeightedLatLng(double latitude, double longitude, {this.weight = 1.0})
-      : super(latitude, longitude);
 
   /// Converts this object to something serializable in JSON.
   Object toJson() {
@@ -168,7 +169,8 @@ class WeightedLatLng extends LatLng {
   }
 
   @override
-  String toString() => '$runtimeType($latitude, $longitude, $weight)';
+  String toString() =>
+      '${objectRuntimeType(this, 'WeightedLatLng')}($latitude, $longitude, $weight)';
 
   @override
   bool operator ==(Object o) {
@@ -180,12 +182,4 @@ class WeightedLatLng extends LatLng {
 
   @override
   int get hashCode => Object.hash(latitude, longitude, weight);
-}
-
-/// Convenience extensions on [LatLng] iterables.
-extension LatLngIterableExtension on Iterable<LatLng> {
-  /// Converts a [LatLng] iterable to a [WeightedLatLng] iterable with each
-  /// [WeightedLatLng] having the specified [weight].
-  Iterable<WeightedLatLng> weighted([double weight = 1.0]) =>
-      map((latLng) => latLng.weighted(weight));
 }

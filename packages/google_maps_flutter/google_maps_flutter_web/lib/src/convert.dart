@@ -304,14 +304,14 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
   return circleOptions;
 }
 
-gmaps_visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
+visualization.HeatmapLayerOptions _heatmapOptionsFromHeatmap(
   Heatmap heatmap,
 ) {
-  final gmaps_visualization.HeatmapLayerOptions heatmapOptions =
-      gmaps_visualization.HeatmapLayerOptions()
+  final visualization.HeatmapLayerOptions heatmapOptions =
+      visualization.HeatmapLayerOptions()
         ..data = heatmap.data
             .map(
-              (WeightedLatLng e) => gmaps_visualization.WeightedLocation()
+              (WeightedLatLng e) => visualization.WeightedLocation()
                 ..location = gmaps.LatLng(e.latitude, e.longitude)
                 ..weight = e.weight,
             )

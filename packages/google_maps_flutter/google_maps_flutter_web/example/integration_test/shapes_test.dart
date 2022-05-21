@@ -9,8 +9,7 @@ import 'dart:ui';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps/google_maps_geometry.dart' as geometry;
-import 'package:google_maps/google_maps_visualization.dart'
-    as gmaps_visualization;
+import 'package:google_maps/google_maps_visualization.dart' as visualization;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:integration_test/integration_test.dart';
@@ -403,8 +402,8 @@ void main() {
           hasLength(0));
 
       final Set<Heatmap> updatedHeatmaps = <Heatmap>{
-        Heatmap(
-          heatmapId: const HeatmapId('1'),
+        const Heatmap(
+          heatmapId: HeatmapId('1'),
           data: <WeightedLatLng>[WeightedLatLng(0, 0)],
         ),
       };
@@ -453,7 +452,7 @@ void main() {
 
       controller.addHeatmaps(heatmaps);
 
-      final gmaps_visualization.HeatmapLayer heatmap =
+      final visualization.HeatmapLayer heatmap =
           controller.heatmaps.values.first.heatmap!;
 
       expect(heatmap.get('gradient'), <String>['rgba(250, 186, 218, 1)']);

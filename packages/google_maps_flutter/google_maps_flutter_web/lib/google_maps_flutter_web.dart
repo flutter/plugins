@@ -16,8 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
-import 'package:google_maps/google_maps_visualization.dart'
-    as gmaps_visualization;
+import 'package:google_maps/google_maps_visualization.dart' as visualization;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:sanitize_html/sanitize_html.dart';
 import 'package:stream_transform/stream_transform.dart';

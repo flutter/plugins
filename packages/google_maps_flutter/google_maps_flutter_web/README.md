@@ -26,7 +26,7 @@ Modify the `<head>` tag of your `web/index.html` to load the Google Maps JavaScr
 
 Now you should be able to use the Google Maps plugin normally.
 
-To use heatmaps, add `&libraries=visualization` to the end of the URL.
+To use heatmaps, add `&libraries=visualization` to the end of the URL. See [the documentation](https://developers.google.com/maps/documentation/javascript/libraries) for more information.
 
 ## Limitations of the web version
 
