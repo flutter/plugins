@@ -35,15 +35,15 @@ class _FakeLatLng_3 extends _i1.Fake implements _i3.LatLng {}
 class MockGoogleMapController extends _i1.Mock
     implements _i4.GoogleMapController {
   @override
-  _i2.StreamController<_i3.MapEvent<dynamic>> get stream =>
+  _i2.StreamController<_i3.MapEvent<Object?>> get stream =>
       (super.noSuchMethod(Invocation.getter(#stream),
-              returnValue: _FakeStreamController_0<_i3.MapEvent<dynamic>>())
-          as _i2.StreamController<_i3.MapEvent<dynamic>>);
+              returnValue: _FakeStreamController_0<_i3.MapEvent<Object?>>())
+          as _i2.StreamController<_i3.MapEvent<Object?>>);
   @override
-  _i2.Stream<_i3.MapEvent<dynamic>> get events =>
+  _i2.Stream<_i3.MapEvent<Object?>> get events =>
       (super.noSuchMethod(Invocation.getter(#events),
-              returnValue: Stream<_i3.MapEvent<dynamic>>.empty())
-          as _i2.Stream<_i3.MapEvent<dynamic>>);
+              returnValue: Stream<_i3.MapEvent<Object?>>.empty())
+          as _i2.Stream<_i3.MapEvent<Object?>>);
   @override
   bool get isInitialized =>
       (super.noSuchMethod(Invocation.getter(#isInitialized), returnValue: false)

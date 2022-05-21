@@ -218,7 +218,7 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains(
-              'Unable to run \'java\'. Make sure that it is in your path, or '
+              'Unable to run "java". Make sure that it is in your path, or '
               'provide a full path with --java.'),
         ]));
   });
@@ -330,8 +330,7 @@ void main() {
     expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains(
-              'Unable to run \'clang-format\'. Make sure that it is in your '
+          contains('Unable to run "clang-format". Make sure that it is in your '
               'path, or provide a full path with --clang-format.'),
         ]));
   });

@@ -192,8 +192,8 @@ class _MyAppState extends State<_MyApp> {
     final Widget storeHeader = ListTile(
       leading: Icon(_isAvailable ? Icons.check : Icons.block,
           color: _isAvailable ? Colors.green : ThemeData.light().errorColor),
-      title: Text(
-          'The store is ' + (_isAvailable ? 'available' : 'unavailable') + '.'),
+      title:
+          Text('The store is ${_isAvailable ? 'available' : 'unavailable'}.'),
     );
     final List<Widget> children = <Widget>[storeHeader];
 

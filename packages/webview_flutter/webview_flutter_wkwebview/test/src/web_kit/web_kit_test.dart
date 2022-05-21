@@ -163,7 +163,7 @@ void main() {
 
         final NSHttpCookieData cookie = verify(
           mockPlatformHostApi.setCookie(
-            instanceManager.getInstanceId(httpCookieStore)!,
+            instanceManager.getInstanceId(httpCookieStore),
             captureAny,
           ),
         ).captured.single as NSHttpCookieData;
@@ -373,8 +373,8 @@ void main() {
           instanceManager: instanceManager,
         );
         verify(mockPlatformHostApi.createFromWebView(
-          instanceManager.getInstanceId(configurationFromWebView)!,
-          instanceManager.getInstanceId(webView)!,
+          instanceManager.getInstanceId(configurationFromWebView),
+          instanceManager.getInstanceId(webView),
         ));
       });
 

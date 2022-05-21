@@ -400,10 +400,10 @@ void main() {
               WKUserScriptInjectionTime.atDocumentEnd);
           expect(
             zoomScript.source,
-            "var meta = document.createElement('meta');"
-            "meta.name = 'viewport';"
-            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-            "user-scalable=no';"
+            "var meta = document.createElement('meta');\n"
+            "meta.name = 'viewport';\n"
+            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+            "user-scalable=no';\n"
             "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
           );
         });
@@ -892,10 +892,10 @@ void main() {
             zoomScript.injectionTime, WKUserScriptInjectionTime.atDocumentEnd);
         expect(
           zoomScript.source,
-          "var meta = document.createElement('meta');"
-          "meta.name = 'viewport';"
-          "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-          "user-scalable=no';"
+          "var meta = document.createElement('meta');\n"
+          "meta.name = 'viewport';\n"
+          "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+          "user-scalable=no';\n"
           "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
         );
       });

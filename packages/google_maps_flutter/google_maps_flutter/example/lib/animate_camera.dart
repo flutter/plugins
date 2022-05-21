@@ -28,6 +28,7 @@ class AnimateCamera extends StatefulWidget {
 class AnimateCameraState extends State<AnimateCamera> {
   GoogleMapController? mapController;
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
