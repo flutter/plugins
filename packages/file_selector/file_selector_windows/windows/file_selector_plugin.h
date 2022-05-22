@@ -10,6 +10,7 @@
 #include <functional>
 
 #include "file_dialog_controller.h"
+#include "messages.g.h"
 
 namespace file_selector_windows {
 
@@ -18,7 +19,7 @@ namespace file_selector_windows {
 // around https://github.com/flutter/flutter/issues/90694.
 using FlutterRootWindowProvider = std::function<HWND()>;
 
-class FileSelectorPlugin : public flutter::Plugin {
+class FileSelectorPlugin : public flutter::Plugin, public FileSelectorApi {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
@@ -30,9 +31,16 @@ class FileSelectorPlugin : public flutter::Plugin {
 
   virtual ~FileSelectorPlugin();
 
-  // Called when a method is called on plugin channel;
-  void HandleMethodCall(const flutter::MethodCall<>& method_call,
-                        std::unique_ptr<flutter::MethodResult<>> result);
+  // FileSelectorApi
+  ErrorOr<std::unique_ptr<flutter::EncodableList>> showOpenDialog(
+      const SelectionOptions& options,
+      std::optional<std::string> initialDirectory,
+      std::optional<std::string> confirmButtonText) override;
+  ErrorOr<std::unique_ptr<flutter::EncodableList>> showSaveDialog(
+      const SelectionOptions& options,
+      std::optional<std::string> initialDirectory,
+      std::optional<std::string> suggestedName,
+      std::optional<std::string> confirmButtonText) override;
 
  private:
   // The provider for the root window to attach the dialog to.
