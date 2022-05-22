@@ -186,10 +186,6 @@ class MockTestUIViewHostApi extends _i1.Mock implements _i2.TestUIViewHostApi {
   }
 
   @override
-  List<double?> getContentOffset(int? instanceId) =>
-      (super.noSuchMethod(Invocation.method(#getContentOffset, [instanceId]),
-          returnValue: <double?>[]) as List<double?>);
-  @override
   void setBackgroundColor(int? instanceId, int? value) => super.noSuchMethod(
       Invocation.method(#setBackgroundColor, [instanceId, value]),
       returnValueForMissingStub: null);

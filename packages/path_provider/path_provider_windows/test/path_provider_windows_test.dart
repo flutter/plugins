@@ -78,9 +78,8 @@ void main() {
     if (path != null) {
       expect(
           path,
-          endsWith(r'AppData\Roaming\'
-              r'A _Bad_ Company_ Name\'
-              r'A__Terrible__App__Name'));
+          endsWith(
+              r'AppData\Roaming\A _Bad_ Company_ Name\A__Terrible__App__Name'));
       expect(Directory(path).existsSync(), isTrue);
     }
   }, skip: !Platform.isWindows);

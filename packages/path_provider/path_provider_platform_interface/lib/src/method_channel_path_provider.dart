@@ -22,6 +22,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// This API is only exposed for the unit tests. It should not be used by
   /// any code outside of the plugin itself.
   @visibleForTesting
+  // ignore: use_setters_to_change_properties
   void setMockPathProviderPlatform(Platform platform) {
     _platform = platform;
   }
