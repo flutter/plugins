@@ -29,9 +29,9 @@ import 'package:google_maps/google_maps.dart' as gmaps;
 ///
 /// See: https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/libraries/maps/Projection#public-point-toscreenlocation-latlng-location
 gmaps.Point toScreenLocation(gmaps.GMap map, gmaps.LatLng coords) {
-  final zoom = map.zoom;
-  final bounds = map.bounds;
-  final projection = map.projection;
+  final num? zoom = map.zoom;
+  final gmaps.LatLngBounds? bounds = map.bounds;
+  final gmaps.Projection? projection = map.projection;
 
   assert(
       bounds != null, 'Map Bounds required to compute screen x/y of LatLng.');
@@ -40,15 +40,15 @@ gmaps.Point toScreenLocation(gmaps.GMap map, gmaps.LatLng coords) {
   assert(zoom != null,
       'Current map zoom level required to compute screen x/y of LatLng.');
 
-  final ne = bounds!.northEast;
-  final sw = bounds.southWest;
+  final gmaps.LatLng ne = bounds!.northEast;
+  final gmaps.LatLng sw = bounds.southWest;
 
-  final topRight = projection!.fromLatLngToPoint!(ne)!;
-  final bottomLeft = projection.fromLatLngToPoint!(sw)!;
+  final gmaps.Point topRight = projection!.fromLatLngToPoint!(ne)!;
+  final gmaps.Point bottomLeft = projection.fromLatLngToPoint!(sw)!;
 
-  final scale = 1 << (zoom!.toInt()); // 2 ^ zoom
+  final int scale = 1 << (zoom!.toInt()); // 2 ^ zoom
 
-  final worldPoint = projection.fromLatLngToPoint!(coords)!;
+  final gmaps.Point worldPoint = projection.fromLatLngToPoint!(coords)!;
 
   return gmaps.Point(
     ((worldPoint.x! - bottomLeft.x!) * scale).toInt(),

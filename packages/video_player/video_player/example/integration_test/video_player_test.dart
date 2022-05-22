@@ -182,7 +182,7 @@ void main() {
             child: FutureBuilder<bool>(
               future: started(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.data == true) {
+                if (snapshot.data ?? false) {
                   return AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),

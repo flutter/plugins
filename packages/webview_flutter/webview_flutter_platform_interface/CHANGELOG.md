@@ -1,3 +1,8 @@
+## 1.9.0
+
+* Adds the first iteration of the v4 webview_flutter interface implementation.
+* Removes unnecessary imports.
+
 ## 1.8.2
 
 * Migrates from `ui.hash*` to `Object.hash*`.
