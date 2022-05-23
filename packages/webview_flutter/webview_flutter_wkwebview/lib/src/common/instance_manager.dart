@@ -196,7 +196,8 @@ class InstanceManager {
   int _generateNewIdentifier() {
     late int identifier;
     do {
-      // Value must be < 2^16.
+      // Values are less than 2^16 while the host platform is expected to use
+      // values greater than or equal to 2^16.
       identifier = Random().nextInt(65536);
     } while (containsIdentifier(identifier));
     return identifier;

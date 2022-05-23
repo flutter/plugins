@@ -78,8 +78,8 @@
     long identifier;
     do {
       // Identifiers are generated randomly to avoid collisions with objects
-      // created simultaneously by the Flutter.
-      // Value must be >= 2^16.
+      // created simultaneously by Flutter.
+      // Values are >= 2^16 and Flutter is expected to use values < 2^16.
       identifier = arc4random_uniform(65536) + 65536;
     } while ([self.weakInstances objectForKey:@(identifier)]);
     [self addInstance:instance withIdentifier:identifier];
