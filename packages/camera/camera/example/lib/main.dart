@@ -667,7 +667,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await cameraController.initialize();
       await Future.wait(<Future<Object?>>[
         // The exposure mode is currently not supported on the web.
-        if (kIsWeb) ...<Future<Object?>>[
+        if (!kIsWeb) ...<Future<Object?>>[
           cameraController
               .getMinExposureOffset()
               .then((double value) => _minAvailableExposureOffset = value),
