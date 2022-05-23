@@ -84,7 +84,7 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, Object?> rawOptions) {
   }
 
   if (rawOptions['gestureHandling'] != null) {
-    options.gestureHandling = rawOptions['gestureHandling'];
+    options.gestureHandling = rawOptions['gestureHandling'] as String?;
   } else if (rawOptions['scrollGesturesEnabled'] == false ||
       rawOptions['zoomGesturesEnabled'] == false) {
     options.gestureHandling = GestureHandling.none.name;

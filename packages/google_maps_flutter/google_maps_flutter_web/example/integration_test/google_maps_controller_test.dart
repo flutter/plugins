@@ -145,8 +145,8 @@ void main() {
           expect(() {
             controller.updateCircles(
               CircleUpdates.from(
-                <Circle>{},
-                <Circle>{},
+                const <Circle>{},
+                const <Circle>{},
               ),
             );
           }, throwsAssertionError);
@@ -159,8 +159,8 @@ void main() {
           expect(() {
             controller.updatePolygons(
               PolygonUpdates.from(
-                <Polygon>{},
-                <Polygon>{},
+                const <Polygon>{},
+                const <Polygon>{},
               ),
             );
           }, throwsAssertionError);
@@ -173,8 +173,8 @@ void main() {
           expect(() {
             controller.updatePolylines(
               PolylineUpdates.from(
-                <Polyline>{},
-                <Polyline>{},
+                const <Polyline>{},
+                const <Polyline>{},
               ),
             );
           }, throwsAssertionError);
@@ -187,8 +187,8 @@ void main() {
           expect(() {
             controller.updateMarkers(
               MarkerUpdates.from(
-                <Marker>{},
-                <Marker>{},
+                const <Marker>{},
+                const <Marker>{},
               ),
             );
           }, throwsAssertionError);
@@ -429,10 +429,11 @@ void main() {
 
         testWidgets('translates gestureHandling option',
             (WidgetTester tester) async {
-          controller = _createController(options: {
+          controller = _createController(options: <String, String>{
             'gestureHandling': GestureHandling.greedy.name,
           });
-          controller.debugSetOverrides(createMap: (_, options) {
+          controller.debugSetOverrides(
+              createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
             return map;
           });
