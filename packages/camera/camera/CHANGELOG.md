@@ -1,6 +1,14 @@
-## 0.9.5+1
+## 0.9.6+1
 
 * Improve the example to update the controller only if it's initialized successfully.
+
+## 0.9.6
+
+* Adds audio access permission handling logic on iOS to fix an issue with `prepareForVideoRecording` not awaiting for the audio permission request result.
+
+## 0.9.5+1
+
+* Suppresses warnings for pre-iOS-11 codepaths.
 
 ## 0.9.5
 

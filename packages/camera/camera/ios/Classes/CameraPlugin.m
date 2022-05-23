@@ -132,14 +132,7 @@
       [result sendNotImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
-    FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
-      // Create FLTCam only if granted camera access.
-      if (error) {
-        [result sendFlutterError:error];
-      } else {
-        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
-      }
-    });
+    [self handleCreateMethodCall:call result:result];
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
     [result sendSuccess];
@@ -194,7 +187,7 @@
       [_camera close];
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
-      [_camera setUpCaptureSessionForAudio];
+      [self.camera setUpCaptureSessionForAudio];
       [result sendSuccess];
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingWithResult:result];
@@ -256,6 +249,33 @@
       [result sendNotImplemented];
     }
   }
+}
+
+- (void)handleCreateMethodCall:(FlutterMethodCall *)call
+                        result:(FLTThreadSafeFlutterResult *)result {
+  // Create FLTCam only if granted camera access (and audio access if audio is enabled)
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
+    if (error) {
+      [result sendFlutterError:error];
+    } else {
+      // Request audio permission on `create` call with `enableAudio` argument instead of the
+      // `prepareForVideoRecording` call. This is because `prepareForVideoRecording` call is
+      // optional, and used as a workaround to fix a missing frame issue on iOS.
+      BOOL audioEnabled = [call.arguments[@"enableAudio"] boolValue];
+      if (audioEnabled) {
+        // Setup audio capture session only if granted audio access.
+        FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
+          if (error) {
+            [result sendFlutterError:error];
+          } else {
+            [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+          }
+        });
+      } else {
+        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+      }
+    }
+  });
 }
 
 - (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
