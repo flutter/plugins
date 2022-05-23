@@ -427,10 +427,10 @@ void main() {
                   'disabling scroll gestures disables all gesture handling');
         });
 
-        testWidgets('translates gestureHandling option',
+        testWidgets('translates webGestureHandling option',
             (WidgetTester tester) async {
           controller = _createController(options: <String, String>{
-            'gestureHandling': GestureHandling.greedy.name,
+            'webGestureHandling': WebGestureHandling.greedy.name,
           });
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {

@@ -89,7 +89,7 @@ class GoogleMap extends StatefulWidget {
     required this.initialCameraPosition,
     this.onMapCreated,
     this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
-    this.gestureHandling,
+    this.webGestureHandling,
     this.compassEnabled = true,
     this.mapToolbarEnabled = true,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
@@ -289,8 +289,8 @@ class GoogleMap extends StatefulWidget {
 
   /// This setting controls how the API handles gestures on the map. Web only.
   ///
-  /// See [GestureHandling] for more details.
-  final GestureHandling? gestureHandling;
+  /// See [WebGestureHandling] for more details.
+  final WebGestureHandling? webGestureHandling;
 
   /// Creates a [State] for this [GoogleMap].
   @override
@@ -540,7 +540,7 @@ class _GoogleMapState extends State<GoogleMap> {
 /// Configuration options for the GoogleMaps user interface.
 class _GoogleMapOptions {
   _GoogleMapOptions.fromWidget(GoogleMap map)
-      : gestureHandling = map.gestureHandling,
+      : webGestureHandling = map.webGestureHandling,
         compassEnabled = map.compassEnabled,
         mapToolbarEnabled = map.mapToolbarEnabled,
         cameraTargetBounds = map.cameraTargetBounds,
@@ -562,7 +562,7 @@ class _GoogleMapOptions {
         buildingsEnabled = map.buildingsEnabled,
         assert(!map.liteModeEnabled || Platform.isAndroid);
 
-  final GestureHandling? gestureHandling;
+  final WebGestureHandling? webGestureHandling;
 
   final bool compassEnabled;
 
@@ -604,7 +604,7 @@ class _GoogleMapOptions {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'gestureHandling': gestureHandling?.name,
+      'webGestureHandling': webGestureHandling?.name,
       'compassEnabled': compassEnabled,
       'mapToolbarEnabled': mapToolbarEnabled,
       'cameraTargetBounds': cameraTargetBounds.toJson(),
