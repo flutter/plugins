@@ -64,7 +64,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  bool get includeSubpackages => true;
+  PackageLoopingType get packageLoopingType =>
+      PackageLoopingType.includeAllSubpackages;
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
@@ -225,8 +226,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool _checkIssueLink(Pubspec pubspec) {
     return pubspec.issueTracker
             ?.toString()
-            .startsWith(_expectedIssueLinkFormat) ==
-        true;
+            .startsWith(_expectedIssueLinkFormat) ??
+        false;
   }
 
   // Validates the "implements" keyword for a plugin, returning an error
@@ -287,8 +288,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
         .where((String package) => !dependencies.contains(package));
     if (missingPackages.isNotEmpty) {
       return 'The following default_packages are missing '
-              'corresponding dependencies:\n  ' +
-          missingPackages.join('\n  ');
+          'corresponding dependencies:\n'
+          '  ${missingPackages.join('\n  ')}';
     }
 
     return null;

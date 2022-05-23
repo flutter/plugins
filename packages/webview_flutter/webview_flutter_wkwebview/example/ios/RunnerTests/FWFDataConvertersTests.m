@@ -10,7 +10,7 @@
 @end
 
 @implementation FWFDataConvertersTests
-- (void)testFNSURLRequestFromRequestData {
+- (void)testFWFNSURLRequestFromRequestData {
   NSURLRequest *request = FWFNSURLRequestFromRequestData([FWFNSUrlRequestData
               makeWithUrl:@"https://flutter.dev"
                httpMethod:@"post"
@@ -21,5 +21,26 @@
   XCTAssertEqualObjects(request.HTTPMethod, @"POST");
   XCTAssertEqualObjects(request.HTTPBody, [NSData data]);
   XCTAssertEqualObjects(request.allHTTPHeaderFields, @{@"a" : @"header"});
+}
+
+- (void)testFWFNSHTTPCookieFromCookieData {
+  NSHTTPCookie *cookie = FWFNSHTTPCookieFromCookieData([FWFNSHttpCookieData
+      makeWithPropertyKeys:@[ [FWFNSHttpCookiePropertyKeyEnumData
+                               makeWithValue:FWFNSHttpCookiePropertyKeyEnumName] ]
+            propertyValues:@[ @"cookieName" ]]);
+  XCTAssertEqualObjects(cookie,
+                        [NSHTTPCookie cookieWithProperties:@{NSHTTPCookieName : @"cookieName"}]);
+}
+
+- (void)testFWFWKUserScriptFromScriptData {
+  WKUserScript *userScript = FWFWKUserScriptFromScriptData([FWFWKUserScriptData
+       makeWithSource:@"mySource"
+        injectionTime:[FWFWKUserScriptInjectionTimeEnumData
+                          makeWithValue:FWFWKUserScriptInjectionTimeEnumAtDocumentStart]
+      isMainFrameOnly:@NO]);
+
+  XCTAssertEqualObjects(userScript.source, @"mySource");
+  XCTAssertEqual(userScript.injectionTime, WKUserScriptInjectionTimeAtDocumentStart);
+  XCTAssertEqual(userScript.isForMainFrameOnly, NO);
 }
 @end

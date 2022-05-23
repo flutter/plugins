@@ -93,7 +93,7 @@ void main() {
         ]));
   });
 
-  test('don\'t elide a non-contained example package', () async {
+  test("don't elide a non-contained example package", () async {
     final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
     final RepositoryPackage plugin2 = createFakePlugin('example', packagesDir);
 
@@ -211,6 +211,18 @@ void main() {
             ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
                 plugin.path),
           ]));
+    });
+
+    test('allows an empty config file', () async {
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
+      final File allowFile = packagesDir.childFile('custom.yaml');
+      allowFile.createSync();
+
+      await expectLater(
+          () => runCapturingPrint(
+              runner, <String>['analyze', '--custom-analysis', allowFile.path]),
+          throwsA(isA<ToolExit>()));
     });
 
     // See: https://github.com/flutter/flutter/issues/78994

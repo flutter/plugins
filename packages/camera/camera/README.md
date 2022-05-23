@@ -80,6 +80,26 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 }
 ```
 
+### Handling camera access permissions
+
+Permission errors may be thrown when initializing the camera controller, and you are expected to handle them properly.
+
+Here is a list of all permission error codes that can be thrown:
+
+- `CameraAccessDenied`: Thrown when user denies the camera access permission.
+
+- `CameraAccessDeniedWithoutPrompt`: iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
+
+- `CameraAccessRestricted`: iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
+
+- `AudioAccessDenied`: Thrown when user denies the audio access permission.
+
+- `AudioAccessDeniedWithoutPrompt`: iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
+
+- `AudioAccessRestricted`: iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
+
+- `cameraPermission`: Android and Web only. A legacy error code for all kinds of camera permission errors.
+
 ### Example
 
 Here is a small example flutter app displaying a full screen camera preview.
@@ -89,18 +109,22 @@ Here is a small example flutter app displaying a full screen camera preview.
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-late List<CameraDescription> cameras;
+late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  cameras = await availableCameras();
-  runApp(CameraApp());
+  _cameras = await availableCameras();
+  runApp(const CameraApp());
 }
 
+/// CameraApp is the Main Application.
 class CameraApp extends StatefulWidget {
+  /// Default Constructor
+  const CameraApp({Key? key}) : super(key: key);
+
   @override
-  _CameraAppState createState() => _CameraAppState();
+  State<CameraApp> createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
@@ -109,12 +133,23 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    controller = CameraController(cameras[0], ResolutionPreset.max);
+    controller = CameraController(_cameras[0], ResolutionPreset.max);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
       }
       setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print('User denied camera access.');
+            break;
+          default:
+            print('Handle other errors.');
+            break;
+        }
+      }
     });
   }
 

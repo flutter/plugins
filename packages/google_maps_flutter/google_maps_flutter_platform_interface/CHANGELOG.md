@@ -1,6 +1,10 @@
 ## 2.2.0
 
 * Adds options for gesture handling and tilt controls on web.
+
+## 2.1.7
+
+* Updates code for stricter analysis options.
 * Removes unnecessary imports.
 
 ## 2.1.6
