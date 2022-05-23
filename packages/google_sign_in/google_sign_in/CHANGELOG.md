@@ -1,5 +1,6 @@
-## NEXT
+## 5.3.2
 
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
 * Updates tests to use a mock platform instead of relying on default
   method channel implementation internals.
 * Removes example workaround to build for arm64 iOS simulators.
