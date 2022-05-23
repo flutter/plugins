@@ -682,11 +682,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .getMinZoomLevel()
             .then((double value) => _minAvailableZoom = value),
       ]);
-      // `controller` needs to be set until it's fully initialized, to avoid a
-      // race condition when the lifecycle callback being called and creates a
-      // new `controller`. This happens when the camera permission dialog
+      // `controller` needs to be set until it's fully initialized to avoid a
+      // race condition when the lifecycle callback is being called and creates
+      // a new `controller`. This happens when the camera permission dialog
       // dismisses at the first run, which triggers `didChangeAppLifecycleState`
-      // that disposes and re-creates the controller.
+      // that disposes and re-creates the controller. Switching controllers in a
+      // short circumstance might cause the camera preview flashes or make the
+      // state hard to manage.
       controller = cameraController;
     } on CameraException catch (e) {
       switch (e.code) {
