@@ -150,9 +150,10 @@ final class GoogleMapController
    * (16.66ms at 60hz) have passed since the drawing operation was issued.
    */
   private void invalidateMapIfNeeded() {
-    if (googleMap == null) {
+    if (googleMap == null || invalidatePending) {
       return;
     }
+    invalidatePending = true;
     googleMap.setOnMapLoadedCallback(
         new GoogleMap.OnMapLoadedCallback() {
           @Override
@@ -161,6 +162,7 @@ final class GoogleMapController
                 () -> {
                   postFrameCallback(
                       () -> {
+                        invalidatePending = false;
                         if (mapView != null) {
                           mapView.invalidate();
                         }
@@ -169,6 +171,8 @@ final class GoogleMapController
           }
         });
   }
+
+  private boolean invalidatePending = false;
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
@@ -305,10 +309,8 @@ final class GoogleMapController
           markersController.changeMarkers(markersToChange);
           List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers(markerIdsToRemove);
-          // Workaround for https://github.com/flutter/flutter/issues/103686.
-          // After Flutter 3.0.0, markers aren't updated until the next view invalidation.
-          invalidateMapIfNeeded();
           result.success(null);
+          invalidateMapIfNeeded();
           break;
         }
       case "markers#showInfoWindow":
@@ -338,6 +340,7 @@ final class GoogleMapController
           List<Object> polygonIdsToRemove = call.argument("polygonIdsToRemove");
           polygonsController.removePolygons(polygonIdsToRemove);
           result.success(null);
+          invalidateMapIfNeeded();
           break;
         }
       case "polylines#update":
@@ -349,6 +352,7 @@ final class GoogleMapController
           List<Object> polylineIdsToRemove = call.argument("polylineIdsToRemove");
           polylinesController.removePolylines(polylineIdsToRemove);
           result.success(null);
+          invalidateMapIfNeeded();
           break;
         }
       case "circles#update":
@@ -360,6 +364,7 @@ final class GoogleMapController
           List<Object> circleIdsToRemove = call.argument("circleIdsToRemove");
           circlesController.removeCircles(circleIdsToRemove);
           result.success(null);
+          invalidateMapIfNeeded();
           break;
         }
       case "map#isCompassEnabled":
@@ -432,12 +437,16 @@ final class GoogleMapController
         }
       case "map#setStyle":
         {
-          String mapStyle = (String) call.arguments;
           boolean mapStyleSet;
-          if (mapStyle == null) {
-            mapStyleSet = googleMap.setMapStyle(null);
+          if (call.arguments instanceof String) {
+            String mapStyle = (String) call.arguments;
+            if (mapStyle == null) {
+              mapStyleSet = googleMap.setMapStyle(null);
+            } else {
+              mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
+            }
           } else {
-            mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
+            mapStyleSet = googleMap.setMapStyle(null);
           }
           ArrayList<Object> mapStyleResult = new ArrayList<>(2);
           mapStyleResult.add(mapStyleSet);
@@ -446,6 +455,7 @@ final class GoogleMapController
                 "Unable to set the map style. Please check console logs for errors.");
           }
           result.success(mapStyleResult);
+          invalidateMapIfNeeded();
           break;
         }
       case "tileOverlays#update":
@@ -457,12 +467,14 @@ final class GoogleMapController
           List<String> tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
           tileOverlaysController.removeTileOverlays(tileOverlaysToRemove);
           result.success(null);
+          invalidateMapIfNeeded();
           break;
         }
       case "tileOverlays#clearTileCache":
         {
           String tileOverlayId = call.argument("tileOverlayId");
           tileOverlaysController.clearTileCache(tileOverlayId);
+          invalidateMapIfNeeded();
           result.success(null);
           break;
         }

@@ -68,11 +68,52 @@ public class GoogleMapControllerTest {
   }
 
   @Test
-  public void InvalidateMapAfterMarkersUpdate() throws InterruptedException {
+  public void InvalidateMapAfterMethodCalls() throws InterruptedException {
+    String[] methodsThatTriggerInvalidation = {
+      "markers#update",
+      "polygons#update",
+      "polylines#update",
+      "circles#update",
+      "map#setStyle",
+      "tileOverlays#update",
+      "tileOverlays#clearTileCache"
+    };
+
+    for (String methodName : methodsThatTriggerInvalidation) {
+      googleMapController =
+          new GoogleMapController(0, context, mockMessenger, activity::getLifecycle, null);
+      googleMapController.init();
+
+      mockGoogleMap = mock(GoogleMap.class);
+      googleMapController.onMapReady(mockGoogleMap);
+
+      MethodChannel.Result result = mock(MethodChannel.Result.class);
+      System.out.println(methodName);
+      googleMapController.onMethodCall(
+          new MethodCall(methodName, new HashMap<String, Object>()), result);
+
+      ArgumentCaptor<GoogleMap.OnMapLoadedCallback> argument =
+          ArgumentCaptor.forClass(GoogleMap.OnMapLoadedCallback.class);
+      verify(mockGoogleMap).setOnMapLoadedCallback(argument.capture());
+
+      MapView mapView = mock(MapView.class);
+      googleMapController.setView(mapView);
+
+      verify(mapView, never()).invalidate();
+      argument.getValue().onMapLoaded();
+      verify(mapView).invalidate();
+    }
+  }
+
+  @Test
+  public void InvalidateMapOnceAfterMethodCall() throws InterruptedException {
     googleMapController.onMapReady(mockGoogleMap);
+
     MethodChannel.Result result = mock(MethodChannel.Result.class);
     googleMapController.onMethodCall(
         new MethodCall("markers#update", new HashMap<String, Object>()), result);
+    googleMapController.onMethodCall(
+        new MethodCall("polygons#update", new HashMap<String, Object>()), result);
 
     ArgumentCaptor<GoogleMap.OnMapLoadedCallback> argument =
         ArgumentCaptor.forClass(GoogleMap.OnMapLoadedCallback.class);
@@ -87,7 +128,7 @@ public class GoogleMapControllerTest {
   }
 
   @Test
-  public void UpdateMarkersAfterControllerIsDestroyed() throws InterruptedException {
+  public void MethodCalledAfterControllerIsDestroyed() throws InterruptedException {
     googleMapController.onMapReady(mockGoogleMap);
     MethodChannel.Result result = mock(MethodChannel.Result.class);
     googleMapController.onMethodCall(
