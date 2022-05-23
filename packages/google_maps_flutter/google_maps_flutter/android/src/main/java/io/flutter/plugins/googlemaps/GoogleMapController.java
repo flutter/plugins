@@ -133,7 +133,7 @@ final class GoogleMapController
     return trackCameraPosition ? googleMap.getCameraPosition() : null;
   }
 
-  private boolean invalidatePending = false;
+  private boolean loadedCallbackPending = false;
 
   /**
    * Invalidates the map view after the map has finished rendering.
@@ -152,19 +152,19 @@ final class GoogleMapController
    * (16.66ms at 60hz) have passed since the drawing operation was issued.
    */
   private void invalidateMapIfNeeded() {
-    if (googleMap == null || invalidatePending) {
+    if (googleMap == null || loadedCallbackPending) {
       return;
     }
-    invalidatePending = true;
+    loadedCallbackPending = true;
     googleMap.setOnMapLoadedCallback(
         new GoogleMap.OnMapLoadedCallback() {
           @Override
           public void onMapLoaded() {
+            loadedCallbackPending = false;
             postFrameCallback(
                 () -> {
                   postFrameCallback(
                       () -> {
-                        invalidatePending = false;
                         if (mapView != null) {
                           mapView.invalidate();
                         }
