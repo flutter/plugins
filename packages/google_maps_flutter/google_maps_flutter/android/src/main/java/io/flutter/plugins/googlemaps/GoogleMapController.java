@@ -133,6 +133,8 @@ final class GoogleMapController
     return trackCameraPosition ? googleMap.getCameraPosition() : null;
   }
 
+  private boolean invalidatePending = false;
+
   /**
    * Invalidates the map view after the map has finished rendering.
    *
@@ -172,7 +174,16 @@ final class GoogleMapController
         });
   }
 
-  private boolean invalidatePending = false;
+  private static void postFrameCallback(Runnable f) {
+    Choreographer.getInstance()
+        .postFrameCallback(
+            new Choreographer.FrameCallback() {
+              @Override
+              public void doFrame(long frameTimeNanos) {
+                f.run();
+              }
+            });
+  }
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
@@ -197,17 +208,6 @@ final class GoogleMapController
     updateInitialPolylines();
     updateInitialCircles();
     updateInitialTileOverlays();
-  }
-
-  private static void postFrameCallback(Runnable f) {
-    Choreographer.getInstance()
-        .postFrameCallback(
-            new Choreographer.FrameCallback() {
-              @Override
-              public void doFrame(long frameTimeNanos) {
-                f.run();
-              }
-            });
   }
 
   @Override
