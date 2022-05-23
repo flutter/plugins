@@ -673,7 +673,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               .then((double value) => _minAvailableExposureOffset = value),
           cameraController
               .getMaxExposureOffset()
-              .then((double value) => _maxAvailableExposureOffset = value)
+              .then((double value) => _maxAvailableExposureOffset = value),
         ],
         cameraController
             .getMaxZoomLevel()
