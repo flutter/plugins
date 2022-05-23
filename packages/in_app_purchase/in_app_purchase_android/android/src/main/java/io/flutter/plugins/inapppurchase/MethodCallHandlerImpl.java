@@ -5,7 +5,7 @@
 package io.flutter.plugins.inapppurchase;
 
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchaseHistoryRecordList;
-import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
+import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
@@ -25,11 +25,14 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.PriceChangeFlowParams;
+import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import com.android.billingclient.api.QueryPurchasesParams;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
@@ -153,7 +156,7 @@ class MethodCallHandlerImpl
         launchPriceChangeConfirmationFlow((String) call.argument("sku"), result);
         break;
       case InAppPurchasePlugin.MethodNames.GET_CONNECTION_STATE:
-        getConnectionState();
+        getConnectionState(result);
         break;
       default:
         result.notImplemented();
@@ -256,7 +259,7 @@ class MethodCallHandlerImpl
     BillingFlowParams.Builder paramsBuilder =
         BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
     BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
-        BillingFlowParams.SubscriptionUpdateParams.Builder.newBuilder();
+        BillingFlowParams.SubscriptionUpdateParams.newBuilder();
     if (accountId != null && !accountId.isEmpty()) {
       paramsBuilder.setObfuscatedAccountId(accountId);
     }
@@ -302,18 +305,22 @@ class MethodCallHandlerImpl
 
     // Like in our connect call, consider the billing client responding a "success" here regardless
     // of status code.
-    billingClient.queryPurchaseHistoryAsync(
-        skuType,
+    QueryPurchasesParams.Builder paramsBuilder = QueryPurchasesParams.newBuilder();
+    paramsBuilder.setProductType(skuType);
+    billingClient.queryPurchasesAsync(
+        paramsBuilder.build(),
         new PurchasesResponseListener() {
-          @Override
-          public void onQueryPurchasesResponse(
-              BillingResult billingResult, List<Purchase> purchasesList) {
-            final Map<String, Object> serialized = new HashMap<>();
-            serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-            serialized.put(
-                "purchaseList", fromPurchaseList(purchasesList));
-            result.success(serialized);
-          }
+            @Override
+            public void onQueryPurchasesResponse(
+                BillingResult billingResult, List<Purchase> purchasesList) {
+              final Map<String, Object> serialized = new HashMap<>();
+              // The response code is no longer passed, as part of billing 4.1.0, so we pass OK here.
+              serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
+              serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+              serialized.put(
+                  "purchaseList", fromPurchasesList(purchasesList));
+              result.success(serialized);
+            }
         });
   }
 
@@ -329,8 +336,6 @@ class MethodCallHandlerImpl
           public void onPurchaseHistoryResponse(
               BillingResult billingResult, List<PurchaseHistoryRecord> purchasesList) {
             final Map<String, Object> serialized = new HashMap<>();
-            // The response code is no longer passed, as part of billing 4.1.0, so we pass OK here.
-            serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
             serialized.put("billingResult", Translator.fromBillingResult(billingResult));
             serialized.put(
                 "purchaseHistoryRecordList", fromPurchaseHistoryRecordList(purchasesList));
@@ -339,7 +344,7 @@ class MethodCallHandlerImpl
         });
   }
 
-  private void getConnectionState() {
+  private void getConnectionState(final MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }

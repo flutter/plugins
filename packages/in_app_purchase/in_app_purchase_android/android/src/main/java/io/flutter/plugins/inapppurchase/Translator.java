@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.SkuDetails;
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ import java.util.Locale;
     info.put("purchaseToken", purchase.getPurchaseToken());
     info.put("signature", purchase.getSignature());
     if (!skus.isEmpty()) {
-      info.put("sku", skus[0]);
+      info.put("sku", skus.get(0));
     }
     info.put("skus", skus);
     info.put("isAutoRenewing", purchase.isAutoRenewing());
@@ -88,7 +87,7 @@ import java.util.Locale;
     info.put("purchaseToken", purchaseHistoryRecord.getPurchaseToken());
     info.put("signature", purchaseHistoryRecord.getSignature());
     if (!skus.isEmpty()) {
-      info.put("sku", skus[0]);
+      info.put("sku", skus.get(0));
     }
     info.put("skus", skus);
     info.put("developerPayload", purchaseHistoryRecord.getDeveloperPayload());
@@ -120,14 +119,6 @@ import java.util.Locale;
       serialized.add(fromPurchaseHistoryRecord(purchaseHistoryRecord));
     }
     return serialized;
-  }
-
-  static HashMap<String, Object> fromPurchasesResult(PurchasesResult purchasesResult) {
-    HashMap<String, Object> info = new HashMap<>();
-    info.put("responseCode", purchasesResult.getResponseCode());
-    info.put("billingResult", fromBillingResult(purchasesResult.getBillingResult()));
-    info.put("purchasesList", fromPurchasesList(purchasesResult.getPurchasesList()));
-    return info;
   }
 
   static HashMap<String, Object> fromBillingResult(BillingResult billingResult) {
