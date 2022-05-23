@@ -1,6 +1,7 @@
 ## 0.3.4
 
 * Adds support for heatmap layers.
+* Adds `const` constructor parameters in example tests.
 
 ## 0.3.3
 
