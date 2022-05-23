@@ -42,8 +42,8 @@ class LatLng {
       return null;
     }
     assert(json is List && json.length == 2);
-    final List<dynamic> list = json as List<dynamic>;
-    return LatLng(list[0] as double, list[1] as double);
+    final List<Object?> list = json as List<Object?>;
+    return LatLng(list[0]! as double, list[1]! as double);
   }
 
   @override
@@ -116,7 +116,7 @@ class LatLngBounds {
       return null;
     }
     assert(json is List && json.length == 2);
-    final List<dynamic> list = json as List<dynamic>;
+    final List<Object?> list = json as List<Object?>;
     return LatLngBounds(
       southwest: LatLng.fromJson(list[0])!,
       northeast: LatLng.fromJson(list[1])!,
