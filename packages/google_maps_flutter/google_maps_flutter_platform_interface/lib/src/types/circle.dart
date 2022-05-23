@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart' show VoidCallback;
-import 'package:flutter/material.dart' show Color, Colors;
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter/material.dart' show Color, Colors;
 
 import 'types.dart';
 
@@ -105,9 +105,11 @@ class Circle implements MapsObject<Circle> {
   }
 
   /// Creates a new [Circle] object whose values are the same as this instance.
+  @override
   Circle clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 
@@ -132,18 +134,22 @@ class Circle implements MapsObject<Circle> {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final Circle typedOther = other as Circle;
-    return circleId == typedOther.circleId &&
-        consumeTapEvents == typedOther.consumeTapEvents &&
-        fillColor == typedOther.fillColor &&
-        center == typedOther.center &&
-        radius == typedOther.radius &&
-        strokeColor == typedOther.strokeColor &&
-        strokeWidth == typedOther.strokeWidth &&
-        visible == typedOther.visible &&
-        zIndex == typedOther.zIndex;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is Circle &&
+        circleId == other.circleId &&
+        consumeTapEvents == other.consumeTapEvents &&
+        fillColor == other.fillColor &&
+        center == other.center &&
+        radius == other.radius &&
+        strokeColor == other.strokeColor &&
+        strokeWidth == other.strokeWidth &&
+        visible == other.visible &&
+        zIndex == other.zIndex;
   }
 
   @override
