@@ -10,50 +10,50 @@ void main() {
 
   group('LanLng constructor', () {
     test('Maintains longitude precision if within acceptable range', () async {
-      const lat = -34.509981;
-      const lng = 150.792384;
+      const double lat = -34.509981;
+      const double lng = 150.792384;
 
-      final latLng = LatLng(lat, lng);
+      const LatLng latLng = LatLng(lat, lng);
 
       expect(latLng.latitude, equals(lat));
       expect(latLng.longitude, equals(lng));
     });
 
     test('Normalizes longitude that is below lower limit', () async {
-      const lat = -34.509981;
-      const lng = -270.0;
+      const double lat = -34.509981;
+      const double lng = -270.0;
 
-      final latLng = LatLng(lat, lng);
+      const LatLng latLng = LatLng(lat, lng);
 
       expect(latLng.latitude, equals(lat));
       expect(latLng.longitude, equals(90.0));
     });
 
     test('Normalizes longitude that is above upper limit', () async {
-      const lat = -34.509981;
-      const lng = 270.0;
+      const double lat = -34.509981;
+      const double lng = 270.0;
 
-      final latLng = LatLng(lat, lng);
+      const LatLng latLng = LatLng(lat, lng);
 
       expect(latLng.latitude, equals(lat));
       expect(latLng.longitude, equals(-90.0));
     });
 
     test('Includes longitude set to lower limit', () async {
-      const lat = -34.509981;
-      const lng = -180.0;
+      const double lat = -34.509981;
+      const double lng = -180.0;
 
-      final latLng = LatLng(lat, lng);
+      const LatLng latLng = LatLng(lat, lng);
 
       expect(latLng.latitude, equals(lat));
       expect(latLng.longitude, equals(-180.0));
     });
 
     test('Normalizes longitude set to upper limit', () async {
-      const lat = -34.509981;
-      const lng = 180.0;
+      const double lat = -34.509981;
+      const double lng = 180.0;
 
-      final latLng = LatLng(lat, lng);
+      const LatLng latLng = LatLng(lat, lng);
 
       expect(latLng.latitude, equals(lat));
       expect(latLng.longitude, equals(-180.0));
