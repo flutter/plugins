@@ -1,6 +1,7 @@
 ## 0.3.4
 
 * Adds options for gesture handling and tilt controls.
+* Adds `const` constructor parameters in example tests.
 
 ## 0.3.3
 
