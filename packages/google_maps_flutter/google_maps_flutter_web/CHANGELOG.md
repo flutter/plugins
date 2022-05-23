@@ -1,3 +1,7 @@
+## NEXT
+
+* Adds `const` constructor parameters in example tests.
+
 ## 0.3.3
 
 * Removes custom `analysis_options.yaml` (and fixes code to comply with newest rules).

@@ -233,8 +233,8 @@ void main() {
       // Geometry
       testWidgets('updateMarkers', (WidgetTester tester) async {
         final MarkerUpdates expectedUpdates = MarkerUpdates.from(
-          <Marker>{},
-          <Marker>{},
+          const <Marker>{},
+          const <Marker>{},
         );
 
         await plugin.updateMarkers(expectedUpdates, mapId: mapId);
@@ -243,8 +243,8 @@ void main() {
       });
       testWidgets('updatePolygons', (WidgetTester tester) async {
         final PolygonUpdates expectedUpdates = PolygonUpdates.from(
-          <Polygon>{},
-          <Polygon>{},
+          const <Polygon>{},
+          const <Polygon>{},
         );
 
         await plugin.updatePolygons(expectedUpdates, mapId: mapId);
@@ -253,8 +253,8 @@ void main() {
       });
       testWidgets('updatePolylines', (WidgetTester tester) async {
         final PolylineUpdates expectedUpdates = PolylineUpdates.from(
-          <Polyline>{},
-          <Polyline>{},
+          const <Polyline>{},
+          const <Polyline>{},
         );
 
         await plugin.updatePolylines(expectedUpdates, mapId: mapId);
@@ -263,8 +263,8 @@ void main() {
       });
       testWidgets('updateCircles', (WidgetTester tester) async {
         final CircleUpdates expectedUpdates = CircleUpdates.from(
-          <Circle>{},
-          <Circle>{},
+          const <Circle>{},
+          const <Circle>{},
         );
 
         await plugin.updateCircles(expectedUpdates, mapId: mapId);
