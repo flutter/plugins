@@ -9,7 +9,7 @@
 
 @property(strong, nonatomic) GMSMarker *marker;
 @property(weak, nonatomic) GMSMapView *mapView;
-@property(assign, nonatomic) BOOL consumeTapEvents;
+@property(assign, nonatomic, readwrite) BOOL consumeTapEvents;
 
 @end
 
@@ -41,10 +41,6 @@
   return self.mapView.selectedMarker == self.marker;
 }
 
-- (BOOL)consumeTapEvents {
-  return self.consumeTapEvents;
-}
-
 - (void)removeMarker {
   self.marker.map = nil;
 }
@@ -57,10 +53,6 @@
 
 - (void)setAnchor:(CGPoint)anchor {
   self.marker.groundAnchor = anchor;
-}
-
-- (void)setConsumeTapEvents:(BOOL)consumes {
-  self.consumeTapEvents = consumes;
 }
 
 - (void)setDraggable:(BOOL)draggable {

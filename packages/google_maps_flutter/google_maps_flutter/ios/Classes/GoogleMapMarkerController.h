@@ -26,13 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapMarkerController : NSObject <FLTGoogleMapMarkerOptionsSink>
+@property(assign, nonatomic, readonly) BOOL consumeTapEvents;
 - (instancetype)initMarkerWithPosition:(CLLocationCoordinate2D)position
                             identifier:(NSString *)identifier
                                mapView:(GMSMapView *)mapView;
 - (void)showInfoWindow;
 - (void)hideInfoWindow;
 - (BOOL)isInfoWindowShown;
-- (BOOL)consumeTapEvents;
 - (void)removeMarker;
 @end
 
