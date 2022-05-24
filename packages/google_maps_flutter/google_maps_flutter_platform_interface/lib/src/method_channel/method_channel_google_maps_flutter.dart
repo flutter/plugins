@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/map_objects.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/map_widget_configuration.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../types/tile_overlay_updates.dart';

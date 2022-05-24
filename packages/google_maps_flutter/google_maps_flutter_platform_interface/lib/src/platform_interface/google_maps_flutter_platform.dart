@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/map_objects.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/map_widget_configuration.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/utils/map_configuration_serialization.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 

@@ -282,4 +282,131 @@ void main() {
       expect(updated.buildingsEnabled, true);
     });
   });
+
+  group('isEmpty', () {
+    test('is true for empty', () async {
+      const MapConfiguration nullOptions = MapConfiguration();
+
+      expect(nullOptions.isEmpty, true);
+    });
+
+    test('is false with compassEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(compassEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with mapToolbarEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(mapToolbarEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with cameraTargetBounds', () async {
+      final CameraTargetBounds newBounds = CameraTargetBounds(LatLngBounds(
+          northeast: const LatLng(55, 15), southwest: const LatLng(5, 15)));
+      final MapConfiguration diff =
+          MapConfiguration(cameraTargetBounds: newBounds);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with mapType', () async {
+      const MapConfiguration diff =
+          MapConfiguration(mapType: MapType.satellite);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with minMaxZoomPreference', () async {
+      const MinMaxZoomPreference newZoomPref = MinMaxZoomPreference(3.3, 4.5);
+      const MapConfiguration diff =
+          MapConfiguration(minMaxZoomPreference: newZoomPref);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with rotateGesturesEnabled', () async {
+      const MapConfiguration diff =
+          MapConfiguration(rotateGesturesEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with scrollGesturesEnabled', () async {
+      const MapConfiguration diff =
+          MapConfiguration(scrollGesturesEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with tiltGesturesEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(tiltGesturesEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with trackCameraPosition', () async {
+      const MapConfiguration diff = MapConfiguration(trackCameraPosition: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with zoomControlsEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(zoomControlsEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with zoomGesturesEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(zoomGesturesEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with liteModeEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(liteModeEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with myLocationEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(myLocationEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with myLocationButtonEnabled', () async {
+      const MapConfiguration diff =
+          MapConfiguration(myLocationButtonEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with padding', () async {
+      const EdgeInsets newPadding =
+          EdgeInsets.symmetric(vertical: 1.0, horizontal: 3.0);
+      const MapConfiguration diff = MapConfiguration(padding: newPadding);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with indoorViewEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(indoorViewEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with trafficEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(trafficEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+
+    test('is false with buildingsEnabled', () async {
+      const MapConfiguration diff = MapConfiguration(buildingsEnabled: true);
+
+      expect(diff.isEmpty, false);
+    });
+  });
 }

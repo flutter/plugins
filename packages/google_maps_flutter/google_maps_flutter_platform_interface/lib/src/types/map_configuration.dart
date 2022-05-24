@@ -174,6 +174,27 @@ class MapConfiguration {
     );
   }
 
+  /// True if no options are set.
+  bool get isEmpty =>
+      compassEnabled == null &&
+      mapToolbarEnabled == null &&
+      cameraTargetBounds == null &&
+      mapType == null &&
+      minMaxZoomPreference == null &&
+      rotateGesturesEnabled == null &&
+      scrollGesturesEnabled == null &&
+      tiltGesturesEnabled == null &&
+      trackCameraPosition == null &&
+      zoomControlsEnabled == null &&
+      zoomGesturesEnabled == null &&
+      liteModeEnabled == null &&
+      myLocationEnabled == null &&
+      myLocationButtonEnabled == null &&
+      padding == null &&
+      indoorViewEnabled == null &&
+      trafficEnabled == null &&
+      buildingsEnabled == null;
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
