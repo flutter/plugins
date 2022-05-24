@@ -73,9 +73,8 @@
 
 - (long)addHostCreatedInstance:(nonnull NSObject *)instance {
   NSParameterAssert(instance);
-  long identifier = -1;
+  long __block identifier = -1;
   dispatch_sync(_lockQueue, ^{
-    long identifier;
     do {
       // Identifiers are generated randomly to avoid collisions with objects
       // created simultaneously by Flutter.

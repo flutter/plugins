@@ -21,7 +21,7 @@
                  0);
 }
 
-- (void)testAddHostIdentifier {
+- (void)testAddHostCreatedInstance {
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];

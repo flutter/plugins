@@ -169,6 +169,7 @@ class InstanceManager {
   void addHostCreatedInstance(Copyable instance, int identifier) {
     assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
+    assert(identifier >= 0);
     _addInstanceWithIdentifier(instance, identifier);
   }
 
