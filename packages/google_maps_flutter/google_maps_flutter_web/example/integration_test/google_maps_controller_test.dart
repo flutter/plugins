@@ -40,21 +40,17 @@ void main() {
     GoogleMapController _createController({
       CameraPosition initialCameraPosition =
           const CameraPosition(target: LatLng(0, 0)),
-      Set<Marker> markers = const <Marker>{},
-      Set<Polygon> polygons = const <Polygon>{},
-      Set<Polyline> polylines = const <Polyline>{},
-      Set<Circle> circles = const <Circle>{},
-      Map<String, dynamic> options = const <String, dynamic>{},
+      MapObjects mapObjects = const MapObjects(),
+      MapConfiguration mapConfiguration = const MapConfiguration(),
     }) {
       return GoogleMapController(
         mapId: mapId,
         streamController: stream,
-        initialCameraPosition: initialCameraPosition,
-        markers: markers,
-        polygons: polygons,
-        polylines: polylines,
-        circles: circles,
-        mapOptions: options,
+        widgetConfiguration: MapWidgetConfiguration(
+            initialCameraPosition: initialCameraPosition,
+            textDirection: TextDirection.ltr),
+        mapObjects: mapObjects,
+        mapConfiguration: mapConfiguration,
       );
     }
 
@@ -284,7 +280,8 @@ void main() {
       });
 
       testWidgets('renders initial geometry', (WidgetTester tester) async {
-        controller = _createController(circles: <Circle>{
+        controller = _createController(
+            mapObjects: MapObjects(circles: <Circle>{
           const Circle(
             circleId: CircleId('circle-1'),
             zIndex: 1234,
@@ -327,7 +324,7 @@ void main() {
             LatLng(43.354469, -5.851318),
             LatLng(43.354762, -5.850824),
           ])
-        });
+        }));
 
         controller.debugSetOverrides(
           circles: circles,
@@ -363,9 +360,10 @@ void main() {
 
       testWidgets('empty infoWindow does not create InfoWindow instance.',
           (WidgetTester tester) async {
-        controller = _createController(markers: <Marker>{
+        controller = _createController(
+            mapObjects: MapObjects(markers: <Marker>{
           const Marker(markerId: MarkerId('marker-1')),
-        });
+        }));
 
         controller.debugSetOverrides(
           markers: markers,
@@ -385,10 +383,11 @@ void main() {
           capturedOptions = null;
         });
         testWidgets('translates initial options', (WidgetTester tester) async {
-          controller = _createController(options: <String, dynamic>{
-            'mapType': 2,
-            'zoomControlsEnabled': true,
-          });
+          controller = _createController(
+              mapConfiguration: const MapConfiguration(
+            mapType: MapType.satellite,
+            zoomControlsEnabled: true,
+          ));
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
@@ -407,9 +406,10 @@ void main() {
 
         testWidgets('disables gestureHandling with scrollGesturesEnabled false',
             (WidgetTester tester) async {
-          controller = _createController(options: <String, dynamic>{
-            'scrollGesturesEnabled': false,
-          });
+          controller = _createController(
+              mapConfiguration: const MapConfiguration(
+            scrollGesturesEnabled: false,
+          ));
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
@@ -426,9 +426,10 @@ void main() {
 
         testWidgets('disables gestureHandling with zoomGesturesEnabled false',
             (WidgetTester tester) async {
-          controller = _createController(options: <String, dynamic>{
-            'zoomGesturesEnabled': false,
-          });
+          controller = _createController(
+              mapConfiguration: const MapConfiguration(
+            zoomGesturesEnabled: false,
+          ));
           controller.debugSetOverrides(
               createMap: (_, gmaps.MapOptions options) {
             capturedOptions = options;
@@ -477,9 +478,10 @@ void main() {
 
         testWidgets('initializes with traffic layer',
             (WidgetTester tester) async {
-          controller = _createController(options: <String, dynamic>{
-            'trafficEnabled': true,
-          });
+          controller = _createController(
+              mapConfiguration: const MapConfiguration(
+            trafficEnabled: true,
+          ));
           controller.debugSetOverrides(createMap: (_, __) => map);
           controller.init();
           expect(controller.trafficLayer, isNotNull);
@@ -505,9 +507,9 @@ void main() {
 
       group('updateRawOptions', () {
         testWidgets('can update `options`', (WidgetTester tester) async {
-          controller.updateRawOptions(<String, dynamic>{
-            'mapType': 2,
-          });
+          controller.updateMapConfiguration(const MapConfiguration(
+            mapType: MapType.satellite,
+          ));
 
           expect(map.mapTypeId, gmaps.MapTypeId.SATELLITE);
         });
@@ -515,15 +517,15 @@ void main() {
         testWidgets('can turn on/off traffic', (WidgetTester tester) async {
           expect(controller.trafficLayer, isNull);
 
-          controller.updateRawOptions(<String, dynamic>{
-            'trafficEnabled': true,
-          });
+          controller.updateMapConfiguration(const MapConfiguration(
+            trafficEnabled: true,
+          ));
 
           expect(controller.trafficLayer, isNotNull);
 
-          controller.updateRawOptions(<String, dynamic>{
-            'trafficEnabled': false,
-          });
+          controller.updateMapConfiguration(const MapConfiguration(
+            trafficEnabled: false,
+          ));
 
           expect(controller.trafficLayer, isNull);
         });
