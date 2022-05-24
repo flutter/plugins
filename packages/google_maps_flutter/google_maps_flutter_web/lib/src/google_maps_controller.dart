@@ -162,6 +162,11 @@ class GoogleMapController {
     // Initial position can only to be set here!
     options = _applyInitialPosition(_initialCameraPosition, options);
 
+    // Fully disable 45 degree imagery if desired
+    if (options.rotateControl == false) {
+      options.tilt = 0;
+    }
+
     // Create the map...
     final gmaps.GMap map = _createMap(_div, options);
     _googleMap = map;

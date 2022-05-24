@@ -92,9 +92,9 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, Object?> rawOptions) {
     options.gestureHandling = WebGestureHandling.auto.name;
   }
 
-  if (rawOptions['tiltControlsEnabled'] == false) {
-    options.rotateControl = false;
-    options.tilt = 0;
+  if (rawOptions['fortyFiveDegreeImageryEnabled'] != null) {
+    options.rotateControl =
+        rawOptions['fortyFiveDegreeImageryEnabled'] as bool?;
   }
 
   // These don't have any rawOptions entry, but they seem to be off in the native maps.
