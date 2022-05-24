@@ -172,8 +172,9 @@ enum SKProductDiscountPaymentMode {
 ///
 /// This is used as a property in the [SKProductDiscountWrapper].
 /// The values of the enum options are matching the [SKProductDiscountType]'s
-/// values. Should there be an update or addition in the
-/// [SKProductDiscountType], this need to be updated to match.
+/// values.
+///
+/// Values representing the types of discount offers an app can present.
 enum SKProductDiscountType {
   /// A constant indicating the discount type is an introductory offer.
   @JsonValue(0)
@@ -234,6 +235,8 @@ class SKProductDiscountWrapper {
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 
   /// A string used to uniquely identify a discount offer for a product.
+  ///
+  /// You set up offers and their identifiers in App Store Connect.
   @JsonKey(defaultValue: null)
   final String? identifier;
 
