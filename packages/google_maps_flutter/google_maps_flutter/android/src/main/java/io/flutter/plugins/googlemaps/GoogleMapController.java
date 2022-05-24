@@ -303,6 +303,7 @@ final class GoogleMapController
         }
       case "markers#update":
         {
+          invalidateMapIfNeeded();
           List<Object> markersToAdd = call.argument("markersToAdd");
           markersController.addMarkers(markersToAdd);
           List<Object> markersToChange = call.argument("markersToChange");
@@ -310,7 +311,6 @@ final class GoogleMapController
           List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers(markerIdsToRemove);
           result.success(null);
-          invalidateMapIfNeeded();
           break;
         }
       case "markers#showInfoWindow":
@@ -333,6 +333,7 @@ final class GoogleMapController
         }
       case "polygons#update":
         {
+          invalidateMapIfNeeded();
           List<Object> polygonsToAdd = call.argument("polygonsToAdd");
           polygonsController.addPolygons(polygonsToAdd);
           List<Object> polygonsToChange = call.argument("polygonsToChange");
@@ -340,11 +341,11 @@ final class GoogleMapController
           List<Object> polygonIdsToRemove = call.argument("polygonIdsToRemove");
           polygonsController.removePolygons(polygonIdsToRemove);
           result.success(null);
-          invalidateMapIfNeeded();
           break;
         }
       case "polylines#update":
         {
+          invalidateMapIfNeeded();
           List<Object> polylinesToAdd = call.argument("polylinesToAdd");
           polylinesController.addPolylines(polylinesToAdd);
           List<Object> polylinesToChange = call.argument("polylinesToChange");
@@ -352,11 +353,11 @@ final class GoogleMapController
           List<Object> polylineIdsToRemove = call.argument("polylineIdsToRemove");
           polylinesController.removePolylines(polylineIdsToRemove);
           result.success(null);
-          invalidateMapIfNeeded();
           break;
         }
       case "circles#update":
         {
+          invalidateMapIfNeeded();
           List<Object> circlesToAdd = call.argument("circlesToAdd");
           circlesController.addCircles(circlesToAdd);
           List<Object> circlesToChange = call.argument("circlesToChange");
@@ -364,7 +365,6 @@ final class GoogleMapController
           List<Object> circleIdsToRemove = call.argument("circleIdsToRemove");
           circlesController.removeCircles(circleIdsToRemove);
           result.success(null);
-          invalidateMapIfNeeded();
           break;
         }
       case "map#isCompassEnabled":
@@ -437,6 +437,7 @@ final class GoogleMapController
         }
       case "map#setStyle":
         {
+          invalidateMapIfNeeded();
           boolean mapStyleSet;
           if (call.arguments instanceof String) {
             String mapStyle = (String) call.arguments;
@@ -455,11 +456,11 @@ final class GoogleMapController
                 "Unable to set the map style. Please check console logs for errors.");
           }
           result.success(mapStyleResult);
-          invalidateMapIfNeeded();
           break;
         }
       case "tileOverlays#update":
         {
+          invalidateMapIfNeeded();
           List<Map<String, ?>> tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
           tileOverlaysController.addTileOverlays(tileOverlaysToAdd);
           List<Map<String, ?>> tileOverlaysToChange = call.argument("tileOverlaysToChange");
@@ -467,14 +468,13 @@ final class GoogleMapController
           List<String> tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
           tileOverlaysController.removeTileOverlays(tileOverlaysToRemove);
           result.success(null);
-          invalidateMapIfNeeded();
           break;
         }
       case "tileOverlays#clearTileCache":
         {
+          invalidateMapIfNeeded();
           String tileOverlayId = call.argument("tileOverlayId");
           tileOverlaysController.clearTileCache(tileOverlayId);
-          invalidateMapIfNeeded();
           result.success(null);
           break;
         }
