@@ -1,3 +1,11 @@
+## 2.2.0
+
+* Adds new versions of `buildView` and `updateOptions` that take a new option
+  class instead of a dictionary, to remove the cross-package dependency on
+  magic string keys.
+* Adopts several parameter objects in the new `buildView` variant to
+  future-proof it against future changes.
+
 ## 2.1.7
 
 * Updates code for stricter analysis options.

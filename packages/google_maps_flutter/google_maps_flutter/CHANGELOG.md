@@ -1,5 +1,7 @@
-## NEXT
+## 2.1.6
 
+* Switches to new platform interface versions of `buildView` and
+  `updateOptions`, making it compatible with `google_maps_flutter_web` 0.4.0.
 * Fixes iOS native unit tests on M1 devices.
 * Minor fixes for new analysis options.
 
