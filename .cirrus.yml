@@ -57,8 +57,16 @@ macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for
   # PRs on macOS.
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+
+macos_intel_template: &MACOS_INTEL_TEMPLATE
+  << : *MACOS_TEMPLATE
   osx_instance:
     image: big-sur-xcode-13
+
+macos_arm_template: &MACOS_ARM_TEMPLATE
+  << : *MACOS_TEMPLATE
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-monterey-xcode:13.4
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -298,15 +306,11 @@ task:
       drive_script:
         - ./script/tool_runner.sh drive-examples --web --exclude=script/configs/exclude_integration_web.yaml
 
-# macOS tasks.
+# ARM macOS tasks.
 task:
-  << : *MACOS_TEMPLATE
+  << : *MACOS_ARM_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
-    ### iOS+macOS tasks ***
-    - name: darwin-lint_podspecs
-      script:
-        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
     - name: ios-build_all_plugins
       env:
@@ -315,6 +319,42 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    ### macOS desktop tasks ###
+    - name: macos-platform_tests
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        PATH: $PATH:/usr/local/bin
+      build_script:
+        - flutter config --enable-macos-desktop
+        - ./script/tool_runner.sh build-examples --macos
+      xcode_analyze_script:
+        - ./script/tool_runner.sh xcode-analyze --macos
+      xcode_analyze_deprecation_script:
+        # Ensure we don't accidentally introduce deprecated code.
+        - ./script/tool_runner.sh xcode-analyze --macos --macos-min-version=12.3
+      native_test_script:
+        - ./script/tool_runner.sh native-test --macos
+      drive_script:
+        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml
+
+# Intel macOS tasks.
+task:
+  << : *MACOS_INTEL_TEMPLATE
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  matrix:
+    ### iOS+macOS tasks ***
+    # TODO(stuartmorgan): Move this to ARM once google_maps_flutter has ARM
+    # support. `pod lint` makes a synthetic target that doesn't respect the
+    # pod's arch exclusions, so fails to build.
+    - name: darwin-lint_podspecs
+      script:
+        - ./script/tool_runner.sh podspecs
+    ### iOS tasks ###
+    # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
+    # tests are reliable on the ARM infrastructure. See discussion at
+    # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
     - name: ios-platform_tests
       env:
         PATH: $PATH:/usr/local/bin
@@ -345,6 +385,8 @@ task:
         # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
         - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
+    # macos-platform_tests builds all the plugins on M1, so this build is run
+    # on Intel to give us build coverage of both host types.
     - name: macos-build_all_plugins
       env:
         BUILD_ALL_ARGS: "macos"
@@ -354,21 +396,3 @@ task:
       setup_script:
         - flutter config --enable-macos-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
-    - name: macos-platform_tests
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-        PATH: $PATH:/usr/local/bin
-      build_script:
-        - flutter config --enable-macos-desktop
-        - ./script/tool_runner.sh build-examples --macos
-      xcode_analyze_script:
-        - ./script/tool_runner.sh xcode-analyze --macos
-      xcode_analyze_deprecation_script:
-        # Ensure we don't accidentally introduce deprecated code.
-        - ./script/tool_runner.sh xcode-analyze --macos --macos-min-version=12.3
-      native_test_script:
-        - ./script/tool_runner.sh native-test --macos
-      drive_script:
-        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml
