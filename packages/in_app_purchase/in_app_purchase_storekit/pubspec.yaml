@@ -14,6 +14,8 @@ flutter:
     platforms:
       ios:
         pluginClass: InAppPurchasePlugin
+      macos:
+        pluginClass: InAppPurchasePlugin
 
 dependencies:
   collection: ^1.15.0

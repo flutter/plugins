@@ -4,7 +4,7 @@
 Pod::Spec.new do |s|
   s.name             = 'in_app_purchase_storekit'
   s.version          = '0.0.1'
-  s.summary          = 'Flutter In App Purchase iOS'
+  s.summary          = 'Flutter In App Purchase for macOS'
   s.description      = <<-DESC
 A Flutter plugin for in-app purchases. Exposes APIs for making in-app purchases through the App Store.
 Downloaded by pub (not CocoaPods).
@@ -13,12 +13,12 @@ Downloaded by pub (not CocoaPods).
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.'}
-  # TODO(mvanbeusekom): update URL when in_app_purchase_storekit package is published.
-  # Updating it before the package is published will cause a lint error and block the tree.
+  # Updating it before the package is published will cause a lint error and block the tree.                   
   s.documentation_url = 'https://pub.dev/packages/in_app_purchase'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
-  s.dependency 'Flutter'
-  s.platform = :ios, '9.0'
+  s.static_framework = true
+  s.dependency 'FlutterMacOS'
+  s.platform = :osx, '10.15'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end
