@@ -134,6 +134,7 @@ public class DartMessenger {
    * @param description contains details regarding the error that occurred.
    */
   void sendCameraErrorEvent(@Nullable String description) {
+    System.out.println("!!!!!!!!!!!!!!!!!!!!Sending error camera event: " + description);
     this.send(
         CameraEventType.ERROR,
         new HashMap<String, Object>() {
@@ -157,6 +158,7 @@ public class DartMessenger {
           @Override
           public void run() {
             cameraChannel.invokeMethod(eventType.method, args);
+            System.out.println("!!!!!!!!!!!!!!Sending message across channel");
           }
         });
   }

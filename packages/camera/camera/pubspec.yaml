@@ -22,8 +22,10 @@ flutter:
         default_package: camera_web
 
 dependencies:
-  camera_platform_interface: ^2.1.0
-  camera_web: ^0.2.1
+  camera_platform_interface:
+    path: ../camera_platform_interface/
+  camera_web:
+    path: ../camera_web/
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.2

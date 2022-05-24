@@ -521,6 +521,7 @@ class MethodChannelCamera extends CameraPlatform {
         ));
         break;
       case 'error':
+        print("!!!!!!!!!!!!!!!error found");
         cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
           call.arguments['description']! as String,

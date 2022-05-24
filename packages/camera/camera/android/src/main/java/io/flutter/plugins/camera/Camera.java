@@ -341,7 +341,7 @@ class Camera
 
             // Prevents calls to methods that would otherwise result in IllegalStateException exceptions.
             cameraDevice = null;
-            captureSession = null;
+            closeCaptureSession();
             dartMessenger.sendCameraClosingEvent();
           }
 
@@ -356,8 +356,9 @@ class Camera
           @Override
           public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
             Log.i(TAG, "open | onError");
-
+            
             close();
+
             String errorDescription;
             switch (errorCode) {
               case ERROR_CAMERA_IN_USE:
@@ -393,7 +394,7 @@ class Camera
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {
     // Close any existing capture session.
-    captureSession = null;
+    closeCaptureSession();
 
     // Create a new capture builder.
     previewRequestBuilder = cameraDevice.createCaptureRequest(templateType);
@@ -1167,6 +1168,15 @@ class Camera
           img.close();
         },
         backgroundHandler);
+  }
+
+  private void closeCaptureSession() {
+    if (captureSession != null) {
+      Log.i(TAG, "closeCaptureSession");
+
+      captureSession.close();
+      captureSession = null;
+    }
   }
 
   public void close() {
