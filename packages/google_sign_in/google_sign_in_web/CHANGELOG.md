@@ -1,3 +1,7 @@
+## 0.10.1+3
+
+* Renames generated folder to js_interlop.
+
 ## 0.10.1+2
 
 * Minor fixes for new analysis options.

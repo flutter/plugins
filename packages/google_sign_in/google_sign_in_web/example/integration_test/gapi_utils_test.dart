@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_sign_in_web/src/generated/gapiauth2.dart' as gapi;
+import 'package:google_sign_in_web/src/js_interlop/gapiauth2.dart' as gapi;
 import 'package:google_sign_in_web/src/utils.dart';
 import 'package:integration_test/integration_test.dart';
 
