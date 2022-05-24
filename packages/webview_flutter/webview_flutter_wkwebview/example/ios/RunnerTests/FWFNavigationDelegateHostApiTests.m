@@ -14,11 +14,11 @@
 @implementation FWFNavigationDelegateHostApiTests
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFNavigationDelegateHostApiImpl *hostApi =
+  FWFNavigationDelegateHostApiImpl *hostAPI =
       [[FWFNavigationDelegateHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   FWFNavigationDelegate *navigationDelegate =
       (FWFNavigationDelegate *)[instanceManager instanceForIdentifier:0];
 

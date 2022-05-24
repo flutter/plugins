@@ -18,11 +18,11 @@
   return self;
 }
 
-- (NSObject *)objectForIdentifier:(NSNumber *)instanceId {
-  return (NSObject *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (NSObject *)objectForIdentifier:(NSNumber *)identifier {
+  return (NSObject *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)addObserverForObjectWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)addObserverForObjectWithIdentifier:(nonnull NSNumber *)identifier
                         observerIdentifier:(nonnull NSNumber *)observer
                                    keyPath:(nonnull NSString *)keyPath
                                    options:
@@ -33,22 +33,22 @@
   for (FWFNSKeyValueObservingOptionsEnumData *data in options) {
     optionsInt |= FWFNSKeyValueObservingOptionsFromEnumData(data);
   }
-  [[self objectForIdentifier:instanceId] addObserver:[self objectForIdentifier:observer]
+  [[self objectForIdentifier:identifier] addObserver:[self objectForIdentifier:observer]
                                           forKeyPath:keyPath
                                              options:optionsInt
                                              context:nil];
 }
 
-- (void)removeObserverForObjectWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)removeObserverForObjectWithIdentifier:(nonnull NSNumber *)identifier
                            observerIdentifier:(nonnull NSNumber *)observer
                                       keyPath:(nonnull NSString *)keyPath
                                         error:(FlutterError *_Nullable *_Nonnull)error {
-  [[self objectForIdentifier:instanceId] removeObserver:[self objectForIdentifier:observer]
+  [[self objectForIdentifier:identifier] removeObserver:[self objectForIdentifier:observer]
                                              forKeyPath:keyPath];
 }
 
-- (void)disposeObjectWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)disposeObjectWithIdentifier:(nonnull NSNumber *)identifier
                               error:(FlutterError *_Nullable *_Nonnull)error {
-  [self.instanceManager removeInstanceWithIdentifier:instanceId.longValue];
+  [self.instanceManager removeInstanceWithIdentifier:identifier.longValue];
 }
 @end

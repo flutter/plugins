@@ -19,7 +19,7 @@ class FunctionFlutterApiImpl extends FunctionFlutterApi {
   void dispose(int instanceId) {
     final Function? function = instanceManager.getInstance(instanceId);
     if (function != null) {
-      instanceManager.removeInstance(function);
+      instanceManager.removeWeakReference(function);
     }
   }
 }

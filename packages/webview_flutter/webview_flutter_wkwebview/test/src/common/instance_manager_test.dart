@@ -16,20 +16,19 @@ void main() {
     test('tryAddInstance', () {
       final Object object = Object();
 
-      expect(testInstanceManager.tryAddInstance(object), 0);
-      expect(testInstanceManager.getInstanceId(object), 0);
+      expect(testInstanceManager.addDartCreatedInstance(object), 0);
+      expect(testInstanceManager.getIdentifier(object), 0);
       expect(testInstanceManager.getInstance(0), object);
-      expect(testInstanceManager.tryAddInstance(object), null);
     });
 
     test('removeInstance', () {
       final Object object = Object();
-      testInstanceManager.tryAddInstance(object);
+      testInstanceManager.addDartCreatedInstance(object);
 
-      expect(testInstanceManager.removeInstance(object), 0);
-      expect(testInstanceManager.getInstanceId(object), null);
+      expect(testInstanceManager.removeWeakReference(object), 0);
+      expect(testInstanceManager.getIdentifier(object), null);
       expect(testInstanceManager.getInstance(0), null);
-      expect(testInstanceManager.removeInstance(object), null);
+      expect(testInstanceManager.removeWeakReference(object), null);
     });
   });
 }
