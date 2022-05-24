@@ -20,7 +20,7 @@ void main() {
     test('dispose', () {
       void function() {}
       final int functionInstanceId =
-          instanceManager.addDartCreatedInstance(function)!;
+          instanceManager.addDartCreatedInstance(function);
 
       FoundationFlutterApis.instance = FoundationFlutterApis(
         instanceManager: instanceManager,
