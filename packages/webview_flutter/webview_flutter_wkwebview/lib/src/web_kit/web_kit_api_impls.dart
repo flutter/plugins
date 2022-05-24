@@ -545,15 +545,15 @@ class WKNavigationDelegateFlutterApiImpl
 
   @override
   void didFinishNavigation(
-    int functionInstanceId,
-    int webViewInstanceId,
+    int functionIdentifier,
+    int webViewIdentifier,
     String? url,
   ) {
     final void Function(
       WKWebView webView,
       String? url,
-    ) function = instanceManager.getInstance(functionInstanceId)!;
-    function(instanceManager.getInstance(webViewInstanceId)!, url);
+    ) function = instanceManager.getInstance(functionIdentifier)!;
+    function(instanceManager.getInstance(webViewIdentifier)!, url);
   }
 }
 
