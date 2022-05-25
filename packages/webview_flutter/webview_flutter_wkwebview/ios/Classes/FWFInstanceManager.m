@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "FWFInstanceManager.h"
-#import <objc/runtime.h>
 
 // Attaches to an object to receive a callback when the object is deallocated.
 @interface FWFFinalizer : NSObject

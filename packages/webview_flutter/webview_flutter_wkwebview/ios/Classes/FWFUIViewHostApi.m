@@ -5,7 +5,7 @@
 #import "FWFUIViewHostApi.h"
 
 @interface FWFUIViewHostApiImpl ()
-@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@property(nonatomic) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFUIViewHostApiImpl

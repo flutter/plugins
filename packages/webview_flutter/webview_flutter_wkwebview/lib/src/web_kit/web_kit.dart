@@ -606,13 +606,9 @@ class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
     this.didFinishNavigation,
-    BinaryMessenger? binaryMessenger,
-    InstanceManager? instanceManager,
-  })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
-        super(
+    super.binaryMessenger,
+    super.instanceManager,
+  }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
@@ -627,13 +623,9 @@ class WKNavigationDelegate extends NSObject {
   /// library or to create a copy for an InstanceManager.
   WKNavigationDelegate.detached({
     this.didFinishNavigation,
-    BinaryMessenger? binaryMessenger,
-    InstanceManager? instanceManager,
-  })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
-        super(
+    super.binaryMessenger,
+    super.instanceManager,
+  }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         );
@@ -726,15 +718,11 @@ class WKWebView extends UIView {
   /// configuration object.
   WKWebView(
     WKWebViewConfiguration configuration, {
-    BinaryMessenger? binaryMessenger,
-    InstanceManager? instanceManager,
+    super.binaryMessenger,
+    super.instanceManager,
   })  : _binaryMessenger = binaryMessenger,
         _instanceManager = instanceManager,
         _webViewApi = WKWebViewHostApiImpl(
-          binaryMessenger: binaryMessenger,
-          instanceManager: instanceManager,
-        ),
-        super(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {

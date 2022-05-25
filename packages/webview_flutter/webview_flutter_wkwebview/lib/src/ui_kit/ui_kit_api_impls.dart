@@ -20,7 +20,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   UIScrollViewHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -77,7 +77,7 @@ class UIViewHostApiImpl extends UIViewHostApi {
   UIViewHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
