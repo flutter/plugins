@@ -38,56 +38,6 @@ class FileSelectorIOS extends FileSelectorPlatform {
     return path == null ? null : XFile(path.first);
   }
 
-  @override
-  Future<List<XFile>> openFiles({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
-    final List<String>? pathList = await _channel.invokeListMethod<String>(
-      'openFile',
-      <String, dynamic>{
-        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
-        'initialDirectory': initialDirectory,
-        'confirmButtonText': confirmButtonText,
-        'multiple': true,
-      },
-    );
-    return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
-  }
-
-  @override
-  Future<String?> getSavePath({
-    List<XTypeGroup>? acceptedTypeGroups,
-    String? initialDirectory,
-    String? suggestedName,
-    String? confirmButtonText,
-  }) async {
-    return _channel.invokeMethod<String>(
-      'getSavePath',
-      <String, dynamic>{
-        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
-        'initialDirectory': initialDirectory,
-        'suggestedName': suggestedName,
-        'confirmButtonText': confirmButtonText,
-      },
-    );
-  }
-
-  @override
-  Future<String?> getDirectoryPath({
-    String? initialDirectory,
-    String? confirmButtonText,
-  }) async {
-    return _channel.invokeMethod<String>(
-      'getDirectoryPath',
-      <String, dynamic>{
-        'initialDirectory': initialDirectory,
-        'confirmButtonText': confirmButtonText,
-      },
-    );
-  }
-
   // Converts the type group list into a flat list of all allowed types, since
   // iOS doesn't support filter groups.
   Map<String, List<String>>? _allowedTypeListFromTypeGroups(
