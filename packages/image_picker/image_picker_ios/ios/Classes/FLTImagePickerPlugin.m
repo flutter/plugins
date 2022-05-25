@@ -119,8 +119,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _pickerViewController.presentationController.delegate = self;
   self.callContext = context;
 
-  BOOL requestFullMetadata = context.requestFullMetadata;
-  if (requestFullMetadata) {
+  if (context.requestFullMetadata) {
     [self checkPhotoAuthorizationForAccessLevel];
   } else {
     [self showPhotoLibraryWithPHPicker:_pickerViewController];
@@ -134,7 +133,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   imagePickerController.delegate = self;
   imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
   self.callContext = context;
-  BOOL requestFullMetadata = context.requestFullMetadata;
 
   switch (source.type) {
     case FLTSourceTypeCamera:
@@ -143,7 +141,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     case FLTSourceTypeGallery:
       if (@available(iOS 11, *)) {
-        if (requestFullMetadata) {
+        if (context.requestFullMetadata) {
           [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
         } else {
           [self showPhotoLibraryWithImagePicker:imagePickerController];
@@ -244,7 +242,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 
   self.callContext = context;
-  BOOL requestFullMetadata = context.requestFullMetadata;
 
   switch (source.type) {
     case FLTSourceTypeCamera:
@@ -252,7 +249,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                              camera:[self cameraDeviceForSource:source]];
       break;
     case FLTSourceTypeGallery:
-      if (requestFullMetadata) {
+      if (context.requestFullMetadata) {
         [self checkPhotoAuthorizationWithImagePicker:imagePickerController];
       } else {
         [self showPhotoLibraryWithImagePicker:imagePickerController];
@@ -575,11 +572,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *maxHeight = self.callContext.maxSize.height;
     NSNumber *imageQuality = self.callContext.imageQuality;
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-    BOOL requestFullMetadata = _callContext.requestFullMetadata;
 
     PHAsset *originalAsset;
-    if (requestFullMetadata) {
-      // Full metadata are available only in PHAsset, which requires gallery permission
+    if (_callContext.requestFullMetadata) {
+      // Full metadata are available only in PHAsset, which requires gallery permission.
       originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     }
 
