@@ -57,8 +57,8 @@ class GoogleAuth {
 
   /// Calls the onInit function when the GoogleAuth object is fully initialized, or calls the onFailure function if
   /// initialization fails.
-  external dynamic then(dynamic onInit(GoogleAuth googleAuth),
-      [dynamic onFailure(GoogleAuthInitFailureError reason)]);
+  external dynamic then(dynamic Function(GoogleAuth googleAuth) onInit,
+      [dynamic Function(GoogleAuthInitFailureError reason) onFailure]);
 
   /// Signs out all accounts from the application.
   external dynamic signOut();
@@ -70,8 +70,8 @@ class GoogleAuth {
   external dynamic attachClickHandler(
       dynamic container,
       SigninOptions options,
-      dynamic onsuccess(GoogleUser googleUser),
-      dynamic onfailure(String reason));
+      dynamic Function(GoogleUser googleUser) onsuccess,
+      dynamic Function(String reason) onfailure);
 }
 
 @anonymous
@@ -104,7 +104,7 @@ abstract class IsSignedIn {
   external bool get();
 
   /// Listen for changes in the current user's sign-in state.
-  external void listen(dynamic listener(bool signedIn));
+  external void listen(dynamic Function(bool signedIn) listener);
 }
 
 @anonymous
@@ -116,7 +116,7 @@ abstract class CurrentUser {
   external GoogleUser get();
 
   /// Listen for changes in currentUser.
-  external void listen(dynamic listener(GoogleUser user));
+  external void listen(dynamic Function(GoogleUser user) listener);
 }
 
 @anonymous
@@ -440,7 +440,7 @@ external GoogleAuth? getAuthInstance();
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2authorizeparams-callback
 @JS('gapi.auth2.authorize')
 external void authorize(
-    AuthorizeConfig params, void callback(AuthorizeResponse response));
+    AuthorizeConfig params, void Function(AuthorizeResponse response) callback);
 // End module gapi.auth2
 
 // Module gapi.signin2
@@ -497,6 +497,7 @@ external void render(
 @JS()
 abstract class Promise<T> {
   external factory Promise(
-      void executor(void resolve(T result), Function reject));
-  external Promise then(void onFulfilled(T result), [Function onRejected]);
+      void Function(void Function(T result) resolve, Function reject) executor);
+  external Promise then(void Function(T result) onFulfilled,
+      [Function onRejected]);
 }

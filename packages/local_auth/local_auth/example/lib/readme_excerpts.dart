@@ -24,10 +24,12 @@ import 'package:local_auth_ios/local_auth_ios.dart';
 // #enddocregion CustomMessages
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   State<MyApp> createState() => _MyAppState();
 }

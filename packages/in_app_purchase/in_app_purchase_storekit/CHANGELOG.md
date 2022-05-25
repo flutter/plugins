@@ -1,7 +1,11 @@
 ## 0.3.1
 
+* Fixes a memory leak on iOS.
+* Minor fixes for new analysis options.
 * Adds the `identifier` and `type` fields to the `SKProductDiscountWrapper` to reflect the changes in the [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc) in iOS 12.2. 
 * Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
 
 ## 0.3.0+5
 

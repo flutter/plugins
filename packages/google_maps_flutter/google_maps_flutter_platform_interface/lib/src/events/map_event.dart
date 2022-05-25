@@ -34,29 +34,29 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 /// events to access the `.position` property, rather than the more generic `.value`
 /// yielded from the latter.
 class MapEvent<T> {
-  /// The ID of the Map this event is associated to.
-  final int mapId;
-
-  /// The value wrapped by this event
-  final T value;
-
   /// Build a Map Event, that relates a mapId with a given value.
   ///
   /// The `mapId` is the id of the map that triggered the event.
   /// `value` may be `null` in events that don't transport any meaningful data.
   MapEvent(this.mapId, this.value);
+
+  /// The ID of the Map this event is associated to.
+  final int mapId;
+
+  /// The value wrapped by this event
+  final T value;
 }
 
 /// A `MapEvent` associated to a `position`.
 class _PositionedMapEvent<T> extends MapEvent<T> {
-  /// The position where this event happened.
-  final LatLng position;
-
   /// Build a Positioned MapEvent, that relates a mapId and a position with a value.
   ///
   /// The `mapId` is the id of the map that triggered the event.
   /// `value` may be `null` in events that don't transport any meaningful data.
   _PositionedMapEvent(int mapId, this.position, T value) : super(mapId, value);
+
+  /// The position where this event happened.
+  final LatLng position;
 }
 
 // The following events are the ones exposed to the end user. They are semantic extensions

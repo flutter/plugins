@@ -169,8 +169,8 @@ class MakeDepsPathBasedCommand extends PluginCommand {
       // then re-serialiazing so that it's a localized change, rather than
       // rewriting the whole file (e.g., destroying comments), which could be
       // more disruptive for local use.
-      String newPubspecContents = pubspecContents +
-          '''
+      String newPubspecContents = '''
+$pubspecContents
 
 $_dependencyOverrideWarningComment
 dependency_overrides:
