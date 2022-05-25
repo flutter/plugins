@@ -1,3 +1,7 @@
+## 2.9.0
+
+* Adds Android implementation of the new webview_flutter_platform_interface (v4).
+
 ## 2.8.8
 
 * Minor fixes for new analysis options.
