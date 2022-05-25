@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart'
+    show immutable, objectRuntimeType, visibleForTesting;
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
+@immutable
 class LatLng {
   /// Creates a geographical location specified in degrees [latitude] and
   /// [longitude].
@@ -17,7 +19,7 @@ class LatLng {
       : assert(latitude != null),
         assert(longitude != null),
         latitude =
-            (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
+            latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude),
         // Avoids normalization if possible to prevent unnecessary loss of precision
         longitude = longitude >= -180 && longitude < 180
             ? longitude
@@ -40,16 +42,19 @@ class LatLng {
       return null;
     }
     assert(json is List && json.length == 2);
-    final list = json as List;
-    return LatLng(list[0], list[1]);
+    final List<Object?> list = json as List<Object?>;
+    return LatLng(list[0]! as double, list[1]! as double);
   }
 
   @override
-  String toString() => '$runtimeType($latitude, $longitude)';
+  String toString() =>
+      '${objectRuntimeType(this, 'LatLng')}($latitude, $longitude)';
 
   @override
-  bool operator ==(Object o) {
-    return o is LatLng && o.latitude == latitude && o.longitude == longitude;
+  bool operator ==(Object other) {
+    return other is LatLng &&
+        other.latitude == latitude &&
+        other.longitude == longitude;
   }
 
   @override
@@ -64,6 +69,7 @@ class LatLng {
 ///   if `southwest.longitude` ≤ `northeast.longitude`,
 /// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180],
 ///   if `northeast.longitude` < `southwest.longitude`
+@immutable
 class LatLngBounds {
   /// Creates geographical bounding box with the specified corners.
   ///
@@ -110,7 +116,7 @@ class LatLngBounds {
       return null;
     }
     assert(json is List && json.length == 2);
-    final list = json as List;
+    final List<Object?> list = json as List<Object?>;
     return LatLngBounds(
       southwest: LatLng.fromJson(list[0])!,
       northeast: LatLng.fromJson(list[1])!,
@@ -119,14 +125,14 @@ class LatLngBounds {
 
   @override
   String toString() {
-    return '$runtimeType($southwest, $northeast)';
+    return '${objectRuntimeType(this, 'LatLngBounds')}($southwest, $northeast)';
   }
 
   @override
-  bool operator ==(Object o) {
-    return o is LatLngBounds &&
-        o.southwest == southwest &&
-        o.northeast == northeast;
+  bool operator ==(Object other) {
+    return other is LatLngBounds &&
+        other.southwest == southwest &&
+        other.northeast == northeast;
   }
 
   @override
