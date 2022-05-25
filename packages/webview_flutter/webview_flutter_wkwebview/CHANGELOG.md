@@ -1,6 +1,21 @@
-## NEXT
+## 2.7.5
+
+* Minor fixes for new analysis options.
+
+## 2.7.4
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.7.3
+
+* Removes two occurrences of the compiler warning: "'RequiresUserActionForMediaPlayback' is deprecated: first deprecated in ios 10.0".
+
+## 2.7.2
 
 * Fixes an integration test race condition.
+* Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.
 
 ## 2.7.1
 

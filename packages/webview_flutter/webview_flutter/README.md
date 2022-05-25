@@ -7,6 +7,10 @@ A Flutter plugin that provides a WebView widget.
 On iOS the WebView widget is backed by a [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview);
 On Android the WebView widget is backed by a [WebView](https://developer.android.com/reference/android/webkit/WebView).
 
+|             | Android        | iOS  |
+|-------------|----------------|------|
+| **Support** | SDK 19+ or 20+ | 9.0+ |
+
 ## Usage
 Add `webview_flutter` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels). If you are targeting Android, make sure to read the *Android Platform Views* section below to choose the platform view mode that best suits your needs.
 
@@ -91,4 +95,4 @@ follow the steps described in the [Enabling Material Components instructions](ht
 ### Setting custom headers on POST requests
 
 Currently, setting custom headers when making a post request with the WebViewController's `loadRequest` method is not supported on Android.
-If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHTMLString` instead. 
+If you require this functionality, a workaround is to make the request manually, and then load the response data using `loadHTMLString` instead.

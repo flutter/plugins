@@ -14,23 +14,24 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   // A cache of map controllers by map Id.
-  Map _mapById = Map<int, GoogleMapController>();
+  Map<int, GoogleMapController> _mapById = <int, GoogleMapController>{};
 
   /// Allows tests to inject controllers without going through the buildView flow.
   @visibleForTesting
+  // ignore: use_setters_to_change_properties
   void debugSetMapById(Map<int, GoogleMapController> mapById) {
     _mapById = mapById;
   }
 
   // Convenience getter for a stream of events filtered by their mapId.
-  Stream<MapEvent> _events(int mapId) => _map(mapId).events;
+  Stream<MapEvent<Object?>> _events(int mapId) => _map(mapId).events;
 
   // Convenience getter for a map controller by its mapId.
   GoogleMapController _map(int mapId) {
-    final controller = _mapById[mapId];
+    final GoogleMapController? controller = _mapById[mapId];
     assert(controller != null,
         'Maps cannot be retrieved before calling buildView!');
-    return controller;
+    return controller!;
   }
 
   @override
@@ -134,7 +135,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     String? mapStyle, {
     required int mapId,
   }) async {
-    _map(mapId).updateRawOptions({
+    _map(mapId).updateRawOptions(<String, dynamic>{
       'styles': _mapStyles(mapStyle),
     });
   }
@@ -303,13 +304,13 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }) {
     // Bail fast if we've already rendered this map ID...
     if (_mapById[creationId]?.widget != null) {
-      return _mapById[creationId].widget;
+      return _mapById[creationId]!.widget!;
     }
 
-    final StreamController<MapEvent> controller =
-        StreamController<MapEvent>.broadcast();
+    final StreamController<MapEvent<Object?>> controller =
+        StreamController<MapEvent<Object?>>.broadcast();
 
-    final mapController = GoogleMapController(
+    final GoogleMapController mapController = GoogleMapController(
       initialCameraPosition: initialCameraPosition,
       mapId: creationId,
       streamController: controller,
@@ -322,7 +323,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
     _mapById[creationId] = mapController;
 
-    mapController.events.whereType<WebMapReadyEvent>().first.then((event) {
+    mapController.events
+        .whereType<WebMapReadyEvent>()
+        .first
+        .then((WebMapReadyEvent event) {
       assert(creationId == event.mapId,
           'Received WebMapReadyEvent for the wrong map');
       // Notify the plugin now that there's a fully initialized controller.

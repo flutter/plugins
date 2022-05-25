@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui' show hashValues;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
@@ -130,7 +129,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
@@ -148,7 +147,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   @override
   int get hashCode =>
-      hashValues(displayName, email, id, photoUrl, _idToken, serverAuthCode);
+      Object.hash(displayName, email, id, photoUrl, _idToken, serverAuthCode);
 
   @override
   String toString() {

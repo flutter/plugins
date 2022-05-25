@@ -4,18 +4,22 @@
 
 A Flutter plugin that manages files and interactions with file dialogs.
 
+|             | macOS  | Web | Windows     |
+|-------------|--------|-----|-------------|
+| **Support** | 10.11+ | Any | Windows 10+ |
+
 ## Usage
 To use this plugin, add `file_selector` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
 ### macOS
 
 You will need to [add an entitlement][entitlement] for either read-only access:
-```
+```xml
   <key>com.apple.security.files.user-selected.read-only</key>
   <true/>
 ```
 or read/write access:
-```
+```xml
   <key>com.apple.security.files.user-selected.read-write</key>
   <true/>
 ```
