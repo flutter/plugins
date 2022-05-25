@@ -179,25 +179,22 @@
             [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
-- (void)testPickImageWithoutFullMetadataPreiOS14 {
-  if (@available(iOS 14, *)) {
-    return;
-  }
+- (void)testPickImageWithoutFullMetadata API_AVAILABLE(ios(11)) {
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
+
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
   [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage"
-                                                              arguments:@{
-                                                                @"source" : @(1),
-                                                                @"requestFullMetadata" : @(NO),
-                                                              }];
 
-  [plugin handleMethodCall:call
-                    result:^(id _Nullable r){
-                    }];
+  [plugin pickImageWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                            camera:FLTSourceCameraFront]
+                      maxSize:[[FLTMaxSize alloc] init]
+                      quality:nil
+                 fullMetadata:@(NO)
+                   completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
+                   }];
 
-  OCMVerify(times(1),
-            [mockUIImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary]);
+  OCMVerify(times(0), [photoLibrary authorizationStatus]);
 }
 
 #pragma mark - Test camera devices, no op on simulators
