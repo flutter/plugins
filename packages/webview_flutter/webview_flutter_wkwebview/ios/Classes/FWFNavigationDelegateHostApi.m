@@ -74,16 +74,16 @@
   return self;
 }
 
-- (FWFNavigationDelegate *)navigationDelegateForIdentifier:(NSNumber *)instanceId {
-  return (FWFNavigationDelegate *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (FWFNavigationDelegate *)navigationDelegateForIdentifier:(NSNumber *)identifier {
+  return (FWFNavigationDelegate *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:navigationDelegate
-                                withIdentifier:instanceId.longValue];
+                                withIdentifier:identifier.longValue];
 }
 @end

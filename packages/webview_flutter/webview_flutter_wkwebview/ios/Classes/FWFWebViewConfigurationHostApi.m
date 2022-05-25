@@ -7,7 +7,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFWebViewConfigurationHostApiImpl ()
-@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@property(nonatomic) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebViewConfigurationHostApiImpl
@@ -19,38 +19,38 @@
   return self;
 }
 
-- (WKWebViewConfiguration *)webViewConfigurationForIdentifier:(NSNumber *)instanceId {
+- (WKWebViewConfiguration *)webViewConfigurationForIdentifier:(NSNumber *)identifier {
   return (WKWebViewConfiguration *)[self.instanceManager
-      instanceForIdentifier:instanceId.longValue];
+      instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *webViewConfiguration = [[WKWebViewConfiguration alloc] init];
   [self.instanceManager addDartCreatedInstance:webViewConfiguration
-                                withIdentifier:instanceId.longValue];
+                                withIdentifier:identifier.longValue];
 }
 
-- (void)createFromWebViewWithIdentifier:(nonnull NSNumber *)instanceId
-                      webViewIdentifier:(nonnull NSNumber *)webViewInstanceId
+- (void)createFromWebViewWithIdentifier:(nonnull NSNumber *)identifier
+                      webViewIdentifier:(nonnull NSNumber *)webViewIdentifier
                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebView *webView =
-      (WKWebView *)[self.instanceManager instanceForIdentifier:webViewInstanceId.longValue];
+      (WKWebView *)[self.instanceManager instanceForIdentifier:webViewIdentifier.longValue];
   [self.instanceManager addDartCreatedInstance:webView.configuration
-                                withIdentifier:instanceId.longValue];
+                                withIdentifier:identifier.longValue];
 }
 
-- (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(nonnull NSNumber *)identifier
                                                          isAllowed:(nonnull NSNumber *)allow
                                                              error:
                                                                  (FlutterError *_Nullable *_Nonnull)
                                                                      error {
-  [[self webViewConfigurationForIdentifier:instanceId]
+  [[self webViewConfigurationForIdentifier:identifier]
       setAllowsInlineMediaPlayback:allow.boolValue];
 }
 
 - (void)
-    setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
+    setMediaTypesRequiresUserActionForConfigurationWithIdentifier:(nonnull NSNumber *)identifier
                                                          forTypes:
                                                              (nonnull NSArray<
                                                                  FWFWKAudiovisualMediaTypeEnumData
@@ -61,7 +61,7 @@
   NSAssert(types.count, @"Types must not be empty.");
 
   WKWebViewConfiguration *configuration =
-      (WKWebViewConfiguration *)[self webViewConfigurationForIdentifier:instanceId];
+      (WKWebViewConfiguration *)[self webViewConfigurationForIdentifier:identifier];
   if (@available(iOS 10.0, *)) {
     WKAudiovisualMediaTypes typesInt = 0;
     for (FWFWKAudiovisualMediaTypeEnumData *data in types) {

@@ -12,7 +12,7 @@
 @end
 
 @interface FWFScriptMessageHandlerHostApiImpl ()
-@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@property(nonatomic) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFScriptMessageHandlerHostApiImpl
@@ -24,15 +24,15 @@
   return self;
 }
 
-- (FWFScriptMessageHandler *)scriptMessageHandlerForIdentifier:(NSNumber *)instanceId {
+- (FWFScriptMessageHandler *)scriptMessageHandlerForIdentifier:(NSNumber *)identifier {
   return (FWFScriptMessageHandler *)[self.instanceManager
-      instanceForIdentifier:instanceId.longValue];
+      instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFScriptMessageHandler *scriptMessageHandler = [[FWFScriptMessageHandler alloc] init];
   [self.instanceManager addDartCreatedInstance:scriptMessageHandler
-                                withIdentifier:instanceId.longValue];
+                                withIdentifier:identifier.longValue];
 }
 @end

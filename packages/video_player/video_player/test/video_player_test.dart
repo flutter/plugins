@@ -958,6 +958,13 @@ void main() {
   });
 
   group('VideoPlayerOptions', () {
+    late FakeVideoPlayerPlatform fakeVideoPlayerPlatform;
+
+    setUp(() {
+      fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
+      VideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
+    });
+
     test('setMixWithOthers', () async {
       final VideoPlayerController controller = VideoPlayerController.file(
           File(''),

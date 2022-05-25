@@ -30,7 +30,7 @@
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:identifier], object);
 }
 
-- (void)testRemoveStrongReferenceWithIdentifier {
+- (void)testRemoveInstanceWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 

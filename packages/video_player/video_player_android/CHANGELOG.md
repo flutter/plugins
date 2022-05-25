@@ -1,3 +1,7 @@
+## 2.3.4
+
+* Updates ExoPlayer to 2.17.1.
+
 ## 2.3.3
 
 * Removes unnecessary imports.

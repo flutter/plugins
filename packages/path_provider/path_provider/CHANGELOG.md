@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes integration test permission issue on recent versions of macOS.
+
 ## 2.0.10
 
 * Removes unnecessary imports.

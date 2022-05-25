@@ -558,15 +558,15 @@ class WKNavigationDelegateFlutterApiImpl
 
   @override
   void didFinishNavigation(
-    int instanceId,
-    int webViewInstanceId,
+    int identifier,
+    int webViewIdentifier,
     String? url,
   ) {
     final void Function(WKWebView, String?)? function =
-        _getDelegate(instanceId).didFinishNavigation;
+        _getDelegate(identifier).didFinishNavigation;
     function?.call(
       instanceManager.getInstance(
-        webViewInstanceId,
+        webViewIdentifier,
         returnedInstanceMayBeUsed: true,
       )!,
       url,

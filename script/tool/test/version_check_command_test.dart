@@ -421,7 +421,7 @@ This is necessary because of X, Y, and Z
 ## $version
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
       expect(
@@ -439,7 +439,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.2
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -465,7 +465,7 @@ This is necessary because of X, Y, and Z
 ## $version
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
       expect(
@@ -488,7 +488,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -518,7 +518,7 @@ This is necessary because of X, Y, and Z
 ## $version
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
@@ -547,7 +547,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -580,7 +580,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
@@ -612,7 +612,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
@@ -642,8 +642,8 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.1'),
       ];
@@ -671,7 +671,7 @@ This is necessary because of X, Y, and Z
 # 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
@@ -704,7 +704,7 @@ This is necessary because of X, Y, and Z
 ## Alpha
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
@@ -749,7 +749,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -778,7 +778,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -813,7 +813,7 @@ packages/plugin/lib/plugin.dart
 ## 1.0.1
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -844,7 +844,7 @@ packages/plugin/pubspec.yaml
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -874,7 +874,7 @@ tool/plugin/lib/plugin.dart
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -907,7 +907,7 @@ packages/plugin/CHANGELOG.md
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -948,7 +948,7 @@ No version change: Code change is only to implementation comments.
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -983,7 +983,7 @@ packages/plugin/example/lib/foo.dart
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -1014,7 +1014,7 @@ packages/plugin/CHANGELOG.md
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -1048,7 +1048,7 @@ packages/another_plugin/CHANGELOG.md
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
