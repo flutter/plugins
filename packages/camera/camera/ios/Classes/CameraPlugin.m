@@ -7,6 +7,7 @@
 
 @import AVFoundation;
 
+#import "CameraPermissionUtils.h"
 #import "CameraProperties.h"
 #import "FLTCam.h"
 #import "FLTThreadSafeEventChannel.h"
@@ -100,8 +101,14 @@
                        result:(FLTThreadSafeFlutterResult *)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     if (@available(iOS 10.0, *)) {
+      NSMutableArray *discoveryDevices =
+          [@[ AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera ]
+              mutableCopy];
+      if (@available(iOS 13.0, *)) {
+        [discoveryDevices addObject:AVCaptureDeviceTypeBuiltInUltraWideCamera];
+      }
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
+          discoverySessionWithDeviceTypes:discoveryDevices
                                 mediaType:AVMediaTypeVideo
                                  position:AVCaptureDevicePositionUnspecified];
       NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
@@ -131,31 +138,7 @@
       [result sendNotImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
-    NSString *cameraName = call.arguments[@"cameraName"];
-    NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
-    NSNumber *enableAudio = call.arguments[@"enableAudio"];
-    NSError *error;
-    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
-                                    resolutionPreset:resolutionPreset
-                                         enableAudio:[enableAudio boolValue]
-                                         orientation:[[UIDevice currentDevice] orientation]
-                                 captureSessionQueue:_captureSessionQueue
-                                               error:&error];
-
-    if (error) {
-      [result sendError:error];
-    } else {
-      if (_camera) {
-        [_camera close];
-      }
-      _camera = cam;
-      [self.registry registerTexture:cam
-                          completion:^(int64_t textureId) {
-                            [result sendSuccessWithData:@{
-                              @"cameraId" : @(textureId),
-                            }];
-                          }];
-    }
+    [self handleCreateMethodCall:call result:result];
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
     [result sendSuccess];
@@ -210,7 +193,7 @@
       [_camera close];
       [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
-      [_camera setUpCaptureSessionForAudio];
+      [self.camera setUpCaptureSessionForAudio];
       [result sendSuccess];
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingWithResult:result];
@@ -272,6 +255,64 @@
       [result sendNotImplemented];
     }
   }
+}
+
+- (void)handleCreateMethodCall:(FlutterMethodCall *)call
+                        result:(FLTThreadSafeFlutterResult *)result {
+  // Create FLTCam only if granted camera access (and audio access if audio is enabled)
+  FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
+    if (error) {
+      [result sendFlutterError:error];
+    } else {
+      // Request audio permission on `create` call with `enableAudio` argument instead of the
+      // `prepareForVideoRecording` call. This is because `prepareForVideoRecording` call is
+      // optional, and used as a workaround to fix a missing frame issue on iOS.
+      BOOL audioEnabled = [call.arguments[@"enableAudio"] boolValue];
+      if (audioEnabled) {
+        // Setup audio capture session only if granted audio access.
+        FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
+          if (error) {
+            [result sendFlutterError:error];
+          } else {
+            [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+          }
+        });
+      } else {
+        [self createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+      }
+    }
+  });
+}
+
+- (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
+                                                result:(FLTThreadSafeFlutterResult *)result {
+  dispatch_async(self.captureSessionQueue, ^{
+    NSString *cameraName = createMethodCall.arguments[@"cameraName"];
+    NSString *resolutionPreset = createMethodCall.arguments[@"resolutionPreset"];
+    NSNumber *enableAudio = createMethodCall.arguments[@"enableAudio"];
+    NSError *error;
+    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
+                                    resolutionPreset:resolutionPreset
+                                         enableAudio:[enableAudio boolValue]
+                                         orientation:[[UIDevice currentDevice] orientation]
+                                 captureSessionQueue:self.captureSessionQueue
+                                               error:&error];
+
+    if (error) {
+      [result sendError:error];
+    } else {
+      if (self.camera) {
+        [self.camera close];
+      }
+      self.camera = cam;
+      [self.registry registerTexture:cam
+                          completion:^(int64_t textureId) {
+                            [result sendSuccessWithData:@{
+                              @"cameraId" : @(textureId),
+                            }];
+                          }];
+    }
+  });
 }
 
 @end

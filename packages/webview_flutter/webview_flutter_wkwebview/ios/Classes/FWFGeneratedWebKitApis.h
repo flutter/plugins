@@ -45,15 +45,15 @@ typedef NS_ENUM(NSUInteger, FWFWKAudiovisualMediaTypeEnum) {
   FWFWKAudiovisualMediaTypeEnumAll = 3,
 };
 
-typedef NS_ENUM(NSUInteger, FWFWKWebsiteDataTypesEnum) {
-  FWFWKWebsiteDataTypesEnumCookies = 0,
-  FWFWKWebsiteDataTypesEnumMemoryCache = 1,
-  FWFWKWebsiteDataTypesEnumDiskCache = 2,
-  FWFWKWebsiteDataTypesEnumOfflineWebApplicationCache = 3,
-  FWFWKWebsiteDataTypesEnumLocalStroage = 4,
-  FWFWKWebsiteDataTypesEnumSessionStorage = 5,
-  FWFWKWebsiteDataTypesEnumSqlDatabases = 6,
-  FWFWKWebsiteDataTypesEnumIndexedDBDatabases = 7,
+typedef NS_ENUM(NSUInteger, FWFWKWebsiteDataTypeEnum) {
+  FWFWKWebsiteDataTypeEnumCookies = 0,
+  FWFWKWebsiteDataTypeEnumMemoryCache = 1,
+  FWFWKWebsiteDataTypeEnumDiskCache = 2,
+  FWFWKWebsiteDataTypeEnumOfflineWebApplicationCache = 3,
+  FWFWKWebsiteDataTypeEnumLocalStorage = 4,
+  FWFWKWebsiteDataTypeEnumSessionStorage = 5,
+  FWFWKWebsiteDataTypeEnumWebSQLDatabases = 6,
+  FWFWKWebsiteDataTypeEnumIndexedDBDatabases = 7,
 };
 
 typedef NS_ENUM(NSUInteger, FWFWKNavigationActionPolicyEnum) {
@@ -81,33 +81,43 @@ typedef NS_ENUM(NSUInteger, FWFNSHttpCookiePropertyKeyEnum) {
 @class FWFNSKeyValueObservingOptionsEnumData;
 @class FWFWKUserScriptInjectionTimeEnumData;
 @class FWFWKAudiovisualMediaTypeEnumData;
-@class FWFWKWebsiteDataTypesEnumData;
+@class FWFWKWebsiteDataTypeEnumData;
 @class FWFNSHttpCookiePropertyKeyEnumData;
 @class FWFNSUrlRequestData;
 @class FWFWKUserScriptData;
 @class FWFNSHttpCookieData;
 
 @interface FWFNSKeyValueObservingOptionsEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFNSKeyValueObservingOptionsEnum)value;
 @property(nonatomic, assign) FWFNSKeyValueObservingOptionsEnum value;
 @end
 
 @interface FWFWKUserScriptInjectionTimeEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFWKUserScriptInjectionTimeEnum)value;
 @property(nonatomic, assign) FWFWKUserScriptInjectionTimeEnum value;
 @end
 
 @interface FWFWKAudiovisualMediaTypeEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFWKAudiovisualMediaTypeEnum)value;
 @property(nonatomic, assign) FWFWKAudiovisualMediaTypeEnum value;
 @end
 
-@interface FWFWKWebsiteDataTypesEnumData : NSObject
-+ (instancetype)makeWithValue:(FWFWKWebsiteDataTypesEnum)value;
-@property(nonatomic, assign) FWFWKWebsiteDataTypesEnum value;
+@interface FWFWKWebsiteDataTypeEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithValue:(FWFWKWebsiteDataTypeEnum)value;
+@property(nonatomic, assign) FWFWKWebsiteDataTypeEnum value;
 @end
 
 @interface FWFNSHttpCookiePropertyKeyEnumData : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithValue:(FWFNSHttpCookiePropertyKeyEnum)value;
 @property(nonatomic, assign) FWFNSHttpCookiePropertyKeyEnum value;
 @end
@@ -139,24 +149,24 @@ typedef NS_ENUM(NSUInteger, FWFNSHttpCookiePropertyKeyEnum) {
 @interface FWFNSHttpCookieData : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithProperties:
-    (NSDictionary<FWFNSHttpCookiePropertyKeyEnumData *, NSString *> *)properties;
-@property(nonatomic, strong)
-    NSDictionary<FWFNSHttpCookiePropertyKeyEnumData *, NSString *> *properties;
++ (instancetype)makeWithPropertyKeys:(NSArray<FWFNSHttpCookiePropertyKeyEnumData *> *)propertyKeys
+                      propertyValues:(NSArray<id> *)propertyValues;
+@property(nonatomic, strong) NSArray<FWFNSHttpCookiePropertyKeyEnumData *> *propertyKeys;
+@property(nonatomic, strong) NSArray<id> *propertyValues;
 @end
 
 /// The codec used by FWFWKWebsiteDataStoreHostApi.
 NSObject<FlutterMessageCodec> *FWFWKWebsiteDataStoreHostApiGetCodec(void);
 
 @protocol FWFWKWebsiteDataStoreHostApi
-- (void)createDataStoreFromConfigurationWithIdentifier:(NSNumber *)instanceId
-                               configurationIdentifier:(NSNumber *)configurationInstanceId
-                                                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createFromWebViewConfigurationWithIdentifier:(NSNumber *)instanceId
+                             configurationIdentifier:(NSNumber *)configurationInstanceId
+                                               error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)createDefaultDataStoreWithIdentifier:(NSNumber *)instanceId
                                        error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)removeDataFromDataStoreWithIdentifier:(NSNumber *)instanceId
-                                      ofTypes:(NSArray<FWFWKWebsiteDataTypesEnumData *> *)dataTypes
-                    secondsModifiedSinceEpoch:(NSNumber *)secondsModifiedSinceEpoch
+                                      ofTypes:(NSArray<FWFWKWebsiteDataTypeEnumData *> *)dataTypes
+                                modifiedSince:(NSNumber *)modificationTimeInSecondsSinceEpoch
                                    completion:(void (^)(NSNumber *_Nullable,
                                                         FlutterError *_Nullable))completion;
 @end
@@ -169,10 +179,6 @@ extern void FWFWKWebsiteDataStoreHostApiSetup(
 NSObject<FlutterMessageCodec> *FWFUIViewHostApiGetCodec(void);
 
 @protocol FWFUIViewHostApi
-/// @return `nil` only when `error != nil`.
-- (nullable NSArray<NSNumber *> *)
-    contentOffsetForViewWithIdentifier:(NSNumber *)instanceId
-                                 error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setBackgroundColorForViewWithIdentifier:(NSNumber *)instanceId
                                         toValue:(nullable NSNumber *)value
                                           error:(FlutterError *_Nullable *_Nonnull)error;
@@ -196,7 +202,7 @@ NSObject<FlutterMessageCodec> *FWFUIScrollViewHostApiGetCodec(void);
     contentOffsetForScrollViewWithIdentifier:(NSNumber *)instanceId
                                        error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)scrollByForScrollViewWithIdentifier:(NSNumber *)instanceId
-                                        toX:(NSNumber *)x
+                                          x:(NSNumber *)x
                                           y:(NSNumber *)y
                                       error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setContentOffsetForScrollViewWithIdentifier:(NSNumber *)instanceId
@@ -217,7 +223,7 @@ NSObject<FlutterMessageCodec> *FWFWKWebViewConfigurationHostApiGetCodec(void);
                       webViewIdentifier:(NSNumber *)webViewInstanceId
                                   error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(NSNumber *)instanceId
-                                                          isAlowed:(NSNumber *)allow
+                                                         isAllowed:(NSNumber *)allow
                                                              error:
                                                                  (FlutterError *_Nullable *_Nonnull)
                                                                      error;
@@ -270,9 +276,9 @@ extern void FWFWKUserContentControllerHostApiSetup(
 NSObject<FlutterMessageCodec> *FWFWKPreferencesHostApiGetCodec(void);
 
 @protocol FWFWKPreferencesHostApi
-- (void)createFromWebViewConfiguration:(NSNumber *)instanceId
-               configurationIdentifier:(NSNumber *)configurationInstanceId
-                                 error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)createFromWebViewConfigurationWithIdentifier:(NSNumber *)instanceId
+                             configurationIdentifier:(NSNumber *)configurationInstanceId
+                                               error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setJavaScriptEnabledForPreferencesWithIdentifier:(NSNumber *)instanceId
                                                isEnabled:(NSNumber *)enabled
                                                    error:(FlutterError *_Nullable *_Nonnull)error;
@@ -428,7 +434,7 @@ NSObject<FlutterMessageCodec> *FWFWKHttpCookieStoreHostApiGetCodec(void);
                                            error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setCookieForStoreWithIdentifier:(NSNumber *)instanceId
                                  cookie:(FWFNSHttpCookieData *)cookie
-                                  error:(FlutterError *_Nullable *_Nonnull)error;
+                             completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void FWFWKHttpCookieStoreHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,

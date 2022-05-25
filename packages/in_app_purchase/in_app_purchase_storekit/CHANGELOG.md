@@ -1,6 +1,16 @@
-## NEXT
+## 0.3.0+8
+
+* Fixes a memory leak on iOS.
+
+## 0.3.0+7
+
+* Minor fixes for new analysis options.
+
+## 0.3.0+6
 
 * Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
 
 ## 0.3.0+5
 

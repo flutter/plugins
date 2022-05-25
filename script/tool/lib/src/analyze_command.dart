@@ -87,9 +87,11 @@ class AnalyzeCommand extends PackageLoopingCommand {
         getStringListArg(_customAnalysisFlag).expand<String>((String item) {
       if (item.endsWith('.yaml')) {
         final File file = packagesDir.fileSystem.file(item);
-        return (loadYaml(file.readAsStringSync()) as YamlList)
-            .toList()
-            .cast<String>();
+        final Object? yaml = loadYaml(file.readAsStringSync());
+        if (yaml == null) {
+          return <String>[];
+        }
+        return (yaml as YamlList).toList().cast<String>();
       }
       return <String>[item];
     }).toSet();

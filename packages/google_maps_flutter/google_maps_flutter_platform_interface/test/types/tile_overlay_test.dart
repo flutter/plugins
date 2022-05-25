@@ -8,7 +8,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 class _TestTileProvider extends TileProvider {
   @override
   Future<Tile> getTile(int x, int y, int? zoom) async {
-    return Tile(0, 0, null);
+    return const Tile(0, 0, null);
   }
 }
 
@@ -65,7 +65,7 @@ void main() {
     test('equality', () async {
       final TileProvider tileProvider = _TestTileProvider();
       final TileOverlay tileOverlay1 = TileOverlay(
-          tileOverlayId: TileOverlayId('id1'),
+          tileOverlayId: const TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
@@ -73,7 +73,7 @@ void main() {
           visible: false,
           tileSize: 128);
       final TileOverlay tileOverlaySameValues = TileOverlay(
-          tileOverlayId: TileOverlayId('id1'),
+          tileOverlayId: const TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
@@ -81,14 +81,14 @@ void main() {
           visible: false,
           tileSize: 128);
       final TileOverlay tileOverlayDifferentId = TileOverlay(
-          tileOverlayId: TileOverlayId('id2'),
+          tileOverlayId: const TileOverlayId('id2'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      final TileOverlay tileOverlayDifferentProvider = TileOverlay(
+      const TileOverlay tileOverlayDifferentProvider = TileOverlay(
           tileOverlayId: TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: null,
@@ -105,7 +105,7 @@ void main() {
       final TileProvider tileProvider = _TestTileProvider();
       // Set non-default values for every parameter.
       final TileOverlay tileOverlay = TileOverlay(
-          tileOverlayId: TileOverlayId('id1'),
+          tileOverlayId: const TileOverlayId('id1'),
           fadeIn: false,
           tileProvider: tileProvider,
           transparency: 0.1,

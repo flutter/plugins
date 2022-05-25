@@ -17,8 +17,7 @@
 - (void)testCreate_ShouldCallResultOnMainThread {
   CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
 
-  XCTestExpectation *expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation *expectation = [self expectationWithDescription:@"Result finished"];
 
   // Set up mocks for initWithCameraName method
   id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
@@ -37,7 +36,8 @@
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
 
-  [camera handleMethodCallAsync:call result:resultObject];
+  [camera createCameraOnSessionQueueWithCreateMethodCall:call result:resultObject];
+  [self waitForExpectationsWithTimeout:1 handler:nil];
 
   // Verify the result
   NSDictionary *dictionaryResult = (NSDictionary *)resultObject.receivedResult;

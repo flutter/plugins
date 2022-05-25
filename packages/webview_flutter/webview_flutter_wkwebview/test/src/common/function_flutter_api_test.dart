@@ -18,7 +18,7 @@ void main() {
     });
 
     test('dispose', () {
-      final Function function = () {};
+      void function() {}
       final int functionInstanceId = instanceManager.tryAddInstance(function)!;
 
       FoundationFlutterApis.instance = FoundationFlutterApis(
