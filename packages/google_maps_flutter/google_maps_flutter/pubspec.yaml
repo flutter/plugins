@@ -21,7 +21,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
-  google_maps_flutter_platform_interface: ^2.2.0
+  google_maps_flutter_platform_interface: ^2.1.2 # 2.2.0
 
 dev_dependencies:
   flutter_test:
