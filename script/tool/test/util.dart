@@ -125,7 +125,7 @@ RepositoryPackage createFakePlugin(
 /// separators, of extra files to create in the package.
 ///
 /// If [includeCommonFiles] is true, common but non-critical files like
-/// CHANGELOG.md and AUTHORS will be included.
+/// CHANGELOG.md, README.md, and AUTHORS will be included.
 ///
 /// If non-null, [directoryName] will be used for the directory instead of
 /// [name].
@@ -152,11 +152,12 @@ RepositoryPackage createFakePackage(
       version: version,
       flutterConstraint: flutterConstraint);
   if (includeCommonFiles) {
-    createFakeCHANGELOG(package, '''
+    package.changelogFile.writeAsStringSync('''
 ## $version
   * Some changes.
   ''');
-    createFakeAuthors(package);
+    package.readmeFile.writeAsStringSync('A very useful package');
+    package.authorsFile.writeAsStringSync('Google Inc.');
   }
 
   if (examples.length == 1) {
@@ -186,11 +187,6 @@ RepositoryPackage createFakePackage(
   }
 
   return package;
-}
-
-void createFakeCHANGELOG(RepositoryPackage package, String texts) {
-  package.changelogFile.createSync();
-  package.changelogFile.writeAsStringSync(texts);
 }
 
 /// Creates a `pubspec.yaml` file with a flutter dependency.
@@ -267,11 +263,6 @@ $pluginSection
   package.pubspecFile.writeAsStringSync(yaml);
 }
 
-void createFakeAuthors(RepositoryPackage package) {
-  package.authorsFile.createSync();
-  package.authorsFile.writeAsStringSync('Google Inc.');
-}
-
 String _pluginPlatformSection(
     String platform, PlatformDetails support, String packageName) {
   String entry = '';
@@ -319,14 +310,15 @@ String _pluginPlatformSection(
   return entry;
 }
 
-typedef ErrorHandler = void Function(Error error);
-
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
 /// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<void> runner, List<String> args,
-    {ErrorHandler? errorHandler}) async {
+  CommandRunner<void> runner,
+  List<String> args, {
+  Function(Error error)? errorHandler,
+  Function(Exception error)? exceptionHandler,
+}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
@@ -342,6 +334,11 @@ Future<List<String>> runCapturingPrint(
       rethrow;
     }
     errorHandler(e);
+  } on Exception catch (e) {
+    if (exceptionHandler == null) {
+      rethrow;
+    }
+    exceptionHandler(e);
   }
 
   return prints;

@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes order-dependent unit tests.
+
 ## 2.4.2
 
 * Minor fixes for new analysis options.
