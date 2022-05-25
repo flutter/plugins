@@ -93,7 +93,7 @@ class InstanceManager {
   /// `null` if the instance was not found in this manager.
   ///
   /// This does not remove the the strong referenced instance associated with
-  /// [instance]. This can be done with [removeStrongReference].
+  /// [instance]. This can be done with [removeReference].
   int? removeWeakReference(Copyable instance) {
     final int? identifier = getIdentifier(instance);
     if (identifier == null) {
@@ -116,7 +116,7 @@ class InstanceManager {
   ///
   /// This does not remove the the weak referenced instance associtated with
   /// [identifier]. This can be done with [removeWeakReference].
-  Copyable? removeStrongReference(int identifier) {
+  Copyable? removeReference(int identifier) {
     return _strongInstances.remove(identifier);
   }
 

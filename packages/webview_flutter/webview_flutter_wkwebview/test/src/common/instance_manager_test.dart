@@ -103,7 +103,7 @@ void main() {
 
       instanceManager.addHostCreatedInstance(object, 0);
       instanceManager.removeWeakReference(object);
-      expect(instanceManager.removeStrongReference(0), isA<CopyableObject>());
+      expect(instanceManager.removeReference(0), isA<CopyableObject>());
       expect(
         instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
         isNull,
@@ -117,7 +117,7 @@ void main() {
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
       instanceManager.addHostCreatedInstance(object, 0);
-      expect(instanceManager.removeStrongReference(0), isA<CopyableObject>());
+      expect(instanceManager.removeReference(0), isA<CopyableObject>());
       expect(
         instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
         object,
