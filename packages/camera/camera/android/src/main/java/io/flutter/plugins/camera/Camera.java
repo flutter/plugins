@@ -356,7 +356,7 @@ class Camera
           @Override
           public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
             Log.i(TAG, "open | onError");
-            
+
             close();
 
             String errorDescription;
@@ -394,7 +394,7 @@ class Camera
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {
     // Close any existing capture session.
-    closeCaptureSession();
+    captureSession = null;
 
     // Create a new capture builder.
     previewRequestBuilder = cameraDevice.createCaptureRequest(templateType);
@@ -1181,12 +1181,15 @@ class Camera
 
   public void close() {
     Log.i(TAG, "close");
-    captureSession = null;
 
     if (cameraDevice != null) {
       cameraDevice.close();
       cameraDevice = null;
+      captureSession = null;
+    } else {
+      closeCaptureSession();
     }
+
     if (pictureImageReader != null) {
       pictureImageReader.close();
       pictureImageReader = null;
