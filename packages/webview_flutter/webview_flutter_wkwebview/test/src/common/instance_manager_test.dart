@@ -16,14 +16,14 @@ void main() {
     test('tryAddInstance', () {
       final Object object = Object();
 
-      expect(testInstanceManager.addInstanceCreatedFromDart(object), 0);
+      expect(testInstanceManager.addDartCreatedInstance(object), 0);
       expect(testInstanceManager.getIdentifier(object), 0);
       expect(testInstanceManager.getInstance(0), object);
     });
 
     test('removeInstance', () {
       final Object object = Object();
-      testInstanceManager.addInstanceCreatedFromDart(object);
+      testInstanceManager.addDartCreatedInstance(object);
 
       expect(testInstanceManager.removeWeakReference(object), 0);
       expect(testInstanceManager.getIdentifier(object), null);

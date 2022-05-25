@@ -27,8 +27,8 @@
                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebView *webView =
       (WKWebView *)[self.instanceManager instanceForIdentifier:webViewIdentifier.longValue];
-  [self.instanceManager addInstanceCreatedFromDart:webView.scrollView
-                                    withIdentifier:identifier.longValue];
+  [self.instanceManager addDartCreatedInstance:webView.scrollView
+                                withIdentifier:identifier.longValue];
 }
 
 - (NSArray<NSNumber *> *)

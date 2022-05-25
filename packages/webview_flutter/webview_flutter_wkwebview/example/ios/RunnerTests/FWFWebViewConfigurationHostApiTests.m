@@ -32,7 +32,7 @@
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   OCMStub([mockWebView configuration]).andReturn(OCMClassMock([WKWebViewConfiguration class]));
-  [instanceManager addInstanceCreatedFromDart:mockWebView withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
   FlutterError *error;
   [hostAPI createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
@@ -46,7 +46,7 @@
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstanceCreatedFromDart:mockWebViewConfiguration withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -63,7 +63,7 @@
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstanceCreatedFromDart:mockWebViewConfiguration withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];

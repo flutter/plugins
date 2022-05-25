@@ -78,7 +78,7 @@
       instanceForIdentifier:configurationIdentifier.longValue];
   FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)
                                             configuration:configuration];
-  [self.instanceManager addInstanceCreatedFromDart:webView withIdentifier:identifier.longValue];
+  [self.instanceManager addDartCreatedInstance:webView withIdentifier:identifier.longValue];
 }
 
 - (void)loadRequestForWebViewWithIdentifier:(nonnull NSNumber *)identifier

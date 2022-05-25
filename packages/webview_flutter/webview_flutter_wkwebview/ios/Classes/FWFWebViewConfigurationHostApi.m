@@ -27,8 +27,8 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *webViewConfiguration = [[WKWebViewConfiguration alloc] init];
-  [self.instanceManager addInstanceCreatedFromDart:webViewConfiguration
-                                    withIdentifier:identifier.longValue];
+  [self.instanceManager addDartCreatedInstance:webViewConfiguration
+                                withIdentifier:identifier.longValue];
 }
 
 - (void)createFromWebViewWithIdentifier:(nonnull NSNumber *)identifier
@@ -36,8 +36,8 @@
                                   error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebView *webView =
       (WKWebView *)[self.instanceManager instanceForIdentifier:webViewIdentifier.longValue];
-  [self.instanceManager addInstanceCreatedFromDart:webView.configuration
-                                    withIdentifier:identifier.longValue];
+  [self.instanceManager addDartCreatedInstance:webView.configuration
+                                withIdentifier:identifier.longValue];
 }
 
 - (void)setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:(nonnull NSNumber *)identifier

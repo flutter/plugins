@@ -31,8 +31,8 @@
   if (@available(iOS 11.0, *)) {
     WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
         instanceForIdentifier:websiteDataStoreIdentifier.longValue];
-    [self.instanceManager addInstanceCreatedFromDart:dataStore.httpCookieStore
-                                      withIdentifier:identifier.longValue];
+    [self.instanceManager addDartCreatedInstance:dataStore.httpCookieStore
+                                  withIdentifier:identifier.longValue];
   } else {
     *error = [FlutterError
         errorWithCode:@"FWFUnsupportedVersionError"
