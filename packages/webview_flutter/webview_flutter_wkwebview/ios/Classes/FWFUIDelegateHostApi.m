@@ -28,6 +28,6 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] init];
-  [self.instanceManager addInstanceCreatedFromDart:uIDelegate withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:uIDelegate withIdentifier:instanceId.longValue];
 }
 @end

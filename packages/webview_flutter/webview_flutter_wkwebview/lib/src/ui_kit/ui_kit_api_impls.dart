@@ -29,7 +29,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     UIScrollView instance,
     WKWebView webView,
   ) {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return createFromWebView(
       instanceId,
       instanceManager.getIdentifier(webView)!,

@@ -25,7 +25,7 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)instanceId
                        error:(FlutterError *_Nullable *_Nonnull)error {
   WKPreferences *preferences = [[WKPreferences alloc] init];
-  [self.instanceManager addInstanceCreatedFromDart:preferences withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:preferences withIdentifier:instanceId.longValue];
 }
 
 - (void)createFromWebViewConfigurationWithIdentifier:(nonnull NSNumber *)instanceId
@@ -33,8 +33,8 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addInstanceCreatedFromDart:configuration.preferences
-                                    withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:configuration.preferences
+                                withIdentifier:instanceId.longValue];
 }
 
 - (void)setJavaScriptEnabledForPreferencesWithIdentifier:(nonnull NSNumber *)instanceId

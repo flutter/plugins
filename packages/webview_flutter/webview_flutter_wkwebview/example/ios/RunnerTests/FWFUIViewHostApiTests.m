@@ -16,7 +16,7 @@
   UIView *mockUIView = OCMClassMock([UIView class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstanceCreatedFromDart:mockUIView withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostAPI =
       [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -35,7 +35,7 @@
   UIView *mockUIView = OCMClassMock([UIView class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstanceCreatedFromDart:mockUIView withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostAPI =
       [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];

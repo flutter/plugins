@@ -29,8 +29,8 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addInstanceCreatedFromDart:configuration.userContentController
-                                    withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:configuration.userContentController
+                                withIdentifier:instanceId.longValue];
 }
 
 - (void)addScriptMessageHandlerForControllerWithIdentifier:(nonnull NSNumber *)instanceId

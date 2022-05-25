@@ -17,8 +17,7 @@
   FWFPreferencesHostApiImpl *hostAPI =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addInstanceCreatedFromDart:[[WKWebViewConfiguration alloc] init]
-                               withIdentifier:0];
+  [instanceManager addDartCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
 
   FlutterError *error;
   [hostAPI createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
@@ -31,7 +30,7 @@
   WKPreferences *mockPreferences = OCMClassMock([WKPreferences class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstanceCreatedFromDart:mockPreferences withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockPreferences withIdentifier:0];
 
   FWFPreferencesHostApiImpl *hostAPI =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];

@@ -83,7 +83,7 @@
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
-  [self.instanceManager addInstanceCreatedFromDart:navigationDelegate
-                                    withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:navigationDelegate
+                                withIdentifier:instanceId.longValue];
 }
 @end

@@ -79,7 +79,7 @@ long const FWFMinHostCreatedIdentifier = 65536;
   return self;
 }
 
-- (void)addInstanceCreatedFromDart:(NSObject *)instance withIdentifier:(long)instanceIdentifier {
+- (void)addDartCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier {
   NSParameterAssert(instance);
   NSParameterAssert(instanceIdentifier >= 0);
   dispatch_async(_lockQueue, ^{
@@ -87,7 +87,7 @@ long const FWFMinHostCreatedIdentifier = 65536;
   });
 }
 
-- (long)addInstanceCreatedFromHost:(nonnull NSObject *)instance {
+- (long)addHostCreatedInstance:(nonnull NSObject *)instance {
   NSParameterAssert(instance);
   long __block identifier = -1;
   dispatch_sync(_lockQueue, ^{

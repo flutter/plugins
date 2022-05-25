@@ -13,7 +13,7 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 
-  [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
+  [instanceManager addDartCreatedInstance:object withIdentifier:0];
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:0], object);
   XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO],
                  0);
@@ -22,7 +22,7 @@
 - (void)testAddHostCreatedInstance {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
-  [instanceManager addInstanceCreatedFromHost:object];
+  [instanceManager addHostCreatedInstance:object];
 
   long identifier = [instanceManager identifierForInstance:object
                            identifierWillBePassedToFlutter:NO];
@@ -34,7 +34,7 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 
-  [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
+  [instanceManager addDartCreatedInstance:object withIdentifier:0];
 
   XCTAssertEqualObjects([instanceManager removeInstanceWithIdentifier:0], object);
   XCTAssertEqual([instanceManager strongInstanceCount], 0);

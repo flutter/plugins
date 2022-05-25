@@ -236,7 +236,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
     WKWebsiteDataStore instance,
     WKWebViewConfiguration configuration,
   ) {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
 
     return createFromWebViewConfiguration(
       instanceId,
@@ -248,7 +248,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   Future<void> createDefaultDataStoreForInstances(
     WKWebsiteDataStore instance,
   ) async {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return createDefaultDataStore(instanceId);
   }
 
@@ -279,7 +279,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
 
   /// Calls [create] with the ids of the provided object instances.
   Future<void> createForInstances(WKScriptMessageHandler instance) async {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return create(instanceId);
   }
 }
@@ -300,7 +300,7 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
     WKPreferences instance,
     WKWebViewConfiguration configuration,
   ) {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return createFromWebViewConfiguration(
       instanceId,
       instanceManager.getIdentifier(configuration)!,
@@ -335,7 +335,7 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
     WKHttpCookieStore instance,
     WKWebsiteDataStore dataStore,
   ) {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return createFromWebsiteDataStore(
       instanceId,
       instanceManager.getIdentifier(dataStore)!,
@@ -371,7 +371,7 @@ class WKUserContentControllerHostApiImpl
     WKUserContentController instance,
     WKWebViewConfiguration configuration,
   ) async {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return createFromWebViewConfiguration(
       instanceId,
       instanceManager.getIdentifier(configuration)!,
@@ -443,7 +443,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
 
   /// Calls [create] with the ids of the provided object instances.
   Future<void> createForInstances(WKWebViewConfiguration instance) {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return create(instanceId);
   }
 
@@ -452,7 +452,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     WKWebViewConfiguration instance,
     WKWebView webView,
   ) async {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return createFromWebView(
       instanceId,
       instanceManager.getIdentifier(webView)!,
@@ -495,7 +495,7 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
 
   /// Calls [create] with the ids of the provided object instances.
   Future<void> createForInstances(WKUIDelegate instance) async {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return create(instanceId);
   }
 }
@@ -521,7 +521,7 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
 
   /// Calls [create] with the ids of the provided object instances.
   Future<void> createForInstances(WKNavigationDelegate instance) async {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return create(instanceId);
   }
 
@@ -590,7 +590,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     WKWebView instance,
     WKWebViewConfiguration configuration,
   ) {
-    final int instanceId = instanceManager.addInstanceCreatedFromDart(instance);
+    final int instanceId = instanceManager.addDartCreatedInstance(instance);
     return create(
       instanceId,
       instanceManager.getIdentifier(configuration)!,

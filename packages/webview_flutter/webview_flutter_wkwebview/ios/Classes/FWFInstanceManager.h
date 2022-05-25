@@ -38,7 +38,7 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  * @param instance The instance to be stored.
  * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0.
  */
-- (void)addInstanceCreatedFromDart:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
+- (void)addDartCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
  * Adds a new instance that was instantiated from the host platform.
@@ -46,7 +46,7 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  * @param instance The instance to be stored.
  * @return The unique identifier stored with instance.
  */
-- (long)addInstanceCreatedFromHost:(nonnull NSObject *)instance;
+- (long)addHostCreatedInstance:(nonnull NSObject *)instance;
 
 /**
  * Removes `instanceIdentifier` and its associated strongly referenced instance, if present, from

@@ -13,7 +13,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
 
       expect(instanceManager.getIdentifier(object), 0);
       expect(
@@ -28,15 +28,15 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
 
       expect(
-        () => instanceManager.addInstanceCreatedFromHost(object, 1),
+        () => instanceManager.addHostCreatedInstance(object, 1),
         throwsAssertionError,
       );
 
       expect(
-        () => instanceManager.addInstanceCreatedFromHost(CopyableObject(), 0),
+        () => instanceManager.addHostCreatedInstance(CopyableObject(), 0),
         throwsAssertionError,
       );
     });
@@ -47,7 +47,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromDart(object);
+      instanceManager.addDartCreatedInstance(object);
 
       final int? instanceId = instanceManager.getIdentifier(object);
       expect(instanceId, isNotNull);
@@ -69,7 +69,7 @@ void main() {
         weakInstanceId = instanceId;
       });
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
 
       expect(instanceManager.removeWeakReference(object), 0);
       expect(
@@ -85,7 +85,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
 
       expect(instanceManager.removeWeakReference(object), 0);
       final CopyableObject copy = instanceManager.getInstance(
@@ -101,7 +101,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
       instanceManager.removeWeakReference(object);
       expect(instanceManager.removeReference(0), isA<CopyableObject>());
       expect(
@@ -116,7 +116,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
       expect(instanceManager.removeReference(0), isA<CopyableObject>());
       expect(
         instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
@@ -130,7 +130,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addInstanceCreatedFromHost(object, 0);
+      instanceManager.addHostCreatedInstance(object, 0);
       instanceManager.removeWeakReference(object);
 
       final CopyableObject strongCopy = instanceManager.getInstance(

@@ -78,7 +78,7 @@ class InstanceManager {
   /// Throws assertion error if the instance has already been added.
   ///
   /// Returns the randomly generated id of the [instance] added.
-  int addInstanceCreatedFromDart(Copyable instance) {
+  int addDartCreatedInstance(Copyable instance) {
     assert(getIdentifier(instance) == null);
 
     final int identifier = _nextUniqueIdentifier();
@@ -167,7 +167,7 @@ class InstanceManager {
   /// added.
   ///
   /// Returns unique identifier of the [instance] added.
-  void addInstanceCreatedFromHost(Copyable instance, int identifier) {
+  void addHostCreatedInstance(Copyable instance, int identifier) {
     assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
     assert(identifier >= 0);
