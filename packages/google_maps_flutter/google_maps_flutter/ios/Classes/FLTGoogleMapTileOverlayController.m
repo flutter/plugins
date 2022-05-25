@@ -14,11 +14,14 @@
 
 @implementation FLTGoogleMapTileOverlayController
 
-- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer mapView:(GMSMapView *)mapView {
+- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer
+                          mapView:(GMSMapView *)mapView
+                          options:(NSDictionary *)optionsData {
   self = [super init];
   if (self) {
     _layer = tileLayer;
     _mapView = mapView;
+    [self interpretTileOverlayOptions:optionsData];
   }
   return self;
 }
@@ -42,8 +45,6 @@
   return info;
 }
 
-#pragma mark - FLTGoogleMapTileOverlayOptionsSink methods
-
 - (void)setFadeIn:(BOOL)fadeIn {
   self.layer.fadeIn = fadeIn;
 }
@@ -64,6 +65,37 @@
 - (void)setTileSize:(NSInteger)tileSize {
   self.layer.tileSize = tileSize;
 }
+
+- (void)interpretTileOverlayOptions:(NSDictionary *)data {
+  if (!data) {
+    return;
+  }
+  NSNumber *visible = data[@"visible"];
+  if (visible != nil && visible != (id)[NSNull null]) {
+    [self setVisible:visible.boolValue];
+  }
+
+  NSNumber *transparency = data[@"transparency"];
+  if (transparency != nil && transparency != (id)[NSNull null]) {
+    [self setTransparency:transparency.floatValue];
+  }
+
+  NSNumber *zIndex = data[@"zIndex"];
+  if (zIndex != nil && zIndex != (id)[NSNull null]) {
+    [self setZIndex:zIndex.intValue];
+  }
+
+  NSNumber *fadeIn = data[@"fadeIn"];
+  if (fadeIn != nil && fadeIn != (id)[NSNull null]) {
+    [self setFadeIn:fadeIn.boolValue];
+  }
+
+  NSNumber *tileSize = data[@"tileSize"];
+  if (tileSize != nil && tileSize != (id)[NSNull null]) {
+    [self setTileSize:tileSize.integerValue];
+  }
+}
+
 @end
 
 @interface FLTTileProviderController ()
@@ -90,11 +122,10 @@
                       y:(NSUInteger)y
                    zoom:(NSUInteger)zoom
                receiver:(id<GMSTileReceiver>)receiver {
-  __weak typeof(self) weakSelf = self;
   [self.methodChannel
       invokeMethod:@"tileOverlay#getTile"
          arguments:@{
-           @"tileOverlayId" : weakSelf.tileOverlayIdentifier,
+           @"tileOverlayId" : self.tileOverlayIdentifier,
            @"x" : @(x),
            @"y" : @(y),
            @"zoom" : @(zoom)
@@ -156,8 +187,8 @@
                       withTileOverlayIdentifier:identifier];
     FLTGoogleMapTileOverlayController *controller =
         [[FLTGoogleMapTileOverlayController alloc] initWithTileLayer:tileProvider
-                                                             mapView:self.mapView];
-    [FLTTileOverlaysController interpretTileOverlayOptions:tileOverlay sink:controller];
+                                                             mapView:self.mapView
+                                                             options:tileOverlay];
     self.tileOverlayIdentifierToController[identifier] = controller;
   }
 }
@@ -170,7 +201,7 @@
     if (!controller) {
       continue;
     }
-    [FLTTileOverlaysController interpretTileOverlayOptions:tileOverlay sink:controller];
+    [controller interpretTileOverlayOptions:tileOverlay];
   }
 }
 - (void)removeTileOverlayWithIdentifiers:(NSArray *)identifiers {
@@ -203,34 +234,6 @@
 
 + (NSString *)identifierForTileOverlay:(NSDictionary *)tileOverlay {
   return tileOverlay[@"tileOverlayId"];
-}
-
-+ (void)interpretTileOverlayOptions:(NSDictionary *)data
-                               sink:(id<FLTGoogleMapTileOverlayOptionsSink>)sink {
-  NSNumber *visible = data[@"visible"];
-  if (visible != nil && visible != (id)[NSNull null]) {
-    [sink setVisible:visible.boolValue];
-  }
-
-  NSNumber *transparency = data[@"transparency"];
-  if (transparency != nil && transparency != (id)[NSNull null]) {
-    [sink setTransparency:transparency.floatValue];
-  }
-
-  NSNumber *zIndex = data[@"zIndex"];
-  if (zIndex != nil && zIndex != (id)[NSNull null]) {
-    [sink setZIndex:zIndex.intValue];
-  }
-
-  NSNumber *fadeIn = data[@"fadeIn"];
-  if (fadeIn != nil && fadeIn != (id)[NSNull null]) {
-    [sink setFadeIn:fadeIn.boolValue];
-  }
-
-  NSNumber *tileSize = data[@"tileSize"];
-  if (tileSize != nil && tileSize != (id)[NSNull null]) {
-    [sink setTileSize:tileSize.integerValue];
-  }
 }
 
 @end

@@ -17,14 +17,14 @@
 @implementation FLTGoogleMapJSONConversionsTests
 
 - (void)testLocationFromLatlong {
-  NSArray<NSNumber *> *latlong = @[ @(1), @(2) ];
+  NSArray<NSNumber *> *latlong = @[ @1, @2 ];
   CLLocationCoordinate2D location = [FLTGoogleMapJSONConversions locationFromLatlong:latlong];
   XCTAssertEqual(location.latitude, 1);
   XCTAssertEqual(location.longitude, 2);
 }
 
 - (void)testPointFromArray {
-  NSArray<NSNumber *> *array = @[ @(1), @(2) ];
+  NSArray<NSNumber *> *array = @[ @1, @2 ];
   CGPoint point = [FLTGoogleMapJSONConversions pointFromArray:array];
   XCTAssertEqual(point.x, 1);
   XCTAssertEqual(point.y, 2);
@@ -51,7 +51,7 @@
 }
 
 - (void)testPointsFromLatlongs {
-  NSArray<NSArray *> *latlongs = @[ @[ @(1), @(2) ], @[ @(3), @(4) ] ];
+  NSArray<NSArray *> *latlongs = @[ @[ @1, @2 ], @[ @(3), @(4) ] ];
   NSArray<CLLocation *> *locations = [FLTGoogleMapJSONConversions pointsFromLatlongs:latlongs];
   XCTAssertEqual(locations.count, 2);
   XCTAssertEqual(locations[0].coordinate.latitude, 1);
@@ -62,7 +62,7 @@
 
 - (void)testHolesFromPointsArray {
   NSArray<NSArray *> *pointsArray =
-      @[ @[ @[ @(1), @(2) ], @[ @(3), @(4) ] ], @[ @[ @(5), @(6) ], @[ @(7), @(8) ] ] ];
+      @[ @[ @[ @1, @2 ], @[ @(3), @(4) ] ], @[ @[ @(5), @(6) ], @[ @(7), @(8) ] ] ];
   NSArray<NSArray<CLLocation *> *> *holes =
       [FLTGoogleMapJSONConversions holesFromPointsArray:pointsArray];
   XCTAssertEqual(holes.count, 2);
@@ -116,7 +116,7 @@
   XCTAssertNil([FLTGoogleMapJSONConversions cameraPostionFromDictionary:nil]);
 
   NSDictionary *channelValue =
-      @{@"target" : @[ @(1), @(2) ], @"zoom" : @3, @"bearing" : @4, @"tilt" : @5};
+      @{@"target" : @[ @1, @2 ], @"zoom" : @3, @"bearing" : @4, @"tilt" : @5};
 
   GMSCameraPosition *cameraPosition =
       [FLTGoogleMapJSONConversions cameraPostionFromDictionary:channelValue];
@@ -145,7 +145,7 @@
 }
 
 - (void)testCoordinateBoundsFromLatlongs {
-  NSArray<NSNumber *> *latlong1 = @[ @(1), @(2) ];
+  NSArray<NSNumber *> *latlong1 = @[ @1, @2 ];
   NSArray<NSNumber *> *latlong2 = @[ @(3), @(4) ];
 
   GMSCoordinateBounds *bounds =
@@ -168,8 +168,7 @@
 
 - (void)testCameraUpdateFromChannelValueNewCameraPosition {
   NSArray *channelValue = @[
-    @"newCameraPosition",
-    @{@"target" : @[ @(1), @(2) ], @"zoom" : @3, @"bearing" : @4, @"tilt" : @5}
+    @"newCameraPosition", @{@"target" : @[ @1, @2 ], @"zoom" : @3, @"bearing" : @4, @"tilt" : @5}
   ];
   id classMockCameraUpdate = OCMClassMock([GMSCameraUpdate class]);
   [FLTGoogleMapJSONConversions cameraUpdateFromChannelValue:channelValue];
@@ -209,7 +208,7 @@
 }
 
 - (void)testCameraUpdateFromChannelValueNewLatLngBounds {
-  NSArray<NSNumber *> *latlong1 = @[ @(1), @(2) ];
+  NSArray<NSNumber *> *latlong1 = @[ @1, @2 ];
   NSArray<NSNumber *> *latlong2 = @[ @(3), @(4) ];
   GMSCoordinateBounds *bounds =
       [FLTGoogleMapJSONConversions coordinateBoundsFromLatlongs:@[ latlong1, latlong2 ]];

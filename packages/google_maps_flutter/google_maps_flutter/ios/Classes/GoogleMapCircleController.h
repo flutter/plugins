@@ -5,24 +5,13 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-// Defines circle UI options writable from Flutter.
-@protocol FLTGoogleMapCircleOptionsSink
-- (void)setConsumeTapEvents:(BOOL)consume;
-- (void)setVisible:(BOOL)visible;
-- (void)setStrokeColor:(UIColor *)color;
-- (void)setStrokeWidth:(CGFloat)width;
-- (void)setFillColor:(UIColor *)color;
-- (void)setCenter:(CLLocationCoordinate2D)center;
-- (void)setRadius:(CLLocationDistance)radius;
-- (void)setZIndex:(int)zIndex;
-@end
-
 // Defines circle controllable by Flutter.
-@interface FLTGoogleMapCircleController : NSObject <FLTGoogleMapCircleOptionsSink>
+@interface FLTGoogleMapCircleController : NSObject
 - (instancetype)initCircleWithPosition:(CLLocationCoordinate2D)position
                                 radius:(CLLocationDistance)radius
                               circleId:(NSString *)circleIdentifier
-                               mapView:(GMSMapView *)mapView;
+                               mapView:(GMSMapView *)mapView
+                               options:(NSDictionary *)options;
 - (void)removeCircle;
 @end
 

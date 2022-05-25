@@ -74,7 +74,7 @@
     _mapView.accessibilityElementsHidden = NO;
     // TODO(cyanglaz): avoid sending message to self in the middle of the init method.
     // https://github.com/flutter/flutter/issues/104121
-    [FLTGoogleMapController interpretMapOptions:args[@"options"] sink:self];
+    [self interpretMapOptions:args[@"options"]];
     NSString *channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -171,7 +171,7 @@
                                    cameraUpdateFromChannelValue:call.arguments[@"cameraUpdate"]]];
     result(nil);
   } else if ([call.method isEqualToString:@"map#update"]) {
-    [FLTGoogleMapController interpretMapOptions:call.arguments[@"options"] sink:self];
+    [self interpretMapOptions:call.arguments[@"options"]];
     result([FLTGoogleMapJSONConversions dictionaryFromPosition:[self cameraPosition]]);
   } else if ([call.method isEqualToString:@"map#getVisibleRegion"]) {
     if (self.mapView != nil) {
@@ -405,8 +405,6 @@
   }
 }
 
-#pragma mark - FLTGoogleMapOptionsSink methods
-
 - (void)setCamera:(GMSCameraPosition *)camera {
   self.mapView.camera = camera;
 }
@@ -552,10 +550,10 @@
          arguments:@{@"position" : [FLTGoogleMapJSONConversions arrayFromLocation:coordinate]}];
 }
 
-+ (void)interpretMapOptions:(NSDictionary *)data sink:(id<FLTGoogleMapOptionsSink>)sink {
+- (void)interpretMapOptions:(NSDictionary *)data {
   NSArray *cameraTargetBounds = data[@"cameraTargetBounds"];
   if (cameraTargetBounds && cameraTargetBounds != (id)[NSNull null]) {
-    [sink
+    [self
         setCameraTargetBounds:cameraTargetBounds.count > 0 && cameraTargetBounds[0] != [NSNull null]
                                   ? [FLTGoogleMapJSONConversions
                                         coordinateBoundsFromLatlongs:cameraTargetBounds.firstObject]
@@ -563,29 +561,29 @@
   }
   NSNumber *compassEnabled = data[@"compassEnabled"];
   if (compassEnabled && compassEnabled != (id)[NSNull null]) {
-    [sink setCompassEnabled:[compassEnabled boolValue]];
+    [self setCompassEnabled:[compassEnabled boolValue]];
   }
   id indoorEnabled = data[@"indoorEnabled"];
   if (indoorEnabled && indoorEnabled != [NSNull null]) {
-    [sink setIndoorEnabled:[indoorEnabled boolValue]];
+    [self setIndoorEnabled:[indoorEnabled boolValue]];
   }
   id trafficEnabled = data[@"trafficEnabled"];
   if (trafficEnabled && trafficEnabled != [NSNull null]) {
-    [sink setTrafficEnabled:[trafficEnabled boolValue]];
+    [self setTrafficEnabled:[trafficEnabled boolValue]];
   }
   id buildingsEnabled = data[@"buildingsEnabled"];
   if (buildingsEnabled && buildingsEnabled != [NSNull null]) {
-    [sink setBuildingsEnabled:[buildingsEnabled boolValue]];
+    [self setBuildingsEnabled:[buildingsEnabled boolValue]];
   }
   id mapType = data[@"mapType"];
   if (mapType && mapType != [NSNull null]) {
-    [sink setMapType:[FLTGoogleMapJSONConversions mapViewTypeFromTypeValue:mapType]];
+    [self setMapType:[FLTGoogleMapJSONConversions mapViewTypeFromTypeValue:mapType]];
   }
   NSArray *zoomData = data[@"minMaxZoomPreference"];
   if (zoomData && zoomData != (id)[NSNull null]) {
     float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : [zoomData[0] floatValue];
     float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : [zoomData[1] floatValue];
-    [sink setMinZoom:minZoom maxZoom:maxZoom];
+    [self setMinZoom:minZoom maxZoom:maxZoom];
   }
   NSArray *paddingData = data[@"padding"];
   if (paddingData) {
@@ -593,36 +591,36 @@
     float left = (paddingData[1] == [NSNull null]) ? 0 : [paddingData[1] floatValue];
     float bottom = (paddingData[2] == [NSNull null]) ? 0 : [paddingData[2] floatValue];
     float right = (paddingData[3] == [NSNull null]) ? 0 : [paddingData[3] floatValue];
-    [sink setPaddingTop:top left:left bottom:bottom right:right];
+    [self setPaddingTop:top left:left bottom:bottom right:right];
   }
 
   NSNumber *rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
   if (rotateGesturesEnabled && rotateGesturesEnabled != (id)[NSNull null]) {
-    [sink setRotateGesturesEnabled:[rotateGesturesEnabled boolValue]];
+    [self setRotateGesturesEnabled:[rotateGesturesEnabled boolValue]];
   }
   NSNumber *scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
   if (scrollGesturesEnabled && scrollGesturesEnabled != (id)[NSNull null]) {
-    [sink setScrollGesturesEnabled:[scrollGesturesEnabled boolValue]];
+    [self setScrollGesturesEnabled:[scrollGesturesEnabled boolValue]];
   }
   NSNumber *tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
   if (tiltGesturesEnabled && tiltGesturesEnabled != (id)[NSNull null]) {
-    [sink setTiltGesturesEnabled:[tiltGesturesEnabled boolValue]];
+    [self setTiltGesturesEnabled:[tiltGesturesEnabled boolValue]];
   }
   NSNumber *trackCameraPosition = data[@"trackCameraPosition"];
   if (trackCameraPosition && trackCameraPosition != (id)[NSNull null]) {
-    [sink setTrackCameraPosition:[trackCameraPosition boolValue]];
+    [self setTrackCameraPosition:[trackCameraPosition boolValue]];
   }
   NSNumber *zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
   if (zoomGesturesEnabled && zoomGesturesEnabled != (id)[NSNull null]) {
-    [sink setZoomGesturesEnabled:[zoomGesturesEnabled boolValue]];
+    [self setZoomGesturesEnabled:[zoomGesturesEnabled boolValue]];
   }
   NSNumber *myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled && myLocationEnabled != (id)[NSNull null]) {
-    [sink setMyLocationEnabled:[myLocationEnabled boolValue]];
+    [self setMyLocationEnabled:[myLocationEnabled boolValue]];
   }
   NSNumber *myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
   if (myLocationButtonEnabled && myLocationButtonEnabled != (id)[NSNull null]) {
-    [sink setMyLocationButtonEnabled:[myLocationButtonEnabled boolValue]];
+    [self setMyLocationButtonEnabled:[myLocationButtonEnabled boolValue]];
   }
 }
 

@@ -17,12 +17,14 @@
 - (instancetype)initCircleWithPosition:(CLLocationCoordinate2D)position
                                 radius:(CLLocationDistance)radius
                               circleId:(NSString *)circleIdentifier
-                               mapView:(GMSMapView *)mapView {
+                               mapView:(GMSMapView *)mapView
+                               options:(NSDictionary *)options {
   self = [super init];
   if (self) {
     _circle = [GMSCircle circleWithPosition:position radius:radius];
     _mapView = mapView;
     _circle.userData = @[ circleIdentifier ];
+    [self interpretCircleOptions:options];
   }
   return self;
 }
@@ -30,8 +32,6 @@
 - (void)removeCircle {
   self.circle.map = nil;
 }
-
-#pragma mark - FLTGoogleMapCircleOptionsSink methods
 
 - (void)setConsumeTapEvents:(BOOL)consumes {
   self.circle.tappable = consumes;
@@ -58,6 +58,49 @@
 - (void)setFillColor:(UIColor *)color {
   self.circle.fillColor = color;
 }
+
+- (void)interpretCircleOptions:(NSDictionary *)data {
+  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
+  if (consumeTapEvents && consumeTapEvents != (id)[NSNull null]) {
+    [self setConsumeTapEvents:consumeTapEvents.boolValue];
+  }
+
+  NSNumber *visible = data[@"visible"];
+  if (visible && visible != (id)[NSNull null]) {
+    [self setVisible:[visible boolValue]];
+  }
+
+  NSNumber *zIndex = data[@"zIndex"];
+  if (zIndex && zIndex != (id)[NSNull null]) {
+    [self setZIndex:[zIndex intValue]];
+  }
+
+  NSArray *center = data[@"center"];
+  if (center && center != (id)[NSNull null]) {
+    [self setCenter:[FLTGoogleMapJSONConversions locationFromLatlong:center]];
+  }
+
+  NSNumber *radius = data[@"radius"];
+  if (radius && radius != (id)[NSNull null]) {
+    [self setRadius:[radius floatValue]];
+  }
+
+  NSNumber *strokeColor = data[@"strokeColor"];
+  if (strokeColor && strokeColor != (id)[NSNull null]) {
+    [self setStrokeColor:[FLTGoogleMapJSONConversions colorFromRGBA:strokeColor]];
+  }
+
+  NSNumber *strokeWidth = data[@"strokeWidth"];
+  if (strokeWidth && strokeWidth != (id)[NSNull null]) {
+    [self setStrokeWidth:[strokeWidth intValue]];
+  }
+
+  NSNumber *fillColor = data[@"fillColor"];
+  if (fillColor && fillColor != (id)[NSNull null]) {
+    [self setFillColor:[FLTGoogleMapJSONConversions colorFromRGBA:fillColor]];
+  }
+}
+
 @end
 
 @interface FLTCirclesController ()
@@ -91,8 +134,8 @@
         [[FLTGoogleMapCircleController alloc] initCircleWithPosition:position
                                                               radius:radius
                                                             circleId:circleId
-                                                             mapView:self.mapView];
-    [FLTCirclesController interpretCircleOptions:circle sink:controller];
+                                                             mapView:self.mapView
+                                                             options:circle];
     self.circleIdToController[circleId] = controller;
   }
 }
@@ -104,7 +147,7 @@
     if (!controller) {
       continue;
     }
-    [FLTCirclesController interpretCircleOptions:circle sink:controller];
+    [controller interpretCircleOptions:circle];
   }
 }
 
@@ -149,48 +192,6 @@
 
 + (NSString *)getCircleId:(NSDictionary *)circle {
   return circle[@"circleId"];
-}
-
-+ (void)interpretCircleOptions:(NSDictionary *)data sink:(id<FLTGoogleMapCircleOptionsSink>)sink {
-  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents && consumeTapEvents != (id)[NSNull null]) {
-    [sink setConsumeTapEvents:consumeTapEvents.boolValue];
-  }
-
-  NSNumber *visible = data[@"visible"];
-  if (visible && visible != (id)[NSNull null]) {
-    [sink setVisible:[visible boolValue]];
-  }
-
-  NSNumber *zIndex = data[@"zIndex"];
-  if (zIndex && zIndex != (id)[NSNull null]) {
-    [sink setZIndex:[zIndex intValue]];
-  }
-
-  NSArray *center = data[@"center"];
-  if (center && center != (id)[NSNull null]) {
-    [sink setCenter:[FLTGoogleMapJSONConversions locationFromLatlong:center]];
-  }
-
-  NSNumber *radius = data[@"radius"];
-  if (radius && radius != (id)[NSNull null]) {
-    [sink setRadius:[radius floatValue]];
-  }
-
-  NSNumber *strokeColor = data[@"strokeColor"];
-  if (strokeColor && strokeColor != (id)[NSNull null]) {
-    [sink setStrokeColor:[FLTGoogleMapJSONConversions colorFromRGBA:strokeColor]];
-  }
-
-  NSNumber *strokeWidth = data[@"strokeWidth"];
-  if (strokeWidth && strokeWidth != (id)[NSNull null]) {
-    [sink setStrokeWidth:[strokeWidth intValue]];
-  }
-
-  NSNumber *fillColor = data[@"fillColor"];
-  if (fillColor && fillColor != (id)[NSNull null]) {
-    [sink setFillColor:[FLTGoogleMapJSONConversions colorFromRGBA:fillColor]];
-  }
 }
 
 @end

@@ -45,8 +45,6 @@
   self.marker.map = nil;
 }
 
-#pragma mark - FLTGoogleMapMarkerOptionsSink methods
-
 - (void)setAlpha:(float)alpha {
   self.marker.opacity = alpha;
 }
@@ -92,6 +90,135 @@
   self.marker.zIndex = zIndex;
 }
 
+- (void)interpretMarkerOptions:(NSDictionary *)data
+                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  NSNumber *alpha = data[@"alpha"];
+  if (alpha && alpha != (id)[NSNull null]) {
+    [self setAlpha:[alpha floatValue]];
+  }
+  NSArray *anchor = data[@"anchor"];
+  if (anchor && anchor != (id)[NSNull null]) {
+    [self setAnchor:[FLTGoogleMapJSONConversions pointFromArray:anchor]];
+  }
+  NSNumber *draggable = data[@"draggable"];
+  if (draggable && draggable != (id)[NSNull null]) {
+    [self setDraggable:[draggable boolValue]];
+  }
+  NSArray *icon = data[@"icon"];
+  if (icon && icon != (id)[NSNull null]) {
+    UIImage *image = [self extractIconFromData:icon registrar:registrar];
+    [self setIcon:image];
+  }
+  NSNumber *flat = data[@"flat"];
+  if (flat && flat != (id)[NSNull null]) {
+    [self setFlat:[flat boolValue]];
+  }
+  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
+  if (consumeTapEvents && consumeTapEvents != (id)[NSNull null]) {
+    [self setConsumeTapEvents:[consumeTapEvents boolValue]];
+  }
+  [self interpretInfoWindow:data];
+  NSArray *position = data[@"position"];
+  if (position && position != (id)[NSNull null]) {
+    [self setPosition:[FLTGoogleMapJSONConversions locationFromLatlong:position]];
+  }
+  NSNumber *rotation = data[@"rotation"];
+  if (rotation && rotation != (id)[NSNull null]) {
+    [self setRotation:[rotation doubleValue]];
+  }
+  NSNumber *visible = data[@"visible"];
+  if (visible && visible != (id)[NSNull null]) {
+    [self setVisible:[visible boolValue]];
+  }
+  NSNumber *zIndex = data[@"zIndex"];
+  if (zIndex && zIndex != (id)[NSNull null]) {
+    [self setZIndex:[zIndex intValue]];
+  }
+}
+
+- (void)interpretInfoWindow:(NSDictionary *)data {
+  NSDictionary *infoWindow = data[@"infoWindow"];
+  if (infoWindow && infoWindow != (id)[NSNull null]) {
+    NSString *title = infoWindow[@"title"];
+    NSString *snippet = infoWindow[@"snippet"];
+    if (title && title != (id)[NSNull null]) {
+      [self setInfoWindowTitle:title snippet:snippet];
+    }
+    NSArray *infoWindowAnchor = infoWindow[@"infoWindowAnchor"];
+    if (infoWindowAnchor && infoWindowAnchor != (id)[NSNull null]) {
+      [self setInfoWindowAnchor:[FLTGoogleMapJSONConversions pointFromArray:infoWindowAnchor]];
+    }
+  }
+}
+
+- (UIImage *)extractIconFromData:(NSArray *)iconData
+                       registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  UIImage *image;
+  if ([iconData.firstObject isEqualToString:@"defaultMarker"]) {
+    CGFloat hue = (iconData.count == 1) ? 0.0f : [iconData[1] doubleValue];
+    image = [GMSMarker markerImageWithColor:[UIColor colorWithHue:hue / 360.0
+                                                       saturation:1.0
+                                                       brightness:0.7
+                                                            alpha:1.0]];
+  } else if ([iconData.firstObject isEqualToString:@"fromAsset"]) {
+    if (iconData.count == 2) {
+      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
+    } else {
+      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
+                                                   fromPackage:iconData[2]]];
+    }
+  } else if ([iconData.firstObject isEqualToString:@"fromAssetImage"]) {
+    if (iconData.count == 3) {
+      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
+      id scaleParam = iconData[2];
+      image = [self scaleImage:image by:scaleParam];
+    } else {
+      NSString *error =
+          [NSString stringWithFormat:@"'fromAssetImage' should have exactly 3 arguments. Got: %lu",
+                                     (unsigned long)iconData.count];
+      NSException *exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
+                                                       reason:error
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  } else if ([iconData[0] isEqualToString:@"fromBytes"]) {
+    if (iconData.count == 2) {
+      @try {
+        FlutterStandardTypedData *byteData = iconData[1];
+        CGFloat screenScale = [[UIScreen mainScreen] scale];
+        image = [UIImage imageWithData:[byteData data] scale:screenScale];
+      } @catch (NSException *exception) {
+        @throw [NSException exceptionWithName:@"InvalidByteDescriptor"
+                                       reason:@"Unable to interpret bytes as a valid image."
+                                     userInfo:nil];
+      }
+    } else {
+      NSString *error = [NSString
+          stringWithFormat:@"fromBytes should have exactly one argument, the bytes. Got: %lu",
+                           (unsigned long)iconData.count];
+      NSException *exception = [NSException exceptionWithName:@"InvalidByteDescriptor"
+                                                       reason:error
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+  return image;
+}
+
+- (UIImage *)scaleImage:(UIImage *)image by:(id)scaleParam {
+  double scale = 1.0;
+  if ([scaleParam isKindOfClass:[NSNumber class]]) {
+    scale = [scaleParam doubleValue];
+  }
+  if (fabs(scale - 1) > 1e-3) {
+    return [UIImage imageWithCGImage:[image CGImage]
+                               scale:(image.scale * scale)
+                         orientation:(image.imageOrientation)];
+  }
+  return image;
+}
+
 @end
 
 @interface FLTMarkersController ()
@@ -126,7 +253,7 @@
         [[FLTGoogleMapMarkerController alloc] initMarkerWithPosition:position
                                                           identifier:identifier
                                                              mapView:self.mapView];
-    [FLTMarkersController interpretMarkerOptions:marker sink:controller registrar:self.registrar];
+    [controller interpretMarkerOptions:marker registrar:self.registrar];
     self.markerIdentifierToController[identifier] = controller;
   }
 }
@@ -138,7 +265,7 @@
     if (!controller) {
       continue;
     }
-    [FLTMarkersController interpretMarkerOptions:marker sink:controller registrar:self.registrar];
+    [controller interpretMarkerOptions:marker registrar:self.registrar];
   }
 }
 
@@ -255,136 +382,6 @@
 + (CLLocationCoordinate2D)getPosition:(NSDictionary *)marker {
   NSArray *position = marker[@"position"];
   return [FLTGoogleMapJSONConversions locationFromLatlong:position];
-}
-
-+ (void)interpretMarkerOptions:(NSDictionary *)data
-                          sink:(id<FLTGoogleMapMarkerOptionsSink>)sink
-                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  NSNumber *alpha = data[@"alpha"];
-  if (alpha && alpha != (id)[NSNull null]) {
-    [sink setAlpha:[alpha floatValue]];
-  }
-  NSArray *anchor = data[@"anchor"];
-  if (anchor && anchor != (id)[NSNull null]) {
-    [sink setAnchor:[FLTGoogleMapJSONConversions pointFromArray:anchor]];
-  }
-  NSNumber *draggable = data[@"draggable"];
-  if (draggable && draggable != (id)[NSNull null]) {
-    [sink setDraggable:[draggable boolValue]];
-  }
-  NSArray *icon = data[@"icon"];
-  if (icon && icon != (id)[NSNull null]) {
-    UIImage *image = [FLTMarkersController extractIconFromData:icon registrar:registrar];
-    [sink setIcon:image];
-  }
-  NSNumber *flat = data[@"flat"];
-  if (flat && flat != (id)[NSNull null]) {
-    [sink setFlat:[flat boolValue]];
-  }
-  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents && consumeTapEvents != (id)[NSNull null]) {
-    [sink setConsumeTapEvents:[consumeTapEvents boolValue]];
-  }
-  [FLTMarkersController interpretInfoWindow:data sink:sink];
-  NSArray *position = data[@"position"];
-  if (position && position != (id)[NSNull null]) {
-    [sink setPosition:[FLTGoogleMapJSONConversions locationFromLatlong:position]];
-  }
-  NSNumber *rotation = data[@"rotation"];
-  if (rotation && rotation != (id)[NSNull null]) {
-    [sink setRotation:[rotation doubleValue]];
-  }
-  NSNumber *visible = data[@"visible"];
-  if (visible && visible != (id)[NSNull null]) {
-    [sink setVisible:[visible boolValue]];
-  }
-  NSNumber *zIndex = data[@"zIndex"];
-  if (zIndex && zIndex != (id)[NSNull null]) {
-    [sink setZIndex:[zIndex intValue]];
-  }
-}
-
-+ (void)interpretInfoWindow:(NSDictionary *)data sink:(id<FLTGoogleMapMarkerOptionsSink>)sink {
-  NSDictionary *infoWindow = data[@"infoWindow"];
-  if (infoWindow && infoWindow != (id)[NSNull null]) {
-    NSString *title = infoWindow[@"title"];
-    NSString *snippet = infoWindow[@"snippet"];
-    if (title && title != (id)[NSNull null]) {
-      [sink setInfoWindowTitle:title snippet:snippet];
-    }
-    NSArray *infoWindowAnchor = infoWindow[@"infoWindowAnchor"];
-    if (infoWindowAnchor && infoWindowAnchor != (id)[NSNull null]) {
-      [sink setInfoWindowAnchor:[FLTGoogleMapJSONConversions pointFromArray:infoWindowAnchor]];
-    }
-  }
-}
-
-+ (UIImage *)extractIconFromData:(NSArray *)iconData
-                       registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  UIImage *image;
-  if ([iconData.firstObject isEqualToString:@"defaultMarker"]) {
-    CGFloat hue = (iconData.count == 1) ? 0.0f : [iconData[1] doubleValue];
-    image = [GMSMarker markerImageWithColor:[UIColor colorWithHue:hue / 360.0
-                                                       saturation:1.0
-                                                       brightness:0.7
-                                                            alpha:1.0]];
-  } else if ([iconData.firstObject isEqualToString:@"fromAsset"]) {
-    if (iconData.count == 2) {
-      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
-    } else {
-      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
-                                                   fromPackage:iconData[2]]];
-    }
-  } else if ([iconData.firstObject isEqualToString:@"fromAssetImage"]) {
-    if (iconData.count == 3) {
-      image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
-      id scaleParam = iconData[2];
-      image = [FLTMarkersController scaleImage:image by:scaleParam];
-    } else {
-      NSString *error =
-          [NSString stringWithFormat:@"'fromAssetImage' should have exactly 3 arguments. Got: %lu",
-                                     (unsigned long)iconData.count];
-      NSException *exception = [NSException exceptionWithName:@"InvalidBitmapDescriptor"
-                                                       reason:error
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  } else if ([iconData[0] isEqualToString:@"fromBytes"]) {
-    if (iconData.count == 2) {
-      @try {
-        FlutterStandardTypedData *byteData = iconData[1];
-        CGFloat screenScale = [[UIScreen mainScreen] scale];
-        image = [UIImage imageWithData:[byteData data] scale:screenScale];
-      } @catch (NSException *exception) {
-        @throw [NSException exceptionWithName:@"InvalidByteDescriptor"
-                                       reason:@"Unable to interpret bytes as a valid image."
-                                     userInfo:nil];
-      }
-    } else {
-      NSString *error = [NSString
-          stringWithFormat:@"fromBytes should have exactly one argument, the bytes. Got: %lu",
-                           (unsigned long)iconData.count];
-      NSException *exception = [NSException exceptionWithName:@"InvalidByteDescriptor"
-                                                       reason:error
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-
-  return image;
-}
-
-+ (UIImage *)scaleImage:(UIImage *)image by:(id)scaleParam {
-  double scale = 1.0;
-  if ([scaleParam isKindOfClass:[NSNumber class]]) {
-    scale = [scaleParam doubleValue];
-  }
-  if (fabs(scale - 1) > 1e-3) {
-    return [UIImage imageWithCGImage:[image CGImage]
-                               scale:(image.scale * scale)
-                         orientation:(image.imageOrientation)];
-  }
-  return image;
 }
 
 @end

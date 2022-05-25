@@ -30,8 +30,6 @@
   self.polygon.map = nil;
 }
 
-#pragma mark - FLTGoogleMapPolygonOptionsSink methods
-
 - (void)setConsumeTapEvents:(BOOL)consumes {
   self.polygon.tappable = consumes;
 }
@@ -72,6 +70,50 @@
 - (void)setStrokeWidth:(CGFloat)width {
   self.polygon.strokeWidth = width;
 }
+
+- (void)interpretPolygonOptions:(NSDictionary *)data
+                      registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
+  if (consumeTapEvents && consumeTapEvents != (id)[NSNull null]) {
+    [self setConsumeTapEvents:[consumeTapEvents boolValue]];
+  }
+
+  NSNumber *visible = data[@"visible"];
+  if (visible && visible != (id)[NSNull null]) {
+    [self setVisible:[visible boolValue]];
+  }
+
+  NSNumber *zIndex = data[@"zIndex"];
+  if (zIndex && zIndex != (id)[NSNull null]) {
+    [self setZIndex:[zIndex intValue]];
+  }
+
+  NSArray *points = data[@"points"];
+  if (points && points != (id)[NSNull null]) {
+    [self setPoints:[FLTGoogleMapJSONConversions pointsFromLatlongs:points]];
+  }
+
+  NSArray *holes = data[@"holes"];
+  if (holes && holes != (id)[NSNull null]) {
+    [self setHoles:[FLTGoogleMapJSONConversions holesFromPointsArray:holes]];
+  }
+
+  NSNumber *fillColor = data[@"fillColor"];
+  if (fillColor && fillColor != (id)[NSNull null]) {
+    [self setFillColor:[FLTGoogleMapJSONConversions colorFromRGBA:fillColor]];
+  }
+
+  NSNumber *strokeColor = data[@"strokeColor"];
+  if (strokeColor && strokeColor != (id)[NSNull null]) {
+    [self setStrokeColor:[FLTGoogleMapJSONConversions colorFromRGBA:strokeColor]];
+  }
+
+  NSNumber *strokeWidth = data[@"strokeWidth"];
+  if (strokeWidth && strokeWidth != (id)[NSNull null]) {
+    [self setStrokeWidth:[strokeWidth intValue]];
+  }
+}
+
 @end
 
 @interface FLTPolygonsController ()
@@ -101,28 +143,24 @@
 - (void)addPolygons:(NSArray *)polygonsToAdd {
   for (NSDictionary *polygon in polygonsToAdd) {
     GMSMutablePath *path = [FLTPolygonsController getPath:polygon];
-    NSString *identifier = [FLTPolygonsController getPolygonId:polygon];
+    NSString *identifier = polygon[@"polygonId"];
     FLTGoogleMapPolygonController *controller =
         [[FLTGoogleMapPolygonController alloc] initPolygonWithPath:path
                                                         identifier:identifier
                                                            mapView:self.mapView];
-    [FLTPolygonsController interpretPolygonOptions:polygon
-                                              sink:controller
-                                         registrar:self.registrar];
+    [controller interpretPolygonOptions:polygon registrar:self.registrar];
     self.polygonIdentifierToController[identifier] = controller;
   }
 }
 
 - (void)changePolygons:(NSArray *)polygonsToChange {
   for (NSDictionary *polygon in polygonsToChange) {
-    NSString *identifier = [FLTPolygonsController getPolygonId:polygon];
+    NSString *identifier = polygon[@"polygonId"];
     FLTGoogleMapPolygonController *controller = self.polygonIdentifierToController[identifier];
     if (!controller) {
       continue;
     }
-    [FLTPolygonsController interpretPolygonOptions:polygon
-                                              sink:controller
-                                         registrar:self.registrar];
+    [controller interpretPolygonOptions:polygon registrar:self.registrar];
   }
 }
 
@@ -165,51 +203,4 @@
   return path;
 }
 
-+ (NSString *)getPolygonId:(NSDictionary *)polygon {
-  return polygon[@"polygonId"];
-}
-
-+ (void)interpretPolygonOptions:(NSDictionary *)data
-                           sink:(id<FLTGoogleMapPolygonOptionsSink>)sink
-                      registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents && consumeTapEvents != (id)[NSNull null]) {
-    [sink setConsumeTapEvents:[consumeTapEvents boolValue]];
-  }
-
-  NSNumber *visible = data[@"visible"];
-  if (visible && visible != (id)[NSNull null]) {
-    [sink setVisible:[visible boolValue]];
-  }
-
-  NSNumber *zIndex = data[@"zIndex"];
-  if (zIndex && zIndex != (id)[NSNull null]) {
-    [sink setZIndex:[zIndex intValue]];
-  }
-
-  NSArray *points = data[@"points"];
-  if (points && points != (id)[NSNull null]) {
-    [sink setPoints:[FLTGoogleMapJSONConversions pointsFromLatlongs:points]];
-  }
-
-  NSArray *holes = data[@"holes"];
-  if (holes && holes != (id)[NSNull null]) {
-    [sink setHoles:[FLTGoogleMapJSONConversions holesFromPointsArray:holes]];
-  }
-
-  NSNumber *fillColor = data[@"fillColor"];
-  if (fillColor && fillColor != (id)[NSNull null]) {
-    [sink setFillColor:[FLTGoogleMapJSONConversions colorFromRGBA:fillColor]];
-  }
-
-  NSNumber *strokeColor = data[@"strokeColor"];
-  if (strokeColor && strokeColor != (id)[NSNull null]) {
-    [sink setStrokeColor:[FLTGoogleMapJSONConversions colorFromRGBA:strokeColor]];
-  }
-
-  NSNumber *strokeWidth = data[@"strokeWidth"];
-  if (strokeWidth && strokeWidth != (id)[NSNull null]) {
-    [sink setStrokeWidth:[strokeWidth intValue]];
-  }
-}
 @end

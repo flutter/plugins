@@ -7,17 +7,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Defines map UI options writable from Flutter.
-@protocol FLTGoogleMapTileOverlayOptionsSink
-- (void)setFadeIn:(BOOL)fadeIn;
-- (void)setTransparency:(float)transparency;
-- (void)setZIndex:(int)zIndex;
-- (void)setVisible:(BOOL)visible;
-- (void)setTileSize:(NSInteger)tileSize;
-@end
-
-@interface FLTGoogleMapTileOverlayController : NSObject <FLTGoogleMapTileOverlayOptionsSink>
-- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer mapView:(GMSMapView *)mapView;
+@interface FLTGoogleMapTileOverlayController : NSObject
+- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer
+                          mapView:(GMSMapView *)mapView
+                          options:(NSDictionary *)optionsData;
 - (void)removeTileOverlay;
 - (void)clearTileCache;
 - (NSDictionary *)getTileOverlayInfo;
@@ -36,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addTileOverlays:(NSArray *)tileOverlaysToAdd;
 - (void)changeTileOverlays:(NSArray *)tileOverlaysToChange;
 - (void)removeTileOverlayWithIdentifiers:(NSArray *)identifiers;
-- (void)clearTileCacheWithIdentifier:(NSString *)identifiers;
+- (void)clearTileCacheWithIdentifier:(NSString *)identifier;
 - (nullable NSDictionary *)tileOverlayInfoWithIdentifier:(NSString *)identifier;
 @end
 

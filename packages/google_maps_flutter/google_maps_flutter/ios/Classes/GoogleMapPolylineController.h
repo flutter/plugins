@@ -5,19 +5,8 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-// Defines polyline UI options writable from Flutter.
-@protocol FLTGoogleMapPolylineOptionsSink
-- (void)setConsumeTapEvents:(BOOL)consume;
-- (void)setVisible:(BOOL)visible;
-- (void)setColor:(UIColor *)color;
-- (void)setStrokeWidth:(CGFloat)width;
-- (void)setPoints:(NSArray<CLLocation *> *)points;
-- (void)setZIndex:(int)zIndex;
-- (void)setGeodesic:(BOOL)isGeodesic;
-@end
-
 // Defines polyline controllable by Flutter.
-@interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
+@interface FLTGoogleMapPolylineController : NSObject
 - (instancetype)initPolylineWithPath:(GMSMutablePath *)path
                           identifier:(NSString *)identifier
                              mapView:(GMSMapView *)mapView;
