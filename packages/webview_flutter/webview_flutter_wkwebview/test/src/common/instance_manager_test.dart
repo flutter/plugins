@@ -47,7 +47,7 @@ void main() {
       final InstanceManager instanceManager =
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
-      instanceManager.addFlutterCreatedInstance(object);
+      instanceManager.addDartCreatedInstance(object);
 
       final int? instanceId = instanceManager.getIdentifier(object);
       expect(instanceId, isNotNull);

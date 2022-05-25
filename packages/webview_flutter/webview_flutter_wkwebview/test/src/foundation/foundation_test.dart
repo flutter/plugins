@@ -35,7 +35,7 @@ void main() {
         TestNSObjectHostApi.setup(mockPlatformHostApi);
 
         object = NSObject(instanceManager: instanceManager);
-        instanceManager.addFlutterCreatedInstance(object);
+        instanceManager.addDartCreatedInstance(object);
       });
 
       tearDown(() {
@@ -44,7 +44,7 @@ void main() {
 
       test('addObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.addFlutterCreatedInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.addObserver(
           observer,
@@ -76,7 +76,7 @@ void main() {
 
       test('removeObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.addFlutterCreatedInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.removeObserver(observer, keyPath: 'aKeyPath');
 
@@ -96,7 +96,7 @@ void main() {
 
         final NSObject object = NSObject(instanceManager: instanceManager);
         final int identifier =
-            instanceManager.addFlutterCreatedInstance(object);
+            instanceManager.addDartCreatedInstance(object);
 
         NSObject.dispose(object);
         expect(callbackIdentifier, identifier);

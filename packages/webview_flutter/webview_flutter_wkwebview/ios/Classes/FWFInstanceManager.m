@@ -48,9 +48,16 @@
 @property NSMapTable<NSObject *, NSNumber *> *identifiers;
 @property NSMapTable<NSNumber *, NSObject *> *weakInstances;
 @property NSMapTable<NSNumber *, NSObject *> *strongInstances;
+@property long nextIdentifier;
 @end
 
 @implementation FWFInstanceManager
+// Identifiers are locked to a specific range to avoid collisions with objects
+// created simultaneously by Dart.
+// Host uses identifiers >= 2^16 and Dart is expected to use values n where,
+// 0 <= n < 2^16.
+long const FWFMinHostCreatedIdentifier = 65536;
+
 - (instancetype)initWithDeallocCallback:(FWFOnDeallocCallback)callback {
   self = [self init];
   if (self) {
@@ -59,6 +66,7 @@
     _identifiers = [NSMapTable weakToStrongObjectsMapTable];
     _weakInstances = [NSMapTable strongToWeakObjectsMapTable];
     _strongInstances = [NSMapTable strongToStrongObjectsMapTable];
+    _nextIdentifier = FWFMinHostCreatedIdentifier;
   }
   return self;
 }
@@ -75,12 +83,7 @@
   NSParameterAssert(instance);
   long __block identifier = -1;
   dispatch_sync(_lockQueue, ^{
-    do {
-      // Identifiers are generated randomly to avoid collisions with objects
-      // created simultaneously by Flutter.
-      // Values are >= 2^16 and Flutter is expected to use values < 2^16.
-      identifier = arc4random_uniform(65536) + 65536;
-    } while ([self.weakInstances objectForKey:@(identifier)]);
+    identifier = self.nextIdentifier++;
     [self addInstance:instance withIdentifier:identifier];
   });
   return identifier;
