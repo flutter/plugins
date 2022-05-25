@@ -98,7 +98,7 @@ void main() {
         TestUIViewHostApi.setup(mockPlatformHostApi);
 
         view = UIView(instanceManager: instanceManager);
-        viewInstanceId = instanceManager.addDartCreatedInstance(view);
+        viewInstanceId = instanceManager.addInstanceCreatedFromDart(view);
       });
 
       tearDown(() {

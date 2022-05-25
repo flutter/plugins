@@ -44,7 +44,7 @@
                         instanceManager:(FWFInstanceManager *)instanceManager {
   self = [super initWithBinaryMessenger:binaryMessenger instanceManager:instanceManager];
   if (self) {
-    _navigationDelegateApi =
+    _navigationDelegateAPI =
         [[FWFNavigationDelegateFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
                                                              instanceManager:instanceManager];
   }
@@ -52,7 +52,7 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-  [self.navigationDelegateApi didFinishNavigationForDelegate:self
+  [self.navigationDelegateAPI didFinishNavigationForDelegate:self
                                                      webView:webView
                                                          URL:webView.URL.absoluteString];
 }
@@ -83,7 +83,7 @@
   FWFNavigationDelegate *navigationDelegate =
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
-  [self.instanceManager addFlutterCreatedInstance:navigationDelegate
+  [self.instanceManager addInstanceCreatedFromDart:navigationDelegate
                                    withIdentifier:instanceId.longValue];
 }
 @end

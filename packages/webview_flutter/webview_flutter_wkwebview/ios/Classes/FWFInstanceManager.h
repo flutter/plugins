@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^FWFOnDeallocCallback)(long identifier);
 
 /**
- * Maintains instances used to communicate with the Dart objects that represent them in Flutter.
+ * Maintains instances used to communicate with the corresponding objects in Dart.
  *
  * When an instance is added with an identifier, either can be used to retrieve the other.
  *
@@ -29,7 +29,7 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
 // TODO(bparrishMines): Pairs should not be able to be overwritten and this feature
 // should be replaced with a call to clear the manager in the event of a hot restart.
 /**
- * Adds a new instance that was instantiated by Flutter.
+ * Adds a new instance that was instantiated from Dart.
  *
  * If an instance or identifier has already been added, it will be replaced by the new values. The
  * Dart InstanceManager is considered the source of truth and has the capability to overwrite stored
@@ -38,15 +38,15 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  * @param instance The instance to be stored.
  * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0.
  */
-- (void)addFlutterCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
+- (void)addInstanceCreatedFromDart:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
- * Adds a new instance that was instantiated by the host platform.
+ * Adds a new instance that was instantiated from the host platform.
  *
  * @param instance The instance to be stored.
- * @return The randomly generated identifier stored with instance.
+ * @return The unique identifier stored with instance.
  */
-- (long)addHostCreatedInstance:(nonnull NSObject *)instance;
+- (long)addInstanceCreatedFromHost:(nonnull NSObject *)instance;
 
 /**
  * Removes `instanceIdentifier` and its associated strongly referenced instance, if present, from
@@ -57,7 +57,7 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  * @return The removed instance if the manager contains the given instanceIdentifier, otherwise
  * nil.
  */
-- (nullable NSObject *)removeStrongReferenceWithIdentifier:(long)instanceIdentifier;
+- (nullable NSObject *)removeInstanceWithIdentifier:(long)instanceIdentifier;
 
 /**
  * Retrieves the instance associated with identifier.
@@ -86,7 +86,7 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
 /**
  * The number of instances stored as a strong reference.
  *
- * Added for debuggingpurposes.
+ * Added for debugging purposes.
  */
 - (NSUInteger)strongInstanceCount;
 

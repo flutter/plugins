@@ -28,14 +28,14 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addFlutterCreatedInstance:configuration.websiteDataStore
+  [self.instanceManager addInstanceCreatedFromDart:configuration.websiteDataStore
                                    withIdentifier:instanceId.longValue];
 }
 
 - (void)createDefaultDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                  error {
-  [self.instanceManager addFlutterCreatedInstance:[WKWebsiteDataStore defaultDataStore]
+  [self.instanceManager addInstanceCreatedFromDart:[WKWebsiteDataStore defaultDataStore]
                                    withIdentifier:instanceId.longValue];
 }
 

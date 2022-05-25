@@ -29,7 +29,7 @@
                                                error:(FlutterError *_Nullable *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
-  [self.instanceManager addFlutterCreatedInstance:configuration.userContentController
+  [self.instanceManager addInstanceCreatedFromDart:configuration.userContentController
                                    withIdentifier:instanceId.longValue];
 }
 

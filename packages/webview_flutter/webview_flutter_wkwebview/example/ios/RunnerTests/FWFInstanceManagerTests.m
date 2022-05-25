@@ -15,7 +15,7 @@
       }];
   NSObject *object = [[NSObject alloc] init];
 
-  [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:0], object);
   XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO],
                  0);
@@ -26,7 +26,7 @@
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
   NSObject *object = [[NSObject alloc] init];
-  [instanceManager addHostCreatedInstance:object];
+  [instanceManager addInstanceCreatedFromHost:object];
 
   long identifier = [instanceManager identifierForInstance:object
                            identifierWillBePassedToFlutter:NO];
@@ -40,9 +40,9 @@
       }];
   NSObject *object = [[NSObject alloc] init];
 
-  [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
 
-  XCTAssertEqualObjects([instanceManager removeStrongReferenceWithIdentifier:0], object);
+  XCTAssertEqualObjects([instanceManager removeInstanceWithIdentifier:0], object);
   XCTAssertEqual([instanceManager strongInstanceCount], 0);
 }
 @end

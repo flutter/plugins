@@ -31,7 +31,7 @@
   if (@available(iOS 11.0, *)) {
     WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
         instanceForIdentifier:websiteDataStoreInstanceId.longValue];
-    [self.instanceManager addFlutterCreatedInstance:dataStore.httpCookieStore
+    [self.instanceManager addInstanceCreatedFromDart:dataStore.httpCookieStore
                                      withIdentifier:instanceId.longValue];
   } else {
     *error = [FlutterError

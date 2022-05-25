@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Implementation of WKNavigationDelegate for FWFNavigationDelegateHostApiImpl.
  */
 @interface FWFNavigationDelegate : FWFObject <WKNavigationDelegate>
-@property(readonly, nonnull) FWFNavigationDelegateFlutterApiImpl *navigationDelegateApi;
+@property(readonly, nonnull) FWFNavigationDelegateFlutterApiImpl *navigationDelegateAPI;
 @end
 
 /**

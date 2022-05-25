@@ -7,16 +7,15 @@
 
 // Attaches to an object to receive a callback when the object is deallocated.
 @interface FWFFinalizer : NSObject
-@property(nonatomic) long identifier;
-// Callbacks are no longer made once FWFInstanceManager is inaccessible.
-@property(nonatomic, weak) FWFOnDeallocCallback callback;
-+ (void)attachToInstance:(NSObject *)instance
-          withIdentifier:(long)identifier
-                callback:(FWFOnDeallocCallback)callback;
-+ (void)detachFromInstance:(NSObject *)instance;
 @end
 
-@implementation FWFFinalizer
+// Attaches to an object to receive a callback when the object is deallocated.
+@implementation FWFFinalizer {
+  long _identifier;
+  // Callbacks are no longer made once FWFInstanceManager is inaccessible.
+  FWFOnDeallocCallback __weak _callback;
+}
+
 - (instancetype)initWithIdentifier:(long)identifier callback:(FWFOnDeallocCallback)callback {
   self = [self init];
   if (self) {
@@ -39,7 +38,7 @@
 }
 
 - (void)dealloc {
-  self.callback(self.identifier);
+  _callback(_identifier);
 }
 @end
 
@@ -71,7 +70,7 @@ long const FWFMinHostCreatedIdentifier = 65536;
   return self;
 }
 
-- (void)addFlutterCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier {
+- (void)addInstanceCreatedFromDart:(NSObject *)instance withIdentifier:(long)instanceIdentifier {
   NSParameterAssert(instance);
   NSParameterAssert(instanceIdentifier >= 0);
   dispatch_async(_lockQueue, ^{
@@ -79,7 +78,7 @@ long const FWFMinHostCreatedIdentifier = 65536;
   });
 }
 
-- (long)addHostCreatedInstance:(nonnull NSObject *)instance {
+- (long)addInstanceCreatedFromHost:(nonnull NSObject *)instance {
   NSParameterAssert(instance);
   long __block identifier = -1;
   dispatch_sync(_lockQueue, ^{
@@ -89,7 +88,7 @@ long const FWFMinHostCreatedIdentifier = 65536;
   return identifier;
 }
 
-- (nullable NSObject *)removeStrongReferenceWithIdentifier:(long)instanceIdentifier {
+- (nullable NSObject *)removeInstanceWithIdentifier:(long)instanceIdentifier {
   NSObject *__block instance = nil;
   dispatch_sync(_lockQueue, ^{
     instance = [self.strongInstances objectForKey:@(instanceIdentifier)];

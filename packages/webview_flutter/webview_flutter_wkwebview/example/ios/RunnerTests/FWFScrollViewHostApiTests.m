@@ -19,7 +19,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:mockScrollView withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockScrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostAPI =
       [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -38,7 +38,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:scrollView withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostAPI =
       [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -56,7 +56,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:scrollView withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostAPI =
       [[FWFScrollViewHostApiImpl alloc] initWithInstanceManager:instanceManager];

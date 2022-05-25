@@ -4,7 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 
-/// An immutable object that can provide functional copies of themselves.
+/// An immutable object that can provide functional copies of itself.
 ///
 /// All implementers are expected to be immutable as defined by the annotation.
 @immutable
@@ -28,7 +28,7 @@ mixin Copyable {
 /// methods. Both are stored with the same identifier.
 ///
 /// When a weak referenced instance becomes inaccessible,
-/// [onWeakReferenceRemoved] is called with it's associated identifier.
+/// [onWeakReferenceRemoved] is called with its associated identifier.
 ///
 /// If an instance is retrieved and has the possiblity to be used, (e.g. calling
 /// [getInstance] with `returnedInstanceMayBeUsed` as `true`) a copy of the
@@ -70,15 +70,15 @@ class InstanceManager {
   /// or becomes inaccessible.
   late final void Function(int) onWeakReferenceRemoved;
 
-  /// Adds a new instance that was instantiated by Flutter.
+  /// Adds a new instance that was instantiated by Dart.
   ///
-  /// In other words, Flutter wants to add a new instance that will represent
-  /// an object that will be instantied on the host platform.
+  /// In other words, Dart wants to add a new instance that will represent
+  /// an object that will be instantiated on the host platform.
   ///
   /// Throws assertion error if the instance has already been added.
   ///
   /// Returns the randomly generated id of the [instance] added.
-  int addDartCreatedInstance(Copyable instance) {
+  int addInstanceCreatedFromDart(Copyable instance) {
     assert(getIdentifier(instance) == null);
 
     final int identifier = _nextUniqueIdentifier();
@@ -120,7 +120,7 @@ class InstanceManager {
     return _strongInstances.remove(identifier);
   }
 
-  /// Retrieve the instance associated with identifier.
+  /// Retrieves the instance associated with identifier.
   ///
   /// The value returned is chosen in this order:
   /// 1. A weakly referenced instance asscociated with identifier.
@@ -153,7 +153,7 @@ class InstanceManager {
     return weakInstance as T;
   }
 
-  /// Retrieve the identifier associated with instance.
+  /// Retrieves the identifier associated with instance.
   int? getIdentifier(Copyable instance) {
     return _identifiers[instance];
   }
@@ -166,8 +166,8 @@ class InstanceManager {
   /// Throws assertion error if the instance or its identifier has already been
   /// added.
   ///
-  /// Returns the randomly generated id of the [instance] added.
-  void addHostCreatedInstance(Copyable instance, int identifier) {
+  /// Returns unique identifier of the [instance] added.
+  void addInstanceCreatedFromHost(Copyable instance, int identifier) {
     assert(!containsIdentifier(identifier));
     assert(getIdentifier(instance) == null);
     assert(identifier >= 0);

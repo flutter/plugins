@@ -48,11 +48,11 @@
               instanceManager:instanceManager];
   id mockFlutterApi = OCMPartialMock(flutterAPI);
 
-  OCMStub([mockDelegate navigationDelegateApi]).andReturn(mockFlutterApi);
+  OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterApi);
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   OCMStub([mockWebView URL]).andReturn([NSURL URLWithString:@"https://flutter.dev/"]);
-  [instanceManager addFlutterCreatedInstance:mockWebView withIdentifier:1];
+  [instanceManager addInstanceCreatedFromDart:mockWebView withIdentifier:1];
 
   [mockDelegate webView:mockWebView didFinishNavigation:OCMClassMock([WKNavigation class])];
   OCMVerify([mockFlutterApi didFinishNavigationForDelegateWithIdentifier:@0

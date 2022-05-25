@@ -19,7 +19,7 @@
   FWFWebsiteDataStoreHostApiImpl *hostAPI =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addFlutterCreatedInstance:[[WKWebViewConfiguration alloc] init]
+  [instanceManager addInstanceCreatedFromDart:[[WKWebViewConfiguration alloc] init]
                               withIdentifier:0];
 
   FlutterError *error;
@@ -59,7 +59,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:mockWebsiteDataStore withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockWebsiteDataStore withIdentifier:0];
 
   FWFWebsiteDataStoreHostApiImpl *hostAPI =
       [[FWFWebsiteDataStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];

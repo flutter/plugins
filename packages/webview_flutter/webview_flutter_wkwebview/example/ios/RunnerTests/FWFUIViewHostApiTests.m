@@ -18,7 +18,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:mockUIView withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostAPI =
       [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
@@ -39,7 +39,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:mockUIView withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostAPI =
       [[FWFUIViewHostApiImpl alloc] initWithInstanceManager:instanceManager];

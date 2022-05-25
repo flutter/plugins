@@ -76,6 +76,6 @@
 
 - (void)disposeObjectWithIdentifier:(nonnull NSNumber *)instanceId
                               error:(FlutterError *_Nullable *_Nonnull)error {
-  [self.instanceManager removeStrongReferenceWithIdentifier:instanceId.longValue];
+  [self.instanceManager removeInstanceWithIdentifier:instanceId.longValue];
 }
 @end

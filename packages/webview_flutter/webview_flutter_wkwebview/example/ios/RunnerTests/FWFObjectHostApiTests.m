@@ -18,13 +18,13 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
-  [instanceManager addFlutterCreatedInstance:observerObject withIdentifier:1];
+  [instanceManager addInstanceCreatedFromDart:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostAPI
@@ -52,13 +52,13 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:mockObject withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
-  [instanceManager addFlutterCreatedInstance:observerObject withIdentifier:1];
+  [instanceManager addInstanceCreatedFromDart:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostAPI removeObserverForObjectWithIdentifier:@0
@@ -75,7 +75,7 @@
   FWFInstanceManager *instanceManager =
       [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
       }];
-  [instanceManager addFlutterCreatedInstance:object withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
