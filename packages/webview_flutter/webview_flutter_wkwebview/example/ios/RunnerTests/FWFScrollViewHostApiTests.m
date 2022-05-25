@@ -16,9 +16,7 @@
   UIScrollView *mockScrollView = OCMClassMock([UIScrollView class]);
   OCMStub([mockScrollView contentOffset]).andReturn(CGPointMake(1.0, 2.0));
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockScrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostAPI =
@@ -35,9 +33,7 @@
   UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
   scrollView.contentOffset = CGPointMake(1, 2);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostAPI =
@@ -53,9 +49,7 @@
 - (void)testSetContentOffset {
   UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:scrollView withIdentifier:0];
 
   FWFScrollViewHostApiImpl *hostAPI =

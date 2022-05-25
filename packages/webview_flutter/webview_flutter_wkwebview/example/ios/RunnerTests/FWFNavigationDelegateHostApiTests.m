@@ -13,9 +13,7 @@
 
 @implementation FWFNavigationDelegateHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFNavigationDelegateHostApiImpl *hostAPI = [[FWFNavigationDelegateHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
@@ -30,9 +28,7 @@
 }
 
 - (void)testDidFinishNavigation {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFNavigationDelegateHostApiImpl *hostAPI = [[FWFNavigationDelegateHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];

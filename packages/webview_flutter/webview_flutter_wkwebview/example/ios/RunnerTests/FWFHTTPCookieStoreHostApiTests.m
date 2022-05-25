@@ -13,9 +13,7 @@
 
 @implementation FWFHTTPCookieStoreHostApiTests
 - (void)testCreateFromWebsiteDataStoreWithIdentifier API_AVAILABLE(ios(11.0)) {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFHTTPCookieStoreHostApiImpl *hostAPI =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -33,9 +31,7 @@
 - (void)testSetCookie API_AVAILABLE(ios(11.0)) {
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockHttpCookieStore withIdentifier:0];
 
   FWFHTTPCookieStoreHostApiImpl *hostAPI =

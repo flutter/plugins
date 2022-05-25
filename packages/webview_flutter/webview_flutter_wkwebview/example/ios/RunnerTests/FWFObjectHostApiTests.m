@@ -15,9 +15,7 @@
 - (void)testAddObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
@@ -49,9 +47,7 @@
 - (void)testRemoveObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
@@ -72,9 +68,7 @@
 - (void)testDispose {
   NSObject *object = [[NSObject alloc] init];
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =

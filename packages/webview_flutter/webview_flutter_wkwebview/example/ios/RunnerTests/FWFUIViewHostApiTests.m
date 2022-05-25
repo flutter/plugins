@@ -15,9 +15,7 @@
 - (void)testSetBackgroundColor {
   UIView *mockUIView = OCMClassMock([UIView class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostAPI =
@@ -36,9 +34,7 @@
 - (void)testSetOpaque {
   UIView *mockUIView = OCMClassMock([UIView class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUIView withIdentifier:0];
 
   FWFUIViewHostApiImpl *hostAPI =

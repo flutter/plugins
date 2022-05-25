@@ -10,9 +10,7 @@
 
 @implementation FWFInstanceManagerTests
 - (void)testAddFlutterCreatedInstance {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 
   [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
@@ -22,9 +20,7 @@
 }
 
 - (void)testAddHostCreatedInstance {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
   [instanceManager addInstanceCreatedFromHost:object];
 
@@ -35,9 +31,7 @@
 }
 
 - (void)testRemoveStrongReferenceWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 
   [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];

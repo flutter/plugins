@@ -13,14 +13,12 @@
 
 @implementation FWFUserContentControllerHostApiTests
 - (void)testCreateFromWebViewConfigurationWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   [instanceManager addInstanceCreatedFromDart:[[WKWebViewConfiguration alloc] init]
-                              withIdentifier:0];
+                               withIdentifier:0];
 
   FlutterError *error;
   [hostAPI createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
@@ -34,9 +32,7 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostAPI =
@@ -59,9 +55,7 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostAPI =
@@ -77,9 +71,7 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostAPI =
@@ -95,9 +87,7 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostAPI =
@@ -124,9 +114,7 @@
   WKUserContentController *mockUserContentController =
       OCMClassMock([WKUserContentController class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockUserContentController withIdentifier:0];
 
   FWFUserContentControllerHostApiImpl *hostAPI =

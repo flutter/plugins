@@ -57,15 +57,24 @@
 // 0 <= n < 2^16.
 long const FWFMinHostCreatedIdentifier = 65536;
 
-- (instancetype)initWithDeallocCallback:(FWFOnDeallocCallback)callback {
-  self = [self init];
+- (instancetype)init {
+  self = [super init];
   if (self) {
-    _deallocCallback = callback;
+    _deallocCallback = _deallocCallback ? _deallocCallback : ^(long identifier) {
+    };
     _lockQueue = dispatch_queue_create("FWFInstanceManager", DISPATCH_QUEUE_SERIAL);
     _identifiers = [NSMapTable weakToStrongObjectsMapTable];
     _weakInstances = [NSMapTable strongToWeakObjectsMapTable];
     _strongInstances = [NSMapTable strongToStrongObjectsMapTable];
     _nextIdentifier = FWFMinHostCreatedIdentifier;
+  }
+  return self;
+}
+
+- (instancetype)initWithDeallocCallback:(FWFOnDeallocCallback)callback {
+  self = [self init];
+  if (self) {
+    _deallocCallback = callback;
   }
   return self;
 }

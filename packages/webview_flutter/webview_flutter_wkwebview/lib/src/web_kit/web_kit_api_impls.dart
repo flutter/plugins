@@ -226,7 +226,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   WKWebsiteDataStoreHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -272,7 +272,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   WKScriptMessageHandlerHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -290,7 +290,7 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   WKPreferencesHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -325,7 +325,7 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   WKHttpCookieStoreHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -361,7 +361,7 @@ class WKUserContentControllerHostApiImpl
   WKUserContentControllerHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -436,7 +436,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   WKWebViewConfigurationHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -488,7 +488,7 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   WKUIDelegateHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;

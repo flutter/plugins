@@ -34,7 +34,7 @@
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationInstanceId.longValue];
   [self.instanceManager addInstanceCreatedFromDart:configuration.preferences
-                                   withIdentifier:instanceId.longValue];
+                                    withIdentifier:instanceId.longValue];
 }
 
 - (void)setJavaScriptEnabledForPreferencesWithIdentifier:(nonnull NSNumber *)instanceId

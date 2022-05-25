@@ -84,6 +84,6 @@
       [[FWFNavigationDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
                                              instanceManager:self.instanceManager];
   [self.instanceManager addInstanceCreatedFromDart:navigationDelegate
-                                   withIdentifier:instanceId.longValue];
+                                    withIdentifier:instanceId.longValue];
 }
 @end

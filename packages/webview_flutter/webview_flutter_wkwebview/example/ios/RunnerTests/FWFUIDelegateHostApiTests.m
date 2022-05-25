@@ -13,9 +13,7 @@
 
 @implementation FWFUIDelegateHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFUIDelegateHostApiImpl *hostAPI =
       [[FWFUIDelegateHostApiImpl alloc] initWithInstanceManager:instanceManager];
 

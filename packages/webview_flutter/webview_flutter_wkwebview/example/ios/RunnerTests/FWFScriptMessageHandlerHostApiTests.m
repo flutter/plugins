@@ -13,9 +13,7 @@
 
 @implementation FWFScriptMessageHandlerHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFScriptMessageHandlerHostApiImpl *hostAPI =
       [[FWFScriptMessageHandlerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 

@@ -13,9 +13,7 @@
 
 @implementation FWFWebViewConfigurationHostApiTests
 - (void)testCreateWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -28,9 +26,7 @@
 }
 
 - (void)testCreateFromWebViewWithIdentifier {
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebViewConfigurationHostApiImpl *hostAPI =
       [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
@@ -49,9 +45,7 @@
 - (void)testSetAllowsInlineMediaPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostAPI =
@@ -68,9 +62,7 @@
 - (void)testSetMediaTypesRequiringUserActionForPlayback {
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
-  FWFInstanceManager *instanceManager =
-      [[FWFInstanceManager alloc] initWithDeallocCallback:^(long identifier){
-      }];
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addInstanceCreatedFromDart:mockWebViewConfiguration withIdentifier:0];
 
   FWFWebViewConfigurationHostApiImpl *hostAPI =
