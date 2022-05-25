@@ -1,3 +1,7 @@
+## 2.8.0
+
+* Raises minimum Dart version to 2.17.
+
 ## 2.7.5
 
 * Minor fixes for new analysis options.
