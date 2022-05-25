@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param instance The instance to be stored.
  * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0.
  */
-- (void)addDartCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
+- (void)addInstanceCreatedFromDart:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
  * Removes the instance paired with a given identifier from the manager.

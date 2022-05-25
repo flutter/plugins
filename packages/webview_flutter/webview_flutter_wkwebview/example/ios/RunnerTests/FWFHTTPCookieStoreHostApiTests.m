@@ -19,7 +19,7 @@
 
   WKWebsiteDataStore *mockDataStore = OCMClassMock([WKWebsiteDataStore class]);
   OCMStub([mockDataStore httpCookieStore]).andReturn(OCMClassMock([WKHTTPCookieStore class]));
-  [instanceManager addDartCreatedInstance:mockDataStore withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockDataStore withIdentifier:0];
 
   FlutterError *error;
   [hostAPI createFromWebsiteDataStoreWithIdentifier:@1 dataStoreIdentifier:@0 error:&error];
@@ -32,7 +32,7 @@
   WKHTTPCookieStore *mockHttpCookieStore = OCMClassMock([WKHTTPCookieStore class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addDartCreatedInstance:mockHttpCookieStore withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockHttpCookieStore withIdentifier:0];
 
   FWFHTTPCookieStoreHostApiImpl *hostAPI =
       [[FWFHTTPCookieStoreHostApiImpl alloc] initWithInstanceManager:instanceManager];

@@ -28,8 +28,8 @@
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc] init];
-  [self.instanceManager addDartCreatedInstance:navigationDelegate
-                                withIdentifier:identifier.longValue];
+  [self.instanceManager addInstanceCreatedFromDart:navigationDelegate
+                                    withIdentifier:identifier.longValue];
 }
 
 - (void)setDidFinishNavigationForDelegateWithIdentifier:(nonnull NSNumber *)identifier

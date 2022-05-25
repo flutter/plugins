@@ -16,13 +16,13 @@
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addDartCreatedInstance:mockObject withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
-  [instanceManager addDartCreatedInstance:observerObject withIdentifier:1];
+  [instanceManager addInstanceCreatedFromDart:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostAPI
@@ -48,13 +48,13 @@
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addDartCreatedInstance:mockObject withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:mockObject withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   NSObject *observerObject = [[NSObject alloc] init];
-  [instanceManager addDartCreatedInstance:observerObject withIdentifier:1];
+  [instanceManager addInstanceCreatedFromDart:observerObject withIdentifier:1];
 
   FlutterError *error;
   [hostAPI removeObserverForObjectWithIdentifier:@0
@@ -69,7 +69,7 @@
   NSObject *object = [[NSObject alloc] init];
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addDartCreatedInstance:object withIdentifier:0];
+  [instanceManager addInstanceCreatedFromDart:object withIdentifier:0];
 
   FWFObjectHostApiImpl *hostAPI =
       [[FWFObjectHostApiImpl alloc] initWithInstanceManager:instanceManager];

@@ -16,7 +16,7 @@ class InstanceManager {
   ///
   /// Returns new if [instance] has already been added. Otherwise, it is added
   /// with a new instance id.
-  int addDartCreatedInstance(Object instance) {
+  int addInstanceCreatedFromDart(Object instance) {
     assert(getIdentifier(instance) == null);
 
     final int instanceId = _nextIdentifier++;
