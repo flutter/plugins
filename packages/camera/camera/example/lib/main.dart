@@ -697,6 +697,17 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           // iOS only
           showInSnackBar('Camera access is restricted.');
           break;
+        case 'AudioAccessDenied':
+          showInSnackBar('You have denied audio access.');
+          break;
+        case 'AudioAccessDeniedWithoutPrompt':
+          // iOS only
+          showInSnackBar('Please go to Settings app to enable audio access.');
+          break;
+        case 'AudioAccessRestricted':
+          // iOS only
+          showInSnackBar('Audio access is restricted.');
+          break;
         case 'cameraPermission':
           // Android & web only
           showInSnackBar('Unknown permission error.');

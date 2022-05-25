@@ -13,6 +13,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'common/core.dart';
 import 'common/git_version_finder.dart';
 import 'common/package_looping_command.dart';
+import 'common/package_state_utils.dart';
 import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 import 'common/repository_package.dart';
@@ -531,44 +532,16 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     final Directory gitRoot =
         packagesDir.fileSystem.directory((await gitDir).path);
     final String relativePackagePath =
-        '${getRelativePosixPath(package.directory, from: gitRoot)}/';
-    bool hasChanges = false;
-    bool needsVersionChange = false;
-    bool hasChangelogChange = false;
-    for (final String path in _changedFiles) {
-      // Only consider files within the package.
-      if (!path.startsWith(relativePackagePath)) {
-        continue;
-      }
-      hasChanges = true;
+        getRelativePosixPath(package.directory, from: gitRoot);
 
-      final List<String> components = p.posix.split(path);
-      final bool isChangelog = components.last == 'CHANGELOG.md';
-      if (isChangelog) {
-        hasChangelogChange = true;
-      }
+    final PackageChangeState state = checkPackageChangeState(package,
+        changedPaths: _changedFiles, relativePackagePath: relativePackagePath);
 
-      if (!needsVersionChange &&
-          !isChangelog &&
-          // The example's main.dart is shown on pub.dev, but for anything else
-          // in the example publishing has no purpose.
-          !(components.contains('example') && components.last != 'main.dart') &&
-          // Changes to tests don't need to be published.
-          !components.contains('test') &&
-          !components.contains('androidTest') &&
-          !components.contains('RunnerTests') &&
-          !components.contains('RunnerUITests') &&
-          // Ignoring lints doesn't affect clients.
-          !components.contains('lint-baseline.xml')) {
-        needsVersionChange = true;
-      }
-    }
-
-    if (!hasChanges) {
+    if (!state.hasChanges) {
       return null;
     }
 
-    if (needsVersionChange) {
+    if (state.needsVersionChange) {
       if (_getChangeDescription().split('\n').any((String line) =>
           line.startsWith(_missingVersionChangeJustificationMarker))) {
         logWarning('Ignoring lack of version change due to '
@@ -586,7 +559,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       }
     }
 
-    if (!hasChangelogChange) {
+    if (!state.hasChangelogChange) {
       if (_getChangeDescription().split('\n').any((String line) =>
           line.startsWith(_missingChangelogChangeJustificationMarker))) {
         logWarning('Ignoring lack of CHANGELOG update due to '

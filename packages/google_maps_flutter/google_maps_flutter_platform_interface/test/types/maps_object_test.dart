@@ -37,9 +37,9 @@ void main() {
     expect(
         serializeMapsObjectSet(<TestMapsObject>{object1, object2, object3}),
         <Map<String, Object>>[
-          {'id': '1'},
-          {'id': '2'},
-          {'id': '3'}
+          <String, Object>{'id': '1'},
+          <String, Object>{'id': '2'},
+          <String, Object>{'id': '3'}
         ]);
   });
 }

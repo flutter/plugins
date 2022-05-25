@@ -1,3 +1,7 @@
+## 0.8.5+5
+
+* Adds non-deprecated codepaths for iOS 13+.
+
 ## 0.8.5+4
 
 * Suppresses warnings for pre-iOS-11 codepaths.

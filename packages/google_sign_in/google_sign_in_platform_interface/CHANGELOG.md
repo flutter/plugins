@@ -1,5 +1,6 @@
 ## 2.1.3
 
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
 * Removes unnecessary imports.
 * Adds `SignInInitParameters` class to hold all sign in params, including the new `forceCodeForRefreshToken`.
 
