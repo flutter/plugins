@@ -358,7 +358,6 @@ class Camera
             Log.i(TAG, "open | onError");
 
             close();
-
             String errorDescription;
             switch (errorCode) {
               case ERROR_CAMERA_IN_USE:

@@ -1,6 +1,7 @@
-## NEXT
+## 0.9.4+22
 
 * Removes unnecessary imports.
+* Avoids duplicate calls to stop background camera thread and unnecessary closings of camera capture sessions.
 
 ## 0.9.4+21
 
