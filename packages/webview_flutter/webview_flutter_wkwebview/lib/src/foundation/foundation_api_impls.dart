@@ -105,8 +105,8 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     Set<NSKeyValueObservingOptions> options,
   ) {
     return addObserver(
-      instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(observer)!,
+      instanceManager.getIdentifier(instance)!,
+      instanceManager.getIdentifier(observer)!,
       keyPath,
       _toNSKeyValueObservingOptionsEnumData(options).toList(),
     );
@@ -119,17 +119,17 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     String keyPath,
   ) {
     return removeObserver(
-      instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(observer)!,
+      instanceManager.getIdentifier(instance)!,
+      instanceManager.getIdentifier(observer)!,
       keyPath,
     );
   }
 
   /// Calls [dispose] with the ids of the provided object instances.
   Future<void> disposeForInstances(NSObject instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      await dispose(instanceId);
+    final int? identifier = instanceManager.removeWeakReference(instance);
+    if (identifier != null) {
+      await dispose(identifier);
     }
   }
 }

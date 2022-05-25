@@ -19,20 +19,20 @@
   return self;
 }
 
-- (WKHTTPCookieStore *)HTTPCookieStoreForIdentifier:(NSNumber *)instanceId
+- (WKHTTPCookieStore *)HTTPCookieStoreForIdentifier:(NSNumber *)identifier
     API_AVAILABLE(ios(11.0)) {
-  return (WKHTTPCookieStore *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+  return (WKHTTPCookieStore *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createFromWebsiteDataStoreWithIdentifier:(nonnull NSNumber *)instanceId
-                             dataStoreIdentifier:(nonnull NSNumber *)websiteDataStoreInstanceId
+- (void)createFromWebsiteDataStoreWithIdentifier:(nonnull NSNumber *)identifier
+                             dataStoreIdentifier:(nonnull NSNumber *)websiteDataStoreIdentifier
                                            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                      error {
   if (@available(iOS 11.0, *)) {
     WKWebsiteDataStore *dataStore = (WKWebsiteDataStore *)[self.instanceManager
-        instanceForIdentifier:websiteDataStoreInstanceId.longValue];
-    [self.instanceManager addInstance:dataStore.httpCookieStore
-                       withIdentifier:instanceId.longValue];
+        instanceForIdentifier:websiteDataStoreIdentifier.longValue];
+    [self.instanceManager addDartCreatedInstance:dataStore.httpCookieStore
+                                  withIdentifier:identifier.longValue];
   } else {
     *error = [FlutterError
         errorWithCode:@"FWFUnsupportedVersionError"
@@ -41,13 +41,13 @@
   }
 }
 
-- (void)setCookieForStoreWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)setCookieForStoreWithIdentifier:(nonnull NSNumber *)identifier
                                  cookie:(nonnull FWFNSHttpCookieData *)cookie
                              completion:(nonnull void (^)(FlutterError *_Nullable))completion {
   NSHTTPCookie *nsCookie = FWFNSHTTPCookieFromCookieData(cookie);
 
   if (@available(iOS 11.0, *)) {
-    [[self HTTPCookieStoreForIdentifier:instanceId] setCookie:nsCookie
+    [[self HTTPCookieStoreForIdentifier:identifier] setCookie:nsCookie
                                             completionHandler:^{
                                               completion(nil);
                                             }];
