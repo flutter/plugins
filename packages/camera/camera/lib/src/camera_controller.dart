@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quiver/core.dart';
 
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
+
 /// Signature for a callback receiving the a camera image.
 ///
 /// This is used by [CameraController.startImageStream].
@@ -255,7 +257,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   int _cameraId = kUninitializedCameraId;
 
   bool _isDisposed = false;
-  StreamSubscription<CameraImageData>? _imageStreamSubscription;
+  StreamSubscription<dynamic>? _imageStreamSubscription;
   FutureOr<bool>? _initCalled;
   StreamSubscription<DeviceOrientationChangedEvent>?
       _deviceOrientationSubscription;
@@ -436,15 +438,27 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      _imageStreamSubscription = CameraPlatform.instance
-          .onStreamedFrameAvailable(_cameraId)
-          .listen((CameraImageData imageData) {
-        onAvailable(CameraImage.fromPlatformInterface(imageData));
-      });
+      await _channel.invokeMethod<void>('startImageStream');
       value = value.copyWith(isStreamingImages: true);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+    const EventChannel cameraEventChannel =
+        EventChannel('plugins.flutter.io/camera/imageStream');
+    _imageStreamSubscription =
+        cameraEventChannel.receiveBroadcastStream().listen(
+      (dynamic imageData) {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          try {
+            _channel.invokeMethod<void>('receivedImageStreamData');
+          } on PlatformException catch (e) {
+            throw CameraException(e.code, e.message);
+          }
+        }
+        onAvailable(
+            CameraImage.fromPlatformData(imageData as Map<dynamic, dynamic>));
+      },
+    );
   }
 
   /// Stop streaming images from platform camera.
@@ -473,11 +487,13 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       value = value.copyWith(isStreamingImages: false);
-      await _imageStreamSubscription?.cancel();
-      _imageStreamSubscription = null;
+      await _channel.invokeMethod<void>('stopImageStream');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+
+    await _imageStreamSubscription?.cancel();
+    _imageStreamSubscription = null;
   }
 
   /// Start a video recording.
