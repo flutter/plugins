@@ -76,6 +76,9 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  * `instance` will be recreated and will need to be removed again with
  * `removeInstanceWithIdentifier:`.
  *
+ * This method also expects the Dart `InstanceManager` to have, or recreate, a weak reference to the
+ * instance the identifier is associated with once it receives it.
+ *
  * @param instance An instance that may be stored in the manager.
  *
  * @return The identifer associated with `instance` if the manager contains the value, otherwise

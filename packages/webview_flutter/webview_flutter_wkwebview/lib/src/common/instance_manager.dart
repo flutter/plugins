@@ -129,6 +129,9 @@ class InstanceManager {
   /// referenced instance, a copy of the instance is added as a weak reference
   /// with the same identifier. Returning the newly created copy.
   /// 3. If no instance is associated with identifier, returns null.
+  ///
+  /// This method also expects the host `InstanceManager` to have a strong
+  /// reference to the instance the identifier is associated with.
   T? getInstanceWithWeakReference<T extends Copyable>(int identifier) {
     final Copyable? weakInstance = _weakInstances[identifier]?.target;
 
