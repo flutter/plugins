@@ -241,11 +241,8 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     final String contentType =
         httpReq.getResponseHeader('content-type') ?? 'text/html';
     // ignore: unsafe_html
-    _element.src = Uri.dataFromString(
-      httpReq.responseText ?? '',
-      mimeType: contentType,
-      encoding: Encoding.getByName('utf-8'),
-    ).toString();
+    _element.src =
+        'data:$contentType,${Uri.encodeFull(httpReq.responseText ?? '')}';
   }
 
   @override

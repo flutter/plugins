@@ -71,33 +71,6 @@ void main() {
     expect(element!.src, secondaryUrl);
   });
 
-  testWidgets('loadHtml', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-        ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller.loadHtmlString('<div>Te#st</div>');
-
-    // Assert an iframe has been rendered to the DOM with the correct src attribute.
-    final html.IFrameElement? element =
-        html.document.querySelector('iframe') as html.IFrameElement?;
-    expect(element, isNotNull);
-    expect(
-        element!.srcdoc,
-        '<!DOCTYPE html><html><head><script>parent.webview2_getWindow(window);\n'
-        '</script></head><body><div>Te#st</div></body></html>');
-  });
-
   testWidgets('JavascriptChannel', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
