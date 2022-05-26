@@ -18,8 +18,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.SessionConfiguration;
@@ -28,6 +30,7 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Size;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +38,7 @@ import androidx.lifecycle.LifecycleObserver;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
+import io.flutter.plugins.camera.features.CameraFeatures;
 import io.flutter.plugins.camera.features.Point;
 import io.flutter.plugins.camera.features.autofocus.AutoFocusFeature;
 import io.flutter.plugins.camera.features.autofocus.FocusMode;
@@ -834,6 +838,28 @@ public class CameraTest {
   }
 
   @Test
+  public void stopBackgroundThread_cancelsDuplicateCalls() throws InterruptedException {
+    TestUtils.setPrivateField(camera, "stoppingBackgroundHandlerThread", true);
+
+    camera.startBackgroundThread();
+    camera.stopBackgroundThread();
+
+    verify(mockHandlerThread, never()).quitSafely();
+    verify(mockHandlerThread, never()).join();
+  }
+
+  @Test
+  public void stopBackgroundThread_proceedsWithoutDuplicateCall() throws InterruptedException {
+    TestUtils.setPrivateField(camera, "stoppingBackgroundHandlerThread", false);
+
+    camera.startBackgroundThread();
+    camera.stopBackgroundThread();
+
+    verify(mockHandlerThread).quitSafely();
+    verify(mockHandlerThread).join();
+  }
+
+  @Test
   public void onConverge_shouldTakePictureWithoutAbortingSession() throws CameraAccessException {
     ArrayList<CaptureRequest.Builder> mockRequestBuilders = new ArrayList<>();
     mockRequestBuilders.add(mock(CaptureRequest.Builder.class));
@@ -854,6 +880,52 @@ public class CameraTest {
     // The session shuold not be aborted as part of this flow, as this breaks capture on some
     // devices, and causes delays on others.
     verify(mockCaptureSession, never()).abortCaptures();
+  }
+
+  @Test
+  public void createCaptureSession_doesNotCloseCaptureSession() throws CameraAccessException {
+    Surface mockSurface = mock(Surface.class);
+    SurfaceTexture mockSurfaceTexture = mock(SurfaceTexture.class);
+    ResolutionFeature mockResolutionFeature = mock(ResolutionFeature.class);
+    Size mockSize = mock(Size.class);
+    ArrayList<CaptureRequest.Builder> mockRequestBuilders = new ArrayList<>();
+    mockRequestBuilders.add(mock(CaptureRequest.Builder.class));
+    CameraDeviceWrapper fakeCamera = new FakeCameraDeviceWrapper(mockRequestBuilders);
+    TestUtils.setPrivateField(camera, "cameraDevice", fakeCamera);
+
+    TextureRegistry.SurfaceTextureEntry cameraFlutterTexture =
+        (TextureRegistry.SurfaceTextureEntry) TestUtils.getPrivateField(camera, "flutterTexture");
+    CameraFeatures cameraFeatures =
+        (CameraFeatures) TestUtils.getPrivateField(camera, "cameraFeatures");
+    ResolutionFeature resolutionFeature =
+        (ResolutionFeature)
+            TestUtils.getPrivateField(mockCameraFeatureFactory, "mockResolutionFeature");
+
+    when(cameraFlutterTexture.surfaceTexture()).thenReturn(mockSurfaceTexture);
+    when(resolutionFeature.getPreviewSize()).thenReturn(mockSize);
+
+    camera.createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, mockSurface);
+
+    verify(mockCaptureSession, never()).close();
+  }
+
+  @Test
+  public void close_doesCloseCaptureSessionWhenCameraDeviceNull() {
+    camera.close();
+
+    verify(mockCaptureSession).close();
+  }
+
+  @Test
+  public void close_doesNotCloseCaptureSessionWhenCameraDeviceNonNull() {
+    ArrayList<CaptureRequest.Builder> mockRequestBuilders = new ArrayList<>();
+    mockRequestBuilders.add(mock(CaptureRequest.Builder.class));
+    CameraDeviceWrapper fakeCamera = new FakeCameraDeviceWrapper(mockRequestBuilders);
+    TestUtils.setPrivateField(camera, "cameraDevice", fakeCamera);
+
+    camera.close();
+
+    verify(mockCaptureSession, never()).close();
   }
 
   private static class TestCameraFeatureFactory implements CameraFeatureFactory {

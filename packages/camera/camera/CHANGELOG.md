@@ -1,6 +1,6 @@
 ## 0.9.7+1
 
-* Avoids duplicate calls to stop background camera thread and unnecessary closings of camera capture sessions.
+* Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
 
 ## 0.9.7
 

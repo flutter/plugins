@@ -384,8 +384,8 @@ class Camera
         backgroundHandler);
   }
 
-  private void createCaptureSession(int templateType, Surface... surfaces)
-      throws CameraAccessException {
+  @VisibleForTesting
+  void createCaptureSession(int templateType, Surface... surfaces) throws CameraAccessException {
     createCaptureSession(templateType, null, surfaces);
   }
 
