@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html';
 import 'dart:js' as js;
 import 'package:flutter/foundation.dart';
