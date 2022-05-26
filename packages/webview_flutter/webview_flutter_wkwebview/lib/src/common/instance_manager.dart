@@ -93,7 +93,7 @@ class InstanceManager {
   /// `null` if the instance was not found in this manager.
   ///
   /// This does not remove the the strong referenced instance associated with
-  /// [instance]. This can be done with [removeReference].
+  /// [instance]. This can be done with [remove].
   int? removeWeakReference(Copyable instance) {
     final int? identifier = getIdentifier(instance);
     if (identifier == null) {
@@ -116,31 +116,25 @@ class InstanceManager {
   ///
   /// This does not remove the the weak referenced instance associtated with
   /// [identifier]. This can be done with [removeWeakReference].
-  Copyable? removeReference(int identifier) {
-    return _strongInstances.remove(identifier);
+  T? remove<T extends Copyable>(int identifier) {
+    return _strongInstances.remove(identifier) as T?;
   }
 
   /// Retrieves the instance associated with identifier.
   ///
-  /// The value returned is chosen in this order:
-  /// 1. A weakly referenced instance asscociated with identifier.
-  /// 2. When [returnedInstanceMayBeUsed] is set to `true` and the only instance
-  /// associated with identifier is a strongly referenced instance, a copy of the
-  /// instance is added as a weakly reference with the same instance id. Returning
-  /// the newly created weakly referenced copy.
-  /// 3. When [returnedInstanceMayBeUsed] is set to `false` and the only
-  /// instance associated with identifier has a strong reference. The strongly
-  /// referenced instance is returned.
-  /// 4. If no instance is associated with identifier, returns null.
-  T? getInstance<T extends Copyable>(
-    int identifier, {
-    required bool returnedInstanceMayBeUsed,
-  }) {
+  /// The value returned is chosen from the following order:
+  ///
+  /// 1. A weakly referenced instance associated with identifier.
+  /// 2. If the only instance associated with identifier is a strongly
+  /// referenced instance, a copy of the instance is added as a weak reference
+  /// with the same identifier. Returning the newly created copy.
+  /// 3. If no instance is associated with identifier, returns null.
+  T? getInstanceWithWeakReference<T extends Copyable>(int identifier) {
     final Copyable? weakInstance = _weakInstances[identifier]?.target;
 
     if (weakInstance == null) {
       final Copyable? strongInstance = _strongInstances[identifier];
-      if (strongInstance != null && returnedInstanceMayBeUsed) {
+      if (strongInstance != null) {
         final Copyable copy = strongInstance.copy();
         _identifiers[copy] = identifier;
         _weakInstances[identifier] = WeakReference<Copyable>(copy);

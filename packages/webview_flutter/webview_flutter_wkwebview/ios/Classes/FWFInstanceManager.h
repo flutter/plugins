@@ -72,16 +72,23 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
 /**
  * Retrieves the identifier paired with an instance.
  *
- * @param instance An instance that may be stored in the manager.
- * @param willBePassed Whether the identifier will be passed to Dart. If YES, the strong reference
- * to `instance` will be recreated and will need to be removed again by
- * `removeStrongReferenceWithIdentifier:`.
+ * If the manager contains `instance`, as a strong or weak reference, the strong reference to
+ * `instance` will be recreated and will need to be removed again with
+ * `removeInstanceWithIdentifier:`.
  *
- * @return The  identifer associated with `instance` if the manager contains the value, otherwise
+ * @param instance An instance that may be stored in the manager.
+ *
+ * @return The identifer associated with `instance` if the manager contains the value, otherwise
  * NSNotFound.
  */
-- (long)identifierForInstance:(nonnull NSObject *)instance
-    identifierWillBePassedToFlutter:(BOOL)willBePassed;
+- (long)identifierWithStrongReferenceForInstance:(nonnull NSObject *)instance;
+
+/**
+ * Returns whether this manager contains the given `instance`.
+ *
+ * @return Whether this manager contains the given `instance`.
+ */
+- (BOOL)containsInstance:(nonnull NSObject *)instance;
 @end
 
 NS_ASSUME_NONNULL_END

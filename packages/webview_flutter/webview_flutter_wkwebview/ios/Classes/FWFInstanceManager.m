@@ -118,18 +118,6 @@ long const FWFMinHostCreatedIdentifier = 65536;
   return instance;
 }
 
-- (long)identifierForInstance:(nonnull NSObject *)instance
-    identifierWillBePassedToFlutter:(BOOL)willBePassed {
-  NSNumber *__block identifierNumber = nil;
-  dispatch_sync(_lockQueue, ^{
-    identifierNumber = [self.identifiers objectForKey:instance];
-    if (identifierNumber && willBePassed) {
-      [self.strongInstances setObject:instance forKey:identifierNumber];
-    }
-  });
-  return identifierNumber ? identifierNumber.longValue : NSNotFound;
-}
-
 - (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier {
   [self.identifiers setObject:@(instanceIdentifier) forKey:instance];
   [self.weakInstances setObject:instance forKey:@(instanceIdentifier)];
@@ -137,6 +125,25 @@ long const FWFMinHostCreatedIdentifier = 65536;
   [FWFFinalizer attachToInstance:instance
                   withIdentifier:instanceIdentifier
                         callback:self.deallocCallback];
+}
+
+- (long)identifierWithStrongReferenceForInstance:(nonnull NSObject *)instance {
+  NSNumber *__block identifierNumber = nil;
+  dispatch_sync(_lockQueue, ^{
+    identifierNumber = [self.identifiers objectForKey:instance];
+    if (identifierNumber) {
+      [self.strongInstances setObject:instance forKey:identifierNumber];
+    }
+  });
+  return identifierNumber ? identifierNumber.longValue : NSNotFound;
+}
+
+- (BOOL)containsInstance:(nonnull NSObject *)instance {
+  BOOL __block containsInstance;
+  dispatch_sync(_lockQueue, ^{
+    containsInstance = [self.identifiers objectForKey:instance];
+  });
+  return containsInstance;
 }
 
 - (NSUInteger)strongInstanceCount {

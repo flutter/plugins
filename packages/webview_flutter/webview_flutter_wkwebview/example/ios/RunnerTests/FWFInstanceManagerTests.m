@@ -17,8 +17,7 @@
 
   [instanceManager addDartCreatedInstance:object withIdentifier:0];
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:0], object);
-  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO],
-                 0);
+  XCTAssertEqual([instanceManager identifierWithStrongReferenceForInstance:object], 0);
 }
 
 - (void)testAddHostCreatedInstance {
@@ -26,8 +25,7 @@
   NSObject *object = [[NSObject alloc] init];
   [instanceManager addHostCreatedInstance:object];
 
-  long identifier = [instanceManager identifierForInstance:object
-                           identifierWillBePassedToFlutter:NO];
+  long identifier = [instanceManager identifierWithStrongReferenceForInstance:object];
   XCTAssertNotEqual(identifier, NSNotFound);
   XCTAssertEqualObjects([instanceManager instanceForIdentifier:identifier], object);
 }

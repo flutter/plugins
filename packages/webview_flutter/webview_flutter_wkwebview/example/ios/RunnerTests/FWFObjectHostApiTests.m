@@ -79,8 +79,7 @@
   // Only the strong reference is removed, so the weak reference will remain until object is set to
   // nil.
   object = nil;
-  XCTAssertEqual([instanceManager identifierForInstance:object identifierWillBePassedToFlutter:NO],
-                 NSNotFound);
+  XCTAssertFalse([instanceManager containsInstance:object]);
   XCTAssertNil(error);
 }
 @end

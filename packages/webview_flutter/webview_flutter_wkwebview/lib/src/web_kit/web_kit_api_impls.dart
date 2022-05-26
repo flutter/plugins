@@ -540,11 +540,8 @@ class WKNavigationDelegateFlutterApiImpl
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
 
-  WKNavigationDelegate _getDelegate(int instanceId) {
-    return instanceManager.getInstance(
-      instanceId,
-      returnedInstanceMayBeUsed: false,
-    )!;
+  WKNavigationDelegate _getDelegate(int identifier) {
+    return instanceManager.getInstanceWithWeakReference(identifier)!;
   }
 
   @override
@@ -556,10 +553,8 @@ class WKNavigationDelegateFlutterApiImpl
     final void Function(WKWebView, String?)? function =
         _getDelegate(identifier).didFinishNavigation;
     function?.call(
-      instanceManager.getInstance(
-        webViewIdentifier,
-        returnedInstanceMayBeUsed: true,
-      )!,
+      instanceManager.getInstanceWithWeakReference(webViewIdentifier)!
+          as WKWebView,
       url,
     );
   }

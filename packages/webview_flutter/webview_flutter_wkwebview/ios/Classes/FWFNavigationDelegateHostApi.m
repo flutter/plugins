@@ -20,19 +20,17 @@
   return self;
 }
 
-- (long)identifierForNavigationDelegate:(FWFNavigationDelegate *)instance {
-  return [self.instanceManager identifierForInstance:instance identifierWillBePassedToFlutter:NO];
+- (long)identifierForDelegate:(FWFNavigationDelegate *)instance {
+  return [self.instanceManager identifierWithStrongReferenceForInstance:instance];
 }
 
 - (void)didFinishNavigationForDelegate:(FWFNavigationDelegate *)instance
                                webView:(WKWebView *)webView
                                    URL:(NSString *)URL {
-  [self didFinishNavigationForDelegateWithIdentifier:@([self.instanceManager
-                                                                   identifierForInstance:instance
-                                                         identifierWillBePassedToFlutter:YES])
-                                   webViewIdentifier:@([self.instanceManager
-                                                                   identifierForInstance:webView
-                                                         identifierWillBePassedToFlutter:YES])
+  [self didFinishNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
+                                   webViewIdentifier:
+                                       @([self.instanceManager
+                                           identifierWithStrongReferenceForInstance:webView])
                                                  URL:URL
                                           completion:^(NSError *error) {
                                             NSAssert(!error, @"%@", error);

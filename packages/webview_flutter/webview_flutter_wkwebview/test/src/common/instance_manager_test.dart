@@ -17,7 +17,7 @@ void main() {
 
       expect(instanceManager.getIdentifier(object), 0);
       expect(
-        instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
+        instanceManager.getInstanceWithWeakReference(0),
         object,
       );
     });
@@ -31,7 +31,7 @@ void main() {
       instanceManager.addHostCreatedInstance(object, 0);
 
       expect(
-        () => instanceManager.addHostCreatedInstance(object, 1),
+        () => instanceManager.addHostCreatedInstance(object, 0),
         throwsAssertionError,
       );
 
@@ -52,10 +52,7 @@ void main() {
       final int? instanceId = instanceManager.getIdentifier(object);
       expect(instanceId, isNotNull);
       expect(
-        instanceManager.getInstance(
-          instanceId!,
-          returnedInstanceMayBeUsed: false,
-        ),
+        instanceManager.getInstanceWithWeakReference(instanceId!),
         object,
       );
     });
@@ -73,7 +70,7 @@ void main() {
 
       expect(instanceManager.removeWeakReference(object), 0);
       expect(
-        instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
+        instanceManager.getInstanceWithWeakReference(0),
         isA<CopyableObject>(),
       );
       expect(weakInstanceId, 0);
@@ -88,9 +85,8 @@ void main() {
       instanceManager.addHostCreatedInstance(object, 0);
 
       expect(instanceManager.removeWeakReference(object), 0);
-      final CopyableObject copy = instanceManager.getInstance(
+      final CopyableObject copy = instanceManager.getInstanceWithWeakReference(
         0,
-        returnedInstanceMayBeUsed: false,
       )!;
       expect(identical(object, copy), isFalse);
     });
@@ -103,11 +99,8 @@ void main() {
 
       instanceManager.addHostCreatedInstance(object, 0);
       instanceManager.removeWeakReference(object);
-      expect(instanceManager.removeReference(0), isA<CopyableObject>());
-      expect(
-        instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
-        isNull,
-      );
+      expect(instanceManager.remove(0), isA<CopyableObject>());
+      expect(instanceManager.containsIdentifier(0), isFalse);
     });
 
     test('removeStrongReference removes only strong reference', () {
@@ -117,9 +110,9 @@ void main() {
           InstanceManager(onWeakReferenceRemoved: (_) {});
 
       instanceManager.addHostCreatedInstance(object, 0);
-      expect(instanceManager.removeReference(0), isA<CopyableObject>());
+      expect(instanceManager.remove(0), isA<CopyableObject>());
       expect(
-        instanceManager.getInstance(0, returnedInstanceMayBeUsed: false),
+        instanceManager.getInstanceWithWeakReference(0),
         object,
       );
     });
@@ -133,15 +126,11 @@ void main() {
       instanceManager.addHostCreatedInstance(object, 0);
       instanceManager.removeWeakReference(object);
 
-      final CopyableObject strongCopy = instanceManager.getInstance(
+      final CopyableObject newWeakCopy =
+          instanceManager.getInstanceWithWeakReference(
         0,
-        returnedInstanceMayBeUsed: false,
       )!;
-      final CopyableObject newWeakCopy = instanceManager.getInstance(
-        0,
-        returnedInstanceMayBeUsed: true,
-      )!;
-      expect(identical(strongCopy, newWeakCopy), isFalse);
+      expect(identical(object, newWeakCopy), isFalse);
     });
   });
 }
