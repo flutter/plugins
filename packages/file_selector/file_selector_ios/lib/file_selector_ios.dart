@@ -6,6 +6,8 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 
+import 'src/messages.g.dart';
+
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/file_selector_ios');
 
@@ -14,6 +16,8 @@ class FileSelectorIOS extends FileSelectorPlatform {
   /// The MethodChannel that is being used by this implementation of the plugin.
   @visibleForTesting
   MethodChannel get channel => _channel;
+
+  final FileSelectorApi _hostApi = FileSelectorApi();
 
   /// Registers the iOS implementation.
   static void registerWith() {
@@ -26,45 +30,40 @@ class FileSelectorIOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String>? path = await _channel.invokeListMethod<String>(
-      'openFile',
-      <String, dynamic>{
-        'acceptedTypes': _allowedTypeListFromTypeGroups(acceptedTypeGroups),
-        'initialDirectory': initialDirectory,
-        'confirmButtonText': confirmButtonText,
-        'multiple': false,
-      },
-    );
+    final List<String>? path = (await _hostApi.openFile(FileSelectorConfig(
+            utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
+            allowMultiSelection: false)))
+        ?.cast<String>();
     return path == null ? null : XFile(path.first);
   }
 
-  // Converts the type group list into a flat list of all allowed types, since
+  @override
+  Future<List<XFile>> openFiles({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) async {
+    final List<String>? pathList = (await _hostApi.openFile(FileSelectorConfig(
+            utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
+            allowMultiSelection: true)))
+        ?.cast<String>();
+    return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
+  }
+
+  // Converts the type group list into a list of all allowed UTIs, since
   // iOS doesn't support filter groups.
-  Map<String, List<String>>? _allowedTypeListFromTypeGroups(
-      List<XTypeGroup>? typeGroups) {
-    const String extensionKey = 'extensions';
-    const String mimeTypeKey = 'mimeTypes';
-    const String utiKey = 'UTIs';
+  List<String>? _allowedUtiListFromTypeGroups(List<XTypeGroup>? typeGroups) {
     if (typeGroups == null || typeGroups.isEmpty) {
       return null;
     }
-    final Map<String, List<String>> allowedTypes = <String, List<String>>{
-      extensionKey: <String>[],
-      mimeTypeKey: <String>[],
-      utiKey: <String>[],
-    };
+    final List<String> allowedUTIs = <String>[];
     for (final XTypeGroup typeGroup in typeGroups) {
       // If any group allows everything, no filtering should be done.
-      if ((typeGroup.extensions?.isEmpty ?? true) &&
-          (typeGroup.macUTIs?.isEmpty ?? true) &&
-          (typeGroup.mimeTypes?.isEmpty ?? true)) {
+      if (typeGroup.macUTIs?.isEmpty ?? true) {
         return null;
       }
-      allowedTypes[extensionKey]!.addAll(typeGroup.extensions ?? <String>[]);
-      allowedTypes[mimeTypeKey]!.addAll(typeGroup.mimeTypes ?? <String>[]);
-      allowedTypes[utiKey]!.addAll(typeGroup.macUTIs ?? <String>[]);
+      allowedUTIs.addAll(typeGroup.macUTIs!);
     }
-
-    return allowedTypes;
+    return allowedUTIs;
   }
 }
