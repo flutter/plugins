@@ -135,6 +135,8 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
 }
 ```
 
+When handling purchase updates, make sure to use setState(() {}) at some point inside the method or when trying to update "Pending UI", otherwise the stream may never fire an event and trigger rebuild behaviour. For the same reason, print messages may never appear in case if this is your debug option.
+
 ### Connecting to the underlying store
 
 ```dart
