@@ -1,6 +1,6 @@
 ## 2.8.0
 
-* Raises minimum Dart version to 2.17.
+* Raises minimum Dart version to 2.17 and Flutter version to 3.0.0.
 
 ## 2.7.5
 
