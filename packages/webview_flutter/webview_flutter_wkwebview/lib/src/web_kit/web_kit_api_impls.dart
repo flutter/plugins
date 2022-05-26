@@ -224,10 +224,9 @@ class WebKitFlutterApis {
 class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   /// Constructs a [WebsiteDataStoreHostApiImpl].
   WKWebsiteDataStoreHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -269,10 +268,9 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
 class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   /// Constructs a [WKScriptMessageHandlerHostApiImpl].
   WKScriptMessageHandlerHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -287,10 +285,9 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
 class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   /// Constructs a [WKPreferencesHostApiImpl].
   WKPreferencesHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -322,10 +319,9 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
 class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   /// Constructs a [WKHttpCookieStoreHostApiImpl].
   WKHttpCookieStoreHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -358,10 +354,9 @@ class WKUserContentControllerHostApiImpl
     extends WKUserContentControllerHostApi {
   /// Constructs a [WKUserContentControllerHostApiImpl].
   WKUserContentControllerHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -433,10 +428,9 @@ class WKUserContentControllerHostApiImpl
 class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   /// Constructs a [WKWebViewConfigurationHostApiImpl].
   WKWebViewConfigurationHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -484,10 +478,9 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
 class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   /// Constructs a [WKUIDelegateHostApiImpl].
   WKUIDelegateHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -502,10 +495,9 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
 class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   /// Constructs a [WKNavigationDelegateHostApiImpl].
   WKNavigationDelegateHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -561,10 +553,9 @@ class WKNavigationDelegateFlutterApiImpl
 class WKWebViewHostApiImpl extends WKWebViewHostApi {
   /// Constructs a [WKWebViewHostApiImpl].
   WKWebViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
