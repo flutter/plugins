@@ -64,7 +64,8 @@ void main() {
       // Run
       controller.loadHtmlString('test html');
       // Verify
-      verify(mockElement.src = 'data:text/html,${Uri.encodeFull('test html')}');
+      verify(mockElement.srcdoc =
+          '<!DOCTYPE html><html><head><script>parent.webview1_getWindow(window);\n</script></head><body>test html</body></html>');
     });
 
     group('loadRequest', () {
