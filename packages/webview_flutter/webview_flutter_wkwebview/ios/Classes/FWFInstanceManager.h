@@ -82,21 +82,6 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  */
 - (long)identifierForInstance:(nonnull NSObject *)instance
     identifierWillBePassedToFlutter:(BOOL)willBePassed;
-
-/**
- * The number of instances stored as a strong reference.
- *
- * Added for debugging purposes.
- */
-- (NSUInteger)strongInstanceCount;
-
-/**
- * The number of instances stored as a weak reference.
- *
- * Added for debugging purposes. NSMapTables that store keys or objects as weak reference will be
- * reclaimed nondeterministically.
- */
-- (NSUInteger)weakInstanceCount;
 @end
 
 NS_ASSUME_NONNULL_END

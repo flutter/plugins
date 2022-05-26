@@ -193,9 +193,11 @@ class InstanceManager {
   }
 
   int _nextUniqueIdentifier() {
-    while (containsIdentifier(_nextIdentifier)) {
+    late int identifier;
+    do {
+      identifier = _nextIdentifier;
       _nextIdentifier = (_nextIdentifier + 1) % _maxDartCreatedIdentifier;
-    }
-    return _nextIdentifier;
+    } while (containsIdentifier(identifier));
+    return identifier;
   }
 }

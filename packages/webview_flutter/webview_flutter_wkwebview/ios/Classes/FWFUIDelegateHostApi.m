@@ -30,5 +30,4 @@
   FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] init];
   [self.instanceManager addDartCreatedInstance:uIDelegate withIdentifier:identifier.longValue];
 }
-
 @end

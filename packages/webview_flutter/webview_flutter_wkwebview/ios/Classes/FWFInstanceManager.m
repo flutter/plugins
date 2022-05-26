@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #import "FWFInstanceManager.h"
+#import "FWFInstanceManager_Test.h"
+
+#import <objc/runtime.h>
 
 // Attaches to an object to receive a callback when the object is deallocated.
 @interface FWFFinalizer : NSObject
@@ -51,7 +54,7 @@
 
 @implementation FWFInstanceManager
 // Identifiers are locked to a specific range to avoid collisions with objects
-// created simultaneously by Dart.
+// created simultaneously from Dart.
 // Host uses identifiers >= 2^16 and Dart is expected to use values n where,
 // 0 <= n < 2^16.
 long const FWFMinHostCreatedIdentifier = 65536;

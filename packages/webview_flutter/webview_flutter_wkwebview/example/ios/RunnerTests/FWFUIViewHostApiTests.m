@@ -45,4 +45,5 @@
   OCMVerify([mockUIView setOpaque:YES]);
   XCTAssertNil(error);
 }
+
 @end
