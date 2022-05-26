@@ -1,6 +1,10 @@
-## 0.9.7+1
+## 0.9.7+2
 
 * Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
+
+## 0.9.7+1
+
+* Moves streaming implementation to the platform interface package.
 
 ## 0.9.7
 

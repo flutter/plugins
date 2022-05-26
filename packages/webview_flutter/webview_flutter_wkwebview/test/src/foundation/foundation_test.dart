@@ -35,7 +35,7 @@ void main() {
         TestNSObjectHostApi.setup(mockPlatformHostApi);
 
         object = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(object);
+        instanceManager.addDartCreatedInstance(object);
       });
 
       tearDown(() {
@@ -44,7 +44,7 @@ void main() {
 
       test('addObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.addObserver(
           observer,
@@ -57,8 +57,8 @@ void main() {
 
         final List<NSKeyValueObservingOptionsEnumData?> optionsData =
             verify(mockPlatformHostApi.addObserver(
-          instanceManager.getInstanceId(object),
-          instanceManager.getInstanceId(observer),
+          instanceManager.getIdentifier(object),
+          instanceManager.getIdentifier(observer),
           'aKeyPath',
           captureAny,
         )).captured.single as List<NSKeyValueObservingOptionsEnumData?>;
@@ -76,19 +76,19 @@ void main() {
 
       test('removeObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.removeObserver(observer, keyPath: 'aKeyPath');
 
         verify(mockPlatformHostApi.removeObserver(
-          instanceManager.getInstanceId(object),
-          instanceManager.getInstanceId(observer),
+          instanceManager.getIdentifier(object),
+          instanceManager.getIdentifier(observer),
           'aKeyPath',
         ));
       });
 
       test('dispose', () async {
-        final int instanceId = instanceManager.getInstanceId(object)!;
+        final int instanceId = instanceManager.getIdentifier(object)!;
 
         await object.dispose();
         verify(

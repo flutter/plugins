@@ -21,18 +21,19 @@
   return self;
 }
 
-- (FWFNavigationDelegate *)navigationDelegateForIdentifier:(NSNumber *)instanceId {
-  return (FWFNavigationDelegate *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (FWFNavigationDelegate *)navigationDelegateForIdentifier:(NSNumber *)identifier {
+  return (FWFNavigationDelegate *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc] init];
-  [self.instanceManager addInstance:navigationDelegate withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:navigationDelegate
+                                withIdentifier:identifier.longValue];
 }
 
-- (void)setDidFinishNavigationForDelegateWithIdentifier:(nonnull NSNumber *)instanceId
-                                     functionIdentifier:(nullable NSNumber *)functionInstanceId
+- (void)setDidFinishNavigationForDelegateWithIdentifier:(nonnull NSNumber *)identifier
+                                     functionIdentifier:(nullable NSNumber *)functionIdentifier
                                                   error:(FlutterError *_Nullable __autoreleasing
                                                              *_Nonnull)error {
   // TODO(bparrishMines): Implement when callback method design is finalized.

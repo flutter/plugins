@@ -54,7 +54,7 @@ void main() {
           webView,
           instanceManager: instanceManager,
         );
-        scrollViewInstanceId = instanceManager.getInstanceId(scrollView)!;
+        scrollViewInstanceId = instanceManager.getIdentifier(scrollView)!;
       });
 
       tearDown(() {
@@ -98,7 +98,7 @@ void main() {
         TestUIViewHostApi.setup(mockPlatformHostApi);
 
         view = UIView(instanceManager: instanceManager);
-        viewInstanceId = instanceManager.tryAddInstance(view)!;
+        viewInstanceId = instanceManager.addDartCreatedInstance(view);
       });
 
       tearDown(() {

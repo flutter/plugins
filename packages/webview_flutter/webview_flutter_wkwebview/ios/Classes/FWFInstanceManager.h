@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 // should be replaced with a call to clear the manager in the event of a hot restart
 // instead.
 /**
- * Adds a new instance to the manager.
+ * Adds a new instance to the manager that was instantiated by Dart.
  *
  * If an instance or identifier has already been added, it will be replaced by the new values. The
  * Dart InstanceManager is considered the source of truth and has the capability to overwrite stored
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param instance The instance to be stored.
  * @param instanceIdentifier The identifier to be paired with instance. This value must be >= 0.
  */
-- (void)addInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
+- (void)addDartCreatedInstance:(NSObject *)instance withIdentifier:(long)instanceIdentifier;
 
 /**
  * Removes the instance paired with a given identifier from the manager.

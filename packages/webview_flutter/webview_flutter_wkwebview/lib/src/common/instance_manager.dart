@@ -4,10 +4,10 @@
 
 /// Maintains instances stored to communicate with Objective-C objects.
 class InstanceManager {
-  final Map<int, Object> _instanceIdsToInstances = <int, Object>{};
-  final Map<Object, int> _instancesToInstanceIds = <Object, int>{};
+  final Map<int, Object> _strongInstances = <int, Object>{};
+  final Map<Object, int> _identifiers = <Object, int>{};
 
-  int _nextInstanceId = 0;
+  int _nextIdentifier = 0;
 
   /// Global instance of [InstanceManager].
   static final InstanceManager instance = InstanceManager();
@@ -16,14 +16,12 @@ class InstanceManager {
   ///
   /// Returns new if [instance] has already been added. Otherwise, it is added
   /// with a new instance id.
-  int? tryAddInstance(Object instance) {
-    if (_instancesToInstanceIds.containsKey(instance)) {
-      return null;
-    }
+  int addDartCreatedInstance(Object instance) {
+    assert(getIdentifier(instance) == null);
 
-    final int instanceId = _nextInstanceId++;
-    _instancesToInstanceIds[instance] = instanceId;
-    _instanceIdsToInstances[instanceId] = instance;
+    final int instanceId = _nextIdentifier++;
+    _identifiers[instance] = instanceId;
+    _strongInstances[instanceId] = instance;
     return instanceId;
   }
 
@@ -31,22 +29,22 @@ class InstanceManager {
   ///
   /// Returns null if the instance is removed. Otherwise, return the instanceId
   /// of the removed instance.
-  int? removeInstance<T extends Object>(T instance) {
-    final int? instanceId = _instancesToInstanceIds[instance];
+  int? removeWeakReference<T extends Object>(T instance) {
+    final int? instanceId = _identifiers[instance];
     if (instanceId != null) {
-      _instancesToInstanceIds.remove(instance);
-      _instanceIdsToInstances.remove(instanceId);
+      _identifiers.remove(instance);
+      _strongInstances.remove(instanceId);
     }
     return instanceId;
   }
 
   /// Retrieve the Object paired with instanceId.
-  T? getInstance<T extends Object>(int instanceId) {
-    return _instanceIdsToInstances[instanceId] as T?;
+  T? getInstance<T extends Object>(int identifier) {
+    return _strongInstances[identifier] as T?;
   }
 
   /// Retrieve the instanceId paired with instance.
-  int? getInstanceId(Object instance) {
-    return _instancesToInstanceIds[instance];
+  int? getIdentifier(Object instance) {
+    return _identifiers[instance];
   }
 }
