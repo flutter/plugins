@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -64,7 +65,11 @@ void main() {
       // Run
       controller.loadHtmlString('test html');
       // Verify
-      verify(mockElement.src = 'data:text/html,${Uri.encodeFull('test html')}');
+      verify(mockElement.src = Uri.dataFromString(
+        'test html',
+        mimeType: 'text/html',
+        encoding: Encoding.getByName('utf-8'),
+      ).toString());
     });
 
     group('loadRequest', () {
@@ -122,8 +127,11 @@ void main() {
           requestHeaders: <String, String>{'Foo': 'Bar'},
           sendData: Uint8List.fromList('test body'.codeUnits),
         ));
-        verify(
-            mockElement.src = 'data:text/plain,${Uri.encodeFull('test data')}');
+        verify(mockElement.src = Uri.dataFromString(
+          'test data',
+          mimeType: 'text/plain',
+          encoding: Encoding.getByName('utf-8'),
+        ).toString());
       });
     });
   });
