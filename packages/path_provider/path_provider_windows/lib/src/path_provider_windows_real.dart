@@ -50,7 +50,7 @@ class VersionInfoQuerier {
     }
     final Pointer<Utf16> keyPath =
         TEXT('\\StringFileInfo\\$language$encoding\\$key');
-    final Pointer<Uint32> length = calloc<Uint32>();
+    final Pointer<UINT> length = calloc<UINT>();
     final Pointer<Pointer<Utf16>> valueAddress = calloc<Pointer<Utf16>>();
     try {
       if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
@@ -192,10 +192,9 @@ class PathProviderWindows extends PathProviderPlatform {
     String? companyName;
     String? productName;
 
-    final Pointer<Utf16> moduleNameBuffer =
-        calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
-    final Pointer<Uint32> unused = calloc<Uint32>();
-    Pointer<Uint8>? infoBuffer;
+    final Pointer<Utf16> moduleNameBuffer = wsalloc(MAX_PATH + 1);
+    final Pointer<DWORD> unused = calloc<DWORD>();
+    Pointer<BYTE>? infoBuffer;
     try {
       // Get the module name.
       final int moduleNameLength =
@@ -208,7 +207,7 @@ class PathProviderWindows extends PathProviderPlatform {
       // From that, load the VERSIONINFO resource
       final int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
       if (infoSize != 0) {
-        infoBuffer = calloc<Uint8>(infoSize);
+        infoBuffer = calloc<BYTE>(infoSize);
         if (GetFileVersionInfo(moduleNameBuffer, 0, infoSize, infoBuffer) ==
             0) {
           calloc.free(infoBuffer);
