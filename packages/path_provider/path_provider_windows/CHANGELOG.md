@@ -1,5 +1,6 @@
-## 2.0.7
+## 2.1.0
 
+* Upgrade `package:ffi` dependency to 2.0.0
 * Added support for unicode encoded VERSIONINFO
 * Minor fixes for new analysis options.
 
