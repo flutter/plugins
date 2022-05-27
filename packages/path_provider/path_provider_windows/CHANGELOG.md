@@ -1,5 +1,6 @@
-## NEXT
+## 2.0.7
 
+* Added support for unicode encoded VERSIONINFO
 * Minor fixes for new analysis options.
 
 ## 2.0.6
