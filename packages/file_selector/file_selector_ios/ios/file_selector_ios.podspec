@@ -14,6 +14,7 @@ Displays the native iOS document picker.
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/file_selector/file_selector_ios' }
   s.source_files = 'Classes/**/*'
+  s.module_map = 'Classes/FileSelectorPlugin.modulemap'
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
 

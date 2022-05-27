@@ -3,18 +3,8 @@
 // found in the LICENSE file.
 
 #import "FLTFileSelectorPlugin.h"
+#import "FLTFileSelectorPlugin_Test.h"
 #import "messages.g.h"
-
-@interface FLTFileSelectorPlugin () <UIDocumentPickerDelegate, FLTFileSelectorApi>
-
-/**
- * The completion block of a FLTFileSelectorApi request.
- * It is saved and invoked later in a UIDocumentPickerDelegate method.
- */
-@property(nonatomic) void (^pendingCompletion)(NSArray<NSString *> * _Nullable,
-                                               FlutterError * _Nullable);
-
-@end
 
 @implementation FLTFileSelectorPlugin
 
@@ -30,7 +20,7 @@
     return;
   }
 
-  UIDocumentPickerViewController *documentPicker =
+  UIDocumentPickerViewController *documentPicker = self.documentPickerViewControllerOverride ?:
   [[UIDocumentPickerViewController alloc] initWithDocumentTypes:config.utis
                                                          inMode:UIDocumentPickerModeImport];
   documentPicker.delegate = self;
@@ -38,9 +28,10 @@
     documentPicker.allowsMultipleSelection = config.allowMultiSelection.boolValue;
   }
 
-  UIViewController *rootVC = UIApplication.sharedApplication.delegate.window.rootViewController;
-  if (rootVC) {
-    [rootVC presentViewController:documentPicker animated:YES completion:nil];
+  UIViewController *presentingVC = self.presentingViewControllerOverride ?:
+      UIApplication.sharedApplication.delegate.window.rootViewController;
+  if (presentingVC) {
+    [presentingVC presentViewController:documentPicker animated:YES completion:nil];
     self.pendingCompletion = completion;
   } else {
     completion(nil, [FlutterError errorWithCode:@"error"
@@ -60,6 +51,7 @@
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller
   didPickDocumentAtURL:(NSURL *)url {
+  // This method is only called in iOS < 11.0.
   if (self.pendingCompletion) {
     self.pendingCompletion(@[ url.path ], nil);
     self.pendingCompletion = nil;

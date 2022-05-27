@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 @import file_selector_ios;
+@import file_selector_ios.Test;
 @import XCTest;
+
+#import <OCMock/OCMock.h>
 
 @interface FileSelectorTests : XCTestCase
 
@@ -11,9 +14,104 @@
 
 @implementation FileSelectorTests
 
-- (void)testPlugin {
-  FTLFileSelectorPlugin *plugin = [[FTLFileSelectorPlugin alloc] init];
-  XCTAssertNotNil(plugin);
+- (void)testPickerPresents {
+  FLTFileSelectorPlugin *plugin = [[FLTFileSelectorPlugin alloc] init];
+  UIDocumentPickerViewController *picker =
+      [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
+                                                             inMode:UIDocumentPickerModeImport];
+  id mockPresentingVC = OCMClassMock([UIViewController class]);
+  plugin.documentPickerViewControllerOverride = picker;
+  plugin.presentingViewControllerOverride = mockPresentingVC;
+
+  [plugin openFileSelectorWithConfig:[FLTFileSelectorConfig makeWithUtis:nil
+                                                     allowMultiSelection:@NO]
+                          completion:^(NSArray<NSString *> *paths, FlutterError *error){
+                          }];
+
+  XCTAssertEqualObjects(picker.delegate, plugin);
+  OCMVerify(times(1), [mockPresentingVC presentViewController:picker
+                                                     animated:[OCMArg any]
+                                                   completion:[OCMArg any]]);
+}
+
+- (void)testReturnsPickedFiles {
+  FLTFileSelectorPlugin *plugin = [[FLTFileSelectorPlugin alloc] init];
+  XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
+  UIDocumentPickerViewController *picker =
+      [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
+                                                             inMode:UIDocumentPickerModeImport];
+  [plugin openFileSelectorWithConfig:[FLTFileSelectorConfig makeWithUtis:nil
+                                                     allowMultiSelection:@YES]
+                          completion:^(NSArray<NSString *> *paths, FlutterError *error) {
+                            NSArray *expectedPaths = @[ @"/file1.txt", @"/file2.txt" ];
+                            XCTAssertEqualObjects(paths, expectedPaths);
+                            [completionWasCalled fulfill];
+                          }];
+  [plugin documentPicker:picker
+      didPickDocumentsAtURLs:@[
+        [NSURL URLWithString:@"file:///file1.txt"], [NSURL URLWithString:@"file:///file2.txt"]
+      ]];
+  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
+  XCTAssertNil(plugin.pendingCompletion);
+}
+
+- (void)testReturnsPickedFileLegacy {
+  // Tests that it handles the pre iOS 11 UIDocumentPickerDelegate method.
+  FLTFileSelectorPlugin *plugin = [[FLTFileSelectorPlugin alloc] init];
+  XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
+  UIDocumentPickerViewController *picker =
+      [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
+                                                             inMode:UIDocumentPickerModeImport];
+  plugin.documentPickerViewControllerOverride = picker;
+  [plugin openFileSelectorWithConfig:[FLTFileSelectorConfig makeWithUtis:nil
+                                                     allowMultiSelection:@NO]
+                          completion:^(NSArray<NSString *> *paths, FlutterError *error) {
+                            NSArray *expectedPaths = @[ @"/file1.txt" ];
+                            XCTAssertEqualObjects(paths, expectedPaths);
+                            [completionWasCalled fulfill];
+                          }];
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  [plugin documentPicker:picker didPickDocumentAtURL:[NSURL URLWithString:@"file:///file1.txt"]];
+#pragma GCC diagnostic pop
+  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
+  XCTAssertNil(plugin.pendingCompletion);
+}
+
+- (void)testCancellingPickerReturnsNil {
+  FLTFileSelectorPlugin *plugin = [[FLTFileSelectorPlugin alloc] init];
+  UIDocumentPickerViewController *picker =
+      [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
+                                                             inMode:UIDocumentPickerModeImport];
+  plugin.documentPickerViewControllerOverride = picker;
+
+  XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
+  [plugin openFileSelectorWithConfig:[FLTFileSelectorConfig makeWithUtis:nil
+                                                     allowMultiSelection:@NO]
+                          completion:^(NSArray<NSString *> *paths, FlutterError *error) {
+                            XCTAssertEqual(paths.count, 0);
+                            [completionWasCalled fulfill];
+                          }];
+  [plugin documentPickerWasCancelled:picker];
+  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
+  XCTAssertNil(plugin.pendingCompletion);
+}
+
+- (void)testOpenFileSelectorWithPendingCompletionReturnsError {
+  FLTFileSelectorPlugin *plugin = [[FLTFileSelectorPlugin alloc] init];
+  plugin.pendingCompletion = ^(NSArray<NSString *> *paths, FlutterError *error) {
+  };
+
+  XCTestExpectation *completionWasCalled =
+      [[XCTestExpectation alloc] initWithDescription:@"Completion was called"];
+  [plugin openFileSelectorWithConfig:[FLTFileSelectorConfig makeWithUtis:nil
+                                                     allowMultiSelection:@NO]
+                          completion:^(NSArray<NSString *> *paths, FlutterError *error) {
+                            XCTAssertNotNil(error);
+                            [completionWasCalled fulfill];
+                          }];
+
+  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
 }
 
 @end
