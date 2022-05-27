@@ -105,7 +105,7 @@
 
 @interface FLTCirclesController ()
 
-@property(weak, nonatomic) FlutterMethodChannel *methodChannel;
+@property(strong, nonatomic) FlutterMethodChannel *methodChannel;
 @property(weak, nonatomic) GMSMapView *mapView;
 @property(strong, nonatomic) NSMutableDictionary *circleIdToController;
 

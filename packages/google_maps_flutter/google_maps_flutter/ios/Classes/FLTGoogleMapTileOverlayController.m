@@ -100,7 +100,7 @@
 
 @interface FLTTileProviderController ()
 
-@property(weak, nonatomic) FlutterMethodChannel *methodChannel;
+@property(strong, nonatomic) FlutterMethodChannel *methodChannel;
 
 @end
 
@@ -160,7 +160,7 @@
 @interface FLTTileOverlaysController ()
 
 @property(strong, nonatomic) NSMutableDictionary *tileOverlayIdentifierToController;
-@property(weak, nonatomic) FlutterMethodChannel *methodChannel;
+@property(strong, nonatomic) FlutterMethodChannel *methodChannel;
 @property(weak, nonatomic) GMSMapView *mapView;
 
 @end
