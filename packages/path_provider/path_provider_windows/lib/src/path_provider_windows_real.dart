@@ -13,7 +13,7 @@ import 'package:win32/win32.dart';
 
 import 'folders.dart';
 
-/// Constant for en-US language used in VersionInfo keys
+/// Constant for en-US language used in VersionInfo keys.
 @visibleForTesting
 const String languageEn = '0409';
 
@@ -43,6 +43,8 @@ class VersionInfoQuerier {
     required String language,
     required String encoding,
   }) {
+    assert(language.isNotEmpty);
+    assert(encoding.isNotEmpty);
     if (versionInfo == null) {
       return null;
     }

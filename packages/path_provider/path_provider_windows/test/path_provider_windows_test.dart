@@ -12,8 +12,11 @@ import 'package:path_provider_windows/src/path_provider_windows_real.dart'
 
 // A fake VersionInfoQuerier that just returns preset responses.
 class FakeVersionInfoQuerier implements VersionInfoQuerier {
-  FakeVersionInfoQuerier(this.responses,
-      [this.language = languageEn, this.encoding = encodingUnicode]);
+  FakeVersionInfoQuerier(
+    this.responses, {
+    this.language = languageEn,
+    this.encoding = encodingUnicode,
+  });
 
   final String language;
   final String encoding;
@@ -60,7 +63,7 @@ void main() {
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
-    }, languageEn, encodingCP1252);
+    }, language: languageEn, encoding: encodingCP1252);
     final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
@@ -74,7 +77,7 @@ void main() {
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
-    }, languageEn, encodingUnicode);
+    }, language: languageEn, encoding: encodingUnicode);
     final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
@@ -90,7 +93,7 @@ void main() {
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
-    }, '0000', '0000');
+    }, language: '0000', encoding: '0000');
     final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'AppData'));
