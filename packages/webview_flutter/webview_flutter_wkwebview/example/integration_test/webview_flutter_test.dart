@@ -9,6 +9,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// TODO(a14n): remove this import once flutter/flutter#104231 lands
 // ignore: unnecessary_import
 import 'dart:typed_data';
 

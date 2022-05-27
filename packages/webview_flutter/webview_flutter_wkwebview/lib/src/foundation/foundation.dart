@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once flutter/flutter#104231 lands
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
