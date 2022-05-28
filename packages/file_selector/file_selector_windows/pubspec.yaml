@@ -25,4 +25,8 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  pigeon: ^3.1.0
+  pigeon: ^3.1.4
+
+dependency_overrides:
+  pigeon:
+    path: ../../../../packages/packages/pigeon

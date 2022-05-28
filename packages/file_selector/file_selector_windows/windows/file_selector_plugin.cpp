@@ -138,13 +138,13 @@ class DialogWrapper {
     for (const EncodableValue& filter_info_value : filters) {
       const auto& type_group = std::any_cast<TypeGroup>(
           std::get<flutter::CustomEncodableValue>(filter_info_value));
-      filter_names.push_back(Utf16FromUtf8(type_group.getLabel()));
+      filter_names.push_back(Utf16FromUtf8(type_group.label()));
       filter_extensions.push_back(L"");
       std::wstring& spec = filter_extensions.back();
-      if (type_group.getExtensions().empty()) {
+      if (type_group.extensions().empty()) {
         spec += L"*.*";
       } else {
-        for (const EncodableValue& extension : type_group.getExtensions()) {
+        for (const EncodableValue& extension : type_group.extensions()) {
           if (!spec.empty()) {
             spec += spec_delimiter;
           }
@@ -220,10 +220,10 @@ ErrorOr<std::unique_ptr<flutter::EncodableList>> ShowDialog(
   }
 
   FILEOPENDIALOGOPTIONS dialog_options = 0;
-  if (options.getSelectFolders()) {
+  if (options.select_folders()) {
     dialog_options |= FOS_PICKFOLDERS;
   }
-  if (options.getAllowMultiple()) {
+  if (options.allow_multiple()) {
     dialog_options |= FOS_ALLOWMULTISELECT;
   }
   if (dialog_options != 0) {
@@ -240,9 +240,8 @@ ErrorOr<std::unique_ptr<flutter::EncodableList>> ShowDialog(
     dialog.SetOkButtonLabel(*confirm_label);
   }
 
-  // TODO(stuartmorgan): Handle null once the generator bug is fixed.
-  if (!options.getAllowedTypes().empty()) {
-    dialog.SetFileTypeFilters(options.getAllowedTypes());
+  if (!options.allowed_types().empty()) {
+    dialog.SetFileTypeFilters(options.allowed_types());
   }
 
   std::unique_ptr<EncodableList> files = dialog.Show(parent_window);
@@ -281,7 +280,7 @@ FileSelectorPlugin::FileSelectorPlugin(
 FileSelectorPlugin::~FileSelectorPlugin() = default;
 
 ErrorOr<std::unique_ptr<flutter::EncodableList>>
-FileSelectorPlugin::showOpenDialog(
+FileSelectorPlugin::ShowOpenDialog(
     const SelectionOptions& options,
     std::optional<std::string> initialDirectory,
     std::optional<std::string> confirmButtonText) {
@@ -290,7 +289,7 @@ FileSelectorPlugin::showOpenDialog(
 }
 
 ErrorOr<std::unique_ptr<flutter::EncodableList>>
-FileSelectorPlugin::showSaveDialog(
+FileSelectorPlugin::ShowSaveDialog(
     const SelectionOptions& options,
     std::optional<std::string> initialDirectory,
     std::optional<std::string> suggestedName,

@@ -15,31 +15,26 @@ import 'package:pigeon/pigeon.dart';
 class TypeGroup {
   TypeGroup(this.label, {required this.extensions});
 
-  // TODO(stuartmorgan): Make these non-nullable once supported.
-  // https://github.com/flutter/flutter/issues/104278
+  String label;
   // TODO(stuartmorgan): Make the generic type non-nullable once supported.
   // https://github.com/flutter/flutter/issues/97848
   // The C++ code treats all of it as non-nullable.
-  String? label;
-  List<String?>? extensions;
+  List<String?> extensions;
 }
 
 class SelectionOptions {
   SelectionOptions({
     this.allowMultiple = false,
     this.selectFolders = false,
-    this.allowedTypes,
+    this.allowedTypes = const <TypeGroup?>[],
   });
-  // TODO(stuartmorgan): Make these non-nullable once supported.
-  // https://github.com/flutter/flutter/issues/104278
-  // The C++ code treats the values as non-nullable.
-  bool? allowMultiple;
-  bool? selectFolders;
+  bool allowMultiple;
+  bool selectFolders;
 
   // TODO(stuartmorgan): Make the generic type non-nullable once supported.
   // https://github.com/flutter/flutter/issues/97848
   // The C++ code treats the values as non-nullable.
-  List<TypeGroup?>? allowedTypes;
+  List<TypeGroup?> allowedTypes;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostImagePickerApi')

@@ -78,7 +78,6 @@ class FileSelectorWindows extends FileSelectorPlatform {
         SelectionOptions(
           allowMultiple: false,
           selectFolders: true,
-          // TODO(stuartmorgan): Remove once the generator bug is fixed.
           allowedTypes: <TypeGroup>[],
         ),
         initialDirectory,
