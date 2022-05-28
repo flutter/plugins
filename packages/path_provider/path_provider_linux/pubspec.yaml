@@ -16,7 +16,7 @@ flutter:
         dartPluginClass: PathProviderLinux
 
 dependencies:
-  ffi: ^2.0.0
+  ffi: ">=1.1.2 <3.0.0"
   flutter:
     sdk: flutter
   path: ^1.8.0

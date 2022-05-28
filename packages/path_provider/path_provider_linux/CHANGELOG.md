@@ -1,6 +1,6 @@
 ## 2.1.7
 
-* Bump ffi dependency to match path_provider_windows.
+* Bumps ffi dependency to match path_provider_windows.
 
 ## 2.1.6
 
