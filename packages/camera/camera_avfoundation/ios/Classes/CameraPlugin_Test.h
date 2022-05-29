@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This header is available in the Test module. Import via "@import camera.Test;"
+// This header is available in the Test module. Import via "@import camera_avfoundation.Test;"
 
-#import <camera/CameraPlugin.h>
-#import <camera/FLTCam.h>
-#import <camera/FLTThreadSafeFlutterResult.h>
+#import "CameraPlugin.h"
+#import "FLTCam.h"
+#import "FLTThreadSafeFlutterResult.h"
 
 /// Methods exposed for unit testing.
 @interface CameraPlugin ()

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@import camera;
-@import camera.Test;
+@import camera_avfoundation;
+@import camera_avfoundation.Test;
 @import XCTest;
 @import Flutter;
 
