@@ -81,7 +81,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     assert(
         !scopes.any((String scope) => scope.contains(' ')),
-        'OAuth 2.0 Scopes for Google APIs can\'t contain spaces.'
+        "OAuth 2.0 Scopes for Google APIs can't contain spaces. "
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
@@ -92,6 +92,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       // The js lib wants a space-separated list of values
       scope: scopes.join(' '),
       client_id: appClientId!,
+      plugin_name: 'dart-google_sign_in_web',
     ));
 
     final Completer<void> isAuthInitialized = Completer<void>();

@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:image_picker_platform_interface/src/types/media_selection_type.dart';
 
-/// Options class for [ImagePickerPlatform.getMedia].
+/// Specifies options class for selecting items when using [ImagePickerPlatform.getMedia].
 class MediaSelectionOptions {
   /// Construct a new MediaSelectionOptions instance.
   MediaSelectionOptions({

@@ -92,7 +92,14 @@ void main() {
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else {
       final Directory? result = await getDownloadsDirectory();
-      _verifySampleFile(result, 'downloads');
+      if (Platform.isMacOS) {
+        // On recent versions of macOS, actually using the downloads directory
+        // requires a user prompt, so will fail on CI. Instead, just check that
+        // it returned a path with the expected directory name.
+        expect(result?.path, endsWith('Downloads'));
+      } else {
+        _verifySampleFile(result, 'downloads');
+      }
     }
   });
 }
