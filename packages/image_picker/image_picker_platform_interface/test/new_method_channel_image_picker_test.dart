@@ -1009,17 +1009,23 @@ void main() {
         returnValue = '0';
         await picker.getMedia(
           options: MediaSelectionOptions(
-            maxImageWidth: 10.0,
+            imageAdjustmentOptions: const ImageAdjustmentOptions(
+              maxImageWidth: 10.0,
+            ),
           ),
         );
         await picker.getMedia(
           options: MediaSelectionOptions(
-            maxImageHeight: 10.0,
+            imageAdjustmentOptions: const ImageAdjustmentOptions(
+              maxImageHeight: 10.0,
+            ),
           ),
         );
         await picker.getMedia(
           options: MediaSelectionOptions(
-            imageQuality: 70,
+            imageAdjustmentOptions: const ImageAdjustmentOptions(
+              imageQuality: 70,
+            ),
           ),
         );
         // General options
@@ -1031,18 +1037,20 @@ void main() {
         );
         returnValue = '0';
         await picker.getMedia(
-          options:
-              MediaSelectionOptions(types: <RetrieveType>[RetrieveType.image]),
+          options: MediaSelectionOptions(
+              types: <MediaSelectionType>[MediaSelectionType.image]),
         );
         // Combinations
         returnValue = <String>['0', '1'];
         await picker.getMedia(
           options: MediaSelectionOptions(
-              maxImageWidth: 10.0,
-              maxImageHeight: 20.0,
-              imageQuality: 70,
+              imageAdjustmentOptions: const ImageAdjustmentOptions(
+                maxImageWidth: 10.0,
+                maxImageHeight: 20.0,
+                imageQuality: 70,
+              ),
               allowMultiple: true,
-              types: <RetrieveType>[RetrieveType.video]),
+              types: <MediaSelectionType>[MediaSelectionType.video]),
         );
 
         expect(
@@ -1124,13 +1132,23 @@ void main() {
         returnValue = <String>['0', '1'];
         expect(
           () => picker.getMedia(
-              options: MediaSelectionOptions(maxImageWidth: -1.0)),
+            options: MediaSelectionOptions(
+              imageAdjustmentOptions: const ImageAdjustmentOptions(
+                maxImageWidth: -1.0,
+              ),
+            ),
+          ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getMedia(
-              options: MediaSelectionOptions(maxImageHeight: -1.0)),
+            options: MediaSelectionOptions(
+              imageAdjustmentOptions: const ImageAdjustmentOptions(
+                maxImageHeight: -1.0,
+              ),
+            ),
+          ),
           throwsArgumentError,
         );
       });
@@ -1138,14 +1156,24 @@ void main() {
       test('does not accept a invalid imageQuality argument', () {
         returnValue = <String>['0', '1'];
         expect(
-          () =>
-              picker.getMedia(options: MediaSelectionOptions(imageQuality: -1)),
+          () => picker.getMedia(
+            options: MediaSelectionOptions(
+              imageAdjustmentOptions: const ImageAdjustmentOptions(
+                imageQuality: -1,
+              ),
+            ),
+          ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getMedia(
-              options: MediaSelectionOptions(imageQuality: 101)),
+            options: MediaSelectionOptions(
+              imageAdjustmentOptions: const ImageAdjustmentOptions(
+                imageQuality: 101,
+              ),
+            ),
+          ),
           throwsArgumentError,
         );
       });

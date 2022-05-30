@@ -35,7 +35,8 @@ class LostDataResponse {
   /// An empty response should have [file], [exception] and [type] to be null.
   bool get isEmpty => _empty;
 
-  /// The file that was lost in a previous [getImage], [getMultiImage] or [getVideo] call due to MainActivity being destroyed.
+  /// The file that was lost in a previous [getImage], [getMultiImage], [getVideo] or [getMedia] call due to
+  /// MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
   final XFile? file;
@@ -50,7 +51,7 @@ class LostDataResponse {
   /// Note that it is not the exception that caused the destruction of the MainActivity.
   final PlatformException? exception;
 
-  /// Can either be [RetrieveType.image] or [RetrieveType.video];
+  /// Can either be [RetrieveType.image], [RetrieveType.video], or [RetrieveType.media].
   ///
   /// If the lost data is empty, this will be null.
   final RetrieveType? type;

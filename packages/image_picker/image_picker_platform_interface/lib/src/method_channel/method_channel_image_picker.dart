@@ -220,26 +220,27 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     MediaSelectionOptions? options,
   }) async {
     options ??= MediaSelectionOptions();
-    final int? imageQuality = options.imageQuality;
+    final int? imageQuality = options.imageAdjustmentOptions.imageQuality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
-    final double? maxImageWidth = options.maxImageWidth;
+    final double? maxImageWidth = options.imageAdjustmentOptions.maxImageWidth;
     if (maxImageWidth != null && maxImageWidth < 0) {
       throw ArgumentError.value(
           maxImageWidth, 'maxImageWidth', 'cannot be negative');
     }
 
-    final double? maxImageHeight = options.maxImageHeight;
+    final double? maxImageHeight =
+        options.imageAdjustmentOptions.maxImageHeight;
     if (maxImageHeight != null && maxImageHeight < 0) {
       throw ArgumentError.value(
           maxImageHeight, 'maxImageHeight', 'cannot be negative');
     }
 
     final Map<String, dynamic> args = <String, dynamic>{
-      'types': options.types.map(serializeRetrieveType).toList(),
+      'types': options.types.map(serializeMediaSelectionType).toList(),
       'maxImageWidth': maxImageWidth,
       'maxImageHeight': maxImageHeight,
       'imageQuality': imageQuality,

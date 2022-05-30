@@ -3,29 +3,41 @@
 // found in the LICENSE file.
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:image_picker_platform_interface/src/types/media_selection_type.dart';
 
 /// Options class for [ImagePickerPlatform.getMedia].
 class MediaSelectionOptions {
   /// Construct a new MediaSelectionOptions instance.
   MediaSelectionOptions({
-    List<RetrieveType>? types,
-    this.maxImageWidth,
-    this.maxImageHeight,
-    this.imageQuality,
+    List<MediaSelectionType>? types,
     this.allowMultiple = false,
-  }) : types = types ?? <RetrieveType>[RetrieveType.image, RetrieveType.video];
-
-  // General options
+    this.imageAdjustmentOptions = const ImageAdjustmentOptions(),
+  }) : types = types ??
+            <MediaSelectionType>[
+              MediaSelectionType.image,
+              MediaSelectionType.video
+            ];
 
   /// The types of allowed media to be picked.
   /// Allows all types by default.
-  final List<RetrieveType> types;
+  final List<MediaSelectionType> types;
 
   /// Allow multiple items to be picked.
   /// false by default.
   final bool allowMultiple;
 
-  // Image specific options
+  /// Adjustment options specific to images only.
+  final ImageAdjustmentOptions imageAdjustmentOptions;
+}
+
+/// Image specific adjustment options for [ImagePickerPlatform.getMedia], contained in [MediaSelectionOptions].
+class ImageAdjustmentOptions {
+  /// Construct a new ImageAdjustmentOptions instance.
+  const ImageAdjustmentOptions({
+    this.maxImageWidth,
+    this.maxImageHeight,
+    this.imageQuality,
+  });
 
   /// If specified, a picked image will be at most [maxImageWidth] wide.
   /// Otherwise the image will be returned at its original width.
