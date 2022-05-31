@@ -88,9 +88,15 @@ Here is a list of all permission error codes that can be thrown:
 
 - `CameraAccessDenied`: Thrown when user denies the camera access permission.
 
-- `CameraAccessDeniedWithoutPrompt`: iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy in order to enable camera access.
+- `CameraAccessDeniedWithoutPrompt`: iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
 
 - `CameraAccessRestricted`: iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
+
+- `AudioAccessDenied`: Thrown when user denies the audio access permission.
+
+- `AudioAccessDeniedWithoutPrompt`: iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
+
+- `AudioAccessRestricted`: iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
 
 - `cameraPermission`: Android and Web only. A legacy error code for all kinds of camera permission errors.
 

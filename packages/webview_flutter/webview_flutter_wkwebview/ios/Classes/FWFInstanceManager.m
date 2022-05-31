@@ -20,7 +20,8 @@
   return self;
 }
 
-- (void)addInstance:(nonnull NSObject *)instance withIdentifier:(long)instanceIdentifier {
+- (void)addDartCreatedInstance:(nonnull NSObject *)instance
+                withIdentifier:(long)instanceIdentifier {
   NSAssert(instance && instanceIdentifier >= 0,
            @"Instance must be nonnull and identifier must be >= 0.");
   dispatch_async(_lockQueue, ^{

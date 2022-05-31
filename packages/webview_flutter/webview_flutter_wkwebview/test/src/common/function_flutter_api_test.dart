@@ -19,7 +19,8 @@ void main() {
 
     test('dispose', () {
       void function() {}
-      final int functionInstanceId = instanceManager.tryAddInstance(function)!;
+      final int functionInstanceId =
+          instanceManager.addDartCreatedInstance(function);
 
       FoundationFlutterApis.instance = FoundationFlutterApis(
         instanceManager: instanceManager,
@@ -27,7 +28,7 @@ void main() {
 
       FoundationFlutterApis.instance.functionFlutterApi
           .dispose(functionInstanceId);
-      expect(instanceManager.getInstanceId(function), isNull);
+      expect(instanceManager.getIdentifier(function), isNull);
     });
   });
 }

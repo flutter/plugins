@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/painting.dart' show Color;
-import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
@@ -17,10 +16,9 @@ import 'ui_kit.dart';
 class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   /// Constructs a [UIScrollViewHostApiImpl].
   UIScrollViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -29,14 +27,11 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   Future<void> createFromWebViewForInstances(
     UIScrollView instance,
     WKWebView webView,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createFromWebView(
-        instanceId,
-        instanceManager.getInstanceId(webView)!,
-      );
-    }
+  ) {
+    return createFromWebView(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(webView)!,
+    );
   }
 
   /// Calls [getContentOffset] with the ids of the provided object instances.
@@ -44,7 +39,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     UIScrollView instance,
   ) async {
     final List<double?> point = await getContentOffset(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
     );
     return Point<double>(point[0]!, point[1]!);
   }
@@ -55,7 +50,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     Point<double> offset,
   ) {
     return scrollBy(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       offset.x,
       offset.y,
     );
@@ -67,7 +62,7 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
     Point<double> offset,
   ) async {
     return setContentOffset(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       offset.x,
       offset.y,
     );
@@ -78,10 +73,9 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
 class UIViewHostApiImpl extends UIViewHostApi {
   /// Constructs a [UIViewHostApiImpl].
   UIViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -92,7 +86,7 @@ class UIViewHostApiImpl extends UIViewHostApi {
     Color? color,
   ) async {
     return setBackgroundColor(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       color?.value,
     );
   }
@@ -102,6 +96,6 @@ class UIViewHostApiImpl extends UIViewHostApi {
     UIView instance,
     bool opaque,
   ) async {
-    return setOpaque(instanceManager.getInstanceId(instance)!, opaque);
+    return setOpaque(instanceManager.getIdentifier(instance)!, opaque);
   }
 }

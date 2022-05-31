@@ -224,10 +224,9 @@ class WebKitFlutterApis {
 class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   /// Constructs a [WebsiteDataStoreHostApiImpl].
   WKWebsiteDataStoreHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -236,24 +235,19 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   Future<void> createFromWebViewConfigurationForInstances(
     WKWebsiteDataStore instance,
     WKWebViewConfiguration configuration,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createFromWebViewConfiguration(
-        instanceId,
-        instanceManager.getInstanceId(configuration)!,
-      );
-    }
+  ) {
+    return createFromWebViewConfiguration(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [createDefaultDataStore] with the ids of the provided object instances.
   Future<void> createDefaultDataStoreForInstances(
     WKWebsiteDataStore instance,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createDefaultDataStore(instanceId);
-    }
+  ) {
+    return createDefaultDataStore(
+        instanceManager.addDartCreatedInstance(instance));
   }
 
   /// Calls [removeDataOfTypes] with the ids of the provided object instances.
@@ -263,7 +257,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
     required double secondsModifiedSinceEpoch,
   }) {
     return removeDataOfTypes(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       _toWKWebsiteDataTypeEnumData(dataTypes).toList(),
       secondsModifiedSinceEpoch,
     );
@@ -274,20 +268,16 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
 class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   /// Constructs a [WKScriptMessageHandlerHostApiImpl].
   WKScriptMessageHandlerHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKScriptMessageHandler instance) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+  Future<void> createForInstances(WKScriptMessageHandler instance) {
+    return create(instanceManager.addDartCreatedInstance(instance));
   }
 }
 
@@ -295,10 +285,9 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
 class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   /// Constructs a [WKPreferencesHostApiImpl].
   WKPreferencesHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -307,14 +296,11 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   Future<void> createFromWebViewConfigurationForInstances(
     WKPreferences instance,
     WKWebViewConfiguration configuration,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createFromWebViewConfiguration(
-        instanceId,
-        instanceManager.getInstanceId(configuration)!,
-      );
-    }
+  ) {
+    return createFromWebViewConfiguration(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [setJavaScriptEnabled] with the ids of the provided object instances.
@@ -323,7 +309,7 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
     bool enabled,
   ) {
     return setJavaScriptEnabled(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       enabled,
     );
   }
@@ -333,10 +319,9 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
 class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   /// Constructs a [WKHttpCookieStoreHostApiImpl].
   WKHttpCookieStoreHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -345,14 +330,11 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   Future<void> createFromWebsiteDataStoreForInstances(
     WKHttpCookieStore instance,
     WKWebsiteDataStore dataStore,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createFromWebsiteDataStore(
-        instanceId,
-        instanceManager.getInstanceId(dataStore)!,
-      );
-    }
+  ) {
+    return createFromWebsiteDataStore(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(dataStore)!,
+    );
   }
 
   /// Calls [setCookie] with the ids of the provided object instances.
@@ -361,7 +343,7 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
     NSHttpCookie cookie,
   ) {
     return setCookie(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       cookie.toNSHttpCookieData(),
     );
   }
@@ -372,10 +354,9 @@ class WKUserContentControllerHostApiImpl
     extends WKUserContentControllerHostApi {
   /// Constructs a [WKUserContentControllerHostApiImpl].
   WKUserContentControllerHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -384,14 +365,11 @@ class WKUserContentControllerHostApiImpl
   Future<void> createFromWebViewConfigurationForInstances(
     WKUserContentController instance,
     WKWebViewConfiguration configuration,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createFromWebViewConfiguration(
-        instanceId,
-        instanceManager.getInstanceId(configuration)!,
-      );
-    }
+  ) {
+    return createFromWebViewConfiguration(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [addScriptMessageHandler] with the ids of the provided object instances.
@@ -401,8 +379,8 @@ class WKUserContentControllerHostApiImpl
     String name,
   ) {
     return addScriptMessageHandler(
-      instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(handler)!,
+      instanceManager.getIdentifier(instance)!,
+      instanceManager.getIdentifier(handler)!,
       name,
     );
   }
@@ -413,7 +391,7 @@ class WKUserContentControllerHostApiImpl
     String name,
   ) {
     return removeScriptMessageHandler(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       name,
     );
   }
@@ -423,7 +401,7 @@ class WKUserContentControllerHostApiImpl
     WKUserContentController instance,
   ) {
     return removeAllScriptMessageHandlers(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
     );
   }
 
@@ -433,7 +411,7 @@ class WKUserContentControllerHostApiImpl
     WKUserScript userScript,
   ) {
     return addUserScript(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       userScript.toWKUserScriptData(),
     );
   }
@@ -442,7 +420,7 @@ class WKUserContentControllerHostApiImpl
   Future<void> removeAllUserScriptsForInstances(
     WKUserContentController instance,
   ) {
-    return removeAllUserScripts(instanceManager.getInstanceId(instance)!);
+    return removeAllUserScripts(instanceManager.getIdentifier(instance)!);
   }
 }
 
@@ -450,34 +428,27 @@ class WKUserContentControllerHostApiImpl
 class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   /// Constructs a [WKWebViewConfigurationHostApiImpl].
   WKWebViewConfigurationHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKWebViewConfiguration instance) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+  Future<void> createForInstances(WKWebViewConfiguration instance) {
+    return create(instanceManager.addDartCreatedInstance(instance));
   }
 
   /// Calls [createFromWebView] with the ids of the provided object instances.
   Future<void> createFromWebViewForInstances(
     WKWebViewConfiguration instance,
     WKWebView webView,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await createFromWebView(
-        instanceId,
-        instanceManager.getInstanceId(webView)!,
-      );
-    }
+  ) {
+    return createFromWebView(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(webView)!,
+    );
   }
 
   /// Calls [setAllowsInlineMediaPlayback] with the ids of the provided object instances.
@@ -486,7 +457,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     bool allow,
   ) {
     return setAllowsInlineMediaPlayback(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       allow,
     );
   }
@@ -497,7 +468,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     Set<WKAudiovisualMediaType> types,
   ) {
     return setMediaTypesRequiringUserActionForPlayback(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       _toWKAudiovisualMediaTypeEnumData(types).toList(),
     );
   }
@@ -507,20 +478,16 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
 class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   /// Constructs a [WKUIDelegateHostApiImpl].
   WKUIDelegateHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKUIDelegate instance) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+  Future<void> createForInstances(WKUIDelegate instance) {
+    return create(instanceManager.addDartCreatedInstance(instance));
   }
 }
 
@@ -528,20 +495,16 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
 class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   /// Constructs a [WKNavigationDelegateHostApiImpl].
   WKNavigationDelegateHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKNavigationDelegate instance) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await create(instanceId);
-    }
+  Future<void> createForInstances(WKNavigationDelegate instance) {
+    return create(instanceManager.addDartCreatedInstance(instance));
   }
 
   /// Calls [setDidFinishNavigation] with the ids of the provided object instances.
@@ -551,11 +514,11 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   ) {
     int? functionInstanceId;
     if (didFinishNavigation != null) {
-      functionInstanceId = instanceManager.getInstanceId(didFinishNavigation) ??
-          instanceManager.tryAddInstance(didFinishNavigation)!;
+      functionInstanceId = instanceManager.getIdentifier(didFinishNavigation) ??
+          instanceManager.addDartCreatedInstance(didFinishNavigation);
     }
     return setDidFinishNavigation(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       functionInstanceId,
     );
   }
@@ -574,15 +537,15 @@ class WKNavigationDelegateFlutterApiImpl
 
   @override
   void didFinishNavigation(
-    int functionInstanceId,
-    int webViewInstanceId,
+    int functionIdentifier,
+    int webViewIdentifier,
     String? url,
   ) {
     final void Function(
       WKWebView webView,
       String? url,
-    ) function = instanceManager.getInstance(functionInstanceId)!;
-    function(instanceManager.getInstance(webViewInstanceId)!, url);
+    ) function = instanceManager.getInstance(functionIdentifier)!;
+    function(instanceManager.getInstance(webViewIdentifier)!, url);
   }
 }
 
@@ -590,10 +553,9 @@ class WKNavigationDelegateFlutterApiImpl
 class WKWebViewHostApiImpl extends WKWebViewHostApi {
   /// Constructs a [WKWebViewHostApiImpl].
   WKWebViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? InstanceManager.instance;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -602,21 +564,18 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   Future<void> createForInstances(
     WKWebView instance,
     WKWebViewConfiguration configuration,
-  ) async {
-    final int? instanceId = instanceManager.tryAddInstance(instance);
-    if (instanceId != null) {
-      await create(
-        instanceId,
-        instanceManager.getInstanceId(configuration)!,
-      );
-    }
+  ) {
+    return create(
+      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.getIdentifier(configuration)!,
+    );
   }
 
   /// Calls [loadRequest] with the ids of the provided object instances.
   Future<void> loadRequestForInstances(
       WKWebView webView, NSUrlRequest request) {
     return loadRequest(
-      instanceManager.getInstanceId(webView)!,
+      instanceManager.getIdentifier(webView)!,
       request.toNSUrlRequestData(),
     );
   }
@@ -628,7 +587,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     String? baseUrl,
   ) {
     return loadHtmlString(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       string,
       baseUrl,
     );
@@ -641,7 +600,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     String readAccessUrl,
   ) {
     return loadFileUrl(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       url,
       readAccessUrl,
     );
@@ -650,49 +609,49 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   /// Calls [loadFlutterAsset] with the ids of the provided object instances.
   Future<void> loadFlutterAssetForInstances(WKWebView instance, String key) {
     return loadFlutterAsset(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       key,
     );
   }
 
   /// Calls [canGoBack] with the ids of the provided object instances.
   Future<bool> canGoBackForInstances(WKWebView instance) {
-    return canGoBack(instanceManager.getInstanceId(instance)!);
+    return canGoBack(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [canGoForward] with the ids of the provided object instances.
   Future<bool> canGoForwardForInstances(WKWebView instance) {
-    return canGoForward(instanceManager.getInstanceId(instance)!);
+    return canGoForward(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [goBack] with the ids of the provided object instances.
   Future<void> goBackForInstances(WKWebView instance) {
-    return goBack(instanceManager.getInstanceId(instance)!);
+    return goBack(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [goForward] with the ids of the provided object instances.
   Future<void> goForwardForInstances(WKWebView instance) {
-    return goForward(instanceManager.getInstanceId(instance)!);
+    return goForward(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [reload] with the ids of the provided object instances.
   Future<void> reloadForInstances(WKWebView instance) {
-    return reload(instanceManager.getInstanceId(instance)!);
+    return reload(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [getUrl] with the ids of the provided object instances.
   Future<String?> getUrlForInstances(WKWebView instance) {
-    return getUrl(instanceManager.getInstanceId(instance)!);
+    return getUrl(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [getTitle] with the ids of the provided object instances.
   Future<String?> getTitleForInstances(WKWebView instance) {
-    return getTitle(instanceManager.getInstanceId(instance)!);
+    return getTitle(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [getEstimatedProgress] with the ids of the provided object instances.
   Future<double> getEstimatedProgressForInstances(WKWebView instance) {
-    return getEstimatedProgress(instanceManager.getInstanceId(instance)!);
+    return getEstimatedProgress(instanceManager.getIdentifier(instance)!);
   }
 
   /// Calls [setAllowsBackForwardNavigationGestures] with the ids of the provided object instances.
@@ -701,7 +660,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     bool allow,
   ) {
     return setAllowsBackForwardNavigationGestures(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       allow,
     );
   }
@@ -712,7 +671,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     String? userAgent,
   ) {
     return setCustomUserAgent(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       userAgent,
     );
   }
@@ -723,7 +682,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     String javaScriptString,
   ) {
     return evaluateJavaScript(
-      instanceManager.getInstanceId(instance)!,
+      instanceManager.getIdentifier(instance)!,
       javaScriptString,
     );
   }
@@ -734,8 +693,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     WKNavigationDelegate? delegate,
   ) {
     return setNavigationDelegate(
-      instanceManager.getInstanceId(instance)!,
-      delegate != null ? instanceManager.getInstanceId(delegate)! : null,
+      instanceManager.getIdentifier(instance)!,
+      delegate != null ? instanceManager.getIdentifier(delegate)! : null,
     );
   }
 
@@ -745,8 +704,8 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
     WKUIDelegate? delegate,
   ) {
     return setUIDelegate(
-      instanceManager.getInstanceId(instance)!,
-      delegate != null ? instanceManager.getInstanceId(delegate)! : null,
+      instanceManager.getIdentifier(instance)!,
+      delegate != null ? instanceManager.getIdentifier(delegate)! : null,
     );
   }
 }

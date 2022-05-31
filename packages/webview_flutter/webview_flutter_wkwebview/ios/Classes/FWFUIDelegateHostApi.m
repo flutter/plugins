@@ -21,13 +21,13 @@
   return self;
 }
 
-- (FWFUIDelegate *)delegateForIdentifier:(NSNumber *)instanceId {
-  return (FWFUIDelegate *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (FWFUIDelegate *)delegateForIdentifier:(NSNumber *)identifier {
+  return (FWFUIDelegate *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
   FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] init];
-  [self.instanceManager addInstance:uIDelegate withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:uIDelegate withIdentifier:identifier.longValue];
 }
 @end

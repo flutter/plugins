@@ -18,14 +18,14 @@ import 'web_kit/web_kit.dart';
 class WebKitWebViewWidget extends StatefulWidget {
   /// Constructs a [WebKitWebViewWidget].
   const WebKitWebViewWidget({
-    Key? key,
+    super.key,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     required this.onBuildWidget,
     this.configuration,
     @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
-  }) : super(key: key);
+  });
 
   /// The initial parameters used to setup the WebView.
   final CreationParams creationParams;
