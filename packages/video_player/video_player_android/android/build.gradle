@@ -49,7 +49,7 @@ android {
         implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.17.1'
         testImplementation 'junit:junit:4.12'
         testImplementation 'androidx.test:core:1.3.0'
-        testImplementation 'org.mockito:mockito-inline:3.9.0'
+        testImplementation 'org.mockito:mockito-inline:4.6.0'
         testImplementation 'org.robolectric:robolectric:4.5'
     }
 
