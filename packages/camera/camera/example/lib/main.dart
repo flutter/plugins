@@ -708,11 +708,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           // iOS only
           showInSnackBar('Audio access is restricted.');
           break;
-        case 'CameraPermissionsRequestOngoing':
-          // Android only
-          showInSnackBar(
-              'Another request is ongoing and multiple requests cannot be handled at once.');
-          break;
         default:
           _showCameraException(e);
           break;
