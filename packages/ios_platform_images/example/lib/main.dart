@@ -77,18 +77,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-/// Example app containing an invalid symbol reference.
-class IOSImageErrorExample extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Image(
-          image: IosPlatformImages.loadSystemImage('nonexistent.sfsymbol', 100),
-          semanticLabel: 'Nonexistant Symbol',
-        ),
-      ),
-    );
-  }
-}
