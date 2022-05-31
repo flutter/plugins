@@ -13,7 +13,8 @@ void main() {
   // in this file.
   test('plugin initialized', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    FakeVideoPlayerPlatform fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
+    final FakeVideoPlayerPlatform fakeVideoPlayerPlatform =
+        FakeVideoPlayerPlatform();
     VideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
 
     final VideoPlayerController controller = VideoPlayerController.network(

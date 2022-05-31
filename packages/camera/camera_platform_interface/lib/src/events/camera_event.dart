@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:camera_platform_interface/src/types/focus_mode.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
 import '../../camera_platform_interface.dart';
@@ -117,14 +116,15 @@ class CameraInitializedEvent extends CameraEvent {
           focusPointSupported == other.focusPointSupported;
 
   @override
-  int get hashCode =>
-      super.hashCode ^
-      previewWidth.hashCode ^
-      previewHeight.hashCode ^
-      exposureMode.hashCode ^
-      exposurePointSupported.hashCode ^
-      focusMode.hashCode ^
-      focusPointSupported.hashCode;
+  int get hashCode => Object.hash(
+        super.hashCode,
+        previewWidth,
+        previewHeight,
+        exposureMode,
+        exposurePointSupported,
+        focusMode,
+        focusPointSupported,
+      );
 }
 
 /// An event fired when the resolution preset of the camera has changed.
@@ -171,8 +171,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
           captureHeight == other.captureHeight;
 
   @override
-  int get hashCode =>
-      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
+  int get hashCode => Object.hash(super.hashCode, captureWidth, captureHeight);
 }
 
 /// An event fired when the camera is going to close.
@@ -239,7 +238,7 @@ class CameraErrorEvent extends CameraEvent {
           description == other.description;
 
   @override
-  int get hashCode => super.hashCode ^ description.hashCode;
+  int get hashCode => Object.hash(super.hashCode, description);
 }
 
 /// An event fired when a video has finished recording.
@@ -284,6 +283,5 @@ class VideoRecordedEvent extends CameraEvent {
           maxVideoDuration == other.maxVideoDuration;
 
   @override
-  int get hashCode =>
-      super.hashCode ^ file.hashCode ^ maxVideoDuration.hashCode;
+  int get hashCode => Object.hash(super.hashCode, file, maxVideoDuration);
 }

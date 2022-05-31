@@ -6,6 +6,7 @@ framework module camera {
 
   explicit module Test {
     header "CameraPlugin_Test.h"
+    header "CameraPermissionUtils.h"
     header "CameraProperties.h"
     header "FLTCam.h"
     header "FLTCam_Test.h"
@@ -14,6 +15,6 @@ framework module camera {
     header "FLTThreadSafeFlutterResult.h"
     header "FLTThreadSafeMethodChannel.h"
     header "FLTThreadSafeTextureRegistry.h"
-    header "QueueHelper.h"
+    header "QueueUtils.h"
   }
 }

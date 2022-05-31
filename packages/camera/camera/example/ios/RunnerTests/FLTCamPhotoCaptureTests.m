@@ -7,7 +7,9 @@
 @import AVFoundation;
 @import XCTest;
 #import <OCMock/OCMock.h>
+#import "CameraTestUtils.h"
 
+/// Includes test cases related to photo capture operations for FLTCam class.
 @interface FLTCamPhotoCaptureTests : XCTestCase
 
 @end
@@ -22,7 +24,7 @@
   dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
   dispatch_queue_set_specific(captureSessionQueue, FLTCaptureSessionQueueSpecific,
                               (void *)FLTCaptureSessionQueueSpecific, NULL);
-  FLTCam *cam = [self createFLTCamWithCaptureSessionQueue:captureSessionQueue];
+  FLTCam *cam = FLTCreateCamWithCaptureSessionQueue(captureSessionQueue);
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   id mockSettings = OCMClassMock([AVCapturePhotoSettings class]);
   OCMStub([mockSettings photoSettings]).andReturn(settings);
@@ -61,7 +63,7 @@
   dispatch_queue_t captureSessionQueue = dispatch_queue_create("capture_session_queue", NULL);
   dispatch_queue_set_specific(captureSessionQueue, FLTCaptureSessionQueueSpecific,
                               (void *)FLTCaptureSessionQueueSpecific, NULL);
-  FLTCam *cam = [self createFLTCamWithCaptureSessionQueue:captureSessionQueue];
+  FLTCam *cam = FLTCreateCamWithCaptureSessionQueue(captureSessionQueue);
 
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   id mockSettings = OCMClassMock([AVCapturePhotoSettings class]);
@@ -90,25 +92,6 @@
     [cam captureToFile:mockResult];
   });
   [self waitForExpectationsWithTimeout:1 handler:nil];
-}
-
-/// Creates an `FLTCam` that runs its operations on a given capture session queue.
-- (FLTCam *)createFLTCamWithCaptureSessionQueue:(dispatch_queue_t)captureSessionQueue {
-  id inputMock = OCMClassMock([AVCaptureDeviceInput class]);
-  OCMStub([inputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg setTo:nil]])
-      .andReturn(inputMock);
-
-  id sessionMock = OCMClassMock([AVCaptureSession class]);
-  OCMStub([sessionMock alloc]).andReturn(sessionMock);
-  OCMStub([sessionMock addInputWithNoConnections:[OCMArg any]]);  // no-op
-  OCMStub([sessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
-
-  return [[FLTCam alloc] initWithCameraName:@"camera"
-                           resolutionPreset:@"medium"
-                                enableAudio:true
-                                orientation:UIDeviceOrientationPortrait
-                        captureSessionQueue:captureSessionQueue
-                                      error:nil];
 }
 
 @end

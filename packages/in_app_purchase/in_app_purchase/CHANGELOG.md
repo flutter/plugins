@@ -1,3 +1,22 @@
+## 3.0.4
+
+* Minor fixes for new analysis options.
+
+## 3.0.3
+
+* Removes unnecessary imports.
+* Adds OS version support information to README.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 3.0.2
+
+* Adds additional explanation on why it is important to complete a purchase.
+
+## 3.0.1
+
+* Internal code cleanup for stricter analysis options.
+
 ## 3.0.0
 
 * **BREAKING CHANGE** Updates `restorePurchases` to emit an empty list of purchases on StoreKit when there are no purchases to restore (same as Android).

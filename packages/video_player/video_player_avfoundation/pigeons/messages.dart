@@ -58,7 +58,7 @@ class MixWithOthersMessage {
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
-abstract class VideoPlayerApi {
+abstract class AVFoundationVideoPlayerApi {
   @ObjCSelector('initialize')
   void initialize();
   @ObjCSelector('create:')

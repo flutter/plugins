@@ -192,7 +192,9 @@ abstract class PluginCommand extends Command<void> {
 
   /// Convenience accessor for List<String> arguments.
   List<String> getStringListArg(String key) {
-    return (argResults![key] as List<String>?) ?? <String>[];
+    // Clone the list so that if a caller modifies the result it won't change
+    // the actual arguments list for future queries.
+    return List<String>.from(argResults![key] as List<String>? ?? <String>[]);
   }
 
   /// If true, commands should log timing information that might be useful in
@@ -368,7 +370,7 @@ abstract class PluginCommand extends Command<void> {
       await for (final FileSystemEntity entity
           in dir.list(followLinks: false)) {
         // A top-level Dart package is a plugin package.
-        if (_isDartPackage(entity)) {
+        if (isPackage(entity)) {
           if (packages.isEmpty || packages.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(
                 RepositoryPackage(entity as Directory),
@@ -378,7 +380,7 @@ abstract class PluginCommand extends Command<void> {
           // Look for Dart packages under this top-level directory.
           await for (final FileSystemEntity subdir
               in entity.list(followLinks: false)) {
-            if (_isDartPackage(subdir)) {
+            if (isPackage(subdir)) {
               // There are three ways for a federated plugin to match:
               // - package name (path_provider_android)
               // - fully specified name (path_provider/path_provider_android)
@@ -409,19 +411,28 @@ abstract class PluginCommand extends Command<void> {
   ///
   /// By default, packages excluded via --exclude will not be in the stream, but
   /// they can be included by passing false for [filterExcluded].
+  ///
+  /// Subpackages are guaranteed to be after the containing package in the
+  /// stream.
   Stream<PackageEnumerationEntry> getTargetPackagesAndSubpackages(
       {bool filterExcluded = true}) async* {
     await for (final PackageEnumerationEntry plugin
         in getTargetPackages(filterExcluded: filterExcluded)) {
       yield plugin;
-      yield* plugin.package.directory
-          .list(recursive: true, followLinks: false)
-          .where(_isDartPackage)
-          .map((FileSystemEntity directory) => PackageEnumerationEntry(
-              // _isDartPackage guarantees that this cast is valid.
-              RepositoryPackage(directory as Directory),
-              excluded: plugin.excluded));
+      yield* getSubpackages(plugin.package).map((RepositoryPackage package) =>
+          PackageEnumerationEntry(package, excluded: plugin.excluded));
     }
+  }
+
+  /// Returns all Dart package folders (e.g., examples) under the given package.
+  Stream<RepositoryPackage> getSubpackages(RepositoryPackage package,
+      {bool filterExcluded = true}) async* {
+    yield* package.directory
+        .list(recursive: true, followLinks: false)
+        .where(isPackage)
+        .map((FileSystemEntity directory) =>
+            // isPackage guarantees that this cast is valid.
+            RepositoryPackage(directory as Directory));
   }
 
   /// Returns the files contained, recursively, within the packages
@@ -437,12 +448,6 @@ abstract class PluginCommand extends Command<void> {
         .list(recursive: true, followLinks: false)
         .where((FileSystemEntity entity) => entity is File)
         .cast<File>();
-  }
-
-  /// Returns whether the specified entity is a directory containing a
-  /// `pubspec.yaml` file.
-  bool _isDartPackage(FileSystemEntity entity) {
-    return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
   /// Retrieve an instance of [GitVersionFinder] based on `_baseShaArg` and [gitDir].

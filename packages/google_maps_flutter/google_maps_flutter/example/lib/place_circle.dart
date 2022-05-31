@@ -10,7 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class PlaceCirclePage extends GoogleMapExampleAppPage {
-  PlaceCirclePage() : super(const Icon(Icons.linear_scale), 'Place circle');
+  const PlaceCirclePage({Key? key})
+      : super(const Icon(Icons.linear_scale), 'Place circle', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class PlaceCirclePage extends GoogleMapExampleAppPage {
 }
 
 class PlaceCircleBody extends StatefulWidget {
-  const PlaceCircleBody();
+  const PlaceCircleBody({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => PlaceCircleBodyState();
@@ -47,6 +48,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   int widthsIndex = 0;
   List<int> widths = <int>[10, 20, 5];
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
   }
@@ -169,42 +171,42 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                     Column(
                       children: <Widget>[
                         TextButton(
-                          child: const Text('add'),
                           onPressed: _add,
+                          child: const Text('add'),
                         ),
                         TextButton(
-                          child: const Text('remove'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _remove(selectedId),
+                          child: const Text('remove'),
                         ),
                         TextButton(
-                          child: const Text('toggle visible'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _toggleVisible(selectedId),
+                          child: const Text('toggle visible'),
                         ),
                       ],
                     ),
                     Column(
                       children: <Widget>[
                         TextButton(
-                          child: const Text('change stroke width'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeStrokeWidth(selectedId),
+                          child: const Text('change stroke width'),
                         ),
                         TextButton(
-                          child: const Text('change stroke color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeStrokeColor(selectedId),
+                          child: const Text('change stroke color'),
                         ),
                         TextButton(
-                          child: const Text('change fill color'),
                           onPressed: (selectedId == null)
                               ? null
                               : () => _changeFillColor(selectedId),
+                          child: const Text('change fill color'),
                         ),
                       ],
                     )

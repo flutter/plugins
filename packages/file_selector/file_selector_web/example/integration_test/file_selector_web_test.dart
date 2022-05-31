@@ -19,10 +19,10 @@ void main() {
       testWidgets('works', (WidgetTester _) async {
         final XFile mockFile = createXFile('1001', 'identity.png');
 
-        final MockDomHelper mockDomHelper = MockDomHelper()
-          ..setFiles(<XFile>[mockFile])
-          ..expectAccept('.jpg,.jpeg,image/png,image/*')
-          ..expectMultiple(false);
+        final MockDomHelper mockDomHelper = MockDomHelper(
+            files: <XFile>[mockFile],
+            expectAccept: '.jpg,.jpeg,image/png,image/*',
+            expectMultiple: false);
 
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
@@ -49,10 +49,10 @@ void main() {
         final XFile mockFile1 = createXFile('123456', 'file1.txt');
         final XFile mockFile2 = createXFile('', 'file2.txt');
 
-        final MockDomHelper mockDomHelper = MockDomHelper()
-          ..setFiles(<XFile>[mockFile1, mockFile2])
-          ..expectAccept('.txt')
-          ..expectMultiple(true);
+        final MockDomHelper mockDomHelper = MockDomHelper(
+            files: <XFile>[mockFile1, mockFile2],
+            expectAccept: '.txt',
+            expectMultiple: true);
 
         final FileSelectorWeb plugin =
             FileSelectorWeb(domHelper: mockDomHelper);
@@ -90,9 +90,17 @@ void main() {
 }
 
 class MockDomHelper implements DomHelper {
-  List<XFile> _files = <XFile>[];
-  String _expectedAccept = '';
-  bool _expectedMultiple = false;
+  MockDomHelper({
+    List<XFile> files = const <XFile>[],
+    String expectAccept = '',
+    bool expectMultiple = false,
+  })  : _files = files,
+        _expectedAccept = expectAccept,
+        _expectedMultiple = expectMultiple;
+
+  final List<XFile> _files;
+  final String _expectedAccept;
+  final bool _expectedMultiple;
 
   @override
   Future<List<XFile>> getFiles({
@@ -105,18 +113,6 @@ class MockDomHelper implements DomHelper {
     expect(multiple, _expectedMultiple,
         reason: 'Expected "multiple" value does not match.');
     return Future<List<XFile>>.value(_files);
-  }
-
-  void setFiles(List<XFile> files) {
-    _files = files;
-  }
-
-  void expectAccept(String accept) {
-    _expectedAccept = accept;
-  }
-
-  void expectMultiple(bool multiple) {
-    _expectedMultiple = multiple;
   }
 }
 

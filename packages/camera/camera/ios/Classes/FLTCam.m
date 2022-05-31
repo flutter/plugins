@@ -5,18 +5,10 @@
 #import "FLTCam.h"
 #import "FLTCam_Test.h"
 #import "FLTSavePhotoDelegate.h"
-#import "QueueHelper.h"
+#import "QueueUtils.h"
 
 @import CoreMotion;
 #import <libkern/OSAtomic.h>
-
-@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
-// The queue on which `eventSink` property should be accessed
-@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
-// `eventSink` property should be accessed on `captureSessionQueue`.
-// The block itself should be invoked on the main queue.
-@property FlutterEventSink eventSink;
-@end
 
 @implementation FLTImageStreamHandler
 
@@ -52,7 +44,9 @@
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
-@property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
+/// Tracks the latest pixel buffer sent from AVFoundation's sample buffer delegate callback.
+/// Used to deliver the latest pixel buffer to the flutter engine via the `copyPixelBuffer` API.
+@property(readwrite, nonatomic) CVPixelBufferRef latestPixelBuffer;
 @property(readonly, nonatomic) CGSize captureSize;
 @property(strong, nonatomic) AVAssetWriter *videoWriter;
 @property(strong, nonatomic) AVAssetWriterInput *videoWriterInput;
@@ -66,7 +60,13 @@
 @property(assign, nonatomic) BOOL videoIsDisconnected;
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
-@property(assign, nonatomic) BOOL isStreamingImages;
+
+/// Number of frames currently pending processing.
+@property(assign, nonatomic) int streamingPendingFramesCount;
+
+/// Maximum number of frames pending processing.
+@property(assign, nonatomic) int maxStreamingPendingFramesCount;
+
 @property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -76,6 +76,9 @@
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 /// All FLTCam's state access and capture session related operations should be on run on this queue.
 @property(strong, nonatomic) dispatch_queue_t captureSessionQueue;
+/// The queue on which `latestPixelBuffer` property is accessed.
+/// To avoid unnecessary contention, do not access `latestPixelBuffer` on the `captureSessionQueue`.
+@property(strong, nonatomic) dispatch_queue_t pixelBufferSynchronizationQueue;
 /// The queue on which captured photos (not videos) are written to disk.
 /// Videos are written to disk by `videoAdaptor` on an internal queue managed by AVFoundation.
 @property(strong, nonatomic) dispatch_queue_t photoIOQueue;
@@ -92,6 +95,22 @@ NSString *const errorMethod = @"error";
                        orientation:(UIDeviceOrientation)orientation
                captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error {
+  return [self initWithCameraName:cameraName
+                 resolutionPreset:resolutionPreset
+                      enableAudio:enableAudio
+                      orientation:orientation
+                   captureSession:[[AVCaptureSession alloc] init]
+              captureSessionQueue:captureSessionQueue
+                            error:error];
+}
+
+- (instancetype)initWithCameraName:(NSString *)cameraName
+                  resolutionPreset:(NSString *)resolutionPreset
+                       enableAudio:(BOOL)enableAudio
+                       orientation:(UIDeviceOrientation)orientation
+                    captureSession:(AVCaptureSession *)captureSession
+               captureSessionQueue:(dispatch_queue_t)captureSessionQueue
+                             error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   @try {
@@ -101,8 +120,10 @@ NSString *const errorMethod = @"error";
   }
   _enableAudio = enableAudio;
   _captureSessionQueue = captureSessionQueue;
+  _pixelBufferSynchronizationQueue =
+      dispatch_queue_create("io.flutter.camera.pixelBufferSynchronizationQueue", NULL);
   _photoIOQueue = dispatch_queue_create("io.flutter.camera.photoIOQueue", NULL);
-  _captureSession = [[AVCaptureSession alloc] init];
+  _captureSession = captureSession;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   _flashMode = _captureDevice.hasFlash ? FLTFlashModeAuto : FLTFlashModeOff;
   _exposureMode = FLTExposureModeAuto;
@@ -111,6 +132,11 @@ NSString *const errorMethod = @"error";
   _deviceOrientation = orientation;
   _videoFormat = kCVPixelFormatType_32BGRA;
   _inProgressSavePhotoDelegates = [NSMutableDictionary dictionary];
+
+  // To limit memory consumption, limit the number of frames pending processing.
+  // After some testing, 4 was determined to be the best maximum value.
+  // https://github.com/flutter/plugins/pull/4520#discussion_r766335637
+  _maxStreamingPendingFramesCount = 4;
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -355,12 +381,17 @@ NSString *const errorMethod = @"error";
   if (output == _captureVideoOutput) {
     CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CFRetain(newBuffer);
-    CVPixelBufferRef old = _latestPixelBuffer;
-    while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
-      old = _latestPixelBuffer;
-    }
-    if (old != nil) {
-      CFRelease(old);
+
+    __block CVPixelBufferRef previousPixelBuffer = nil;
+    // Use `dispatch_sync` to avoid unnecessary context switch under common non-contest scenarios;
+    // Under rare contest scenarios, it will not block for too long since the critical section is
+    // quite lightweight.
+    dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
+      previousPixelBuffer = self.latestPixelBuffer;
+      self.latestPixelBuffer = newBuffer;
+    });
+    if (previousPixelBuffer) {
+      CFRelease(previousPixelBuffer);
     }
     if (_onFrameAvailable) {
       _onFrameAvailable();
@@ -373,7 +404,8 @@ NSString *const errorMethod = @"error";
   }
   if (_isStreamingImages) {
     FlutterEventSink eventSink = _imageStreamHandler.eventSink;
-    if (eventSink) {
+    if (eventSink && (self.streamingPendingFramesCount < self.maxStreamingPendingFramesCount)) {
+      self.streamingPendingFramesCount++;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       // Must lock base address before accessing the pixel data
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
@@ -420,7 +452,7 @@ NSString *const errorMethod = @"error";
 
         [planes addObject:planeBuffer];
       }
-      // Before accessing pixel data, we should lock the base address, and unlock it afterwards.
+      // Lock the base address before accessing pixel data, and unlock it afterwards.
       // Done accessing the `pixelBuffer` at this point.
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -575,11 +607,12 @@ NSString *const errorMethod = @"error";
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-  CVPixelBufferRef pixelBuffer = _latestPixelBuffer;
-  while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&_latestPixelBuffer)) {
-    pixelBuffer = _latestPixelBuffer;
-  }
-
+  __block CVPixelBufferRef pixelBuffer = nil;
+  // Use `dispatch_sync` because `copyPixelBuffer` API requires synchronous return.
+  dispatch_sync(self.pixelBufferSynchronizationQueue, ^{
+    pixelBuffer = self.latestPixelBuffer;
+    self.latestPixelBuffer = nil;
+  });
   return pixelBuffer;
 }
 
@@ -869,6 +902,13 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+  [self startImageStreamWithMessenger:messenger
+                   imageStreamHandler:[[FLTImageStreamHandler alloc]
+                                          initWithCaptureSessionQueue:_captureSessionQueue]];
+}
+
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                   imageStreamHandler:(FLTImageStreamHandler *)imageStreamHandler {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
         [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
@@ -876,12 +916,12 @@ NSString *const errorMethod = @"error";
     FLTThreadSafeEventChannel *threadSafeEventChannel =
         [[FLTThreadSafeEventChannel alloc] initWithEventChannel:eventChannel];
 
-    _imageStreamHandler =
-        [[FLTImageStreamHandler alloc] initWithCaptureSessionQueue:_captureSessionQueue];
+    _imageStreamHandler = imageStreamHandler;
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
                                     dispatch_async(self->_captureSessionQueue, ^{
                                       self.isStreamingImages = YES;
+                                      self.streamingPendingFramesCount = 0;
                                     });
                                   }];
   } else {
@@ -897,6 +937,10 @@ NSString *const errorMethod = @"error";
   } else {
     [_methodChannel invokeMethod:errorMethod arguments:@"Images from camera are not streaming!"];
   }
+}
+
+- (void)receivedImageStreamData {
+  self.streamingPendingFramesCount--;
 }
 
 - (void)getMaxZoomLevelWithResult:(FLTThreadSafeFlutterResult *)result {

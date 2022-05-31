@@ -11,7 +11,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-
+import 'package:flutter_web_plugins/flutter_web_plugins.dart' show urlStrategy;
 import 'package:url_launcher_platform_interface/link.dart';
 
 /// The unique identifier for the view type to be used for link platform views.
@@ -31,7 +31,7 @@ HtmlViewFactory get linkViewFactory => LinkViewController._viewFactory;
 /// It uses a platform view to render an anchor element in the DOM.
 class WebLinkDelegate extends StatefulWidget {
   /// Creates a delegate for the given [link].
-  const WebLinkDelegate(this.link);
+  const WebLinkDelegate(this.link, {Key? key}) : super(key: key);
 
   /// Information about the link built by the app.
   final LinkInfo link;
@@ -163,6 +163,7 @@ class LinkViewController extends PlatformViewController {
   final BuildContext context;
 
   late html.Element _element;
+
   bool get _isInitialized => _element != null;
 
   Future<void> _initialize() async {
@@ -221,7 +222,13 @@ class LinkViewController extends PlatformViewController {
     if (uri == null) {
       _element.removeAttribute('href');
     } else {
-      _element.setAttribute('href', uri.toString());
+      String href = uri.toString();
+      // in case an internal uri is given, the url mus be properly encoded
+      // using the currently used [UrlStrategy]
+      if (!uri.hasScheme) {
+        href = urlStrategy?.prepareExternalUrl(href) ?? href;
+      }
+      _element.setAttribute('href', href);
     }
   }
 

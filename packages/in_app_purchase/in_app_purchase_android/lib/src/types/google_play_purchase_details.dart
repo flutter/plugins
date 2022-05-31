@@ -25,12 +25,8 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
           verificationData: verificationData,
           status: status,
         ) {
-    this.pendingCompletePurchase = !billingClientPurchase.isAcknowledged;
+    pendingCompletePurchase = !billingClientPurchase.isAcknowledged;
   }
-
-  /// Points back to the [PurchaseWrapper] which was used to generate this
-  /// [GooglePlayPurchaseDetails] object.
-  final PurchaseWrapper billingClientPurchase;
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   factory GooglePlayPurchaseDetails.fromPurchase(PurchaseWrapper purchase) {
@@ -43,7 +39,8 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
           source: kIAPSource),
       transactionDate: purchase.purchaseTime.toString(),
       billingClientPurchase: purchase,
-      status: PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState),
+      status: const PurchaseStateConverter()
+          .toPurchaseStatus(purchase.purchaseState),
     );
 
     if (purchaseDetails.status == PurchaseStatus.error) {
@@ -56,4 +53,8 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
 
     return purchaseDetails;
   }
+
+  /// Points back to the [PurchaseWrapper] which was used to generate this
+  /// [GooglePlayPurchaseDetails] object.
+  final PurchaseWrapper billingClientPurchase;
 }

@@ -1,3 +1,26 @@
+## 0.2.2+6
+
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
+
+## 0.2.2+5
+
+* Minor fixes for new analysis options.
+
+## 0.2.2+4
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 0.2.2+3
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+* Updates minimum Flutter version to 2.5.0.
+
+## 0.2.2+2
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.2.2+1
 
 * Removes the dependency on `meta`.

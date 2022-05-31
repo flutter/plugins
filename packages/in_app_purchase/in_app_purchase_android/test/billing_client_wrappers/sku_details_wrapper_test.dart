@@ -6,7 +6,7 @@ import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/src/types/google_play_product_details.dart';
 import 'package:test/test.dart';
 
-final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
+const SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   description: 'description',
   freeTrialPeriod: 'freeTrialPeriod',
   introductoryPrice: 'introductoryPrice',
@@ -28,7 +28,7 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
 void main() {
   group('SkuDetailsWrapper', () {
     test('converts from map', () {
-      final SkuDetailsWrapper expected = dummySkuDetails;
+      const SkuDetailsWrapper expected = dummySkuDetails;
       final SkuDetailsWrapper parsed =
           SkuDetailsWrapper.fromJson(buildSkuMap(expected));
 
@@ -38,13 +38,13 @@ void main() {
 
   group('SkuDetailsResponseWrapper', () {
     test('parsed from map', () {
-      final BillingResponse responseCode = BillingResponse.ok;
+      const BillingResponse responseCode = BillingResponse.ok;
       const String debugMessage = 'dummy message';
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[
         dummySkuDetails,
         dummySkuDetails
       ];
-      BillingResultWrapper result = BillingResultWrapper(
+      const BillingResultWrapper result = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
           billingResult: result, skuDetailsList: skusDetails);
@@ -52,7 +52,7 @@ void main() {
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
         'billingResult': <String, dynamic>{
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'debugMessage': debugMessage,
         },
         'skuDetailsList': <Map<String, dynamic>>[
@@ -78,10 +78,10 @@ void main() {
     });
 
     test('handles empty list of skuDetails', () {
-      final BillingResponse responseCode = BillingResponse.error;
+      const BillingResponse responseCode = BillingResponse.error;
       const String debugMessage = 'dummy message';
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[];
-      BillingResultWrapper billingResult = BillingResultWrapper(
+      const BillingResultWrapper billingResult = BillingResultWrapper(
           responseCode: responseCode, debugMessage: debugMessage);
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
           billingResult: billingResult, skuDetailsList: skusDetails);
@@ -89,10 +89,10 @@ void main() {
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
         'billingResult': <String, dynamic>{
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'debugMessage': debugMessage,
         },
-        'skuDetailsList': <Map<String, dynamic>>[]
+        'skuDetailsList': const <Map<String, dynamic>>[]
       });
 
       expect(parsed.billingResult, equals(expected.billingResult));
@@ -101,10 +101,10 @@ void main() {
 
     test('fromJson creates an object with default values', () {
       final SkuDetailsResponseWrapper skuDetails =
-          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{});
+          SkuDetailsResponseWrapper.fromJson(const <String, dynamic>{});
       expect(
           skuDetails.billingResult,
-          equals(BillingResultWrapper(
+          equals(const BillingResultWrapper(
               responseCode: BillingResponse.error,
               debugMessage: kInvalidBillingResultErrorMessage)));
       expect(skuDetails.skuDetailsList, isEmpty);
@@ -114,7 +114,7 @@ void main() {
   group('BillingResultWrapper', () {
     test('fromJson on empty map creates an object with default values', () {
       final BillingResultWrapper billingResult =
-          BillingResultWrapper.fromJson(<String, dynamic>{});
+          BillingResultWrapper.fromJson(const <String, dynamic>{});
       expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
       expect(billingResult.responseCode, BillingResponse.error);
     });
@@ -124,6 +124,60 @@ void main() {
           BillingResultWrapper.fromJson(null);
       expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
       expect(billingResult.responseCode, BillingResponse.error);
+    });
+
+    test('operator == of SkuDetailsWrapper works fine', () {
+      const SkuDetailsWrapper firstSkuDetailsInstance = SkuDetailsWrapper(
+        description: 'description',
+        freeTrialPeriod: 'freeTrialPeriod',
+        introductoryPrice: 'introductoryPrice',
+        introductoryPriceAmountMicros: 990000,
+        introductoryPriceCycles: 1,
+        introductoryPricePeriod: 'introductoryPricePeriod',
+        price: 'price',
+        priceAmountMicros: 1000,
+        priceCurrencyCode: 'priceCurrencyCode',
+        priceCurrencySymbol: r'$',
+        sku: 'sku',
+        subscriptionPeriod: 'subscriptionPeriod',
+        title: 'title',
+        type: SkuType.inapp,
+        originalPrice: 'originalPrice',
+        originalPriceAmountMicros: 1000,
+      );
+      const SkuDetailsWrapper secondSkuDetailsInstance = SkuDetailsWrapper(
+        description: 'description',
+        freeTrialPeriod: 'freeTrialPeriod',
+        introductoryPrice: 'introductoryPrice',
+        introductoryPriceAmountMicros: 990000,
+        introductoryPriceCycles: 1,
+        introductoryPricePeriod: 'introductoryPricePeriod',
+        price: 'price',
+        priceAmountMicros: 1000,
+        priceCurrencyCode: 'priceCurrencyCode',
+        priceCurrencySymbol: r'$',
+        sku: 'sku',
+        subscriptionPeriod: 'subscriptionPeriod',
+        title: 'title',
+        type: SkuType.inapp,
+        originalPrice: 'originalPrice',
+        originalPriceAmountMicros: 1000,
+      );
+      expect(firstSkuDetailsInstance == secondSkuDetailsInstance, isTrue);
+    });
+
+    test('operator == of BillingResultWrapper works fine', () {
+      const BillingResultWrapper firstBillingResultInstance =
+          BillingResultWrapper(
+        responseCode: BillingResponse.ok,
+        debugMessage: 'debugMessage',
+      );
+      const BillingResultWrapper secondBillingResultInstance =
+          BillingResultWrapper(
+        responseCode: BillingResponse.ok,
+        debugMessage: 'debugMessage',
+      );
+      expect(firstBillingResultInstance == secondBillingResultInstance, isTrue);
     });
   });
 }

@@ -1,3 +1,16 @@
+## NEXT
+
+* Removes unnecessary imports.
+
+## 5.1.2
+
+* Adopts `Object.hash`.
+* Removes obsolete dependency on `pedantic`.
+
+## 5.1.1
+
+* Adds `rotationCorrection` (for Android playing videos recorded in landscapeRight [#60327](https://github.com/flutter/flutter/issues/60327)).
+
 ## 5.1.0
 
 * Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.

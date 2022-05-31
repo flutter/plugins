@@ -36,10 +36,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     argParser.addFlag(platformWeb,
         help: 'Runs the web implementation of the examples');
     argParser.addFlag(platformWindows,
-        help: 'Runs the Windows (Win32) implementation of the examples');
-    argParser.addFlag(platformWinUwp,
-        help:
-            'Runs the UWP implementation of the examples [currently a no-op]');
+        help: 'Runs the Windows implementation of the examples');
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
@@ -70,7 +67,6 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       platformMacOS,
       platformWeb,
       platformWindows,
-      platformWinUwp,
     ];
     final int platformCount = platformSwitches
         .where((String platform) => getBoolArg(platform))
@@ -83,10 +79,6 @@ class DriveExamplesCommand extends PackageLoopingCommand {
           'Exactly one of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
           'must be specified.');
       throw ToolExit(_exitNoPlatformFlags);
-    }
-
-    if (getBoolArg(platformWinUwp)) {
-      logWarning('Driving UWP applications is not yet supported');
     }
 
     String? androidDevice;
@@ -126,54 +118,52 @@ class DriveExamplesCommand extends PackageLoopingCommand {
         ],
       if (getBoolArg(platformWindows))
         platformWindows: <String>['-d', 'windows'],
-      // TODO(stuartmorgan): Check these flags once drive supports UWP:
-      // https://github.com/flutter/flutter/issues/82821
-      if (getBoolArg(platformWinUwp)) platformWinUwp: <String>['-d', 'winuwp'],
     };
   }
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    if (package.isPlatformInterface &&
-        !package.getSingleExampleDeprecated().directory.existsSync()) {
+    final bool isPlugin = isFlutterPlugin(package);
+
+    if (package.isPlatformInterface && package.getExamples().isEmpty) {
       // Platform interface packages generally aren't intended to have
       // examples, and don't need integration tests, so skip rather than fail.
       return PackageResult.skip(
           'Platform interfaces are not expected to have integration tests.');
     }
 
-    final List<String> deviceFlags = <String>[];
-    for (final MapEntry<String, List<String>> entry
-        in _targetDeviceFlags.entries) {
-      final String platform = entry.key;
-      String? variant;
-      if (platform == platformWindows) {
-        variant = platformVariantWin32;
-      } else if (platform == platformWinUwp) {
-        variant = platformVariantWinUwp;
-        // TODO(stuartmorgan): Remove this once drive supports UWP.
-        // https://github.com/flutter/flutter/issues/82821
-        return PackageResult.skip('Drive does not yet support UWP');
+    // For plugin packages, skip if the plugin itself doesn't support any
+    // requested platform(s).
+    if (isPlugin) {
+      final Iterable<String> requestedPlatforms = _targetDeviceFlags.keys;
+      final Iterable<String> unsupportedPlatforms = requestedPlatforms.where(
+          (String platform) => !pluginSupportsPlatform(platform, package));
+      for (final String platform in unsupportedPlatforms) {
+        print('Skipping unsupported platform $platform...');
       }
-      if (pluginSupportsPlatform(platform, package, variant: variant)) {
-        deviceFlags.addAll(entry.value);
-      } else {
-        print('Skipping unsupported platform ${entry.key}...');
+      if (unsupportedPlatforms.length == requestedPlatforms.length) {
+        return PackageResult.skip(
+            '${package.displayName} does not support any requested platform.');
       }
-    }
-    // If there is no supported target platform, skip the plugin.
-    if (deviceFlags.isEmpty) {
-      return PackageResult.skip(
-          '${package.displayName} does not support any requested platform.');
     }
 
     int examplesFound = 0;
+    int supportedExamplesFound = 0;
     bool testsRan = false;
     final List<String> errors = <String>[];
     for (final RepositoryPackage example in package.getExamples()) {
       ++examplesFound;
       final String exampleName =
           getRelativePosixPath(example.directory, from: packagesDir);
+
+      // Skip examples that don't support any requested platform(s).
+      final List<String> deviceFlags = _deviceFlagsForExample(example);
+      if (deviceFlags.isEmpty) {
+        print(
+            'Skipping $exampleName; does not support any requested platforms.');
+        continue;
+      }
+      ++supportedExamplesFound;
 
       final List<File> drivers = await _getDrivers(example);
       if (drivers.isEmpty) {
@@ -215,12 +205,39 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       }
     }
     if (!testsRan) {
-      printError('No driver tests were run ($examplesFound example(s) found).');
-      errors.add('No tests ran (use --exclude if this is intentional).');
+      // It is an error for a plugin not to have integration tests, because that
+      // is the only way to test the method channel communication.
+      if (isPlugin) {
+        printError(
+            'No driver tests were run ($examplesFound example(s) found).');
+        errors.add('No tests ran (use --exclude if this is intentional).');
+      } else {
+        return PackageResult.skip(supportedExamplesFound == 0
+            ? 'No example supports requested platform(s).'
+            : 'No example is configured for driver tests.');
+      }
     }
     return errors.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(errors);
+  }
+
+  /// Returns the device flags for the intersection of the requested platforms
+  /// and the platforms supported by [example].
+  List<String> _deviceFlagsForExample(RepositoryPackage example) {
+    final List<String> deviceFlags = <String>[];
+    for (final MapEntry<String, List<String>> entry
+        in _targetDeviceFlags.entries) {
+      final String platform = entry.key;
+      if (example.directory.childDirectory(platform).existsSync()) {
+        deviceFlags.addAll(entry.value);
+      } else {
+        final String exampleName =
+            getRelativePosixPath(example.directory, from: packagesDir);
+        print('Skipping unsupported platform $platform for $exampleName');
+      }
+    }
+    return deviceFlags;
   }
 
   Future<List<String>> _getDevicesForPlatform(String platform) async {
