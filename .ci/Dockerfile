@@ -1,7 +1,7 @@
 # The Flutter version is not important here, since the CI scripts update Flutter
 # before running. What matters is that the base image is pinned to minimize
 # unintended changes when modifying this file.
-FROM cirrusci/flutter:2.8.0
+FROM cirrusci/flutter@sha256:505fe8bce2896c75b4df9ccf500b1604155bf932af7465ffcc66fcae8612f82f
 
 RUN apt-get update -y
 

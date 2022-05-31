@@ -172,7 +172,7 @@ void main() {
 
     group('mocking', () {
       const String _key = 'dummy';
-      const String _prefixedKey = 'flutter.' + _key;
+      const String _prefixedKey = 'flutter.$_key';
 
       test('test 1', () async {
         SharedPreferences.setMockInitialValues(

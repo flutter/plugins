@@ -42,6 +42,9 @@
   });
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)captureOutput:(AVCapturePhotoOutput *)output
     didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
                 previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
@@ -56,6 +59,7 @@
                                                         previewPhotoSampleBuffer];
                         }];
 }
+#pragma clang diagnostic pop
 
 - (void)captureOutput:(AVCapturePhotoOutput *)output
     didFinishProcessingPhoto:(AVCapturePhoto *)photo

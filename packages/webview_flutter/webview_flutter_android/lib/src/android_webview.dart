@@ -11,11 +11,6 @@ import 'package:flutter/widgets.dart' show AndroidViewSurface;
 import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 
-// TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
-// Workaround to represent null Strings since pigeon doesn't support null
-// values.
-const String _nullStringIdentifier = '<null-value>';
-
 /// An Android View that displays web pages.
 ///
 /// **Basic usage**
@@ -102,8 +97,8 @@ class WebView {
     return api.loadDataFromInstance(
       this,
       data,
-      mimeType ?? _nullStringIdentifier,
-      encoding ?? _nullStringIdentifier,
+      mimeType,
+      encoding,
     );
   }
 
@@ -151,11 +146,11 @@ class WebView {
   }) {
     return api.loadDataWithBaseUrlFromInstance(
       this,
-      baseUrl ?? _nullStringIdentifier,
+      baseUrl,
       data,
-      mimeType ?? _nullStringIdentifier,
-      encoding ?? _nullStringIdentifier,
-      historyUrl ?? _nullStringIdentifier,
+      mimeType,
+      encoding,
+      historyUrl,
     );
   }
 
@@ -184,12 +179,8 @@ class WebView {
   /// begun, the current page may not have changed.
   ///
   /// Returns null if no page has been loaded.
-  Future<String?> getUrl() async {
-    final String result = await api.getUrlFromInstance(this);
-    if (result == _nullStringIdentifier) {
-      return null;
-    }
-    return result;
+  Future<String?> getUrl() {
+    return api.getUrlFromInstance(this);
   }
 
   /// Whether this WebView has a back history item.
@@ -235,27 +226,19 @@ class WebView {
   /// JavaScript state from an empty WebView is no longer persisted across
   /// navigations like [loadUrl]. For example, global variables and functions
   /// defined before calling [loadUrl]) will not exist in the loaded page.
-  Future<String?> evaluateJavascript(String javascriptString) async {
-    final String result = await api.evaluateJavascriptFromInstance(
+  Future<String?> evaluateJavascript(String javascriptString) {
+    return api.evaluateJavascriptFromInstance(
       this,
       javascriptString,
     );
-    if (result == _nullStringIdentifier) {
-      return null;
-    }
-    return result;
   }
 
   // TODO(bparrishMines): Update documentation when WebViewClient.onReceivedTitle is added.
   /// Gets the title for the current page.
   ///
   /// Returns null if no page has been loaded.
-  Future<String?> getTitle() async {
-    final String result = await api.getTitleFromInstance(this);
-    if (result == _nullStringIdentifier) {
-      return null;
-    }
-    return result;
+  Future<String?> getTitle() {
+    return api.getTitleFromInstance(this);
   }
 
   // TODO(bparrishMines): Update documentation when onScrollChanged is added.
@@ -337,9 +320,11 @@ class WebView {
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
   ///
   /// This will replace the current handler.
-  Future<void> setDownloadListener(DownloadListener listener) {
-    DownloadListener.api.createFromInstance(listener);
-    return api.setDownloadListenerFromInstance(this, listener);
+  Future<void> setDownloadListener(DownloadListener? listener) async {
+    await Future.wait(<Future<void>>[
+      if (listener != null) DownloadListener.api.createFromInstance(listener),
+      api.setDownloadListenerFromInstance(this, listener)
+    ]);
   }
 
   /// Sets the chrome handler.
@@ -347,7 +332,7 @@ class WebView {
   /// This is an implementation of [WebChromeClient] for use in handling
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
-  Future<void> setWebChromeClient(WebChromeClient client) {
+  Future<void> setWebChromeClient(WebChromeClient? client) async {
     // WebView requires a WebViewClient because of a bug fix that makes
     // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
     // window is opened. This is to make sure a url opened by `Window.open` has
@@ -356,8 +341,11 @@ class WebView {
       _currentWebViewClient != null,
       "Can't set a WebChromeClient without setting a WebViewClient first.",
     );
-    WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
-    return api.setWebChromeClientFromInstance(this, client);
+    await Future.wait(<Future<void>>[
+      if (client != null)
+        WebChromeClient.api.createFromInstance(client, _currentWebViewClient!),
+      api.setWebChromeClientFromInstance(this, client),
+    ]);
   }
 
   /// Sets the background color of this WebView.
@@ -477,7 +465,7 @@ class WebSettings {
   /// If the string is empty, the system default value will be used. Note that
   /// starting from KITKAT Android version, changing the user-agent while
   /// loading a web page causes WebView to initiate loading once again.
-  Future<void> setUserAgentString(String userAgentString) {
+  Future<void> setUserAgentString(String? userAgentString) {
     return api.setUserAgentStringFromInstance(this, userAgentString);
   }
 
@@ -851,4 +839,31 @@ class FlutterAssetManager {
   /// Gets the relative file path to the Flutter asset with the given name.
   Future<String> getAssetFilePathByName(String name) =>
       api.getAssetFilePathByName(name);
+}
+
+/// Manages the JavaScript storage APIs provided by the [WebView].
+///
+/// Wraps [WebStorage](https://developer.android.com/reference/android/webkit/WebStorage).
+class WebStorage {
+  /// Constructs a [WebStorage].
+  ///
+  /// This constructor is only used for testing. An instance should be obtained
+  /// with [WebStorage.instance].
+  @visibleForTesting
+  WebStorage() {
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
+    api.createFromInstance(this);
+  }
+
+  /// Pigeon Host Api implementation for [WebStorage].
+  @visibleForTesting
+  static WebStorageHostApiImpl api = WebStorageHostApiImpl();
+
+  /// The singleton instance of this class.
+  static WebStorage instance = WebStorage();
+
+  /// Clears all storage currently being used by the JavaScript storage APIs.
+  Future<void> deleteAllData() {
+    return api.deleteAllDataFromInstance(this);
+  }
 }

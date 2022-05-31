@@ -39,7 +39,7 @@ void main() {
     });
 
     test('runs both new and legacy when both are present', () async {
-      final Directory package =
+      final RepositoryPackage package =
           createFakePlugin('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
@@ -51,7 +51,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           containsAll(<ProcessCall>[
-            ProcessCall(package.childFile('run_tests.sh').path,
+            ProcessCall(package.directory.childFile('run_tests.sh').path,
                 const <String>[], package.path),
             ProcessCall('dart', const <String>['run', 'tool/run_tests.dart'],
                 package.path),
@@ -65,7 +65,8 @@ void main() {
     });
 
     test('runs when only new is present', () async {
-      final Directory package = createFakePlugin('a_package', packagesDir,
+      final RepositoryPackage package = createFakePlugin(
+          'a_package', packagesDir,
           extraFiles: <String>['tool/run_tests.dart']);
 
       final List<String> output =
@@ -85,8 +86,25 @@ void main() {
           ]));
     });
 
+    test('runs pub get before running Dart test script', () async {
+      final RepositoryPackage package = createFakePlugin(
+          'a_package', packagesDir,
+          extraFiles: <String>['tool/run_tests.dart']);
+
+      await runCapturingPrint(runner, <String>['custom-test']);
+
+      expect(
+          processRunner.recordedCalls,
+          containsAll(<ProcessCall>[
+            ProcessCall('dart', const <String>['pub', 'get'], package.path),
+            ProcessCall('dart', const <String>['run', 'tool/run_tests.dart'],
+                package.path),
+          ]));
+    });
+
     test('runs when only legacy is present', () async {
-      final Directory package = createFakePlugin('a_package', packagesDir,
+      final RepositoryPackage package = createFakePlugin(
+          'a_package', packagesDir,
           extraFiles: <String>['run_tests.sh']);
 
       final List<String> output =
@@ -95,7 +113,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           containsAll(<ProcessCall>[
-            ProcessCall(package.childFile('run_tests.sh').path,
+            ProcessCall(package.directory.childFile('run_tests.sh').path,
                 const <String>[], package.path),
           ]));
 
@@ -128,7 +146,8 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess(exitCode: 1),
+        MockProcess(exitCode: 0), // pub get
+        MockProcess(exitCode: 1), // test script
       ];
 
       Error? commandError;
@@ -146,15 +165,41 @@ void main() {
           ]));
     });
 
+    test('fails if pub get fails', () async {
+      createFakePlugin('a_package', packagesDir, extraFiles: <String>[
+        'tool/run_tests.dart',
+        'run_tests.sh',
+      ]);
+
+      processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
+        MockProcess(exitCode: 1),
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['custom-test'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('The following packages had errors:'),
+            contains('a_package:\n'
+                '    Unable to get script dependencies')
+          ]));
+    });
+
     test('fails if legacy fails', () async {
-      final Directory package =
+      final RepositoryPackage package =
           createFakePlugin('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
       ]);
 
       processRunner.mockProcessesForExecutable[
-          package.childFile('run_tests.sh').path] = <io.Process>[
+          package.directory.childFile('run_tests.sh').path] = <io.Process>[
         MockProcess(exitCode: 1),
       ];
 
@@ -192,7 +237,7 @@ void main() {
     });
 
     test('runs new and skips old when both are present', () async {
-      final Directory package =
+      final RepositoryPackage package =
           createFakePlugin('a_package', packagesDir, extraFiles: <String>[
         'tool/run_tests.dart',
         'run_tests.sh',
@@ -216,7 +261,8 @@ void main() {
     });
 
     test('runs when only new is present', () async {
-      final Directory package = createFakePlugin('a_package', packagesDir,
+      final RepositoryPackage package = createFakePlugin(
+          'a_package', packagesDir,
           extraFiles: <String>['tool/run_tests.dart']);
 
       final List<String> output =
@@ -260,7 +306,8 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess(exitCode: 1),
+        MockProcess(exitCode: 0), // pub get
+        MockProcess(exitCode: 1), // test script
       ];
 
       Error? commandError;

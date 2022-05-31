@@ -7,7 +7,6 @@
 /// An example of using the plugin, controlling lifecycle and playback of the
 /// video.
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -425,7 +424,7 @@ class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
         child: FutureBuilder<bool>(
           future: started(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.data == true) {
+            if (snapshot.data ?? false) {
               return AspectRatio(
                 aspectRatio: _videoPlayerController.value.aspectRatio,
                 child: VideoPlayer(_videoPlayerController),
