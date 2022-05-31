@@ -37,7 +37,7 @@ class SelectionOptions {
   List<TypeGroup?> allowedTypes;
 }
 
-@HostApi(dartHostTestHandler: 'TestHostImagePickerApi')
+@HostApi(dartHostTestHandler: 'TestFileSelectorApi')
 abstract class FileSelectorApi {
   List<String?> showOpenDialog(
     SelectionOptions options,

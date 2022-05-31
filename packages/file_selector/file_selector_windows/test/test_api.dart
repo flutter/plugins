@@ -15,8 +15,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:file_selector_windows/src/messages.g.dart';
 
-class _TestHostImagePickerApiCodec extends StandardMessageCodec {
-  const _TestHostImagePickerApiCodec();
+class _TestFileSelectorApiCodec extends StandardMessageCodec {
+  const _TestFileSelectorApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
     if (value is SelectionOptions) {
@@ -45,8 +45,8 @@ class _TestHostImagePickerApiCodec extends StandardMessageCodec {
   }
 }
 
-abstract class TestHostImagePickerApi {
-  static const MessageCodec<Object?> codec = _TestHostImagePickerApiCodec();
+abstract class TestFileSelectorApi {
+  static const MessageCodec<Object?> codec = _TestFileSelectorApiCodec();
 
   List<String?> showOpenDialog(SelectionOptions options,
       String? initialDirectory, String? confirmButtonText);
@@ -55,7 +55,7 @@ abstract class TestHostImagePickerApi {
       String? initialDirectory,
       String? suggestedName,
       String? confirmButtonText);
-  static void setup(TestHostImagePickerApi? api,
+  static void setup(TestFileSelectorApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
