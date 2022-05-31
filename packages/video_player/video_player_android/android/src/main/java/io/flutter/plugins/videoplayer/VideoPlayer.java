@@ -11,6 +11,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.view.Surface;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
@@ -51,11 +52,11 @@ final class VideoPlayer {
 
   private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
-  private QueuingEventSink eventSink = new QueuingEventSink();
+  private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
 
-  private boolean isInitialized = false;
+  @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -71,10 +72,11 @@ final class VideoPlayer {
     this.textureEntry = textureEntry;
     this.options = options;
 
-    exoPlayer = new ExoPlayer.Builder(context).build();
+    ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
 
     Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
+
     if (isHTTP(uri)) {
       DefaultHttpDataSource.Factory httpDataSourceFactory =
           new DefaultHttpDataSource.Factory()
@@ -90,10 +92,26 @@ final class VideoPlayer {
     }
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
+
     exoPlayer.setMediaSource(mediaSource);
     exoPlayer.prepare();
 
-    setupVideoPlayer(eventChannel, textureEntry);
+    setUpVideoPlayer(exoPlayer, new QueuingEventSink());
+  }
+
+  // Constructor used to directly test members of this class.
+  @VisibleForTesting
+  VideoPlayer(
+      ExoPlayer exoPlayer,
+      EventChannel eventChannel,
+      TextureRegistry.SurfaceTextureEntry textureEntry,
+      VideoPlayerOptions options,
+      QueuingEventSink eventSink) {
+    this.eventChannel = eventChannel;
+    this.textureEntry = textureEntry;
+    this.options = options;
+
+    setUpVideoPlayer(exoPlayer, eventSink);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -106,7 +124,6 @@ final class VideoPlayer {
 
   private MediaSource buildMediaSource(
       Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
-
     int type;
     if (formatHint == null) {
       type = Util.inferContentType(uri.getLastPathSegment());
@@ -153,8 +170,10 @@ final class VideoPlayer {
     }
   }
 
-  private void setupVideoPlayer(
-      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
+  private void setUpVideoPlayer(ExoPlayer exoPlayer, QueuingEventSink eventSink) {
+    this.exoPlayer = exoPlayer;
+    this.eventSink = eventSink;
+
     eventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
           @Override
@@ -264,7 +283,8 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
-  private void sendInitialized() {
+  @VisibleForTesting
+  void sendInitialized() {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
@@ -282,7 +302,16 @@ final class VideoPlayer {
         }
         event.put("width", width);
         event.put("height", height);
+
+        // Rotating the video with ExoPlayer does not seem to be possible with a Surface,
+        // so inform the Flutter code that the widget needs to be rotated to prevent
+        // upside-down playback for videos with rotationDegrees of 180 (other orientations work
+        // correctly without correction).
+        if (rotationDegrees == 180) {
+          event.put("rotationCorrection", rotationDegrees);
+        }
       }
+
       eventSink.success(event);
     }
   }
