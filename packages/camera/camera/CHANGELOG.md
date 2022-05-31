@@ -1,3 +1,7 @@
+## 0.10.0
+
+* **BREAKING CHANGE**: Bumps default camera_web package version to 0.3.0.
+
 ## 0.9.7+1
 
 * Moves streaming implementation to the platform interface package.
