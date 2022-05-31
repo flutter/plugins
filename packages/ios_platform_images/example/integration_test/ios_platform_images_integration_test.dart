@@ -44,22 +44,15 @@ void main() {
       final ImageProvider imageProvider =
           IosPlatformImages.loadSystemImage('invalid_symbol', 10);
 
-      final Function errorCallback = expectAsync1((Object exception) async {
-        expect(exception, isArgumentError);
-      }, count: 2);
-
-      // await expectLater( imageProvider.obtainKey(ImageConfiguration.empty),
-      //     throwsArgumentError);
-
       imageProvider.resolve(ImageConfiguration.empty).completer?.addListener(
             ImageStreamListener(
               (ImageInfo info, bool _) => _completer.complete(info),
               onError: (Object exception, StackTrace? _) =>
-                  errorCallback.call(),
+                  _completer.completeError(exception),
             ),
           );
 
-      // await expectLater(_completer.future, throwsArgumentError);
+      await expectLater(_completer.future, throwsArgumentError);
     },
   );
 }
