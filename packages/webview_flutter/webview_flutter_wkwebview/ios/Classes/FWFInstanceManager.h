@@ -81,7 +81,7 @@ typedef void (^FWFOnDeallocCallback)(long identifier);
  *
  * @param instance An instance that may be stored in the manager.
  *
- * @return The identifer associated with `instance` if the manager contains the value, otherwise
+ * @return The identifier associated with `instance` if the manager contains the value, otherwise
  * NSNotFound.
  */
 - (long)identifierWithStrongReferenceForInstance:(nonnull NSObject *)instance;

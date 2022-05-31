@@ -30,11 +30,11 @@ mixin Copyable {
 /// When a weak referenced instance becomes inaccessible,
 /// [onWeakReferenceRemoved] is called with its associated identifier.
 ///
-/// If an instance is retrieved and has the possiblity to be used, (e.g. calling
-/// [getInstance] with `returnedInstanceMayBeUsed` as `true`) a copy of the
-/// strong reference is added as a weak reference with the same identifier. This
-/// prevents a scenario where the weak referenced instance was released and then
-/// later returned by the host platform.
+/// If an instance is retrieved and has the possibility to be used,
+/// (e.g. calling [getInstanceWithWeakReference]) a copy of the strong reference
+/// is added as a weak reference with the same identifier. This prevents a
+/// scenario where the weak referenced instance was released and then later
+/// returned by the host platform.
 class InstanceManager {
   /// Constructs an [InstanceManager].
   InstanceManager({required void Function(int) onWeakReferenceRemoved}) {
