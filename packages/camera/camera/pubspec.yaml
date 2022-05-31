@@ -22,7 +22,7 @@ flutter:
         default_package: camera_web
 
 dependencies:
-  camera_platform_interface: ^2.2.0
+  camera_platform_interface: ^2.2.1
   camera_web: ^0.3.0
   flutter:
     sdk: flutter
