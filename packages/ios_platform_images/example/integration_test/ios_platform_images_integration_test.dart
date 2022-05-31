@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
+import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:ios_platform_images/ios_platform_images.dart';
 
 import 'package:ios_platform_images_example/main.dart' as app;
 
@@ -34,13 +36,30 @@ void main() {
     },
   );
 
-  testWidgets(
+  test(
     'ios system image error case',
-    (WidgetTester tester) async {
-      app.IOSImageErrorExample();
-      await tester.pumpAndSettle();
+    () async {
+      final Completer<ImageInfo> _completer = Completer<ImageInfo>();
 
-      expect(find.byType(Image), findsNothing);
+      final ImageProvider imageProvider =
+          IosPlatformImages.loadSystemImage('invalid_symbol', 10);
+
+      final Function errorCallback = expectAsync1((Object exception) async {
+        expect(exception, isArgumentError);
+      }, count: 2);
+
+      // await expectLater( imageProvider.obtainKey(ImageConfiguration.empty),
+      //     throwsArgumentError);
+
+      imageProvider.resolve(ImageConfiguration.empty).completer?.addListener(
+            ImageStreamListener(
+              (ImageInfo info, bool _) => _completer.complete(info),
+              onError: (Object exception, StackTrace? _) =>
+                  errorCallback.call(),
+            ),
+          );
+
+      // await expectLater(_completer.future, throwsArgumentError);
     },
   );
 }
