@@ -23,7 +23,7 @@ flutter:
 
 dependencies:
   camera_platform_interface: ^2.2.0
-  camera_web: ^0.2.1
+  camera_web: ^0.3.0
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.2
