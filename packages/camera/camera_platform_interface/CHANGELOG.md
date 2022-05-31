@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Adds handling for Android only `CameraPermissionsRequestOngoing` error.
+
 ## 2.2.0
 
 * Adds image streaming to the platform interface.
