@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapPolygonController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 @interface FLTGoogleMapPolygonController ()
 
@@ -90,7 +90,7 @@
 
   NSArray *points = data[@"points"];
   if (points && points != (id)[NSNull null]) {
-    [self setPoints:[FLTGoogleMapJSONConversions pointsFromLatlongs:points]];
+    [self setPoints:[FLTGoogleMapJSONConversions pointsFromLatLongs:points]];
   }
 
   NSArray *holes = data[@"holes"];
@@ -195,7 +195,7 @@
 
 + (GMSMutablePath *)getPath:(NSDictionary *)polygon {
   NSArray *pointArray = polygon[@"points"];
-  NSArray<CLLocation *> *points = [FLTGoogleMapJSONConversions pointsFromLatlongs:pointArray];
+  NSArray<CLLocation *> *points = [FLTGoogleMapJSONConversions pointsFromLatLongs:pointArray];
   GMSMutablePath *path = [GMSMutablePath path];
   for (CLLocation *location in points) {
     [path addCoordinate:location.coordinate];

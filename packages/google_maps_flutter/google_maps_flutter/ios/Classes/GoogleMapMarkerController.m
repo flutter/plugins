@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapMarkerController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 @interface FLTGoogleMapMarkerController ()
 
@@ -120,7 +120,7 @@
   [self interpretInfoWindow:data];
   NSArray *position = data[@"position"];
   if (position && position != (id)[NSNull null]) {
-    [self setPosition:[FLTGoogleMapJSONConversions locationFromLatlong:position]];
+    [self setPosition:[FLTGoogleMapJSONConversions locationFromLatLong:position]];
   }
   NSNumber *rotation = data[@"rotation"];
   if (rotation && rotation != (id)[NSNull null]) {
@@ -381,7 +381,7 @@
 
 + (CLLocationCoordinate2D)getPosition:(NSDictionary *)marker {
   NSArray *position = marker[@"position"];
-  return [FLTGoogleMapJSONConversions locationFromLatlong:position];
+  return [FLTGoogleMapJSONConversions locationFromLatLong:position];
 }
 
 @end

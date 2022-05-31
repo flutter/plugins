@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 @implementation FLTGoogleMapJSONConversions
 
-+ (CLLocationCoordinate2D)locationFromLatlong:(NSArray *)latlong {
++ (CLLocationCoordinate2D)locationFromLatLong:(NSArray *)latlong {
   return CLLocationCoordinate2DMake([latlong[0] doubleValue], [latlong[1] doubleValue]);
 }
 
@@ -26,7 +26,7 @@
                          alpha:((float)((value & 0xFF000000) >> 24)) / 255.0];
 }
 
-+ (NSArray<CLLocation *> *)pointsFromLatlongs:(NSArray *)data {
++ (NSArray<CLLocation *> *)pointsFromLatLongs:(NSArray *)data {
   NSMutableArray *points = [[NSMutableArray alloc] init];
   for (unsigned i = 0; i < [data count]; i++) {
     NSNumber *latitude = data[i][0];
@@ -42,7 +42,7 @@
 + (NSArray<NSArray<CLLocation *> *> *)holesFromPointsArray:(NSArray *)data {
   NSMutableArray<NSArray<CLLocation *> *> *holes = [[[NSMutableArray alloc] init] init];
   for (unsigned i = 0; i < [data count]; i++) {
-    NSArray<CLLocation *> *points = [FLTGoogleMapJSONConversions pointsFromLatlongs:data[i]];
+    NSArray<CLLocation *> *points = [FLTGoogleMapJSONConversions pointsFromLatLongs:data[i]];
     [holes addObject:points];
   }
 
@@ -83,7 +83,7 @@
     return nil;
   }
   return [GMSCameraPosition
-      cameraWithTarget:[FLTGoogleMapJSONConversions locationFromLatlong:data[@"target"]]
+      cameraWithTarget:[FLTGoogleMapJSONConversions locationFromLatLong:data[@"target"]]
                   zoom:[data[@"zoom"] floatValue]
                bearing:[data[@"bearing"] doubleValue]
           viewingAngle:[data[@"tilt"] doubleValue]];
@@ -95,10 +95,10 @@
   return CGPointMake(x, y);
 }
 
-+ (GMSCoordinateBounds *)coordinateBoundsFromLatlongs:(NSArray *)latlongs {
++ (GMSCoordinateBounds *)coordinateBoundsFromLatLongs:(NSArray *)latlongs {
   return [[GMSCoordinateBounds alloc]
-      initWithCoordinate:[FLTGoogleMapJSONConversions locationFromLatlong:latlongs[0]]
-              coordinate:[FLTGoogleMapJSONConversions locationFromLatlong:latlongs[1]]];
+      initWithCoordinate:[FLTGoogleMapJSONConversions locationFromLatLong:latlongs[0]]
+              coordinate:[FLTGoogleMapJSONConversions locationFromLatLong:latlongs[1]]];
 }
 
 + (GMSMapViewType)mapViewTypeFromTypeValue:(NSNumber *)typeValue {
@@ -113,14 +113,14 @@
         setCamera:[FLTGoogleMapJSONConversions cameraPostionFromDictionary:channelValue[1]]];
   } else if ([update isEqualToString:@"newLatLng"]) {
     return [GMSCameraUpdate
-        setTarget:[FLTGoogleMapJSONConversions locationFromLatlong:channelValue[1]]];
+        setTarget:[FLTGoogleMapJSONConversions locationFromLatLong:channelValue[1]]];
   } else if ([update isEqualToString:@"newLatLngBounds"]) {
     return [GMSCameraUpdate
-          fitBounds:[FLTGoogleMapJSONConversions coordinateBoundsFromLatlongs:channelValue[1]]
+          fitBounds:[FLTGoogleMapJSONConversions coordinateBoundsFromLatLongs:channelValue[1]]
         withPadding:[channelValue[2] doubleValue]];
   } else if ([update isEqualToString:@"newLatLngZoom"]) {
     return
-        [GMSCameraUpdate setTarget:[FLTGoogleMapJSONConversions locationFromLatlong:channelValue[1]]
+        [GMSCameraUpdate setTarget:[FLTGoogleMapJSONConversions locationFromLatLong:channelValue[1]]
                               zoom:[channelValue[2] floatValue]];
   } else if ([update isEqualToString:@"scrollBy"]) {
     return [GMSCameraUpdate scrollByX:[channelValue[1] doubleValue]

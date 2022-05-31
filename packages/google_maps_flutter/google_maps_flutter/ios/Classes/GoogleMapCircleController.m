@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapCircleController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 @interface FLTGoogleMapCircleController ()
 
@@ -77,7 +77,7 @@
 
   NSArray *center = data[@"center"];
   if (center && center != (id)[NSNull null]) {
-    [self setCenter:[FLTGoogleMapJSONConversions locationFromLatlong:center]];
+    [self setCenter:[FLTGoogleMapJSONConversions locationFromLatLong:center]];
   }
 
   NSNumber *radius = data[@"radius"];
@@ -182,7 +182,7 @@
 
 + (CLLocationCoordinate2D)getPosition:(NSDictionary *)circle {
   NSArray *center = circle[@"center"];
-  return [FLTGoogleMapJSONConversions locationFromLatlong:center];
+  return [FLTGoogleMapJSONConversions locationFromLatLong:center];
 }
 
 + (CLLocationDistance)getRadius:(NSDictionary *)circle {

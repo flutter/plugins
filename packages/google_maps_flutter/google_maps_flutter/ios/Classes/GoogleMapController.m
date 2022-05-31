@@ -4,7 +4,7 @@
 
 #import "GoogleMapController.h"
 #import "FLTGoogleMapTileOverlayController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
@@ -186,7 +186,7 @@
   } else if ([call.method isEqualToString:@"map#getScreenCoordinate"]) {
     if (self.mapView != nil) {
       CLLocationCoordinate2D location =
-          [FLTGoogleMapJSONConversions locationFromLatlong:call.arguments];
+          [FLTGoogleMapJSONConversions locationFromLatLong:call.arguments];
       CGPoint point = [self.mapView.projection pointForCoordinate:location];
       result([FLTGoogleMapJSONConversions dictionaryFromPoint:point]);
     } else {
@@ -556,7 +556,7 @@
     [self
         setCameraTargetBounds:cameraTargetBounds.count > 0 && cameraTargetBounds[0] != [NSNull null]
                                   ? [FLTGoogleMapJSONConversions
-                                        coordinateBoundsFromLatlongs:cameraTargetBounds.firstObject]
+                                        coordinateBoundsFromLatLongs:cameraTargetBounds.firstObject]
                                   : nil];
   }
   NSNumber *compassEnabled = data[@"compassEnabled"];

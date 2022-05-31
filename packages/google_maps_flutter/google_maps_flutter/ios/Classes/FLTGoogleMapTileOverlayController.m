@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTGoogleMapTileOverlayController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 @interface FLTGoogleMapTileOverlayController ()
 

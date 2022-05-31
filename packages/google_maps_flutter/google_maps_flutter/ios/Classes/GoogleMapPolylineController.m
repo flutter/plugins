@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapPolylineController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h"
 
 @interface FLTGoogleMapPolylineController ()
 
@@ -78,7 +78,7 @@
 
   NSArray *points = data[@"points"];
   if (points && points != (id)[NSNull null]) {
-    [self setPoints:[FLTGoogleMapJSONConversions pointsFromLatlongs:points]];
+    [self setPoints:[FLTGoogleMapJSONConversions pointsFromLatLongs:points]];
   }
 
   NSNumber *strokeColor = data[@"color"];
@@ -173,7 +173,7 @@
 }
 + (GMSMutablePath *)getPath:(NSDictionary *)polyline {
   NSArray *pointArray = polyline[@"points"];
-  NSArray<CLLocation *> *points = [FLTGoogleMapJSONConversions pointsFromLatlongs:pointArray];
+  NSArray<CLLocation *> *points = [FLTGoogleMapJSONConversions pointsFromLatLongs:pointArray];
   GMSMutablePath *path = [GMSMutablePath path];
   for (CLLocation *location in points) {
     [path addCoordinate:location.coordinate];
