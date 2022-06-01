@@ -4,36 +4,36 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#import "FLTPHPickerSaveImageToPathOperation.h"
+#import "FLTPHPickerSaveItemToPathOperation.h"
 
 API_AVAILABLE(ios(14))
-@interface FLTPHPickerSaveImageToPathOperation ()
+@interface FLTPHPickerSaveItemToPathOperation ()
 
 @property(strong, nonatomic) PHPickerResult *result;
-@property(assign, nonatomic) NSNumber *maxHeight;
-@property(assign, nonatomic) NSNumber *maxWidth;
+@property(assign, nonatomic) NSNumber *maxImageHeight;
+@property(assign, nonatomic) NSNumber *maxImageWidth;
 @property(assign, nonatomic) NSNumber *desiredImageQuality;
 
 @end
 
 typedef void (^GetSavedPath)(NSString *);
 
-@implementation FLTPHPickerSaveImageToPathOperation {
+@implementation FLTPHPickerSaveItemToPathOperation {
   BOOL executing;
   BOOL finished;
   GetSavedPath getSavedPath;
 }
 
 - (instancetype)initWithResult:(PHPickerResult *)result
-                     maxHeight:(NSNumber *)maxHeight
-                      maxWidth:(NSNumber *)maxWidth
+                maxImageHeight:(NSNumber *)maxImageHeight
+                 maxImageWidth:(NSNumber *)maxImageWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
                 savedPathBlock:(GetSavedPath)savedPathBlock API_AVAILABLE(ios(14)) {
   if (self = [super init]) {
     if (result) {
       self.result = result;
-      self.maxHeight = maxHeight;
-      self.maxWidth = maxWidth;
+      self.maxImageHeight = maxImageHeight;
+      self.maxImageWidth = maxImageWidth;
       self.desiredImageQuality = desiredImageQuality;
       getSavedPath = savedPathBlock;
       executing = NO;
@@ -84,26 +84,28 @@ typedef void (^GetSavedPath)(NSString *);
   }
   if (@available(iOS 14, *)) {
     [self setExecuting:YES];
-
-    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeWebP.identifier]) {
-      [self.result.itemProvider
-          loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier
-                                completionHandler:^(NSData *_Nullable data,
-                                                    NSError *_Nullable error) {
-                                  UIImage *image = [[UIImage alloc] initWithData:data];
-                                  [self processImage:image];
-                                }];
-      return;
+    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:@"public.movie"]) {
+      [self processVideo];
+    } else if ([self.result.itemProvider hasItemConformingToTypeIdentifier:@"public.image"]) {
+      if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeWebP.identifier]) {
+        [self.result.itemProvider
+            loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier
+                                  completionHandler:^(NSData *_Nullable data,
+                                                      NSError *_Nullable error) {
+                                    UIImage *image = [[UIImage alloc] initWithData:data];
+                                    [self processImage:image];
+                                  }];
+      } else {
+        [self.result.itemProvider
+            loadObjectOfClass:[UIImage class]
+            completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
+                                NSError *_Nullable error) {
+              if ([image isKindOfClass:[UIImage class]]) {
+                [self processImage:image];
+              }
+            }];
+      }
     }
-
-    [self.result.itemProvider
-        loadObjectOfClass:[UIImage class]
-        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
-                            NSError *_Nullable error) {
-          if ([image isKindOfClass:[UIImage class]]) {
-            [self processImage:image];
-          }
-        }];
   } else {
     [self setFinished:YES];
   }
@@ -115,10 +117,10 @@ typedef void (^GetSavedPath)(NSString *);
 - (void)processImage:(UIImage *)localImage API_AVAILABLE(ios(14)) {
   PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
 
-  if (self.maxWidth != nil || self.maxHeight != nil) {
+  if (self.maxImageWidth != nil || self.maxImageHeight != nil) {
     localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                             maxWidth:self.maxWidth
-                                            maxHeight:self.maxHeight
+                                             maxWidth:self.maxImageWidth
+                                            maxHeight:self.maxImageHeight
                                   isMetadataAvailable:originalAsset != nil];
   }
   if (originalAsset) {
@@ -128,8 +130,8 @@ typedef void (^GetSavedPath)(NSString *);
           NSString *savedPath = [FLTImagePickerPhotoAssetUtil
               saveImageWithOriginalImageData:imageData
                                        image:localImage
-                                    maxWidth:self.maxWidth
-                                   maxHeight:self.maxHeight
+                                    maxWidth:self.maxImageWidth
+                                   maxHeight:self.maxImageHeight
                                 imageQuality:self.desiredImageQuality];
           [self completeOperationWithPath:savedPath];
         };
@@ -163,6 +165,41 @@ typedef void (^GetSavedPath)(NSString *);
                                                  imageQuality:self.desiredImageQuality];
     [self completeOperationWithPath:savedPath];
   }
+}
+
+/**
+ * Processes the video.
+ */
+- (void)processVideo API_AVAILABLE(ios(14)) {
+  NSString *typeIdentifier = self.result.itemProvider.registeredTypeIdentifiers.firstObject;
+  [self.result.itemProvider
+      loadFileRepresentationForTypeIdentifier:typeIdentifier
+                            completionHandler:^(NSURL *_Nullable videoURL,
+                                                NSError *_Nullable error) {
+                              if (videoURL == nil) {
+                                return;
+                              }
+                              NSString *fileName = [videoURL lastPathComponent];
+                              NSURL *destination = [NSURL
+                                  fileURLWithPath:[NSTemporaryDirectory()
+                                                      stringByAppendingPathComponent:fileName]];
+
+                              if ([[NSFileManager defaultManager]
+                                      isReadableFileAtPath:[videoURL path]]) {
+                                NSError *error;
+                                if (![[videoURL path] isEqualToString:[destination path]]) {
+                                  [[NSFileManager defaultManager] copyItemAtURL:videoURL
+                                                                          toURL:destination
+                                                                          error:&error];
+                                  if (error) {
+                                    if (error.code != NSFileWriteFileExistsError) {
+                                      return;
+                                    }
+                                  }
+                                }
+                                [self completeOperationWithPath:[destination path]];
+                              }
+                            }];
 }
 
 @end

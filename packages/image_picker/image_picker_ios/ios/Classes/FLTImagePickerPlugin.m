@@ -15,7 +15,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
-#import "FLTPHPickerSaveImageToPathOperation.h"
+#import "FLTPHPickerSaveItemToPathOperation.h"
 #import "messages.g.h"
 
 @implementation FLTImagePickerMethodCallContext
@@ -75,6 +75,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _imagePickerControllerOverrides = [imagePickerControllers mutableCopy];
 }
 
+- (PHPickerViewController *)getPickerViewController API_AVAILABLE(ios(14)) {
+  return _pickerViewController;
+}
+
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window {
   UIWindow *windowToUse = window;
   if (windowToUse == nil) {
@@ -112,7 +116,19 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
   config.selectionLimit = context.maxImageCount;
-  config.filter = [PHPickerFilter imagesFilter];
+
+  NSMutableArray *filters = [[NSMutableArray alloc] init];
+  if (context.allowedTypes == nil) {
+    [filters addObject:[PHPickerFilter imagesFilter]];
+  } else {
+    if ([context.allowedTypes containsObject:@(FLTIOSMediaSelectionTypeImage)]) {
+      [filters addObject:[PHPickerFilter imagesFilter]];
+    }
+    if ([context.allowedTypes containsObject:@(FLTIOSMediaSelectionTypeVideo)]) {
+      [filters addObject:[PHPickerFilter videosFilter]];
+    }
+  }
+  config.filter = [PHPickerFilter anyFilterMatchingSubfilters:filters];
 
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
@@ -127,7 +143,21 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   UIImagePickerController *imagePickerController = [self createImagePickerController];
   imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
   imagePickerController.delegate = self;
-  imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
+
+  NSMutableArray *filters = [[NSMutableArray alloc] init];
+  if (context.allowedTypes == nil) {
+    [filters addObject:(NSString *)kUTTypeImage];
+  } else {
+    if ([context.allowedTypes containsObject:@(FLTIOSMediaSelectionTypeImage)]) {
+      [filters addObject:(NSString *)kUTTypeImage];
+    }
+    if ([context.allowedTypes containsObject:@(FLTIOSMediaSelectionTypeVideo)]) {
+      [filters addObject:(NSString *)kUTTypeMovie];
+    }
+  }
+  imagePickerController.mediaTypes = filters;
+  imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+
   self.callContext = context;
 
   switch (source.type) {
@@ -186,6 +216,35 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
   context.maxSize = maxSize;
   context.imageQuality = imageQuality;
+
+  if (@available(iOS 14, *)) {
+    [self launchPHPickerWithContext:context];
+  } else {
+    // Camera is ignored for gallery mode, so the value here is arbitrary.
+    [self launchUIImagePickerWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
+                                                                      camera:FLTSourceCameraRear]
+                                context:context];
+  }
+}
+
+- (void)pickMediaWithMaxSize:(nonnull FLTMaxSize *)maxSize
+                     quality:(nullable NSNumber *)imageQuality
+               allowMultiple:(nonnull NSNumber *)allowMultiple
+                allowedTypes:(nonnull NSArray<FLTIOSMediaSelectionTypeData *> *)allowedTypes
+                  completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
+                                               FlutterError *_Nullable))completion {
+  FLTImagePickerMethodCallContext *context =
+      [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
+  context.maxSize = maxSize;
+  context.imageQuality = imageQuality;
+  context.maxImageCount = allowMultiple.boolValue ? 0 : 1;
+  NSMutableArray<NSNumber *> *allowedTypeValues =
+      [NSMutableArray arrayWithCapacity:[allowedTypes count]];
+  [allowedTypes enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    id mapObj = [obj valueForKey:@"value"];
+    [allowedTypeValues addObject:mapObj];
+  }];
+  context.allowedTypes = allowedTypeValues;
 
   if (@available(iOS 14, *)) {
     [self launchPHPickerWithContext:context];
@@ -473,14 +532,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation =
-          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
-                                                            maxHeight:maxHeight
-                                                             maxWidth:maxWidth
-                                                  desiredImageQuality:desiredImageQuality
-                                                       savedPathBlock:^(NSString *savedPath) {
-                                                         pathList[i] = savedPath;
-                                                       }];
+      FLTPHPickerSaveItemToPathOperation *operation =
+          [[FLTPHPickerSaveItemToPathOperation alloc] initWithResult:result
+                                                      maxImageHeight:maxHeight
+                                                       maxImageWidth:maxWidth
+                                                 desiredImageQuality:desiredImageQuality
+                                                      savedPathBlock:^(NSString *savedPath) {
+                                                        pathList[i] = savedPath;
+                                                      }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];

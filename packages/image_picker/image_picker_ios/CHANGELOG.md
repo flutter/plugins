@@ -1,3 +1,7 @@
+## 0.8.6
+
+* Adds support for `getMedia`.
+
 ## 0.8.5+5
 
 * Adds non-deprecated codepaths for iOS 13+.

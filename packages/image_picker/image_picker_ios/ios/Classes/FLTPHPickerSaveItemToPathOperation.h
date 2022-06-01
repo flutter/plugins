@@ -20,11 +20,11 @@
  @superclass SuperClass: NSOperation\n
  @helps It helps FLTImagePickerPlugin class.
  */
-@interface FLTPHPickerSaveImageToPathOperation : NSOperation
+@interface FLTPHPickerSaveItemToPathOperation : NSOperation
 
 - (instancetype)initWithResult:(PHPickerResult *)result
-                     maxHeight:(NSNumber *)maxHeight
-                      maxWidth:(NSNumber *)maxWidth
+                maxImageHeight:(NSNumber *)maxImageHeight
+                 maxImageWidth:(NSNumber *)maxImageWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
                 savedPathBlock:(void (^)(NSString *))savedPathBlock API_AVAILABLE(ios(14));
 

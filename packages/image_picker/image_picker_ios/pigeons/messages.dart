@@ -32,6 +32,15 @@ class SourceSpecification {
   SourceCamera? camera;
 }
 
+// Corresponds to `MediaSelectionType` from the platform interface package.
+enum IOSMediaSelectionType { image, video }
+
+// TODO(BeMacized): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
+class IOSMediaSelectionTypeData {
+  late IOSMediaSelectionType value;
+}
+
 @HostApi(dartHostTestHandler: 'TestHostImagePickerApi')
 abstract class ImagePickerApi {
   @async
@@ -41,6 +50,10 @@ abstract class ImagePickerApi {
   @async
   @ObjCSelector('pickMultiImageWithMaxSize:quality:')
   List<String>? pickMultiImage(MaxSize maxSize, int? imageQuality);
+  @async
+  @ObjCSelector('pickMediaWithMaxSize:quality:allowMultiple:allowedTypes:')
+  List<String>? pickMedia(MaxSize maxSize, int? imageQuality,
+      bool allowMultiple, List<IOSMediaSelectionTypeData> allowedTypes);
   @async
   @ObjCSelector('pickVideoWithSource:maxDuration:')
   String? pickVideo(SourceSpecification source, int? maxDurationSeconds);

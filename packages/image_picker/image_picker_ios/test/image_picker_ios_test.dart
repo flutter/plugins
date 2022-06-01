@@ -72,6 +72,23 @@ class _ApiLogger implements TestHostImagePickerApi {
     }));
     return returnValue as String?;
   }
+
+  @override
+  Future<List<String?>?> pickMedia(
+    MaxSize maxSize,
+    int? imageQuality,
+    bool allowMultiple,
+    List<IOSMediaSelectionTypeData?> allowedTypes,
+  ) async {
+    calls.add(_LoggedMethodCall('pickMedia', arguments: <String, dynamic>{
+      'types': allowedTypes,
+      'maxImageWidth': maxSize.width,
+      'maxImageHeight': maxSize.height,
+      'imageQuality': imageQuality,
+      'allowMultiple': allowMultiple,
+    }));
+    return returnValue as List<String?>?;
+  }
 }
 
 void main() {
