@@ -238,20 +238,19 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     MediaSelectionOptions? options,
   }) async {
     options ??= MediaSelectionOptions();
-    final int? imageQuality = options.imageAdjustmentOptions.imageQuality;
+    final int? imageQuality = options.imageAdjustmentOptions.quality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
-    final double? maxImageWidth = options.imageAdjustmentOptions.maxImageWidth;
+    final double? maxImageWidth = options.imageAdjustmentOptions.maxWidth;
     if (maxImageWidth != null && maxImageWidth < 0) {
       throw ArgumentError.value(
           maxImageWidth, 'maxImageWidth', 'cannot be negative');
     }
 
-    final double? maxImageHeight =
-        options.imageAdjustmentOptions.maxImageHeight;
+    final double? maxImageHeight = options.imageAdjustmentOptions.maxHeight;
     if (maxImageHeight != null && maxImageHeight < 0) {
       throw ArgumentError.value(
           maxImageHeight, 'maxImageHeight', 'cannot be negative');

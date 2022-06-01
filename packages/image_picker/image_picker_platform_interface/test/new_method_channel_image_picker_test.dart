@@ -157,7 +157,8 @@ void main() {
         );
 
         expect(
-          () => picker.pickImage(imageQuality: 101, source: ImageSource.gallery),
+          () =>
+              picker.pickImage(imageQuality: 101, source: ImageSource.gallery),
           throwsArgumentError,
         );
 
@@ -1058,21 +1059,21 @@ void main() {
           await picker.getMedia(
             options: MediaSelectionOptions(
               imageAdjustmentOptions: const ImageAdjustmentOptions(
-                maxImageWidth: 10.0,
+                maxWidth: 10.0,
               ),
             ),
           );
           await picker.getMedia(
             options: MediaSelectionOptions(
               imageAdjustmentOptions: const ImageAdjustmentOptions(
-                maxImageHeight: 10.0,
+                maxHeight: 10.0,
               ),
             ),
           );
           await picker.getMedia(
             options: MediaSelectionOptions(
               imageAdjustmentOptions: const ImageAdjustmentOptions(
-                imageQuality: 70,
+                quality: 70,
               ),
             ),
           );
@@ -1085,16 +1086,17 @@ void main() {
           );
           returnValue = '0';
           await picker.getMedia(
-            options: MediaSelectionOptions(types: <MediaSelectionType>[MediaSelectionType.image]),
+            options: MediaSelectionOptions(
+                types: <MediaSelectionType>[MediaSelectionType.image]),
           );
           // Combinations
           returnValue = <String>['0', '1'];
           await picker.getMedia(
             options: MediaSelectionOptions(
                 imageAdjustmentOptions: const ImageAdjustmentOptions(
-                  maxImageWidth: 10.0,
-                  maxImageHeight: 20.0,
-                  imageQuality: 70,
+                  maxWidth: 10.0,
+                  maxHeight: 20.0,
+                  quality: 70,
                 ),
                 allowMultiple: true,
                 types: <MediaSelectionType>[MediaSelectionType.video]),
@@ -1284,7 +1286,7 @@ void main() {
             () => picker.getMedia(
               options: MediaSelectionOptions(
                 imageAdjustmentOptions: const ImageAdjustmentOptions(
-                  maxImageWidth: -1.0,
+                  maxWidth: -1.0,
                 ),
               ),
             ),
@@ -1295,7 +1297,7 @@ void main() {
             () => picker.getMedia(
               options: MediaSelectionOptions(
                 imageAdjustmentOptions: const ImageAdjustmentOptions(
-                  maxImageHeight: -1.0,
+                  maxHeight: -1.0,
                 ),
               ),
             ),
@@ -1343,7 +1345,7 @@ void main() {
             () => picker.getMedia(
               options: MediaSelectionOptions(
                 imageAdjustmentOptions: const ImageAdjustmentOptions(
-                  imageQuality: -1,
+                  quality: -1,
                 ),
               ),
             ),
@@ -1354,7 +1356,7 @@ void main() {
             () => picker.getMedia(
               options: MediaSelectionOptions(
                 imageAdjustmentOptions: const ImageAdjustmentOptions(
-                  imageQuality: 101,
+                  quality: 101,
                 ),
               ),
             ),
@@ -1381,17 +1383,21 @@ void main() {
         });
 
         test('handles a null path response gracefully', () async {
-          picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+          picker.channel
+              .setMockMethodCallHandler((MethodCall methodCall) => null);
 
           expect(await picker.getMedia(), isNull);
           expect(await picker.getMedia(), isNull);
         });
 
         test('handles a null image path response gracefully', () async {
-          picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+          picker.channel
+              .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-          expect(await picker.getImageFromSource(source: ImageSource.gallery), isNull);
-          expect(await picker.getImageFromSource(source: ImageSource.camera), isNull);
+          expect(await picker.getImageFromSource(source: ImageSource.gallery),
+              isNull);
+          expect(await picker.getImageFromSource(source: ImageSource.camera),
+              isNull);
         });
 
         test('camera position defaults to back', () async {
