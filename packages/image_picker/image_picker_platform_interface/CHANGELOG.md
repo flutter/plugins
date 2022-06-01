@@ -1,6 +1,6 @@
 ## 2.6.0
 
-* Adds `getMedia` methods for picking both videos and images simultaneously.
+* Adds `getMedia` method for picking both videos and images simultaneously.
 
 ## 2.5.0
 
