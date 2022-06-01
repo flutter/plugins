@@ -56,21 +56,24 @@ class FakeStoreKitPlatform {
     queueIsActive = false;
   }
 
-  SKPaymentTransactionWrapper createPendingTransaction(String id, {int quantity = 1}) {
+  SKPaymentTransactionWrapper createPendingTransaction(String id,
+      {int quantity = 1}) {
     return SKPaymentTransactionWrapper(
-        transactionIdentifier: '',
-        payment: SKPaymentWrapper(productIdentifier: id, quantity: quantity),
-        transactionState: SKPaymentTransactionStateWrapper.purchasing,
-        transactionTimeStamp: 123123.121,
-        error: null,
-        originalTransaction: null,
+      transactionIdentifier: '',
+      payment: SKPaymentWrapper(productIdentifier: id, quantity: quantity),
+      transactionState: SKPaymentTransactionStateWrapper.purchasing,
+      transactionTimeStamp: 123123.121,
+      error: null,
+      originalTransaction: null,
     );
   }
 
   SKPaymentTransactionWrapper createPurchasedTransaction(
-      String productId, String transactionId, {int quantity = 1}) {
+      String productId, String transactionId,
+      {int quantity = 1}) {
     return SKPaymentTransactionWrapper(
-        payment: SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
+        payment:
+            SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.purchased,
         transactionTimeStamp: 123123.121,
         transactionIdentifier: transactionId,
@@ -78,10 +81,12 @@ class FakeStoreKitPlatform {
         originalTransaction: null);
   }
 
-  SKPaymentTransactionWrapper createFailedTransaction(String productId, {int quantity = 1}) {
+  SKPaymentTransactionWrapper createFailedTransaction(String productId,
+      {int quantity = 1}) {
     return SKPaymentTransactionWrapper(
         transactionIdentifier: '',
-        payment: SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
+        payment:
+            SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.failed,
         transactionTimeStamp: 123123.121,
         error: const SKError(
@@ -92,10 +97,12 @@ class FakeStoreKitPlatform {
   }
 
   SKPaymentTransactionWrapper createCanceledTransaction(
-      String productId, int errorCode, {int quantity = 1}) {
+      String productId, int errorCode,
+      {int quantity = 1}) {
     return SKPaymentTransactionWrapper(
         transactionIdentifier: '',
-        payment: SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
+        payment:
+            SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.failed,
         transactionTimeStamp: 123123.121,
         error: SKError(
@@ -106,9 +113,11 @@ class FakeStoreKitPlatform {
   }
 
   SKPaymentTransactionWrapper createRestoredTransaction(
-      String productId, String transactionId, {int quantity = 1}) {
+      String productId, String transactionId,
+      {int quantity = 1}) {
     return SKPaymentTransactionWrapper(
-        payment: SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
+        payment:
+            SKPaymentWrapper(productIdentifier: productId, quantity: quantity),
         transactionState: SKPaymentTransactionStateWrapper.restored,
         transactionTimeStamp: 123123.121,
         transactionIdentifier: transactionId,
@@ -198,8 +207,7 @@ class FakeStoreKitPlatform {
         finishedTransactions.add(createPurchasedTransaction(
             call.arguments['productIdentifier'] as String,
             call.arguments['transactionIdentifier'] as String,
-            quantity: transactions.first.payment.quantity
-        ));
+            quantity: transactions.first.payment.quantity));
         break;
       case '-[SKPaymentQueue startObservingTransactionQueue]':
         queueIsActive = true;
