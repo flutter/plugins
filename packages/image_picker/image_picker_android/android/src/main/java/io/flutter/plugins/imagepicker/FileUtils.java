@@ -35,6 +35,11 @@ import java.io.OutputStream;
 
 class FileUtils {
 
+  String getMimeFromUri(final Context context, final Uri uri) {
+    ContentResolver contentResolver = context.getContentResolver();
+    return contentResolver.getType(uri);
+  }
+
   String getPathFromUri(final Context context, final Uri uri) {
     File file = null;
     InputStream inputStream = null;

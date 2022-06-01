@@ -1,3 +1,7 @@
+## 0.8.5
+
+* Adds support for `getMedia`.
+
 ## 0.8.4+13
 
 * Minor fixes for new analysis options.

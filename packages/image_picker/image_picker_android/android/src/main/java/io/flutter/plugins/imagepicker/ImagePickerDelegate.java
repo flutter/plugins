@@ -15,6 +15,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -24,8 +26,10 @@ import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 enum CameraDevice {
@@ -74,10 +78,10 @@ enum CameraDevice {
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
-  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
-  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY = 2346;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_MULTI_FROM_GALLERY = 2346;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
@@ -202,7 +206,7 @@ public class ImagePickerDelegate
     return cameraDevice;
   }
 
-  // Save the state of the image picker so it can be retrieved with `retrieveLostImage`.
+  // Save the state of the image picker so it can be retrieved with `retrieveLostData`.
   void saveStateBeforeResult() {
     if (methodCall == null) {
       return;
@@ -215,21 +219,26 @@ public class ImagePickerDelegate
     }
   }
 
-  void retrieveLostImage(MethodChannel.Result result) {
+  void retrieveLostData(MethodChannel.Result result) {
     Map<String, Object> resultMap = cache.getCacheMap();
     @SuppressWarnings("unchecked")
     ArrayList<String> pathList = (ArrayList<String>) resultMap.get(cache.MAP_KEY_PATH_LIST);
     ArrayList<String> newPathList = new ArrayList<>();
+    Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
+    Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
+    int imageQuality =
+        resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
+            ? 100
+            : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
     if (pathList != null) {
       for (String path : pathList) {
-        Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
-        Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
-        int imageQuality =
-            resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
-                ? 100
-                : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
-
-        newPathList.add(imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
+        String mimeType = fileUtils.getMimeFromUri(activity, Uri.parse(path));
+        if (mimeType != null && mimeType.startsWith("image/")) {
+          newPathList.add(
+              imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
+        } else {
+          newPathList.add(path);
+        }
       }
       resultMap.put(cache.MAP_KEY_PATH_LIST, newPathList);
       resultMap.put(cache.MAP_KEY_PATH, newPathList.get(newPathList.size() - 1));
@@ -311,7 +320,7 @@ public class ImagePickerDelegate
       return;
     }
 
-    launchPickImageFromGalleryIntent();
+    launchPickFromGalleryIntent(new String[] {"image/*"}, false);
   }
 
   public void chooseMultiImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
@@ -320,24 +329,53 @@ public class ImagePickerDelegate
       return;
     }
 
-    launchMultiPickImageFromGalleryIntent();
+    launchPickFromGalleryIntent(new String[] {"image/*"}, true);
   }
 
-  private void launchPickImageFromGalleryIntent() {
-    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
-    pickImageIntent.setType("image/*");
+  public void chooseMediaFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError(result);
+      return;
+    }
 
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+    Boolean allowMultiple = methodCall.argument("allowMultiple");
+    if (allowMultiple == null) allowMultiple = false;
+
+    List<String> types = methodCall.argument("types");
+    Set<String> mimeTypes = new HashSet<>();
+
+    if (types == null) {
+      mimeTypes.add("image/*");
+      mimeTypes.add("video/*");
+    } else {
+      if (types.contains("image") || types.contains("media")) {
+        mimeTypes.add("image/*");
+      }
+      if (types.contains("video") || types.contains("media")) {
+        mimeTypes.add("video/*");
+      }
+    }
+
+    launchPickFromGalleryIntent(mimeTypes.toArray(new String[0]), allowMultiple);
   }
 
-  private void launchMultiPickImageFromGalleryIntent() {
+  private void launchPickFromGalleryIntent(@Nullable String[] mimeTypes, boolean multiple) {
+    if (mimeTypes == null) {
+      mimeTypes = new String[] {"*/*"};
+    }
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (multiple && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       pickImageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
     }
-    pickImageIntent.setType("image/*");
-
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      pickImageIntent.setType("*/*");
+      pickImageIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+    } else {
+      pickImageIntent.setType(TextUtils.join(" ", mimeTypes));
+    }
+    activity.startActivityForResult(
+        pickImageIntent,
+        multiple ? REQUEST_CODE_CHOOSE_MULTI_FROM_GALLERY : REQUEST_CODE_CHOOSE_FROM_GALLERY);
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -460,11 +498,11 @@ public class ImagePickerDelegate
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
-      case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
-        handleChooseImageResult(resultCode, data);
+      case REQUEST_CODE_CHOOSE_FROM_GALLERY:
+        handleChooseResult(resultCode, data);
         break;
-      case REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY:
-        handleChooseMultiImageResult(resultCode, data);
+      case REQUEST_CODE_CHOOSE_MULTI_FROM_GALLERY:
+        handleChooseMultiResult(resultCode, data);
         break;
       case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
         handleCaptureImageResult(resultCode);
@@ -482,10 +520,22 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void handleChooseImageResult(int resultCode, Intent data) {
+  private void handleChooseResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
-      String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleImageResult(path, false);
+      Uri uri = data.getData();
+      String path = fileUtils.getPathFromUri(activity, uri);
+      String mime = fileUtils.getMimeFromUri(activity, uri);
+      if (mime == null) {
+        throw new UnsupportedOperationException(
+            "Could not handle picked file as it has an unknown mime type.");
+      }
+      if (mime.startsWith("image/")) {
+        handleImageResult(path, false, true);
+      } else if (mime.startsWith("video/")) {
+        finishWithSuccess(path);
+      } else {
+        throw new UnsupportedOperationException("Cannot handle picked file for mime type: " + mime);
+      }
       return;
     }
 
@@ -493,17 +543,30 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleChooseMultiImageResult(int resultCode, Intent intent) {
+  private void handleChooseMultiResult(int resultCode, Intent intent) {
     if (resultCode == Activity.RESULT_OK && intent != null) {
-      ArrayList<String> paths = new ArrayList<>();
+      List<Uri> uris = new ArrayList<>();
       if (intent.getClipData() != null) {
         for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
-          paths.add(fileUtils.getPathFromUri(activity, intent.getClipData().getItemAt(i).getUri()));
+          uris.add(intent.getClipData().getItemAt(i).getUri());
         }
       } else {
-        paths.add(fileUtils.getPathFromUri(activity, intent.getData()));
+        uris.add(intent.getData());
       }
-      handleMultiImageResult(paths, false);
+      ArrayList<String> paths = new ArrayList<>();
+      for (Uri uri : uris) {
+        String path = fileUtils.getPathFromUri(activity, uri);
+        String mime = fileUtils.getMimeFromUri(activity, uri);
+        if (mime == null) {
+          throw new UnsupportedOperationException(
+              "Could not handle picked file as it has an unknown mime type.");
+        }
+        if (mime.startsWith("image/")) {
+          path = handleImageResult(path, false, false);
+        }
+        paths.add(path);
+      }
+      finishWithListSuccess(paths);
       return;
     }
 
@@ -514,7 +577,7 @@ public class ImagePickerDelegate
   private void handleChooseVideoResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleVideoResult(path);
+      finishWithSuccess(path);
       return;
     }
 
@@ -524,14 +587,18 @@ public class ImagePickerDelegate
 
   private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
+      if (pendingCameraMediaUri == null) {
+        String cachedPath = cache.retrievePendingCameraMediaUriPath();
+        if (cachedPath != null) {
+          pendingCameraMediaUri = Uri.parse(cachedPath);
+        }
+      }
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri != null
-              ? pendingCameraMediaUri
-              : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
+          pendingCameraMediaUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleImageResult(path, true);
+              handleImageResult(path, true, true);
             }
           });
       return;
@@ -543,14 +610,18 @@ public class ImagePickerDelegate
 
   private void handleCaptureVideoResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
+      if (pendingCameraMediaUri == null) {
+        String cachePath = cache.retrievePendingCameraMediaUriPath();
+        if (cachePath != null) {
+          pendingCameraMediaUri = Uri.parse(cachePath);
+        }
+      }
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri != null
-              ? pendingCameraMediaUri
-              : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
+          pendingCameraMediaUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleVideoResult(path);
+              finishWithSuccess(path);
             }
           });
       return;
@@ -560,50 +631,38 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleMultiImageResult(
-      ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
-    if (methodCall != null) {
-      ArrayList<String> finalPath = new ArrayList<>();
-      for (int i = 0; i < paths.size(); i++) {
-        String finalImagePath = getResizedImagePath(paths.get(i));
-
-        //delete original file if scaled
-        if (finalImagePath != null
-            && !finalImagePath.equals(paths.get(i))
-            && shouldDeleteOriginalIfScaled) {
-          new File(paths.get(i)).delete();
-        }
-        finalPath.add(i, finalImagePath);
-      }
-      finishWithListSuccess(finalPath);
-    } else {
-      finishWithListSuccess(paths);
-    }
-  }
-
-  private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
+  private String handleImageResult(
+      String path, boolean shouldDeleteOriginalIfScaled, boolean finishMethodCall) {
     if (methodCall != null) {
       String finalImagePath = getResizedImagePath(path);
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
-      finishWithSuccess(finalImagePath);
-    } else {
+      path = finalImagePath;
+      if (finishMethodCall) {
+        finishWithSuccess(finalImagePath);
+      }
+    } else if (finishMethodCall) {
       finishWithSuccess(path);
     }
+    return path;
   }
 
   private String getResizedImagePath(String path) {
-    Double maxWidth = methodCall.argument("maxWidth");
-    Double maxHeight = methodCall.argument("maxHeight");
+    Double maxWidth = methodCall.argument("maxImageWidth");
+    if (maxWidth == null) {
+      maxWidth = methodCall.argument("maxWidth");
+    }
+
+    Double maxHeight = methodCall.argument("maxImageHeight");
+    if (maxHeight == null) {
+      maxHeight = methodCall.argument("maxHeight");
+    }
+
     Integer imageQuality = methodCall.argument("imageQuality");
 
     return imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
-  }
-
-  private void handleVideoResult(String path) {
-    finishWithSuccess(path);
   }
 
   private boolean setPendingMethodCallAndResult(
@@ -621,23 +680,23 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void finishWithSuccess(String imagePath) {
+  private void finishWithSuccess(String path) {
     if (pendingResult == null) {
       ArrayList<String> pathList = new ArrayList<>();
-      pathList.add(imagePath);
+      pathList.add(path);
       cache.saveResult(pathList, null, null);
       return;
     }
-    pendingResult.success(imagePath);
+    pendingResult.success(path);
     clearMethodCallAndResult();
   }
 
-  private void finishWithListSuccess(ArrayList<String> imagePaths) {
+  private void finishWithListSuccess(ArrayList<String> paths) {
     if (pendingResult == null) {
-      cache.saveResult(imagePaths, null, null);
+      cache.saveResult(paths, null, null);
       return;
     }
-    pendingResult.success(imagePaths);
+    pendingResult.success(paths);
     clearMethodCallAndResult();
   }
 

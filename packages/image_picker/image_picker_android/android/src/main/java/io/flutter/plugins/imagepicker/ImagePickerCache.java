@@ -59,11 +59,12 @@ class ImagePickerCache {
       setType("image");
     } else if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_VIDEO)) {
       setType("video");
+    } else if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_MEDIA)) {
+      setType("media");
     }
   }
 
   private void setType(String type) {
-
     prefs.edit().putString(SHARED_PREFERENCE_TYPE_KEY, type).apply();
   }
 
