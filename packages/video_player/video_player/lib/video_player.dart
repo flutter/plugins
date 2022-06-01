@@ -392,6 +392,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
+        case VideoEventType.disconnectedAudioIO:
+          pause();
+          break;
         case VideoEventType.unknown:
           break;
       }

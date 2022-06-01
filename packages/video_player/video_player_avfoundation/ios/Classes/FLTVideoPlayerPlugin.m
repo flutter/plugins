@@ -98,6 +98,11 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
                                            selector:@selector(itemDidPlayToEndTime:)
                                                name:AVPlayerItemDidPlayToEndTimeNotification
                                              object:item];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRouteChange:)
+                                               name:AVAudioSessionRouteChangeNotification
+                                             object:[AVAudioSession sharedInstance]];
 }
 
 - (void)itemDidPlayToEndTime:(NSNotification *)notification {
@@ -109,6 +114,22 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
       _eventSink(@{@"event" : @"completed"});
     }
   }
+}
+
+- (void)handleRouteChange:(NSNotification *)notification
+{
+    UInt8 reasonValue = [[notification.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] intValue];
+    AVAudioSessionRouteDescription *routeDescription = [notification.userInfo valueForKey:AVAudioSessionRouteChangePreviousRouteKey];
+    switch (reasonValue) {
+        case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+            if (_eventSink != nil) {
+                _eventSink(@{
+              @"event" : @"didPauseInternally",
+                });}
+            break;
+        default:
+            NSLog(@"Reason not mapped");
+    }
 }
 
 const int64_t TIME_UNSET = -9223372036854775807;

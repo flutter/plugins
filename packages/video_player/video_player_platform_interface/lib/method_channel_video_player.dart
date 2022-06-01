@@ -131,6 +131,8 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
           return VideoEvent(eventType: VideoEventType.bufferingEnd);
+        case 'disconnectedAudioIO':
+          return VideoEvent(eventType: VideoEventType.disconnectedAudioIO);
         default:
           return VideoEvent(eventType: VideoEventType.unknown);
       }

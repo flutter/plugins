@@ -278,6 +278,9 @@ enum VideoEventType {
   /// The video stopped to buffer.
   bufferingEnd,
 
+  /// An input or output has been disconnected.
+  disconnectedAudioIO,
+
   /// An unknown event has been received.
   unknown,
 }
