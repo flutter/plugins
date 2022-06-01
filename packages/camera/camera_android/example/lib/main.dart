@@ -5,11 +5,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
+
+import 'camera_controller_lite.dart';
+import 'camera_preview_lite.dart';
 
 /// Camera example home widget.
 class CameraExampleHome extends StatefulWidget {
@@ -108,7 +111,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     super.dispose();
   }
 
-  // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -124,7 +126,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(cameraController.description);
     }
   }
-  // #enddocregion AppLifecycle
 
   @override
   Widget build(BuildContext context) {

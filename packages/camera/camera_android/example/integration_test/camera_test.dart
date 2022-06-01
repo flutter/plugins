@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
