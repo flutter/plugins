@@ -46,3 +46,5 @@ There's no `defaultMarkerWithHue` in web. If you need colored pins/markers, you 
 Indoor and building layers are still not available on the web. Traffic is.
 
 Only Android supports "[Lite Mode](https://developers.google.com/maps/documentation/android-sdk/lite)", so the `liteModeEnabled` constructor argument can't be set to `true` on web apps.
+
+When stacked below other widgets, pointer_interceptor libary must be used to capture mouse events. See issue https://github.com/flutter/flutter/issues/73830
