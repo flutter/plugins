@@ -12,7 +12,7 @@ import 'web_kit_api_impls.dart';
 
 // TODO(bparrishMines): All subclasses of NSObject need to pass their
 // InstanceManager and BinaryMessenger to its parent. They also need to
-// override copy();
+// override copy(): https://github.com/flutter/flutter/issues/105245
 
 /// Times at which to inject script content into a webpage.
 ///
@@ -633,10 +633,7 @@ class WKNavigationDelegate extends NSObject {
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
 
   /// Called when navigation is complete.
-  final void Function(
-    WKWebView webView,
-    String? url,
-  )? didFinishNavigation;
+  final void Function(WKWebView webView, String? url)? didFinishNavigation;
 
   /// Called when navigation from the main frame has started.
   Future<void> setDidStartProvisionalNavigation(
