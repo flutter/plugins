@@ -1,10 +1,10 @@
 # webview\_pro\_android
 
-The Android implementation of [`webview_flutter`][1].
+The Android implementation of [`flutter_webview_pro`][1].
 
 ## Usage
 
-This package is [endorsed][2], which means you can simply use `webview_flutter`
+This package is [endorsed][2], which means you can simply use `flutter_webview_pro`
 normally. This package will be automatically included in your app when you do.
 
 ## Contributing
@@ -18,7 +18,7 @@ flutter packages pub run build_runner build --delete-conflicting-outputs
 
 If you would like to contribute to the plugin, check out our [contribution guide][5].
 
-[1]: https://pub.dev/packages/webview_flutter
+[1]: https://pub.dev/packages/flutter_webview_pro
 [2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
 [3]: https://pub.dev/packages/pigeon
 [4]: https://pub.dev/packages/mockito
