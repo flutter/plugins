@@ -1,3 +1,7 @@
+## 0.8.4+14
+
+* Bump gradle from 3.3.0 to 7.2.1.
+
 ## 0.8.4+13
 
 * Minor fixes for new analysis options.
