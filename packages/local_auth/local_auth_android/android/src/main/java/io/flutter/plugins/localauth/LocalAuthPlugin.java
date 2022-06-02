@@ -142,7 +142,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
     if (!isDeviceSupported()) {
       authInProgress.set(false);
-      result.error(AuthResultErrorCodes.NOT_AVAILABLE, "Required security features not enabled", null);
+      result.error(
+          AuthResultErrorCodes.NOT_AVAILABLE, "Required security features not enabled", null);
       return;
     }
 
@@ -176,8 +177,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         }
         final AuthenticationErrorHandler errorHandler = new AuthenticationErrorHandler();
         errorHandler.handleNotEnrolledError(
-            (FragmentActivity) activity, false, call, completionHandler, null
-        );
+            (FragmentActivity) activity, false, call, completionHandler, null);
         return;
       }
       authHelper =

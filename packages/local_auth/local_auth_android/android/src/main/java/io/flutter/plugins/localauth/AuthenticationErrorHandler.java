@@ -22,8 +22,7 @@ public class AuthenticationErrorHandler {
       boolean canTryUpdateSettings,
       final MethodCall call,
       final AuthenticationHelper.AuthCompletionHandler completionHandler,
-      @Nullable final Runnable onStop
-  ) {
+      @Nullable final Runnable onStop) {
     boolean useErrorDialogs = call.argument("useErrorDialogs");
     if (canTryUpdateSettings && useErrorDialogs) {
       showGoToSettingsDialog(
@@ -32,11 +31,11 @@ public class AuthenticationErrorHandler {
           (String) call.argument("deviceCredentialsSetupDescription"),
           call,
           completionHandler,
-          onStop
-      );
+          onStop);
       return;
     }
-    completionHandler.onError(AuthResultErrorCodes.NOT_AVAILABLE, "Security credentials not available.");
+    completionHandler.onError(
+        AuthResultErrorCodes.NOT_AVAILABLE, "Security credentials not available.");
     if (onStop != null) {
       onStop.run();
     }
@@ -47,8 +46,7 @@ public class AuthenticationErrorHandler {
       boolean isDeviceCredentialAllowed,
       final MethodCall call,
       final AuthenticationHelper.AuthCompletionHandler completionHandler,
-      @Nullable final Runnable onStop
-  ) {
+      @Nullable final Runnable onStop) {
     if (isDeviceCredentialAllowed) return;
     if (call.argument("useErrorDialogs")) {
       showGoToSettingsDialog(
@@ -57,11 +55,11 @@ public class AuthenticationErrorHandler {
           (String) call.argument("goToSettingDescription"),
           call,
           completionHandler,
-          onStop
-      );
+          onStop);
       return;
     }
-    completionHandler.onError(AuthResultErrorCodes.NOT_ENROLLED, "No Biometrics enrolled on this device.");
+    completionHandler.onError(
+        AuthResultErrorCodes.NOT_ENROLLED, "No Biometrics enrolled on this device.");
     if (onStop != null) {
       onStop.run();
     }
@@ -75,8 +73,7 @@ public class AuthenticationErrorHandler {
       String descriptionText,
       final MethodCall call,
       final AuthenticationHelper.AuthCompletionHandler completionHandler,
-      @Nullable final Runnable onStop
-  ) {
+      @Nullable final Runnable onStop) {
     View view = LayoutInflater.from(activity).inflate(R.layout.go_to_setting, null, false);
     TextView message = view.findViewById(R.id.fingerprint_required);
     TextView description = view.findViewById(R.id.go_to_setting_description);
