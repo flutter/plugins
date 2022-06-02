@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  webview_pro_android: ^2.8.3+2
+  webview_pro_android: ^2.8.3+3
   webview_pro_platform_interface: ^1.8.1+2
   webview_pro_wkwebview: ^2.7.1+2
 
