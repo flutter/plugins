@@ -769,19 +769,27 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == VideoPlayerController.kUninitializedTextureId
         ? Container()
-        : videoPlayerWidgetWithCorrectRotation();
-  }
-
-  Widget videoPlayerWidgetWithCorrectRotation() {
-    final Widget playerWidget = _videoPlayerPlatform.buildView(_textureId);
-    final int rotation = widget.controller.value.rotationCorrection;
-    return rotation == 0
-        ? playerWidget
-        : Transform.rotate(
-            angle: rotation * math.pi / 180,
-            child: playerWidget,
+        : _VideoPlayerWithRotation(
+            rotation: widget.controller.value.rotationCorrection,
+            child: _videoPlayerPlatform.buildView(_textureId),
           );
   }
+}
+
+class _VideoPlayerWithRotation extends StatelessWidget {
+  const _VideoPlayerWithRotation(
+      {Key? key, required this.rotation, required this.child})
+      : super(key: key);
+  final int rotation;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => rotation == 0
+      ? child
+      : Transform.rotate(
+          angle: rotation * math.pi / 180,
+          child: child,
+        );
 }
 
 /// Used to configure the [VideoProgressIndicator] widget's colors for how it
