@@ -18,7 +18,7 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   image_picker_platform_interface: ^2.3.0
-  video_player: ^2.1.4
+  video_player: 2.1.4
 
 dev_dependencies:
   espresso: ^0.2.0
