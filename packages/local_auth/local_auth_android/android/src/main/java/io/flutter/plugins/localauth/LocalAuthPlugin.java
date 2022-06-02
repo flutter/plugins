@@ -142,7 +142,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
     if (!isDeviceSupported()) {
       authInProgress.set(false);
-      result.error("NotAvailable", "Required security features not enabled", null);
+      result.error(AuthResultErrorCodes.NOT_AVAILABLE, "Required security features not enabled", null);
       return;
     }
 
@@ -174,7 +174,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         if (!hasBiometricHardware()) {
           completionHandler.onError("NoHardware", "No biometric hardware found");
         }
-        completionHandler.onError("NotEnrolled", "No biometrics enrolled on this device.");
+        final AuthenticationErrorHandler errorHandler = new AuthenticationErrorHandler();
+        errorHandler.handleNotEnrolledError(
+            (FragmentActivity) activity, false, call, completionHandler, null
+        );
         return;
       }
       authHelper =

@@ -129,39 +129,51 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   @SuppressLint("SwitchIntDef")
   @Override
   public void onAuthenticationError(int errorCode, CharSequence errString) {
+    final AuthenticationErrorHandler errorHandler = new AuthenticationErrorHandler();
+    final Runnable onStopCallback = new Runnable() {
+      @Override
+      public void run() {
+        stop();
+      }
+    };
     switch (errorCode) {
       case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
-        if (call.argument("useErrorDialogs")) {
-          showGoToSettingsDialog(
-              (String) call.argument("deviceCredentialsRequired"),
-              (String) call.argument("deviceCredentialsSetupDescription"));
-          return;
-        }
-        completionHandler.onError("NotAvailable", "Security credentials not available.");
-        break;
+        errorHandler.handleCredentialsNotAvailableError(
+            activity,
+            true,
+            call,
+            completionHandler,
+            onStopCallback
+        );
+        return;
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
-        if (promptInfo.isDeviceCredentialAllowed()) return;
-        if (call.argument("useErrorDialogs")) {
-          showGoToSettingsDialog(
-              (String) call.argument("biometricRequired"),
-              (String) call.argument("goToSettingDescription"));
-          return;
-        }
-        completionHandler.onError("NotEnrolled", "No Biometrics enrolled on this device.");
-        break;
+        errorHandler.handleNotEnrolledError(
+            activity,
+            promptInfo.isDeviceCredentialAllowed(),
+            call,
+            completionHandler,
+            onStopCallback
+        );
+        return;
       case BiometricPrompt.ERROR_HW_UNAVAILABLE:
       case BiometricPrompt.ERROR_HW_NOT_PRESENT:
-        completionHandler.onError("NotAvailable", "Security credentials not available.");
-        break;
+        errorHandler.handleCredentialsNotAvailableError(
+            activity,
+            false,
+            call,
+            completionHandler,
+            onStopCallback
+        );
+        return;
       case BiometricPrompt.ERROR_LOCKOUT:
         completionHandler.onError(
-            "LockedOut",
+            AuthResultErrorCodes.LOCKED_OUT,
             "The operation was canceled because the API is locked out due to too many attempts. This occurs after 5 failed attempts, and lasts for 30 seconds.");
         break;
       case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
         completionHandler.onError(
-            "PermanentlyLockedOut",
+            AuthResultErrorCodes.PERMANENTLY_LOCKED_OUT,
             "The operation was canceled because ERROR_LOCKOUT occurred too many times. Biometric authentication is disabled until the user unlocks with strong authentication (PIN/Pattern/Password)");
         break;
       case BiometricPrompt.ERROR_CANCELED:
@@ -224,40 +236,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   @Override
   public void onResume(@NonNull LifecycleOwner owner) {
     onActivityResumed(null);
-  }
-
-  // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
-  @SuppressLint("InflateParams")
-  private void showGoToSettingsDialog(String title, String descriptionText) {
-    View view = LayoutInflater.from(activity).inflate(R.layout.go_to_setting, null, false);
-    TextView message = (TextView) view.findViewById(R.id.fingerprint_required);
-    TextView description = (TextView) view.findViewById(R.id.go_to_setting_description);
-    message.setText(title);
-    description.setText(descriptionText);
-    Context context = new ContextThemeWrapper(activity, R.style.AlertDialogCustom);
-    OnClickListener goToSettingHandler =
-        new OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            completionHandler.onFailure();
-            stop();
-            activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
-          }
-        };
-    OnClickListener cancelHandler =
-        new OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            completionHandler.onFailure();
-            stop();
-          }
-        };
-    new AlertDialog.Builder(context)
-        .setView(view)
-        .setPositiveButton((String) call.argument("goToSetting"), goToSettingHandler)
-        .setNegativeButton((String) call.argument("cancelButton"), cancelHandler)
-        .setCancelable(false)
-        .show();
   }
 
   // Unused methods for activity lifecycle.

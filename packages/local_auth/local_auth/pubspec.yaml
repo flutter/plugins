@@ -5,6 +5,8 @@ repository: https://github.com/flutter/plugins/tree/main/packages/local_auth/loc
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+local_auth%22
 version: 2.1.0
 
+publish_to: none
+
 environment:
   sdk: ">=2.14.0 <3.0.0"
   flutter: ">=2.8.0"
@@ -23,7 +25,11 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
-  local_auth_android: ^1.0.0
+  local_auth_android: # ^1.0.0
+    git:
+      url: https://github.com/zfx-com/flutter_plugins.git
+      path: packages/local_auth/local_auth_android
+      ref: develop
   local_auth_ios: ^1.0.1
   local_auth_platform_interface: ^1.0.1
   local_auth_windows: ^1.0.0
