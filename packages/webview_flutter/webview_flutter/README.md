@@ -1,6 +1,6 @@
 # Flutter WebView Pro
 
-[![pub package](https://img.shields.io/badge/pub-v3.0.1+2-orange)](https://pub.dartlang.org/packages/flutter_webview_pro)
+[![pub package](https://img.shields.io/badge/pub-v3.0.1+3-orange)](https://pub.dartlang.org/packages/flutter_webview_pro)
 
 A Flutter plugin that provides a WebView widget.
 
@@ -29,7 +29,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  flutter_webview_pro: ^3.0.1+2
+  flutter_webview_pro: ^3.0.1+3
 ```
 
 ### 2.Import
