@@ -11,7 +11,7 @@
 @end
 
 @implementation FWFInstanceManagerTests
-- (void)testAddFlutterCreatedInstance {
+- (void)testAddDartCreatedInstance {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   NSObject *object = [[NSObject alloc] init];
 
