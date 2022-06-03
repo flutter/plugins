@@ -1,3 +1,7 @@
+## 0.8.5
+
+* Updates gradle to 7.1.2.
+
 ## 0.8.4+13
 
 * Minor fixes for new analysis options.
