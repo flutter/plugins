@@ -233,17 +233,30 @@ class NSHttpCookie {
 }
 
 /// The root class of most Objective-C class hierarchies.
-class NSObject {
-  /// Constructs an [NSObject].
-  NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : _api = NSObjectHostApiImpl(
+@immutable
+class NSObject with Copyable {
+  // TODO(bparrishMines): Change constructor name to `detached`.
+  /// Constructs a [NSObject] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  NSObject({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _api = NSObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    // Ensures FlutterApis for the Foundation library and FunctionFlutterApi are
-    // set up.
+    // Ensures FlutterApis for the Foundation library are set up.
     FoundationFlutterApis.instance.ensureSetUp();
   }
+
+  /// Global instance of [InstanceManager].
+  static final InstanceManager globalInstanceManager =
+      InstanceManager(onWeakReferenceRemoved: (int instanceId) {
+    NSObjectHostApiImpl().dispose(instanceId);
+  });
 
   final NSObjectHostApiImpl _api;
 
@@ -268,8 +281,8 @@ class NSObject {
   }
 
   /// Release the reference to the Objective-C object.
-  Future<void> dispose() {
-    return _api.disposeForInstances(this);
+  static void dispose(NSObject instance) {
+    instance._api.instanceManager.removeWeakReference(instance);
   }
 
   /// Informs the observing object when the value at the specified key path has changed.
@@ -282,5 +295,26 @@ class NSObject {
         observeValue,
   ) {
     throw UnimplementedError();
+  }
+
+  @override
+  Copyable copy() {
+    return NSObject(
+      binaryMessenger: _api.binaryMessenger,
+      instanceManager: _api.instanceManager,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(_api, _api.instanceManager.getIdentifier(this));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NSObject &&
+        _api == other._api &&
+        _api.instanceManager.getIdentifier(this) ==
+            other._api.instanceManager.getIdentifier(other);
   }
 }

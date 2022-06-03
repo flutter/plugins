@@ -303,9 +303,6 @@ NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateHostApiGetCodec(void);
 
 @protocol FWFWKNavigationDelegateHostApi
 - (void)createWithIdentifier:(NSNumber *)identifier error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setDidFinishNavigationForDelegateWithIdentifier:(NSNumber *)identifier
-                                     functionIdentifier:(nullable NSNumber *)functionIdentifier
-                                                  error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FWFWKNavigationDelegateHostApiSetup(
@@ -317,7 +314,7 @@ NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateFlutterApiGetCodec(void);
 
 @interface FWFWKNavigationDelegateFlutterApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)didFinishNavigationForDelegateWithIdentifier:(NSNumber *)functionIdentifier
+- (void)didFinishNavigationForDelegateWithIdentifier:(NSNumber *)identifier
                                    webViewIdentifier:(NSNumber *)webViewIdentifier
                                                  URL:(nullable NSString *)url
                                           completion:(void (^)(NSError *_Nullable))completion;
@@ -343,13 +340,11 @@ NSObject<FlutterMessageCodec> *FWFNSObjectHostApiGetCodec(void);
 extern void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
                                     NSObject<FWFNSObjectHostApi> *_Nullable api);
 
-/// The codec used by FWFFunctionFlutterApi.
-NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec(void);
+/// The codec used by FWFNSObjectFlutterApi.
+NSObject<FlutterMessageCodec> *FWFNSObjectFlutterApiGetCodec(void);
 
-@interface FWFFunctionFlutterApi : NSObject
+@interface FWFNSObjectFlutterApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)disposeFunctionWithIdentifier:(NSNumber *)identifier
-                           completion:(void (^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FWFWKWebViewHostApi.
 NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);

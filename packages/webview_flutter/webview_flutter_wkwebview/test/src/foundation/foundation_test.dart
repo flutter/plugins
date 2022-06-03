@@ -22,7 +22,7 @@ void main() {
     late InstanceManager instanceManager;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
     });
 
     group('NSObject', () {
@@ -88,12 +88,17 @@ void main() {
       });
 
       test('dispose', () async {
-        final int instanceId = instanceManager.getIdentifier(object)!;
+        int? callbackIdentifier;
+        final InstanceManager instanceManager =
+            InstanceManager(onWeakReferenceRemoved: (int identifier) {
+          callbackIdentifier = identifier;
+        });
 
-        await object.dispose();
-        verify(
-          mockPlatformHostApi.dispose(instanceId),
-        );
+        final NSObject object = NSObject(instanceManager: instanceManager);
+        final int identifier = instanceManager.addDartCreatedInstance(object);
+
+        NSObject.dispose(object);
+        expect(callbackIdentifier, identifier);
       });
     });
   });

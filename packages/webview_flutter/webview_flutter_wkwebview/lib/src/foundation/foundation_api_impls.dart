@@ -5,7 +5,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import '../common/function_flutter_api_impls.dart';
 import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
 import 'foundation.dart';
@@ -38,16 +37,16 @@ Iterable<NSKeyValueObservingOptionsEnumData>
 }
 
 /// Handles initialization of Flutter APIs for the Foundation library.
+// TODO(bparrishMines): Add NSObjectFlutterApiImpl once the callback methods
+// are added.
 class FoundationFlutterApis {
   /// Constructs a [FoundationFlutterApis].
   @visibleForTesting
   FoundationFlutterApis({
     BinaryMessenger? binaryMessenger,
+    // ignore: avoid_unused_constructor_parameters
     InstanceManager? instanceManager,
-  }) : _binaryMessenger = binaryMessenger {
-    functionFlutterApi =
-        FunctionFlutterApiImpl(instanceManager: instanceManager);
-  }
+  }) : _binaryMessenger = binaryMessenger;
 
   static FoundationFlutterApis _instance = FoundationFlutterApis();
 
@@ -62,36 +61,33 @@ class FoundationFlutterApis {
     return _instance;
   }
 
+  // ignore: unused_field
   final BinaryMessenger? _binaryMessenger;
   bool _hasBeenSetUp = false;
-
-  /// Flutter Api for disposing functions.
-  ///
-  /// This FlutterApi is placed here because [FoundationFlutterApis.ensureSetUp]
-  /// is called inside [NSObject] and [NSObject] is the parent class of all
-  /// objects.
-  @visibleForTesting
-  late final FunctionFlutterApiImpl functionFlutterApi;
 
   /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
     if (!_hasBeenSetUp) {
-      FunctionFlutterApi.setup(
-        functionFlutterApi,
-        binaryMessenger: _binaryMessenger,
-      );
       _hasBeenSetUp = true;
     }
   }
 }
 
 /// Host api implementation for [NSObject].
+@immutable
 class NSObjectHostApiImpl extends NSObjectHostApi {
   /// Constructs an [NSObjectHostApiImpl].
   NSObjectHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -124,11 +120,15 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     );
   }
 
-  /// Calls [dispose] with the ids of the provided object instances.
-  Future<void> disposeForInstances(NSObject instance) async {
-    final int? identifier = instanceManager.removeWeakReference(instance);
-    if (identifier != null) {
-      await dispose(identifier);
-    }
+  @override
+  int get hashCode {
+    return Object.hash(binaryMessenger, instanceManager);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NSObjectHostApiImpl &&
+        binaryMessenger == other.binaryMessenger &&
+        instanceManager == other.instanceManager;
   }
 }
