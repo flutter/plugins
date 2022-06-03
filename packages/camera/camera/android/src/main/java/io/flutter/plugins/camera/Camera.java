@@ -1184,6 +1184,10 @@ class Camera
     if (cameraDevice != null) {
       cameraDevice.close();
       cameraDevice = null;
+
+      // Closing the CameraDevice without closing the CameraCaptureSession is recommended
+      // for quickly closing the camera:
+      // https://developer.android.com/reference/android/hardware/camera2/CameraCaptureSession#close()
       captureSession = null;
     } else {
       closeCaptureSession();
