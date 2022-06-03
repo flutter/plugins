@@ -1,6 +1,6 @@
 ## 0.10.0
 
-* **Breaking Change** Bumps default camera_web package version to 0.3.0.
+* **Breaking Change** Bumps default camera_web package version to 0.3.0 which renames permission exception code from `cameraPermission` to `CameraAccessDenied`.
 * **Breaking Change** Updates Android camera access permission error codes to be consistent with other platforms.
 
 ## 0.9.7+1
