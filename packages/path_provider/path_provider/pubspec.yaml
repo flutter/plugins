@@ -20,7 +20,7 @@ flutter:
       linux:
         default_package: path_provider_linux
       windows:
-        default_package: path_provider_windows
+        default_package: path_provider_windows 
 
 dependencies:
   flutter:
