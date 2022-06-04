@@ -34,7 +34,7 @@ dependencies:
   shared_preferences_macos: ^2.0.0
   shared_preferences_platform_interface: ^2.0.0
   shared_preferences_web: ^2.0.0
-  shared_preferences_windows: ^2.0.1
+  shared_preferences_windows: ^2.0.1 
 
 dev_dependencies:
   flutter_driver:
