@@ -18,7 +18,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  webview_pro_platform_interface: ^1.8.1+1
+  webview_pro_platform_interface: ^1.8.1+2
 #    path: ../webview_flutter_platform_interface
 
 dev_dependencies:
