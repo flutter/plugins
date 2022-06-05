@@ -81,7 +81,7 @@ test_driver/
   integration_test.dart
 ```
 
-[Example](https://github.com/flutter/plugins/tree/master/packages/integration_test/example)
+[Example](https://github.com/flutter/plugins/tree/main/packages/integration_test/example)
 
 ## Using Flutter Driver to Run Tests
 
