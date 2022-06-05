@@ -1,5 +1,6 @@
-## NEXT
+## 2.4.3
 
+* Updates references to the obsolete master branch.
 * Fixes order-dependent unit tests.
 
 ## 2.4.2

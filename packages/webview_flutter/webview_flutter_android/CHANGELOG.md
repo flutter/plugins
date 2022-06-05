@@ -1,3 +1,7 @@
+## 2.8.10
+
+* Updates references to the obsolete master branch.
+
 ## 2.8.9
 
 * Updates Gradle to 7.2.1.
