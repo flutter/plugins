@@ -41,6 +41,11 @@ public class AuthenticationErrorHandler {
     }
   }
 
+  /**
+   * Handling the error when the user has not enrolled any biometrics on the device.
+   * @param isDeviceCredentialAllowed {@code true} the error handling can be skipped.
+   * In this case the user has other options to authenticate.
+   */
   void handleNotEnrolledError(
       final FragmentActivity activity,
       boolean isDeviceCredentialAllowed,
