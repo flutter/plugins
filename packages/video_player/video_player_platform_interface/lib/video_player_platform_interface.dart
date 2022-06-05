@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -102,6 +103,12 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   /// Sets the audio mode to mix with other sources
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
+  }
+
+  /// Adds a trusted certificate to the players SSL context
+  Future<void> setTrustedCertificateBytes(Uint8List bytes) {
+    throw UnimplementedError(
+        'setTrustedCertificateBytes() has not been implemented.');
   }
 }
 

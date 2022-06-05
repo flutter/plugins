@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -660,6 +661,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       position: position,
       caption: _getCaptionAt(position),
     );
+  }
+
+  /// Add a certificate to the set of trusted X509 certificates used by the
+  /// video player controller to validate https content.
+  ///
+  /// This function call only works if its called before the video player is
+  /// initialized.  This is supported on Android only currently.
+  Future<void> setTrustedCertificateBytes(List<int> certBytes) async {
+    final bytes = (certBytes is Uint8List)
+        ? (certBytes as Uint8List)
+        : Uint8List.fromList(certBytes);
+
+    await _videoPlayerPlatform.setTrustedCertificateBytes(bytes);
   }
 
   @override

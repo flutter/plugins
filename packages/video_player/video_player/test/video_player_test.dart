@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,6 +76,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setClosedCaptionFile(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {}
+
+  @override
+  Future<void> setTrustedCertificateBytes(List<int> bytes) async {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -1104,6 +1108,11 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) async {
     calls.add('setMixWithOthers');
+  }
+
+  @override
+  Future<void> setTrustedCertificateBytes(Uint8List bytes) async {
+    calls.add('setTrustedCertificateBytes');
   }
 }
 
