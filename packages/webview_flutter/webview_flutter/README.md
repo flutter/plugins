@@ -29,7 +29,15 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
+  # if you Flutter >=2.5 and <2.8, depend this
   flutter_webview_pro: ^3.0.1+3
+  
+  # if you Flutter >=2.8 , depend this 
+  flutter_webview_pro:
+    git:
+      url: https://github.com/wenzhiming/flutter-plugins.git
+      ref: dev-3.0.4
+      path: packages/webview_flutter/webview_flutter
 ```
 
 ### 2.Import
