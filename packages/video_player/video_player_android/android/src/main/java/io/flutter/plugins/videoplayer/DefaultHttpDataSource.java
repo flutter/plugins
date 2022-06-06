@@ -53,6 +53,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 
 /**
  * An {@link HttpDataSource} that uses Android's {@link HttpURLConnection}.
@@ -79,6 +83,8 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
     private int readTimeoutMs;
     private boolean allowCrossProtocolRedirects;
     private boolean keepPostFor302Redirects;
+    @Nullable private SSLSocketFactory sslSocketFactory;
+    @Nullable private HostnameVerifier hostnameVerifier;
 
     /** Creates an instance. */
     public Factory() {
@@ -187,6 +193,22 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
       return this;
     }
 
+    /**
+     * Sets the socket factory to use when generating connections
+     */
+    public Factory setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
+      this.sslSocketFactory = sslSocketFactory;
+      return this;
+    }
+
+    /**
+     * Sets the hostname verifier to use when generating connections
+     */
+    public Factory setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+      this.hostnameVerifier = hostnameVerifier;
+      return this;
+    }
+
     @Override
     public DefaultHttpDataSource createDataSource() {
       DefaultHttpDataSource dataSource =
@@ -197,7 +219,9 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
               allowCrossProtocolRedirects,
               defaultRequestProperties,
               contentTypePredicate,
-              keepPostFor302Redirects);
+              keepPostFor302Redirects,
+              sslSocketFactory,
+              hostnameVerifier);
       if (transferListener != null) {
         dataSource.addTransferListener(transferListener);
       }
@@ -223,6 +247,9 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
   @Nullable private final RequestProperties defaultRequestProperties;
   private final RequestProperties requestProperties;
   private final boolean keepPostFor302Redirects;
+
+  @Nullable private final SSLSocketFactory sslSocketFactory;
+  @Nullable private final HostnameVerifier hostnameVerifier;
 
   @Nullable private Predicate<String> contentTypePredicate;
   @Nullable private DataSpec dataSpec;
@@ -275,7 +302,9 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
         allowCrossProtocolRedirects,
         defaultRequestProperties,
         /* contentTypePredicate= */ null,
-        /* keepPostFor302Redirects= */ false);
+        /* keepPostFor302Redirects= */ false,
+        /* sslSocketFactory= */ null,
+        /* hostnameVerifier= */ null);
   }
 
   private DefaultHttpDataSource(
@@ -285,7 +314,9 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
       boolean allowCrossProtocolRedirects,
       @Nullable RequestProperties defaultRequestProperties,
       @Nullable Predicate<String> contentTypePredicate,
-      boolean keepPostFor302Redirects) {
+      boolean keepPostFor302Redirects,
+      @Nullable SSLSocketFactory sslSocketFactory,
+      @Nullable HostnameVerifier hostnameVerifier) {
     super(/* isNetwork= */ true);
     this.userAgent = userAgent;
     this.connectTimeoutMillis = connectTimeoutMillis;
@@ -295,6 +326,8 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
     this.contentTypePredicate = contentTypePredicate;
     this.requestProperties = new RequestProperties();
     this.keepPostFor302Redirects = keepPostFor302Redirects;
+    this.sslSocketFactory = sslSocketFactory;
+    this.hostnameVerifier = hostnameVerifier;
   }
 
   /**
@@ -606,6 +639,14 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
       Map<String, String> requestParameters)
       throws IOException {
     HttpURLConnection connection = openConnection(url);
+    if (connection instanceof HttpsURLConnection) {
+      if (hostnameVerifier != null)
+        ((HttpsURLConnection) connection).setHostnameVerifier(hostnameVerifier);
+
+      if (sslSocketFactory != null)
+        ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+    }
+
     connection.setConnectTimeout(connectTimeoutMillis);
     connection.setReadTimeout(readTimeoutMillis);
 

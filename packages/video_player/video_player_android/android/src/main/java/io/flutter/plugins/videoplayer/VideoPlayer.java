@@ -85,6 +85,7 @@ final class VideoPlayer {
       if (httpHeaders != null && !httpHeaders.isEmpty()) {
         httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       }
+      httpDataSourceFactory.setSSLSocketFactory(options.socketFactoryIfReq());
       dataSourceFactory = httpDataSourceFactory;
     } else {
       dataSourceFactory = new DefaultDataSource.Factory(context);
