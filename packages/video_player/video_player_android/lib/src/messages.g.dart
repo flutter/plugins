@@ -139,6 +139,7 @@ class CreateMessage {
     this.packageName,
     this.formatHint,
     required this.httpHeaders,
+    this.certificates,
   });
 
   String? asset;
@@ -146,6 +147,7 @@ class CreateMessage {
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  List<Uint8List?>? certificates;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -154,6 +156,7 @@ class CreateMessage {
     pigeonMap['packageName'] = packageName;
     pigeonMap['formatHint'] = formatHint;
     pigeonMap['httpHeaders'] = httpHeaders;
+    pigeonMap['certificates'] = certificates;
     return pigeonMap;
   }
 
@@ -166,6 +169,8 @@ class CreateMessage {
       formatHint: pigeonMap['formatHint'] as String?,
       httpHeaders: (pigeonMap['httpHeaders'] as Map<Object?, Object?>?)!
           .cast<String?, String?>(),
+      certificates:
+          (pigeonMap['certificates'] as List<Object?>?)?.cast<Uint8List?>(),
     );
   }
 }
@@ -187,27 +192,6 @@ class MixWithOthersMessage {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return MixWithOthersMessage(
       mixWithOthers: pigeonMap['mixWithOthers']! as bool,
-    );
-  }
-}
-
-class TrustedCertificateBytesMessage {
-  TrustedCertificateBytesMessage({
-    required this.bytes,
-  });
-
-  Uint8List bytes;
-
-  Object encode() {
-    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['bytes'] = bytes;
-    return pigeonMap;
-  }
-
-  static TrustedCertificateBytesMessage decode(Object message) {
-    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return TrustedCertificateBytesMessage(
-      bytes: pigeonMap['bytes']! as Uint8List,
     );
   }
 }
@@ -234,11 +218,8 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is TextureMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is TrustedCertificateBytesMessage) {
-      buffer.putUint8(134);
-      writeValue(buffer, value.encode());
     } else if (value is VolumeMessage) {
-      buffer.putUint8(135);
+      buffer.putUint8(134);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -267,9 +248,6 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
         return TextureMessage.decode(readValue(buffer)!);
 
       case 134:
-        return TrustedCertificateBytesMessage.decode(readValue(buffer)!);
-
-      case 135:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -542,32 +520,6 @@ class AndroidVideoPlayerApi {
   Future<void> setMixWithOthers(MixWithOthersMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AndroidVideoPlayerApi.setMixWithOthers', codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return;
-    }
-  }
-
-  Future<void> setTrustedCertificateBytes(
-      TrustedCertificateBytesMessage arg_msg) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AndroidVideoPlayerApi.setTrustedCertificateBytes',
-        codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;

@@ -37,11 +37,8 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is TextureMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is TrustedCertificateBytesMessage) {
-      buffer.putUint8(134);
-      writeValue(buffer, value.encode());
     } else if (value is VolumeMessage) {
-      buffer.putUint8(135);
+      buffer.putUint8(134);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -70,9 +67,6 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
         return TextureMessage.decode(readValue(buffer)!);
 
       case 134:
-        return TrustedCertificateBytesMessage.decode(readValue(buffer)!);
-
-      case 135:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -95,7 +89,6 @@ abstract class TestHostVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-  void setTrustedCertificateBytes(TrustedCertificateBytesMessage msg);
   static void setup(TestHostVideoPlayerApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -300,27 +293,6 @@ abstract class TestHostVideoPlayerApi {
           assert(arg_msg != null,
               'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.setMixWithOthers was null, expected non-null MixWithOthersMessage.');
           api.setMixWithOthers(arg_msg!);
-          return <Object?, Object?>{};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.AndroidVideoPlayerApi.setTrustedCertificateBytes',
-          codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.setTrustedCertificateBytes was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final TrustedCertificateBytesMessage? arg_msg =
-              (args[0] as TrustedCertificateBytesMessage?);
-          assert(arg_msg != null,
-              'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.setTrustedCertificateBytes was null, expected non-null TrustedCertificateBytesMessage.');
-          api.setTrustedCertificateBytes(arg_msg!);
           return <Object?, Object?>{};
         });
       }

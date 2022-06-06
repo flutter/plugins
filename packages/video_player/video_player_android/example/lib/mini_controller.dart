@@ -167,6 +167,10 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
 
+  /// Optionally set for network connections, provides a list of ssl
+  /// certificates for validation
+  List<Uint8List>? _certificates;
+
   Timer? _timer;
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
@@ -198,6 +202,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.network,
           uri: dataSource,
+          certificates: _certificates,
         );
         break;
       case DataSourceType.file:
@@ -348,9 +353,16 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     super.removeListener(listener);
   }
 
-  /// Sets the playback speed.
-  Future<void> setTrustedCertificateBytes(List<int> bytes) async {
-    await _platform.setTrustedCertificateBytes(Uint8List.fromList(bytes));
+  void setTrustedCertificateBytes(List<int> certBytes) {
+    final bytes = (certBytes is Uint8List)
+        ? (certBytes as Uint8List)
+        : Uint8List.fromList(certBytes);
+
+    if (_certificates == null) {
+      _certificates = List.empty(growable: true);
+    }
+
+    _certificates?.add(bytes);
   }
 }
 

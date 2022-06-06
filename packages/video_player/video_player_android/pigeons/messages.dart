@@ -49,16 +49,12 @@ class CreateMessage {
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  List<Uint8List?>? certificates;
 }
 
 class MixWithOthersMessage {
   MixWithOthersMessage(this.mixWithOthers);
   bool mixWithOthers;
-}
-
-class TrustedCertificateBytesMessage {
-  TrustedCertificateBytesMessage(this.bytes);
-  Uint8List bytes;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
@@ -74,5 +70,4 @@ abstract class AndroidVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
-  void setTrustedCertificateBytes(TrustedCertificateBytesMessage msg);
 }

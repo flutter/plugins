@@ -19,13 +19,13 @@ import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
 import io.flutter.plugins.videoplayer.Messages.PositionMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
-import io.flutter.plugins.videoplayer.Messages.TrustedCertificateBytesMessage;
 import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
 public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
@@ -140,8 +140,18 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
               "asset:///" + assetLookupKey,
               null,
               null,
+              null,
               options);
     } else {
+      SSLSocketFactory factory = null;
+      if (arg.getCertificates() != null) {
+        SSLBuilder builder = new SSLBuilder();
+        for (byte[] cert : arg.getCertificates()) {
+          builder.addCertificate(cert);
+        }
+        factory = builder.socketFactoryIfReq();
+      }
+
       @SuppressWarnings("unchecked")
       Map<String, String> httpHeaders = arg.getHttpHeaders();
       player =
@@ -152,6 +162,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
               arg.getUri(),
               arg.getFormatHint(),
               httpHeaders,
+              factory,
               options);
     }
     videoPlayers.put(handle.id(), player);
@@ -210,11 +221,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
   @Override
   public void setMixWithOthers(MixWithOthersMessage arg) {
     options.mixWithOthers = arg.getMixWithOthers();
-  }
-
-  @Override
-  public void setTrustedCertificateBytes(TrustedCertificateBytesMessage arg) {
-    options.addCertificate(arg.getBytes());
   }
 
   private interface KeyForAssetFn {

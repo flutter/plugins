@@ -22,7 +22,6 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
-  TrustedCertificateBytesMessage? trustedCertificateBytesMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -58,12 +57,6 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setMixWithOthers(MixWithOthersMessage arg) {
     log.add('setMixWithOthers');
     mixWithOthersMessage = arg;
-  }
-
-  @override
-  void setTrustedCertificateBytes(TrustedCertificateBytesMessage arg) {
-    log.add('setTrustedCertificateBytes');
-    trustedCertificateBytesMessage = arg;
   }
 
   @override
@@ -153,6 +146,7 @@ void main() {
       expect(log.createMessage?.packageName, null);
       expect(log.createMessage?.formatHint, 'dash');
       expect(log.createMessage?.httpHeaders, <String, String>{});
+      expect(log.createMessage?.certificates, null);
       expect(textureId, 3);
     });
 
@@ -169,6 +163,28 @@ void main() {
       expect(log.createMessage?.formatHint, null);
       expect(log.createMessage?.httpHeaders,
           <String, String>{'Authorization': 'Bearer token'});
+      expect(log.createMessage?.certificates, null);
+      expect(textureId, 3);
+    });
+
+    test('create with network (custom ssl)', () async {
+      final int? textureId = await player.create(DataSource(
+        sourceType: DataSourceType.network,
+        uri: 'someUri',
+        formatHint: VideoFormat.dash,
+        certificates: [
+          Uint8List.fromList([0, 1, 2])
+        ],
+      ));
+      expect(log.log.last, 'create');
+      expect(log.createMessage?.asset, null);
+      expect(log.createMessage?.uri, 'someUri');
+      expect(log.createMessage?.packageName, null);
+      expect(log.createMessage?.formatHint, 'dash');
+      expect(log.createMessage?.httpHeaders, <String, String>{});
+      expect(log.createMessage?.certificates, [
+        Uint8List.fromList([0, 1, 2])
+      ]);
       expect(textureId, 3);
     });
 
@@ -209,13 +225,6 @@ void main() {
       await player.setMixWithOthers(false);
       expect(log.log.last, 'setMixWithOthers');
       expect(log.mixWithOthersMessage?.mixWithOthers, false);
-    });
-
-    test('setTrustedCertificateBytes', () async {
-      Uint8List bytes = Uint8List.fromList([0, 1, 2]);
-      await player.setTrustedCertificateBytes(bytes);
-      expect(log.log.last, 'setTrustedCertificateBytes');
-      expect(log.trustedCertificateBytesMessage?.bytes, bytes);
     });
 
     test('setVolume', () async {

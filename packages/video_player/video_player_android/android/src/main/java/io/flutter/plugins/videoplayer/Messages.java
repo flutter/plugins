@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Generated class from Pigeon. */
@@ -432,6 +433,16 @@ public class Messages {
       this.httpHeaders = setterArg;
     }
 
+    private @Nullable List<byte[]> certificates;
+
+    public @Nullable List<byte[]> getCertificates() {
+      return certificates;
+    }
+
+    public void setCertificates(@Nullable List<byte[]> setterArg) {
+      this.certificates = setterArg;
+    }
+
     /** Constructor is private to enforce null safety; use Builder. */
     private CreateMessage() {}
 
@@ -471,6 +482,13 @@ public class Messages {
         return this;
       }
 
+      private @Nullable List<byte[]> certificates;
+
+      public @NonNull Builder setCertificates(@Nullable List<byte[]> setterArg) {
+        this.certificates = setterArg;
+        return this;
+      }
+
       public @NonNull CreateMessage build() {
         CreateMessage pigeonReturn = new CreateMessage();
         pigeonReturn.setAsset(asset);
@@ -478,6 +496,7 @@ public class Messages {
         pigeonReturn.setPackageName(packageName);
         pigeonReturn.setFormatHint(formatHint);
         pigeonReturn.setHttpHeaders(httpHeaders);
+        pigeonReturn.setCertificates(certificates);
         return pigeonReturn;
       }
     }
@@ -490,6 +509,7 @@ public class Messages {
       toMapResult.put("packageName", packageName);
       toMapResult.put("formatHint", formatHint);
       toMapResult.put("httpHeaders", httpHeaders);
+      toMapResult.put("certificates", certificates);
       return toMapResult;
     }
 
@@ -505,6 +525,8 @@ public class Messages {
       pigeonResult.setFormatHint((String) formatHint);
       Object httpHeaders = map.get("httpHeaders");
       pigeonResult.setHttpHeaders((Map<String, String>) httpHeaders);
+      Object certificates = map.get("certificates");
+      pigeonResult.setCertificates((List<byte[]>) certificates);
       return pigeonResult;
     }
   }
@@ -557,54 +579,6 @@ public class Messages {
     }
   }
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class TrustedCertificateBytesMessage {
-    private @NonNull byte[] bytes;
-
-    public @NonNull byte[] getBytes() {
-      return bytes;
-    }
-
-    public void setBytes(@NonNull byte[] setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"bytes\" is null.");
-      }
-      this.bytes = setterArg;
-    }
-
-    /** Constructor is private to enforce null safety; use Builder. */
-    private TrustedCertificateBytesMessage() {}
-
-    public static final class Builder {
-      private @Nullable byte[] bytes;
-
-      public @NonNull Builder setBytes(@NonNull byte[] setterArg) {
-        this.bytes = setterArg;
-        return this;
-      }
-
-      public @NonNull TrustedCertificateBytesMessage build() {
-        TrustedCertificateBytesMessage pigeonReturn = new TrustedCertificateBytesMessage();
-        pigeonReturn.setBytes(bytes);
-        return pigeonReturn;
-      }
-    }
-
-    @NonNull
-    Map<String, Object> toMap() {
-      Map<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("bytes", bytes);
-      return toMapResult;
-    }
-
-    static @NonNull TrustedCertificateBytesMessage fromMap(@NonNull Map<String, Object> map) {
-      TrustedCertificateBytesMessage pigeonResult = new TrustedCertificateBytesMessage();
-      Object bytes = map.get("bytes");
-      pigeonResult.setBytes((byte[]) bytes);
-      return pigeonResult;
-    }
-  }
-
   private static class AndroidVideoPlayerApiCodec extends StandardMessageCodec {
     public static final AndroidVideoPlayerApiCodec INSTANCE = new AndroidVideoPlayerApiCodec();
 
@@ -632,9 +606,6 @@ public class Messages {
           return TextureMessage.fromMap((Map<String, Object>) readValue(buffer));
 
         case (byte) 134:
-          return TrustedCertificateBytesMessage.fromMap((Map<String, Object>) readValue(buffer));
-
-        case (byte) 135:
           return VolumeMessage.fromMap((Map<String, Object>) readValue(buffer));
 
         default:
@@ -662,11 +633,8 @@ public class Messages {
       } else if (value instanceof TextureMessage) {
         stream.write(133);
         writeValue(stream, ((TextureMessage) value).toMap());
-      } else if (value instanceof TrustedCertificateBytesMessage) {
-        stream.write(134);
-        writeValue(stream, ((TrustedCertificateBytesMessage) value).toMap());
       } else if (value instanceof VolumeMessage) {
-        stream.write(135);
+        stream.write(134);
         writeValue(stream, ((VolumeMessage) value).toMap());
       } else {
         super.writeValue(stream, value);
@@ -699,8 +667,6 @@ public class Messages {
     void pause(@NonNull TextureMessage msg);
 
     void setMixWithOthers(@NonNull MixWithOthersMessage msg);
-
-    void setTrustedCertificateBytes(@NonNull TrustedCertificateBytesMessage msg);
 
     /** The codec used by AndroidVideoPlayerApi. */
     static MessageCodec<Object> getCodec() {
@@ -976,34 +942,6 @@ public class Messages {
                     throw new NullPointerException("msgArg unexpectedly null.");
                   }
                   api.setMixWithOthers(msgArg);
-                  wrapped.put("result", null);
-                } catch (Error | RuntimeException exception) {
-                  wrapped.put("error", wrapError(exception));
-                }
-                reply.reply(wrapped);
-              });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(
-                binaryMessenger,
-                "dev.flutter.pigeon.AndroidVideoPlayerApi.setTrustedCertificateBytes",
-                getCodec());
-        if (api != null) {
-          channel.setMessageHandler(
-              (message, reply) -> {
-                Map<String, Object> wrapped = new HashMap<>();
-                try {
-                  ArrayList<Object> args = (ArrayList<Object>) message;
-                  TrustedCertificateBytesMessage msgArg =
-                      (TrustedCertificateBytesMessage) args.get(0);
-                  if (msgArg == null) {
-                    throw new NullPointerException("msgArg unexpectedly null.");
-                  }
-                  api.setTrustedCertificateBytes(msgArg);
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));

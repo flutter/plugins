@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.SSLSocketFactory;
 
 final class VideoPlayer {
   private static final String FORMAT_SS = "ss";
@@ -66,6 +67,7 @@ final class VideoPlayer {
       String dataSource,
       String formatHint,
       @NonNull Map<String, String> httpHeaders,
+      SSLSocketFactory factory,
       VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
@@ -85,7 +87,7 @@ final class VideoPlayer {
       if (httpHeaders != null && !httpHeaders.isEmpty()) {
         httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       }
-      httpDataSourceFactory.setSSLSocketFactory(options.socketFactoryIfReq());
+      httpDataSourceFactory.setSSLSocketFactory(factory);
       dataSourceFactory = httpDataSourceFactory;
     } else {
       dataSourceFactory = new DefaultDataSource.Factory(context);

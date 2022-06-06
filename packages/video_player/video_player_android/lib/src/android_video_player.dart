@@ -38,6 +38,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     String? uri;
     String? formatHint;
     Map<String, String> httpHeaders = <String, String>{};
+    List<Uint8List>? certificates;
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
         asset = dataSource.asset;
@@ -47,6 +48,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
         uri = dataSource.uri;
         formatHint = _videoFormatStringMap[dataSource.formatHint];
         httpHeaders = dataSource.httpHeaders;
+        certificates = dataSource.certificates;
         break;
       case DataSourceType.file:
         uri = dataSource.uri;
@@ -61,6 +63,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       uri: uri,
       httpHeaders: httpHeaders,
       formatHint: formatHint,
+      certificates: certificates,
     );
 
     final TextureMessage response = await _api.create(message);
@@ -163,12 +166,6 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     return _api
         .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
-  }
-
-  @override
-  Future<void> setTrustedCertificateBytes(Uint8List bytes) {
-    return _api.setTrustedCertificateBytes(
-        TrustedCertificateBytesMessage(bytes: bytes));
   }
 
   EventChannel _eventChannelFor(int textureId) {

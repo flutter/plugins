@@ -44,7 +44,8 @@ Future<List<Uint8List>> _getCerts(String url) async {
   // Create a http client with a security context without any trust
   final certs = List<Uint8List>.empty(growable: true);
   final client = HttpClient(context: SecurityContext());
-  client.badCertificateCallback = (X509Certificate cert, String host, int port) {
+  client.badCertificateCallback =
+      (X509Certificate cert, String host, int port) {
     certs.add(cert.der);
     return true;
   };
@@ -192,7 +193,7 @@ void main() {
       // Test with invalid certificate for key
       final certs = await _getCerts('https://www.google.com');
       for (var cert in certs) {
-        await _controller.setTrustedCertificateBytes(cert);
+        _controller.setTrustedCertificateBytes(cert);
       }
 
       expectLater(_controller.initialize(), throwsException);
@@ -202,7 +203,7 @@ void main() {
       final url = getUrlForAssetAsNetworkSource(_videoAssetKey);
       final certs = await _getCerts(url);
       for (var cert in certs) {
-        await _controller.setTrustedCertificateBytes(cert);
+        _controller.setTrustedCertificateBytes(cert);
       }
 
       await _controller.initialize();
@@ -211,11 +212,12 @@ void main() {
           (Duration duration) => duration != Duration.zero);
     });
 
-    testWidgets('custom ssl certificate fails after success', (WidgetTester tester) async {
+    testWidgets('custom ssl certificate fails after success',
+        (WidgetTester tester) async {
       // Test with invalid certificate for key
       final certs = await _getCerts('https://www.google.com');
       for (var cert in certs) {
-        await _controller.setTrustedCertificateBytes(cert);
+        _controller.setTrustedCertificateBytes(cert);
       }
 
       expectLater(_controller.initialize(), throwsException);
