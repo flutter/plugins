@@ -78,7 +78,7 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   ) async {}
 
   @override
-  Future<void> setTrustedCertificateBytes(List<int> bytes) async {}
+  void setTrustedCertificateBytes(List<int> bytes) {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -1108,11 +1108,6 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) async {
     calls.add('setMixWithOthers');
-  }
-
-  @override
-  Future<void> setTrustedCertificateBytes(Uint8List bytes) async {
-    calls.add('setTrustedCertificateBytes');
   }
 }
 

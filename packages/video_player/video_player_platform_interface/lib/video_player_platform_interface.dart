@@ -104,12 +104,6 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
-
-  /// Adds a trusted certificate to the players SSL context
-  Future<void> setTrustedCertificateBytes(Uint8List bytes) {
-    throw UnimplementedError(
-        'setTrustedCertificateBytes() has not been implemented.');
-  }
 }
 
 /// Description of the data source used to create an instance of
@@ -128,6 +122,10 @@ class DataSource {
   ///
   /// The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
+  ///
+  /// The [certificates] argument can be null, and is a list of SSL
+  /// certificates to use to validate the HTTPS connection. If no list is given,
+  /// the default certificate authorities are used.
   DataSource({
     required this.sourceType,
     this.uri,
@@ -135,6 +133,7 @@ class DataSource {
     this.asset,
     this.package,
     this.httpHeaders = const <String, String>{},
+    this.certificates,
   });
 
   /// The way in which the video was originally loaded.
@@ -164,6 +163,10 @@ class DataSource {
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String? package;
+
+  /// Optionally set for network connections, provides a list of ssl
+  /// certificates for validation
+  final List<Uint8List>? certificates;
 }
 
 /// The way in which the video was originally loaded.

@@ -290,6 +290,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
 
+  /// Optionally set for network connections, provides a list of ssl
+  /// certificates for validation
+  List<Uint8List>? _certificates;
+
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
@@ -333,6 +337,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           uri: dataSource,
           formatHint: formatHint,
           httpHeaders: httpHeaders,
+          certificates: _certificates,
         );
         break;
       case DataSourceType.file:
@@ -668,12 +673,16 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This function call only works if its called before the video player is
   /// initialized.  This is supported on Android only currently.
-  Future<void> setTrustedCertificateBytes(List<int> certBytes) async {
+  void setTrustedCertificateBytes(List<int> certBytes) {
     final bytes = (certBytes is Uint8List)
         ? (certBytes as Uint8List)
         : Uint8List.fromList(certBytes);
 
-    await _videoPlayerPlatform.setTrustedCertificateBytes(bytes);
+    if (_certificates == null) {
+      _certificates = List.empty(growable: true);
+    }
+
+    _certificates?.add(bytes);
   }
 
   @override
