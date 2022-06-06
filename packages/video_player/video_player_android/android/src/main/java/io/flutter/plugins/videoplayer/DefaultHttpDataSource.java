@@ -27,8 +27,8 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.upstream.BaseDataSource;
 import com.google.android.exoplayer2.upstream.DataSourceException;
-import com.google.android.exoplayer2.upstream.DataSpec.HttpMethod;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.DataSpec.HttpMethod;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.HttpUtil;
 import com.google.android.exoplayer2.upstream.TransferListener;
@@ -56,7 +56,6 @@ import java.util.zip.GZIPInputStream;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
-
 
 /**
  * An {@link HttpDataSource} that uses Android's {@link HttpURLConnection}.
@@ -194,7 +193,9 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
     }
 
     /**
-     * Sets the socket factory to use when generating connections
+     * Sets the socket factory to use when generating connections.
+     *
+     * <p>The default value of {@code null} uses the default socket factory.
      */
     public Factory setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
       this.sslSocketFactory = sslSocketFactory;
@@ -202,7 +203,9 @@ public class DefaultHttpDataSource extends BaseDataSource implements HttpDataSou
     }
 
     /**
-     * Sets the hostname verifier to use when generating connections
+     * Sets the hostname verifier to use when generating connections.
+     *
+     * <p>The default value of {@code null} uses the default hostname verifier.
      */
     public Factory setHostnameVerifier(HostnameVerifier hostnameVerifier) {
       this.hostnameVerifier = hostnameVerifier;
