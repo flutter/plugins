@@ -1150,32 +1150,6 @@ void FWFWKNavigationDelegateHostApiSetup(id<FlutterBinaryMessenger> binaryMessen
       [channel setMessageHandler:nil];
     }
   }
-  {
-    FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
-           initWithName:@"dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation"
-        binaryMessenger:binaryMessenger
-                  codec:FWFWKNavigationDelegateHostApiGetCodec()];
-    if (api) {
-      NSCAssert(
-          [api respondsToSelector:@selector
-               (setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:error:)],
-          @"FWFWKNavigationDelegateHostApi api (%@) doesn't respond to "
-          @"@selector(setDidFinishNavigationForDelegateWithIdentifier:functionIdentifier:error:)",
-          api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        NSNumber *arg_identifier = GetNullableObjectAtIndex(args, 0);
-        NSNumber *arg_functionIdentifier = GetNullableObjectAtIndex(args, 1);
-        FlutterError *error;
-        [api setDidFinishNavigationForDelegateWithIdentifier:arg_identifier
-                                          functionIdentifier:arg_functionIdentifier
-                                                       error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
 }
 @interface FWFWKNavigationDelegateFlutterApiCodecReader : FlutterStandardReader
 @end
@@ -1222,7 +1196,7 @@ NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateFlutterApiGetCodec() {
   }
   return self;
 }
-- (void)didFinishNavigationForDelegateWithIdentifier:(NSNumber *)arg_functionIdentifier
+- (void)didFinishNavigationForDelegateWithIdentifier:(NSNumber *)arg_identifier
                                    webViewIdentifier:(NSNumber *)arg_webViewIdentifier
                                                  URL:(nullable NSString *)arg_url
                                           completion:(void (^)(NSError *_Nullable))completion {
@@ -1232,7 +1206,7 @@ NSObject<FlutterMessageCodec> *FWFWKNavigationDelegateFlutterApiGetCodec() {
              binaryMessenger:self.binaryMessenger
                        codec:FWFWKNavigationDelegateFlutterApiGetCodec()];
   [channel sendMessage:@[
-    arg_functionIdentifier ?: [NSNull null], arg_webViewIdentifier ?: [NSNull null],
+    arg_identifier ?: [NSNull null], arg_webViewIdentifier ?: [NSNull null],
     arg_url ?: [NSNull null]
   ]
                  reply:^(id reply) {
@@ -1373,43 +1347,43 @@ void FWFNSObjectHostApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
     }
   }
 }
-@interface FWFFunctionFlutterApiCodecReader : FlutterStandardReader
+@interface FWFNSObjectFlutterApiCodecReader : FlutterStandardReader
 @end
-@implementation FWFFunctionFlutterApiCodecReader
-@end
-
-@interface FWFFunctionFlutterApiCodecWriter : FlutterStandardWriter
-@end
-@implementation FWFFunctionFlutterApiCodecWriter
+@implementation FWFNSObjectFlutterApiCodecReader
 @end
 
-@interface FWFFunctionFlutterApiCodecReaderWriter : FlutterStandardReaderWriter
+@interface FWFNSObjectFlutterApiCodecWriter : FlutterStandardWriter
 @end
-@implementation FWFFunctionFlutterApiCodecReaderWriter
+@implementation FWFNSObjectFlutterApiCodecWriter
+@end
+
+@interface FWFNSObjectFlutterApiCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation FWFNSObjectFlutterApiCodecReaderWriter
 - (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[FWFFunctionFlutterApiCodecWriter alloc] initWithData:data];
+  return [[FWFNSObjectFlutterApiCodecWriter alloc] initWithData:data];
 }
 - (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[FWFFunctionFlutterApiCodecReader alloc] initWithData:data];
+  return [[FWFNSObjectFlutterApiCodecReader alloc] initWithData:data];
 }
 @end
 
-NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec() {
+NSObject<FlutterMessageCodec> *FWFNSObjectFlutterApiGetCodec() {
   static dispatch_once_t sPred = 0;
   static FlutterStandardMessageCodec *sSharedObject = nil;
   dispatch_once(&sPred, ^{
-    FWFFunctionFlutterApiCodecReaderWriter *readerWriter =
-        [[FWFFunctionFlutterApiCodecReaderWriter alloc] init];
+    FWFNSObjectFlutterApiCodecReaderWriter *readerWriter =
+        [[FWFNSObjectFlutterApiCodecReaderWriter alloc] init];
     sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
   });
   return sSharedObject;
 }
 
-@interface FWFFunctionFlutterApi ()
+@interface FWFNSObjectFlutterApi ()
 @property(nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
 @end
 
-@implementation FWFFunctionFlutterApi
+@implementation FWFNSObjectFlutterApi
 
 - (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
   self = [super init];
@@ -1417,17 +1391,6 @@ NSObject<FlutterMessageCodec> *FWFFunctionFlutterApiGetCodec() {
     _binaryMessenger = binaryMessenger;
   }
   return self;
-}
-- (void)disposeFunctionWithIdentifier:(NSNumber *)arg_identifier
-                           completion:(void (^)(NSError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.FunctionFlutterApi.dispose"
-             binaryMessenger:self.binaryMessenger
-                       codec:FWFFunctionFlutterApiGetCodec()];
-  [channel sendMessage:@[ arg_identifier ?: [NSNull null] ]
-                 reply:^(id reply) {
-                   completion(nil);
-                 }];
 }
 @end
 @interface FWFWKWebViewHostApiCodecReader : FlutterStandardReader

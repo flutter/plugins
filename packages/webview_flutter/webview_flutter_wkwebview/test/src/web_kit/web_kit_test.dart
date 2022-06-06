@@ -35,7 +35,7 @@ void main() {
     late WebKitFlutterApis flutterApis;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
       flutterApis = WebKitFlutterApis(instanceManager: instanceManager);
       WebKitFlutterApis.instance = flutterApis;
     });
@@ -81,7 +81,7 @@ void main() {
             WKWebsiteDataStore.defaultDataStore;
         verify(
           mockPlatformHostApi.createDefaultDataStore(
-            InstanceManager.instance.getIdentifier(defaultDataStore),
+            NSObject.globalInstanceManager.getIdentifier(defaultDataStore),
           ),
         );
       });
@@ -438,29 +438,33 @@ void main() {
       });
 
       test('create', () async {
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+        );
+
         verify(mockPlatformHostApi.create(
           instanceManager.getIdentifier(navigationDelegate),
         ));
       });
 
-      test('setDidFinishNavigation', () async {
+      test('didFinishNavigation', () async {
         final Completer<List<Object?>> argsCompleter =
             Completer<List<Object?>>();
 
-        navigationDelegate.setDidFinishNavigation(
-          (WKWebView webView, String? url) {
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didFinishNavigation: (WKWebView webView, String? url) {
             argsCompleter.complete(<Object?>[webView, url]);
           },
         );
 
-        final int functionInstanceId =
-            verify(mockPlatformHostApi.setDidFinishNavigation(
-          instanceManager.getIdentifier(navigationDelegate),
-          captureAny,
-        )).captured.single as int;
-
-        flutterApis.navigationDelegateFlutterApi.didFinishNavigation(
-          functionInstanceId,
+        WebKitFlutterApis.instance.navigationDelegateFlutterApi
+            .didFinishNavigation(
+          instanceManager.getIdentifier(navigationDelegate)!,
           instanceManager.getIdentifier(webView)!,
           'url',
         );

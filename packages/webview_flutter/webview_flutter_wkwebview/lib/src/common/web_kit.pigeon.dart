@@ -1074,33 +1074,6 @@ class WKNavigationDelegateHostApi {
       return;
     }
   }
-
-  Future<void> setDidFinishNavigation(
-      int arg_identifier, int? arg_functionIdentifier) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WKNavigationDelegateHostApi.setDidFinishNavigation',
-        codec,
-        binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_identifier, arg_functionIdentifier])
-            as Map<Object?, Object?>?;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error =
-          (replyMap['error'] as Map<Object?, Object?>?)!;
-      throw PlatformException(
-        code: (error['code'] as String?)!,
-        message: error['message'] as String?,
-        details: error['details'],
-      );
-    } else {
-      return;
-    }
-  }
 }
 
 class _WKNavigationDelegateFlutterApiCodec extends StandardMessageCodec {
@@ -1111,8 +1084,7 @@ abstract class WKNavigationDelegateFlutterApi {
   static const MessageCodec<Object?> codec =
       _WKNavigationDelegateFlutterApiCodec();
 
-  void didFinishNavigation(
-      int functionIdentifier, int webViewIdentifier, String? url);
+  void didFinishNavigation(int identifier, int webViewIdentifier, String? url);
   static void setup(WKNavigationDelegateFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1127,15 +1099,15 @@ abstract class WKNavigationDelegateFlutterApi {
           assert(message != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_functionIdentifier = (args[0] as int?);
-          assert(arg_functionIdentifier != null,
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
           final int? arg_webViewIdentifier = (args[1] as int?);
           assert(arg_webViewIdentifier != null,
               'Argument for dev.flutter.pigeon.WKNavigationDelegateFlutterApi.didFinishNavigation was null, expected non-null int.');
           final String? arg_url = (args[2] as String?);
           api.didFinishNavigation(
-              arg_functionIdentifier!, arg_webViewIdentifier!, arg_url);
+              arg_identifier!, arg_webViewIdentifier!, arg_url);
           return;
         });
       }
@@ -1261,36 +1233,15 @@ class NSObjectHostApi {
   }
 }
 
-class _FunctionFlutterApiCodec extends StandardMessageCodec {
-  const _FunctionFlutterApiCodec();
+class _NSObjectFlutterApiCodec extends StandardMessageCodec {
+  const _NSObjectFlutterApiCodec();
 }
 
-abstract class FunctionFlutterApi {
-  static const MessageCodec<Object?> codec = _FunctionFlutterApiCodec();
+abstract class NSObjectFlutterApi {
+  static const MessageCodec<Object?> codec = _NSObjectFlutterApiCodec();
 
-  void dispose(int identifier);
-  static void setup(FunctionFlutterApi? api,
-      {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FunctionFlutterApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.FunctionFlutterApi.dispose was null, expected non-null int.');
-          api.dispose(arg_identifier!);
-          return;
-        });
-      }
-    }
-  }
+  static void setup(NSObjectFlutterApi? api,
+      {BinaryMessenger? binaryMessenger}) {}
 }
 
 class _WKWebViewHostApiCodec extends StandardMessageCodec {
