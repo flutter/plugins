@@ -291,7 +291,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      prefix: "[github_actions]"
+      prefix: "[gh_actions]"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
