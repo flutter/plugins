@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Fixes show dialog when biometrics is not enrolled on the device.
+
 ## 2.1.0
 
 * Adds Windows support.
