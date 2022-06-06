@@ -36,6 +36,25 @@ String getUrlForAssetAsNetworkSource(String assetKey) {
       '?raw=true';
 }
 
+// Connect and fetch the certificate associated with a URL.
+//
+// We do this by connecting to a url with no security context, and storing
+// all the certificates through any redirects.
+Future<List<Uint8List>> _getCerts(String url) async {
+  // Create a http client with a security context without any trust
+  final certs = List<Uint8List>.empty(growable: true);
+  final client = HttpClient(context: SecurityContext());
+  client.badCertificateCallback = (X509Certificate cert, String host, int port) {
+    certs.add(cert.der);
+    return true;
+  };
+
+  final req = await client.openUrl('GET', Uri.parse(url));
+  await req.close();
+  client.close();
+  return certs;
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -167,6 +186,39 @@ void main() {
       // See https://exoplayer.dev/doc/reference/com/google/android/exoplayer2/Player.html#getDuration--
       expect(livestreamController.value.duration,
           (Duration duration) => duration != Duration.zero);
+    });
+
+    testWidgets('custom ssl certificate fails', (WidgetTester tester) async {
+      // Test with invalid certificate for key
+      final certs = await _getCerts('https://www.google.com');
+      for (var cert in certs) {
+        await _controller.setTrustedCertificateBytes(cert);
+      }
+
+      expectLater(_controller.initialize(), throwsException);
+    });
+
+    testWidgets('custom ssl certificate connects', (WidgetTester tester) async {
+      final url = getUrlForAssetAsNetworkSource(_videoAssetKey);
+      final certs = await _getCerts(url);
+      for (var cert in certs) {
+        await _controller.setTrustedCertificateBytes(cert);
+      }
+
+      await _controller.initialize();
+      expect(_controller.value.isInitialized, true);
+      expect(_controller.value.duration,
+          (Duration duration) => duration != Duration.zero);
+    });
+
+    testWidgets('custom ssl certificate fails after success', (WidgetTester tester) async {
+      // Test with invalid certificate for key
+      final certs = await _getCerts('https://www.google.com');
+      for (var cert in certs) {
+        await _controller.setTrustedCertificateBytes(cert);
+      }
+
+      expectLater(_controller.initialize(), throwsException);
     });
   });
 }

@@ -7,6 +7,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -345,6 +346,11 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   @override
   void removeListener(VoidCallback listener) {
     super.removeListener(listener);
+  }
+
+  /// Sets the playback speed.
+  Future<void> setTrustedCertificateBytes(List<int> bytes) async {
+    await _platform.setTrustedCertificateBytes(Uint8List.fromList(bytes));
   }
 }
 
