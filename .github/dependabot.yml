@@ -287,11 +287,3 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
-    
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    commit-message:
-      prefix: "[github_actions]"
-    schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
