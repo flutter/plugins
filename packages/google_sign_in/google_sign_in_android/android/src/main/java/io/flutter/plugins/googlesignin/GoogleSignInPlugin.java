@@ -76,6 +76,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   }
 
   @VisibleForTesting
+  @SuppressWarnings("deprecation")
   public void setUpRegistrar(PluginRegistry.Registrar registrar) {
     delegate.setUpRegistrar(registrar);
   }
@@ -267,6 +268,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
     private final Context context;
     // Only set registrar for v1 embedder.
+    @SuppressWarnings("deprecation")
     private PluginRegistry.Registrar registrar;
     // Only set activity for v2 embedder. Always access activity from getActivity() method.
     private Activity activity;
@@ -282,6 +284,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       this.googleSignInWrapper = googleSignInWrapper;
     }
 
+    @SuppressWarnings("deprecation")
     public void setUpRegistrar(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       registrar.addActivityResultListener(this);

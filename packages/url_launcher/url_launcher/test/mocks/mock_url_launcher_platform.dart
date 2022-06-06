@@ -25,6 +25,7 @@ class MockUrlLauncher extends Fake
   bool canLaunchCalled = false;
   bool launchCalled = false;
 
+  // ignore: use_setters_to_change_properties
   void setCanLaunchExpectations(String url) {
     this.url = url;
   }
@@ -49,6 +50,7 @@ class MockUrlLauncher extends Fake
     this.webOnlyWindowName = webOnlyWindowName;
   }
 
+  // ignore: use_setters_to_change_properties
   void setResponse(bool response) {
     this.response = response;
   }

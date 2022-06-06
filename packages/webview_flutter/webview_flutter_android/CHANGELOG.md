@@ -1,6 +1,16 @@
-## NEXT
+## 2.8.9
+
+* Updates Gradle to 7.2.1.
+
+## 2.8.8
+
+* Minor fixes for new analysis options.
+
+## 2.8.7
 
 * Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
 
 ## 2.8.6
 

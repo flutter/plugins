@@ -149,6 +149,21 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('resumeVideoRecording() is not implemented.');
   }
 
+  /// A new streamed frame is available.
+  ///
+  /// Listening to this stream will start streaming, and canceling will stop.
+  /// Pausing will throw a [CameraException], as pausing the stream would cause
+  /// very high memory usage; to temporarily stop receiving frames, cancel, then
+  /// listen again later.
+  ///
+  ///
+  // TODO(bmparr): Add options to control streaming settings (e.g.,
+  // resolution and FPS).
+  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
+      {CameraImageStreamOptions? options}) {
+    throw UnimplementedError('onStreamedFrameAvailable() is not implemented.');
+  }
+
   /// Sets the flash mode for the selected camera.
   /// On Web [FlashMode.auto] corresponds to [FlashMode.always].
   Future<void> setFlashMode(int cameraId, FlashMode mode) {

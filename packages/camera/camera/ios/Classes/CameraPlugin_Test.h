@@ -38,4 +38,10 @@
 /// that triggered the orientation change.
 - (void)orientationChanged:(NSNotification *)notification;
 
+/// Creates FLTCam on session queue and reports the creation result.
+/// @param createMethodCall the create method call
+/// @param result a thread safe flutter result wrapper object to report creation result.
+- (void)createCameraOnSessionQueueWithCreateMethodCall:(FlutterMethodCall *)createMethodCall
+                                                result:(FLTThreadSafeFlutterResult *)result;
+
 @end
