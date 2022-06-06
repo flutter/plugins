@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
+  TrustedCertificateBytesMessage? trustedCertificateBytesMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -56,6 +58,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setMixWithOthers(MixWithOthersMessage arg) {
     log.add('setMixWithOthers');
     mixWithOthersMessage = arg;
+  }
+
+  @override
+  void setTrustedCertificateBytes(TrustedCertificateBytesMessage arg) {
+    log.add('setTrustedCertificateBytes');
+    trustedCertificateBytesMessage = arg;
   }
 
   @override
@@ -201,6 +209,13 @@ void main() {
       await player.setMixWithOthers(false);
       expect(log.log.last, 'setMixWithOthers');
       expect(log.mixWithOthersMessage?.mixWithOthers, false);
+    });
+
+    test('setTrustedCertificateBytes', () async {
+      Uint8List bytes = Uint8List.fromList([0, 1, 2]);
+      await player.setTrustedCertificateBytes(bytes);
+      expect(log.log.last, 'setTrustedCertificateBytes');
+      expect(log.trustedCertificateBytesMessage?.bytes, bytes);
     });
 
     test('setVolume', () async {

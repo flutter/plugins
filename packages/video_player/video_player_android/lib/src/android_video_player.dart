@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -162,6 +163,12 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     return _api
         .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
+  }
+
+  @override
+  Future<void> setTrustedCertificateBytes(Uint8List bytes) {
+    return _api.setTrustedCertificateBytes(
+        TrustedCertificateBytesMessage(bytes: bytes));
   }
 
   EventChannel _eventChannelFor(int textureId) {
