@@ -7,16 +7,17 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -32,14 +33,14 @@ class MyHomePage extends StatefulWidget {
   final String? title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   List<PickedFile>? _imageFileList;
 
   // This must be called from within a setState() callback
-  set _imageFile(PickedFile? value) {
+  void _setImageFileListFromFile(PickedFile? value) {
     _imageFileList = value == null ? null : <PickedFile>[value];
   }
 
@@ -101,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           imageQuality: quality,
         );
         setState(() {
-          _imageFile = pickedFile;
+          _setImageFileListFromFile(pickedFile);
         });
       } catch (e) {
         setState(() {
@@ -177,17 +178,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (_imageFileList != null) {
       return Semantics(
-          child: ListView.builder(
-            key: UniqueKey(),
-            itemBuilder: (BuildContext context, int index) {
-              return Semantics(
-                label: 'image_picker_example_picked_image',
-                child: Image.file(File(_imageFileList![index].path)),
-              );
-            },
-            itemCount: _imageFileList!.length,
-          ),
-          label: 'image_picker_example_picked_images');
+        label: 'image_picker_example_picked_images',
+        child: ListView.builder(
+          key: UniqueKey(),
+          itemBuilder: (BuildContext context, int index) {
+            return Semantics(
+              label: 'image_picker_example_picked_image',
+              child: Image.file(File(_imageFileList![index].path)),
+            );
+          },
+          itemCount: _imageFileList!.length,
+        ),
+      );
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -364,7 +366,7 @@ typedef OnPickImageCallback = void Function(
     double? maxWidth, double? maxHeight, int? quality);
 
 class AspectRatioVideo extends StatefulWidget {
-  const AspectRatioVideo(this.controller);
+  const AspectRatioVideo(this.controller, {Key? key}) : super(key: key);
 
   final VideoPlayerController? controller;
 

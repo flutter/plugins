@@ -43,14 +43,15 @@ See the example app for more complex examples.
 ## Configuration
 
 ### iOS
-Add any URL schemes passed to `canLaunchUrl` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
+Add any URL schemes passed to `canLaunchUrl` as `LSApplicationQueriesSchemes`
+entries in your Info.plist file, otherwise it will return false.
 
 Example:
 ```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
-  <string>https</string>
-  <string>http</string>
+  <string>sms</string>
+  <string>tel</string>
 </array>
 ```
 
@@ -58,39 +59,30 @@ See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/u
 
 ### Android
 
-Starting from API 30 Android requires package visibility configuration in your
-`AndroidManifest.xml` otherwise `canLaunchUrl` will return `false`. A `<queries>`
+Add any URL schemes passed to `canLaunchUrl` as `<queries>` entries in your
+`AndroidManifest.xml`, otherwise it will return false in most cases starting
+on Android 11 (API 30) or higher. A `<queries>`
 element must be added to your manifest as a child of the root element.
 
-The snippet below shows an example for an application that uses `https`, `tel`,
-and `mailto` URLs with `url_launcher`. See
-[the Android documentation](https://developer.android.com/training/package-visibility/use-cases)
-for examples of other queries.
-
+Example:
 ``` xml
 <queries>
-  <!-- If your app opens https URLs -->
+  <!-- If your app checks for SMS support -->
   <intent>
     <action android:name="android.intent.action.VIEW" />
-    <data android:scheme="https" />
+    <data android:scheme="sms" />
   </intent>
-  <!-- If your app makes calls -->
+  <!-- If your app checks for call support -->
   <intent>
-    <action android:name="android.intent.action.DIAL" />
+    <action android:name="android.intent.action.VIEW" />
     <data android:scheme="tel" />
-  </intent>
-  <!-- If your sends SMS messages -->
-  <intent>
-    <action android:name="android.intent.action.SENDTO" />
-    <data android:scheme="smsto" />
-  </intent>
-  <!-- If your app sends emails -->
-  <intent>
-    <action android:name="android.intent.action.SEND" />
-    <data android:mimeType="*/*" />
   </intent>
 </queries>
 ```
+
+See
+[the Android documentation](https://developer.android.com/training/package-visibility/use-cases)
+for examples of other queries.
 
 ## Supported URL schemes
 

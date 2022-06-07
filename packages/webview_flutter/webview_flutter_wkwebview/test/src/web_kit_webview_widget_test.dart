@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -66,8 +64,9 @@ void main() {
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
       when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
-      when(mockWebViewWidgetProxy.createNavigationDelegate())
-          .thenReturn(mockNavigationDelegate);
+      when(mockWebViewWidgetProxy.createNavigationDelegate(
+        didFinishNavigation: anyNamed('didFinishNavigation'),
+      )).thenReturn(mockNavigationDelegate);
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
@@ -332,7 +331,7 @@ void main() {
 
             final List<dynamic> javaScriptChannels = verifyInOrder(<Object>[
               mockUserContentController.removeAllUserScripts(),
-              mockUserContentController.removeAllScriptMessageHandlers(),
+              mockUserContentController.removeScriptMessageHandler('myChannel'),
               mockUserContentController.addScriptMessageHandler(
                 captureAny,
                 captureAny,
@@ -374,7 +373,6 @@ void main() {
             ));
 
             verify(mockUserContentController.removeAllUserScripts());
-            verify(mockUserContentController.removeAllScriptMessageHandlers());
             verifyNever(mockUserContentController.addScriptMessageHandler(
               any,
               any,
@@ -403,10 +401,10 @@ void main() {
               WKUserScriptInjectionTime.atDocumentEnd);
           expect(
             zoomScript.source,
-            "var meta = document.createElement('meta');"
-            "meta.name = 'viewport';"
-            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-            "user-scalable=no';"
+            "var meta = document.createElement('meta');\n"
+            "meta.name = 'viewport';\n"
+            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+            "user-scalable=no';\n"
             "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
           );
         });
@@ -771,11 +769,11 @@ void main() {
         await buildWidget(tester);
         when(
           mockWebsiteDataStore.removeDataOfTypes(
-            <WKWebsiteDataTypes>{
-              WKWebsiteDataTypes.memoryCache,
-              WKWebsiteDataTypes.diskCache,
-              WKWebsiteDataTypes.offlineWebApplicationCache,
-              WKWebsiteDataTypes.localStroage,
+            <WKWebsiteDataType>{
+              WKWebsiteDataType.memoryCache,
+              WKWebsiteDataType.diskCache,
+              WKWebsiteDataType.offlineWebApplicationCache,
+              WKWebsiteDataType.localStorage,
             },
             DateTime.fromMillisecondsSinceEpoch(0),
           ),
@@ -837,12 +835,15 @@ void main() {
 
         await testController.removeJavascriptChannels(<String>{'c'});
 
-        verify(mockUserContentController.removeAllScriptMessageHandlers());
         verify(mockUserContentController.removeAllUserScripts());
+        verify(mockUserContentController.removeScriptMessageHandler('c'));
+        verify(mockUserContentController.removeScriptMessageHandler('d'));
 
         final List<dynamic> javaScriptChannels = verify(
           mockUserContentController.addScriptMessageHandler(
-              captureAny, captureAny),
+            captureAny,
+            captureAny,
+          ),
         ).captured;
         expect(
           javaScriptChannels[0],
@@ -892,10 +893,10 @@ void main() {
             zoomScript.injectionTime, WKUserScriptInjectionTime.atDocumentEnd);
         expect(
           zoomScript.source,
-          "var meta = document.createElement('meta');"
-          "meta.name = 'viewport';"
-          "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-          "user-scalable=no';"
+          "var meta = document.createElement('meta');\n"
+          "meta.name = 'viewport';\n"
+          "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+          "user-scalable=no';\n"
           "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
         );
       });
@@ -919,9 +920,9 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFinishNavigation =
-            verify(mockNavigationDelegate.setDidFinishNavigation(captureAny))
-                .captured
-                .single as void Function(WKWebView, String);
+            verify(mockWebViewWidgetProxy.createNavigationDelegate(
+          didFinishNavigation: captureAnyNamed('didFinishNavigation'),
+        )).captured.single as void Function(WKWebView, String);
         didFinishNavigation(mockWebView, 'https://google.com');
 
         verify(mockCallbacksHandler.onPageFinished('https://google.com'));

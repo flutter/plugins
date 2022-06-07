@@ -1,3 +1,25 @@
+## 2.8.11
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.8.10
+
+* Updates references to the obsolete master branch.
+
+## 2.8.9
+
+* Updates Gradle to 7.2.1.
+
+## 2.8.8
+
+* Minor fixes for new analysis options.
+
+## 2.8.7
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 2.8.6
 
 * Updates pigeon developer dependency to the latest version which adds support for null safety.

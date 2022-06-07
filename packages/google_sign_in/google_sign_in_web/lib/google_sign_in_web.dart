@@ -81,7 +81,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     assert(
         !scopes.any((String scope) => scope.contains(' ')),
-        'OAuth 2.0 Scopes for Google APIs can\'t contain spaces.'
+        "OAuth 2.0 Scopes for Google APIs can't contain spaces. "
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
