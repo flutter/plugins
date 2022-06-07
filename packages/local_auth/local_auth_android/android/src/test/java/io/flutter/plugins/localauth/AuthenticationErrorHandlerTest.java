@@ -68,14 +68,16 @@ public class AuthenticationErrorHandlerTest {
       }
     });
     final AuthenticationHelper.AuthCompletionHandler completionHandler = mock(AuthenticationHelper.AuthCompletionHandler.class);
+    final Runnable onStopCallback = mock(Runnable.class);
     authErrorHandler.handleCredentialsNotAvailableError(
         mockActivity,
         false,
         methodCall,
         completionHandler,
-        null
+        onStopCallback
     );
     verify(completionHandler).onError(ArgumentMatchers.eq(AuthResultErrorCodes.NOT_AVAILABLE), anyString());
+    verify(onStopCallback).run();
     Assert.assertTrue(alertDialogBuilderConstruction.constructed().isEmpty());
   }
 
@@ -89,14 +91,16 @@ public class AuthenticationErrorHandlerTest {
       }
     });
     final AuthenticationHelper.AuthCompletionHandler completionHandler = mock(AuthenticationHelper.AuthCompletionHandler.class);
+    final Runnable onStopCallback = mock(Runnable.class);
     authErrorHandler.handleCredentialsNotAvailableError(
         mockActivity,
         true,
         methodCall,
         completionHandler,
-        null
+        onStopCallback
     );
     verify(completionHandler).onError(ArgumentMatchers.eq(AuthResultErrorCodes.NOT_AVAILABLE), anyString());
+    verify(onStopCallback).run();
     Assert.assertTrue(alertDialogBuilderConstruction.constructed().isEmpty());
   }
 
@@ -113,16 +117,18 @@ public class AuthenticationErrorHandlerTest {
       }
     });
     final AuthenticationHelper.AuthCompletionHandler completionHandler = mock(AuthenticationHelper.AuthCompletionHandler.class);
+    final Runnable onStopCallback = mock(Runnable.class);
     authErrorHandler.handleCredentialsNotAvailableError(
         mockActivity,
         true,
         methodCall,
         completionHandler,
-        null
+        onStopCallback
     );
     verify(completionHandler, never()).onError(ArgumentMatchers.anyString(), anyString());
     final AlertDialog.Builder alertDialogBuilder = alertDialogBuilderConstruction.constructed().get(0);
     verify(alertDialogBuilder).show();
+    verify(onStopCallback, never()).run();
   }
 
   @Test
@@ -138,16 +144,18 @@ public class AuthenticationErrorHandlerTest {
       }
     });
     final AuthenticationHelper.AuthCompletionHandler completionHandler = mock(AuthenticationHelper.AuthCompletionHandler.class);
+    final Runnable onStopCallback = mock(Runnable.class);
     authErrorHandler.handleNotEnrolledError(
         mockActivity,
         false,
         methodCall,
         completionHandler,
-        null
+        onStopCallback
     );
     verify(completionHandler, never()).onError(ArgumentMatchers.anyString(), anyString());
     final AlertDialog.Builder alertDialogBuilder = alertDialogBuilderConstruction.constructed().get(0);
     verify(alertDialogBuilder).show();
+    verify(onStopCallback, never()).run();
   }
 
   @Test
@@ -161,15 +169,17 @@ public class AuthenticationErrorHandlerTest {
       }
     });
     final AuthenticationHelper.AuthCompletionHandler completionHandler = mock(AuthenticationHelper.AuthCompletionHandler.class);
+    final Runnable onStopCallback = mock(Runnable.class);
     authErrorHandler.handleNotEnrolledError(
         mockActivity,
         false,
         methodCall,
         completionHandler,
-        null
+        onStopCallback
     );
     verify(completionHandler).onError(ArgumentMatchers.eq(AuthResultErrorCodes.NOT_ENROLLED), anyString());
     Assert.assertTrue(alertDialogBuilderConstruction.constructed().isEmpty());
+    verify(onStopCallback).run();
   }
 
   @Test
@@ -183,15 +193,17 @@ public class AuthenticationErrorHandlerTest {
       }
     });
     final AuthenticationHelper.AuthCompletionHandler completionHandler = mock(AuthenticationHelper.AuthCompletionHandler.class);
+    final Runnable onStopCallback = mock(Runnable.class);
     authErrorHandler.handleNotEnrolledError(
         mockActivity,
         true,
         methodCall,
         completionHandler,
-        null
+        onStopCallback
     );
     verify(completionHandler, never()).onError(anyString(), anyString());
     Assert.assertTrue(alertDialogBuilderConstruction.constructed().isEmpty());
+    verify(onStopCallback, never()).run();
   }
 
   private FragmentActivity buildMockActivity() {
