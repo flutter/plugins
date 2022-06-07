@@ -9,6 +9,9 @@ import 'package:path_provider/path_provider.dart';
 
 /// Page for showing an example of saving with file_selector
 class SaveTextPage extends StatelessWidget {
+  /// Default Constructor
+  SaveTextPage({Key? key}) : super(key: key);
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 

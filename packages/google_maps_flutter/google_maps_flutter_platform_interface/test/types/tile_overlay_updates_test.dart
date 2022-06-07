@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues, hashList;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/tile_overlay.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/tile_overlay_updates.dart';
@@ -20,20 +18,20 @@ void main() {
       const TileOverlay to3Changed =
           TileOverlay(tileOverlayId: TileOverlayId('id3'), transparency: 0.5);
       const TileOverlay to4 = TileOverlay(tileOverlayId: TileOverlayId('id4'));
-      final Set<TileOverlay> previous = Set.from(<TileOverlay>[to1, to2, to3]);
-      final Set<TileOverlay> current =
-          Set.from(<TileOverlay>[to2, to3Changed, to4]);
+      final Set<TileOverlay> previous = <TileOverlay>{to1, to2, to3};
+      final Set<TileOverlay> current = <TileOverlay>{to2, to3Changed, to4};
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
 
-      final Set<TileOverlayId> toRemove =
-          Set.from(<TileOverlayId>[const TileOverlayId('id1')]);
+      final Set<TileOverlayId> toRemove = <TileOverlayId>{
+        const TileOverlayId('id1')
+      };
       expect(updates.tileOverlayIdsToRemove, toRemove);
 
-      final Set<TileOverlay> toAdd = Set.from(<TileOverlay>[to4]);
+      final Set<TileOverlay> toAdd = <TileOverlay>{to4};
       expect(updates.tileOverlaysToAdd, toAdd);
 
-      final Set<TileOverlay> toChange = Set.from(<TileOverlay>[to3Changed]);
+      final Set<TileOverlay> toChange = <TileOverlay>{to3Changed};
       expect(updates.tileOverlaysToChange, toChange);
     });
 
@@ -44,9 +42,8 @@ void main() {
       const TileOverlay to3Changed =
           TileOverlay(tileOverlayId: TileOverlayId('id3'), transparency: 0.5);
       const TileOverlay to4 = TileOverlay(tileOverlayId: TileOverlayId('id4'));
-      final Set<TileOverlay> previous = Set.from(<TileOverlay>[to1, to2, to3]);
-      final Set<TileOverlay> current =
-          Set.from(<TileOverlay>[to2, to3Changed, to4]);
+      final Set<TileOverlay> previous = <TileOverlay>{to1, to2, to3};
+      final Set<TileOverlay> current = <TileOverlay>{to2, to3Changed, to4};
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
 
@@ -68,12 +65,10 @@ void main() {
       const TileOverlay to3Changed =
           TileOverlay(tileOverlayId: TileOverlayId('id3'), transparency: 0.5);
       const TileOverlay to4 = TileOverlay(tileOverlayId: TileOverlayId('id4'));
-      final Set<TileOverlay> previous = Set.from(<TileOverlay>[to1, to2, to3]);
-      final Set<TileOverlay> current1 =
-          Set.from(<TileOverlay>[to2, to3Changed, to4]);
-      final Set<TileOverlay> current2 =
-          Set.from(<TileOverlay>[to2, to3Changed, to4]);
-      final Set<TileOverlay> current3 = Set.from(<TileOverlay>[to2, to4]);
+      final Set<TileOverlay> previous = <TileOverlay>{to1, to2, to3};
+      final Set<TileOverlay> current1 = <TileOverlay>{to2, to3Changed, to4};
+      final Set<TileOverlay> current2 = <TileOverlay>{to2, to3Changed, to4};
+      final Set<TileOverlay> current3 = <TileOverlay>{to2, to4};
       final TileOverlayUpdates updates1 =
           TileOverlayUpdates.from(previous, current1);
       final TileOverlayUpdates updates2 =
@@ -91,17 +86,16 @@ void main() {
       const TileOverlay to3Changed =
           TileOverlay(tileOverlayId: TileOverlayId('id3'), transparency: 0.5);
       const TileOverlay to4 = TileOverlay(tileOverlayId: TileOverlayId('id4'));
-      final Set<TileOverlay> previous = Set.from(<TileOverlay>[to1, to2, to3]);
-      final Set<TileOverlay> current =
-          Set.from(<TileOverlay>[to2, to3Changed, to4]);
+      final Set<TileOverlay> previous = <TileOverlay>{to1, to2, to3};
+      final Set<TileOverlay> current = <TileOverlay>{to2, to3Changed, to4};
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
       expect(
           updates.hashCode,
-          hashValues(
-              hashList(updates.tileOverlaysToAdd),
-              hashList(updates.tileOverlayIdsToRemove),
-              hashList(updates.tileOverlaysToChange)));
+          Object.hash(
+              Object.hashAll(updates.tileOverlaysToAdd),
+              Object.hashAll(updates.tileOverlayIdsToRemove),
+              Object.hashAll(updates.tileOverlaysToChange)));
     });
 
     test('toString', () async {
@@ -111,9 +105,8 @@ void main() {
       const TileOverlay to3Changed =
           TileOverlay(tileOverlayId: TileOverlayId('id3'), transparency: 0.5);
       const TileOverlay to4 = TileOverlay(tileOverlayId: TileOverlayId('id4'));
-      final Set<TileOverlay> previous = Set.from(<TileOverlay>[to1, to2, to3]);
-      final Set<TileOverlay> current =
-          Set.from(<TileOverlay>[to2, to3Changed, to4]);
+      final Set<TileOverlay> previous = <TileOverlay>{to1, to2, to3};
+      final Set<TileOverlay> current = <TileOverlay>{to2, to3Changed, to4};
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
       expect(

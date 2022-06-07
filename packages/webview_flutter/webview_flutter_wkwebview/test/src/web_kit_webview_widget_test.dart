@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -22,6 +21,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
 @GenerateMocks(<Type>[
   UIScrollView,
   WKNavigationDelegate,
+  WKPreferences,
   WKScriptMessageHandler,
   WKWebView,
   WKWebViewConfiguration,
@@ -35,10 +35,11 @@ import 'web_kit_webview_widget_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebKitWebViewWidget', () {
+  group('WebKitWebViewWidget', () {
     late MockWKWebView mockWebView;
     late MockWebViewWidgetProxy mockWebViewWidgetProxy;
     late MockWKUserContentController mockUserContentController;
+    late MockWKPreferences mockPreferences;
     late MockWKWebViewConfiguration mockWebViewConfiguration;
     late MockWKUIDelegate mockUIDelegate;
     late MockUIScrollView mockScrollView;
@@ -54,6 +55,7 @@ void main() {
       mockWebView = MockWKWebView();
       mockWebViewConfiguration = MockWKWebViewConfiguration();
       mockUserContentController = MockWKUserContentController();
+      mockPreferences = MockWKPreferences();
       mockUIDelegate = MockWKUIDelegate();
       mockScrollView = MockUIScrollView();
       mockWebsiteDataStore = MockWKWebsiteDataStore();
@@ -62,16 +64,18 @@ void main() {
 
       when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
       when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
-      when(mockWebViewWidgetProxy.createNavigationDelegate())
-          .thenReturn(mockNavigationDelegate);
+      when(mockWebViewWidgetProxy.createNavigationDelegate(
+        didFinishNavigation: anyNamed('didFinishNavigation'),
+      )).thenReturn(mockNavigationDelegate);
       when(mockWebView.configuration).thenReturn(mockWebViewConfiguration);
       when(mockWebViewConfiguration.userContentController).thenReturn(
         mockUserContentController,
       );
+      when(mockWebViewConfiguration.preferences).thenReturn(mockPreferences);
 
       when(mockWebView.scrollView).thenReturn(mockScrollView);
 
-      when(mockWebViewConfiguration.webSiteDataStore).thenReturn(
+      when(mockWebViewConfiguration.websiteDataStore).thenReturn(
         mockWebsiteDataStore,
       );
 
@@ -115,7 +119,7 @@ void main() {
       await buildWidget(tester);
 
       final dynamic onCreateWebView =
-          verify(mockUIDelegate.onCreateWebView = captureAny).captured.single
+          verify(mockUIDelegate.setOnCreateWebView(captureAny)).captured.single
               as void Function(WKWebViewConfiguration, WKNavigationAction);
 
       const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
@@ -130,7 +134,56 @@ void main() {
       verify(mockWebView.loadRequest(request));
     });
 
-    group('$CreationParams', () {
+    group('CreationParams', () {
+      testWidgets('initialUrl', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            initialUrl: 'https://www.google.com',
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+        final NSUrlRequest request = verify(mockWebView.loadRequest(captureAny))
+            .captured
+            .single as NSUrlRequest;
+        expect(request.url, 'https://www.google.com');
+      });
+
+      testWidgets('backgroundColor', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            backgroundColor: Colors.red,
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        verify(mockWebView.setOpaque(false));
+        verify(mockWebView.setBackgroundColor(Colors.transparent));
+        verify(mockScrollView.setBackgroundColor(Colors.red));
+      });
+
+      testWidgets('userAgent', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            userAgent: 'MyUserAgent',
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        verify(mockWebView.setCustomUserAgent('MyUserAgent'));
+      });
+
       testWidgets('autoMediaPlaybackPolicy true', (WidgetTester tester) async {
         await buildWidget(
           tester,
@@ -144,11 +197,11 @@ void main() {
           ),
         );
 
-        verify(
-            mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-                <WKAudiovisualMediaType>{
+        verify(mockWebViewConfiguration
+            .setMediaTypesRequiringUserActionForPlayback(<
+                WKAudiovisualMediaType>{
           WKAudiovisualMediaType.all,
-        });
+        }));
       });
 
       testWidgets('autoMediaPlaybackPolicy false', (WidgetTester tester) async {
@@ -163,11 +216,11 @@ void main() {
           ),
         );
 
-        verify(
-            mockWebViewConfiguration.mediaTypesRequiringUserActionForPlayback =
-                <WKAudiovisualMediaType>{
+        verify(mockWebViewConfiguration
+            .setMediaTypesRequiringUserActionForPlayback(<
+                WKAudiovisualMediaType>{
           WKAudiovisualMediaType.none,
-        });
+        }));
       });
 
       testWidgets('javascriptChannelNames', (WidgetTester tester) async {
@@ -204,7 +257,158 @@ void main() {
         expect(javaScriptChannels[3], 'b');
       });
 
-      group('$WebSettings', () {
+      group('WebSettings', () {
+        testWidgets('javascriptMode', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                javascriptMode: JavascriptMode.unrestricted,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockPreferences.setJavaScriptEnabled(true));
+        });
+
+        testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                hasNavigationDelegate: true,
+              ),
+            ),
+          );
+
+          verify(mockNavigationDelegate
+              .setDecidePolicyForNavigationAction(argThat(isNotNull)));
+        });
+
+        testWidgets('userAgent', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.of('myUserAgent'),
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockWebView.setCustomUserAgent('myUserAgent'));
+        });
+
+        testWidgets(
+          'enabling zoom re-adds JavaScript channels',
+          (WidgetTester tester) async {
+            when(mockWebViewWidgetProxy.createScriptMessageHandler())
+                .thenReturn(
+              MockWKScriptMessageHandler(),
+            );
+
+            await buildWidget(
+              tester,
+              creationParams: CreationParams(
+                webSettings: WebSettings(
+                  userAgent: const WebSetting<String?>.absent(),
+                  zoomEnabled: false,
+                  hasNavigationDelegate: false,
+                ),
+                javascriptChannelNames: <String>{'myChannel'},
+              ),
+            );
+
+            clearInteractions(mockUserContentController);
+
+            await testController.updateSettings(WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              zoomEnabled: true,
+            ));
+
+            final List<dynamic> javaScriptChannels = verifyInOrder(<Object>[
+              mockUserContentController.removeAllUserScripts(),
+              mockUserContentController.removeScriptMessageHandler('myChannel'),
+              mockUserContentController.addScriptMessageHandler(
+                captureAny,
+                captureAny,
+              ),
+            ]).captured[2];
+
+            expect(
+              javaScriptChannels[0],
+              isA<WKScriptMessageHandler>(),
+            );
+            expect(javaScriptChannels[1], 'myChannel');
+          },
+        );
+
+        testWidgets(
+          'enabling zoom removes script',
+          (WidgetTester tester) async {
+            when(mockWebViewWidgetProxy.createScriptMessageHandler())
+                .thenReturn(
+              MockWKScriptMessageHandler(),
+            );
+
+            await buildWidget(
+              tester,
+              creationParams: CreationParams(
+                webSettings: WebSettings(
+                  userAgent: const WebSetting<String?>.absent(),
+                  zoomEnabled: false,
+                  hasNavigationDelegate: false,
+                ),
+              ),
+            );
+
+            clearInteractions(mockUserContentController);
+
+            await testController.updateSettings(WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              zoomEnabled: true,
+            ));
+
+            verify(mockUserContentController.removeAllUserScripts());
+            verifyNever(mockUserContentController.addScriptMessageHandler(
+              any,
+              any,
+            ));
+          },
+        );
+
+        testWidgets('zoomEnabled is false', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                zoomEnabled: false,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          final WKUserScript zoomScript =
+              verify(mockUserContentController.addUserScript(captureAny))
+                  .captured
+                  .first as WKUserScript;
+          expect(zoomScript.isMainFrameOnly, isTrue);
+          expect(zoomScript.injectionTime,
+              WKUserScriptInjectionTime.atDocumentEnd);
+          expect(
+            zoomScript.source,
+            "var meta = document.createElement('meta');\n"
+            "meta.name = 'viewport';\n"
+            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+            "user-scalable=no';\n"
+            "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+          );
+        });
+
         testWidgets('allowsInlineMediaPlayback', (WidgetTester tester) async {
           await buildWidget(
             tester,
@@ -216,12 +420,12 @@ void main() {
             ),
           );
 
-          verify(mockWebViewConfiguration.allowsInlineMediaPlayback = true);
+          verify(mockWebViewConfiguration.setAllowsInlineMediaPlayback(true));
         });
       });
     });
 
-    group('$WebKitWebViewPlatformController', () {
+    group('WebKitWebViewPlatformController', () {
       testWidgets('loadFile', (WidgetTester tester) async {
         await buildWidget(tester);
 
@@ -352,7 +556,7 @@ void main() {
       testWidgets('canGoBack', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.canGoBack).thenAnswer(
+        when(mockWebView.canGoBack()).thenAnswer(
           (_) => Future<bool>.value(false),
         );
         expect(testController.canGoBack(), completion(false));
@@ -361,7 +565,7 @@ void main() {
       testWidgets('canGoForward', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.canGoForward).thenAnswer(
+        when(mockWebView.canGoForward()).thenAnswer(
           (_) => Future<bool>.value(true),
         );
         expect(testController.canGoForward(), completion(true));
@@ -524,7 +728,7 @@ void main() {
       testWidgets('getTitle', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockWebView.title)
+        when(mockWebView.getTitle())
             .thenAnswer((_) => Future<String>.value('Web Title'));
         expect(testController.getTitle(), completion('Web Title'));
       });
@@ -533,7 +737,7 @@ void main() {
         await buildWidget(tester);
 
         await testController.scrollTo(2, 4);
-        verify(mockScrollView.contentOffset = const Point<double>(2.0, 4.0));
+        verify(mockScrollView.setContentOffset(const Point<double>(2.0, 4.0)));
       });
 
       testWidgets('scrollBy', (WidgetTester tester) async {
@@ -546,7 +750,7 @@ void main() {
       testWidgets('getScrollX', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        when(mockScrollView.contentOffset).thenAnswer(
+        when(mockScrollView.getContentOffset()).thenAnswer(
             (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
         expect(testController.getScrollX(), completion(8.0));
       });
@@ -556,24 +760,26 @@ void main() {
 
         await buildWidget(tester);
 
-        when(mockScrollView.contentOffset).thenAnswer(
+        when(mockScrollView.getContentOffset()).thenAnswer(
             (_) => Future<Point<double>>.value(const Point<double>(8.0, 16.0)));
         expect(testController.getScrollY(), completion(16.0));
       });
 
       testWidgets('clearCache', (WidgetTester tester) async {
         await buildWidget(tester);
+        when(
+          mockWebsiteDataStore.removeDataOfTypes(
+            <WKWebsiteDataType>{
+              WKWebsiteDataType.memoryCache,
+              WKWebsiteDataType.diskCache,
+              WKWebsiteDataType.offlineWebApplicationCache,
+              WKWebsiteDataType.localStorage,
+            },
+            DateTime.fromMillisecondsSinceEpoch(0),
+          ),
+        ).thenAnswer((_) => Future<bool>.value(false));
 
-        await testController.clearCache();
-        verify(mockWebsiteDataStore.removeDataOfTypes(
-          <WKWebsiteDataTypes>{
-            WKWebsiteDataTypes.memoryCache,
-            WKWebsiteDataTypes.diskCache,
-            WKWebsiteDataTypes.offlineWebApplicationCache,
-            WKWebsiteDataTypes.localStroage,
-          },
-          DateTime.fromMillisecondsSinceEpoch(0),
-        ));
+        expect(testController.clearCache(), completes);
       });
 
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
@@ -629,12 +835,15 @@ void main() {
 
         await testController.removeJavascriptChannels(<String>{'c'});
 
-        verify(mockUserContentController.removeAllScriptMessageHandlers());
         verify(mockUserContentController.removeAllUserScripts());
+        verify(mockUserContentController.removeScriptMessageHandler('c'));
+        verify(mockUserContentController.removeScriptMessageHandler('d'));
 
         final List<dynamic> javaScriptChannels = verify(
           mockUserContentController.addScriptMessageHandler(
-              captureAny, captureAny),
+            captureAny,
+            captureAny,
+          ),
         ).captured;
         expect(
           javaScriptChannels[0],
@@ -653,15 +862,53 @@ void main() {
         );
         expect(userScripts[0].isMainFrameOnly, false);
       });
+
+      testWidgets('removeJavascriptChannels with zoom disabled',
+          (WidgetTester tester) async {
+        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+          MockWKScriptMessageHandler(),
+        );
+
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            webSettings: WebSettings(
+              userAgent: const WebSetting<String?>.absent(),
+              zoomEnabled: false,
+              hasNavigationDelegate: false,
+            ),
+          ),
+        );
+
+        await testController.addJavascriptChannels(<String>{'c'});
+        clearInteractions(mockUserContentController);
+        await testController.removeJavascriptChannels(<String>{'c'});
+
+        final WKUserScript zoomScript =
+            verify(mockUserContentController.addUserScript(captureAny))
+                .captured
+                .first as WKUserScript;
+        expect(zoomScript.isMainFrameOnly, isTrue);
+        expect(
+            zoomScript.injectionTime, WKUserScriptInjectionTime.atDocumentEnd);
+        expect(
+          zoomScript.source,
+          "var meta = document.createElement('meta');\n"
+          "meta.name = 'viewport';\n"
+          "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+          "user-scalable=no';\n"
+          "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+        );
+      });
     });
 
-    group('$WebViewPlatformCallbacksHandler', () {
+    group('WebViewPlatformCallbacksHandler', () {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
 
         final dynamic didStartProvisionalNavigation = verify(
-                mockNavigationDelegate.didStartProvisionalNavigation =
-                    captureAny)
+                mockNavigationDelegate
+                    .setDidStartProvisionalNavigation(captureAny))
             .captured
             .single as void Function(WKWebView, String);
         didStartProvisionalNavigation(mockWebView, 'https://google.com');
@@ -673,9 +920,9 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFinishNavigation =
-            verify(mockNavigationDelegate.didFinishNavigation = captureAny)
-                .captured
-                .single as void Function(WKWebView, String);
+            verify(mockWebViewWidgetProxy.createNavigationDelegate(
+          didFinishNavigation: captureAnyNamed('didFinishNavigation'),
+        )).captured.single as void Function(WKWebView, String);
         didFinishNavigation(mockWebView, 'https://google.com');
 
         verify(mockCallbacksHandler.onPageFinished('https://google.com'));
@@ -686,7 +933,7 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFailNavigation =
-            verify(mockNavigationDelegate.didFailNavigation = captureAny)
+            verify(mockNavigationDelegate.setDidFailNavigation(captureAny))
                 .captured
                 .single as void Function(WKWebView, NSError);
 
@@ -714,8 +961,8 @@ void main() {
         await buildWidget(tester);
 
         final dynamic didFailProvisionalNavigation = verify(
-                mockNavigationDelegate.didFailProvisionalNavigation =
-                    captureAny)
+                mockNavigationDelegate
+                    .setDidFailProvisionalNavigation(captureAny))
             .captured
             .single as void Function(WKWebView, NSError);
 
@@ -747,8 +994,8 @@ void main() {
         await buildWidget(tester);
 
         final dynamic webViewWebContentProcessDidTerminate = verify(
-                mockNavigationDelegate.webViewWebContentProcessDidTerminate =
-                    captureAny)
+                mockNavigationDelegate
+                    .setWebViewWebContentProcessDidTerminate(captureAny))
             .captured
             .single as void Function(WKWebView);
         webViewWebContentProcessDidTerminate(mockWebView);
@@ -771,8 +1018,8 @@ void main() {
         await buildWidget(tester, hasNavigationDelegate: true);
 
         final dynamic decidePolicyForNavigationAction = verify(
-                    mockNavigationDelegate.decidePolicyForNavigationAction =
-                        captureAny)
+                    mockNavigationDelegate
+                        .setDecidePolicyForNavigationAction(captureAny))
                 .captured
                 .single
             as Future<WKNavigationActionPolicy> Function(
@@ -803,7 +1050,7 @@ void main() {
       testWidgets('onProgress', (WidgetTester tester) async {
         await buildWidget(tester, hasProgressTracking: true);
         final dynamic observeValue =
-            verify(mockWebView.observeValue = captureAny).captured.single
+            verify(mockWebView.setObserveValue(captureAny)).captured.single
                 as void Function(
           String keyPath,
           NSObject object,
@@ -828,7 +1075,7 @@ void main() {
       });
     });
 
-    group('$JavascriptChannelRegistry', () {
+    group('JavascriptChannelRegistry', () {
       testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
         when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
           MockWKScriptMessageHandler(),
@@ -844,7 +1091,7 @@ void main() {
             .single as MockWKScriptMessageHandler;
 
         final dynamic didReceiveScriptMessage =
-            verify(messageHandler.didReceiveScriptMessage = captureAny)
+            verify(messageHandler.setDidReceiveScriptMessage(captureAny))
                 .captured
                 .single as void Function(
           WKUserContentController userContentController,

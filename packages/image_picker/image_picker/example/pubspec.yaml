@@ -4,7 +4,7 @@ publish_to: none
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=2.8.0"
 
 dependencies:
   flutter:
@@ -20,7 +20,7 @@ dependencies:
   video_player: ^2.1.4
 
 dev_dependencies:
-  espresso: ^0.1.0+2
+  espresso: ^0.2.0
   flutter_driver:
     sdk: flutter
   integration_test:

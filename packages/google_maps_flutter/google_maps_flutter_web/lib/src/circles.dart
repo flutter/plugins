@@ -6,17 +6,17 @@ part of google_maps_flutter_web;
 
 /// This class manages all the [CircleController]s associated to a [GoogleMapController].
 class CirclesController extends GeometryController {
+  /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
+  CirclesController({
+    required StreamController<MapEvent<Object?>> stream,
+  })  : _streamController = stream,
+        _circleIdToController = <CircleId, CircleController>{};
+
   // A cache of [CircleController]s indexed by their [CircleId].
   final Map<CircleId, CircleController> _circleIdToController;
 
   // The stream over which circles broadcast their events
-  StreamController<MapEvent> _streamController;
-
-  /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
-  CirclesController({
-    required StreamController<MapEvent> stream,
-  })  : _streamController = stream,
-        _circleIdToController = Map<CircleId, CircleController>();
+  final StreamController<MapEvent<Object?>> _streamController;
 
   /// Returns the cache of [CircleController]s. Test only.
   @visibleForTesting
@@ -26,9 +26,7 @@ class CirclesController extends GeometryController {
   ///
   /// Wraps each [Circle] into its corresponding [CircleController].
   void addCircles(Set<Circle> circlesToAdd) {
-    circlesToAdd.forEach((circle) {
-      _addCircle(circle);
-    });
+    circlesToAdd.forEach(_addCircle);
   }
 
   void _addCircle(Circle circle) {
@@ -36,10 +34,9 @@ class CirclesController extends GeometryController {
       return;
     }
 
-    final populationOptions = _circleOptionsFromCircle(circle);
-    gmaps.Circle gmCircle = gmaps.Circle(populationOptions);
-    gmCircle.map = googleMap;
-    CircleController controller = CircleController(
+    final gmaps.CircleOptions circleOptions = _circleOptionsFromCircle(circle);
+    final gmaps.Circle gmCircle = gmaps.Circle(circleOptions)..map = googleMap;
+    final CircleController controller = CircleController(
         circle: gmCircle,
         consumeTapEvents: circle.consumeTapEvents,
         onTap: () {
@@ -50,24 +47,25 @@ class CirclesController extends GeometryController {
 
   /// Updates a set of [Circle] objects with new options.
   void changeCircles(Set<Circle> circlesToChange) {
-    circlesToChange.forEach((circleToChange) {
-      _changeCircle(circleToChange);
-    });
+    circlesToChange.forEach(_changeCircle);
   }
 
   void _changeCircle(Circle circle) {
-    final circleController = _circleIdToController[circle.circleId];
+    final CircleController? circleController =
+        _circleIdToController[circle.circleId];
     circleController?.update(_circleOptionsFromCircle(circle));
   }
 
   /// Removes a set of [CircleId]s from the cache.
   void removeCircles(Set<CircleId> circleIdsToRemove) {
-    circleIdsToRemove.forEach((circleId) {
-      final CircleController? circleController =
-          _circleIdToController[circleId];
-      circleController?.remove();
-      _circleIdToController.remove(circleId);
-    });
+    circleIdsToRemove.forEach(_removeCircle);
+  }
+
+  // Removes a circle and its controller by its [CircleId].
+  void _removeCircle(CircleId circleId) {
+    final CircleController? circleController = _circleIdToController[circleId];
+    circleController?.remove();
+    _circleIdToController.remove(circleId);
   }
 
   // Handles the global onCircleTap function to funnel events from circles into the stream.

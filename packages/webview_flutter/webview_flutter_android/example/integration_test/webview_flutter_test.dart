@@ -9,12 +9,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_android/webview_android.dart';
@@ -1010,8 +1011,8 @@ Future<void> main() async {
 
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
-    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
-        base64Encode(const Utf8Encoder().convert(blankPage));
+    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,'
+        '${base64Encode(const Utf8Encoder().convert(blankPage))}';
 
     testWidgets('can allow requests', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
@@ -1377,6 +1378,50 @@ Future<void> main() async {
       );
     },
   );
+
+  testWidgets(
+    'clearCache should clear local storage',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> onPageFinished = Completer<void>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: (_) => onPageFinished.complete(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
+        ),
+      );
+
+      final WebViewController controller = await controllerCompleter.future;
+      await onPageFinished.future;
+
+      await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
+
+      expect(
+        controller.runJavascriptReturningResult(
+          'localStorage.getItem("myCat");',
+        ),
+        completion('"Tom"'),
+      );
+
+      await controller.clearCache();
+
+      expect(
+        controller.runJavascriptReturningResult(
+          'localStorage.getItem("myCat");',
+        ),
+        completion('null'),
+      );
+    },
+  );
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
@@ -1403,9 +1448,10 @@ Future<String> _runJavaScriptReturningResult(
 
 class ResizableWebView extends StatefulWidget {
   const ResizableWebView({
+    Key? key,
     required this.onResize,
     required this.onPageFinished,
-  });
+  }) : super(key: key);
 
   final JavascriptMessageHandler onResize;
   final VoidCallback onPageFinished;

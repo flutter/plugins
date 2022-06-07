@@ -6,6 +6,10 @@ _Note_: This plugin is still under development, and some APIs might not be
 available yet. [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
+|             | Android | iOS    | Web |
+|-------------|---------|--------|-----|
+| **Support** | SDK 16+ | iOS 9+ | Any |
+
 ## Platform integration
 
 ### Android integration
@@ -122,4 +126,4 @@ Future<void> _handleSignIn() async {
 ## Example
 
 Find the example wiring in the
-[Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
+[Google sign-in example application](https://github.com/flutter/plugins/blob/main/packages/google_sign_in/google_sign_in/example/lib/main.dart).

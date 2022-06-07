@@ -5,6 +5,19 @@
 #import "FLTCam.h"
 #import "FLTSavePhotoDelegate.h"
 
+@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+
+/// The queue on which `eventSink` property should be accessed.
+@property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
+
+/// The event sink to stream camera events to Dart.
+///
+/// The property should only be accessed on `captureSessionQueue`.
+/// The block itself should be invoked on the main queue.
+@property FlutterEventSink eventSink;
+
+@end
+
 // APIs exposed for unit testing.
 @interface FLTCam ()
 
@@ -13,6 +26,9 @@
 
 /// The output for photo capturing. Exposed setter for unit tests.
 @property(strong, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
+
+/// True when images from the camera are being streamed.
+@property(assign, nonatomic) BOOL isStreamingImages;
 
 /// A dictionary to retain all in-progress FLTSavePhotoDelegates. The key of the dictionary is the
 /// AVCapturePhotoSettings's uniqueID for each photo capture operation, and the value is the
@@ -37,5 +53,9 @@
                     captureSession:(AVCaptureSession *)captureSession
                captureSessionQueue:(dispatch_queue_t)captureSessionQueue
                              error:(NSError **)error;
+
+/// Start streaming images.
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
+                   imageStreamHandler:(FLTImageStreamHandler *)imageStreamHandler;
 
 @end

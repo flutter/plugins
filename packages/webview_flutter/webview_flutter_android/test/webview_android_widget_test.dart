@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
@@ -16,13 +15,14 @@ import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/webview_android_widget.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart' show MockTestWebViewHostApi;
+import 'test_android_webview.pigeon.dart';
 import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
   android_webview.FlutterAssetManager,
   android_webview.WebSettings,
+  android_webview.WebStorage,
   android_webview.WebView,
   WebViewAndroidDownloadListener,
   WebViewAndroidJavaScriptChannel,
@@ -39,6 +39,7 @@ void main() {
     late MockFlutterAssetManager mockFlutterAssetManager;
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
+    late MockWebStorage mockWebStorage;
     late MockWebViewProxy mockWebViewProxy;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
@@ -54,6 +55,7 @@ void main() {
       mockFlutterAssetManager = MockFlutterAssetManager();
       mockWebView = MockWebView();
       mockWebSettings = MockWebSettings();
+      mockWebStorage = MockWebStorage();
       when(mockWebView.settings).thenReturn(mockWebSettings);
 
       mockWebViewProxy = MockWebViewProxy();
@@ -86,6 +88,7 @@ void main() {
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
         flutterAssetManager: mockFlutterAssetManager,
+        webStorage: mockWebStorage,
         onBuildWidget: (WebViewAndroidPlatformController controller) {
           testController = controller;
           return Container();
@@ -590,6 +593,7 @@ void main() {
 
         await testController.clearCache();
         verify(mockWebView.clearCache(true));
+        verify(mockWebStorage.deleteAllData());
       });
 
       testWidgets('evaluateJavascript', (WidgetTester tester) async {
