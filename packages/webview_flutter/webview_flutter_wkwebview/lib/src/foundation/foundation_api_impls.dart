@@ -36,6 +36,14 @@ Iterable<NSKeyValueObservingOptionsEnumData>
   });
 }
 
+extension _NSKeyValueChangeKeyEnumDataConverter on NSKeyValueChangeKeyEnumData {
+  NSKeyValueChangeKey toNSKeyValueChangeKey() {
+    return NSKeyValueChangeKey.values.firstWhere(
+      (NSKeyValueChangeKey element) => element.name == value.name,
+    );
+  }
+}
+
 /// Handles initialization of Flutter APIs for the Foundation library.
 // TODO(bparrishMines): Add NSObjectFlutterApiImpl once the callback methods
 // are added.
@@ -130,5 +138,43 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     return other is NSObjectHostApiImpl &&
         binaryMessenger == other.binaryMessenger &&
         instanceManager == other.instanceManager;
+  }
+}
+
+/// Flutter api implementation for [NSObject].
+class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
+  /// Constructs a [NSObjectFlutterApiImpl].
+  NSObjectFlutterApiImpl({InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }
+
+  /// Maintains instances stored to communicate with native language objects.
+  late final InstanceManager instanceManager;
+
+  NSObject _getObject(int identifier) {
+    return instanceManager.getInstanceWithWeakReference(identifier)!;
+  }
+
+  @override
+  void observeValue(
+    int identifier,
+    String keyPath,
+    int objectIdentifier,
+    List<NSKeyValueChangeKeyEnumData?> changeKeys,
+    List<Object?> changeValues,
+  ) {
+    final void Function(String, NSObject, Map<NSKeyValueChangeKey, Object?>)?
+        function = _getObject(identifier).observeValue;
+    function?.call(
+      keyPath,
+      instanceManager.getInstanceWithWeakReference(objectIdentifier)!
+          as NSObject,
+      Map<NSKeyValueChangeKey, Object?>.fromIterables(
+          changeKeys.map<NSKeyValueChangeKey>(
+        (NSKeyValueChangeKeyEnumData? data) {
+          return data!.toNSKeyValueChangeKey();
+        },
+      ), changeValues),
+    );
   }
 }
