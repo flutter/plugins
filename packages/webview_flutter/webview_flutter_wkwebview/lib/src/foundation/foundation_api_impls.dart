@@ -151,12 +151,11 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
 /// Flutter api implementation for [NSObject].
 class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
   /// Constructs a [NSObjectFlutterApiImpl].
-  NSObjectFlutterApiImpl({InstanceManager? instanceManager}) {
-    this.instanceManager = instanceManager ?? NSObject.globalInstanceManager;
-  }
+  NSObjectFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with native language objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   NSObject _getObject(int identifier) {
     return instanceManager.getInstanceWithWeakReference(identifier)!;

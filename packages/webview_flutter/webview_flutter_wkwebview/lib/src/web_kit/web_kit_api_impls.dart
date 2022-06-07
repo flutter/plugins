@@ -358,12 +358,11 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
 class WKScriptMessageHandlerFlutterApiImpl
     extends WKScriptMessageHandlerFlutterApi {
   /// Constructs a [WKScriptMessageHandlerFlutterApiImpl].
-  WKScriptMessageHandlerFlutterApiImpl({InstanceManager? instanceManager}) {
-    this.instanceManager = instanceManager ?? NSObject.globalInstanceManager;
-  }
+  WKScriptMessageHandlerFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with native language objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   WKScriptMessageHandler _getHandler(int identifier) {
     return instanceManager.getInstanceWithWeakReference(identifier)!;
@@ -597,12 +596,11 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
 /// Flutter api implementation for [WKUIDelegate].
 class WKUIDelegateFlutterApiImpl extends WKUIDelegateFlutterApi {
   /// Constructs a [WKUIDelegateFlutterApiImpl].
-  WKUIDelegateFlutterApiImpl({InstanceManager? instanceManager}) {
-    this.instanceManager = instanceManager ?? NSObject.globalInstanceManager;
-  }
+  WKUIDelegateFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with native language objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   WKUIDelegate _getDelegate(int identifier) {
     return instanceManager.getInstanceWithWeakReference(identifier)!;
@@ -665,12 +663,11 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
 class WKNavigationDelegateFlutterApiImpl
     extends WKNavigationDelegateFlutterApi {
   /// Constructs a [WKNavigationDelegateFlutterApiImpl].
-  WKNavigationDelegateFlutterApiImpl({InstanceManager? instanceManager}) {
-    this.instanceManager = instanceManager ?? NSObject.globalInstanceManager;
-  }
+  WKNavigationDelegateFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with native language objects.
-  late final InstanceManager instanceManager;
+  final InstanceManager instanceManager;
 
   WKNavigationDelegate _getDelegate(int identifier) {
     return instanceManager.getInstanceWithWeakReference(identifier)!;
