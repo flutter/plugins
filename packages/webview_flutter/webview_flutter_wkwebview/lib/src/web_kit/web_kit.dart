@@ -711,6 +711,7 @@ class WKWebView extends UIView {
   /// configuration object.
   WKWebView(
     WKWebViewConfiguration configuration, {
+    super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
   })  : _binaryMessenger = binaryMessenger,

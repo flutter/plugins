@@ -169,7 +169,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       autoMediaPlaybackPolicy: params.autoMediaPlaybackPolicy,
     );
 
-    webView = webViewProxy.createWebView(configuration);
+    webView = webViewProxy.createWebView(configuration, observeValue: (
+      String keyPath,
+      NSObject object,
+      Map<NSKeyValueChangeKey, Object?> change,
+    ) {
+      final double progress = change[NSKeyValueChangeKey.newValue]! as double;
+      callbacksHandler.onProgress((progress * 100).round());
+    });
 
     webView.setUIDelegate(uiDelegate);
     uiDelegate.setOnCreateWebView((
@@ -447,14 +454,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) {
     if (hasProgressTracking) {
-      webView.setObserveValue((
-        String keyPath,
-        NSObject object,
-        Map<NSKeyValueChangeKey, Object?> change,
-      ) {
-        final double progress = change[NSKeyValueChangeKey.newValue]! as double;
-        callbacksHandler.onProgress((progress * 100).round());
-      });
       return webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
@@ -463,7 +462,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         },
       );
     } else {
-      webView.setObserveValue(null);
       return webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
@@ -606,8 +604,16 @@ class WebViewWidgetProxy {
   const WebViewWidgetProxy();
 
   /// Constructs a [WKWebView].
-  WKWebView createWebView(WKWebViewConfiguration configuration) {
-    return WKWebView(configuration);
+  WKWebView createWebView(
+    WKWebViewConfiguration configuration, {
+    void Function(
+      String keyPath,
+      NSObject object,
+      Map<NSKeyValueChangeKey, Object?> change,
+    )?
+        observeValue,
+  }) {
+    return WKWebView(configuration, observeValue: observeValue);
   }
 
   /// Constructs a [WKScriptMessageHandler].

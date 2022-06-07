@@ -62,7 +62,12 @@ void main() {
       mockNavigationDelegate = MockWKNavigationDelegate();
       mockWebViewWidgetProxy = MockWebViewWidgetProxy();
 
-      when(mockWebViewWidgetProxy.createWebView(any)).thenReturn(mockWebView);
+      when(
+        mockWebViewWidgetProxy.createWebView(
+          any,
+          observeValue: anyNamed('observeValue'),
+        ),
+      ).thenReturn(mockWebView);
       when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
       when(mockWebViewWidgetProxy.createNavigationDelegate(
         didFinishNavigation: anyNamed('didFinishNavigation'),
@@ -1091,13 +1096,6 @@ void main() {
 
       testWidgets('onProgress', (WidgetTester tester) async {
         await buildWidget(tester, hasProgressTracking: true);
-        final dynamic observeValue =
-            verify(mockWebView.setObserveValue(captureAny)).captured.single
-                as void Function(
-          String keyPath,
-          NSObject object,
-          Map<NSKeyValueChangeKey, Object?> change,
-        );
 
         verify(mockWebView.addObserver(
           mockWebView,
@@ -1106,6 +1104,16 @@ void main() {
             NSKeyValueObservingOptions.newValue,
           },
         ));
+
+        final dynamic observeValue = verify(
+                mockWebViewWidgetProxy.createWebView(any,
+                    observeValue: captureAnyNamed('observeValue')))
+            .captured
+            .single as void Function(
+          String keyPath,
+          NSObject object,
+          Map<NSKeyValueChangeKey, Object?> change,
+        );
 
         observeValue(
           'estimatedProgress',

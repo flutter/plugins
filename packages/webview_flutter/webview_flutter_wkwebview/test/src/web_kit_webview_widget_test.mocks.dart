@@ -110,14 +110,6 @@ class MockUIScrollView extends _i1.Mock implements _i5.UIScrollView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
   _i3.Copyable copy() => (super.noSuchMethod(Invocation.method(#copy, []),
       returnValue: _FakeCopyable_1()) as _i3.Copyable);
 }
@@ -150,14 +142,6 @@ class MockWKNavigationDelegate extends _i1.Mock
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
 }
 
 /// A class which mocks [WKPreferences].
@@ -185,14 +169,6 @@ class MockWKPreferences extends _i1.Mock implements _i4.WKPreferences {
   _i6.Future<void> removeObserver(_i8.NSObject? observer, {String? keyPath}) =>
       (super.noSuchMethod(
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
@@ -230,14 +206,6 @@ class MockWKScriptMessageHandler extends _i1.Mock
   _i6.Future<void> removeObserver(_i8.NSObject? observer, {String? keyPath}) =>
       (super.noSuchMethod(
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
@@ -370,14 +338,6 @@ class MockWKWebView extends _i1.Mock implements _i4.WKWebView {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
   _i3.Copyable copy() => (super.noSuchMethod(Invocation.method(#copy, []),
       returnValue: _FakeCopyable_1()) as _i3.Copyable);
 }
@@ -432,14 +392,6 @@ class MockWKWebViewConfiguration extends _i1.Mock
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
   _i3.Copyable copy() => (super.noSuchMethod(Invocation.method(#copy, []),
       returnValue: _FakeCopyable_1()) as _i3.Copyable);
 }
@@ -478,14 +430,6 @@ class MockWKWebsiteDataStore extends _i1.Mock
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
   _i3.Copyable copy() => (super.noSuchMethod(Invocation.method(#copy, []),
       returnValue: _FakeCopyable_1()) as _i3.Copyable);
 }
@@ -518,14 +462,6 @@ class MockWKUIDelegate extends _i1.Mock implements _i4.WKUIDelegate {
   _i6.Future<void> removeObserver(_i8.NSObject? observer, {String? keyPath}) =>
       (super.noSuchMethod(
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
@@ -581,14 +517,6 @@ class MockWKUserContentController extends _i1.Mock
   _i6.Future<void> removeObserver(_i8.NSObject? observer, {String? keyPath}) =>
       (super.noSuchMethod(
           Invocation.method(#removeObserver, [observer], {#keyPath: keyPath}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
-  _i6.Future<void> setObserveValue(
-          void Function(
-                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
-              observeValue) =>
-      (super.noSuchMethod(Invocation.method(#setObserveValue, [observeValue]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
   @override
@@ -665,8 +593,13 @@ class MockWebViewWidgetProxy extends _i1.Mock
   }
 
   @override
-  _i4.WKWebView createWebView(_i4.WKWebViewConfiguration? configuration) =>
-      (super.noSuchMethod(Invocation.method(#createWebView, [configuration]),
+  _i4.WKWebView createWebView(_i4.WKWebViewConfiguration? configuration,
+          {void Function(
+                  String, _i8.NSObject, Map<_i8.NSKeyValueChangeKey, Object?>)?
+              observeValue}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #createWebView, [configuration], {#observeValue: observeValue}),
           returnValue: _FakeWKWebView_9()) as _i4.WKWebView);
   @override
   _i4.WKScriptMessageHandler createScriptMessageHandler() =>

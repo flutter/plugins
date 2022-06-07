@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-
 import '../common/instance_manager.dart';
 import 'foundation_api_impls.dart';
 
@@ -245,6 +244,7 @@ class NSObject implements Copyable {
   /// This should only be used by subclasses created by this library or to
   /// create copies.
   NSObject({
+    this.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _api = NSObjectHostApiImpl(
@@ -262,6 +262,13 @@ class NSObject implements Copyable {
   });
 
   final NSObjectHostApiImpl _api;
+
+  /// Informs the observing object when the value at the specified key path has changed.
+  final void Function(
+    String keyPath,
+    NSObject object,
+    Map<NSKeyValueChangeKey, Object?> change,
+  )? observeValue;
 
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
@@ -286,18 +293,6 @@ class NSObject implements Copyable {
   /// Release the reference to the Objective-C object.
   static void dispose(NSObject instance) {
     instance._api.instanceManager.removeWeakReference(instance);
-  }
-
-  /// Informs the observing object when the value at the specified key path has changed.
-  Future<void> setObserveValue(
-    void Function(
-      String keyPath,
-      NSObject object,
-      Map<NSKeyValueChangeKey, Object?> change,
-    )?
-        observeValue,
-  ) {
-    throw UnimplementedError();
   }
 
   @override
