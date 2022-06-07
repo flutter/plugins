@@ -410,16 +410,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       ).map<Future<void>>(
         (String channelName) {
           final WKScriptMessageHandler handler =
-              webViewProxy.createScriptMessageHandler()
-                ..setDidReceiveScriptMessage((
-                  WKUserContentController userContentController,
-                  WKScriptMessage message,
-                ) {
-                  javascriptChannelRegistry.onJavascriptChannelMessage(
-                    message.name,
-                    message.body!.toString(),
-                  );
-                });
+              webViewProxy.createScriptMessageHandler(didReceiveScriptMessage: (
+            WKUserContentController userContentController,
+            WKScriptMessage message,
+          ) {
+            javascriptChannelRegistry.onJavascriptChannelMessage(
+              message.name,
+              message.body!.toString(),
+            );
+          });
           _scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
@@ -617,8 +616,16 @@ class WebViewWidgetProxy {
   }
 
   /// Constructs a [WKScriptMessageHandler].
-  WKScriptMessageHandler createScriptMessageHandler() {
-    return WKScriptMessageHandler();
+  WKScriptMessageHandler createScriptMessageHandler({
+    required void Function(
+      WKUserContentController userContentController,
+      WKScriptMessage message,
+    )
+        didReceiveScriptMessage,
+  }) {
+    return WKScriptMessageHandler(
+      didReceiveScriptMessage: didReceiveScriptMessage,
+    );
   }
 
   /// Constructs a [WKUIDelegate].

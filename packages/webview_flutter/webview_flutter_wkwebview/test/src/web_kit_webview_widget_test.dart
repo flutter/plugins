@@ -237,7 +237,11 @@ void main() {
       });
 
       testWidgets('javascriptChannelNames', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+        when(
+          mockWebViewWidgetProxy.createScriptMessageHandler(
+            didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+          ),
+        ).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -303,8 +307,11 @@ void main() {
         testWidgets(
           'enabling zoom re-adds JavaScript channels',
           (WidgetTester tester) async {
-            when(mockWebViewWidgetProxy.createScriptMessageHandler())
-                .thenReturn(
+            when(
+              mockWebViewWidgetProxy.createScriptMessageHandler(
+                didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+              ),
+            ).thenReturn(
               MockWKScriptMessageHandler(),
             );
 
@@ -781,7 +788,11 @@ void main() {
       });
 
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+        when(
+          mockWebViewWidgetProxy.createScriptMessageHandler(
+            didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+          ),
+        ).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -822,7 +833,11 @@ void main() {
       });
 
       testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+        when(
+          mockWebViewWidgetProxy.createScriptMessageHandler(
+            didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+          ),
+        ).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -863,7 +878,11 @@ void main() {
 
       testWidgets('removeJavascriptChannels with zoom disabled',
           (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+        when(
+          mockWebViewWidgetProxy.createScriptMessageHandler(
+            didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+          ),
+        ).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
@@ -1127,23 +1146,23 @@ void main() {
 
     group('JavascriptChannelRegistry', () {
       testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
-        when(mockWebViewWidgetProxy.createScriptMessageHandler()).thenReturn(
+        when(
+          mockWebViewWidgetProxy.createScriptMessageHandler(
+            didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+          ),
+        ).thenReturn(
           MockWKScriptMessageHandler(),
         );
 
         await buildWidget(tester);
         await testController.addJavascriptChannels(<String>{'hello'});
 
-        final MockWKScriptMessageHandler messageHandler = verify(
-                mockUserContentController.addScriptMessageHandler(
-                    captureAny, 'hello'))
+        final dynamic didReceiveScriptMessage = verify(
+                mockWebViewWidgetProxy.createScriptMessageHandler(
+                    didReceiveScriptMessage:
+                        captureAnyNamed('didReceiveScriptMessage')))
             .captured
-            .single as MockWKScriptMessageHandler;
-
-        final dynamic didReceiveScriptMessage =
-            verify(messageHandler.setDidReceiveScriptMessage(captureAny))
-                .captured
-                .single as void Function(
+            .single as void Function(
           WKUserContentController userContentController,
           WKScriptMessage message,
         );

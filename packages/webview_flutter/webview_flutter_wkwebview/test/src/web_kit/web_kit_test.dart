@@ -186,6 +186,7 @@ void main() {
         TestWKScriptMessageHandlerHostApi.setup(mockPlatformHostApi);
 
         scriptMessageHandler = WKScriptMessageHandler(
+          didReceiveScriptMessage: (_, __) {},
           instanceManager: instanceManager,
         );
       });
@@ -287,9 +288,8 @@ void main() {
         TestWKScriptMessageHandlerHostApi.setup(
           MockTestWKScriptMessageHandlerHostApi(),
         );
-        final WKScriptMessageHandler handler = WKScriptMessageHandler(
-          instanceManager: instanceManager,
-        );
+        final WKScriptMessageHandler handler =
+            WKScriptMessageHandler(didReceiveScriptMessage: (_, __) {}, instanceManager: instanceManager,);
 
         userContentController.addScriptMessageHandler(handler, 'handlerName');
         verify(mockPlatformHostApi.addScriptMessageHandler(

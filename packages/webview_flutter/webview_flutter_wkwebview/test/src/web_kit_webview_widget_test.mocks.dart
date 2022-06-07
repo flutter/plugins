@@ -186,14 +186,12 @@ class MockWKScriptMessageHandler extends _i1.Mock
   }
 
   @override
-  _i6.Future<void> setDidReceiveScriptMessage(
-          void Function(_i4.WKUserContentController, _i4.WKScriptMessage)?
-              didReceiveScriptMessage) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #setDidReceiveScriptMessage, [didReceiveScriptMessage]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
+  void Function(_i4.WKUserContentController, _i4.WKScriptMessage)
+      get didReceiveScriptMessage =>
+          (super.noSuchMethod(Invocation.getter(#didReceiveScriptMessage),
+              returnValue: (_i4.WKUserContentController userContentController,
+                  _i4.WKScriptMessage message) {}) as void Function(
+              _i4.WKUserContentController, _i4.WKScriptMessage));
   @override
   _i6.Future<void> addObserver(_i8.NSObject? observer,
           {String? keyPath, Set<_i8.NSKeyValueObservingOptions>? options}) =>
@@ -602,8 +600,12 @@ class MockWebViewWidgetProxy extends _i1.Mock
               #createWebView, [configuration], {#observeValue: observeValue}),
           returnValue: _FakeWKWebView_9()) as _i4.WKWebView);
   @override
-  _i4.WKScriptMessageHandler createScriptMessageHandler() =>
-      (super.noSuchMethod(Invocation.method(#createScriptMessageHandler, []),
+  _i4.WKScriptMessageHandler createScriptMessageHandler(
+          {void Function(_i4.WKUserContentController, _i4.WKScriptMessage)?
+              didReceiveScriptMessage}) =>
+      (super.noSuchMethod(
+              Invocation.method(#createScriptMessageHandler, [],
+                  {#didReceiveScriptMessage: didReceiveScriptMessage}),
               returnValue: _FakeWKScriptMessageHandler_10())
           as _i4.WKScriptMessageHandler);
   @override

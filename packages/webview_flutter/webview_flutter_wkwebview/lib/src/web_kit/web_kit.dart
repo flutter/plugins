@@ -350,6 +350,7 @@ class WKHttpCookieStore extends NSObject {
 class WKScriptMessageHandler extends NSObject {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler({
+    required this.didReceiveScriptMessage,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _scriptMessageHandlerApi = WKScriptMessageHandlerHostApiImpl(
@@ -366,15 +367,10 @@ class WKScriptMessageHandler extends NSObject {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
-  Future<void> setDidReceiveScriptMessage(
-    void Function(
-      WKUserContentController userContentController,
-      WKScriptMessage message,
-    )?
-        didReceiveScriptMessage,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(
+    WKUserContentController userContentController,
+    WKScriptMessage message,
+  ) didReceiveScriptMessage;
 }
 
 /// Manages interactions between JavaScript code and your web view.
