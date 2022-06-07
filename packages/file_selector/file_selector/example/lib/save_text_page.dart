@@ -16,12 +16,10 @@ class SaveTextPage extends StatelessWidget {
   final TextEditingController _contentController = TextEditingController();
 
   Future<void> _saveFile() async {
-    final String text = _contentController.text;
     final String fileName = _nameController.text;
-    final Uint8List fileData = Uint8List.fromList(text.codeUnits);
-    const String fileMimeType = 'text/plain';
-    final XFile textFile =
-        XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
+    // This demonstrates using an initial directory for the prompt, which should
+    // only be done in cases where the application can likely predict where the
+    // file will be saved. In most cases, this parameter should not be provided.
     final String initialDirectory =
         (await getApplicationDocumentsDirectory()).path;
     final String? path = await getSavePath(
@@ -32,6 +30,12 @@ class SaveTextPage extends StatelessWidget {
       // Operation was canceled by the user.
       return;
     }
+
+    final String text = _contentController.text;
+    final Uint8List fileData = Uint8List.fromList(text.codeUnits);
+    const String fileMimeType = 'text/plain';
+    final XFile textFile =
+        XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
 
     await textFile.saveTo(path);
   }

@@ -16,6 +16,9 @@ class OpenTextPage extends StatelessWidget {
       label: 'text',
       extensions: <String>['txt', 'json'],
     );
+    // This demonstrates using an initial directory for the prompt, which should
+    // only be done in cases where the application can likely predict where the
+    // file would be. In most cases, this parameter should not be provided.
     final String initialDirectory =
         (await getApplicationDocumentsDirectory()).path;
     final XFile? file = await openFile(

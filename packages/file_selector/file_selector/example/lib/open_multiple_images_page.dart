@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// Screen that shows an example of openFiles
 class OpenMultipleImagesPage extends StatelessWidget {
@@ -23,15 +22,10 @@ class OpenMultipleImagesPage extends StatelessWidget {
       label: 'PNGs',
       extensions: <String>['png'],
     );
-    final String initialDirectory =
-        (await getApplicationDocumentsDirectory()).path;
-    final List<XFile> files = await openFiles(
-      acceptedTypeGroups: <XTypeGroup>[
-        jpgsTypeGroup,
-        pngTypeGroup,
-      ],
-      initialDirectory: initialDirectory,
-    );
+    final List<XFile> files = await openFiles(acceptedTypeGroups: <XTypeGroup>[
+      jpgsTypeGroup,
+      pngTypeGroup,
+    ]);
     if (files.isEmpty) {
       // Operation was canceled by the user.
       return;
