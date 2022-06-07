@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+
 import '../common/instance_manager.dart';
 import 'foundation_api_impls.dart';
 
@@ -236,7 +237,7 @@ class NSHttpCookie {
 
 /// The root class of most Objective-C class hierarchies.
 @immutable
-class NSObject with Copyable {
+class NSObject implements Copyable {
   // TODO(bparrishMines): Change constructor name to `detached`.
   /// Constructs a [NSObject] without creating the associated
   /// Objective-C object.

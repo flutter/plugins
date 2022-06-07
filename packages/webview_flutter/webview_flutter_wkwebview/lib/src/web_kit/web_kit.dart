@@ -606,6 +606,11 @@ class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
     this.didFinishNavigation,
+    this.didStartProvisionalNavigation,
+    this.decidePolicyForNavigationAction,
+    this.didFailNavigation,
+    this.didFailProvisionalNavigation,
+    this.webViewWebContentProcessDidTerminate,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -623,6 +628,11 @@ class WKNavigationDelegate extends NSObject {
   /// library or to create a copy for an InstanceManager.
   WKNavigationDelegate.detached({
     this.didFinishNavigation,
+    this.didStartProvisionalNavigation,
+    this.decidePolicyForNavigationAction,
+    this.didFailNavigation,
+    this.didFailProvisionalNavigation,
+    this.webViewWebContentProcessDidTerminate,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -636,49 +646,35 @@ class WKNavigationDelegate extends NSObject {
   final void Function(WKWebView webView, String? url)? didFinishNavigation;
 
   /// Called when navigation from the main frame has started.
-  Future<void> setDidStartProvisionalNavigation(
-    void Function(WKWebView webView, String? url)?
-        didStartProvisionalNavigation,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView, String? url)?
+      didStartProvisionalNavigation;
 
   /// Called when permission is needed to navigate to new content.
-  Future<void> setDecidePolicyForNavigationAction(
-      Future<WKNavigationActionPolicy> Function(
+  final Future<WKNavigationActionPolicy> Function(
     WKWebView webView,
     WKNavigationAction navigationAction,
-  )?
-          decidePolicyForNavigationAction) {
-    throw UnimplementedError();
-  }
+  )? decidePolicyForNavigationAction;
 
   /// Called when an error occurred during navigation.
-  Future<void> setDidFailNavigation(
-    void Function(WKWebView webView, NSError error)? didFailNavigation,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView, NSError error)? didFailNavigation;
 
   /// Called when an error occurred during the early navigation process.
-  Future<void> setDidFailProvisionalNavigation(
-    void Function(WKWebView webView, NSError error)?
-        didFailProvisionalNavigation,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView, NSError error)?
+      didFailProvisionalNavigation;
 
   /// Called when the web view’s content process was terminated.
-  Future<void> setWebViewWebContentProcessDidTerminate(
-    void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView)? webViewWebContentProcessDidTerminate;
 
   @override
-  Copyable copy() {
+  WKNavigationDelegate copy() {
     return WKNavigationDelegate.detached(
       didFinishNavigation: didFinishNavigation,
+      didStartProvisionalNavigation: didStartProvisionalNavigation,
+      decidePolicyForNavigationAction: decidePolicyForNavigationAction,
+      didFailNavigation: didFailNavigation,
+      didFailProvisionalNavigation: didFailProvisionalNavigation,
+      webViewWebContentProcessDidTerminate:
+          webViewWebContentProcessDidTerminate,
       binaryMessenger: _navigationDelegateApi.binaryMessenger,
       instanceManager: _navigationDelegateApi.instanceManager,
     );

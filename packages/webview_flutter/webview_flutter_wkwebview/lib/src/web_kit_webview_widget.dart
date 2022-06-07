@@ -92,6 +92,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   bool _zoomEnabled = true;
+  bool _hasNavigationDelegate = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -121,25 +122,42 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     didFinishNavigation: (WKWebView webView, String? url) {
       callbacksHandler.onPageFinished(url ?? '');
     },
-  )
-        ..setDidStartProvisionalNavigation((WKWebView webView, String? url) {
-          callbacksHandler.onPageStarted(url ?? '');
-        })
-        ..setDidFailNavigation((WKWebView webView, NSError error) {
-          callbacksHandler.onWebResourceError(_toWebResourceError(error));
-        })
-        ..setDidFailProvisionalNavigation((WKWebView webView, NSError error) {
-          callbacksHandler.onWebResourceError(_toWebResourceError(error));
-        })
-        ..setWebViewWebContentProcessDidTerminate((WKWebView webView) {
-          callbacksHandler.onWebResourceError(WebResourceError(
-            errorCode: WKErrorCode.webContentProcessTerminated,
-            // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
-            domain: 'WKErrorDomain',
-            description: '',
-            errorType: WebResourceErrorType.webContentProcessTerminated,
-          ));
-        });
+    didStartProvisionalNavigation: (WKWebView webView, String? url) {
+      callbacksHandler.onPageStarted(url ?? '');
+    },
+    decidePolicyForNavigationAction: (
+      WKWebView webView,
+      WKNavigationAction action,
+    ) async {
+      if (!_hasNavigationDelegate) {
+        return WKNavigationActionPolicy.allow;
+      }
+
+      final bool allow = await callbacksHandler.onNavigationRequest(
+        url: action.request.url,
+        isForMainFrame: action.targetFrame.isMainFrame,
+      );
+
+      return allow
+          ? WKNavigationActionPolicy.allow
+          : WKNavigationActionPolicy.cancel;
+    },
+    didFailNavigation: (WKWebView webView, NSError error) {
+      callbacksHandler.onWebResourceError(_toWebResourceError(error));
+    },
+    didFailProvisionalNavigation: (WKWebView webView, NSError error) {
+      callbacksHandler.onWebResourceError(_toWebResourceError(error));
+    },
+    webViewWebContentProcessDidTerminate: (WKWebView webView) {
+      callbacksHandler.onWebResourceError(WebResourceError(
+        errorCode: WKErrorCode.webContentProcessTerminated,
+        // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+        domain: 'WKErrorDomain',
+        description: '',
+        errorType: WebResourceErrorType.webContentProcessTerminated,
+      ));
+    },
+  );
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -358,10 +376,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> updateSettings(WebSettings setting) async {
+    if (setting.hasNavigationDelegate != null) {
+      _hasNavigationDelegate = setting.hasNavigationDelegate!;
+    }
     await Future.wait(<Future<void>>[
       _setUserAgent(setting.userAgent),
-      if (setting.hasNavigationDelegate != null)
-        _setHasNavigationDelegate(setting.hasNavigationDelegate!),
       if (setting.hasProgressTracking != null)
         _setHasProgressTracking(setting.hasProgressTracking!),
       if (setting.javascriptMode != null)
@@ -424,24 +443,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     }
 
     await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
-  }
-
-  Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
-    if (hasNavigationDelegate) {
-      return navigationDelegate.setDecidePolicyForNavigationAction(
-          (WKWebView webView, WKNavigationAction action) async {
-        final bool allow = await callbacksHandler.onNavigationRequest(
-          url: action.request.url,
-          isForMainFrame: action.targetFrame.isMainFrame,
-        );
-
-        return allow
-            ? WKNavigationActionPolicy.allow
-            : WKNavigationActionPolicy.cancel;
-      });
-    } else {
-      return navigationDelegate.setDecidePolicyForNavigationAction(null);
-    }
   }
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) {
@@ -626,7 +627,26 @@ class WebViewWidgetProxy {
       String? url,
     )?
         didFinishNavigation,
+    void Function(WKWebView webView, String? url)?
+        didStartProvisionalNavigation,
+    Future<WKNavigationActionPolicy> Function(
+      WKWebView webView,
+      WKNavigationAction navigationAction,
+    )?
+        decidePolicyForNavigationAction,
+    void Function(WKWebView webView, NSError error)? didFailNavigation,
+    void Function(WKWebView webView, NSError error)?
+        didFailProvisionalNavigation,
+    void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   }) {
-    return WKNavigationDelegate(didFinishNavigation: didFinishNavigation);
+    return WKNavigationDelegate(
+      didFinishNavigation: didFinishNavigation,
+      didStartProvisionalNavigation: didStartProvisionalNavigation,
+      decidePolicyForNavigationAction: decidePolicyForNavigationAction,
+      didFailNavigation: didFailNavigation,
+      didFailProvisionalNavigation: didFailProvisionalNavigation,
+      webViewWebContentProcessDidTerminate:
+          webViewWebContentProcessDidTerminate,
+    );
   }
 }
