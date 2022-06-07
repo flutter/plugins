@@ -18,13 +18,12 @@ class OpenImagePage extends StatelessWidget {
       label: 'images',
       extensions: <String>['jpg', 'png'],
     );
-    final List<XFile> files =
-        await openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-    if (files.isEmpty) {
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file == null) {
       // Operation was canceled by the user.
       return;
     }
-    final XFile file = files[0];
     final String fileName = file.name;
     final String filePath = file.path;
 
