@@ -1,5 +1,10 @@
-## NEXT
+## 2.4.4
 
+* Updates references to the obsolete master branch.
+
+## 2.4.3
+
+* Fixes Android to correctly display videos recorded in landscapeRight (https://github.com/flutter/flutter/issues/60327).
 * Fixes order-dependent unit tests.
 
 ## 2.4.2

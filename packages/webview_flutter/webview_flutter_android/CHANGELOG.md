@@ -1,3 +1,15 @@
+## 2.8.11
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.8.10
+
+* Updates references to the obsolete master branch.
+
+## 2.8.9
+
+* Updates Gradle to 7.2.1.
+
 ## 2.8.8
 
 * Minor fixes for new analysis options.

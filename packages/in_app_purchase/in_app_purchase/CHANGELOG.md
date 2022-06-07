@@ -1,3 +1,7 @@
+## 3.0.5
+
+* Updates references to the obsolete master branch.
+
 ## 3.0.4
 
 * Minor fixes for new analysis options.

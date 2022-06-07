@@ -1,6 +1,10 @@
-## 0.10.1+3
+## 0.10.1+4
 
 * Renames generated folder to js_interop.
+
+## 0.10.1+3
+
+* Updates references to the obsolete master branch.
 
 ## 0.10.1+2
 

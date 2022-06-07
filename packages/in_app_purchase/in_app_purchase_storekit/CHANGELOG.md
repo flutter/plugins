@@ -1,3 +1,7 @@
+## 0.3.0+9
+
+* Updates references to the obsolete master branch.
+
 ## 0.3.0+8
 
 * Fixes a memory leak on iOS.

@@ -1,3 +1,7 @@
+## 2.3.5
+
+* Updates references to the obsolete master branch.
+
 ## 2.3.4
 
 * Removes unnecessary imports.

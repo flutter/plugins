@@ -35,7 +35,7 @@ void main() {
     late WebKitFlutterApis flutterApis;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
       flutterApis = WebKitFlutterApis(instanceManager: instanceManager);
       WebKitFlutterApis.instance = flutterApis;
     });
@@ -71,8 +71,8 @@ void main() {
 
       test('createFromWebViewConfiguration', () {
         verify(mockPlatformHostApi.createFromWebViewConfiguration(
-          instanceManager.getInstanceId(websiteDataStore),
-          instanceManager.getInstanceId(webViewConfiguration),
+          instanceManager.getIdentifier(websiteDataStore),
+          instanceManager.getIdentifier(webViewConfiguration),
         ));
       });
 
@@ -81,7 +81,7 @@ void main() {
             WKWebsiteDataStore.defaultDataStore;
         verify(
           mockPlatformHostApi.createDefaultDataStore(
-            InstanceManager.instance.getInstanceId(defaultDataStore),
+            NSObject.globalInstanceManager.getIdentifier(defaultDataStore),
           ),
         );
       });
@@ -103,7 +103,7 @@ void main() {
 
         final List<WKWebsiteDataTypeEnumData> typeData =
             verify(mockPlatformHostApi.removeDataOfTypes(
-          instanceManager.getInstanceId(websiteDataStore),
+          instanceManager.getIdentifier(websiteDataStore),
           captureAny,
           5.0,
         )).captured.single.cast<WKWebsiteDataTypeEnumData>()
@@ -150,8 +150,8 @@ void main() {
 
       test('createFromWebsiteDataStore', () {
         verify(mockPlatformHostApi.createFromWebsiteDataStore(
-          instanceManager.getInstanceId(httpCookieStore),
-          instanceManager.getInstanceId(websiteDataStore),
+          instanceManager.getIdentifier(httpCookieStore),
+          instanceManager.getIdentifier(websiteDataStore),
         ));
       });
 
@@ -163,7 +163,7 @@ void main() {
 
         final NSHttpCookieData cookie = verify(
           mockPlatformHostApi.setCookie(
-            instanceManager.getInstanceId(httpCookieStore),
+            instanceManager.getIdentifier(httpCookieStore),
             captureAny,
           ),
         ).captured.single as NSHttpCookieData;
@@ -196,7 +196,7 @@ void main() {
 
       test('create', () async {
         verify(mockPlatformHostApi.create(
-          instanceManager.getInstanceId(scriptMessageHandler),
+          instanceManager.getIdentifier(scriptMessageHandler),
         ));
       });
     });
@@ -232,15 +232,15 @@ void main() {
 
       test('createFromWebViewConfiguration', () async {
         verify(mockPlatformHostApi.createFromWebViewConfiguration(
-          instanceManager.getInstanceId(preferences),
-          instanceManager.getInstanceId(webViewConfiguration),
+          instanceManager.getIdentifier(preferences),
+          instanceManager.getIdentifier(webViewConfiguration),
         ));
       });
 
       test('setJavaScriptEnabled', () async {
         await preferences.setJavaScriptEnabled(true);
         verify(mockPlatformHostApi.setJavaScriptEnabled(
-          instanceManager.getInstanceId(preferences),
+          instanceManager.getIdentifier(preferences),
           true,
         ));
       });
@@ -278,8 +278,8 @@ void main() {
 
       test('createFromWebViewConfiguration', () async {
         verify(mockPlatformHostApi.createFromWebViewConfiguration(
-          instanceManager.getInstanceId(userContentController),
-          instanceManager.getInstanceId(webViewConfiguration),
+          instanceManager.getIdentifier(userContentController),
+          instanceManager.getIdentifier(webViewConfiguration),
         ));
       });
 
@@ -293,8 +293,8 @@ void main() {
 
         userContentController.addScriptMessageHandler(handler, 'handlerName');
         verify(mockPlatformHostApi.addScriptMessageHandler(
-          instanceManager.getInstanceId(userContentController),
-          instanceManager.getInstanceId(handler),
+          instanceManager.getIdentifier(userContentController),
+          instanceManager.getIdentifier(handler),
           'handlerName',
         ));
       });
@@ -302,7 +302,7 @@ void main() {
       test('removeScriptMessageHandler', () async {
         userContentController.removeScriptMessageHandler('handlerName');
         verify(mockPlatformHostApi.removeScriptMessageHandler(
-          instanceManager.getInstanceId(userContentController),
+          instanceManager.getIdentifier(userContentController),
           'handlerName',
         ));
       });
@@ -310,7 +310,7 @@ void main() {
       test('removeAllScriptMessageHandlers', () async {
         userContentController.removeAllScriptMessageHandlers();
         verify(mockPlatformHostApi.removeAllScriptMessageHandlers(
-          instanceManager.getInstanceId(userContentController),
+          instanceManager.getIdentifier(userContentController),
         ));
       });
 
@@ -321,7 +321,7 @@ void main() {
           isMainFrameOnly: false,
         ));
         verify(mockPlatformHostApi.addUserScript(
-          instanceManager.getInstanceId(userContentController),
+          instanceManager.getIdentifier(userContentController),
           argThat(isA<WKUserScriptData>()),
         ));
       });
@@ -329,7 +329,7 @@ void main() {
       test('removeAllUserScripts', () {
         userContentController.removeAllUserScripts();
         verify(mockPlatformHostApi.removeAllUserScripts(
-          instanceManager.getInstanceId(userContentController),
+          instanceManager.getIdentifier(userContentController),
         ));
       });
     });
@@ -354,7 +354,7 @@ void main() {
 
       test('create', () async {
         verify(
-          mockPlatformHostApi.create(instanceManager.getInstanceId(
+          mockPlatformHostApi.create(instanceManager.getIdentifier(
             webViewConfiguration,
           )),
         );
@@ -373,15 +373,15 @@ void main() {
           instanceManager: instanceManager,
         );
         verify(mockPlatformHostApi.createFromWebView(
-          instanceManager.getInstanceId(configurationFromWebView),
-          instanceManager.getInstanceId(webView),
+          instanceManager.getIdentifier(configurationFromWebView),
+          instanceManager.getIdentifier(webView),
         ));
       });
 
       test('allowsInlineMediaPlayback', () {
         webViewConfiguration.setAllowsInlineMediaPlayback(true);
         verify(mockPlatformHostApi.setAllowsInlineMediaPlayback(
-          instanceManager.getInstanceId(webViewConfiguration),
+          instanceManager.getIdentifier(webViewConfiguration),
           true,
         ));
       });
@@ -396,7 +396,7 @@ void main() {
 
         final List<WKAudiovisualMediaTypeEnumData?> typeData = verify(
             mockPlatformHostApi.setMediaTypesRequiringUserActionForPlayback(
-          instanceManager.getInstanceId(webViewConfiguration),
+          instanceManager.getIdentifier(webViewConfiguration),
           captureAny,
         )).captured.single as List<WKAudiovisualMediaTypeEnumData?>;
 
@@ -438,30 +438,34 @@ void main() {
       });
 
       test('create', () async {
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+        );
+
         verify(mockPlatformHostApi.create(
-          instanceManager.getInstanceId(navigationDelegate),
+          instanceManager.getIdentifier(navigationDelegate),
         ));
       });
 
-      test('setDidFinishNavigation', () async {
+      test('didFinishNavigation', () async {
         final Completer<List<Object?>> argsCompleter =
             Completer<List<Object?>>();
 
-        navigationDelegate.setDidFinishNavigation(
-          (WKWebView webView, String? url) {
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        navigationDelegate = WKNavigationDelegate(
+          instanceManager: instanceManager,
+          didFinishNavigation: (WKWebView webView, String? url) {
             argsCompleter.complete(<Object?>[webView, url]);
           },
         );
 
-        final int functionInstanceId =
-            verify(mockPlatformHostApi.setDidFinishNavigation(
-          instanceManager.getInstanceId(navigationDelegate),
-          captureAny,
-        )).captured.single as int;
-
-        flutterApis.navigationDelegateFlutterApi.didFinishNavigation(
-          functionInstanceId,
-          instanceManager.getInstanceId(webView)!,
+        WebKitFlutterApis.instance.navigationDelegateFlutterApi
+            .didFinishNavigation(
+          instanceManager.getIdentifier(navigationDelegate)!,
+          instanceManager.getIdentifier(webView)!,
           'url',
         );
 
@@ -491,7 +495,7 @@ void main() {
           webViewConfiguration,
           instanceManager: instanceManager,
         );
-        webViewInstanceId = instanceManager.getInstanceId(webView)!;
+        webViewInstanceId = instanceManager.getIdentifier(webView)!;
       });
 
       tearDown(() {
@@ -501,8 +505,8 @@ void main() {
 
       test('create', () async {
         verify(mockPlatformHostApi.create(
-          instanceManager.getInstanceId(webView),
-          instanceManager.getInstanceId(
+          instanceManager.getIdentifier(webView),
+          instanceManager.getIdentifier(
             webViewConfiguration,
           ),
         ));
@@ -517,7 +521,7 @@ void main() {
         await webView.setUIDelegate(uiDelegate);
         verify(mockPlatformHostApi.setUIDelegate(
           webViewInstanceId,
-          instanceManager.getInstanceId(uiDelegate),
+          instanceManager.getIdentifier(uiDelegate),
         ));
 
         TestWKUIDelegateHostApi.setup(null);
@@ -534,7 +538,7 @@ void main() {
         await webView.setNavigationDelegate(navigationDelegate);
         verify(mockPlatformHostApi.setNavigationDelegate(
           webViewInstanceId,
-          instanceManager.getInstanceId(navigationDelegate),
+          instanceManager.getIdentifier(navigationDelegate),
         ));
 
         TestWKNavigationDelegateHostApi.setup(null);
@@ -650,7 +654,7 @@ void main() {
 
       test('create', () async {
         verify(mockPlatformHostApi.create(
-          instanceManager.getInstanceId(uiDelegate),
+          instanceManager.getIdentifier(uiDelegate),
         ));
       });
     });
