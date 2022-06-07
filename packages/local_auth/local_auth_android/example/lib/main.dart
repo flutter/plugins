@@ -9,6 +9,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_android/types/android_authentication_options.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 
 void main() {
@@ -109,7 +110,8 @@ class _MyAppState extends State<MyApp> {
         () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
   }
 
-  Future<void> _authenticateWithBiometrics() async {
+  Future<void> _authenticateWithBiometrics(
+      {bool strongBiometricsOnly = false}) async {
     bool authenticated = false;
     try {
       setState(() {
@@ -120,10 +122,11 @@ class _MyAppState extends State<MyApp> {
         localizedReason:
             'Scan your fingerprint (or face or whatever) to authenticate',
         authMessages: <AuthMessages>[const AndroidAuthMessages()],
-        options: const AuthenticationOptions(
+        options: AndroidAuthenticationOptions(
           useErrorDialogs: true,
           stickyAuth: true,
           biometricOnly: true,
+          strongBiometricsOnly: strongBiometricsOnly,
         ),
       );
       setState(() {
@@ -219,6 +222,19 @@ class _MyAppState extends State<MyApp> {
                             Text(_isAuthenticating
                                 ? 'Cancel'
                                 : 'Authenticate: biometrics only'),
+                            const Icon(Icons.fingerprint),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _authenticateWithBiometrics(
+                            strongBiometricsOnly: true),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(_isAuthenticating
+                                ? 'Cancel'
+                                : 'Authenticate: strong biometrics only'),
                             const Icon(Icons.fingerprint),
                           ],
                         ),

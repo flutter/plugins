@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -69,18 +71,43 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private boolean activityPaused = false;
   private BiometricPrompt biometricPrompt;
 
+  @Deprecated
   AuthenticationHelper(
       Lifecycle lifecycle,
       FragmentActivity activity,
       MethodCall call,
       AuthCompletionHandler completionHandler,
       boolean allowCredentials) {
+    this(
+        lifecycle,
+        activity,
+        call,
+        completionHandler,
+        allowCredentials
+            ? new int[] {BiometricManager.Authenticators.DEVICE_CREDENTIAL}
+            : new int[0]);
+  }
+
+  AuthenticationHelper(
+      Lifecycle lifecycle,
+      FragmentActivity activity,
+      MethodCall call,
+      AuthCompletionHandler completionHandler,
+      int[] allowedAuthenticators) {
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
     this.call = call;
     this.isAuthSticky = call.argument("stickyAuth");
     this.uiThreadExecutor = new UiThreadExecutor();
+
+    boolean deviceCredentialAllowed = false;
+    for (int allowedAuthenticator : allowedAuthenticators) {
+      if (allowedAuthenticator == BiometricManager.Authenticators.DEVICE_CREDENTIAL) {
+        deviceCredentialAllowed = true;
+        break;
+      }
+    }
 
     BiometricPrompt.PromptInfo.Builder promptBuilder =
         new BiometricPrompt.PromptInfo.Builder()
@@ -90,9 +117,23 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
-    if (allowCredentials) {
+    // Use setAllowedAuthenticators on API 30 and above.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      if (allowedAuthenticators.length > 0) {
+        // Combine the authentication methods with bitwise OR
+        int allowedAuthenticatorsValue = allowedAuthenticators[0];
+        for (int i = 1; i < allowedAuthenticators.length; i++) {
+          allowedAuthenticatorsValue = (allowedAuthenticatorsValue | allowedAuthenticators[i]);
+        }
+        // Set the allowed authenticators
+        promptBuilder.setAllowedAuthenticators(allowedAuthenticatorsValue);
+      }
+    }
+    // Use setDeviceCredentialAllowed on API 29 and below.
+    else if (deviceCredentialAllowed) {
       promptBuilder.setDeviceCredentialAllowed(true);
-    } else {
+    }
+    if (!deviceCredentialAllowed) {
       promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
     this.promptInfo = promptBuilder.build();

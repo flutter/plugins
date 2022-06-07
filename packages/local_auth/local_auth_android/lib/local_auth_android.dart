@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
+import 'package:local_auth_android/types/android_authentication_options.dart';
 import 'package:local_auth_android/types/auth_messages_android.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:local_auth_platform_interface/types/auth_messages.dart';
+import 'package:local_auth_platform_interface/types/auth_options.dart';
+import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
 export 'package:local_auth_android/types/auth_messages_android.dart';
 export 'package:local_auth_platform_interface/types/auth_messages.dart';
@@ -25,15 +29,20 @@ class LocalAuthAndroid extends LocalAuthPlatform {
   Future<bool> authenticate({
     required String localizedReason,
     required Iterable<AuthMessages> authMessages,
-    AuthenticationOptions options = const AuthenticationOptions(),
+    AuthenticationOptions options = const AndroidAuthenticationOptions(),
   }) async {
     assert(localizedReason.isNotEmpty);
+    bool strongBiometricsOnly = false;
+    if (options is AndroidAuthenticationOptions) {
+      strongBiometricsOnly = options.strongBiometricsOnly;
+    }
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
       'useErrorDialogs': options.useErrorDialogs,
       'stickyAuth': options.stickyAuth,
       'sensitiveTransaction': options.sensitiveTransaction,
       'biometricOnly': options.biometricOnly,
+      'strongBiometricsOnly': strongBiometricsOnly,
     };
     args.addAll(const AndroidAuthMessages().args);
     for (final AuthMessages messages in authMessages) {

@@ -6,6 +6,9 @@ package io.flutter.plugins.localauth;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.KEYGUARD_SERVICE;
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG;
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
+import static androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -167,6 +170,28 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
           }
         };
 
+    boolean strongBiometricsOnly = call.argument("strongBiometricsOnly");
+    if (strongBiometricsOnly && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      if (!canAuthenticateWithStrongBiometrics()) {
+        if (!hasStrongBiometricHardware()) {
+          completionHandler.onError("NoHardware", "No strong biometric hardware found");
+        }
+        completionHandler.onError("NotEnrolled", "No strong biometrics enrolled on this device.");
+        return;
+      }
+      authHelper =
+          new AuthenticationHelper(
+              lifecycle,
+              (FragmentActivity) activity,
+              call,
+              completionHandler,
+              new int[] {
+                BIOMETRIC_STRONG,
+              });
+      authHelper.authenticate();
+      return;
+    }
+
     // if is biometricOnly try biometric prompt - might not work
     boolean isBiometricOnly = call.argument("biometricOnly");
     if (isBiometricOnly) {
@@ -179,7 +204,13 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       }
       authHelper =
           new AuthenticationHelper(
-              lifecycle, (FragmentActivity) activity, call, completionHandler, false);
+              lifecycle,
+              (FragmentActivity) activity,
+              call,
+              completionHandler,
+              new int[] {
+                BIOMETRIC_WEAK, BIOMETRIC_STRONG,
+              });
       authHelper.authenticate();
       return;
     }
@@ -188,7 +219,13 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       authHelper =
           new AuthenticationHelper(
-              lifecycle, (FragmentActivity) activity, call, completionHandler, true);
+              lifecycle,
+              (FragmentActivity) activity,
+              call,
+              completionHandler,
+              new int[] {
+                BiometricManager.Authenticators.DEVICE_CREDENTIAL, BIOMETRIC_WEAK, BIOMETRIC_STRONG,
+              });
       authHelper.authenticate();
       return;
     }
@@ -198,7 +235,13 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       if (fingerprintManager.hasEnrolledFingerprints()) {
         authHelper =
             new AuthenticationHelper(
-                lifecycle, (FragmentActivity) activity, call, completionHandler, false);
+                lifecycle,
+                (FragmentActivity) activity,
+                call,
+                completionHandler,
+                new int[] {
+                  BIOMETRIC_WEAK, BIOMETRIC_STRONG,
+                });
         authHelper.authenticate();
         return;
       }
@@ -275,12 +318,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     if (activity == null || activity.isFinishing()) {
       return biometrics;
     }
-    if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
-        == BiometricManager.BIOMETRIC_SUCCESS) {
+    if (biometricManager.canAuthenticate(BIOMETRIC_WEAK) == BIOMETRIC_SUCCESS) {
       biometrics.add("weak");
     }
-    if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-        == BiometricManager.BIOMETRIC_SUCCESS) {
+    if (biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS) {
       biometrics.add("strong");
     }
     return biometrics;
@@ -293,12 +334,23 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   private boolean canAuthenticateWithBiometrics() {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
+    return biometricManager.canAuthenticate() == BIOMETRIC_SUCCESS;
   }
 
   private boolean hasBiometricHardware() {
     if (biometricManager == null) return false;
     return biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+  }
+
+  private boolean canAuthenticateWithStrongBiometrics() {
+    if (biometricManager == null) return false;
+    return biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS;
+  }
+
+  private boolean hasStrongBiometricHardware() {
+    if (biometricManager == null) return false;
+    return biometricManager.canAuthenticate(BIOMETRIC_STRONG)
+        != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
   }
 
   private void isDeviceSupported(Result result) {
