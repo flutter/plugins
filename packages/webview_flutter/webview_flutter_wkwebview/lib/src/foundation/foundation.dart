@@ -236,7 +236,7 @@ class NSHttpCookie {
 
 /// The root class of most Objective-C class hierarchies.
 @immutable
-class NSObject implements Copyable {
+class NSObject with Copyable {
   // TODO(bparrishMines): Change constructor name to `detached`.
   /// Constructs a [NSObject] without creating the associated
   /// Objective-C object.

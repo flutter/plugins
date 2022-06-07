@@ -658,7 +658,7 @@ class WKNavigationDelegate extends NSObject {
   final void Function(WKWebView webView)? webViewWebContentProcessDidTerminate;
 
   @override
-  WKNavigationDelegate copy() {
+  Copyable copy() {
     return WKNavigationDelegate.detached(
       didFinishNavigation: didFinishNavigation,
       didStartProvisionalNavigation: didStartProvisionalNavigation,
