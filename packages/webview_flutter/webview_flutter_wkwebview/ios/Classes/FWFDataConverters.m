@@ -153,3 +153,31 @@ NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumDat
 
   return nil;
 }
+
+FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(WKNavigationAction *action) {
+  return [FWFWKNavigationActionData makeWithRequest:FWFNSUrlRequestDataFromNSURLRequest(action.request) targetFrame:FWFWKFrameInfoDataFromWKFrameInfo(action.targetFrame)];
+}
+
+
+FWFNSUrlRequestData *FWFNSUrlRequestDataFromNSURLRequest(NSURLRequest *request) {
+  return [FWFNSUrlRequestData makeWithUrl:request.URL.absoluteString httpMethod:request.HTTPMethod httpBody:[FlutterStandardTypedData typedDataWithBytes:request.HTTPBody] allHttpHeaderFields:request.allHTTPHeaderFields];
+}
+
+FWFWKFrameInfoData *FWFWKFrameInfoDataFromWKFrameInfo(WKFrameInfo *info) {
+  return [FWFWKFrameInfoData makeWithIsMainFrame:@(info.isMainFrame)];
+}
+
+WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(FWFWKNavigationActionPolicyEnumData *data) {
+  switch(data.value) {
+    case FWFWKNavigationActionPolicyEnumAllow:
+      return WKNavigationActionPolicyAllow;
+    case FWFWKNavigationActionPolicyEnumCancel:
+      return WKNavigationActionPolicyCancel;
+  }
+  
+  return -1;
+}
+
+FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error) {
+  return [FWFNSErrorData makeWithCode:@(error.code) domain:error.domain localiziedDescription:error.localizedDescription];
+}
