@@ -1,6 +1,6 @@
 ## 0.10.1+3
 
-* Renames generated folder to js_interlop.
+* Renames generated folder to js_interop.
 
 ## 0.10.1+2
 
