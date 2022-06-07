@@ -400,6 +400,11 @@ class WKUserContentController extends NSObject {
     );
   }
 
+  /// Constructs a [WKUserContentController] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
   WKUserContentController.detached({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -508,6 +513,11 @@ class WKWebViewConfiguration extends NSObject {
     return configuration;
   }
 
+  /// Constructs a [WKWebViewConfiguration] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
   WKWebViewConfiguration.detached({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
