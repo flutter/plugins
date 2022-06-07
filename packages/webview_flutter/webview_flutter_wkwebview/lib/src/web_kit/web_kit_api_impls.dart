@@ -234,11 +234,15 @@ class WebKitFlutterApis {
   WebKitFlutterApis({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _binaryMessenger = binaryMessenger {
-    navigationDelegateFlutterApi = WKNavigationDelegateFlutterApiImpl(
-      instanceManager: instanceManager,
-    );
-  }
+  })  : _binaryMessenger = binaryMessenger,
+        navigationDelegate = WKNavigationDelegateFlutterApiImpl(
+          instanceManager: instanceManager,
+        ),
+        scriptMessageHandler = WKScriptMessageHandlerFlutterApiImpl(
+            instanceManager: instanceManager),
+        uiDelegate = WKUIDelegateFlutterApiImpl(
+          instanceManager: instanceManager,
+        );
 
   static WebKitFlutterApis _instance = WebKitFlutterApis();
 
@@ -258,13 +262,29 @@ class WebKitFlutterApis {
 
   /// Flutter Api for [WKNavigationDelegate].
   @visibleForTesting
-  late final WKNavigationDelegateFlutterApiImpl navigationDelegateFlutterApi;
+  final WKNavigationDelegateFlutterApiImpl navigationDelegate;
+
+  /// Flutter Api for [WKScriptMessageHandler].
+  @visibleForTesting
+  final WKScriptMessageHandlerFlutterApiImpl scriptMessageHandler;
+
+  /// Flutter Api for [WKUIDelegate].
+  @visibleForTesting
+  final WKUIDelegateFlutterApiImpl uiDelegate;
 
   /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
     if (!_hasBeenSetUp) {
       WKNavigationDelegateFlutterApi.setup(
-        navigationDelegateFlutterApi,
+        navigationDelegate,
+        binaryMessenger: _binaryMessenger,
+      );
+      WKScriptMessageHandlerFlutterApi.setup(
+        scriptMessageHandler,
+        binaryMessenger: _binaryMessenger,
+      );
+      WKUIDelegateFlutterApi.setup(
+        uiDelegate,
         binaryMessenger: _binaryMessenger,
       );
       _hasBeenSetUp = true;

@@ -45,16 +45,16 @@ extension _NSKeyValueChangeKeyEnumDataConverter on NSKeyValueChangeKeyEnumData {
 }
 
 /// Handles initialization of Flutter APIs for the Foundation library.
-// TODO(bparrishMines): Add NSObjectFlutterApiImpl once the callback methods
-// are added.
 class FoundationFlutterApis {
   /// Constructs a [FoundationFlutterApis].
   @visibleForTesting
   FoundationFlutterApis({
     BinaryMessenger? binaryMessenger,
-    // ignore: avoid_unused_constructor_parameters
     InstanceManager? instanceManager,
-  }) : _binaryMessenger = binaryMessenger;
+  })  : _binaryMessenger = binaryMessenger,
+        object = NSObjectFlutterApiImpl(
+          instanceManager: instanceManager,
+        );
 
   static FoundationFlutterApis _instance = FoundationFlutterApis();
 
@@ -69,13 +69,20 @@ class FoundationFlutterApis {
     return _instance;
   }
 
-  // ignore: unused_field
   final BinaryMessenger? _binaryMessenger;
   bool _hasBeenSetUp = false;
+
+  /// Flutter Api for [NSObject].
+  @visibleForTesting
+  final NSObjectFlutterApiImpl object;
 
   /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
     if (!_hasBeenSetUp) {
+      NSObjectFlutterApi.setup(
+        object,
+        binaryMessenger: _binaryMessenger,
+      );
       _hasBeenSetUp = true;
     }
   }
