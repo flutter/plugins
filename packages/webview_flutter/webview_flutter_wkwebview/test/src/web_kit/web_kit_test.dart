@@ -186,6 +186,7 @@ void main() {
         TestWKScriptMessageHandlerHostApi.setup(mockPlatformHostApi);
 
         scriptMessageHandler = WKScriptMessageHandler(
+          didReceiveScriptMessage: (_, __) {},
           instanceManager: instanceManager,
         );
       });
@@ -288,6 +289,7 @@ void main() {
           MockTestWKScriptMessageHandlerHostApi(),
         );
         final WKScriptMessageHandler handler = WKScriptMessageHandler(
+          didReceiveScriptMessage: (_, __) {},
           instanceManager: instanceManager,
         );
 

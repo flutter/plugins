@@ -350,6 +350,8 @@ class WKHttpCookieStore extends NSObject {
 class WKScriptMessageHandler extends NSObject {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler({
+    required this.didReceiveScriptMessage,
+    super.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _scriptMessageHandlerApi = WKScriptMessageHandlerHostApiImpl(
@@ -366,15 +368,10 @@ class WKScriptMessageHandler extends NSObject {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
-  Future<void> setDidReceiveScriptMessage(
-    void Function(
-      WKUserContentController userContentController,
-      WKScriptMessage message,
-    )?
-        didReceiveScriptMessage,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(
+    WKUserContentController userContentController,
+    WKScriptMessage message,
+  ) didReceiveScriptMessage;
 }
 
 /// Manages interactions between JavaScript code and your web view.
@@ -572,6 +569,8 @@ class WKWebViewConfiguration extends NSObject {
 class WKUIDelegate extends NSObject {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate({
+    this.onCreateWebView,
+    super.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _uiDelegateApi = WKUIDelegateHostApiImpl(
@@ -584,15 +583,10 @@ class WKUIDelegate extends NSObject {
   final WKUIDelegateHostApiImpl _uiDelegateApi;
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
-  Future<void> setOnCreateWebView(
-    void Function(
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    )?
-        onCreateWebView,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(
+    WKWebViewConfiguration configuration,
+    WKNavigationAction navigationAction,
+  )? onCreateWebView;
 }
 
 /// Methods for handling navigation changes and tracking navigation requests.
@@ -606,6 +600,12 @@ class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
     this.didFinishNavigation,
+    this.didStartProvisionalNavigation,
+    this.decidePolicyForNavigationAction,
+    this.didFailNavigation,
+    this.didFailProvisionalNavigation,
+    this.webViewWebContentProcessDidTerminate,
+    super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -623,6 +623,12 @@ class WKNavigationDelegate extends NSObject {
   /// library or to create a copy for an InstanceManager.
   WKNavigationDelegate.detached({
     this.didFinishNavigation,
+    this.didStartProvisionalNavigation,
+    this.decidePolicyForNavigationAction,
+    this.didFailNavigation,
+    this.didFailProvisionalNavigation,
+    this.webViewWebContentProcessDidTerminate,
+    super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -636,49 +642,36 @@ class WKNavigationDelegate extends NSObject {
   final void Function(WKWebView webView, String? url)? didFinishNavigation;
 
   /// Called when navigation from the main frame has started.
-  Future<void> setDidStartProvisionalNavigation(
-    void Function(WKWebView webView, String? url)?
-        didStartProvisionalNavigation,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView, String? url)?
+      didStartProvisionalNavigation;
 
   /// Called when permission is needed to navigate to new content.
-  Future<void> setDecidePolicyForNavigationAction(
-      Future<WKNavigationActionPolicy> Function(
+  final Future<WKNavigationActionPolicy> Function(
     WKWebView webView,
     WKNavigationAction navigationAction,
-  )?
-          decidePolicyForNavigationAction) {
-    throw UnimplementedError();
-  }
+  )? decidePolicyForNavigationAction;
 
   /// Called when an error occurred during navigation.
-  Future<void> setDidFailNavigation(
-    void Function(WKWebView webView, NSError error)? didFailNavigation,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView, NSError error)? didFailNavigation;
 
   /// Called when an error occurred during the early navigation process.
-  Future<void> setDidFailProvisionalNavigation(
-    void Function(WKWebView webView, NSError error)?
-        didFailProvisionalNavigation,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView, NSError error)?
+      didFailProvisionalNavigation;
 
   /// Called when the web view’s content process was terminated.
-  Future<void> setWebViewWebContentProcessDidTerminate(
-    void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(WKWebView webView)? webViewWebContentProcessDidTerminate;
 
   @override
   Copyable copy() {
     return WKNavigationDelegate.detached(
       didFinishNavigation: didFinishNavigation,
+      didStartProvisionalNavigation: didStartProvisionalNavigation,
+      decidePolicyForNavigationAction: decidePolicyForNavigationAction,
+      didFailNavigation: didFailNavigation,
+      didFailProvisionalNavigation: didFailProvisionalNavigation,
+      webViewWebContentProcessDidTerminate:
+          webViewWebContentProcessDidTerminate,
+      observeValue: observeValue,
       binaryMessenger: _navigationDelegateApi.binaryMessenger,
       instanceManager: _navigationDelegateApi.instanceManager,
     );
@@ -715,6 +708,7 @@ class WKWebView extends UIView {
   /// configuration object.
   WKWebView(
     WKWebViewConfiguration configuration, {
+    super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
   })  : _binaryMessenger = binaryMessenger,
