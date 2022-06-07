@@ -441,14 +441,6 @@ class MockWKUIDelegate extends _i1.Mock implements _i4.WKUIDelegate {
   }
 
   @override
-  _i6.Future<void> setOnCreateWebView(
-          void Function(_i4.WKWebViewConfiguration, _i4.WKNavigationAction)?
-              onCreateWebView) =>
-      (super.noSuchMethod(
-          Invocation.method(#setOnCreateWebView, [onCreateWebView]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i6.Future<void>);
-  @override
   _i6.Future<void> addObserver(_i8.NSObject? observer,
           {String? keyPath, Set<_i8.NSKeyValueObservingOptions>? options}) =>
       (super.noSuchMethod(
@@ -609,8 +601,12 @@ class MockWebViewWidgetProxy extends _i1.Mock
               returnValue: _FakeWKScriptMessageHandler_10())
           as _i4.WKScriptMessageHandler);
   @override
-  _i4.WKUIDelegate createUIDelgate() =>
-      (super.noSuchMethod(Invocation.method(#createUIDelgate, []),
+  _i4.WKUIDelegate createUIDelgate(
+          {void Function(_i4.WKWebViewConfiguration, _i4.WKNavigationAction)?
+              onCreateWebView}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #createUIDelgate, [], {#onCreateWebView: onCreateWebView}),
           returnValue: _FakeWKUIDelegate_11()) as _i4.WKUIDelegate);
   @override
   _i4.WKNavigationDelegate createNavigationDelegate(

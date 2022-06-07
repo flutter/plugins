@@ -113,7 +113,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   /// Used to integrate custom user interface elements into web view interactions.
   @visibleForTesting
-  late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate();
+  late final WKUIDelegate uiDelegate =
+      webViewProxy.createUIDelgate(onCreateWebView: (
+    WKWebViewConfiguration configuration,
+    WKNavigationAction navigationAction,
+  ) {
+    if (!navigationAction.targetFrame.isMainFrame) {
+      webView.loadRequest(navigationAction.request);
+    }
+  });
 
   /// Methods for handling navigation changes and tracking navigation requests.
   @visibleForTesting
@@ -179,14 +187,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     });
 
     webView.setUIDelegate(uiDelegate);
-    uiDelegate.setOnCreateWebView((
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    ) {
-      if (!navigationAction.targetFrame.isMainFrame) {
-        webView.loadRequest(navigationAction.request);
-      }
-    });
 
     await addJavascriptChannels(params.javascriptChannelNames);
 
@@ -629,8 +629,14 @@ class WebViewWidgetProxy {
   }
 
   /// Constructs a [WKUIDelegate].
-  WKUIDelegate createUIDelgate() {
-    return WKUIDelegate();
+  WKUIDelegate createUIDelgate({
+    void Function(
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    )?
+        onCreateWebView,
+  }) {
+    return WKUIDelegate(onCreateWebView: onCreateWebView);
   }
 
   /// Constructs a [WKNavigationDelegate].

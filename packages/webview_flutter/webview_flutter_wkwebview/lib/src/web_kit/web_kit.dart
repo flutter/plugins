@@ -568,6 +568,7 @@ class WKWebViewConfiguration extends NSObject {
 class WKUIDelegate extends NSObject {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate({
+    this.onCreateWebView,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _uiDelegateApi = WKUIDelegateHostApiImpl(
@@ -580,15 +581,10 @@ class WKUIDelegate extends NSObject {
   final WKUIDelegateHostApiImpl _uiDelegateApi;
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
-  Future<void> setOnCreateWebView(
-    void Function(
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    )?
-        onCreateWebView,
-  ) {
-    throw UnimplementedError();
-  }
+  final void Function(
+    WKWebViewConfiguration configuration,
+    WKNavigationAction navigationAction,
+  )? onCreateWebView;
 }
 
 /// Methods for handling navigation changes and tracking navigation requests.

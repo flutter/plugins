@@ -68,7 +68,11 @@ void main() {
           observeValue: anyNamed('observeValue'),
         ),
       ).thenReturn(mockWebView);
-      when(mockWebViewWidgetProxy.createUIDelgate()).thenReturn(mockUIDelegate);
+      when(
+        mockWebViewWidgetProxy.createUIDelgate(
+          onCreateWebView: captureAnyNamed('onCreateWebView'),
+        ),
+      ).thenReturn(mockUIDelegate);
       when(mockWebViewWidgetProxy.createNavigationDelegate(
         didFinishNavigation: anyNamed('didFinishNavigation'),
         didStartProvisionalNavigation:
@@ -131,9 +135,11 @@ void main() {
         (WidgetTester tester) async {
       await buildWidget(tester);
 
-      final dynamic onCreateWebView =
-          verify(mockUIDelegate.setOnCreateWebView(captureAny)).captured.single
-              as void Function(WKWebViewConfiguration, WKNavigationAction);
+      final dynamic onCreateWebView = verify(
+              mockWebViewWidgetProxy.createUIDelgate(
+                  onCreateWebView: captureAnyNamed('onCreateWebView')))
+          .captured
+          .single as void Function(WKWebViewConfiguration, WKNavigationAction);
 
       const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
       onCreateWebView(
