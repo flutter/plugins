@@ -55,7 +55,7 @@ void main() {
       verify(mockElement.src = 'test url');
     });
 
-    test('loadHtmlString loads html into iframe', () {
+    test('loadHtmlString escapes "#" correctly', () {
       // Setup
       final MockIFrameElement mockElement = MockIFrameElement();
       final WebWebViewPlatformController controller =
@@ -63,13 +63,9 @@ void main() {
         mockElement,
       );
       // Run
-      controller.loadHtmlString('test html');
+      controller.loadHtmlString('#');
       // Verify
-      verify(mockElement.src = Uri.dataFromString(
-        'test html',
-        mimeType: 'text/html',
-        encoding: Encoding.getByName('utf-8'),
-      ).toString());
+      verify(mockElement.src = 'data:text/html;charset=utf-8,%23');
     });
 
     group('loadRequest', () {
