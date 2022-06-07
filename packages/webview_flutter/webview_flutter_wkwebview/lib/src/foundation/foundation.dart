@@ -298,6 +298,7 @@ class NSObject with Copyable {
   @override
   Copyable copy() {
     return NSObject(
+      observeValue: observeValue,
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
     );

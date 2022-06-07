@@ -351,6 +351,7 @@ class WKScriptMessageHandler extends NSObject {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler({
     required this.didReceiveScriptMessage,
+    super.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _scriptMessageHandlerApi = WKScriptMessageHandlerHostApiImpl(
@@ -569,6 +570,7 @@ class WKUIDelegate extends NSObject {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate({
     this.onCreateWebView,
+    super.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _uiDelegateApi = WKUIDelegateHostApiImpl(
@@ -603,6 +605,7 @@ class WKNavigationDelegate extends NSObject {
     this.didFailNavigation,
     this.didFailProvisionalNavigation,
     this.webViewWebContentProcessDidTerminate,
+    super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -625,6 +628,7 @@ class WKNavigationDelegate extends NSObject {
     this.didFailNavigation,
     this.didFailProvisionalNavigation,
     this.webViewWebContentProcessDidTerminate,
+    super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -667,6 +671,7 @@ class WKNavigationDelegate extends NSObject {
       didFailProvisionalNavigation: didFailProvisionalNavigation,
       webViewWebContentProcessDidTerminate:
           webViewWebContentProcessDidTerminate,
+      observeValue: observeValue,
       binaryMessenger: _navigationDelegateApi.binaryMessenger,
       instanceManager: _navigationDelegateApi.instanceManager,
     );
