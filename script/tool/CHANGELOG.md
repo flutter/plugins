@@ -1,6 +1,7 @@
 ## NEXT
 
 - Supports empty custom analysis allow list files.
+- Adds `drive-examples ---enable-software-rendering` flag.
 
 ## 0.8.6
 

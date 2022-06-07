@@ -898,6 +898,53 @@ void main() {
           ]));
     });
 
+    test('enable-software-rendering flag', () async {
+      final RepositoryPackage plugin = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+          'example/ios/ios.m',
+        ],
+        platformSupport: <String, PlatformDetails>{
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
+        },
+      );
+
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
+
+      setMockFlutterDevicesOutput();
+      await runCapturingPrint(runner, <String>[
+        'drive-examples',
+        '--ios',
+        '--enable-software-rendering',
+      ]);
+
+      expect(
+        processRunner.recordedCalls,
+        orderedEquals(
+          <ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform), const <String>['devices', '--machine'], null),
+            ProcessCall(
+              getFlutterCommand(mockPlatform),
+              const <String>[
+                'drive',
+                '-d',
+                _fakeIOSDevice,
+                '--enable-software-rendering',
+                '--driver',
+                'test_driver/plugin_test.dart',
+                '--target',
+                'test_driver/plugin.dart'
+              ],
+              pluginExampleDirectory.path,
+            ),
+          ],
+        ),
+      );
+    });
+
     test('fails when no example is present', () async {
       createFakePlugin(
         'plugin',
