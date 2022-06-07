@@ -37,12 +37,15 @@ Future<XFile?> openFile({
       confirmButtonText: confirmButtonText);
 }
 
-/// Open file dialog for loading files and return a list of file paths.
+/// Opens a file selection dialog and returns the list of paths chosen by the
+/// user.
 ///
-/// [acceptedTypeGroups] is the file type that can be selected in the dialog.
-/// there are differences in behavior depending on the platform as follows.
-/// - Windows: Each group will be an entry in a list of filter options.
-/// - macOS: The union of all types allowed by all of the groups will be allowed.
+/// [acceptedTypeGroups] is a list of file type groups that can be selected in
+/// the dialog. How this is displayed depends on the pltaform, for example:
+/// - On Windows and Linux, each group will be an entry in a list of filter
+///   options.
+/// - On macOS, the union of all types allowed by all of the groups will be
+///   allowed.
 ///
 /// [initialDirectory] is the full path to the directory that will be displayed
 /// when the dialog is opened. When not provided, the platform will pick an
@@ -63,12 +66,14 @@ Future<List<XFile>> openFiles({
       confirmButtonText: confirmButtonText);
 }
 
-/// Saves File to user's file system.
+/// Opens a save dialog and returns the target path chosen by the user.
 ///
-/// [acceptedTypeGroups] is the file type that can be selected in the dialog.
-/// There are differences in behavior depending on the platform as follows.
-/// - Windows: Each group will be an entry in a list of filter options.
-/// - macOS: The union of all types allowed by all of the groups will be allowed.
+/// [acceptedTypeGroups] is a list of file type groups that can be selected in
+/// the dialog. How this is displayed depends on the pltaform, for example:
+/// - On Windows and Linux, each group will be an entry in a list of filter
+///   options.
+/// - On macOS, the union of all types allowed by all of the groups will be
+///   allowed.
 ///
 /// [initialDirectory] is the full path to the directory that will be displayed
 /// when the dialog is opened. When not provided, the platform will pick an
@@ -93,7 +98,7 @@ Future<String?> getSavePath({
       confirmButtonText: confirmButtonText);
 }
 
-/// Gets a directory path from a user's file system.
+/// Opens a directory selection dialog and returns the path chosen by the user.
 ///
 /// [initialDirectory] is the full path to the directory that will be displayed
 /// when the dialog is opened. When not provided, the platform will pick an
