@@ -187,7 +187,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     _element.src = Uri.dataFromString(
       html,
       mimeType: 'text/html',
-      encoding: Encoding.getByName('utf-8'),
+      encoding: utf8,
     ).toString();
   }
 
@@ -207,7 +207,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     _element.src = Uri.dataFromString(
       httpReq.responseText ?? '',
       mimeType: contentType,
-      encoding: Encoding.getByName('utf-8'),
+      encoding: utf8,
     ).toString();
   }
 

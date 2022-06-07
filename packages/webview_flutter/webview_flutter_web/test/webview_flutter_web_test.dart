@@ -126,7 +126,7 @@ void main() {
         verify(mockElement.src = Uri.dataFromString(
           'test data',
           mimeType: 'text/plain',
-          encoding: Encoding.getByName('utf-8'),
+          encoding: utf8,
         ).toString());
       });
     });
