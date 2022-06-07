@@ -1,5 +1,10 @@
-## NEXT
+## 2.1.7
 
+* Objective-C code cleanup.
+
+## 2.1.6
+
+* Fixes issue in Flutter v3.0.0 where some updates to the map don't take effect on Android.
 * Fixes iOS native unit tests on M1 devices.
 * Minor fixes for new analysis options.
 

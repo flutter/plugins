@@ -58,8 +58,8 @@
   return self;
 }
 
-- (FWFWebView *)webViewForIdentifier:(NSNumber *)instanceId {
-  return (FWFWebView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (FWFWebView *)webViewForIdentifier:(NSNumber *)identifier {
+  return (FWFWebView *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
 + (nonnull FlutterError *)errorForURLString:(nonnull NSString *)string {
@@ -71,17 +71,17 @@
                              details:errorDetails];
 }
 
-- (void)createWithIdentifier:(nonnull NSNumber *)instanceId
-     configurationIdentifier:(nonnull NSNumber *)configurationInstanceId
+- (void)createWithIdentifier:(nonnull NSNumber *)identifier
+     configurationIdentifier:(nonnull NSNumber *)configurationIdentifier
                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
-      instanceForIdentifier:configurationInstanceId.longValue];
+      instanceForIdentifier:configurationIdentifier.longValue];
   FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)
                                             configuration:configuration];
-  [self.instanceManager addInstance:webView withIdentifier:instanceId.longValue];
+  [self.instanceManager addDartCreatedInstance:webView withIdentifier:identifier.longValue];
 }
 
-- (void)loadRequestForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)loadRequestForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                     request:(nonnull FWFNSUrlRequestData *)request
                                       error:
                                           (FlutterError *_Nullable __autoreleasing *_Nonnull)error {
@@ -92,47 +92,47 @@
                                  details:[NSString stringWithFormat:@"URL was: '%@'", request.url]];
     return;
   }
-  [[self webViewForIdentifier:instanceId] loadRequest:urlRequest];
+  [[self webViewForIdentifier:identifier] loadRequest:urlRequest];
 }
 
-- (void)setUserAgentForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)setUserAgentForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                    userAgent:(nullable NSString *)userAgent
                                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                  error {
-  [[self webViewForIdentifier:instanceId] setCustomUserAgent:userAgent];
+  [[self webViewForIdentifier:identifier] setCustomUserAgent:userAgent];
 }
 
 - (nullable NSNumber *)
-    canGoBackForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+    canGoBackForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                 error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return @([self webViewForIdentifier:instanceId].canGoBack);
+  return @([self webViewForIdentifier:identifier].canGoBack);
 }
 
 - (nullable NSString *)
-    URLForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+    URLForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                           error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return [self webViewForIdentifier:instanceId].URL.absoluteString;
+  return [self webViewForIdentifier:identifier].URL.absoluteString;
 }
 
 - (nullable NSNumber *)
-    canGoForwardForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+    canGoForwardForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                    error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return @([[self webViewForIdentifier:instanceId] canGoForward]);
+  return @([[self webViewForIdentifier:identifier] canGoForward]);
 }
 
 - (nullable NSNumber *)
-    estimatedProgressForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+    estimatedProgressForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                         error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                   error {
-  return @([[self webViewForIdentifier:instanceId] estimatedProgress]);
+  return @([[self webViewForIdentifier:identifier] estimatedProgress]);
 }
 
-- (void)evaluateJavaScriptForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)evaluateJavaScriptForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                   javaScriptString:(nonnull NSString *)javaScriptString
                                         completion:
                                             (nonnull void (^)(id _Nullable,
                                                               FlutterError *_Nullable))completion {
-  [[self webViewForIdentifier:instanceId]
+  [[self webViewForIdentifier:identifier]
       evaluateJavaScript:javaScriptString
        completionHandler:^(id _Nullable result, NSError *_Nullable error) {
          id returnValue = nil;
@@ -158,17 +158,17 @@
        }];
 }
 
-- (void)goBackForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)goBackForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                  error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  [[self webViewForIdentifier:instanceId] goBack];
+  [[self webViewForIdentifier:identifier] goBack];
 }
 
-- (void)goForwardForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)goForwardForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                     error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  [[self webViewForIdentifier:instanceId] goForward];
+  [[self webViewForIdentifier:identifier] goForward];
 }
 
-- (void)loadAssetForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)loadAssetForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                  assetKey:(nonnull NSString *)key
                                     error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   NSString *assetFilePath = [self.assetManager lookupKeyForAsset:key];
@@ -178,12 +178,12 @@
   if (!url) {
     *error = [FWFWebViewHostApiImpl errorForURLString:assetFilePath];
   } else {
-    [[self webViewForIdentifier:instanceId] loadFileURL:url
+    [[self webViewForIdentifier:identifier] loadFileURL:url
                                 allowingReadAccessToURL:[url URLByDeletingLastPathComponent]];
   }
 }
 
-- (void)loadFileForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)loadFileForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                  fileURL:(nonnull NSString *)url
                            readAccessURL:(nonnull NSString *)readAccessUrl
                                    error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
@@ -195,55 +195,55 @@
   } else if (!readAccessNSURL) {
     *error = [FWFWebViewHostApiImpl errorForURLString:readAccessUrl];
   } else {
-    [[self webViewForIdentifier:instanceId] loadFileURL:fileURL
+    [[self webViewForIdentifier:identifier] loadFileURL:fileURL
                                 allowingReadAccessToURL:readAccessNSURL];
   }
 }
 
-- (void)loadHTMLForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)loadHTMLForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                               HTMLString:(nonnull NSString *)string
                                  baseURL:(nullable NSString *)baseUrl
                                    error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  [[self webViewForIdentifier:instanceId] loadHTMLString:string
+  [[self webViewForIdentifier:identifier] loadHTMLString:string
                                                  baseURL:[NSURL URLWithString:baseUrl]];
 }
 
-- (void)reloadWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)reloadWebViewWithIdentifier:(nonnull NSNumber *)identifier
                               error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  [[self webViewForIdentifier:instanceId] reload];
+  [[self webViewForIdentifier:identifier] reload];
 }
 
 - (void)
-    setAllowsBackForwardForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+    setAllowsBackForwardForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                                        isAllowed:(nonnull NSNumber *)allow
                                            error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                      error {
-  [[self webViewForIdentifier:instanceId] setAllowsBackForwardNavigationGestures:allow.boolValue];
+  [[self webViewForIdentifier:identifier] setAllowsBackForwardNavigationGestures:allow.boolValue];
 }
 
 - (void)
-    setNavigationDelegateForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
-                               delegateIdentifier:(nullable NSNumber *)navigationDelegateInstanceId
+    setNavigationDelegateForWebViewWithIdentifier:(nonnull NSNumber *)identifier
+                               delegateIdentifier:(nullable NSNumber *)navigationDelegateIdentifier
                                             error:
                                                 (FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                     error {
   id<WKNavigationDelegate> navigationDelegate = (id<WKNavigationDelegate>)[self.instanceManager
-      instanceForIdentifier:navigationDelegateInstanceId.longValue];
-  [[self webViewForIdentifier:instanceId] setNavigationDelegate:navigationDelegate];
+      instanceForIdentifier:navigationDelegateIdentifier.longValue];
+  [[self webViewForIdentifier:identifier] setNavigationDelegate:navigationDelegate];
 }
 
-- (void)setUIDelegateForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
-                           delegateIdentifier:(nullable NSNumber *)uiDelegateInstanceId
+- (void)setUIDelegateForWebViewWithIdentifier:(nonnull NSNumber *)identifier
+                           delegateIdentifier:(nullable NSNumber *)uiDelegateIdentifier
                                         error:(FlutterError *_Nullable __autoreleasing *_Nonnull)
                                                   error {
   id<WKUIDelegate> navigationDelegate =
-      (id<WKUIDelegate>)[self.instanceManager instanceForIdentifier:uiDelegateInstanceId.longValue];
-  [[self webViewForIdentifier:instanceId] setUIDelegate:navigationDelegate];
+      (id<WKUIDelegate>)[self.instanceManager instanceForIdentifier:uiDelegateIdentifier.longValue];
+  [[self webViewForIdentifier:identifier] setUIDelegate:navigationDelegate];
 }
 
 - (nullable NSString *)
-    titleForWebViewWithIdentifier:(nonnull NSNumber *)instanceId
+    titleForWebViewWithIdentifier:(nonnull NSNumber *)identifier
                             error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
-  return [[self webViewForIdentifier:instanceId] title];
+  return [[self webViewForIdentifier:identifier] title];
 }
 @end

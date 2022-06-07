@@ -7,25 +7,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Defines map UI options writable from Flutter.
-@protocol FLTGoogleMapTileOverlayOptionsSink
-- (void)setFadeIn:(BOOL)fadeIn;
-- (void)setTransparency:(float)transparency;
-- (void)setZIndex:(int)zIndex;
-- (void)setVisible:(BOOL)visible;
-- (void)setTileSize:(NSInteger)tileSize;
-@end
-
-@interface FLTGoogleMapTileOverlayController : NSObject <FLTGoogleMapTileOverlayOptionsSink>
-- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer mapView:(GMSMapView *)mapView;
+@interface FLTGoogleMapTileOverlayController : NSObject
+- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer
+                          mapView:(GMSMapView *)mapView
+                          options:(NSDictionary *)optionsData;
 - (void)removeTileOverlay;
 - (void)clearTileCache;
 - (NSDictionary *)getTileOverlayInfo;
 @end
 
 @interface FLTTileProviderController : GMSTileLayer
-@property(copy, nonatomic, readonly) NSString *tileOverlayId;
-- (instancetype)init:(FlutterMethodChannel *)methodChannel tileOverlayId:(NSString *)tileOverlayId;
+@property(copy, nonatomic, readonly) NSString *tileOverlayIdentifier;
+- (instancetype)init:(FlutterMethodChannel *)methodChannel
+    withTileOverlayIdentifier:(NSString *)identifier;
 @end
 
 @interface FLTTileOverlaysController : NSObject
@@ -34,9 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
            registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)addTileOverlays:(NSArray *)tileOverlaysToAdd;
 - (void)changeTileOverlays:(NSArray *)tileOverlaysToChange;
-- (void)removeTileOverlayIds:(NSArray *)tileOverlayIdsToRemove;
-- (void)clearTileCache:(NSString *)tileOverlayId;
-- (nullable NSDictionary *)getTileOverlayInfo:(NSString *)tileverlayId;
+- (void)removeTileOverlayWithIdentifiers:(NSArray *)identifiers;
+- (void)clearTileCacheWithIdentifier:(NSString *)identifier;
+- (nullable NSDictionary *)tileOverlayInfoWithIdentifier:(NSString *)identifier;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -18,14 +18,14 @@ import 'web_kit/web_kit.dart';
 class WebKitWebViewWidget extends StatefulWidget {
   /// Constructs a [WebKitWebViewWidget].
   const WebKitWebViewWidget({
-    Key? key,
+    super.key,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
     required this.onBuildWidget,
     this.configuration,
     @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
-  }) : super(key: key);
+  });
 
   /// The initial parameters used to setup the WebView.
   final CreationParams creationParams;
@@ -117,12 +117,13 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   /// Methods for handling navigation changes and tracking navigation requests.
   @visibleForTesting
   late final WKNavigationDelegate navigationDelegate =
-      webViewProxy.createNavigationDelegate()
+      webViewProxy.createNavigationDelegate(
+    didFinishNavigation: (WKWebView webView, String? url) {
+      callbacksHandler.onPageFinished(url ?? '');
+    },
+  )
         ..setDidStartProvisionalNavigation((WKWebView webView, String? url) {
           callbacksHandler.onPageStarted(url ?? '');
-        })
-        ..setDidFinishNavigation((WKWebView webView, String? url) {
-          callbacksHandler.onPageFinished(url ?? '');
         })
         ..setDidFailNavigation((WKWebView webView, NSError error) {
           callbacksHandler.onWebResourceError(_toWebResourceError(error));
@@ -619,7 +620,13 @@ class WebViewWidgetProxy {
   }
 
   /// Constructs a [WKNavigationDelegate].
-  WKNavigationDelegate createNavigationDelegate() {
-    return WKNavigationDelegate();
+  WKNavigationDelegate createNavigationDelegate({
+    void Function(
+      WKWebView webView,
+      String? url,
+    )?
+        didFinishNavigation,
+  }) {
+    return WKNavigationDelegate(didFinishNavigation: didFinishNavigation);
   }
 }

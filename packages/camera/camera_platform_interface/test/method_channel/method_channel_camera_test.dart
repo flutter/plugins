@@ -1038,6 +1038,52 @@ void main() {
               arguments: <String, Object?>{'cameraId': cameraId}),
         ]);
       });
+
+      test('Should start streaming', () async {
+        // Arrange
+        final MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: <String, dynamic>{
+            'startImageStream': null,
+            'stopImageStream': null,
+          },
+        );
+
+        // Act
+        final StreamSubscription<CameraImageData> subscription = camera
+            .onStreamedFrameAvailable(cameraId)
+            .listen((CameraImageData imageData) {});
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('startImageStream', arguments: null),
+        ]);
+
+        subscription.cancel();
+      });
+
+      test('Should stop streaming', () async {
+        // Arrange
+        final MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: <String, dynamic>{
+            'startImageStream': null,
+            'stopImageStream': null,
+          },
+        );
+
+        // Act
+        final StreamSubscription<CameraImageData> subscription = camera
+            .onStreamedFrameAvailable(cameraId)
+            .listen((CameraImageData imageData) {});
+        subscription.cancel();
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('startImageStream', arguments: null),
+          isMethodCall('stopImageStream', arguments: null),
+        ]);
+      });
     });
   });
 }

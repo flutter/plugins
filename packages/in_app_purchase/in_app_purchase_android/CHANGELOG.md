@@ -1,3 +1,11 @@
+## 0.2.2+7
+
+* Updates references to the obsolete master branch.
+
+## 0.2.2+6
+
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
+
 ## 0.2.2+5
 
 * Minor fixes for new analysis options.
