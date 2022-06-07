@@ -22,7 +22,7 @@ void main() {
     late InstanceManager instanceManager;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
     });
 
     group('NSObject', () {
@@ -35,7 +35,7 @@ void main() {
         TestNSObjectHostApi.setup(mockPlatformHostApi);
 
         object = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(object);
+        instanceManager.addDartCreatedInstance(object);
       });
 
       tearDown(() {
@@ -44,7 +44,7 @@ void main() {
 
       test('addObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.addObserver(
           observer,
@@ -57,8 +57,8 @@ void main() {
 
         final List<NSKeyValueObservingOptionsEnumData?> optionsData =
             verify(mockPlatformHostApi.addObserver(
-          instanceManager.getInstanceId(object),
-          instanceManager.getInstanceId(observer),
+          instanceManager.getIdentifier(object),
+          instanceManager.getIdentifier(observer),
           'aKeyPath',
           captureAny,
         )).captured.single as List<NSKeyValueObservingOptionsEnumData?>;
@@ -76,24 +76,29 @@ void main() {
 
       test('removeObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.removeObserver(observer, keyPath: 'aKeyPath');
 
         verify(mockPlatformHostApi.removeObserver(
-          instanceManager.getInstanceId(object),
-          instanceManager.getInstanceId(observer),
+          instanceManager.getIdentifier(object),
+          instanceManager.getIdentifier(observer),
           'aKeyPath',
         ));
       });
 
       test('dispose', () async {
-        final int instanceId = instanceManager.getInstanceId(object)!;
+        int? callbackIdentifier;
+        final InstanceManager instanceManager =
+            InstanceManager(onWeakReferenceRemoved: (int identifier) {
+          callbackIdentifier = identifier;
+        });
 
-        await object.dispose();
-        verify(
-          mockPlatformHostApi.dispose(instanceId),
-        );
+        final NSObject object = NSObject(instanceManager: instanceManager);
+        final int identifier = instanceManager.addDartCreatedInstance(object);
+
+        NSObject.dispose(object);
+        expect(callbackIdentifier, identifier);
       });
     });
   });

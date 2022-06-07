@@ -21,9 +21,9 @@
 If you need help, consider asking for advice on the #hackers-new channel on [Discord].
 
 <!-- Links -->
-[Contributor Guide]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
+[Contributor Guide]: https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md
 [Tree Hygiene]: https://github.com/flutter/flutter/wiki/Tree-hygiene
-[relevant style guides]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md#style
+[relevant style guides]: https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md#style
 [CLA]: https://cla.developers.google.com/
 [flutter/tests]: https://github.com/flutter/tests
 [breaking change policy]: https://github.com/flutter/flutter/wiki/Tree-hygiene#handling-breaking-changes
@@ -31,5 +31,5 @@ If you need help, consider asking for advice on the #hackers-new channel on [Dis
 [pub versioning philosophy]: https://dart.dev/tools/pub/versioning
 [exempt from version changes]: https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#version-and-changelog-updates
 [following repository CHANGELOG style]: https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#changelog-style
-[the auto-formatter]: https://github.com/flutter/plugins/blob/master/script/tool/README.md#format-code
+[the auto-formatter]: https://github.com/flutter/plugins/blob/main/script/tool/README.md#format-code
 [test-exempt]: https://github.com/flutter/flutter/wiki/Tree-hygiene#tests

@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Updates references to the obsolete master branch.
+
 ## 1.0.6
 
 * Suppresses warnings for pre-iOS-11 codepaths.
