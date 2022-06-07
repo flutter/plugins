@@ -400,6 +400,14 @@ class WKUserContentController extends NSObject {
     );
   }
 
+  WKUserContentController.detached({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _userContentControllerApi = WKUserContentControllerHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
   final WKUserContentControllerHostApiImpl _userContentControllerApi;
 
   /// Installs a message handler that you can call from your JavaScript code.
@@ -472,7 +480,8 @@ class WKWebViewConfiguration extends NSObject {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) {
-    final WKWebViewConfiguration configuration = WKWebViewConfiguration._(
+    final WKWebViewConfiguration configuration =
+        WKWebViewConfiguration.detached(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
@@ -487,7 +496,8 @@ class WKWebViewConfiguration extends NSObject {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) {
-    final WKWebViewConfiguration configuration = WKWebViewConfiguration._(
+    final WKWebViewConfiguration configuration =
+        WKWebViewConfiguration.detached(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
@@ -498,7 +508,7 @@ class WKWebViewConfiguration extends NSObject {
     return configuration;
   }
 
-  WKWebViewConfiguration._({
+  WKWebViewConfiguration.detached({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   })  : _binaryMessenger = binaryMessenger,

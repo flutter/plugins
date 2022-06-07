@@ -200,6 +200,42 @@ void main() {
           instanceManager.getIdentifier(scriptMessageHandler),
         ));
       });
+
+      test('didReceiveScriptMessage', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        scriptMessageHandler = WKScriptMessageHandler(
+          instanceManager: instanceManager,
+          didReceiveScriptMessage: (
+            WKUserContentController userContentController,
+            WKScriptMessage message,
+          ) {
+            argsCompleter.complete(<Object?>[userContentController, message]);
+          },
+        );
+
+        final WKUserContentController userContentController =
+            WKUserContentController.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(userContentController, 2);
+
+        WebKitFlutterApis.instance.scriptMessageHandler.didReceiveScriptMessage(
+          instanceManager.getIdentifier(scriptMessageHandler)!,
+          2,
+          WKScriptMessageData(name: 'name'),
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[userContentController, isA<WKScriptMessage>()]),
+        );
+      });
     });
 
     group('WKPreferences', () {
@@ -801,6 +837,48 @@ void main() {
         verify(mockPlatformHostApi.create(
           instanceManager.getIdentifier(uiDelegate),
         ));
+      });
+
+      test('onCreateWebView', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        WebKitFlutterApis.instance = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        uiDelegate = WKUIDelegate(
+          instanceManager: instanceManager,
+          onCreateWebView: (
+            WKWebViewConfiguration configuration,
+            WKNavigationAction navigationAction,
+          ) {
+            argsCompleter.complete(<Object?>[configuration, navigationAction]);
+          },
+        );
+
+        final WKWebViewConfiguration configuration =
+            WKWebViewConfiguration.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(configuration, 2);
+
+        WebKitFlutterApis.instance.uiDelegate.onCreateWebView(
+          instanceManager.getIdentifier(uiDelegate)!,
+          2,
+          WKNavigationActionData(
+            request: NSUrlRequestData(
+              url: 'url',
+              allHttpHeaderFields: <String, String>{},
+            ),
+            targetFrame: WKFrameInfoData(isMainFrame: false),
+          ),
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[configuration, isA<WKNavigationAction>()]),
+        );
       });
     });
   });
