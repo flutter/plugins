@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'camera_controller_lite.dart';
+import 'camera_controller.dart';
 
 /// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
@@ -27,10 +26,13 @@ class CameraPreview extends StatelessWidget {
         ? ValueListenableBuilder<CameraValue>(
             valueListenable: controller,
             builder: (BuildContext context, Object? value, Widget? child) {
+              final double cameraAspectRatio =
+                  controller.value.previewSize!.width /
+                      controller.value.previewSize!.height;
               return AspectRatio(
                 aspectRatio: _isLandscape()
-                    ? controller.value.aspectRatio
-                    : (1 / controller.value.aspectRatio),
+                    ? cameraAspectRatio
+                    : (1 / cameraAspectRatio),
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[

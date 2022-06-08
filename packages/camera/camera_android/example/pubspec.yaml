@@ -17,6 +17,7 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider: ^2.0.0
+  quiver: ^3.0.0
   video_player: ^2.1.4
 
 dev_dependencies:

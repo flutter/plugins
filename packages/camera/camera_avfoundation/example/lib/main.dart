@@ -4,12 +4,16 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
-import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
+
+import 'camera_controller.dart';
+import 'camera_preview.dart';
 
 /// Camera example home widget.
 class CameraExampleHome extends StatefulWidget {
@@ -108,7 +112,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     super.dispose();
   }
 
-  // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -124,7 +127,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(cameraController.description);
     }
   }
-  // #enddocregion AppLifecycle
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +220,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     _currentScale = (_baseScale * details.scale)
         .clamp(_minAvailableZoom, _maxAvailableZoom);
 
-    await controller!.setZoomLevel(_currentScale);
+    await CameraPlatform.instance
+        .setZoomLevel(controller!.cameraId, _currentScale);
   }
 
   /// Display the thumbnail of the captured image or video.
@@ -403,7 +406,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                         : null,
                     onLongPress: () {
                       if (controller != null) {
-                        controller!.setExposurePoint(null);
+                        CameraPlatform.instance
+                            .setExposurePoint(controller!.cameraId, null);
                         showInSnackBar('Resetting exposure point');
                       }
                     },
@@ -487,7 +491,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                         : null,
                     onLongPress: () {
                       if (controller != null) {
-                        controller!.setFocusPoint(null);
+                        CameraPlatform.instance
+                            .setFocusPoint(controller!.cameraId, null);
                       }
                       showInSnackBar('Resetting focus point');
                     },
@@ -537,7 +542,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
         IconButton(
           icon: cameraController != null &&
-                  cameraController.value.isRecordingPaused
+                  (!cameraController.value.isRecordingVideo ||
+                      cameraController.value.isRecordingPaused)
               ? const Icon(Icons.play_arrow)
               : const Icon(Icons.pause),
           color: Colors.blue,
@@ -624,12 +630,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     final CameraController cameraController = controller!;
 
-    final Offset offset = Offset(
+    final Point<double> point = Point<double>(
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    cameraController.setExposurePoint(offset);
-    cameraController.setFocusPoint(offset);
+    CameraPlatform.instance.setExposurePoint(cameraController.cameraId, point);
+    CameraPlatform.instance.setFocusPoint(cameraController.cameraId, point);
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -658,10 +664,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       if (mounted) {
         setState(() {});
       }
-      if (cameraController.value.hasError) {
-        showInSnackBar(
-            'Camera error ${cameraController.value.errorDescription}');
-      }
     });
 
     try {
@@ -670,18 +672,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         // The exposure mode is currently not supported on the web.
         ...!kIsWeb
             ? <Future<Object?>>[
-                cameraController.getMinExposureOffset().then(
-                    (double value) => _minAvailableExposureOffset = value),
-                cameraController
-                    .getMaxExposureOffset()
+                CameraPlatform.instance
+                    .getMinExposureOffset(cameraController.cameraId)
+                    .then(
+                        (double value) => _minAvailableExposureOffset = value),
+                CameraPlatform.instance
+                    .getMaxExposureOffset(cameraController.cameraId)
                     .then((double value) => _maxAvailableExposureOffset = value)
               ]
             : <Future<Object?>>[],
-        cameraController
-            .getMaxZoomLevel()
+        CameraPlatform.instance
+            .getMaxZoomLevel(cameraController.cameraId)
             .then((double value) => _maxAvailableZoom = value),
-        cameraController
-            .getMinZoomLevel()
+        CameraPlatform.instance
+            .getMinZoomLevel(cameraController.cameraId)
             .then((double value) => _minAvailableZoom = value),
       ]);
     } on CameraException catch (e) {
@@ -1076,7 +1080,7 @@ Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    _cameras = await availableCameras();
+    _cameras = await CameraPlatform.instance.availableCameras();
   } on CameraException catch (e) {
     _logError(e.code, e.description);
   }

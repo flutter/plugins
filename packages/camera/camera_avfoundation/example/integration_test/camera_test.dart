@@ -6,7 +6,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:camera/camera.dart';
+import 'package:camera_example/camera_controller.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -74,7 +75,8 @@ void main() {
   testWidgets(
     'Capture specific image resolutions',
     (WidgetTester tester) async {
-      final List<CameraDescription> cameras = await availableCameras();
+      final List<CameraDescription> cameras =
+          await CameraPlatform.instance.availableCameras();
       if (cameras.isEmpty) {
         return;
       }
@@ -128,7 +130,8 @@ void main() {
   testWidgets(
     'Capture specific video resolutions',
     (WidgetTester tester) async {
-      final List<CameraDescription> cameras = await availableCameras();
+      final List<CameraDescription> cameras =
+          await CameraPlatform.instance.availableCameras();
       if (cameras.isEmpty) {
         return;
       }
@@ -154,7 +157,8 @@ void main() {
   );
 
   testWidgets('Pause and resume video recording', (WidgetTester tester) async {
-    final List<CameraDescription> cameras = await availableCameras();
+    final List<CameraDescription> cameras =
+        await CameraPlatform.instance.availableCameras();
     if (cameras.isEmpty) {
       return;
     }
@@ -209,7 +213,8 @@ void main() {
   testWidgets(
     'Android image streaming',
     (WidgetTester tester) async {
-      final List<CameraDescription> cameras = await availableCameras();
+      final List<CameraDescription> cameras =
+          await CameraPlatform.instance.availableCameras();
       if (cameras.isEmpty) {
         return;
       }
@@ -223,7 +228,7 @@ void main() {
       await controller.initialize();
       bool _isDetecting = false;
 
-      await controller.startImageStream((CameraImage image) {
+      await controller.startImageStream((CameraImageData image) {
         if (_isDetecting) {
           return;
         }
@@ -244,7 +249,7 @@ void main() {
   );
 
   /// Start streaming with specifying the ImageFormatGroup.
-  Future<CameraImage> startStreaming(List<CameraDescription> cameras,
+  Future<CameraImageData> startStreaming(List<CameraDescription> cameras,
       ImageFormatGroup? imageFormatGroup) async {
     final CameraController controller = CameraController(
       cameras.first,
@@ -254,9 +259,9 @@ void main() {
     );
 
     await controller.initialize();
-    final Completer<CameraImage> _completer = Completer<CameraImage>();
+    final Completer<CameraImageData> _completer = Completer<CameraImageData>();
 
-    await controller.startImageStream((CameraImage image) {
+    await controller.startImageStream((CameraImageData image) {
       if (!_completer.isCompleted) {
         Future<void>(() async {
           await controller.stopImageStream();
@@ -272,12 +277,13 @@ void main() {
   testWidgets(
     'iOS image streaming with imageFormatGroup',
     (WidgetTester tester) async {
-      final List<CameraDescription> cameras = await availableCameras();
+      final List<CameraDescription> cameras =
+          await CameraPlatform.instance.availableCameras();
       if (cameras.isEmpty) {
         return;
       }
 
-      CameraImage _image = await startStreaming(cameras, null);
+      CameraImageData _image = await startStreaming(cameras, null);
       expect(_image, isNotNull);
       expect(_image.format.group, ImageFormatGroup.bgra8888);
       expect(_image.planes.length, 1);
