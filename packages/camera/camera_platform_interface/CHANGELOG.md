@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Handles Android camera permissions error code that indicates a request being made while another was in progress.
+
 ## 2.2.0
 
 * Adds image streaming to the platform interface.
