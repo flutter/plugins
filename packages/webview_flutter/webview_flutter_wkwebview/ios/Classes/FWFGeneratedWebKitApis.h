@@ -524,6 +524,7 @@ NSObject<FlutterMessageCodec> *FWFWKUIDelegateFlutterApiGetCodec(void);
 @interface FWFWKUIDelegateFlutterApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)onCreateWebViewForDelegateWithIdentifier:(NSNumber *)identifier
+                               webViewIdentifier:(NSNumber *)webViewIdentifier
                          configurationIdentifier:(NSNumber *)configurationIdentifier
                                 navigationAction:(FWFWKNavigationActionData *)navigationAction
                                       completion:(void (^)(NSError *_Nullable))completion;

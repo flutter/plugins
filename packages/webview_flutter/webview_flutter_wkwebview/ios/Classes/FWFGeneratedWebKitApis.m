@@ -2561,6 +2561,7 @@ NSObject<FlutterMessageCodec> *FWFWKUIDelegateFlutterApiGetCodec() {
   return self;
 }
 - (void)onCreateWebViewForDelegateWithIdentifier:(NSNumber *)arg_identifier
+                               webViewIdentifier:(NSNumber *)arg_webViewIdentifier
                          configurationIdentifier:(NSNumber *)arg_configurationIdentifier
                                 navigationAction:(FWFWKNavigationActionData *)arg_navigationAction
                                       completion:(void (^)(NSError *_Nullable))completion {
@@ -2569,8 +2570,8 @@ NSObject<FlutterMessageCodec> *FWFWKUIDelegateFlutterApiGetCodec() {
              binaryMessenger:self.binaryMessenger
                        codec:FWFWKUIDelegateFlutterApiGetCodec()];
   [channel sendMessage:@[
-    arg_identifier ?: [NSNull null], arg_configurationIdentifier ?: [NSNull null],
-    arg_navigationAction ?: [NSNull null]
+    arg_identifier ?: [NSNull null], arg_webViewIdentifier ?: [NSNull null],
+    arg_configurationIdentifier ?: [NSNull null], arg_navigationAction ?: [NSNull null]
   ]
                  reply:^(id reply) {
                    completion(nil);
