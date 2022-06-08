@@ -26,4 +26,5 @@
   XCTAssertTrue([scriptMessageHandler conformsToProtocol:@protocol(WKScriptMessageHandler)]);
   XCTAssertNil(error);
 }
+
 @end

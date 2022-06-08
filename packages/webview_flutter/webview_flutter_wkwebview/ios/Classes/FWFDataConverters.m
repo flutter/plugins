@@ -160,7 +160,10 @@ FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(WKNavig
 
 
 FWFNSUrlRequestData *FWFNSUrlRequestDataFromNSURLRequest(NSURLRequest *request) {
-  return [FWFNSUrlRequestData makeWithUrl:request.URL.absoluteString httpMethod:request.HTTPMethod httpBody:[FlutterStandardTypedData typedDataWithBytes:request.HTTPBody] allHttpHeaderFields:request.allHTTPHeaderFields];
+  return [FWFNSUrlRequestData makeWithUrl:request.URL.absoluteString
+                               httpMethod:request.HTTPMethod
+                                 httpBody:request.HTTPBody ? [FlutterStandardTypedData typedDataWithBytes:request.HTTPBody] : nil
+                      allHttpHeaderFields:request.allHTTPHeaderFields ? request.allHTTPHeaderFields : @{}];
 }
 
 FWFWKFrameInfoData *FWFWKFrameInfoDataFromWKFrameInfo(WKFrameInfo *info) {
