@@ -400,6 +400,19 @@ class WKUserContentController extends NSObject {
     );
   }
 
+  /// Constructs a [WKUserContentController] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
+  WKUserContentController.detached({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _userContentControllerApi = WKUserContentControllerHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
   final WKUserContentControllerHostApiImpl _userContentControllerApi;
 
   /// Installs a message handler that you can call from your JavaScript code.
@@ -472,7 +485,8 @@ class WKWebViewConfiguration extends NSObject {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) {
-    final WKWebViewConfiguration configuration = WKWebViewConfiguration._(
+    final WKWebViewConfiguration configuration =
+        WKWebViewConfiguration.detached(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
@@ -487,7 +501,8 @@ class WKWebViewConfiguration extends NSObject {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) {
-    final WKWebViewConfiguration configuration = WKWebViewConfiguration._(
+    final WKWebViewConfiguration configuration =
+        WKWebViewConfiguration.detached(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     );
@@ -498,7 +513,12 @@ class WKWebViewConfiguration extends NSObject {
     return configuration;
   }
 
-  WKWebViewConfiguration._({
+  /// Constructs a [WKWebViewConfiguration] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
+  WKWebViewConfiguration.detached({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   })  : _binaryMessenger = binaryMessenger,
@@ -584,6 +604,7 @@ class WKUIDelegate extends NSObject {
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
   final void Function(
+    WKWebView webView,
     WKWebViewConfiguration configuration,
     WKNavigationAction navigationAction,
   )? onCreateWebView;
@@ -719,6 +740,22 @@ class WKWebView extends UIView {
         ) {
     _webViewApi.createForInstances(this, configuration);
   }
+
+  /// Constructs a [WKWebView] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
+  WKWebView.detached({
+    super.observeValue,
+    super.binaryMessenger,
+    super.instanceManager,
+  })  : _binaryMessenger = binaryMessenger,
+        _instanceManager = instanceManager,
+        _webViewApi = WKWebViewHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
 
   final BinaryMessenger? _binaryMessenger;
   final InstanceManager? _instanceManager;
