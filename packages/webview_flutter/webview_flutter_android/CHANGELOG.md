@@ -1,3 +1,7 @@
+## 2.8.10
+
+* Bumps mockito-inline from 3.11.1 to 4.6.1.
+
 ## 2.8.9
 
 * Updates Gradle to 7.2.1.
