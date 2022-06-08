@@ -26,10 +26,12 @@
 }
 
 - (void)onCreateWebViewForDelegate:(FWFUIDelegate *)instance
+                           webView:(WKWebView *)webView
                          configuration:(WKWebViewConfiguration *)configuration
                                 navigationAction:(WKNavigationAction *)navigationAction
                                       completion:(void (^)(NSError * _Nullable))completion {
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
+                               webViewIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:webView])
                          configurationIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:configuration])
                                 navigationAction:FWFWKNavigationActionDataFromNavigationAction(navigationAction)
                                       completion:completion];
@@ -49,7 +51,11 @@
 }
 
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
-  [self.UIDelegateAPI onCreateWebViewForDelegate:self configuration:configuration navigationAction:navigationAction completion:^(NSError *error) {
+  [self.UIDelegateAPI onCreateWebViewForDelegate:self
+                                         webView:webView
+                                   configuration:configuration
+                                navigationAction:navigationAction
+                                      completion:^(NSError *error) {
     NSAssert(!error, @"%@", error);
   }];
   return nil;

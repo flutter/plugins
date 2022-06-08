@@ -40,7 +40,7 @@
   XCTAssertNil(error);
 }
 
-- (void)testWebViewWebContentProcessDidTerminate {
+- (void)testDidReceiveScriptMessageForHandler {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   
   FWFScriptMessageHandler *mockHandler = [self mockHandlerWithManager:instanceManager identifier:0];

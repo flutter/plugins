@@ -38,7 +38,7 @@
   XCTAssertNil(error);
 }
 
-- (void)testWebViewWebContentProcessDidTerminate {
+- (void)testOnCreateWebViewForDelegateWithIdentifier{
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   
   FWFUIDelegate *mockDelegate = [self mockDelegateWithManager:instanceManager identifier:0];
@@ -50,7 +50,7 @@
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
   
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
+  [instanceManager addDartCreatedInstance:configuration withIdentifier:2];
   
   WKNavigationAction *mockNavigationAction = OCMClassMock([WKNavigationAction class]);
   OCMStub([mockNavigationAction request]).andReturn([NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.flutter.dev"]]);
@@ -63,6 +63,10 @@
 createWebViewWithConfiguration:configuration
     forNavigationAction:mockNavigationAction
          windowFeatures:OCMClassMock([WKWindowFeatures class])];
-  OCMVerify([mockFlutterAPI onCreateWebViewForDelegateWithIdentifier:@0 configurationIdentifier:@1 navigationAction:nil completion:OCMOCK_ANY]);
+  OCMVerify([mockFlutterAPI onCreateWebViewForDelegateWithIdentifier:@0
+                                                   webViewIdentifier:@1
+                                             configurationIdentifier:@2
+                                                    navigationAction:[OCMArg isKindOfClass:[FWFWKNavigationActionData class]]
+                                                          completion:OCMOCK_ANY]);
 }
 @end
