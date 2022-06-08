@@ -14,11 +14,11 @@
 @implementation FWFScriptMessageHandlerHostApiTests
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFScriptMessageHandlerHostApiImpl *hostApi =
+  FWFScriptMessageHandlerHostApiImpl *hostAPI =
       [[FWFScriptMessageHandlerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
 
   FWFScriptMessageHandler *scriptMessageHandler =
       (FWFScriptMessageHandler *)[instanceManager instanceForIdentifier:0];
