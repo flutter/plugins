@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Implementation of NSObject for FWFObjectHostApiImpl.
  */
 @interface FWFObject : NSObject
-@property(readonly, nonnull) FWFObjectFlutterApiImpl *objectApi;
+@property(readonly, nonnull, nonatomic) FWFObjectFlutterApiImpl *objectApi;
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end

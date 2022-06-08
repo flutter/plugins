@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Implementation of WKUIDelegate for FWFUIDelegateHostApiImpl.
  */
 @interface FWFUIDelegate : FWFObject <WKUIDelegate>
-@property(readonly, nonnull) FWFUIDelegateFlutterApiImpl *UIDelegateAPI;
+@property(readonly, nonnull, nonatomic) FWFUIDelegateFlutterApiImpl *UIDelegateAPI;
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end

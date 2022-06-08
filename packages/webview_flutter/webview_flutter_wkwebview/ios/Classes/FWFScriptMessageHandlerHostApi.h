@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Implementation of WKScriptMessageHandler for FWFScriptMessageHandlerHostApiImpl.
  */
 @interface FWFScriptMessageHandler : FWFObject <WKScriptMessageHandler>
-@property(readonly, nonnull) FWFScriptMessageHandlerFlutterApiImpl *scriptMessageHandlerAPI;
+@property(readonly, nonnull, nonatomic) FWFScriptMessageHandlerFlutterApiImpl *scriptMessageHandlerAPI;
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end
