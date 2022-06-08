@@ -25,7 +25,7 @@
   FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
-  
+
   [instanceManager addDartCreatedInstance:navigationDelegate withIdentifier:0];
   return OCMPartialMock(navigationDelegate);
 }

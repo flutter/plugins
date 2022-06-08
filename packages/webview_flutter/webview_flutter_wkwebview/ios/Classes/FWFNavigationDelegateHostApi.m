@@ -29,8 +29,8 @@
                                webView:(WKWebView *)webView
                                    URL:(NSString *)URL
                             completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *webViewIdentifier = @([self.instanceManager
-                                   identifierWithStrongReferenceForInstance:webView]);
+  NSNumber *webViewIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:webView]);
   [self didFinishNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                    webViewIdentifier:webViewIdentifier
                                                  URL:URL
@@ -41,8 +41,8 @@
                                          webView:(WKWebView *)webView
                                              URL:(NSString *)URL
                                       completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *webViewIdentifier = @([self.instanceManager
-                                   identifierWithStrongReferenceForInstance:webView]);
+  NSNumber *webViewIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:webView]);
   [self didStartProvisionalNavigationForDelegateWithIdentifier:@([self
                                                                    identifierForDelegate:instance])
                                              webViewIdentifier:webViewIdentifier
@@ -57,10 +57,10 @@
                                     completion:
                                         (void (^)(FWFWKNavigationActionPolicyEnumData *_Nullable,
                                                   NSError *_Nullable))completion {
-  NSNumber *webViewIdentifier = @([self.instanceManager
-                                   identifierWithStrongReferenceForInstance:webView]);
-  FWFWKNavigationActionData *navigationActionData = FWFWKNavigationActionDataFromNavigationAction(
-                                                                                          navigationAction);
+  NSNumber *webViewIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:webView]);
+  FWFWKNavigationActionData *navigationActionData =
+      FWFWKNavigationActionDataFromNavigationAction(navigationAction);
   [self
       decidePolicyForNavigationActionForDelegateWithIdentifier:@([self
                                                                    identifierForDelegate:instance])
@@ -73,8 +73,8 @@
                              webView:(WKWebView *)webView
                                error:(NSError *)error
                           completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *webViewIdentifier = @([self.instanceManager
-                                   identifierWithStrongReferenceForInstance:webView]);
+  NSNumber *webViewIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:webView]);
   [self didFailNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                  webViewIdentifier:webViewIdentifier
                                              error:FWFNSErrorDataFromNSError(error)
@@ -85,8 +85,8 @@
                                         webView:(WKWebView *)webView
                                           error:(NSError *)error
                                      completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *webViewIdentifier = @([self.instanceManager
-                                   identifierWithStrongReferenceForInstance:webView]);
+  NSNumber *webViewIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:webView]);
   [self
       didFailProvisionalNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                           webViewIdentifier:webViewIdentifier
@@ -97,13 +97,12 @@
 - (void)webViewWebContentProcessDidTerminateForDelegate:(FWFNavigationDelegate *)instance
                                                 webView:(WKWebView *)webView
                                              completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *webViewIdentifier = @([self.instanceManager
-                                   identifierWithStrongReferenceForInstance:webView]);
-  [self
-      webViewWebContentProcessDidTerminateForDelegateWithIdentifier:
-          @([self identifierForDelegate:instance])
-                                                  webViewIdentifier:webViewIdentifier
-                                                         completion:completion];
+  NSNumber *webViewIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:webView]);
+  [self webViewWebContentProcessDidTerminateForDelegateWithIdentifier:
+            @([self identifierForDelegate:instance])
+                                                    webViewIdentifier:webViewIdentifier
+                                                           completion:completion];
 }
 @end
 

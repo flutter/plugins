@@ -37,8 +37,8 @@
     [changeValues addObject:value];
   }];
 
-  NSNumber *objectIdentifier = @([self.instanceManager
-                                  identifierWithStrongReferenceForInstance:object]);
+  NSNumber *objectIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:object]);
   [self observeValueForObjectWithIdentifier:@([self identifierForObject:instance])
                                     keyPath:keyPath
                            objectIdentifier:objectIdentifier

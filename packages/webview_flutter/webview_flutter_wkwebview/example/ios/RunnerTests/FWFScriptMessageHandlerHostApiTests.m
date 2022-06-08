@@ -24,7 +24,7 @@
   FWFScriptMessageHandler *handler = [[FWFScriptMessageHandler alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
-  
+
   [instanceManager addDartCreatedInstance:handler withIdentifier:0];
   return OCMPartialMock(handler);
 }

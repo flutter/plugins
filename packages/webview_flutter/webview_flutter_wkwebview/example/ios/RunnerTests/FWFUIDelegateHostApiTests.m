@@ -24,7 +24,7 @@
   FWFUIDelegate *delegate = [[FWFUIDelegate alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
-  
+
   [instanceManager addDartCreatedInstance:delegate withIdentifier:0];
   return OCMPartialMock(delegate);
 }

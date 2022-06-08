@@ -30,16 +30,16 @@
                      configuration:(WKWebViewConfiguration *)configuration
                   navigationAction:(WKNavigationAction *)navigationAction
                         completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *configurationIdentifier = @([self.instanceManager
-                                         identifierWithStrongReferenceForInstance:configuration]);
-  FWFWKNavigationActionData *navigationActionData = FWFWKNavigationActionDataFromNavigationAction(
-                                                                                                  navigationAction);
+  NSNumber *configurationIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
+  FWFWKNavigationActionData *navigationActionData =
+      FWFWKNavigationActionDataFromNavigationAction(navigationAction);
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                webViewIdentifier:
                                    @([self.instanceManager
                                        identifierWithStrongReferenceForInstance:webView])
                          configurationIdentifier:configurationIdentifier
-                          navigationAction:navigationActionData
+                                navigationAction:navigationActionData
                                       completion:completion];
 }
 @end

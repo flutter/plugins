@@ -24,7 +24,7 @@
   FWFObject *object =
       [[FWFObject alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
                                  instanceManager:instanceManager];
-  
+
   [instanceManager addDartCreatedInstance:object withIdentifier:0];
   return OCMPartialMock(object);
 }
