@@ -28,7 +28,7 @@ void main() {
     late InstanceManager instanceManager;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
     });
 
     group('UIScrollView', () {

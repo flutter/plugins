@@ -76,7 +76,10 @@
 
   FlutterError *error;
   [hostAPI disposeObjectWithIdentifier:@0 error:&error];
-  XCTAssertEqual([instanceManager identifierForInstance:object], NSNotFound);
+  // Only the strong reference is removed, so the weak reference will remain until object is set to
+  // nil.
+  object = nil;
+  XCTAssertFalse([instanceManager containsInstance:object]);
   XCTAssertNil(error);
 }
 @end

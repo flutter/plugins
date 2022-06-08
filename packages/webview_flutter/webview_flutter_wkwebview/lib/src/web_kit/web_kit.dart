@@ -10,6 +10,10 @@ import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
 import 'web_kit_api_impls.dart';
 
+// TODO(bparrishMines): All subclasses of NSObject need to pass their
+// InstanceManager and BinaryMessenger to its parent. They also need to
+// override copy(): https://github.com/flutter/flutter/issues/105245
+
 /// Times at which to inject script content into a webpage.
 ///
 /// Wraps [WKUserScriptInjectionTime](https://developer.apple.com/documentation/webkit/wkuserscriptinjectiontime?language=objc).
@@ -210,7 +214,7 @@ class WKScriptMessage {
 /// Encapsulates the standard behaviors to apply to websites.
 ///
 /// Wraps [WKPreferences](https://developer.apple.com/documentation/webkit/wkpreferences?language=objc).
-class WKPreferences {
+class WKPreferences extends NSObject {
   /// Constructs a [WKPreferences] that is owned by [configuration].
   @visibleForTesting
   WKPreferences.fromWebViewConfiguration(
@@ -241,7 +245,7 @@ class WKPreferences {
 /// Manages cookies, disk and memory caches, and other types of data for a web view.
 ///
 /// Wraps [WKWebsiteDataStore](https://developer.apple.com/documentation/webkit/wkwebsitedatastore?language=objc).
-class WKWebsiteDataStore {
+class WKWebsiteDataStore extends NSObject {
   WKWebsiteDataStore._({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -343,7 +347,7 @@ class WKHttpCookieStore extends NSObject {
 /// An interface for receiving messages from JavaScript code running in a webpage.
 ///
 /// Wraps [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler?language=objc)
-class WKScriptMessageHandler {
+class WKScriptMessageHandler extends NSObject {
   /// Constructs a [WKScriptMessageHandler].
   WKScriptMessageHandler({
     BinaryMessenger? binaryMessenger,
@@ -382,7 +386,7 @@ class WKScriptMessageHandler {
 ///   code.
 ///
 /// Wraps [WKUserContentController](https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc).
-class WKUserContentController {
+class WKUserContentController extends NSObject {
   /// Constructs a [WKUserContentController] that is owned by [configuration].
   @visibleForTesting
   WKUserContentController.fromWebViewConfiguration(
@@ -465,7 +469,7 @@ class WKUserContentController {
 /// A collection of properties that you use to initialize a web view.
 ///
 /// Wraps [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc).
-class WKWebViewConfiguration {
+class WKWebViewConfiguration extends NSObject {
   /// Constructs a [WKWebViewConfiguration].
   factory WKWebViewConfiguration({
     BinaryMessenger? binaryMessenger,
@@ -565,7 +569,7 @@ class WKWebViewConfiguration {
 /// The methods for presenting native user interface elements on behalf of a webpage.
 ///
 /// Wraps [WKUIDelegate](https://developer.apple.com/documentation/webkit/wkuidelegate?language=objc).
-class WKUIDelegate {
+class WKUIDelegate extends NSObject {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate({
     BinaryMessenger? binaryMessenger,
@@ -597,9 +601,11 @@ class WKUIDelegate {
 /// coordinate changes in your web view’s main frame.
 ///
 /// Wraps [WKNavigationDelegate](https://developer.apple.com/documentation/webkit/wknavigationdelegate?language=objc).
+@immutable
 class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
+    this.didFinishNavigation,
     super.binaryMessenger,
     super.instanceManager,
   }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
@@ -610,7 +616,24 @@ class WKNavigationDelegate extends NSObject {
     _navigationDelegateApi.createForInstances(this);
   }
 
+  /// Constructs a [WKNavigationDelegate] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
+  WKNavigationDelegate.detached({
+    this.didFinishNavigation,
+    super.binaryMessenger,
+    super.instanceManager,
+  }) : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
+
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
+
+  /// Called when navigation is complete.
+  final void Function(WKWebView webView, String? url)? didFinishNavigation;
 
   /// Called when navigation from the main frame has started.
   Future<void> setDidStartProvisionalNavigation(
@@ -618,16 +641,6 @@ class WKNavigationDelegate extends NSObject {
         didStartProvisionalNavigation,
   ) {
     throw UnimplementedError();
-  }
-
-  /// Called when navigation is complete.
-  Future<void> setDidFinishNavigation(
-    void Function(WKWebView webView, String? url)? didFinishNavigation,
-  ) {
-    return _navigationDelegateApi.setDidFinishNavigationFromInstance(
-      this,
-      didFinishNavigation,
-    );
   }
 
   /// Called when permission is needed to navigate to new content.
@@ -660,6 +673,30 @@ class WKNavigationDelegate extends NSObject {
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
   ) {
     throw UnimplementedError();
+  }
+
+  @override
+  Copyable copy() {
+    return WKNavigationDelegate.detached(
+      didFinishNavigation: didFinishNavigation,
+      binaryMessenger: _navigationDelegateApi.binaryMessenger,
+      instanceManager: _navigationDelegateApi.instanceManager,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(didFinishNavigation, _navigationDelegateApi,
+        _navigationDelegateApi.instanceManager.getIdentifier(this));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WKNavigationDelegate &&
+        didFinishNavigation == other.didFinishNavigation &&
+        _navigationDelegateApi == other._navigationDelegateApi &&
+        _navigationDelegateApi.instanceManager.getIdentifier(this) ==
+            other._navigationDelegateApi.instanceManager.getIdentifier(other);
   }
 }
 

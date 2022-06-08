@@ -5,8 +5,37 @@
 #import "FWFObjectHostApi.h"
 #import "FWFDataConverters.h"
 
+@interface FWFObjectFlutterApi ()
+// This reference must be weak to prevent a circular reference with the objects it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@end
+
+@implementation FWFObjectFlutterApi
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self initWithBinaryMessenger:binaryMessenger];
+  if (self) {
+    _instanceManager = instanceManager;
+  }
+  return self;
+}
+@end
+
+@implementation FWFObject
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self init];
+  if (self) {
+    _objectApi = [[FWFObjectFlutterApi alloc] initWithBinaryMessenger:binaryMessenger
+                                                      instanceManager:instanceManager];
+  }
+  return self;
+}
+@end
+
 @interface FWFObjectHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+// This reference must be weak to prevent a circular reference with the objects it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFObjectHostApiImpl

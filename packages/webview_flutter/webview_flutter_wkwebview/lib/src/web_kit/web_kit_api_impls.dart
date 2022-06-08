@@ -226,7 +226,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   WKWebsiteDataStoreHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -247,7 +247,8 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
     WKWebsiteDataStore instance,
   ) {
     return createDefaultDataStore(
-        instanceManager.addDartCreatedInstance(instance));
+      instanceManager.addDartCreatedInstance(instance),
+    );
   }
 
   /// Calls [removeDataOfTypes] with the ids of the provided object instances.
@@ -270,7 +271,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   WKScriptMessageHandlerHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -287,7 +288,7 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   WKPreferencesHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -321,7 +322,7 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   WKHttpCookieStoreHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -356,7 +357,7 @@ class WKUserContentControllerHostApiImpl
   WKUserContentControllerHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -430,7 +431,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   WKWebViewConfigurationHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -480,47 +481,51 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   WKUIDelegateHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKUIDelegate instance) {
+  Future<void> createForInstances(WKUIDelegate instance) async {
     return create(instanceManager.addDartCreatedInstance(instance));
   }
 }
 
 /// Host api implementation for [WKNavigationDelegate].
+@immutable
 class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   /// Constructs a [WKNavigationDelegateHostApiImpl].
   WKNavigationDelegateHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
 
   /// Calls [create] with the ids of the provided object instances.
-  Future<void> createForInstances(WKNavigationDelegate instance) {
+  Future<void> createForInstances(WKNavigationDelegate instance) async {
     return create(instanceManager.addDartCreatedInstance(instance));
   }
 
-  /// Calls [setDidFinishNavigation] with the ids of the provided object instances.
-  Future<void> setDidFinishNavigationFromInstance(
-    WKNavigationDelegate instance,
-    void Function(WKWebView, String?)? didFinishNavigation,
-  ) {
-    int? functionInstanceId;
-    if (didFinishNavigation != null) {
-      functionInstanceId = instanceManager.getIdentifier(didFinishNavigation) ??
-          instanceManager.addDartCreatedInstance(didFinishNavigation);
-    }
-    return setDidFinishNavigation(
-      instanceManager.getIdentifier(instance)!,
-      functionInstanceId,
-    );
+  @override
+  int get hashCode {
+    return Object.hash(binaryMessenger, instanceManager);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WKNavigationDelegateHostApiImpl &&
+        binaryMessenger == other.binaryMessenger &&
+        instanceManager == other.instanceManager;
   }
 }
 
@@ -529,23 +534,29 @@ class WKNavigationDelegateFlutterApiImpl
     extends WKNavigationDelegateFlutterApi {
   /// Constructs a [WKNavigationDelegateFlutterApiImpl].
   WKNavigationDelegateFlutterApiImpl({InstanceManager? instanceManager}) {
-    this.instanceManager = instanceManager ?? InstanceManager.instance;
+    this.instanceManager = instanceManager ?? NSObject.globalInstanceManager;
   }
 
   /// Maintains instances stored to communicate with native language objects.
   late final InstanceManager instanceManager;
 
+  WKNavigationDelegate _getDelegate(int identifier) {
+    return instanceManager.getInstanceWithWeakReference(identifier)!;
+  }
+
   @override
   void didFinishNavigation(
-    int functionIdentifier,
+    int identifier,
     int webViewIdentifier,
     String? url,
   ) {
-    final void Function(
-      WKWebView webView,
-      String? url,
-    ) function = instanceManager.getInstance(functionIdentifier)!;
-    function(instanceManager.getInstance(webViewIdentifier)!, url);
+    final void Function(WKWebView, String?)? function =
+        _getDelegate(identifier).didFinishNavigation;
+    function?.call(
+      instanceManager.getInstanceWithWeakReference(webViewIdentifier)!
+          as WKWebView,
+      url,
+    );
   }
 }
 
@@ -555,7 +566,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   WKWebViewHostApiImpl({
     super.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? InstanceManager.instance;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -573,7 +584,9 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
 
   /// Calls [loadRequest] with the ids of the provided object instances.
   Future<void> loadRequestForInstances(
-      WKWebView webView, NSUrlRequest request) {
+    WKWebView webView,
+    NSUrlRequest request,
+  ) {
     return loadRequest(
       instanceManager.getIdentifier(webView)!,
       request.toNSUrlRequestData(),
