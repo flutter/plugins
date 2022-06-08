@@ -25,12 +25,16 @@
 }
 
 - (void)didReceiveScriptMessageForHandler:(FWFScriptMessageHandler *)instance
-                        userContentController:(WKUserContentController *)userContentController
-                                                message:(WKScriptMessage *)message
-                                             completion:(void (^)(NSError * _Nullable))completion {
+                    userContentController:(WKUserContentController *)userContentController
+                                  message:(WKScriptMessage *)message
+                               completion:(void (^)(NSError *_Nullable))completion {
   [self didReceiveScriptMessageForHandlerWithIdentifier:@([self identifierForHandler:instance])
-                        userContentControllerIdentifier:@([self.instanceManager
-                                                           identifierWithStrongReferenceForInstance:userContentController]) message:FWFWKScriptMessageDataFromWKScriptMessage(message) completion:completion];
+                        userContentControllerIdentifier:
+                            @([self.instanceManager
+                                identifierWithStrongReferenceForInstance:userContentController])
+                                                message:FWFWKScriptMessageDataFromWKScriptMessage(
+                                                            message)
+                                             completion:completion];
 }
 @end
 
@@ -41,16 +45,19 @@
   if (self) {
     _scriptMessageHandlerAPI =
         [[FWFScriptMessageHandlerFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
-                                                             instanceManager:instanceManager];
+                                                               instanceManager:instanceManager];
   }
   return self;
 }
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController
       didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
-  [self.scriptMessageHandlerAPI didReceiveScriptMessageForHandler:self userContentController:userContentController message:message completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
-  }];
+  [self.scriptMessageHandlerAPI didReceiveScriptMessageForHandler:self
+                                            userContentController:userContentController
+                                                          message:message
+                                                       completion:^(NSError *error) {
+                                                         NSAssert(!error, @"%@", error);
+                                                       }];
 }
 @end
 

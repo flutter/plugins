@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "FWFUIDelegateHostApi.h"
-#import "FWFWebViewConfigurationHostApi.h"
 #import "FWFDataConverters.h"
+#import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFUIDelegateFlutterApiImpl ()
 // This reference must be weak to prevent a circular reference with the objects it stores.
@@ -27,13 +27,18 @@
 
 - (void)onCreateWebViewForDelegate:(FWFUIDelegate *)instance
                            webView:(WKWebView *)webView
-                         configuration:(WKWebViewConfiguration *)configuration
-                                navigationAction:(WKNavigationAction *)navigationAction
-                                      completion:(void (^)(NSError * _Nullable))completion {
+                     configuration:(WKWebViewConfiguration *)configuration
+                  navigationAction:(WKNavigationAction *)navigationAction
+                        completion:(void (^)(NSError *_Nullable))completion {
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
-                               webViewIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:webView])
-                         configurationIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:configuration])
-                                navigationAction:FWFWKNavigationActionDataFromNavigationAction(navigationAction)
+                               webViewIdentifier:
+                                   @([self.instanceManager
+                                       identifierWithStrongReferenceForInstance:webView])
+                         configurationIdentifier:
+                             @([self.instanceManager
+                                 identifierWithStrongReferenceForInstance:configuration])
+                                navigationAction:FWFWKNavigationActionDataFromNavigationAction(
+                                                     navigationAction)
                                       completion:completion];
 }
 @end
@@ -43,21 +48,23 @@
                         instanceManager:(FWFInstanceManager *)instanceManager {
   self = [super initWithBinaryMessenger:binaryMessenger instanceManager:instanceManager];
   if (self) {
-    _UIDelegateAPI =
-        [[FWFUIDelegateFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
-                                                             instanceManager:instanceManager];
+    _UIDelegateAPI = [[FWFUIDelegateFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                                  instanceManager:instanceManager];
   }
   return self;
 }
 
-- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+- (WKWebView *)webView:(WKWebView *)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
+               forNavigationAction:(WKNavigationAction *)navigationAction
+                    windowFeatures:(WKWindowFeatures *)windowFeatures {
   [self.UIDelegateAPI onCreateWebViewForDelegate:self
                                          webView:webView
                                    configuration:configuration
                                 navigationAction:navigationAction
                                       completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
-  }];
+                                        NSAssert(!error, @"%@", error);
+                                      }];
   return nil;
 }
 @end

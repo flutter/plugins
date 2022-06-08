@@ -92,7 +92,8 @@ extern NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataType
  *
  * @return A FWFWKNavigationActionData.
  */
-extern FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(WKNavigationAction *action);
+extern FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(
+    WKNavigationAction *action);
 
 /**
  * Converts a NSURLRequest to an FWFNSUrlRequestData.
@@ -119,7 +120,8 @@ extern FWFWKFrameInfoData *FWFWKFrameInfoDataFromWKFrameInfo(WKFrameInfo *info);
  *
  * @return A WKNavigationActionPolicy or -1 if data could not be converted.
  */
-extern WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(FWFWKNavigationActionPolicyEnumData *data);
+extern WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(
+    FWFWKNavigationActionPolicyEnumData *data);
 
 /**
  * Converts a NSError to an FWFNSErrorData.
@@ -137,7 +139,8 @@ extern FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error);
  *
  * @return A FWFNSKeyValueChangeKeyEnumData or nil if data could not be converted.
  */
-extern FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(NSKeyValueChangeKey key);
+extern FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(
+    NSKeyValueChangeKey key);
 
 /**
  * Converts a WKScriptMessage to an FWFWKScriptMessageData.

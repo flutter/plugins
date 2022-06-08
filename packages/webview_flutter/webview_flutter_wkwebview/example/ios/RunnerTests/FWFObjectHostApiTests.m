@@ -13,7 +13,10 @@
 
 @implementation FWFObjectHostApiTests
 - (id)mockObjectWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
-  FWFObject *object = [[FWFObject alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger)) instanceManager:instanceManager];;
+  FWFObject *object =
+      [[FWFObject alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+                                 instanceManager:instanceManager];
+  ;
   [instanceManager addDartCreatedInstance:object withIdentifier:0];
   return OCMPartialMock(object);
 }
@@ -98,21 +101,31 @@
 
 - (void)testObserveValueForKeyPath {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  
+
   FWFObject *mockObject = [self mockObjectWithManager:instanceManager identifier:0];
   FWFObjectFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockObject objectApi]).andReturn(mockFlutterAPI);
-  
+
   NSObject *object = [[NSObject alloc] init];
   [instanceManager addDartCreatedInstance:object withIdentifier:1];
 
-  [mockObject observeValueForKeyPath:@"keyPath" ofObject:object change:@{NSKeyValueChangeOldKey: @"key"} context:nil];
-  OCMVerify([mockFlutterAPI observeValueForObjectWithIdentifier:@0
-                                                        keyPath:@"keyPath"
-                                               objectIdentifier:@1
-                                                     changeKeys:[OCMArg checkWithBlock:^BOOL(NSArray<FWFNSKeyValueChangeKeyEnumData *> * value) { return value[0].value == FWFNSKeyValueChangeKeyEnumOldValue; }]
-                                                   changeValues:[OCMArg checkWithBlock:^BOOL(id value) { return [@"key" isEqual:value[0]]; }]
-                                                     completion:OCMOCK_ANY]);
+  [mockObject observeValueForKeyPath:@"keyPath"
+                            ofObject:object
+                              change:@{NSKeyValueChangeOldKey : @"key"}
+                             context:nil];
+  OCMVerify([mockFlutterAPI
+      observeValueForObjectWithIdentifier:@0
+                                  keyPath:@"keyPath"
+                         objectIdentifier:@1
+                               changeKeys:[OCMArg checkWithBlock:^BOOL(
+                                                      NSArray<FWFNSKeyValueChangeKeyEnumData *>
+                                                          *value) {
+                                 return value[0].value == FWFNSKeyValueChangeKeyEnumOldValue;
+                               }]
+                             changeValues:[OCMArg checkWithBlock:^BOOL(id value) {
+                               return [@"key" isEqual:value[0]];
+                             }]
+                               completion:OCMOCK_ANY]);
 }
 @end

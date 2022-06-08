@@ -12,8 +12,12 @@
 @end
 
 @implementation FWFNavigationDelegateHostApiTests
-- (id)mockNavigationDelegateWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
-  FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger)) instanceManager:instanceManager];;
+- (id)mockNavigationDelegateWithManager:(FWFInstanceManager *)instanceManager
+                             identifier:(long)identifier {
+  FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+  ;
   [instanceManager addDartCreatedInstance:navigationDelegate withIdentifier:0];
   return OCMPartialMock(navigationDelegate);
 }
@@ -42,9 +46,11 @@
 
 - (void)testDidFinishNavigation {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  
-  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager identifier:0];
-  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager
+                                                                     identifier:0];
+  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI =
+      [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterAPI);
 
@@ -61,9 +67,11 @@
 
 - (void)testDidStartProvisionalNavigation {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  
-  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager identifier:0];
-  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager
+                                                                     identifier:0];
+  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI =
+      [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterAPI);
 
@@ -71,84 +79,113 @@
   OCMStub([mockWebView URL]).andReturn([NSURL URLWithString:@"https://flutter.dev/"]);
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
 
-  [mockDelegate webView:mockWebView didStartProvisionalNavigation:OCMClassMock([WKNavigation class])];
-  OCMVerify([mockFlutterAPI didStartProvisionalNavigationForDelegateWithIdentifier:@0
-                                                       webViewIdentifier:@1
-                                                                     URL:@"https://flutter.dev/"
-                                                              completion:OCMOCK_ANY]);
+  [mockDelegate webView:mockWebView
+      didStartProvisionalNavigation:OCMClassMock([WKNavigation class])];
+  OCMVerify([mockFlutterAPI
+      didStartProvisionalNavigationForDelegateWithIdentifier:@0
+                                           webViewIdentifier:@1
+                                                         URL:@"https://flutter.dev/"
+                                                  completion:OCMOCK_ANY]);
 }
 
 - (void)testDecidePolicyForNavigationAction {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
 
-  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager identifier:0];
-  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager
+                                                                     identifier:0];
+  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI =
+      [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterAPI);
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
-  
+
   WKNavigationAction *mockNavigationAction = OCMClassMock([WKNavigationAction class]);
-  OCMStub([mockNavigationAction request]).andReturn([NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.flutter.dev"]]);
-  
+  OCMStub([mockNavigationAction request])
+      .andReturn([NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.flutter.dev"]]);
+
   WKFrameInfo *mockFrameInfo = OCMClassMock([WKFrameInfo class]);
   OCMStub([mockFrameInfo isMainFrame]).andReturn(YES);
   OCMStub([mockNavigationAction targetFrame]).andReturn(mockFrameInfo);
-  
-  OCMStub([mockFlutterAPI decidePolicyForNavigationActionForDelegateWithIdentifier:@0
-                                                                   webViewIdentifier:@1
-                                                                    navigationAction:[OCMArg isKindOfClass:[FWFWKNavigationActionData class]]
-                                                                          completion:([OCMArg invokeBlockWithArgs:[FWFWKNavigationActionPolicyEnumData makeWithValue:FWFWKNavigationActionPolicyEnumCancel], [NSNull null], nil])]);
-  
+
+  OCMStub([mockFlutterAPI
+      decidePolicyForNavigationActionForDelegateWithIdentifier:@0
+                                             webViewIdentifier:@1
+                                              navigationAction:
+                                                  [OCMArg isKindOfClass:[FWFWKNavigationActionData
+                                                                            class]]
+                                                    completion:
+                                                        ([OCMArg
+                                                            invokeBlockWithArgs:
+                                                                [FWFWKNavigationActionPolicyEnumData
+                                                                    makeWithValue:
+                                                                        FWFWKNavigationActionPolicyEnumCancel],
+                                                                [NSNull null], nil])]);
+
   WKNavigationActionPolicy __block callbackPolicy = -1;
-  [mockDelegate webView:mockWebView decidePolicyForNavigationAction:mockNavigationAction decisionHandler:^(WKNavigationActionPolicy policy) {
-    callbackPolicy = policy;
-  }];
+  [mockDelegate webView:mockWebView
+      decidePolicyForNavigationAction:mockNavigationAction
+                      decisionHandler:^(WKNavigationActionPolicy policy) {
+                        callbackPolicy = policy;
+                      }];
   XCTAssertEqual(callbackPolicy, WKNavigationActionPolicyCancel);
 }
 
 - (void)testDidFailNavigation {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  
-  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager identifier:0];
-  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager
+                                                                     identifier:0];
+  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI =
+      [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterAPI);
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
 
-  [mockDelegate webView:mockWebView didFailNavigation:OCMClassMock([WKNavigation class]) withError:[NSError errorWithDomain:@"domain" code:0 userInfo:nil]];
-  OCMVerify([mockFlutterAPI didFailNavigationForDelegateWithIdentifier:@0
-                                                       webViewIdentifier:@1
-                                                                     error:[OCMArg isKindOfClass:[FWFNSErrorData class]]
-                                                              completion:OCMOCK_ANY]);
+  [mockDelegate webView:mockWebView
+      didFailNavigation:OCMClassMock([WKNavigation class])
+              withError:[NSError errorWithDomain:@"domain" code:0 userInfo:nil]];
+  OCMVerify([mockFlutterAPI
+      didFailNavigationForDelegateWithIdentifier:@0
+                               webViewIdentifier:@1
+                                           error:[OCMArg isKindOfClass:[FWFNSErrorData class]]
+                                      completion:OCMOCK_ANY]);
 }
 
 - (void)testDidFailProvisionalNavigation {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  
-  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager identifier:0];
-  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager
+                                                                     identifier:0];
+  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI =
+      [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterAPI);
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
 
-  [mockDelegate webView:mockWebView didFailProvisionalNavigation:OCMClassMock([WKNavigation class]) withError:[NSError errorWithDomain:@"domain" code:0 userInfo:nil]];
-  OCMVerify([mockFlutterAPI didFailProvisionalNavigationForDelegateWithIdentifier:@0
-                                                       webViewIdentifier:@1
-                                                                     error:[OCMArg isKindOfClass:[FWFNSErrorData class]]
-                                                              completion:OCMOCK_ANY]);
+  [mockDelegate webView:mockWebView
+      didFailProvisionalNavigation:OCMClassMock([WKNavigation class])
+                         withError:[NSError errorWithDomain:@"domain" code:0 userInfo:nil]];
+  OCMVerify([mockFlutterAPI
+      didFailProvisionalNavigationForDelegateWithIdentifier:@0
+                                          webViewIdentifier:@1
+                                                      error:[OCMArg isKindOfClass:[FWFNSErrorData
+                                                                                      class]]
+                                                 completion:OCMOCK_ANY]);
 }
 
 - (void)testWebViewWebContentProcessDidTerminate {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  
-  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager identifier:0];
-  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  FWFNavigationDelegate *mockDelegate = [self mockNavigationDelegateWithManager:instanceManager
+                                                                     identifier:0];
+  FWFNavigationDelegateFlutterApiImpl *mockFlutterAPI =
+      [self mockFlutterApiWithManager:instanceManager];
 
   OCMStub([mockDelegate navigationDelegateAPI]).andReturn(mockFlutterAPI);
 
@@ -156,8 +193,9 @@
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
 
   [mockDelegate webViewWebContentProcessDidTerminate:mockWebView];
-  OCMVerify([mockFlutterAPI webViewWebContentProcessDidTerminateForDelegateWithIdentifier:@0
-                                                       webViewIdentifier:@1
-                                                              completion:OCMOCK_ANY]);
+  OCMVerify([mockFlutterAPI
+      webViewWebContentProcessDidTerminateForDelegateWithIdentifier:@0
+                                                  webViewIdentifier:@1
+                                                         completion:OCMOCK_ANY]);
 }
 @end

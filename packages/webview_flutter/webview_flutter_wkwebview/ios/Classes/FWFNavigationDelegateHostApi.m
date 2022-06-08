@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "FWFNavigationDelegateHostApi.h"
-#import "FWFWebViewConfigurationHostApi.h"
 #import "FWFDataConverters.h"
+#import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFNavigationDelegateFlutterApiImpl ()
 // This reference must be weak to prevent a circular reference with the objects it stores.
@@ -28,8 +28,7 @@
 - (void)didFinishNavigationForDelegate:(FWFNavigationDelegate *)instance
                                webView:(WKWebView *)webView
                                    URL:(NSString *)URL
-                            completion:
-                                (void (^)(NSError *_Nullable))completion {
+                            completion:(void (^)(NSError *_Nullable))completion {
   [self didFinishNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                    webViewIdentifier:
                                        @([self.instanceManager
@@ -38,48 +37,76 @@
                                           completion:completion];
 }
 
--(void)didStartProvisionalNavigationForDelegate:(FWFNavigationDelegate *)instance
+- (void)didStartProvisionalNavigationForDelegate:(FWFNavigationDelegate *)instance
+                                         webView:(WKWebView *)webView
+                                             URL:(NSString *)URL
+                                      completion:(void (^)(NSError *_Nullable))completion {
+  [self didStartProvisionalNavigationForDelegateWithIdentifier:@([self
+                                                                   identifierForDelegate:instance])
+                                             webViewIdentifier:
+                                                 @([self.instanceManager
+                                                     identifierWithStrongReferenceForInstance:
+                                                         webView])
+                                                           URL:URL
+                                                    completion:completion];
+}
+
+- (void)
+    decidePolicyForNavigationActionForDelegate:(FWFNavigationDelegate *)instance
+                                       webView:(WKWebView *)webView
+                              navigationAction:(WKNavigationAction *)navigationAction
+                                    completion:
+                                        (void (^)(FWFWKNavigationActionPolicyEnumData *_Nullable,
+                                                  NSError *_Nullable))completion {
+  [self
+      decidePolicyForNavigationActionForDelegateWithIdentifier:@([self
+                                                                   identifierForDelegate:instance])
+                                             webViewIdentifier:
+                                                 @([self.instanceManager
+                                                     identifierWithStrongReferenceForInstance:
+                                                         webView])
+                                              navigationAction:
+                                                  FWFWKNavigationActionDataFromNavigationAction(
+                                                      navigationAction)
+                                                    completion:completion];
+}
+
+- (void)didFailNavigationForDelegate:(FWFNavigationDelegate *)instance
                              webView:(WKWebView *)webView
-                                 URL:(NSString *)URL
-                          completion:
-                              (void (^)(NSError *_Nullable))completion {
-  [self didStartProvisionalNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
-                                   webViewIdentifier:
-                                       @([self.instanceManager
-                                           identifierWithStrongReferenceForInstance:webView])
-                                                 URL:URL
-                                          completion:completion];
-}
-
-- (void)decidePolicyForNavigationActionForDelegate:(FWFNavigationDelegate *)instance
-                                           webView:(WKWebView *)webView
-                                                navigationAction:(WKNavigationAction *)navigationAction
-                                        completion:(void (^)(FWFWKNavigationActionPolicyEnumData
-                                                          *_Nullable,
-                                                      NSError *_Nullable))completion {
-  [self decidePolicyForNavigationActionForDelegateWithIdentifier:@([self identifierForDelegate:instance])
-                                               webViewIdentifier:@([self.instanceManager
-                                                                          identifierWithStrongReferenceForInstance:webView])
-                                                navigationAction:FWFWKNavigationActionDataFromNavigationAction(navigationAction)
-                                                      completion:completion];
-}
-
-- (void)didFailNavigationForDelegate:(FWFNavigationDelegate *)instance webView:(WKWebView *)webView error:(NSError *)error completion:(void (^)(NSError * _Nullable))completion {
+                               error:(NSError *)error
+                          completion:(void (^)(NSError *_Nullable))completion {
   [self didFailNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
-                                 webViewIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:webView])
+                                 webViewIdentifier:
+                                     @([self.instanceManager
+                                         identifierWithStrongReferenceForInstance:webView])
                                              error:FWFNSErrorDataFromNSError(error)
                                         completion:completion];
 }
 
-- (void)didFailProvisionalNavigationForDelegate:(FWFNavigationDelegate *)instance webView:(WKWebView *)webView error:(NSError *)error completion:(void (^)(NSError * _Nullable))completion {
-  [self didFailProvisionalNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
-                                 webViewIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:webView])
-                                             error:FWFNSErrorDataFromNSError(error)
-                                        completion:completion];
+- (void)didFailProvisionalNavigationForDelegate:(FWFNavigationDelegate *)instance
+                                        webView:(WKWebView *)webView
+                                          error:(NSError *)error
+                                     completion:(void (^)(NSError *_Nullable))completion {
+  [self
+      didFailProvisionalNavigationForDelegateWithIdentifier:@([self identifierForDelegate:instance])
+                                          webViewIdentifier:
+                                              @([self.instanceManager
+                                                  identifierWithStrongReferenceForInstance:webView])
+                                                      error:FWFNSErrorDataFromNSError(error)
+                                                 completion:completion];
 }
 
-- (void)webViewWebContentProcessDidTerminateForDelegate:(FWFNavigationDelegate *)instance webView:(WKWebView *)webView completion:(void (^)(NSError * _Nullable))completion {
-  [self webViewWebContentProcessDidTerminateForDelegateWithIdentifier:@([self identifierForDelegate:instance]) webViewIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:webView]) completion:completion];
+- (void)webViewWebContentProcessDidTerminateForDelegate:(FWFNavigationDelegate *)instance
+                                                webView:(WKWebView *)webView
+                                             completion:(void (^)(NSError *_Nullable))completion {
+  [self
+      webViewWebContentProcessDidTerminateForDelegateWithIdentifier:
+          @([self identifierForDelegate:instance])
+                                                  webViewIdentifier:
+                                                      @([self.instanceManager
+                                                          identifierWithStrongReferenceForInstance:
+                                                              webView])
+                                                         completion:completion];
 }
 @end
 
@@ -105,35 +132,57 @@
 }
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-  [self.navigationDelegateAPI didStartProvisionalNavigationForDelegate:self webView:webView URL:webView.URL.absoluteString
-                                                 completion:^(NSError *error) {
-                                                   NSAssert(!error, @"%@", error);
-                                                 }];
+  [self.navigationDelegateAPI didStartProvisionalNavigationForDelegate:self
+                                                               webView:webView
+                                                                   URL:webView.URL.absoluteString
+                                                            completion:^(NSError *error) {
+                                                              NSAssert(!error, @"%@", error);
+                                                            }];
 }
 
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-  [self.navigationDelegateAPI decidePolicyForNavigationActionForDelegate:self webView:webView navigationAction:navigationAction completion:^(FWFWKNavigationActionPolicyEnumData *policy, NSError *error) {
-    NSAssert(!error, @"%@", error);
-    decisionHandler(FWFWKNavigationActionPolicyFromEnumData(policy));
-  }];
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+                    decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+  [self.navigationDelegateAPI
+      decidePolicyForNavigationActionForDelegate:self
+                                         webView:webView
+                                navigationAction:navigationAction
+                                      completion:^(FWFWKNavigationActionPolicyEnumData *policy,
+                                                   NSError *error) {
+                                        NSAssert(!error, @"%@", error);
+                                        decisionHandler(
+                                            FWFWKNavigationActionPolicyFromEnumData(policy));
+                                      }];
 }
 
-- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-  [self.navigationDelegateAPI didFailNavigationForDelegate:self webView:webView error:error completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
-  }];
+- (void)webView:(WKWebView *)webView
+    didFailNavigation:(WKNavigation *)navigation
+            withError:(NSError *)error {
+  [self.navigationDelegateAPI didFailNavigationForDelegate:self
+                                                   webView:webView
+                                                     error:error
+                                                completion:^(NSError *error) {
+                                                  NSAssert(!error, @"%@", error);
+                                                }];
 }
 
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-  [self.navigationDelegateAPI didFailProvisionalNavigationForDelegate:self webView:webView error:error completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
-  }];
+- (void)webView:(WKWebView *)webView
+    didFailProvisionalNavigation:(WKNavigation *)navigation
+                       withError:(NSError *)error {
+  [self.navigationDelegateAPI didFailProvisionalNavigationForDelegate:self
+                                                              webView:webView
+                                                                error:error
+                                                           completion:^(NSError *error) {
+                                                             NSAssert(!error, @"%@", error);
+                                                           }];
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
-  [self.navigationDelegateAPI webViewWebContentProcessDidTerminateForDelegate:self webView:webView completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
-  }];
+  [self.navigationDelegateAPI webViewWebContentProcessDidTerminateForDelegate:self
+                                                                      webView:webView
+                                                                   completion:^(NSError *error) {
+                                                                     NSAssert(!error, @"%@", error);
+                                                                   }];
 }
 @end
 

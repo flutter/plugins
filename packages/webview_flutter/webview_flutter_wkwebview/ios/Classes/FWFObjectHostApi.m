@@ -28,18 +28,19 @@
                       keyPath:(NSString *)keyPath
                        object:(NSObject *)object
                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
-                   completion:(void (^)(NSError * _Nullable))completion {
+                   completion:(void (^)(NSError *_Nullable))completion {
   NSMutableArray<FWFNSKeyValueChangeKeyEnumData *> *changeKeys = [NSMutableArray array];
   NSMutableArray<id> *changeValues = [NSMutableArray array];
-  
-  [change enumerateKeysAndObjectsUsingBlock:^(NSKeyValueChangeKey key, id value, BOOL* stop) {
+
+  [change enumerateKeysAndObjectsUsingBlock:^(NSKeyValueChangeKey key, id value, BOOL *stop) {
     [changeKeys addObject:FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(key)];
     [changeValues addObject:value];
   }];
-  
+
   [self observeValueForObjectWithIdentifier:@([self identifierForObject:instance])
                                     keyPath:keyPath
-                           objectIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:object])
+                           objectIdentifier:@([self.instanceManager
+                                                identifierWithStrongReferenceForInstance:object])
                                  changeKeys:changeKeys
                                changeValues:changeValues
                                  completion:completion];
@@ -52,15 +53,22 @@
   self = [self init];
   if (self) {
     _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
-                                                      instanceManager:instanceManager];
+                                                          instanceManager:instanceManager];
   }
   return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-  [self.objectApi observeValueForObject:self keyPath:keyPath object:object change:change completion:^(NSError *error) {
-    NSAssert(!error, @"%@", error);
-  }];
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(void *)context {
+  [self.objectApi observeValueForObject:self
+                                keyPath:keyPath
+                                 object:object
+                                 change:change
+                             completion:^(NSError *error) {
+                               NSAssert(!error, @"%@", error);
+                             }];
 }
 @end
 
