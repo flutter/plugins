@@ -11,7 +11,7 @@ Enables Google Sign-In in Flutter apps.
   s.homepage         = 'https://github.com/flutter/plugins/tree/main/packages/google_sign_in'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/google_sign_in/google_sign_in_ios' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/google_sign_in/google_sign_in_ios' }
   s.source_files = 'Classes/**/*.{h,m}'
   s.public_header_files = 'Classes/**/*.h'
   s.module_map = 'Classes/FLTGoogleSignInPlugin.modulemap'
