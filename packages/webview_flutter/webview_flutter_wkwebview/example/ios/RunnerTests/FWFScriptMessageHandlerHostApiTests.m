@@ -12,6 +12,19 @@
 @end
 
 @implementation FWFScriptMessageHandlerHostApiTests
+- (id)mockHandlerWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
+  FWFScriptMessageHandler *handler = [[FWFScriptMessageHandler alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger)) instanceManager:instanceManager];;
+  [instanceManager addDartCreatedInstance:handler withIdentifier:0];
+  return OCMPartialMock(handler);
+}
+
+- (id)mockFlutterApiWithManager:(FWFInstanceManager *)instanceManager {
+  FWFScriptMessageHandlerFlutterApiImpl *flutterAPI = [[FWFScriptMessageHandlerFlutterApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+  return OCMPartialMock(flutterAPI);
+}
+
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFScriptMessageHandlerHostApiImpl *hostAPI =
@@ -27,4 +40,25 @@
   XCTAssertNil(error);
 }
 
+- (void)testWebViewWebContentProcessDidTerminate {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  
+  FWFScriptMessageHandler *mockHandler = [self mockHandlerWithManager:instanceManager identifier:0];
+  FWFScriptMessageHandlerFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  OCMStub([mockHandler scriptMessageHandlerAPI]).andReturn(mockFlutterAPI);
+  
+  WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+  [instanceManager addDartCreatedInstance:userContentController withIdentifier:1];
+  
+  WKScriptMessage *mockScriptMessage = OCMClassMock([WKScriptMessage class]);
+  OCMStub([mockScriptMessage name]).andReturn(@"name");
+  OCMStub([mockScriptMessage body]).andReturn(@"message");
+
+  [mockHandler userContentController:userContentController didReceiveScriptMessage:mockScriptMessage];
+  OCMVerify([mockFlutterAPI didReceiveScriptMessageForHandlerWithIdentifier:@0
+                                            userContentControllerIdentifier:@1
+                                                                    message:[OCMArg isKindOfClass:[FWFWKScriptMessageData class]]
+                                                                 completion:OCMOCK_ANY]);
+}
 @end
