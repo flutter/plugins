@@ -75,9 +75,13 @@ public class QuickActionsTest {
     assertEquals(expectedShortcuts.size(), dynamicShortcuts.size());
     for (int i = 0; i < expectedShortcuts.size(); i++) {
       ShortcutInfo expectedShortcut = expectedShortcuts.get(i);
-      ShortcutInfo dynamicShortcut = dynamicShortcuts.get(i);
+      ShortcutInfo dynamicShortcut =
+          dynamicShortcuts
+              .stream()
+              .filter(s -> s.getId().equals(expectedShortcut.getId()))
+              .findFirst()
+              .get();
 
-      assertEquals(expectedShortcut.getId(), dynamicShortcut.getId());
       assertEquals(expectedShortcut.getShortLabel(), dynamicShortcut.getShortLabel());
       assertEquals(expectedShortcut.getLongLabel(), dynamicShortcut.getLongLabel());
     }
