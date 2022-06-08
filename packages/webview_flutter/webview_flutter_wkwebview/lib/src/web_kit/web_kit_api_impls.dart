@@ -293,12 +293,20 @@ class WebKitFlutterApis {
 }
 
 /// Host api implementation for [WKWebSiteDataStore].
+@immutable
 class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   /// Constructs a [WebsiteDataStoreHostApiImpl].
   WKWebsiteDataStoreHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -338,12 +346,20 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
 }
 
 /// Host api implementation for [WKScriptMessageHandler].
+@immutable
 class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   /// Constructs a [WKScriptMessageHandlerHostApiImpl].
   WKScriptMessageHandlerHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -355,6 +371,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
 }
 
 /// Flutter api implementation for [WKScriptMessageHandler].
+@immutable
 class WKScriptMessageHandlerFlutterApiImpl
     extends WKScriptMessageHandlerFlutterApi {
   /// Constructs a [WKScriptMessageHandlerFlutterApiImpl].
@@ -384,12 +401,20 @@ class WKScriptMessageHandlerFlutterApiImpl
 }
 
 /// Host api implementation for [WKPreferences].
+@immutable
 class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   /// Constructs a [WKPreferencesHostApiImpl].
   WKPreferencesHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -418,12 +443,20 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
 }
 
 /// Host api implementation for [WKHttpCookieStore].
+@immutable
 class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   /// Constructs a [WKHttpCookieStoreHostApiImpl].
   WKHttpCookieStoreHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -452,13 +485,21 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
 }
 
 /// Host api implementation for [WKUserContentController].
+@immutable
 class WKUserContentControllerHostApiImpl
     extends WKUserContentControllerHostApi {
   /// Constructs a [WKUserContentControllerHostApiImpl].
   WKUserContentControllerHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -527,12 +568,20 @@ class WKUserContentControllerHostApiImpl
 }
 
 /// Host api implementation for [WKWebViewConfiguration].
+@immutable
 class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   /// Constructs a [WKWebViewConfigurationHostApiImpl].
   WKWebViewConfigurationHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -577,12 +626,20 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
 }
 
 /// Host api implementation for [WKUIDelegate].
+@immutable
 class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   /// Constructs a [WKUIDelegateHostApiImpl].
   WKUIDelegateHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -594,6 +651,7 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
 }
 
 /// Flutter api implementation for [WKUIDelegate].
+@immutable
 class WKUIDelegateFlutterApiImpl extends WKUIDelegateFlutterApi {
   /// Constructs a [WKUIDelegateFlutterApiImpl].
   WKUIDelegateFlutterApiImpl({InstanceManager? instanceManager})
@@ -648,21 +706,10 @@ class WKNavigationDelegateHostApiImpl extends WKNavigationDelegateHostApi {
   Future<void> createForInstances(WKNavigationDelegate instance) async {
     return create(instanceManager.addDartCreatedInstance(instance));
   }
-
-  @override
-  int get hashCode {
-    return Object.hash(binaryMessenger, instanceManager);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is WKNavigationDelegateHostApiImpl &&
-        binaryMessenger == other.binaryMessenger &&
-        instanceManager == other.instanceManager;
-  }
 }
 
 /// Flutter api implementation for [WKNavigationDelegate].
+@immutable
 class WKNavigationDelegateFlutterApiImpl
     extends WKNavigationDelegateFlutterApi {
   /// Constructs a [WKNavigationDelegateFlutterApiImpl].
@@ -776,12 +823,20 @@ class WKNavigationDelegateFlutterApiImpl
 }
 
 /// Host api implementation for [WKWebView].
+@immutable
 class WKWebViewHostApiImpl extends WKWebViewHostApi {
   /// Constructs a [WKWebViewHostApiImpl].
   WKWebViewHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;

@@ -134,21 +134,10 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
       keyPath,
     );
   }
-
-  @override
-  int get hashCode {
-    return Object.hash(binaryMessenger, instanceManager);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is NSObjectHostApiImpl &&
-        binaryMessenger == other.binaryMessenger &&
-        instanceManager == other.instanceManager;
-  }
 }
 
 /// Flutter api implementation for [NSObject].
+@immutable
 class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
   /// Constructs a [NSObjectFlutterApiImpl].
   NSObjectFlutterApiImpl({InstanceManager? instanceManager})
