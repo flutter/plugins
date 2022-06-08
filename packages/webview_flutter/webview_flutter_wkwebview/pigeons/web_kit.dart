@@ -581,10 +581,11 @@ abstract class WKUIDelegateHostApi {
 @FlutterApi()
 abstract class WKUIDelegateFlutterApi {
   @ObjCSelector(
-    'onCreateWebViewForDelegateWithIdentifier:configurationIdentifier:navigationAction:',
+    'onCreateWebViewForDelegateWithIdentifier:webViewIdentifier:configurationIdentifier:navigationAction:',
   )
   void onCreateWebView(
     int identifier,
+    int webViewIdentifier,
     int configurationIdentifier,
     WKNavigationActionData navigationAction,
   );

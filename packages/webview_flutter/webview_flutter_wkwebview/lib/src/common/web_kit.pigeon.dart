@@ -2433,8 +2433,8 @@ class _WKUIDelegateFlutterApiCodec extends StandardMessageCodec {
 abstract class WKUIDelegateFlutterApi {
   static const MessageCodec<Object?> codec = _WKUIDelegateFlutterApiCodec();
 
-  void onCreateWebView(int identifier, int configurationIdentifier,
-      WKNavigationActionData navigationAction);
+  void onCreateWebView(int identifier, int webViewIdentifier,
+      int configurationIdentifier, WKNavigationActionData navigationAction);
   static void setup(WKUIDelegateFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -2451,15 +2451,18 @@ abstract class WKUIDelegateFlutterApi {
           final int? arg_identifier = (args[0] as int?);
           assert(arg_identifier != null,
               'Argument for dev.flutter.pigeon.WKUIDelegateFlutterApi.onCreateWebView was null, expected non-null int.');
-          final int? arg_configurationIdentifier = (args[1] as int?);
+          final int? arg_webViewIdentifier = (args[1] as int?);
+          assert(arg_webViewIdentifier != null,
+              'Argument for dev.flutter.pigeon.WKUIDelegateFlutterApi.onCreateWebView was null, expected non-null int.');
+          final int? arg_configurationIdentifier = (args[2] as int?);
           assert(arg_configurationIdentifier != null,
               'Argument for dev.flutter.pigeon.WKUIDelegateFlutterApi.onCreateWebView was null, expected non-null int.');
           final WKNavigationActionData? arg_navigationAction =
-              (args[2] as WKNavigationActionData?);
+              (args[3] as WKNavigationActionData?);
           assert(arg_navigationAction != null,
               'Argument for dev.flutter.pigeon.WKUIDelegateFlutterApi.onCreateWebView was null, expected non-null WKNavigationActionData.');
-          api.onCreateWebView(arg_identifier!, arg_configurationIdentifier!,
-              arg_navigationAction!);
+          api.onCreateWebView(arg_identifier!, arg_webViewIdentifier!,
+              arg_configurationIdentifier!, arg_navigationAction!);
           return;
         });
       }

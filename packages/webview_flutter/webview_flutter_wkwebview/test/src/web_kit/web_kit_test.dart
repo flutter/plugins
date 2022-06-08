@@ -850,22 +850,33 @@ void main() {
         uiDelegate = WKUIDelegate(
           instanceManager: instanceManager,
           onCreateWebView: (
+            WKWebView webView,
             WKWebViewConfiguration configuration,
             WKNavigationAction navigationAction,
           ) {
-            argsCompleter.complete(<Object?>[configuration, navigationAction]);
+            argsCompleter.complete(<Object?>[
+              webView,
+              configuration,
+              navigationAction,
+            ]);
           },
         );
+
+        final WKWebView webView = WKWebView.detached(
+          instanceManager: instanceManager,
+        );
+        instanceManager.addHostCreatedInstance(webView, 2);
 
         final WKWebViewConfiguration configuration =
             WKWebViewConfiguration.detached(
           instanceManager: instanceManager,
         );
-        instanceManager.addHostCreatedInstance(configuration, 2);
+        instanceManager.addHostCreatedInstance(configuration, 3);
 
         WebKitFlutterApis.instance.uiDelegate.onCreateWebView(
           instanceManager.getIdentifier(uiDelegate)!,
           2,
+          3,
           WKNavigationActionData(
             request: NSUrlRequestData(
               url: 'url',
@@ -877,7 +888,11 @@ void main() {
 
         expect(
           argsCompleter.future,
-          completion(<Object?>[configuration, isA<WKNavigationAction>()]),
+          completion(<Object?>[
+            webView,
+            configuration,
+            isA<WKNavigationAction>(),
+          ]),
         );
       });
     });

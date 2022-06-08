@@ -601,7 +601,8 @@ class MockWebViewWidgetProxy extends _i1.Mock
           as _i4.WKScriptMessageHandler);
   @override
   _i4.WKUIDelegate createUIDelgate(
-          {void Function(_i4.WKWebViewConfiguration, _i4.WKNavigationAction)?
+          {void Function(_i4.WKWebView, _i4.WKWebViewConfiguration,
+                  _i4.WKNavigationAction)?
               onCreateWebView}) =>
       (super.noSuchMethod(
           Invocation.method(

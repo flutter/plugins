@@ -604,6 +604,7 @@ class WKUIDelegate extends NSObject {
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
   final void Function(
+    WKWebView webView,
     WKWebViewConfiguration configuration,
     WKNavigationAction navigationAction,
   )? onCreateWebView;
@@ -739,6 +740,22 @@ class WKWebView extends UIView {
         ) {
     _webViewApi.createForInstances(this, configuration);
   }
+
+  /// Constructs a [WKWebView] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an InstanceManager.
+  WKWebView.detached({
+    super.observeValue,
+    super.binaryMessenger,
+    super.instanceManager,
+  })  : _binaryMessenger = binaryMessenger,
+        _instanceManager = instanceManager,
+        _webViewApi = WKWebViewHostApiImpl(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        );
 
   final BinaryMessenger? _binaryMessenger;
   final InstanceManager? _instanceManager;

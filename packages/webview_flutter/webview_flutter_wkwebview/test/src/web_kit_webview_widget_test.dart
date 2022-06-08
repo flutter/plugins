@@ -136,13 +136,16 @@ void main() {
       await buildWidget(tester);
 
       final dynamic onCreateWebView = verify(
-              mockWebViewWidgetProxy.createUIDelgate(
-                  onCreateWebView: captureAnyNamed('onCreateWebView')))
-          .captured
-          .single as void Function(WKWebViewConfiguration, WKNavigationAction);
+                  mockWebViewWidgetProxy.createUIDelgate(
+                      onCreateWebView: captureAnyNamed('onCreateWebView')))
+              .captured
+              .single
+          as void Function(
+              WKWebView, WKWebViewConfiguration, WKNavigationAction);
 
       const NSUrlRequest request = NSUrlRequest(url: 'https://google.com');
       onCreateWebView(
+        mockWebView,
         mockWebViewConfiguration,
         const WKNavigationAction(
           request: request,

@@ -115,6 +115,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WKUIDelegate uiDelegate =
       webViewProxy.createUIDelgate(onCreateWebView: (
+    WKWebView webView,
     WKWebViewConfiguration configuration,
     WKNavigationAction navigationAction,
   ) {
@@ -631,6 +632,7 @@ class WebViewWidgetProxy {
   /// Constructs a [WKUIDelegate].
   WKUIDelegate createUIDelgate({
     void Function(
+      WKWebView webView,
       WKWebViewConfiguration configuration,
       WKNavigationAction navigationAction,
     )?

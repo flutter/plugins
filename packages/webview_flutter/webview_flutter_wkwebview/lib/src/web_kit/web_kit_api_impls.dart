@@ -609,12 +609,15 @@ class WKUIDelegateFlutterApiImpl extends WKUIDelegateFlutterApi {
   @override
   void onCreateWebView(
     int identifier,
+    int webViewIdentifier,
     int configurationIdentifier,
     WKNavigationActionData navigationAction,
   ) {
-    final void Function(WKWebViewConfiguration, WKNavigationAction)? function =
-        _getDelegate(identifier).onCreateWebView;
+    final void Function(WKWebView, WKWebViewConfiguration, WKNavigationAction)?
+        function = _getDelegate(identifier).onCreateWebView;
     function?.call(
+      instanceManager.getInstanceWithWeakReference(webViewIdentifier)!
+          as WKWebView,
       instanceManager.getInstanceWithWeakReference(configurationIdentifier)!
           as WKWebViewConfiguration,
       navigationAction.toNavigationAction(),
