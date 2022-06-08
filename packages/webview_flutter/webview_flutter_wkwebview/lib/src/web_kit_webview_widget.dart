@@ -271,6 +271,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
+  Future<String?> currentUrl() {
+    return webView.getUrl();
+  }
+
+  @override
   Future<void> loadUrl(String url, Map<String, String>? headers) async {
     final NSUrlRequest request = NSUrlRequest(
       url: url,
