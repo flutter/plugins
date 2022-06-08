@@ -187,10 +187,10 @@ typedef NS_ENUM(NSUInteger, FWFNSHttpCookiePropertyKeyEnum) {
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithCode:(NSNumber *)code
                       domain:(NSString *)domain
-       localiziedDescription:(NSString *)localiziedDescription;
+        localizedDescription:(NSString *)localizedDescription;
 @property(nonatomic, strong) NSNumber *code;
 @property(nonatomic, copy) NSString *domain;
-@property(nonatomic, copy) NSString *localiziedDescription;
+@property(nonatomic, copy) NSString *localizedDescription;
 @end
 
 @interface FWFWKScriptMessageData : NSObject

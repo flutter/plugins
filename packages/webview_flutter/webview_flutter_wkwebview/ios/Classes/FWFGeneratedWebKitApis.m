@@ -333,11 +333,11 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @implementation FWFNSErrorData
 + (instancetype)makeWithCode:(NSNumber *)code
                       domain:(NSString *)domain
-       localiziedDescription:(NSString *)localiziedDescription {
+        localizedDescription:(NSString *)localizedDescription {
   FWFNSErrorData *pigeonResult = [[FWFNSErrorData alloc] init];
   pigeonResult.code = code;
   pigeonResult.domain = domain;
-  pigeonResult.localiziedDescription = localiziedDescription;
+  pigeonResult.localizedDescription = localizedDescription;
   return pigeonResult;
 }
 + (FWFNSErrorData *)fromMap:(NSDictionary *)dict {
@@ -346,15 +346,15 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   NSAssert(pigeonResult.code != nil, @"");
   pigeonResult.domain = GetNullableObject(dict, @"domain");
   NSAssert(pigeonResult.domain != nil, @"");
-  pigeonResult.localiziedDescription = GetNullableObject(dict, @"localiziedDescription");
-  NSAssert(pigeonResult.localiziedDescription != nil, @"");
+  pigeonResult.localizedDescription = GetNullableObject(dict, @"localizedDescription");
+  NSAssert(pigeonResult.localizedDescription != nil, @"");
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
   return @{
     @"code" : (self.code ?: [NSNull null]),
     @"domain" : (self.domain ?: [NSNull null]),
-    @"localiziedDescription" : (self.localiziedDescription ?: [NSNull null]),
+    @"localizedDescription" : (self.localizedDescription ?: [NSNull null]),
   };
 }
 @end
