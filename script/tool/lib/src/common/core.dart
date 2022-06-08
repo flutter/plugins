@@ -30,9 +30,6 @@ const String platformWindows = 'windows';
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
 
-/// Key for enable software rendering.
-const String kEnableSoftwareRendering = 'enable-software-rendering';
-
 /// Target platforms supported by Flutter.
 // ignore: public_member_api_docs
 enum FlutterPlatform { android, ios, linux, macos, web, windows }

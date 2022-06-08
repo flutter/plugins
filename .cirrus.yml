@@ -314,19 +314,23 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    ### iOS tasks ###
     - name: ios-platform_tests
       env:
         PATH: $PATH:/usr/local/bin
-        # TODO(jmagman): Run on stable when --enable-software-rendering
-        # is available https://github.com/flutter/flutter/pull/105161.
-        CHANNEL: "master"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
+        # TODO(jmagman): Remove default write when Metal on virtualization is on the ARM infrastructure.
+        # See discussion at https://github.com/flutter/plugins/pull/5794#issuecomment-1134716307.
+        - defaults write com.apple.CoreSimulator.IndigoFramebufferServices FramebufferRendererHint 3
         - xcrun simctl list
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-15-5 | xargs xcrun simctl boot
       build_script:
@@ -342,7 +346,7 @@ task:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
         # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
-        - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml --enable-software-rendering
+        - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
     - name: macos-platform_tests
       env:
@@ -375,37 +379,6 @@ task:
     - name: darwin-lint_podspecs
       script:
         - ./script/tool_runner.sh podspecs
-    ### iOS tasks ###
-    # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
-    # tests are reliable on the ARM infrastructure. See discussion at
-    # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
-    - name: ios-platform_tests
-      env:
-        PATH: $PATH:/usr/local/bin
-        CHANNEL: "stable"
-        matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
-        SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-      create_simulator_script:
-        - xcrun simctl list
-        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-15-0 | xargs xcrun simctl boot
-      build_script:
-        - ./script/tool_runner.sh build-examples --ios
-      xcode_analyze_script:
-        - ./script/tool_runner.sh xcode-analyze --ios
-      xcode_analyze_deprecation_script:
-        # Ensure we don't accidentally introduce deprecated code.
-        - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=13.0
-      native_test_script:
-        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
-      drive_script:
-        # `drive-examples` contains integration tests, which changes the UI of the application.
-        # This UI change sometimes affects `xctest`.
-        # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
-        - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
     # macos-platform_tests builds all the plugins on M1, so this build is run
     # on Intel to give us build coverage of both host types.

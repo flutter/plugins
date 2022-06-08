@@ -43,10 +43,6 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       help:
           'Runs the driver tests in Dart VM with the given experiments enabled.',
     );
-    argParser.addFlag(
-      kEnableSoftwareRendering,
-      help: 'Renders the driver tests using the Skia software backend.',
-    );
   }
 
   @override
@@ -341,8 +337,6 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             ...deviceFlags,
             if (enableExperiment.isNotEmpty)
               '--enable-experiment=$enableExperiment',
-            if (getBoolArg(kEnableSoftwareRendering))
-              '--enable-software-rendering',
             '--driver',
             getRelativePosixPath(driver, from: example.directory),
             '--target',
