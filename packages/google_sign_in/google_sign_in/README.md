@@ -126,4 +126,4 @@ Future<void> _handleSignIn() async {
 ## Example
 
 Find the example wiring in the
-[Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
+[Google sign-in example application](https://github.com/flutter/plugins/blob/main/packages/google_sign_in/google_sign_in/example/lib/main.dart).

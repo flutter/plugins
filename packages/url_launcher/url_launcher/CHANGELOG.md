@@ -1,3 +1,8 @@
+## 6.1.3
+
+* Updates README section about query permissions to better reflect changes to
+  `canLaunchUrl` recommendations.
+
 ## 6.1.2
 
 * Minor fixes for new analysis options.
