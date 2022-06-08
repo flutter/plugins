@@ -12,15 +12,30 @@
 @end
 
 @implementation FWFUIDelegateHostApiTests
+/**
+ * Creates a partially mocked FWFUIDelegate and adds it to instanceManager.
+ *
+ * @param instanceManager Instance manager to add the delegate to.
+ * @param identifier Identifier for the delegate added to the instanceManager.
+ *
+ * @return A mock FWFUIDelegate.
+ */
 - (id)mockDelegateWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
   FWFUIDelegate *delegate = [[FWFUIDelegate alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
-  ;
+  
   [instanceManager addDartCreatedInstance:delegate withIdentifier:0];
   return OCMPartialMock(delegate);
 }
 
+/**
+ * Creates a  mock FWFUIDelegateFlutterApiImpl with instanceManager.
+ *
+ * @param instanceManager Instance manager passed to the Flutter API.
+ *
+ * @return A mock FWFUIDelegateFlutterApiImpl.
+ */
 - (id)mockFlutterApiWithManager:(FWFInstanceManager *)instanceManager {
   FWFUIDelegateFlutterApiImpl *flutterAPI = [[FWFUIDelegateFlutterApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))

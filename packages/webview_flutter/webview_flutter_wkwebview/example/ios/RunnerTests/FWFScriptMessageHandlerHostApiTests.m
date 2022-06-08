@@ -12,15 +12,30 @@
 @end
 
 @implementation FWFScriptMessageHandlerHostApiTests
+/**
+ * Creates a partially mocked FWFScriptMessageHandler and adds it to instanceManager.
+ *
+ * @param instanceManager Instance manager to add the delegate to.
+ * @param identifier Identifier for the delegate added to the instanceManager.
+ *
+ * @return A mock FWFScriptMessageHandler.
+ */
 - (id)mockHandlerWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
   FWFScriptMessageHandler *handler = [[FWFScriptMessageHandler alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
               instanceManager:instanceManager];
-  ;
+  
   [instanceManager addDartCreatedInstance:handler withIdentifier:0];
   return OCMPartialMock(handler);
 }
 
+/**
+ * Creates a  mock FWFScriptMessageHandlerFlutterApiImpl with instanceManager.
+ *
+ * @param instanceManager Instance manager passed to the Flutter API.
+ *
+ * @return A mock FWFScriptMessageHandlerFlutterApiImpl.
+ */
 - (id)mockFlutterApiWithManager:(FWFInstanceManager *)instanceManager {
   FWFScriptMessageHandlerFlutterApiImpl *flutterAPI = [[FWFScriptMessageHandlerFlutterApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))

@@ -12,15 +12,30 @@
 @end
 
 @implementation FWFObjectHostApiTests
+/**
+ * Creates a partially mocked FWFObject and adds it to instanceManager.
+ *
+ * @param instanceManager Instance manager to add the delegate to.
+ * @param identifier Identifier for the delegate added to the instanceManager.
+ *
+ * @return A mock FWFObject.
+ */
 - (id)mockObjectWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
   FWFObject *object =
       [[FWFObject alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
                                  instanceManager:instanceManager];
-  ;
+  
   [instanceManager addDartCreatedInstance:object withIdentifier:0];
   return OCMPartialMock(object);
 }
 
+/**
+ * Creates a  mock FWFObjectFlutterApiImpl with instanceManager.
+ *
+ * @param instanceManager Instance manager passed to the Flutter API.
+ *
+ * @return A mock FWFObjectFlutterApiImpl.
+ */
 - (id)mockFlutterApiWithManager:(FWFInstanceManager *)instanceManager {
   FWFObjectFlutterApiImpl *flutterAPI = [[FWFObjectFlutterApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))

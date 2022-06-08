@@ -12,6 +12,14 @@
 @end
 
 @implementation FWFNavigationDelegateHostApiTests
+/**
+ * Creates a partially mocked FWFNavigationDelegate and adds it to instanceManager.
+ *
+ * @param instanceManager Instance manager to add the delegate to.
+ * @param identifier Identifier for the delegate added to the instanceManager.
+ *
+ * @return A mock FWFNavigationDelegate.
+ */
 - (id)mockNavigationDelegateWithManager:(FWFInstanceManager *)instanceManager
                              identifier:(long)identifier {
   FWFNavigationDelegate *navigationDelegate = [[FWFNavigationDelegate alloc]
@@ -22,6 +30,13 @@
   return OCMPartialMock(navigationDelegate);
 }
 
+/**
+ * Creates a  mock FWFNavigationDelegateFlutterApiImpl with instanceManager.
+ *
+ * @param instanceManager Instance manager passed to the Flutter API.
+ *
+ * @return A mock FWFNavigationDelegateFlutterApiImpl.
+ */
 - (id)mockFlutterApiWithManager:(FWFInstanceManager *)instanceManager {
   FWFNavigationDelegateFlutterApiImpl *flutterAPI = [[FWFNavigationDelegateFlutterApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
