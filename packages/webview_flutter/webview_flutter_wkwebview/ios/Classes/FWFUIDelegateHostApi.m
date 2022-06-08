@@ -4,12 +4,60 @@
 
 #import "FWFUIDelegateHostApi.h"
 #import "FWFWebViewConfigurationHostApi.h"
+#import "FWFDataConverters.h"
+
+@interface FWFUIDelegateFlutterApiImpl ()
+// This reference must be weak to prevent a circular reference with the objects it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@end
+
+@implementation FWFUIDelegateFlutterApiImpl
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self initWithBinaryMessenger:binaryMessenger];
+  if (self) {
+    _instanceManager = instanceManager;
+  }
+  return self;
+}
+
+- (long)identifierForDelegate:(FWFUIDelegate *)instance {
+  return [self.instanceManager identifierWithStrongReferenceForInstance:instance];
+}
+
+- (void)onCreateWebViewForDelegate:(FWFUIDelegate *)instance
+                         configuration:(WKWebViewConfiguration *)configuration
+                                navigationAction:(WKNavigationAction *)navigationAction
+                                      completion:(void (^)(NSError * _Nullable))completion {
+  [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
+                         configurationIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:configuration])
+                                navigationAction:FWFWKNavigationActionDataFromNavigationAction(navigationAction)
+                                      completion:completion];
+}
+@end
 
 @implementation FWFUIDelegate
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [super initWithBinaryMessenger:binaryMessenger instanceManager:instanceManager];
+  if (self) {
+    _UIDelegateAPI =
+        [[FWFUIDelegateFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                             instanceManager:instanceManager];
+  }
+  return self;
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+  [self.UIDelegateAPI onCreateWebViewForDelegate:self configuration:configuration navigationAction:navigationAction completion:^(NSError *error) {
+    NSAssert(!error, @"%@", error);
+  }];
+  return nil;
+}
 @end
 
 @interface FWFUIDelegateHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFUIDelegateHostApiImpl

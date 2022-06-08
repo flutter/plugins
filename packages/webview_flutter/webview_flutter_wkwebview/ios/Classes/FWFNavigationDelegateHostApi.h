@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface FWFNavigationDelegate : FWFObject <WKNavigationDelegate>
 @property(readonly, nonnull) FWFNavigationDelegateFlutterApiImpl *navigationDelegateAPI;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 /**

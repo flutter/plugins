@@ -201,3 +201,7 @@ FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChan
   
   return nil;
 }
+
+FWFWKScriptMessageData *FWFWKScriptMessageDataFromWKScriptMessage(WKScriptMessage *message) {
+  return [FWFWKScriptMessageData makeWithName:message.name body:message.body];
+}

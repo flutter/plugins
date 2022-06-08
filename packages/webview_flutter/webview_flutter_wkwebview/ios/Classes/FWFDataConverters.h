@@ -139,4 +139,13 @@ extern FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error);
  */
 extern FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(NSKeyValueChangeKey key);
 
+/**
+ * Converts a WKScriptMessage to an FWFWKScriptMessageData.
+ *
+ * @param message The object containing information to create a FWFWKScriptMessageData.
+ *
+ * @return A FWFWKScriptMessageData.
+ */
+extern FWFWKScriptMessageData *FWFWKScriptMessageDataFromWKScriptMessage(WKScriptMessage *message);
+
 NS_ASSUME_NONNULL_END
