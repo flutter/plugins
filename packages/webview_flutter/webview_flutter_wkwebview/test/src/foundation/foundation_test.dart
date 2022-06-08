@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
+import 'package:webview_flutter_wkwebview/src/foundation/foundation_api_impls.dart';
 
 import '../common/test_web_kit.pigeon.dart';
 import 'foundation_test.mocks.dart';
@@ -99,6 +102,48 @@ void main() {
 
         NSObject.dispose(object);
         expect(callbackIdentifier, identifier);
+      });
+
+      test('observeValue', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        FoundationFlutterApis.instance = FoundationFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        object = NSObject(
+          instanceManager: instanceManager,
+          observeValue: (
+            String keyPath,
+            NSObject object,
+            Map<NSKeyValueChangeKey, Object?> change,
+          ) {
+            argsCompleter.complete(<Object?>[keyPath, object, change]);
+          },
+        );
+        instanceManager.addHostCreatedInstance(object, 1);
+
+        FoundationFlutterApis.instance.object.observeValue(
+          1,
+          'keyPath',
+          1,
+          <NSKeyValueChangeKeyEnumData>[
+            NSKeyValueChangeKeyEnumData(value: NSKeyValueChangeKeyEnum.oldValue)
+          ],
+          <Object?>['value'],
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[
+            'keyPath',
+            object,
+            <NSKeyValueChangeKey, Object?>{
+              NSKeyValueChangeKey.oldValue: 'value',
+            },
+          ]),
+        );
       });
     });
   });

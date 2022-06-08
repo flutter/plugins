@@ -36,17 +36,25 @@ Iterable<NSKeyValueObservingOptionsEnumData>
   });
 }
 
+extension _NSKeyValueChangeKeyEnumDataConverter on NSKeyValueChangeKeyEnumData {
+  NSKeyValueChangeKey toNSKeyValueChangeKey() {
+    return NSKeyValueChangeKey.values.firstWhere(
+      (NSKeyValueChangeKey element) => element.name == value.name,
+    );
+  }
+}
+
 /// Handles initialization of Flutter APIs for the Foundation library.
-// TODO(bparrishMines): Add NSObjectFlutterApiImpl once the callback methods
-// are added.
 class FoundationFlutterApis {
   /// Constructs a [FoundationFlutterApis].
   @visibleForTesting
   FoundationFlutterApis({
     BinaryMessenger? binaryMessenger,
-    // ignore: avoid_unused_constructor_parameters
     InstanceManager? instanceManager,
-  }) : _binaryMessenger = binaryMessenger;
+  })  : _binaryMessenger = binaryMessenger,
+        object = NSObjectFlutterApiImpl(
+          instanceManager: instanceManager,
+        );
 
   static FoundationFlutterApis _instance = FoundationFlutterApis();
 
@@ -61,13 +69,20 @@ class FoundationFlutterApis {
     return _instance;
   }
 
-  // ignore: unused_field
   final BinaryMessenger? _binaryMessenger;
   bool _hasBeenSetUp = false;
+
+  /// Flutter Api for [NSObject].
+  @visibleForTesting
+  final NSObjectFlutterApiImpl object;
 
   /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
     if (!_hasBeenSetUp) {
+      NSObjectFlutterApi.setup(
+        object,
+        binaryMessenger: _binaryMessenger,
+      );
       _hasBeenSetUp = true;
     }
   }
@@ -130,5 +145,42 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
     return other is NSObjectHostApiImpl &&
         binaryMessenger == other.binaryMessenger &&
         instanceManager == other.instanceManager;
+  }
+}
+
+/// Flutter api implementation for [NSObject].
+class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
+  /// Constructs a [NSObjectFlutterApiImpl].
+  NSObjectFlutterApiImpl({InstanceManager? instanceManager})
+      : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+
+  NSObject _getObject(int identifier) {
+    return instanceManager.getInstanceWithWeakReference(identifier)!;
+  }
+
+  @override
+  void observeValue(
+    int identifier,
+    String keyPath,
+    int objectIdentifier,
+    List<NSKeyValueChangeKeyEnumData?> changeKeys,
+    List<Object?> changeValues,
+  ) {
+    final void Function(String, NSObject, Map<NSKeyValueChangeKey, Object?>)?
+        function = _getObject(identifier).observeValue;
+    function?.call(
+      keyPath,
+      instanceManager.getInstanceWithWeakReference(objectIdentifier)!
+          as NSObject,
+      Map<NSKeyValueChangeKey, Object?>.fromIterables(
+          changeKeys.map<NSKeyValueChangeKey>(
+        (NSKeyValueChangeKeyEnumData? data) {
+          return data!.toNSKeyValueChangeKey();
+        },
+      ), changeValues),
+    );
   }
 }
