@@ -1,3 +1,7 @@
+## 0.8.2+2
+
+* Updates references to the obsolete master branch.
+
 ## 0.8.2+1
 
 * Removes unnecessary imports.

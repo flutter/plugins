@@ -5,14 +5,64 @@
 #import "FWFScriptMessageHandlerHostApi.h"
 #import "FWFDataConverters.h"
 
+@interface FWFScriptMessageHandlerFlutterApiImpl ()
+// This reference must be weak to prevent a circular reference with the objects it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@end
+
+@implementation FWFScriptMessageHandlerFlutterApiImpl
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self initWithBinaryMessenger:binaryMessenger];
+  if (self) {
+    _instanceManager = instanceManager;
+  }
+  return self;
+}
+
+- (long)identifierForHandler:(FWFScriptMessageHandler *)instance {
+  return [self.instanceManager identifierWithStrongReferenceForInstance:instance];
+}
+
+- (void)didReceiveScriptMessageForHandler:(FWFScriptMessageHandler *)instance
+                    userContentController:(WKUserContentController *)userContentController
+                                  message:(WKScriptMessage *)message
+                               completion:(void (^)(NSError *_Nullable))completion {
+  NSNumber *userContentControllerIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:userContentController]);
+  FWFWKScriptMessageData *messageData = FWFWKScriptMessageDataFromWKScriptMessage(message);
+  [self didReceiveScriptMessageForHandlerWithIdentifier:@([self identifierForHandler:instance])
+                        userContentControllerIdentifier:userContentControllerIdentifier
+                                                message:messageData
+                                             completion:completion];
+}
+@end
+
 @implementation FWFScriptMessageHandler
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [super initWithBinaryMessenger:binaryMessenger instanceManager:instanceManager];
+  if (self) {
+    _scriptMessageHandlerAPI =
+        [[FWFScriptMessageHandlerFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                               instanceManager:instanceManager];
+  }
+  return self;
+}
+
 - (void)userContentController:(nonnull WKUserContentController *)userContentController
       didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
+  [self.scriptMessageHandlerAPI didReceiveScriptMessageForHandler:self
+                                            userContentController:userContentController
+                                                          message:message
+                                                       completion:^(NSError *error) {
+                                                         NSAssert(!error, @"%@", error);
+                                                       }];
 }
 @end
 
 @interface FWFScriptMessageHandlerHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFScriptMessageHandlerHostApiImpl

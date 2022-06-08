@@ -244,6 +244,7 @@ class NSObject with Copyable {
   /// This should only be used by subclasses created by this library or to
   /// create copies.
   NSObject({
+    this.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _api = NSObjectHostApiImpl(
@@ -261,6 +262,13 @@ class NSObject with Copyable {
   });
 
   final NSObjectHostApiImpl _api;
+
+  /// Informs the observing object when the value at the specified key path has changed.
+  final void Function(
+    String keyPath,
+    NSObject object,
+    Map<NSKeyValueChangeKey, Object?> change,
+  )? observeValue;
 
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
@@ -287,21 +295,10 @@ class NSObject with Copyable {
     instance._api.instanceManager.removeWeakReference(instance);
   }
 
-  /// Informs the observing object when the value at the specified key path has changed.
-  Future<void> setObserveValue(
-    void Function(
-      String keyPath,
-      NSObject object,
-      Map<NSKeyValueChangeKey, Object?> change,
-    )?
-        observeValue,
-  ) {
-    throw UnimplementedError();
-  }
-
   @override
   Copyable copy() {
     return NSObject(
+      observeValue: observeValue,
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
     );
