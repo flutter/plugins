@@ -10,6 +10,7 @@ environment:
 
 flutter:
   plugin:
+    implements: camera
     platforms:
       android:
         package: io.flutter.plugins.camera
