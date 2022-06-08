@@ -92,7 +92,7 @@
   FWFNSErrorData *data = FWFNSErrorDataFromNSError(error);
   XCTAssertEqualObjects(data.code, @23);
   XCTAssertEqualObjects(data.domain, @"domain");
-  XCTAssertEqualObjects(data.localiziedDescription, @"description");
+  XCTAssertEqualObjects(data.localizedDescription, @"description");
 }
 
 - (void)testFWFWKScriptMessageDataFromWKScriptMessage {

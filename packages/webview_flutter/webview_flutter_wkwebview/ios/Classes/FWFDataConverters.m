@@ -190,7 +190,7 @@ WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(
 FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error) {
   return [FWFNSErrorData makeWithCode:@(error.code)
                                domain:error.domain
-                localiziedDescription:error.localizedDescription];
+                 localizedDescription:error.localizedDescription];
 }
 
 FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(
