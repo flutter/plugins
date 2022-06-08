@@ -30,10 +30,8 @@ void main() {
 
   final Map<ResolutionPreset, Size> presetExpectedSizes =
       <ResolutionPreset, Size>{
-    ResolutionPreset.low:
-        Platform.isAndroid ? const Size(240, 320) : const Size(288, 352),
-    ResolutionPreset.medium:
-        Platform.isAndroid ? const Size(480, 720) : const Size(480, 640),
+    ResolutionPreset.low: const Size(240, 320),
+    ResolutionPreset.medium: const Size(480, 720),
     ResolutionPreset.high: const Size(720, 1280),
     ResolutionPreset.veryHigh: const Size(1080, 1920),
     ResolutionPreset.ultraHigh: const Size(2160, 3840),
@@ -208,10 +206,10 @@ void main() {
     await videoController.dispose();
 
     expect(duration, lessThan(recordingTime - timePaused));
-  }, skip: !Platform.isAndroid);
+  });
 
   testWidgets(
-    'Android image streaming',
+    'image streaming',
     (WidgetTester tester) async {
       final List<CameraDescription> cameras =
           await CameraPlatform.instance.availableCameras();
@@ -245,59 +243,5 @@ void main() {
       await controller.stopImageStream();
       await controller.dispose();
     },
-    skip: !Platform.isAndroid,
-  );
-
-  /// Start streaming with specifying the ImageFormatGroup.
-  Future<CameraImageData> startStreaming(List<CameraDescription> cameras,
-      ImageFormatGroup? imageFormatGroup) async {
-    final CameraController controller = CameraController(
-      cameras.first,
-      ResolutionPreset.low,
-      enableAudio: false,
-      imageFormatGroup: imageFormatGroup,
-    );
-
-    await controller.initialize();
-    final Completer<CameraImageData> _completer = Completer<CameraImageData>();
-
-    await controller.startImageStream((CameraImageData image) {
-      if (!_completer.isCompleted) {
-        Future<void>(() async {
-          await controller.stopImageStream();
-          await controller.dispose();
-        }).then((Object? value) {
-          _completer.complete(image);
-        });
-      }
-    });
-    return _completer.future;
-  }
-
-  testWidgets(
-    'iOS image streaming with imageFormatGroup',
-    (WidgetTester tester) async {
-      final List<CameraDescription> cameras =
-          await CameraPlatform.instance.availableCameras();
-      if (cameras.isEmpty) {
-        return;
-      }
-
-      CameraImageData _image = await startStreaming(cameras, null);
-      expect(_image, isNotNull);
-      expect(_image.format.group, ImageFormatGroup.bgra8888);
-      expect(_image.planes.length, 1);
-
-      _image = await startStreaming(cameras, ImageFormatGroup.yuv420);
-      expect(_image, isNotNull);
-      expect(_image.format.group, ImageFormatGroup.yuv420);
-      expect(_image.planes.length, 2);
-
-      _image = await startStreaming(cameras, ImageFormatGroup.bgra8888);
-      expect(_image, isNotNull);
-      expect(_image.format.group, ImageFormatGroup.bgra8888);
-      expect(_image.planes.length, 1);
-    },
-    skip: !Platform.isIOS,
   );
 }
