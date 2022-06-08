@@ -587,7 +587,7 @@ void main() {
           NSErrorData(
             code: 23,
             domain: 'Hello',
-            localiziedDescription: 'localiziedDescription',
+            localizedDescription: 'localiziedDescription',
           ),
         );
 
@@ -619,7 +619,7 @@ void main() {
           NSErrorData(
             code: 23,
             domain: 'Hello',
-            localiziedDescription: 'localiziedDescription',
+            localizedDescription: 'localiziedDescription',
           ),
         );
 

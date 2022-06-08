@@ -195,7 +195,7 @@ extension _WKNSErrorDataConverter on NSErrorData {
     return NSError(
       domain: domain,
       code: code,
-      localizedDescription: localiziedDescription,
+      localizedDescription: localizedDescription,
     );
   }
 }
