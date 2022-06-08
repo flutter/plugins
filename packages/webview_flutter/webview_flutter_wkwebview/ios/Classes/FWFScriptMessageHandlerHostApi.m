@@ -28,12 +28,12 @@
                     userContentController:(WKUserContentController *)userContentController
                                   message:(WKScriptMessage *)message
                                completion:(void (^)(NSError *_Nullable))completion {
+  NSNumber *userContentControllerIdentifier = @([self.instanceManager
+                                                 identifierWithStrongReferenceForInstance:userContentController]);
+  FWFWKScriptMessageData *messageData = FWFWKScriptMessageDataFromWKScriptMessage(message);
   [self didReceiveScriptMessageForHandlerWithIdentifier:@([self identifierForHandler:instance])
-                        userContentControllerIdentifier:
-                            @([self.instanceManager
-                                identifierWithStrongReferenceForInstance:userContentController])
-                                                message:FWFWKScriptMessageDataFromWKScriptMessage(
-                                                            message)
+                        userContentControllerIdentifier:userContentControllerIdentifier
+                                                message:messageData
                                              completion:completion];
 }
 @end
