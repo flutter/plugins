@@ -6,7 +6,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFPreferencesHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFPreferencesHostApiImpl

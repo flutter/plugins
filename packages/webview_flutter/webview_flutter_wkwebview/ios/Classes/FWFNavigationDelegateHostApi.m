@@ -183,8 +183,8 @@
 @end
 
 @interface FWFNavigationDelegateHostApiImpl ()
+// Reference must be weak to prevent a circular reference with the objects it stores.
 @property(weak) id<FlutterBinaryMessenger> binaryMessenger;
-// This reference must be weak to prevent a circular reference with the objects it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 

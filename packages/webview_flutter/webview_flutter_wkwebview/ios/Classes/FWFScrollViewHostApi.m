@@ -6,7 +6,7 @@
 #import "FWFWebViewHostApi.h"
 
 @interface FWFScrollViewHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFScrollViewHostApiImpl

@@ -7,7 +7,7 @@
 #import "FWFWebsiteDataStoreHostApi.h"
 
 @interface FWFHTTPCookieStoreHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFHTTPCookieStoreHostApiImpl
