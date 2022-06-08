@@ -239,7 +239,8 @@ class WebKitFlutterApis {
           instanceManager: instanceManager,
         ),
         scriptMessageHandler = WKScriptMessageHandlerFlutterApiImpl(
-            instanceManager: instanceManager),
+          instanceManager: instanceManager,
+        ),
         uiDelegate = WKUIDelegateFlutterApiImpl(
           instanceManager: instanceManager,
         );
@@ -299,7 +300,7 @@ class WKWebsiteDataStoreHostApiImpl extends WKWebsiteDataStoreHostApi {
   WKWebsiteDataStoreHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -352,7 +353,7 @@ class WKScriptMessageHandlerHostApiImpl extends WKScriptMessageHandlerHostApi {
   WKScriptMessageHandlerHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -407,7 +408,7 @@ class WKPreferencesHostApiImpl extends WKPreferencesHostApi {
   WKPreferencesHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -449,7 +450,7 @@ class WKHttpCookieStoreHostApiImpl extends WKHttpCookieStoreHostApi {
   WKHttpCookieStoreHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -492,7 +493,7 @@ class WKUserContentControllerHostApiImpl
   WKUserContentControllerHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -574,7 +575,7 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
   WKWebViewConfigurationHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -632,7 +633,7 @@ class WKUIDelegateHostApiImpl extends WKUIDelegateHostApi {
   WKUIDelegateHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.
@@ -829,7 +830,7 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   WKWebViewHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
 
   /// Sends binary data across the Flutter platform barrier.

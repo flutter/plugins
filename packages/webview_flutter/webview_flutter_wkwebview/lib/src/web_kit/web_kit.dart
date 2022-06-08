@@ -414,6 +414,8 @@ class WKScriptMessageHandler extends NSObject {
           instanceManager: instanceManager,
         ),
         super.detached() {
+    // Ensures FlutterApis for the WebKit library are set up.
+    WebKitFlutterApis.instance.ensureSetUp();
     _scriptMessageHandlerApi.createForInstances(this);
   }
 
@@ -588,6 +590,8 @@ class WKWebViewConfiguration extends NSObject {
           instanceManager: instanceManager,
         ),
         super.detached() {
+    // Ensures FlutterApis for the WebKit library are set up.
+    WebKitFlutterApis.instance.ensureSetUp();
     _webViewConfigurationApi.createForInstances(this);
   }
 
@@ -705,6 +709,8 @@ class WKUIDelegate extends NSObject {
           instanceManager: instanceManager,
         ),
         super.detached() {
+    // Ensures FlutterApis for the WebKit library are set up.
+    WebKitFlutterApis.instance.ensureSetUp();
     _uiDelegateApi.createForInstances(this);
   }
 
@@ -768,6 +774,7 @@ class WKNavigationDelegate extends NSObject {
           instanceManager: instanceManager,
         ),
         super.detached() {
+    // Ensures FlutterApis for the WebKit library are set up.
     WebKitFlutterApis.instance.ensureSetUp();
     _navigationDelegateApi.createForInstances(this);
   }
@@ -859,6 +866,8 @@ class WKWebView extends UIView {
           instanceManager: instanceManager,
         ),
         super.detached() {
+    // Ensures FlutterApis for the WebKit library are set up.
+    WebKitFlutterApis.instance.ensureSetUp();
     _webViewApi.createForInstances(this, configuration);
   }
 
