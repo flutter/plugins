@@ -181,3 +181,23 @@ WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(FWFWKNavigation
 FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error) {
   return [FWFNSErrorData makeWithCode:@(error.code) domain:error.domain localiziedDescription:error.localizedDescription];
 }
+
+FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(NSKeyValueChangeKey key) {
+  if ([key isEqualToString:NSKeyValueChangeIndexesKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumIndexes];
+  } else
+  if ([key isEqualToString:NSKeyValueChangeKindKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumKind];
+  }else
+  if ([key isEqualToString:NSKeyValueChangeNewKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumNewValue];
+  }else
+  if ([key isEqualToString:NSKeyValueChangeNotificationIsPriorKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumNotificationIsPrior];
+  }else
+  if ([key isEqualToString:NSKeyValueChangeOldKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumOldValue];
+  }
+  
+  return nil;
+}

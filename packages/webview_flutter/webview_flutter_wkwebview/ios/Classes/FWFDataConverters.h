@@ -130,4 +130,13 @@ extern WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(FWFWKNav
  */
 extern FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error);
 
+/**
+ * Converts an NSKeyValueChangeKey to a FWFNSKeyValueChangeKeyEnumData.
+ *
+ * @param key The data object containing information to create a FWFNSKeyValueChangeKeyEnumData.
+ *
+ * @return A FWFNSKeyValueChangeKeyEnumData or nil if data could not be converted.
+ */
+extern FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(NSKeyValueChangeKey key);
+
 NS_ASSUME_NONNULL_END

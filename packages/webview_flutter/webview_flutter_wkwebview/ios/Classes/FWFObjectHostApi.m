@@ -19,6 +19,31 @@
   }
   return self;
 }
+
+- (long)identifierForObject:(NSObject *)instance {
+  return [self.instanceManager identifierWithStrongReferenceForInstance:instance];
+}
+
+- (void)observeValueForObject:(NSObject *)instance
+                      keyPath:(NSString *)keyPath
+                       object:(NSObject *)object
+                       change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                   completion:(void (^)(NSError * _Nullable))completion {
+  NSMutableArray<FWFNSKeyValueChangeKeyEnumData *> *changeKeys = [NSMutableArray array];
+  NSMutableArray<id> *changeValues = [NSMutableArray array];
+  
+  [change enumerateKeysAndObjectsUsingBlock:^(NSKeyValueChangeKey key, id value, BOOL* stop) {
+    [changeKeys addObject:FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(key)];
+    [changeValues addObject:value];
+  }];
+  
+  [self observeValueForObjectWithIdentifier:@([self identifierForObject:instance])
+                                    keyPath:keyPath
+                           objectIdentifier:@([self.instanceManager identifierWithStrongReferenceForInstance:object])
+                                 changeKeys:changeKeys
+                               changeValues:changeValues
+                                 completion:completion];
+}
 @end
 
 @implementation FWFObject
@@ -30,6 +55,12 @@
                                                       instanceManager:instanceManager];
   }
   return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+  [self.objectApi observeValueForObject:self keyPath:keyPath object:object change:change completion:^(NSError *error) {
+    NSAssert(!error, @"%@", error);
+  }];
 }
 @end
 
