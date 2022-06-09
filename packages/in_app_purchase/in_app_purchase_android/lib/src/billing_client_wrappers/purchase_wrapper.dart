@@ -105,9 +105,8 @@ class PurchaseWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  ///
-  /// This property is deprecated. Use `skus` instead.
   @JsonKey(defaultValue: '')
+  @Deprecated('Use skus instead')
   final String sku;
 
   /// The product IDs of this purchase.
@@ -209,9 +208,8 @@ class PurchaseHistoryRecordWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  ///
-  /// This property is deprecated. Use `skus` instead.
   @JsonKey(defaultValue: '')
+  @Deprecated('Use skus instead')
   final String sku;
 
   /// The product ID of this purchase.
