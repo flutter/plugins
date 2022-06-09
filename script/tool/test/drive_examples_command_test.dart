@@ -307,6 +307,47 @@ void main() {
       );
     });
 
+    test('integration tests using test(...) fail validation', () async {
+      setMockFlutterDevicesOutput();
+      final RepositoryPackage package = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/foo_test.dart',
+          'example/android/android.java',
+        ],
+        platformSupport: <String, PlatformDetails>{
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
+        },
+      );
+      package.directory
+          .childDirectory('example')
+          .childDirectory('integration_test')
+          .childFile('foo_test.dart')
+          .writeAsStringSync('''
+   test('this is the wrong kind of test!'), () {
+     ...
+   }
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('foo_test.dart failed validation'),
+        ]),
+      );
+    });
+
     test(
         'driving under folder "test_driver" when targets are under "integration_test"',
         () async {

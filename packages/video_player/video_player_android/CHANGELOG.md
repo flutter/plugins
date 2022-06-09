@@ -1,3 +1,7 @@
+## 2.3.6
+
+* Updates references to the obsolete master branch.
+
 ## 2.3.5
 
 * Sets rotationCorrection for videos recorded in landscapeRight (https://github.com/flutter/flutter/issues/60327).
