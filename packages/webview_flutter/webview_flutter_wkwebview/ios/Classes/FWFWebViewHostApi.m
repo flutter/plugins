@@ -185,7 +185,7 @@
          } else {
            flutterError = [FlutterError errorWithCode:@"FWFEvaluateJavaScriptError"
                                               message:@"Failed evaluating JavaScript."
-                                              details:error];
+                                              details:FWFNSErrorDataFromNSError(error)];
          }
 
          completion(returnValue, flutterError);
