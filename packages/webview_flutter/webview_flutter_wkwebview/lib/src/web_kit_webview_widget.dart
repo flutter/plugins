@@ -598,6 +598,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         stringValues.add(_asObjectiveCString(listValue, inContainer: true));
       }
       return '(${stringValues.join(',')})';
+    } else if (value is bool) {
+      return value ? '1' : '0';
+    } else if (value is double && value.truncate() == value) {
+      return value.truncate().toString();
     } else if (value is Map) {
       final List<String> stringValues = <String>[];
       for (final MapEntry<Object?, Object?> entry in value.entries) {
