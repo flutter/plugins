@@ -14,16 +14,22 @@ import 'package:stream_transform/stream_transform.dart';
 import 'type_conversion.dart';
 import 'utils.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
+const MethodChannel _channel =
+    MethodChannel('plugins.flutter.io/camera_android');
 
 /// The Android implementation of [CameraPlatform] that uses method channels.
 class AndroidCamera extends CameraPlatform {
   /// Construct a new method channel camera instance.
   AndroidCamera() {
     const MethodChannel channel =
-        MethodChannel('flutter.io/cameraPlugin/device');
+        MethodChannel('plugins.flutter.io/camera_android/fromPlatform');
     channel.setMethodCallHandler(
         (MethodCall call) => handleDeviceMethodCall(call));
+  }
+
+  /// Registers this class as the default instance of [CameraPlatform].
+  static void registerWith() {
+    CameraPlatform.instance = AndroidCamera();
   }
 
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
@@ -112,7 +118,7 @@ class AndroidCamera extends CameraPlatform {
   }) {
     _channels.putIfAbsent(cameraId, () {
       final MethodChannel channel =
-          MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
+          MethodChannel('plugins.flutter.io/camera_android/camera$cameraId');
       channel.setMethodCallHandler(
           (MethodCall call) => handleCameraMethodCall(call, cameraId));
       return channel;
@@ -294,7 +300,7 @@ class AndroidCamera extends CameraPlatform {
   Future<void> _startPlatformStream() async {
     await _channel.invokeMethod<void>('startImageStream');
     const EventChannel cameraEventChannel =
-        EventChannel('plugins.flutter.io/camera/imageStream');
+        EventChannel('plugins.flutter.io/camera_android/imageStream');
     _platformImageStreamSubscription =
         cameraEventChannel.receiveBroadcastStream().listen((dynamic imageData) {
       if (defaultTargetPlatform == TargetPlatform.iOS) {

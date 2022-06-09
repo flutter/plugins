@@ -15,14 +15,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'method_channel_mock.dart';
 
+const String _channelName = 'plugins.flutter.io/camera_android';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('registers instance', () async {
+    AndroidCamera.registerWith();
+    expect(CameraPlatform.instance, isA<AndroidCamera>());
+  });
 
   group('Creation, Initialization & Disposal Tests', () {
     test('Should send creation data and receive back a camera id', () async {
       // Arrange
       final MethodChannelMock cameraMockChannel = MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
+          channelName: _channelName,
           methods: <String, dynamic>{
             'create': <String, dynamic>{
               'cameraId': 1,
@@ -57,14 +64,12 @@ void main() {
     test('Should throw CameraException when create throws a PlatformException',
         () {
       // Arrange
-      MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
-          methods: <String, dynamic>{
-            'create': PlatformException(
-              code: 'TESTING_ERROR_CODE',
-              message: 'Mock error message used during testing.',
-            )
-          });
+      MethodChannelMock(channelName: _channelName, methods: <String, dynamic>{
+        'create': PlatformException(
+          code: 'TESTING_ERROR_CODE',
+          message: 'Mock error message used during testing.',
+        )
+      });
       final AndroidCamera camera = AndroidCamera();
 
       // Act
@@ -90,14 +95,12 @@ void main() {
     test('Should throw CameraException when create throws a PlatformException',
         () {
       // Arrange
-      MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
-          methods: <String, dynamic>{
-            'create': PlatformException(
-              code: 'TESTING_ERROR_CODE',
-              message: 'Mock error message used during testing.',
-            )
-          });
+      MethodChannelMock(channelName: _channelName, methods: <String, dynamic>{
+        'create': PlatformException(
+          code: 'TESTING_ERROR_CODE',
+          message: 'Mock error message used during testing.',
+        )
+      });
       final AndroidCamera camera = AndroidCamera();
 
       // Act
@@ -125,7 +128,7 @@ void main() {
       () {
         // Arrange
         MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
+          channelName: _channelName,
           methods: <String, dynamic>{
             'initialize': PlatformException(
               code: 'TESTING_ERROR_CODE',
@@ -155,7 +158,7 @@ void main() {
     test('Should send initialization data', () async {
       // Arrange
       final MethodChannelMock cameraMockChannel = MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
+          channelName: _channelName,
           methods: <String, dynamic>{
             'create': <String, dynamic>{
               'cameraId': 1,
@@ -203,7 +206,7 @@ void main() {
     test('Should send a disposal call on dispose', () async {
       // Arrange
       final MethodChannelMock cameraMockChannel = MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
+          channelName: _channelName,
           methods: <String, dynamic>{
             'create': <String, dynamic>{'cameraId': 1},
             'initialize': null,
@@ -252,7 +255,7 @@ void main() {
     late int cameraId;
     setUp(() async {
       MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{
           'create': <String, dynamic>{'cameraId': 1},
           'initialize': null
@@ -422,7 +425,7 @@ void main() {
 
     setUp(() async {
       MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{
           'create': <String, dynamic>{'cameraId': 1},
           'initialize': null
@@ -468,7 +471,7 @@ void main() {
         }
       ];
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'availableCameras': returnData},
       );
 
@@ -495,14 +498,12 @@ void main() {
         'Should throw CameraException when availableCameras throws a PlatformException',
         () {
       // Arrange
-      MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
-          methods: <String, dynamic>{
-            'availableCameras': PlatformException(
-              code: 'TESTING_ERROR_CODE',
-              message: 'Mock error message used during testing.',
-            )
-          });
+      MethodChannelMock(channelName: _channelName, methods: <String, dynamic>{
+        'availableCameras': PlatformException(
+          code: 'TESTING_ERROR_CODE',
+          message: 'Mock error message used during testing.',
+        )
+      });
 
       // Act
       expect(
@@ -520,7 +521,7 @@ void main() {
     test('Should take a picture and return an XFile instance', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-          channelName: 'plugins.flutter.io/camera',
+          channelName: _channelName,
           methods: <String, dynamic>{'takePicture': '/test/path.jpg'});
 
       // Act
@@ -538,7 +539,7 @@ void main() {
     test('Should prepare for video recording', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'prepareForVideoRecording': null},
       );
 
@@ -554,7 +555,7 @@ void main() {
     test('Should start recording a video', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'startVideoRecording': null},
       );
 
@@ -574,7 +575,7 @@ void main() {
         () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'startVideoRecording': null},
       );
 
@@ -596,7 +597,7 @@ void main() {
     test('Should stop a video recording and return the file', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'stopVideoRecording': '/test/path.mp4'},
       );
 
@@ -615,7 +616,7 @@ void main() {
     test('Should pause a video recording', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'pauseVideoRecording': null},
       );
 
@@ -633,7 +634,7 @@ void main() {
     test('Should resume a video recording', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'resumeVideoRecording': null},
       );
 
@@ -651,7 +652,7 @@ void main() {
     test('Should set the flash mode', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setFlashMode': null},
       );
 
@@ -681,7 +682,7 @@ void main() {
     test('Should set the exposure mode', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setExposureMode': null},
       );
 
@@ -703,7 +704,7 @@ void main() {
     test('Should set the exposure point', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setExposurePoint': null},
       );
 
@@ -731,7 +732,7 @@ void main() {
     test('Should get the min exposure offset', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'getMinExposureOffset': 2.0},
       );
 
@@ -751,7 +752,7 @@ void main() {
     test('Should get the max exposure offset', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'getMaxExposureOffset': 2.0},
       );
 
@@ -771,7 +772,7 @@ void main() {
     test('Should get the exposure offset step size', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'getExposureOffsetStepSize': 0.25},
       );
 
@@ -790,7 +791,7 @@ void main() {
     test('Should set the exposure offset', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setExposureOffset': 0.6},
       );
 
@@ -810,7 +811,7 @@ void main() {
     test('Should set the focus mode', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setFocusMode': null},
       );
 
@@ -832,7 +833,7 @@ void main() {
     test('Should set the exposure point', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setFocusPoint': null},
       );
 
@@ -879,7 +880,7 @@ void main() {
     test('Should get the max zoom level', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'getMaxZoomLevel': 10.0},
       );
 
@@ -898,7 +899,7 @@ void main() {
     test('Should get the min zoom level', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'getMinZoomLevel': 1.0},
       );
 
@@ -917,7 +918,7 @@ void main() {
     test('Should set the zoom level', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'setZoomLevel': null},
       );
 
@@ -935,7 +936,7 @@ void main() {
         () async {
       // Arrange
       MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{
           'setZoomLevel': PlatformException(
             code: 'ZOOM_ERROR',
@@ -957,7 +958,7 @@ void main() {
     test('Should lock the capture orientation', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'lockCaptureOrientation': null},
       );
 
@@ -977,7 +978,7 @@ void main() {
     test('Should unlock the capture orientation', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'unlockCaptureOrientation': null},
       );
 
@@ -994,7 +995,7 @@ void main() {
     test('Should pause the camera preview', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'pausePreview': null},
       );
 
@@ -1011,7 +1012,7 @@ void main() {
     test('Should resume the camera preview', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{'resumePreview': null},
       );
 
@@ -1028,7 +1029,7 @@ void main() {
     test('Should start streaming', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{
           'startImageStream': null,
           'stopImageStream': null,
@@ -1051,7 +1052,7 @@ void main() {
     test('Should stop streaming', () async {
       // Arrange
       final MethodChannelMock channel = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
+        channelName: _channelName,
         methods: <String, dynamic>{
           'startImageStream': null,
           'stopImageStream': null,

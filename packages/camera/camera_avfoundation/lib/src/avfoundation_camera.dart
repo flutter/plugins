@@ -14,16 +14,22 @@ import 'package:stream_transform/stream_transform.dart';
 import 'type_conversion.dart';
 import 'utils.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
+const MethodChannel _channel =
+    MethodChannel('plugins.flutter.io/camera_avfoundation');
 
 /// An iOS implementation of [CameraPlatform] based on AVFoundation.
 class AVFoundationCamera extends CameraPlatform {
   /// Construct a new method channel camera instance.
   AVFoundationCamera() {
     const MethodChannel channel =
-        MethodChannel('flutter.io/cameraPlugin/device');
+        MethodChannel('plugins.flutter.io/camera_avfoundation/fromPlatform');
     channel.setMethodCallHandler(
         (MethodCall call) => handleDeviceMethodCall(call));
+  }
+
+  /// Registers this class as the default instance of [CameraPlatform].
+  static void registerWith() {
+    CameraPlatform.instance = AVFoundationCamera();
   }
 
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
@@ -111,8 +117,8 @@ class AVFoundationCamera extends CameraPlatform {
     ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
   }) {
     _channels.putIfAbsent(cameraId, () {
-      final MethodChannel channel =
-          MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
+      final MethodChannel channel = MethodChannel(
+          'plugins.flutter.io/camera_avfoundation/camera$cameraId');
       channel.setMethodCallHandler(
           (MethodCall call) => handleCameraMethodCall(call, cameraId));
       return channel;
@@ -294,7 +300,7 @@ class AVFoundationCamera extends CameraPlatform {
   Future<void> _startPlatformStream() async {
     await _channel.invokeMethod<void>('startImageStream');
     const EventChannel cameraEventChannel =
-        EventChannel('plugins.flutter.io/camera/imageStream');
+        EventChannel('plugins.flutter.io/camera_avfoundation/imageStream');
     _platformImageStreamSubscription =
         cameraEventChannel.receiveBroadcastStream().listen((dynamic imageData) {
       if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -522,6 +528,7 @@ class AVFoundationCamera extends CameraPlatform {
   ///
   /// This is only exposed for test purposes. It shouldn't be used by clients of
   /// the plugin as it may break or change at any time.
+  @visibleForTesting
   Future<dynamic> handleDeviceMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'orientation_changed':
