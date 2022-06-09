@@ -170,7 +170,6 @@
       evaluateJavaScript:javaScriptString
        completionHandler:^(id _Nullable result, NSError *_Nullable error) {
          id returnValue = nil;
-         FlutterError *flutterError = nil;
          if (!error) {
            if (!result || [result isKindOfClass:[NSString class]] ||
                [result isKindOfClass:[NSNumber class]]) {
@@ -183,12 +182,10 @@
              returnValue = [result description];
            }
          } else {
-           flutterError = [FlutterError errorWithCode:@"FWFEvaluateJavaScriptError"
-                                              message:@"Failed evaluating JavaScript."
-                                              details:FWFNSErrorDataFromNSError(error)];
+           returnValue = FWFNSErrorDataFromNSError(error);
          }
 
-         completion(returnValue, flutterError);
+         completion(returnValue, nil);
        }];
 }
 

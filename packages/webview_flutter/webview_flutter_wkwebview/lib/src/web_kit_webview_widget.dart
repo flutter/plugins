@@ -328,20 +328,21 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> runJavascript(String javascript) async {
-    try {
-      await webView.evaluateJavaScript(javascript);
-    } on PlatformException catch (exception) {
-      // WebKit will throw an error when the type of the evaluated value is
-      // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
-      // example, when running a void function. For ease of use, this specific
-      // error is ignored when no return value is expected.
-      // TODO(bparrishMines): Ensure the platform code includes the NSError in
-      // the FlutterError.details.
-      if (exception.details is! NSError ||
-          exception.details.code !=
-              WKErrorCode.javaScriptResultTypeIsUnsupported) {
-        rethrow;
-      }
+    final Object? result = await webView.evaluateJavaScript(javascript);
+    // WebKit will throw an error when the type of the evaluated value is
+    // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
+    // example, when running a void function. For ease of use, this specific
+    // error is ignored when no return value is expected.
+    if (result is NSError &&
+        result.code == WKErrorCode.javaScriptResultTypeIsUnsupported) {
+      return;
+    } else if (result is NSError) {
+      throw PlatformException(
+        code: 'runJavascript_failed',
+        message: 'Failed running JavaScript',
+        details:
+            "JavaScript string was: '$javascript'\n${result.localizedDescription}",
+      );
     }
   }
 
@@ -352,6 +353,13 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       throw ArgumentError(
         'Result of JavaScript execution returned a `null` value. '
         'Use `runJavascript` when expecting a null return value.',
+      );
+    } else if (result is NSError) {
+      throw PlatformException(
+        code: 'runJavascriptReturningResult_failed',
+        message: 'Failed running JavaScript',
+        details:
+            "JavaScript string was: '$javascript'\n${result.localizedDescription}",
       );
     }
     return result.toString();
