@@ -87,7 +87,9 @@
 
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
-  FWFScriptMessageHandler *scriptMessageHandler = [[FWFScriptMessageHandler alloc] initWithBinaryMessenger:self.binaryMessenger instanceManager:self.instanceManager];
+  FWFScriptMessageHandler *scriptMessageHandler =
+      [[FWFScriptMessageHandler alloc] initWithBinaryMessenger:self.binaryMessenger
+                                               instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:scriptMessageHandler
                                 withIdentifier:identifier.longValue];
 }
