@@ -70,6 +70,7 @@
                                         blockError = error;
                                       }];
   XCTAssertEqualObjects(returnValue, @YES);
+  XCTAssertEqual(CFBooleanGetTypeID(), CFGetTypeID((__bridge CFTypeRef)(returnValue)));
   XCTAssertNil(blockError);
 }
 @end
