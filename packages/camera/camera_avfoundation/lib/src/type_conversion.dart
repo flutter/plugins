@@ -6,9 +6,8 @@
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
-
-import '../types/types.dart';
 
 /// Converts method channel call [data] for `receivedImageStreamData` to a
 /// [CameraImageData].

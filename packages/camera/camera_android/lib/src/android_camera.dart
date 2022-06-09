@@ -6,20 +6,20 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import 'type_conversion.dart';
+import 'utils.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
-/// An implementation of [CameraPlatform] that uses method channels.
-class MethodChannelCamera extends CameraPlatform {
+/// The Android implementation of [CameraPlatform] that uses method channels.
+class AndroidCamera extends CameraPlatform {
   /// Construct a new method channel camera instance.
-  MethodChannelCamera() {
+  AndroidCamera() {
     const MethodChannel channel =
         MethodChannel('flutter.io/cameraPlugin/device');
     channel.setMethodCallHandler(
@@ -522,6 +522,7 @@ class MethodChannelCamera extends CameraPlatform {
   ///
   /// This is only exposed for test purposes. It shouldn't be used by clients of
   /// the plugin as it may break or change at any time.
+  @visibleForTesting
   Future<dynamic> handleDeviceMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'orientation_changed':

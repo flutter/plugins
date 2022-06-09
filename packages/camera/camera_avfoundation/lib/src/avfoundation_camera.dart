@@ -6,20 +6,20 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import 'type_conversion.dart';
+import 'utils.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
-/// An implementation of [CameraPlatform] that uses method channels.
-class MethodChannelCamera extends CameraPlatform {
+/// An iOS implementation of [CameraPlatform] based on AVFoundation.
+class AVFoundationCamera extends CameraPlatform {
   /// Construct a new method channel camera instance.
-  MethodChannelCamera() {
+  AVFoundationCamera() {
     const MethodChannel channel =
         MethodChannel('flutter.io/cameraPlugin/device');
     channel.setMethodCallHandler(

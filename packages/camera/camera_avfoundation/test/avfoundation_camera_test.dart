@@ -6,19 +6,19 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:async/async.dart';
+import 'package:camera_avfoundation/src/avfoundation_camera.dart';
+import 'package:camera_avfoundation/src/utils.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
-import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../utils/method_channel_mock.dart';
+import 'method_channel_mock.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$MethodChannelCamera', () {
+  group('AVFoundationCamera', () {
     group('Creation, Initialization & Disposal Tests', () {
       test('Should send creation data and receive back a camera id', () async {
         // Arrange
@@ -30,7 +30,7 @@ void main() {
                 'imageFormatGroup': 'unknown',
               }
             });
-        final MethodChannelCamera camera = MethodChannelCamera();
+        final AVFoundationCamera camera = AVFoundationCamera();
 
         // Act
         final int cameraId = await camera.createCamera(
@@ -67,7 +67,7 @@ void main() {
                 message: 'Mock error message used during testing.',
               )
             });
-        final MethodChannelCamera camera = MethodChannelCamera();
+        final AVFoundationCamera camera = AVFoundationCamera();
 
         // Act
         expect(
@@ -101,7 +101,7 @@ void main() {
                 message: 'Mock error message used during testing.',
               )
             });
-        final MethodChannelCamera camera = MethodChannelCamera();
+        final AVFoundationCamera camera = AVFoundationCamera();
 
         // Act
         expect(
@@ -136,7 +136,7 @@ void main() {
               )
             },
           );
-          final MethodChannelCamera camera = MethodChannelCamera();
+          final AVFoundationCamera camera = AVFoundationCamera();
 
           // Act
           expect(
@@ -166,7 +166,7 @@ void main() {
               },
               'initialize': null
             });
-        final MethodChannelCamera camera = MethodChannelCamera();
+        final AVFoundationCamera camera = AVFoundationCamera();
         final int cameraId = await camera.createCamera(
           const CameraDescription(
             name: 'Test',
@@ -213,7 +213,7 @@ void main() {
               'dispose': <String, dynamic>{'cameraId': 1}
             });
 
-        final MethodChannelCamera camera = MethodChannelCamera();
+        final AVFoundationCamera camera = AVFoundationCamera();
         final int cameraId = await camera.createCamera(
           const CameraDescription(
             name: 'Test',
@@ -251,7 +251,7 @@ void main() {
     });
 
     group('Event Tests', () {
-      late MethodChannelCamera camera;
+      late AVFoundationCamera camera;
       late int cameraId;
       setUp(() async {
         MethodChannelMock(
@@ -261,7 +261,7 @@ void main() {
             'initialize': null
           },
         );
-        camera = MethodChannelCamera();
+        camera = AVFoundationCamera();
         cameraId = await camera.createCamera(
           const CameraDescription(
             name: 'Test',
@@ -420,7 +420,7 @@ void main() {
     });
 
     group('Function Tests', () {
-      late MethodChannelCamera camera;
+      late AVFoundationCamera camera;
       late int cameraId;
 
       setUp(() async {
@@ -431,7 +431,7 @@ void main() {
             'initialize': null
           },
         );
-        camera = MethodChannelCamera();
+        camera = AVFoundationCamera();
         cameraId = await camera.createCamera(
           const CameraDescription(
             name: 'Test',
@@ -882,7 +882,7 @@ void main() {
 
       test('Should throw MissingPluginException when handling unknown method',
           () {
-        final MethodChannelCamera camera = MethodChannelCamera();
+        final AVFoundationCamera camera = AVFoundationCamera();
 
         expect(
             () => camera.handleCameraMethodCall(
