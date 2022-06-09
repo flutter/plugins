@@ -182,7 +182,16 @@ class DriveExamplesCommand extends PackageLoopingCommand {
         if (legacyTestFile != null) {
           testTargets.add(legacyTestFile);
         } else {
-          (await _getIntegrationTests(example)).forEach(testTargets.add);
+          for (final File testFile in await _getIntegrationTests(example)) {
+            // Check files for known problematic patterns.
+            final bool passesValidation = _validateIntegrationTest(testFile);
+            if (!passesValidation) {
+              // Report the issue, but continue with the test as the validation
+              // errors don't prevent running.
+              errors.add('${testFile.basename} failed validation');
+            }
+            testTargets.add(testFile);
+          }
         }
 
         if (testTargets.isEmpty) {
@@ -308,6 +317,25 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       }
     }
     return tests;
+  }
+
+  /// Checks [testFile] for known bad patterns in integration tests, logging
+  /// any issues.
+  ///
+  /// Returns true if the file passes validation without issues.
+  bool _validateIntegrationTest(File testFile) {
+    final List<String> lines = testFile.readAsLinesSync();
+
+    final RegExp badTestPattern = RegExp(r'\s*test\(');
+    if (lines.any((String line) => line.startsWith(badTestPattern))) {
+      final String filename = testFile.basename;
+      printError(
+          '$filename uses "test", which will not report failures correctly. '
+          'Use testWidgets instead.');
+      return false;
+    }
+
+    return true;
   }
 
   /// For each file in [targets], uses
