@@ -96,6 +96,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
                   'biometricOnly': true,
+                  'strongBiometricsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -121,6 +122,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': false,
                   'biometricOnly': true,
+                  'strongBiometricsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -143,6 +145,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
                   'biometricOnly': false,
+                  'strongBiometricsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -167,6 +170,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': false,
                   'biometricOnly': false,
+                  'strongBiometricsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
