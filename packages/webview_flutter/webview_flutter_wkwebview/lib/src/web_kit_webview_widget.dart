@@ -93,6 +93,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   bool _zoomEnabled = true;
   bool _hasNavigationDelegate = false;
+  bool _hasProgressTracking = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -457,9 +458,14 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  Future<void> _setHasProgressTracking(bool hasProgressTracking) {
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
+    // Calls to removeObserver before addObserver causes a crash.
+    if (_hasProgressTracking == hasProgressTracking) {
+      return;
+    }
+    _hasProgressTracking = hasProgressTracking;
     if (hasProgressTracking) {
-      return webView.addObserver(
+      await webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
         options: <NSKeyValueObservingOptions>{
@@ -467,7 +473,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         },
       );
     } else {
-      return webView.removeObserver(webView, keyPath: 'estimatedProgress');
+      await webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
 
