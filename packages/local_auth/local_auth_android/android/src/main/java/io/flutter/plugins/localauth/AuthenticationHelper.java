@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
@@ -71,23 +72,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private boolean activityPaused = false;
   private BiometricPrompt biometricPrompt;
 
-  @Deprecated
-  AuthenticationHelper(
-      Lifecycle lifecycle,
-      FragmentActivity activity,
-      MethodCall call,
-      AuthCompletionHandler completionHandler,
-      boolean allowCredentials) {
-    this(
-        lifecycle,
-        activity,
-        call,
-        completionHandler,
-        allowCredentials
-            ? new int[] {BiometricManager.Authenticators.DEVICE_CREDENTIAL}
-            : new int[0]);
-  }
-
   AuthenticationHelper(
       Lifecycle lifecycle,
       FragmentActivity activity,
@@ -114,7 +98,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setDescription((String) call.argument("localizedReason"))
             .setTitle((String) call.argument("signInTitle"))
             .setSubtitle((String) call.argument("biometricHint"))
-            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
     // Use setAllowedAuthenticators on API 30 and above.
@@ -130,8 +113,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       }
     }
     // Use setDeviceCredentialAllowed on API 29 and below.
-    else if (deviceCredentialAllowed) {
-      promptBuilder.setDeviceCredentialAllowed(true);
+    else {
+      promptBuilder.setDeviceCredentialAllowed(deviceCredentialAllowed);
     }
     if (!deviceCredentialAllowed) {
       promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
@@ -337,5 +320,10 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     public void execute(Runnable command) {
       handler.post(command);
     }
+  }
+
+  @VisibleForTesting
+  public BiometricPrompt.PromptInfo getPromptInfo() {
+    return promptInfo;
   }
 }

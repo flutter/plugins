@@ -1,3 +1,8 @@
+## 1.1.0
+
+* Adds `strongBiometricsOnly` flag to platform specific AndroidAuthenticationOptions for forcing 
+  strong authentication.
+
 ## 1.0.5
 
 * Updates references to the obsolete master branch.

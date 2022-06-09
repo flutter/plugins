@@ -180,7 +180,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         return;
       }
       authHelper =
-          new AuthenticationHelper(
+          AuthenticationHelperFactory.create(
               lifecycle,
               (FragmentActivity) activity,
               call,
@@ -203,7 +203,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         return;
       }
       authHelper =
-          new AuthenticationHelper(
+          AuthenticationHelperFactory.create(
               lifecycle,
               (FragmentActivity) activity,
               call,
@@ -218,7 +218,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     // API 29 and above
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       authHelper =
-          new AuthenticationHelper(
+          AuthenticationHelperFactory.create(
               lifecycle,
               (FragmentActivity) activity,
               call,
@@ -230,39 +230,33 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       return;
     }
 
-    // API 23 - 28 with fingerprint
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fingerprintManager != null) {
-      if (fingerprintManager.hasEnrolledFingerprints()) {
-        authHelper =
-            new AuthenticationHelper(
-                lifecycle,
-                (FragmentActivity) activity,
-                call,
-                completionHandler,
-                new int[] {
-                  BIOMETRIC_WEAK, BIOMETRIC_STRONG,
-                });
-        authHelper.authenticate();
-        return;
+    // Fallback to fingerprint manager (23 and above) fingerprint.
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (fingerprintManager != null) {
+        if (fingerprintManager.hasEnrolledFingerprints()) {
+          authHelper =
+              AuthenticationHelperFactory.create(
+                  lifecycle,
+                  (FragmentActivity) activity,
+                  call,
+                  completionHandler,
+                  new int[] {
+                    BIOMETRIC_WEAK, BIOMETRIC_STRONG,
+                  });
+          authHelper.authenticate();
+          return;
+        }
       }
-    }
-
-    // API 23 or higher with device credentials
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        && keyguardManager != null
-        && keyguardManager.isDeviceSecure()) {
+      // Fallback to device credentials
       String title = call.argument("signInTitle");
       String reason = call.argument("localizedReason");
-      Intent authIntent = keyguardManager.createConfirmDeviceCredentialIntent(title, reason);
+      Intent authIntent = null;
+      authIntent = keyguardManager.createConfirmDeviceCredentialIntent(title, reason);
 
-      // save result for async response
+      // Save result for async response
       lockRequestResult = result;
       activity.startActivityForResult(authIntent, LOCK_REQUEST_CODE);
-      return;
     }
-
-    // Unable to authenticate
-    result.error("NotSupported", "This device does not support required security features", null);
   }
 
   private void authenticateSuccess(Result result) {
@@ -414,5 +408,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @VisibleForTesting
   void setBiometricManager(BiometricManager biometricManager) {
     this.biometricManager = biometricManager;
+  }
+
+  @VisibleForTesting
+  void setAuthInProgress(boolean value) {
+    this.authInProgress.set(value);
   }
 }
