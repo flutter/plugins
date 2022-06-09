@@ -1,6 +1,8 @@
 ## NEXT
 
 - Supports empty custom analysis allow list files.
+- `drive-examples` now validates files to ensure that they don't accidentally
+  use `test(...)`.
 
 ## 0.8.6
 

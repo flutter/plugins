@@ -1,3 +1,8 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
 ## 0.9.7+1
 
 * Moves streaming implementation to the platform interface package.

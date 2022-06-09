@@ -7,13 +7,27 @@
 
 #import "FWFGeneratedWebKitApis.h"
 #import "FWFInstanceManager.h"
+#import "FWFObjectHostApi.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * Flutter api implementation for WKUIDelegate.
+ *
+ * Handles making callbacks to Dart for a WKUIDelegate.
+ */
+@interface FWFUIDelegateFlutterApiImpl : FWFWKUIDelegateFlutterApi
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
+@end
+
+/**
  * Implementation of WKUIDelegate for FWFUIDelegateHostApiImpl.
  */
-@interface FWFUIDelegate : NSObject <WKUIDelegate>
+@interface FWFUIDelegate : FWFObject <WKUIDelegate>
+@property(readonly, nonnull, nonatomic) FWFUIDelegateFlutterApiImpl *UIDelegateAPI;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 /**

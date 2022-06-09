@@ -64,8 +64,11 @@ class UIScrollView extends UIView {
 /// Wraps [UIView](https://developer.apple.com/documentation/uikit/uiview?language=objc).
 class UIView extends NSObject {
   /// Constructs an [NSObject].
-  UIView({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : _viewApi = UIViewHostApiImpl(
+  UIView({
+    super.observeValue,
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _viewApi = UIViewHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         );
