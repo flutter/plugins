@@ -362,7 +362,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             "JavaScript string was: '$javascript'\n${result.localizedDescription}",
       );
     }
-    return result.toString();
+    return _asObjectiveCString(result);
   }
 
   @override
