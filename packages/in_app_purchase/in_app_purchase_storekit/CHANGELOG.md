@@ -1,4 +1,4 @@
-## 0.3.0+8
+## 0.3.1
 
 * Added ability to purchase mutliple quanitity of one product
 
