@@ -13,6 +13,7 @@ PurchaseWrapper _$PurchaseWrapperFromJson(Map json) => PurchaseWrapper(
       purchaseToken: json['purchaseToken'] as String? ?? '',
       signature: json['signature'] as String? ?? '',
       sku: json['sku'] as String? ?? '',
+      skus: json['skus'] as List<String>? ?? <String>[],
       isAutoRenewing: json['isAutoRenewing'] as bool,
       originalJson: json['originalJson'] as String? ?? '',
       developerPayload: json['developerPayload'] as String?,
@@ -29,6 +30,7 @@ PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) =>
       purchaseToken: json['purchaseToken'] as String? ?? '',
       signature: json['signature'] as String? ?? '',
       sku: json['sku'] as String? ?? '',
+      skus: json['skus'] as List<String>? ?? <String>[],
       originalJson: json['originalJson'] as String? ?? '',
       developerPayload: json['developerPayload'] as String?,
     );

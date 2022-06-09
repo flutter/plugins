@@ -33,7 +33,8 @@ class PurchaseWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
-    required this.sku,
+    this.sku = '', // Deprecated
+    required this.skus,
     required this.isAutoRenewing,
     required this.originalJson,
     this.developerPayload,
@@ -104,8 +105,14 @@ class PurchaseWrapper {
   final String signature;
 
   /// The product ID of this purchase.
+  ///
+  /// This property is deprecated. Use `skus` instead.
   @JsonKey(defaultValue: '')
   final String sku;
+
+  /// The product IDs of this purchase.
+  @JsonKey(defaultValue: <String>[])
+  final List<String> skus;
 
   /// True for subscriptions that renew automatically. Does not apply to
   /// [SkuType.inapp] products.
@@ -178,7 +185,8 @@ class PurchaseHistoryRecordWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
-    required this.sku,
+    this.sku = '', // Deprecated
+    required this.skus,
     required this.originalJson,
     required this.developerPayload,
   });
@@ -201,8 +209,14 @@ class PurchaseHistoryRecordWrapper {
   final String signature;
 
   /// The product ID of this purchase.
+  ///
+  /// This property is deprecated. Use `skus` instead.
   @JsonKey(defaultValue: '')
   final String sku;
+
+  /// The product ID of this purchase.
+  @JsonKey(defaultValue: <String>[])
+  final List<String> skus;
 
   /// Details about this purchase, in JSON.
   ///
