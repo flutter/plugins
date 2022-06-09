@@ -37,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles creating WKScriptMessageHandler that intercommunicate with a paired Dart object.
  */
 @interface FWFScriptMessageHandlerHostApiImpl : NSObject <FWFWKScriptMessageHandlerHostApi>
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 NS_ASSUME_NONNULL_END

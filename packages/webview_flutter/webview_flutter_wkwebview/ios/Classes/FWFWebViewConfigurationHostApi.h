@@ -7,8 +7,15 @@
 
 #import "FWFGeneratedWebKitApis.h"
 #import "FWFInstanceManager.h"
+#import "FWFObjectHostApi.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface FWFWebViewConfiguration : WKWebViewConfiguration
+@property(readonly, nonnull, nonatomic) FWFObjectFlutterApiImpl *objectApi;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+              instanceManager:(FWFInstanceManager *)instanceManager;
+@end
 
 /**
  * Host api implementation for WKWebViewConfiguration.
@@ -16,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles creating WKWebViewConfiguration that intercommunicate with a paired Dart object.
  */
 @interface FWFWebViewConfigurationHostApiImpl : NSObject <FWFWKWebViewConfigurationHostApi>
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+              instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 NS_ASSUME_NONNULL_END

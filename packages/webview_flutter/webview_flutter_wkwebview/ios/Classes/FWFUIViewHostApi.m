@@ -5,6 +5,8 @@
 #import "FWFUIViewHostApi.h"
 
 @interface FWFUIViewHostApiImpl ()
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 

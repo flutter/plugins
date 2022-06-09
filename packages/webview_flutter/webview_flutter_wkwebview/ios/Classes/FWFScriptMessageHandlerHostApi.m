@@ -6,7 +6,8 @@
 #import "FWFDataConverters.h"
 
 @interface FWFScriptMessageHandlerFlutterApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
@@ -62,14 +63,18 @@
 @end
 
 @interface FWFScriptMessageHandlerHostApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
+@property(weak) id<FlutterBinaryMessenger> binaryMessenger;
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFScriptMessageHandlerHostApiImpl
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self init];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
   }
   return self;
@@ -82,7 +87,7 @@
 
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
-  FWFScriptMessageHandler *scriptMessageHandler = [[FWFScriptMessageHandler alloc] init];
+  FWFScriptMessageHandler *scriptMessageHandler = [[FWFScriptMessageHandler alloc] initWithBinaryMessenger:self.binaryMessenger instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:scriptMessageHandler
                                 withIdentifier:identifier.longValue];
 }

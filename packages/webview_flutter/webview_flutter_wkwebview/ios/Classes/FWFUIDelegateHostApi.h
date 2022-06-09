@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles creating WKUIDelegate that intercommunicate with a paired Dart object.
  */
 @interface FWFUIDelegateHostApiImpl : NSObject <FWFWKUIDelegateHostApi>
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 NS_ASSUME_NONNULL_END

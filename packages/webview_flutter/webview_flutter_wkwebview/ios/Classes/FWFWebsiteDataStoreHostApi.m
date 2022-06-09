@@ -7,6 +7,8 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFWebsiteDataStoreHostApiImpl ()
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 

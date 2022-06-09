@@ -6,14 +6,41 @@
 #import "FWFDataConverters.h"
 #import "FWFWebViewConfigurationHostApi.h"
 
+@implementation FWFWebViewConfiguration
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self init];
+  if (self) {
+    _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                          instanceManager:instanceManager];
+  }
+  return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+  [self.objectApi observeValueForObject:self
+                                keyPath:keyPath
+                                 object:object
+                                 change:change
+                             completion:^(NSError *error) {
+                               NSAssert(!error, @"%@", error);
+                             }];
+}
+@end
+
 @interface FWFWebViewConfigurationHostApiImpl ()
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
+@property(weak) id<FlutterBinaryMessenger> binaryMessenger;
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebViewConfigurationHostApiImpl
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self init];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
   }
   return self;
@@ -26,7 +53,7 @@
 
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
-  WKWebViewConfiguration *webViewConfiguration = [[WKWebViewConfiguration alloc] init];
+  FWFWebViewConfiguration *webViewConfiguration = [[FWFWebViewConfiguration alloc] initWithBinaryMessenger:self.binaryMessenger instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:webViewConfiguration
                                 withIdentifier:identifier.longValue];
 }

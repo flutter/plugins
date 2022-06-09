@@ -7,7 +7,8 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFUIDelegateFlutterApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
@@ -71,13 +72,18 @@
 @end
 
 @interface FWFUIDelegateHostApiImpl ()
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
+@property(weak) id<FlutterBinaryMessenger> binaryMessenger;
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFUIDelegateHostApiImpl
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self init];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
   }
   return self;
@@ -89,7 +95,7 @@
 
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
-  FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] init];
+  FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] initWithBinaryMessenger:self.binaryMessenger instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:uIDelegate withIdentifier:identifier.longValue];
 }
 @end
