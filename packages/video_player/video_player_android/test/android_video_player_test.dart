@@ -21,6 +21,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
+  AudioSessionMessage? audioSessionMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -56,6 +57,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setMixWithOthers(MixWithOthersMessage arg) {
     log.add('setMixWithOthers');
     mixWithOthersMessage = arg;
+  }
+
+  @override
+  void setupAudioSession(AudioSessionMessage arg) {
+    log.add('setupAduioSession');
+    audioSessionMessage = arg;
   }
 
   @override

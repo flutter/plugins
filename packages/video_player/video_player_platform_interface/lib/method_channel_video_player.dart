@@ -149,6 +149,12 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     );
   }
 
+  @override
+  Future<void> setupAudioSession(AudioSession config) {
+    final msg = AudioSessionMessage();
+    return _api.setupAudioSession(msg);
+  }
+
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }

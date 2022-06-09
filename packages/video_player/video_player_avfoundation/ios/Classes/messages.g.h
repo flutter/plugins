@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTPositionMessage;
 @class FLTCreateMessage;
 @class FLTMixWithOthersMessage;
+@class FLTAudioSessionMessage;
+
 
 @interface FLTTextureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
@@ -80,6 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber *mixWithOthers;
 @end
 
+@interface FLTAudioSessionMessage : NSObject
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeAudioSession;
+@end
+
 /// The codec used by FLTAVFoundationVideoPlayerApi.
 NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
 
@@ -101,6 +108,10 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
 - (void)pause:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setMixWithOthers:(FLTMixWithOthersMessage *)msg
                    error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setupAudioSession:(FLTAudioSessionMessage *)msg
+                   error:(FlutterError *_Nullable *_Nonnull)error;
+
+
 @end
 
 extern void FLTAVFoundationVideoPlayerApiSetup(

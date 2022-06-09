@@ -1,3 +1,7 @@
+## 5.1.4
+* Adds `bypassAudioSetup` to `VideoPlayerOptions`.
+* Adds `setupAudioSession` method to `VideoPlayerApi`.
+
 ## 5.1.3
 
 * Updates references to the obsolete master branch.

@@ -557,6 +557,29 @@ public class Messages {
     }
   }
 
+  public static class AudioSessionMessage {
+    /** Constructor is private to enforce null safety; use Builder. */
+    private AudioSessionMessage() {}
+
+    public static class Builder {
+      public @NonNull AudioSessionMessage build() {
+        AudioSessionMessage pigeonReturn = new AudioSessionMessage();
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      return toMapResult;
+    }
+
+    static @NonNull AudioSessionMessage fromMap(@NonNull Map<String, Object> map) {
+      AudioSessionMessage pigeonResult = new AudioSessionMessage();
+      return pigeonResult;
+    }
+  }
+
   private static class AndroidVideoPlayerApiCodec extends StandardMessageCodec {
     public static final AndroidVideoPlayerApiCodec INSTANCE = new AndroidVideoPlayerApiCodec();
 
@@ -586,6 +609,9 @@ public class Messages {
         case (byte) 134:
           return VolumeMessage.fromMap((Map<String, Object>) readValue(buffer));
 
+        case (byte) 135:
+          return AudioSessionMessage.fromMap((Map<String, Object>) readValue(buffer));
+
         default:
           return super.readValueOfType(type, buffer);
       }
@@ -614,6 +640,9 @@ public class Messages {
       } else if (value instanceof VolumeMessage) {
         stream.write(134);
         writeValue(stream, ((VolumeMessage) value).toMap());
+      } else if (value instanceof AudioSessionMessage) {
+        stream.write(135);
+        writeValue(stream, ((AudioSessionMessage) value).toMap());
       } else {
         super.writeValue(stream, value);
       }
@@ -645,6 +674,8 @@ public class Messages {
     void pause(@NonNull TextureMessage msg);
 
     void setMixWithOthers(@NonNull MixWithOthersMessage msg);
+
+    void setupAudioSession(@NonNull AudioSessionMessage msg);
 
     /** The codec used by AndroidVideoPlayerApi. */
     static MessageCodec<Object> getCodec() {
@@ -920,6 +951,33 @@ public class Messages {
                     throw new NullPointerException("msgArg unexpectedly null.");
                   }
                   api.setMixWithOthers(msgArg);
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.AndroidVideoPlayerApi.setupAudioSession",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  AudioSessionMessage msgArg = (AudioSessionMessage) args.get(0);
+                  if (msgArg == null) {
+                    throw new NullPointerException("msgArg unexpectedly null.");
+                  }
+                  api.setupAudioSession(msgArg);
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));

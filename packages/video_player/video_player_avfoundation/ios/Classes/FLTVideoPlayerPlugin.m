@@ -529,9 +529,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)initialize:(FlutterError *__autoreleasing *)error {
-  // Allow audio playback when the Ring/Silent switch is set to silent
-  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-
   [self.playersByTextureId
       enumerateKeysAndObjectsUsingBlock:^(NSNumber *textureId, FLTVideoPlayer *player, BOOL *stop) {
         [self.registry unregisterTexture:textureId.unsignedIntegerValue];
@@ -632,6 +629,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   } else {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
   }
+}
+
+- (void)setupAudioSession:(FLTAudioSessionMessage *)input
+                    error:(FlutterError *_Nullable __autoreleasing *)error {
+  // Allow audio playback when the Ring/Silent switch is set to silent
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
 }
 
 @end

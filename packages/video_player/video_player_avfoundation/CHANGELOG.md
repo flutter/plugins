@@ -1,3 +1,8 @@
+## 2.3.6
+
+* Adds `bypassAudioSetup` to `VideoPlayerOptions`.
+* Adds `setupAudioSession` method to `FLTVideoPlayer`.
+
 ## 2.3.5
 
 * Updates references to the obsolete master branch.

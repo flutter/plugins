@@ -40,6 +40,9 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is VolumeMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
+    } else if (value is AudioSessionMessage) {
+      buffer.putUint8(135);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -69,6 +72,9 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
       case 134:
         return VolumeMessage.decode(readValue(buffer)!);
 
+      case 135:
+        return AudioSessionMessage.decode(readValue(buffer)!);
+
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -89,6 +95,8 @@ abstract class TestHostVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  void setupAudioSession(AudioSessionMessage msg);
+
   static void setup(TestHostVideoPlayerApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -293,6 +301,26 @@ abstract class TestHostVideoPlayerApi {
           assert(arg_msg != null,
               'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.setMixWithOthers was null, expected non-null MixWithOthersMessage.');
           api.setMixWithOthers(arg_msg!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.AndroidVideoPlayerApi.setupAudioSession', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.setupAudioSession was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AudioSessionMessage? arg_msg =
+              (args[0] as AudioSessionMessage?);
+          assert(arg_msg != null,
+              'Argument for dev.flutter.pigeon.AndroidVideoPlayerApi.setupAudioSession was null, expected non-null AmbientMixMessage.');
+          api.setupAudioSession(arg_msg!);
           return <Object?, Object?>{};
         });
       }

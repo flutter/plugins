@@ -1,3 +1,7 @@
+## 2.3.7
+
+* Adds `setupAudioSession` method to `AndroidVideoPlayer`.
+
 ## 2.3.6
 
 * Updates references to the obsolete master branch.

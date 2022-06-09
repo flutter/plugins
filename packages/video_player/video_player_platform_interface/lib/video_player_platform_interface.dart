@@ -103,6 +103,14 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+
+  Future<void> setupAudioSession(AudioSession config) {
+    throw UnimplementedError('setupAudioSession() has not been implemented.');
+  }
+}
+
+class AudioSession {
+  AudioSession();
 }
 
 /// Description of the data source used to create an instance of
@@ -358,6 +366,7 @@ class VideoPlayerOptions {
   VideoPlayerOptions({
     this.mixWithOthers = false,
     this.allowBackgroundPlayback = false,
+    this.bypassAudioSetup = false,
   });
 
   /// Set this to true to keep playing video in background, when app goes in background.
@@ -370,4 +379,6 @@ class VideoPlayerOptions {
   /// Note: This option will be silently ignored in the web platform (there is
   /// currently no way to implement this feature in this platform).
   final bool mixWithOthers;
+
+  final bool bypassAudioSetup;
 }

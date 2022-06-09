@@ -1,3 +1,7 @@
+## 2.0.11
+
+* Adds `setupAudioSession` method to `VideoPlayerPlugin`.
+
 ## 2.0.10
 
 * Minor fixes for new analysis options.

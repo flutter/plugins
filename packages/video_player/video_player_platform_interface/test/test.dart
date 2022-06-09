@@ -24,6 +24,7 @@ abstract class TestHostVideoPlayerApi {
   void seekTo(PositionMessage arg);
   void pause(TextureMessage arg);
   void setMixWithOthers(MixWithOthersMessage arg);
+  void setupAudioSession(AudioSessionMessage arg);
   static void setup(TestHostVideoPlayerApi? api) {
     {
       const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -191,6 +192,23 @@ abstract class TestHostVideoPlayerApi {
           final MixWithOthersMessage input =
               MixWithOthersMessage.decode(message!);
           api.setMixWithOthers(input);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.VideoPlayerApi.setupAudioSession',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.VideoPlayerApi.setupAudioSession was null. Expected AudioSessionMessage.');
+          final AudioSessionMessage input =
+              AudioSessionMessage.decode(message!);
+          api.setupAudioSession(input);
           return <Object?, Object?>{};
         });
       }

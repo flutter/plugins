@@ -1012,6 +1012,14 @@ void main() {
       );
     });
 
+    test('setupAudioSession', () async {
+      final VideoPlayerController controller = VideoPlayerController.file(
+          File(''),
+          videoPlayerOptions: VideoPlayerOptions(bypassAudioSetup: false));
+      await controller.initialize();
+      expect(controller.videoPlayerOptions!.bypassAudioSetup, false);
+    });
+
     test('false allowBackgroundPlayback pauses playback', () async {
       final VideoPlayerController controller = VideoPlayerController.file(
         File(''),
@@ -1128,6 +1136,11 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) async {
     calls.add('setMixWithOthers');
+  }
+
+  @override
+  Future<void> setupAudioSession(AudioSession config) async {
+    calls.add('setupAduioSession');
   }
 }
 

@@ -1,6 +1,8 @@
-## NEXT
+## 2.4.5
 
-* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231)
+* Adds `bypassAudioSetup` to `VideoPlayerOptions`.
+* Delegates iOS AVAudioSession global configuration to `VideoPlayerController`
 
 ## 2.4.4
 

@@ -20,4 +20,11 @@ void main() {
       expect(options.mixWithOthers, false);
     },
   );
+  test(
+    'VideoPlayerOptions bypassAudioSetup defaults to false',
+    () {
+      final VideoPlayerOptions options = VideoPlayerOptions();
+      expect(options.bypassAudioSetup, false);
+    },
+  );
 }

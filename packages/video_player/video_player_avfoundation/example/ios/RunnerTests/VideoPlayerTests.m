@@ -268,4 +268,24 @@
   XCTAssertEqual(t.ty, expectY);
 }
 
+- (void)testSetupAudioSession {
+  FLTVideoPlayerPlugin *videoPlayer = [[FLTVideoPlayerPlugin alloc] init];
+  FLTAudioSessionMessage *msg = [FLTAudioSessionMessage alloc];
+  FLTMixWithOthersMessage *mixWithOthers = [FLTMixWithOthersMessage alloc];
+  AVAudioSession *session = [AVAudioSession sharedInstance];
+  FlutterError *error;
+
+  [videoPlayer initialize:&error];
+
+  [videoPlayer setupAudioSession:msg error:&error];
+
+  XCTAssertEqual(session.category, AVAudioSessionCategoryPlayback);
+
+  mixWithOthers.mixWithOthers = @1;
+  [videoPlayer setMixWithOthers:mixWithOthers error:&error];
+
+  XCTAssertEqual(session.category, AVAudioSessionCategoryPlayback);
+  XCTAssertEqual(session.categoryOptions, AVAudioSessionCategoryOptionMixWithOthers);
+}
+
 @end
