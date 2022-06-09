@@ -7,9 +7,9 @@
 
 // ignore_for_file: public_member_api_docs
 
-// #docregion Save
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
-// #enddocregion Save
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';

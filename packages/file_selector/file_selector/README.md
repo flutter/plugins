@@ -62,20 +62,18 @@ final List<XFile> files = await openFiles(acceptedTypeGroups: <XTypeGroup>[
 #### Saving a file
 <?code-excerpt "readme_standalone_excerpts.dart (Save)"?>
 ```dart
-import 'dart:typed_data';
-// ···
-    const String fileName = 'suggested_name.txt';
-    final String? path = await getSavePath(suggestedName: fileName);
-    if (path == null) {
-      // Operation was canceled by the user.
-      return;
-    }
+const String fileName = 'suggested_name.txt';
+final String? path = await getSavePath(suggestedName: fileName);
+if (path == null) {
+  // Operation was canceled by the user.
+  return;
+}
 
-    final Uint8List fileData = Uint8List.fromList('Hello World!'.codeUnits);
-    const String mimeType = 'text/plain';
-    final XFile textFile =
-        XFile.fromData(fileData, mimeType: mimeType, name: fileName);
-    await textFile.saveTo(path);
+final Uint8List fileData = Uint8List.fromList('Hello World!'.codeUnits);
+const String mimeType = 'text/plain';
+final XFile textFile =
+    XFile.fromData(fileData, mimeType: mimeType, name: fileName);
+await textFile.saveTo(path);
 ```
 
 [example]:./example
