@@ -303,12 +303,10 @@ class AVFoundationCamera extends CameraPlatform {
         EventChannel('plugins.flutter.io/camera_avfoundation/imageStream');
     _platformImageStreamSubscription =
         cameraEventChannel.receiveBroadcastStream().listen((dynamic imageData) {
-      if (defaultTargetPlatform == TargetPlatform.iOS) {
-        try {
-          _channel.invokeMethod<void>('receivedImageStreamData');
-        } on PlatformException catch (e) {
-          throw CameraException(e.code, e.message);
-        }
+      try {
+        _channel.invokeMethod<void>('receivedImageStreamData');
+      } on PlatformException catch (e) {
+        throw CameraException(e.code, e.message);
       }
       _frameStreamController!
           .add(cameraImageFromPlatformData(imageData as Map<dynamic, dynamic>));

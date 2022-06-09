@@ -7,7 +7,6 @@
 import 'dart:typed_data';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:flutter/foundation.dart';
 
 /// Converts method channel call [data] for `receivedImageStreamData` to a
 /// [CameraImageData].
@@ -30,23 +29,11 @@ CameraImageFormat _cameraImageFormatFromPlatformData(dynamic data) {
 }
 
 ImageFormatGroup _imageFormatGroupFromPlatformData(dynamic data) {
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    switch (data) {
-      case 35: // android.graphics.ImageFormat.YUV_420_888
-        return ImageFormatGroup.yuv420;
-      case 256: // android.graphics.ImageFormat.JPEG
-        return ImageFormatGroup.jpeg;
-    }
-  }
-
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    switch (data) {
-      case 875704438: // kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-        return ImageFormatGroup.yuv420;
-
-      case 1111970369: // kCVPixelFormatType_32BGRA
-        return ImageFormatGroup.bgra8888;
-    }
+  switch (data) {
+    case 35: // android.graphics.ImageFormat.YUV_420_888
+      return ImageFormatGroup.yuv420;
+    case 256: // android.graphics.ImageFormat.JPEG
+      return ImageFormatGroup.jpeg;
   }
 
   return ImageFormatGroup.unknown;
