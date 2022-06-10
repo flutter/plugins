@@ -33,6 +33,7 @@ class PurchaseWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
+    @Deprecated('Use skus instead')
     this.sku = '', // Deprecated
     required this.skus,
     required this.isAutoRenewing,
@@ -184,6 +185,7 @@ class PurchaseHistoryRecordWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
+    @Deprecated('Use skus instead')
     this.sku = '', // Deprecated
     required this.skus,
     required this.originalJson,

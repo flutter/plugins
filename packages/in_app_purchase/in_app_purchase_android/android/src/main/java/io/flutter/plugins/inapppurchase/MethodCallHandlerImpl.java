@@ -331,7 +331,7 @@ class MethodCallHandlerImpl
     }
 
     billingClient.queryPurchaseHistoryAsync(
-        skuType,
+        QueryPurchasesParams.newBuilder().setProductType(skuType).build(),
         new PurchaseHistoryResponseListener() {
           @Override
           public void onPurchaseHistoryResponse(

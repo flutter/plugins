@@ -23,6 +23,7 @@ import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 import static java.util.Arrays.asList;
+import static java.util.Collections.list;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
@@ -527,9 +528,6 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getOldSku(), oldSkuId);
-    assertEquals(params.getOldSkuPurchaseToken(), purchaseToken);
-    assertEquals(params.getReplaceSkusProrationMode(), prorationMode);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -595,7 +593,7 @@ public class MethodCallHandlerTest {
   }
 
   @Test
-  public void queryPurchases() {
+  public void queryPurchasesAsync() {
     establishConnectedBillingClient(null, null);
     PurchasesResult purchasesResult = mock(PurchasesResult.class);
     Purchase purchase = buildPurchase("foo");
@@ -606,11 +604,26 @@ public class MethodCallHandlerTest {
             .setDebugMessage("dummy debug message")
             .build();
     when(purchasesResult.getBillingResult()).thenReturn(billingResult);
-    when(mockBillingClient.queryPurchases(SkuType.INAPP)).thenReturn(purchasesResult);
+    when(mockBillingClient.queryPurchasesAsync(
+        any(QueryPurchasesParams.class),
+        any(PurchaseHistoryResponseListener.class)
+    ).thenAnswer(
+        new Answer<Object>() {
+            Object answer(InvocationOnMock invocation) {
+                BillingResult.Builder builder = BillingResult.newBuilder();
+                builder.setDebugMessage("debug message");
+                builder.setResponseCode(10);
+                ((Callback<Response>) invocation.getArguments()[1]).onPurchaseHistoryResponse(
+                    builder.build(),
+                    List.of(PurchaseHistoryRecord("{}", "signature"))
+                );
+                return null;
+            }
+        });
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES, arguments), result);
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
     // Verify we pass the response to result
     ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
@@ -626,7 +639,7 @@ public class MethodCallHandlerTest {
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES, arguments), result);
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
     // Assert that we sent an error back.
     verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
