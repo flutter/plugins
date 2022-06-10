@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 - (void)createWithConfiguration:(WKWebViewConfiguration *)configuration
-                     completion:(void (^)(NSError * _Nullable))completion;
+                     completion:(void (^)(NSError *_Nullable))completion;
 @end
 
 @interface FWFWebViewConfiguration : WKWebViewConfiguration

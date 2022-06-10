@@ -23,7 +23,7 @@
 }
 
 - (void)createWithConfiguration:(WKWebViewConfiguration *)configuration
-                     completion:(void (^)(NSError * _Nullable))completion {
+                     completion:(void (^)(NSError *_Nullable))completion {
   long identifier = [self.instanceManager addHostCreatedInstance:configuration];
   [self createWithIdentifier:@(identifier) completion:completion];
 }

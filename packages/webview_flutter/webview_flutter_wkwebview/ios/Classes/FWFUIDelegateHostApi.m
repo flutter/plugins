@@ -37,12 +37,16 @@
       @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
   FWFWKNavigationActionData *navigationActionData =
       FWFWKNavigationActionDataFromNavigationAction(navigationAction);
-  
+
   if (![self.instanceManager containsInstance:configuration]) {
-    FWFWebViewConfigurationFlutterApiImpl *flutterApi = [[FWFWebViewConfigurationFlutterApiImpl alloc] initWithBinaryMessenger:self.binaryMessenger instanceManager:self.instanceManager];
-    [flutterApi createWithConfiguration:configuration completion:^(NSError *error) {
-      NSAssert(!error, @"%@", error);
-    }];
+    FWFWebViewConfigurationFlutterApiImpl *flutterApi =
+        [[FWFWebViewConfigurationFlutterApiImpl alloc]
+            initWithBinaryMessenger:self.binaryMessenger
+                    instanceManager:self.instanceManager];
+    [flutterApi createWithConfiguration:configuration
+                             completion:^(NSError *error) {
+                               NSAssert(!error, @"%@", error);
+                             }];
   }
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                webViewIdentifier:
