@@ -11,8 +11,8 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
 
-/// An implementation of [ImagePickerPlatform] that uses method channels.
-class MethodChannelImagePicker extends ImagePickerPlatform {
+/// An Android implementation of [ImagePickerPlatform].
+class ImagePickerAndroid extends ImagePickerPlatform {
   /// The MethodChannel that is being used by this implementation of the plugin.
   @visibleForTesting
   MethodChannel get channel => _channel;

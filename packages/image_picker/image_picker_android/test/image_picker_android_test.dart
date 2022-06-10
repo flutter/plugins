@@ -5,14 +5,14 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:image_picker_android/image_picker_android.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$MethodChannelImagePicker', () {
-    final MethodChannelImagePicker picker = MethodChannelImagePicker();
+  group('ImagePickerAndroid', () {
+    final ImagePickerAndroid picker = ImagePickerAndroid();
 
     final List<MethodCall> log = <MethodCall>[];
     dynamic returnValue = '';
