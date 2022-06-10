@@ -5,6 +5,7 @@
   magic string keys.
 * Adopts several parameter objects in the new `buildView` variant to
   future-proof it against future changes.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 
 ## 2.1.7
 

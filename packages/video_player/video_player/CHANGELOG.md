@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
 ## 2.4.4
 
 * Updates references to the obsolete master branch.

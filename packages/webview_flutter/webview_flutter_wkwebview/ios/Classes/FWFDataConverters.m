@@ -153,3 +153,64 @@ NSString *_Nullable FWFWKWebsiteDataTypeFromEnumData(FWFWKWebsiteDataTypeEnumDat
 
   return nil;
 }
+
+FWFWKNavigationActionData *FWFWKNavigationActionDataFromNavigationAction(
+    WKNavigationAction *action) {
+  return [FWFWKNavigationActionData
+      makeWithRequest:FWFNSUrlRequestDataFromNSURLRequest(action.request)
+          targetFrame:FWFWKFrameInfoDataFromWKFrameInfo(action.targetFrame)];
+}
+
+FWFNSUrlRequestData *FWFNSUrlRequestDataFromNSURLRequest(NSURLRequest *request) {
+  return [FWFNSUrlRequestData
+              makeWithUrl:request.URL.absoluteString
+               httpMethod:request.HTTPMethod
+                 httpBody:request.HTTPBody
+                              ? [FlutterStandardTypedData typedDataWithBytes:request.HTTPBody]
+                              : nil
+      allHttpHeaderFields:request.allHTTPHeaderFields ? request.allHTTPHeaderFields : @{}];
+}
+
+FWFWKFrameInfoData *FWFWKFrameInfoDataFromWKFrameInfo(WKFrameInfo *info) {
+  return [FWFWKFrameInfoData makeWithIsMainFrame:@(info.isMainFrame)];
+}
+
+WKNavigationActionPolicy FWFWKNavigationActionPolicyFromEnumData(
+    FWFWKNavigationActionPolicyEnumData *data) {
+  switch (data.value) {
+    case FWFWKNavigationActionPolicyEnumAllow:
+      return WKNavigationActionPolicyAllow;
+    case FWFWKNavigationActionPolicyEnumCancel:
+      return WKNavigationActionPolicyCancel;
+  }
+
+  return -1;
+}
+
+FWFNSErrorData *FWFNSErrorDataFromNSError(NSError *error) {
+  return [FWFNSErrorData makeWithCode:@(error.code)
+                               domain:error.domain
+                 localizedDescription:error.localizedDescription];
+}
+
+FWFNSKeyValueChangeKeyEnumData *FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(
+    NSKeyValueChangeKey key) {
+  if ([key isEqualToString:NSKeyValueChangeIndexesKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumIndexes];
+  } else if ([key isEqualToString:NSKeyValueChangeKindKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumKind];
+  } else if ([key isEqualToString:NSKeyValueChangeNewKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumNewValue];
+  } else if ([key isEqualToString:NSKeyValueChangeNotificationIsPriorKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData
+        makeWithValue:FWFNSKeyValueChangeKeyEnumNotificationIsPrior];
+  } else if ([key isEqualToString:NSKeyValueChangeOldKey]) {
+    return [FWFNSKeyValueChangeKeyEnumData makeWithValue:FWFNSKeyValueChangeKeyEnumOldValue];
+  }
+
+  return nil;
+}
+
+FWFWKScriptMessageData *FWFWKScriptMessageDataFromWKScriptMessage(WKScriptMessage *message) {
+  return [FWFWKScriptMessageData makeWithName:message.name body:message.body];
+}

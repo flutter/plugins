@@ -1,3 +1,7 @@
+## 2.8.12
+
+* Bumps mockito-inline from 3.11.1 to 4.6.1.
+
 ## 2.8.11
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
