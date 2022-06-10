@@ -9,7 +9,8 @@ import 'package:flutter/services.dart';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
+const MethodChannel _channel =
+    MethodChannel('plugins.flutter.io/image_picker_android');
 
 /// An Android implementation of [ImagePickerPlatform].
 class ImagePickerAndroid extends ImagePickerPlatform {
