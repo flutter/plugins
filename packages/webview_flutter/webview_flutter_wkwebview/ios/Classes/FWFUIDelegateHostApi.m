@@ -33,21 +33,24 @@
                      configuration:(WKWebViewConfiguration *)configuration
                   navigationAction:(WKNavigationAction *)navigationAction
                         completion:(void (^)(NSError *_Nullable))completion {
-  NSNumber *configurationIdentifier =
-      @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
-  FWFWKNavigationActionData *navigationActionData =
-      FWFWKNavigationActionDataFromNavigationAction(navigationAction);
-
   if (![self.instanceManager containsInstance:configuration]) {
     FWFWebViewConfigurationFlutterApiImpl *flutterApi =
         [[FWFWebViewConfigurationFlutterApiImpl alloc]
             initWithBinaryMessenger:self.binaryMessenger
                     instanceManager:self.instanceManager];
+
     [flutterApi createWithConfiguration:configuration
                              completion:^(NSError *error) {
                                NSAssert(!error, @"%@", error);
                              }];
   }
+
+  FWFWKNavigationActionData *navigationActionData =
+      FWFWKNavigationActionDataFromNavigationAction(navigationAction);
+
+  NSNumber *configurationIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
+
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                webViewIdentifier:
                                    @([self.instanceManager
