@@ -607,7 +607,7 @@ public class MethodCallHandlerTest {
     when(mockBillingClient.queryPurchasesAsync(
         any(QueryPurchasesParams.class),
         any(PurchaseHistoryResponseListener.class)
-    ).thenAnswer(
+    )).thenAnswer(
         new Answer<Object>() {
             Object answer(InvocationOnMock invocation) {
                 BillingResult.Builder builder = BillingResult.newBuilder();
@@ -619,7 +619,8 @@ public class MethodCallHandlerTest {
                 );
                 return null;
             }
-        });
+        }
+    );
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
