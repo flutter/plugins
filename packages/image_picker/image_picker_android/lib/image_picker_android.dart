@@ -17,6 +17,11 @@ class ImagePickerAndroid extends ImagePickerPlatform {
   @visibleForTesting
   MethodChannel get channel => _channel;
 
+  /// Registers this class as the default platform implementation.
+  static void registerWith() {
+    ImagePickerPlatform.instance = ImagePickerAndroid();
+  }
+
   @override
   Future<PickedFile?> pickImage({
     required ImageSource source,

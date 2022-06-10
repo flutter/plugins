@@ -26,6 +26,11 @@ void main() {
     log.clear();
   });
 
+  test('registers instance', () async {
+    ImagePickerAndroid.registerWith();
+    expect(ImagePickerPlatform.instance, isA<ImagePickerAndroid>());
+  });
+
   group('#pickImage', () {
     test('passes the image source argument correctly', () async {
       await picker.pickImage(source: ImageSource.camera);
