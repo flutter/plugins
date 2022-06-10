@@ -89,7 +89,6 @@ class FoundationFlutterApis {
 }
 
 /// Host api implementation for [NSObject].
-@immutable
 class NSObjectHostApiImpl extends NSObjectHostApi {
   /// Constructs an [NSObjectHostApiImpl].
   NSObjectHostApiImpl({
@@ -137,7 +136,6 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
 }
 
 /// Flutter api implementation for [NSObject].
-@immutable
 class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
   /// Constructs a [NSObjectFlutterApiImpl].
   NSObjectFlutterApiImpl({InstanceManager? instanceManager})
@@ -171,5 +169,10 @@ class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
         },
       ), changeValues),
     );
+  }
+
+  @override
+  void dispose(int identifier) {
+    instanceManager.remove(identifier);
   }
 }

@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart' show Color;
 import 'package:flutter/services.dart';
 
@@ -17,7 +16,6 @@ import '../web_kit/web_kit.dart';
 import 'ui_kit.dart';
 
 /// Host api implementation for [UIScrollView].
-@immutable
 class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   /// Constructs a [UIScrollViewHostApiImpl].
   UIScrollViewHostApiImpl({
@@ -82,7 +80,6 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
 }
 
 /// Host api implementation for [UIView].
-@immutable
 class UIViewHostApiImpl extends UIViewHostApi {
   /// Constructs a [UIViewHostApiImpl].
   UIViewHostApiImpl({
