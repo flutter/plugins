@@ -252,7 +252,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                         child: Center(
                           child: AspectRatio(
                               aspectRatio:
-                                  localVideoController.value.size != null
+                                  localVideoController.value.size != Size.zero
                                       ? localVideoController.value.aspectRatio
                                       : 1.0,
                               child: VideoPlayer(localVideoController)),
