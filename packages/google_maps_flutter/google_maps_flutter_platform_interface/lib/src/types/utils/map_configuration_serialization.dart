@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 
 import '../map_configuration.dart';
 
-/// Returns a JSON representatino of [config].
+/// Returns a JSON representation of [config].
 ///
-/// This is intend for two purposes:
+/// This is intended for two purposes:
 /// - Conversion of [MapConfiguration] to the map options dictionary used by
 ///   legacy platform interface methods.
-/// - Conversion of [MapConfiguraiton] to the default method channel
+/// - Conversion of [MapConfiguration] to the default method channel
 ///   implementation's representation.
 ///
 /// Both of these are parts of the public interface, so any change to the
