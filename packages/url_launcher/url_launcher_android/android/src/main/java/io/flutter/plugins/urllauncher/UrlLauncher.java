@@ -118,7 +118,7 @@ class UrlLauncher {
   }
 
   private Set<String> getNonBrowserPackageNames(Intent specializedIntent) {
-    PackageManager packageManager = activity.getPackageManager();
+    PackageManager packageManager = applicationContext.getPackageManager();
 
     // Get all apps that resolve the specific URL.
     Set<String> specializedPackageNames = queryPackageNames(packageManager, specializedIntent);
