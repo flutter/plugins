@@ -20,19 +20,15 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
-
+import io.flutter.plugins.urllauncher.utils.IntentDataMatcher;
+import io.flutter.plugins.urllauncher.utils.TestUtils;
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.robolectric.RobolectricTestRunner;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import io.flutter.plugins.urllauncher.utils.IntentDataMatcher;
-import io.flutter.plugins.urllauncher.utils.TestUtils;
 
 @RunWith(RobolectricTestRunner.class)
 public class UrlLauncherTest {

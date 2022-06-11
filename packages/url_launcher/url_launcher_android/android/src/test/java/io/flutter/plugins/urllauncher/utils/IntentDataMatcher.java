@@ -5,7 +5,6 @@
 package io.flutter.plugins.urllauncher.utils;
 
 import android.content.Intent;
-
 import org.mockito.ArgumentMatcher;
 
 public class IntentDataMatcher extends ArgumentMatcher<Intent> {

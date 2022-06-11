@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.util.Log;
 import androidx.annotation.Nullable;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
