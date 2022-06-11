@@ -9,14 +9,14 @@ import android.content.Intent;
 import org.mockito.ArgumentMatcher;
 
 public class IntentDataMatcher extends ArgumentMatcher<Intent> {
-    public IntentDataMatcher(String dataString) {
-        this.dataString = dataString;
-    }
+  public IntentDataMatcher(String dataString) {
+    this.dataString = dataString;
+  }
 
-    private final String dataString;
+  private final String dataString;
 
-    @Override
-    public boolean matches(Object intent) {
-        return ((Intent) intent).getDataString().equals(dataString);
-    }
+  @Override
+  public boolean matches(Object intent) {
+    return ((Intent) intent).getDataString().equals(dataString);
+  }
 }
