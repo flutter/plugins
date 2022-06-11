@@ -88,11 +88,13 @@ final class MethodCallHandlerImpl implements MethodCallHandler {
     final boolean useWebView = call.argument("useWebView");
     final boolean enableJavaScript = call.argument("enableJavaScript");
     final boolean enableDomStorage = call.argument("enableDomStorage");
+    final boolean universalLinksOnly = call.argument("universalLinksOnly");
     final Map<String, String> headersMap = call.argument("headers");
     final Bundle headersBundle = extractBundle(headersMap);
 
     LaunchStatus launchStatus =
-        urlLauncher.launch(url, headersBundle, useWebView, enableJavaScript, enableDomStorage);
+        urlLauncher.launch(
+            url, headersBundle, useWebView, enableJavaScript, enableDomStorage, universalLinksOnly);
 
     if (launchStatus == LaunchStatus.NO_ACTIVITY) {
       result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);

@@ -25,9 +25,9 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 ///     On iOS, this should be used in cases where sharing the cookies of the
 ///     user's browser is important, such as SSO flows, since Safari View
 ///     Controller does not share the browser's context.
-///   - [LaunchMode.externalNonBrowserApplication] is supported on iOS 10+.
-///     This setting is used to require universal links to open in a non-browser
-///     application.
+///   - [LaunchMode.externalNonBrowserApplication] is supported on iOS 10+ and
+///     Android. This setting is used to require universal links to open in a
+///     non-browser application.
 ///
 /// For web, [webOnlyWindowName] specifies a target for the launch. This
 /// supports the standard special link target names. For example:
