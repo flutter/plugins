@@ -1,3 +1,8 @@
+## 6.0.18
+
+* Adds support for requiring links to open in a non-browser app in `launch`
+  through the `universalLinksOnly` parameter.
+
 ## 6.0.17
 
 * Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
