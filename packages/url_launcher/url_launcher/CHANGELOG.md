@@ -1,6 +1,8 @@
-## NEXT
+## 6.1.4
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/105648).
+* Updates documentation to mention `LaunchMode.externalNonBrowserApplication`
+  now being supported for Android in `launchUrl`.
 
 ## 6.1.3
 
