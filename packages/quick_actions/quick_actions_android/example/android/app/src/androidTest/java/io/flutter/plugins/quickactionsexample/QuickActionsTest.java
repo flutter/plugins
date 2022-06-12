@@ -23,6 +23,7 @@ import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiScrollable;
 import androidx.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.Until;
 import io.flutter.plugins.quickactions.QuickActionsPlugin;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class QuickActionsTest {
     context = ApplicationProvider.getApplicationContext();
     device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     scenario = ensureAppRunToView();
+    ensureAllAppShortcutsAreCreated();
   }
 
   @After
@@ -73,8 +75,7 @@ public class QuickActionsTest {
     // Assert the app shortcuts defined in ../lib/main.dart.
     assertFalse(dynamicShortcuts.isEmpty());
     assertEquals(expectedShortcuts.size(), dynamicShortcuts.size());
-    for (int i = 0; i < expectedShortcuts.size(); i++) {
-      ShortcutInfo expectedShortcut = expectedShortcuts.get(i);
+    for (ShortcutInfo expectedShortcut : expectedShortcuts) {
       ShortcutInfo dynamicShortcut =
           dynamicShortcuts
               .stream()
@@ -127,6 +128,10 @@ public class QuickActionsTest {
     // This is Android SingleTop behavior in which Android does not destroy the initial activity and
     // launch a new activity.
     Assert.assertEquals(initialActivity.get(), currentActivity.get());
+  }
+
+  private void ensureAllAppShortcutsAreCreated() {
+    device.wait(Until.hasObject(By.text("actions ready")), 1000);
   }
 
   private List<ShortcutInfo> createMockShortcuts() {
