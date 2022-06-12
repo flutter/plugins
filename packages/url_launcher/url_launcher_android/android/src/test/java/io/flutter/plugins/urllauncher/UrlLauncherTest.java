@@ -96,9 +96,6 @@ public class UrlLauncherTest {
       ResolveInfo browserIntentActivity = stubResolveInfo("browser");
       when(mockPackageManager.queryIntentActivities(any(Intent.class), anyInt()))
           .thenReturn(Collections.singletonList(browserIntentActivity));
-      when(mockPackageManager.queryIntentActivities(
-              Matchers.argThat(new IntentDataMatcher(LAUNCH_URL)), anyInt()))
-          .thenReturn(Collections.singletonList(browserIntentActivity));
 
       UrlLauncher.LaunchStatus launchStatus =
           urlLauncher.launch(LAUNCH_URL, null, false, false, false, true);
