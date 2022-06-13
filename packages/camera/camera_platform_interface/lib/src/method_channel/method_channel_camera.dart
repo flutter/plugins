@@ -131,10 +131,10 @@ class MethodChannelCamera extends CameraPlatform {
         'imageFormatGroup': imageFormatGroup.name(),
       },
     )
-    // TODO(srawlins): Fix this static issue,
-    // https://github.com/flutter/flutter/issues/105750.
-    // ignore: body_might_complete_normally_catch_error
-    .catchError(
+        // TODO(srawlins): Fix this static issue,
+        // https://github.com/flutter/flutter/issues/105750.
+        // ignore: body_might_complete_normally_catch_error
+        .catchError(
       (Object error, StackTrace stackTrace) {
         if (error is! PlatformException) {
           throw error;
