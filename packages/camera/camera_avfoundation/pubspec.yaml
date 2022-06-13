@@ -20,8 +20,10 @@ dependencies:
   camera_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
+  stream_transform: ^2.0.0
 
 dev_dependencies:
+  async: ^2.5.0
   flutter_driver:
     sdk: flutter
   flutter_test:
