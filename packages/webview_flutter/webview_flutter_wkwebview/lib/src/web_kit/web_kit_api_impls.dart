@@ -239,8 +239,13 @@ class WebKitFlutterApis {
           instanceManager: instanceManager,
         ),
         scriptMessageHandler = WKScriptMessageHandlerFlutterApiImpl(
-            instanceManager: instanceManager),
+          instanceManager: instanceManager,
+        ),
         uiDelegate = WKUIDelegateFlutterApiImpl(
+          instanceManager: instanceManager,
+        ),
+        webViewConfiguration = WKWebViewConfigurationFlutterApiImpl(
+          binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         );
 
@@ -271,6 +276,10 @@ class WebKitFlutterApis {
   /// Flutter Api for [WKUIDelegate].
   @visibleForTesting
   final WKUIDelegateFlutterApiImpl uiDelegate;
+
+  /// Flutter Api for [WKWebViewConfiguration].
+  @visibleForTesting
+  final WKWebViewConfigurationFlutterApiImpl webViewConfiguration;
 
   /// Ensures all the Flutter APIs have been set up to receive calls from native code.
   void ensureSetUp() {
@@ -572,6 +581,37 @@ class WKWebViewConfigurationHostApiImpl extends WKWebViewConfigurationHostApi {
     return setMediaTypesRequiringUserActionForPlayback(
       instanceManager.getIdentifier(instance)!,
       _toWKAudiovisualMediaTypeEnumData(types).toList(),
+    );
+  }
+}
+
+/// Flutter api implementation for [WKWebViewConfiguration].
+@immutable
+class WKWebViewConfigurationFlutterApiImpl
+    extends WKWebViewConfigurationFlutterApi {
+  /// Constructs a [WKWebViewConfigurationFlutterApiImpl].
+  WKWebViewConfigurationFlutterApiImpl({
+    this.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void create(int identifier) {
+    instanceManager.addHostCreatedInstance(
+      WKWebViewConfiguration.detached(
+        binaryMessenger: binaryMessenger,
+        instanceManager: instanceManager,
+      ),
+      identifier,
     );
   }
 }

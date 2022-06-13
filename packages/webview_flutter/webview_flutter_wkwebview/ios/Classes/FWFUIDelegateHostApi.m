@@ -7,7 +7,9 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFUIDelegateFlutterApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
+@property(weak) id<FlutterBinaryMessenger> binaryMessenger;
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
@@ -16,6 +18,7 @@
                         instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self initWithBinaryMessenger:binaryMessenger];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
   }
   return self;
@@ -30,8 +33,21 @@
                      configuration:(WKWebViewConfiguration *)configuration
                   navigationAction:(WKNavigationAction *)navigationAction
                         completion:(void (^)(NSError *_Nullable))completion {
+  if (![self.instanceManager containsInstance:configuration]) {
+      FWFWebViewConfigurationFlutterApiImpl *flutterApi =
+          [[FWFWebViewConfigurationFlutterApiImpl alloc]
+              initWithBinaryMessenger:self.binaryMessenger
+                      instanceManager:self.instanceManager];
+
+      [flutterApi createWithConfiguration:configuration
+                               completion:^(NSError *error) {
+                                 NSAssert(!error, @"%@", error);
+                               }];
+    }
+  
   NSNumber *configurationIdentifier =
-      @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
+        @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
+  
   FWFWKNavigationActionData *navigationActionData =
       FWFWKNavigationActionDataFromNavigationAction(navigationAction);
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
