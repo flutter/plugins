@@ -117,6 +117,7 @@ class InstanceManager {
   /// This does not remove the the weak referenced instance associtated with
   /// [identifier]. This can be done with [removeWeakReference].
   T? remove<T extends Copyable>(int identifier) {
+    _weakInstances.remove(identifier);
     return _strongInstances.remove(identifier) as T?;
   }
 
