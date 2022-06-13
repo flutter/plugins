@@ -1,4 +1,4 @@
-## NEXT
+## 0.9.8
 
 * Moves Android and iOS implementations to federated packages.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).

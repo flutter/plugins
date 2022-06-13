@@ -14,6 +14,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
   const OpenMultipleImagesPage({Key? key}) : super(key: key);
 
   Future<void> _openImageFile(BuildContext context) async {
+    // #docregion MultiOpen
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: <String>['jpg', 'jpeg'],
@@ -26,6 +27,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
       jpgsTypeGroup,
       pngTypeGroup,
     ]);
+    // #enddocregion MultiOpen
     if (files.isEmpty) {
       // Operation was canceled by the user.
       return;
