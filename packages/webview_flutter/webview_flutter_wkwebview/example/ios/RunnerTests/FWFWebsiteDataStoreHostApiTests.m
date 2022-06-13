@@ -70,6 +70,8 @@
                                         blockError = error;
                                       }];
   XCTAssertEqualObjects(returnValue, @YES);
+  // Asserts whether the NSNumber value represents a BOOL.
+  XCTAssertEqual(CFBooleanGetTypeID(), CFGetTypeID((__bridge CFTypeRef)(returnValue)));
   XCTAssertNil(blockError);
 }
 @end
