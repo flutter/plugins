@@ -15,7 +15,7 @@ flutter:
       android:
         package: io.flutter.plugins.imagepicker
         pluginClass: ImagePickerPlugin
-        dartPLuginClass: ImagePickerAndroid
+        dartPluginClass: ImagePickerAndroid
 
 dependencies:
   flutter:
