@@ -4,7 +4,6 @@
 
 #import "FWFUIDelegateHostApi.h"
 #import "FWFDataConverters.h"
-#import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFUIDelegateFlutterApiImpl ()
 // BinaryMessenger and InstanceManager must be weak to prevent a circular reference
@@ -20,6 +19,9 @@
   if (self) {
     _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
+    _webViewConfigurationFlutterApi =
+        [[FWFWebViewConfigurationFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                               instanceManager:instanceManager];
   }
   return self;
 }
@@ -34,22 +36,17 @@
                   navigationAction:(WKNavigationAction *)navigationAction
                         completion:(void (^)(NSError *_Nullable))completion {
   if (![self.instanceManager containsInstance:configuration]) {
-      FWFWebViewConfigurationFlutterApiImpl *flutterApi =
-          [[FWFWebViewConfigurationFlutterApiImpl alloc]
-              initWithBinaryMessenger:self.binaryMessenger
-                      instanceManager:self.instanceManager];
+    [self.webViewConfigurationFlutterApi createWithConfiguration:configuration
+                                                      completion:^(NSError *error) {
+                                                        NSAssert(!error, @"%@", error);
+                                                      }];
+  }
 
-      [flutterApi createWithConfiguration:configuration
-                               completion:^(NSError *error) {
-                                 NSAssert(!error, @"%@", error);
-                               }];
-    }
-  
   NSNumber *configurationIdentifier =
-        @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
-  
+      @([self.instanceManager identifierWithStrongReferenceForInstance:configuration]);
   FWFWKNavigationActionData *navigationActionData =
       FWFWKNavigationActionDataFromNavigationAction(navigationAction);
+
   [self onCreateWebViewForDelegateWithIdentifier:@([self identifierForDelegate:instance])
                                webViewIdentifier:
                                    @([self.instanceManager
