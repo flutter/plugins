@@ -221,14 +221,13 @@ void main() {
         plugin.debugSetMapById(<int, GoogleMapController>{mapId: controller});
       });
       // Options
-      testWidgets('updateMapOptions', (WidgetTester tester) async {
-        final Map<String, dynamic> expectedMapOptions = <String, dynamic>{
-          'someOption': 12345
-        };
+      testWidgets('updateMapConfiguration', (WidgetTester tester) async {
+        const MapConfiguration configuration =
+            MapConfiguration(mapType: MapType.satellite);
 
-        await plugin.updateMapOptions(expectedMapOptions, mapId: mapId);
+        await plugin.updateMapConfiguration(configuration, mapId: mapId);
 
-        verify(controller.updateRawOptions(expectedMapOptions));
+        verify(controller.updateMapConfiguration(configuration));
       });
       // Geometry
       testWidgets('updateMarkers', (WidgetTester tester) async {
