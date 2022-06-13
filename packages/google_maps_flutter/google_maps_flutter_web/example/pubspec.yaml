@@ -21,13 +21,7 @@ dev_dependencies:
   google_maps: ^6.1.0
   google_maps_flutter: # Used for projection_test.dart
     path: ../../google_maps_flutter
-  google_maps_flutter_platform_interface: ^2.1.2 # 2.2.0
   http: ^0.13.0
   integration_test:
     sdk: flutter
   mockito: ^5.0.0
-
-# FOR TESTING ONLY. DO NOT MERGE.
-dependency_overrides:
-  google_maps_flutter_platform_interface:
-    path: ../../../google_maps_flutter/google_maps_flutter_platform_interface
