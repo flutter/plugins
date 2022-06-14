@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/utils/map_configuration_serialization.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// The interface that platform-specific implementations of `google_maps_flutter` must extend.
@@ -50,7 +51,8 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// Updates configuration options of the map user interface.
+  /// Updates configuration options of the map user interface - deprecated, use
+  /// updateMapConfiguration instead.
   ///
   /// Change listeners are notified once the update has been made on the
   /// platform side.
@@ -61,6 +63,20 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     required int mapId,
   }) {
     throw UnimplementedError('updateMapOptions() has not been implemented.');
+  }
+
+  /// Updates configuration options of the map user interface.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> updateMapConfiguration(
+    MapConfiguration configuration, {
+    required int mapId,
+  }) {
+    return updateMapOptions(jsonForMapConfiguration(configuration),
+        mapId: mapId);
   }
 
   /// Updates marker configuration.
@@ -348,7 +364,8 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('dispose() has not been implemented.');
   }
 
-  /// Returns a widget displaying the map view.
+  /// Returns a widget displaying the map view - deprecated, use
+  /// [buildViewWithConfiguration] instead.
   Widget buildView(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
@@ -367,7 +384,8 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 
-  /// Returns a widget displaying the map view.
+  /// Returns a widget displaying the map view - deprecated, use
+  /// [buildViewWithConfiguration] instead.
   ///
   /// This method is similar to [buildView], but contains a parameter for
   /// platforms that require a text direction.
@@ -381,12 +399,12 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
     required TextDirection textDirection,
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
     return buildView(
@@ -400,6 +418,29 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
       tileOverlays: tileOverlays,
       gestureRecognizers: gestureRecognizers,
       mapOptions: mapOptions,
+    );
+  }
+
+  /// Returns a widget displaying the map view.
+  Widget buildViewWithConfiguration(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required MapWidgetConfiguration widgetConfiguration,
+    MapConfiguration mapConfiguration = const MapConfiguration(),
+    MapObjects mapObjects = const MapObjects(),
+  }) {
+    return buildViewWithTextDirection(
+      creationId,
+      onPlatformViewCreated,
+      initialCameraPosition: widgetConfiguration.initialCameraPosition,
+      textDirection: widgetConfiguration.textDirection,
+      markers: mapObjects.markers,
+      polygons: mapObjects.polygons,
+      polylines: mapObjects.polylines,
+      circles: mapObjects.circles,
+      tileOverlays: mapObjects.tileOverlays,
+      gestureRecognizers: widgetConfiguration.gestureRecognizers,
+      mapOptions: jsonForMapConfiguration(mapConfiguration),
     );
   }
 }
