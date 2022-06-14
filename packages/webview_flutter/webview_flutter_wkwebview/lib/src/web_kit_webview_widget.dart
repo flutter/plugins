@@ -355,6 +355,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   Future<String?> getTitle() => webView.getTitle();
 
   @override
+  Future<String?> currentUrl() => webView.getUrl();
+
+  @override
   Future<void> scrollTo(int x, int y) async {
     webView.scrollView.setContentOffset(Point<double>(
       x.toDouble(),
