@@ -113,6 +113,7 @@ task:
           # run with --require-excerpts and no exclusions.
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
+        dependabot_script: dart $PLUGIN_TOOL dependabot-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
       # rather than state.
