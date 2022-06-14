@@ -169,8 +169,8 @@ class MakeDepsPathBasedCommand extends PluginCommand {
       // then re-serialiazing so that it's a localized change, rather than
       // rewriting the whole file (e.g., destroying comments), which could be
       // more disruptive for local use.
-      String newPubspecContents = pubspecContents +
-          '''
+      String newPubspecContents = '''
+$pubspecContents
 
 $_dependencyOverrideWarningComment
 dependency_overrides:
@@ -178,7 +178,7 @@ dependency_overrides:
       for (final String packageName in packagesToOverride) {
         // Find the relative path from the common base to the local package.
         final List<String> repoRelativePathComponents = path.split(
-            path.relative(localDependencies[packageName]!.directory.path,
+            path.relative(localDependencies[packageName]!.path,
                 from: commonBasePath));
         newPubspecContents += '''
   $packageName:

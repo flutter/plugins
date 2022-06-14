@@ -13,5 +13,5 @@ If you would like to contribute to the plugin, check out our [contribution guide
 
 [1]: https://pub.dev/packages/quick_actions
 [2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
-[3]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
+[3]: https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md
 

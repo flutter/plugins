@@ -18,6 +18,7 @@ import 'web_kit/web_kit.dart';
 class WebKitWebViewWidget extends StatefulWidget {
   /// Constructs a [WebKitWebViewWidget].
   const WebKitWebViewWidget({
+    super.key,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
@@ -91,6 +92,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   bool _zoomEnabled = true;
+  bool _hasNavigationDelegate = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -111,33 +113,60 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   /// Used to integrate custom user interface elements into web view interactions.
   @visibleForTesting
-  late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate();
+  late final WKUIDelegate uiDelegate =
+      webViewProxy.createUIDelgate(onCreateWebView: (
+    WKWebView webView,
+    WKWebViewConfiguration configuration,
+    WKNavigationAction navigationAction,
+  ) {
+    if (!navigationAction.targetFrame.isMainFrame) {
+      webView.loadRequest(navigationAction.request);
+    }
+  });
 
   /// Methods for handling navigation changes and tracking navigation requests.
   @visibleForTesting
   late final WKNavigationDelegate navigationDelegate =
-      webViewProxy.createNavigationDelegate()
-        ..setDidStartProvisionalNavigation((WKWebView webView, String? url) {
-          callbacksHandler.onPageStarted(url ?? '');
-        })
-        ..setDidFinishNavigation((WKWebView webView, String? url) {
-          callbacksHandler.onPageFinished(url ?? '');
-        })
-        ..setDidFailNavigation((WKWebView webView, NSError error) {
-          callbacksHandler.onWebResourceError(_toWebResourceError(error));
-        })
-        ..setDidFailProvisionalNavigation((WKWebView webView, NSError error) {
-          callbacksHandler.onWebResourceError(_toWebResourceError(error));
-        })
-        ..setWebViewWebContentProcessDidTerminate((WKWebView webView) {
-          callbacksHandler.onWebResourceError(WebResourceError(
-            errorCode: WKErrorCode.webContentProcessTerminated,
-            // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
-            domain: 'WKErrorDomain',
-            description: '',
-            errorType: WebResourceErrorType.webContentProcessTerminated,
-          ));
-        });
+      webViewProxy.createNavigationDelegate(
+    didFinishNavigation: (WKWebView webView, String? url) {
+      callbacksHandler.onPageFinished(url ?? '');
+    },
+    didStartProvisionalNavigation: (WKWebView webView, String? url) {
+      callbacksHandler.onPageStarted(url ?? '');
+    },
+    decidePolicyForNavigationAction: (
+      WKWebView webView,
+      WKNavigationAction action,
+    ) async {
+      if (!_hasNavigationDelegate) {
+        return WKNavigationActionPolicy.allow;
+      }
+
+      final bool allow = await callbacksHandler.onNavigationRequest(
+        url: action.request.url,
+        isForMainFrame: action.targetFrame.isMainFrame,
+      );
+
+      return allow
+          ? WKNavigationActionPolicy.allow
+          : WKNavigationActionPolicy.cancel;
+    },
+    didFailNavigation: (WKWebView webView, NSError error) {
+      callbacksHandler.onWebResourceError(_toWebResourceError(error));
+    },
+    didFailProvisionalNavigation: (WKWebView webView, NSError error) {
+      callbacksHandler.onWebResourceError(_toWebResourceError(error));
+    },
+    webViewWebContentProcessDidTerminate: (WKWebView webView) {
+      callbacksHandler.onWebResourceError(WebResourceError(
+        errorCode: WKErrorCode.webContentProcessTerminated,
+        // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+        domain: 'WKErrorDomain',
+        description: '',
+        errorType: WebResourceErrorType.webContentProcessTerminated,
+      ));
+    },
+  );
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -149,24 +178,23 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       autoMediaPlaybackPolicy: params.autoMediaPlaybackPolicy,
     );
 
-    webView = webViewProxy.createWebView(configuration);
+    webView = webViewProxy.createWebView(configuration, observeValue: (
+      String keyPath,
+      NSObject object,
+      Map<NSKeyValueChangeKey, Object?> change,
+    ) {
+      final double progress = change[NSKeyValueChangeKey.newValue]! as double;
+      callbacksHandler.onProgress((progress * 100).round());
+    });
 
     webView.setUIDelegate(uiDelegate);
-    uiDelegate.setOnCreateWebView((
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    ) {
-      if (!navigationAction.targetFrame.isMainFrame) {
-        webView.loadRequest(navigationAction.request);
-      }
-    });
 
     await addJavascriptChannels(params.javascriptChannelNames);
 
     webView.setNavigationDelegate(navigationDelegate);
 
     if (params.userAgent != null) {
-      webView.setCustomUserAgent(params.userAgent!);
+      webView.setCustomUserAgent(params.userAgent);
     }
 
     if (params.webSettings != null) {
@@ -176,7 +204,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     if (params.backgroundColor != null) {
       webView.setOpaque(false);
       webView.setBackgroundColor(Colors.transparent);
-      webView.scrollView.setBackgroundColor(params.backgroundColor!);
+      webView.scrollView.setBackgroundColor(params.backgroundColor);
     }
 
     if (params.initialUrl != null) {
@@ -226,11 +254,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<void> clearCache() {
     return webView.configuration.websiteDataStore.removeDataOfTypes(
-      <WKWebsiteDataTypes>{
-        WKWebsiteDataTypes.memoryCache,
-        WKWebsiteDataTypes.diskCache,
-        WKWebsiteDataTypes.offlineWebApplicationCache,
-        WKWebsiteDataTypes.localStroage,
+      <WKWebsiteDataType>{
+        WKWebsiteDataType.memoryCache,
+        WKWebsiteDataType.diskCache,
+        WKWebsiteDataType.offlineWebApplicationCache,
+        WKWebsiteDataType.localStorage,
       },
       DateTime.fromMillisecondsSinceEpoch(0),
     );
@@ -356,10 +384,11 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> updateSettings(WebSettings setting) async {
+    if (setting.hasNavigationDelegate != null) {
+      _hasNavigationDelegate = setting.hasNavigationDelegate!;
+    }
     await Future.wait(<Future<void>>[
       _setUserAgent(setting.userAgent),
-      if (setting.hasNavigationDelegate != null)
-        _setHasNavigationDelegate(setting.hasNavigationDelegate!),
       if (setting.hasProgressTracking != null)
         _setHasProgressTracking(setting.hasProgressTracking!),
       if (setting.javascriptMode != null)
@@ -382,16 +411,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       ).map<Future<void>>(
         (String channelName) {
           final WKScriptMessageHandler handler =
-              webViewProxy.createScriptMessageHandler()
-                ..setDidReceiveScriptMessage((
-                  WKUserContentController userContentController,
-                  WKScriptMessage message,
-                ) {
-                  javascriptChannelRegistry.onJavascriptChannelMessage(
-                    message.name,
-                    message.body!.toString(),
-                  );
-                });
+              webViewProxy.createScriptMessageHandler(didReceiveScriptMessage: (
+            WKUserContentController userContentController,
+            WKScriptMessage message,
+          ) {
+            javascriptChannelRegistry.onJavascriptChannelMessage(
+              message.name,
+              message.body!.toString(),
+            );
+          });
           _scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
@@ -424,34 +452,8 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
-    if (hasNavigationDelegate) {
-      return navigationDelegate.setDecidePolicyForNavigationAction(
-          (WKWebView webView, WKNavigationAction action) async {
-        final bool allow = await callbacksHandler.onNavigationRequest(
-          url: action.request.url,
-          isForMainFrame: action.targetFrame.isMainFrame,
-        );
-
-        return allow
-            ? WKNavigationActionPolicy.allow
-            : WKNavigationActionPolicy.cancel;
-      });
-    } else {
-      return navigationDelegate.setDecidePolicyForNavigationAction(null);
-    }
-  }
-
   Future<void> _setHasProgressTracking(bool hasProgressTracking) {
     if (hasProgressTracking) {
-      webView.setObserveValue((
-        String keyPath,
-        NSObject object,
-        Map<NSKeyValueChangeKey, Object?> change,
-      ) {
-        final double progress = change[NSKeyValueChangeKey.newValue]! as double;
-        callbacksHandler.onProgress((progress * 100).round());
-      });
       return webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
@@ -460,7 +462,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         },
       );
     } else {
-      webView.setObserveValue(null);
       return webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
@@ -495,10 +496,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   Future<void> _disableZoom() {
     const WKUserScript userScript = WKUserScript(
-      "var meta = document.createElement('meta');"
-      "meta.name = 'viewport';"
-      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-      "user-scalable=no';"
+      "var meta = document.createElement('meta');\n"
+      "meta.name = 'viewport';\n"
+      "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+      "user-scalable=no';\n"
       "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
       WKUserScriptInjectionTime.atDocumentEnd,
       isMainFrameOnly: true,
@@ -516,8 +517,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     Set<String> removedJavaScriptChannels = const <String>{},
   }) async {
     webView.configuration.userContentController.removeAllUserScripts();
-    webView.configuration.userContentController
-        .removeAllScriptMessageHandlers();
+    // TODO(bparrishMines): This can be replaced with
+    // `removeAllScriptMessageHandlers` once Dart supports runtime version
+    // checking. (e.g. The equivalent to @availability in Objective-C.)
+    _scriptMessageHandlers.keys.forEach(
+      webView.configuration.userContentController.removeScriptMessageHandler,
+    );
 
     removedJavaScriptChannels.forEach(_scriptMessageHandlers.remove);
     final Set<String> remainingNames = _scriptMessageHandlers.keys.toSet();
@@ -599,22 +604,70 @@ class WebViewWidgetProxy {
   const WebViewWidgetProxy();
 
   /// Constructs a [WKWebView].
-  WKWebView createWebView(WKWebViewConfiguration configuration) {
-    return WKWebView(configuration);
+  WKWebView createWebView(
+    WKWebViewConfiguration configuration, {
+    void Function(
+      String keyPath,
+      NSObject object,
+      Map<NSKeyValueChangeKey, Object?> change,
+    )?
+        observeValue,
+  }) {
+    return WKWebView(configuration, observeValue: observeValue);
   }
 
   /// Constructs a [WKScriptMessageHandler].
-  WKScriptMessageHandler createScriptMessageHandler() {
-    return WKScriptMessageHandler();
+  WKScriptMessageHandler createScriptMessageHandler({
+    required void Function(
+      WKUserContentController userContentController,
+      WKScriptMessage message,
+    )
+        didReceiveScriptMessage,
+  }) {
+    return WKScriptMessageHandler(
+      didReceiveScriptMessage: didReceiveScriptMessage,
+    );
   }
 
   /// Constructs a [WKUIDelegate].
-  WKUIDelegate createUIDelgate() {
-    return WKUIDelegate();
+  WKUIDelegate createUIDelgate({
+    void Function(
+      WKWebView webView,
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    )?
+        onCreateWebView,
+  }) {
+    return WKUIDelegate(onCreateWebView: onCreateWebView);
   }
 
   /// Constructs a [WKNavigationDelegate].
-  WKNavigationDelegate createNavigationDelegate() {
-    return WKNavigationDelegate();
+  WKNavigationDelegate createNavigationDelegate({
+    void Function(
+      WKWebView webView,
+      String? url,
+    )?
+        didFinishNavigation,
+    void Function(WKWebView webView, String? url)?
+        didStartProvisionalNavigation,
+    Future<WKNavigationActionPolicy> Function(
+      WKWebView webView,
+      WKNavigationAction navigationAction,
+    )?
+        decidePolicyForNavigationAction,
+    void Function(WKWebView webView, NSError error)? didFailNavigation,
+    void Function(WKWebView webView, NSError error)?
+        didFailProvisionalNavigation,
+    void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
+  }) {
+    return WKNavigationDelegate(
+      didFinishNavigation: didFinishNavigation,
+      didStartProvisionalNavigation: didStartProvisionalNavigation,
+      decidePolicyForNavigationAction: decidePolicyForNavigationAction,
+      didFailNavigation: didFailNavigation,
+      didFailProvisionalNavigation: didFailProvisionalNavigation,
+      webViewWebContentProcessDidTerminate:
+          webViewWebContentProcessDidTerminate,
+    );
   }
 }

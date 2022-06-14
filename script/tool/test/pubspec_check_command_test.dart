@@ -27,6 +27,7 @@ String _headerSection(
   String name, {
   bool isPlugin = false,
   bool includeRepository = true,
+  String repositoryBranch = 'main',
   String? repositoryPackagesDirRelativePath,
   bool includeHomepage = false,
   bool includeIssueTracker = true,
@@ -38,12 +39,12 @@ String _headerSection(
     'flutter',
     if (isPlugin) 'plugins' else 'packages',
     'tree',
-    'main',
+    repositoryBranch,
     'packages',
     repositoryPath,
   ];
   final String repoLink =
-      'https://github.com/' + repoLinkPathComponents.join('/');
+      'https://github.com/${repoLinkPathComponents.join('/')}';
   final String issueTrackerLink = 'https://github.com/flutter/flutter/issues?'
       'q=is%3Aissue+is%3Aopen+label%3A%22p%3A+$name%22';
   description ??= 'A test package for validating that the pubspec.yaml '
@@ -55,7 +56,7 @@ ${includeRepository ? 'repository: $repoLink' : ''}
 ${includeHomepage ? 'homepage: $repoLink' : ''}
 ${includeIssueTracker ? 'issue_tracker: $issueTrackerLink' : ''}
 version: 1.0.0
-${publishable ? '' : 'publish_to: \'none\''}
+${publishable ? '' : "publish_to: 'none'"}
 ''';
 }
 
@@ -146,9 +147,9 @@ void main() {
     });
 
     test('passes for a plugin following conventions', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+      final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -157,10 +158,7 @@ ${_devDependenciesSection()}
 ${_falseSecretsSection()}
 ''');
 
-      pluginDirectory
-          .childDirectory('example')
-          .childFile('pubspec.yaml')
-          .writeAsStringSync('''
+      plugin.getExamples().first.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin_example',
         publishable: false,
@@ -187,10 +185,10 @@ ${_flutterSection()}
     });
 
     test('passes for a Flutter package following conventions', () async {
-      final Directory packageDirectory =
+      final RepositoryPackage package =
           createFakePackage('a_package', packagesDir);
 
-      packageDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      package.pubspecFile.writeAsStringSync('''
 ${_headerSection('a_package')}
 ${_environmentSection()}
 ${_dependenciesSection()}
@@ -199,10 +197,7 @@ ${_flutterSection()}
 ${_falseSecretsSection()}
 ''');
 
-      packageDirectory
-          .childDirectory('example')
-          .childFile('pubspec.yaml')
-          .writeAsStringSync('''
+      package.getExamples().first.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'a_package',
         publishable: false,
@@ -229,10 +224,10 @@ ${_flutterSection()}
     });
 
     test('passes for a minimal package following conventions', () async {
-      final Directory packageDirectory = packagesDir.childDirectory('package');
-      packageDirectory.createSync(recursive: true);
+      final RepositoryPackage package =
+          createFakePackage('package', packagesDir, examples: <String>[]);
 
-      packageDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      package.pubspecFile.writeAsStringSync('''
 ${_headerSection('package')}
 ${_environmentSection()}
 ${_dependenciesSection()}
@@ -252,10 +247,10 @@ ${_dependenciesSection()}
     });
 
     test('fails when homepage is included', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, includeHomepage: true)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -280,10 +275,10 @@ ${_devDependenciesSection()}
     });
 
     test('fails when repository is missing', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, includeRepository: false)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -307,10 +302,10 @@ ${_devDependenciesSection()}
     });
 
     test('fails when homepage is given instead of repository', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, includeHomepage: true, includeRepository: false)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -334,11 +329,11 @@ ${_devDependenciesSection()}
       );
     });
 
-    test('fails when repository is incorrect', () async {
-      final Directory pluginDirectory =
+    test('fails when repository package name is incorrect', () async {
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, repositoryPackagesDirRelativePath: 'different_plugin')}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -361,11 +356,38 @@ ${_devDependenciesSection()}
       );
     });
 
-    test('fails when issue tracker is missing', () async {
-      final Directory pluginDirectory =
+    test('fails when repository uses master instead of main', () async {
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
+${_headerSection('plugin', isPlugin: true, repositoryBranch: 'master')}
+${_environmentSection()}
+${_flutterSection(isPlugin: true)}
+${_dependenciesSection()}
+${_devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('The "repository" link should use "main", not "master".'),
+        ]),
+      );
+    });
+
+    test('fails when issue tracker is missing', () async {
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, examples: <String>[]);
+
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, includeIssueTracker: false)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -389,11 +411,11 @@ ${_devDependenciesSection()}
     });
 
     test('fails when description is too short', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'a_plugin', packagesDir.childDirectory('a_plugin'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, description: 'Too short')}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -420,10 +442,10 @@ ${_devDependenciesSection()}
     test(
         'allows short descriptions for non-app-facing parts of federated plugins',
         () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, description: 'Too short')}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -448,7 +470,7 @@ ${_devDependenciesSection()}
     });
 
     test('fails when description is too long', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
       const String description = 'This description is too long. It just goes '
@@ -456,7 +478,7 @@ ${_devDependenciesSection()}
           'there is just too much here. Someone shoul really cut this down to just '
           'the core description so that search results are more useful and the '
           'package does not lose pub points.';
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true, description: description)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -481,10 +503,10 @@ ${_devDependenciesSection()}
     });
 
     test('fails when environment section is out of order', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true)}
 ${_flutterSection(isPlugin: true)}
 ${_dependenciesSection()}
@@ -509,10 +531,10 @@ ${_environmentSection()}
     });
 
     test('fails when flutter section is out of order', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true)}
 ${_flutterSection(isPlugin: true)}
 ${_environmentSection()}
@@ -537,10 +559,10 @@ ${_devDependenciesSection()}
     });
 
     test('fails when dependencies section is out of order', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -565,9 +587,9 @@ ${_dependenciesSection()}
     });
 
     test('fails when dev_dependencies section is out of order', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+      final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true)}
 ${_environmentSection()}
 ${_devDependenciesSection()}
@@ -592,10 +614,10 @@ ${_dependenciesSection()}
     });
 
     test('fails when false_secrets section is out of order', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin', isPlugin: true)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -622,11 +644,11 @@ ${_devDependenciesSection()}
 
     test('fails when an implemenation package is missing "implements"',
         () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a_foo', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin_a_foo', isPlugin: true)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true)}
@@ -651,11 +673,11 @@ ${_devDependenciesSection()}
 
     test('fails when an implemenation package has the wrong "implements"',
         () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a_foo', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin_a_foo', isPlugin: true)}
 ${_environmentSection()}
 ${_flutterSection(isPlugin: true, implementedPackage: 'plugin_a_foo')}
@@ -680,11 +702,11 @@ ${_devDependenciesSection()}
     });
 
     test('passes for a correct implemenation package', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a_foo', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin_a_foo',
         isPlugin: true,
@@ -709,11 +731,11 @@ ${_devDependenciesSection()}
     });
 
     test('fails when a "default_package" looks incorrect', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin_a',
         isPlugin: true,
@@ -749,11 +771,11 @@ ${_devDependenciesSection()}
     test(
         'fails when a "default_package" does not have a corresponding dependency',
         () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin_a',
         isPlugin: true,
@@ -787,11 +809,11 @@ ${_devDependenciesSection()}
     });
 
     test('passes for an app-facing package without "implements"', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin_a',
         isPlugin: true,
@@ -817,11 +839,11 @@ ${_devDependenciesSection()}
 
     test('passes for a platform interface package without "implements"',
         () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a_platform_interface', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin_a_platform_interface',
         isPlugin: true,
@@ -847,13 +869,13 @@ ${_devDependenciesSection()}
     });
 
     test('validates some properties even for unpublished packages', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
           'plugin_a_foo', packagesDir.childDirectory('plugin_a'),
           examples: <String>[]);
 
       // Environment section is in the wrong location.
       // Missing 'implements'.
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection('plugin_a_foo', isPlugin: true, publishable: false)}
 ${_flutterSection(isPlugin: true)}
 ${_dependenciesSection()}
@@ -879,12 +901,12 @@ ${_environmentSection()}
     });
 
     test('ignores some checks for unpublished packages', () async {
-      final Directory pluginDirectory =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, examples: <String>[]);
 
       // Missing metadata that is only useful for published packages, such as
       // repository and issue tracker.
-      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      plugin.pubspecFile.writeAsStringSync('''
 ${_headerSection(
         'plugin',
         isPlugin: true,
@@ -936,10 +958,10 @@ ${_devDependenciesSection()}
     });
 
     test('repository check works', () async {
-      final Directory packageDirectory =
+      final RepositoryPackage package =
           createFakePackage('package', packagesDir, examples: <String>[]);
 
-      packageDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+      package.pubspecFile.writeAsStringSync('''
 ${_headerSection('package')}
 ${_environmentSection()}
 ${_dependenciesSection()}

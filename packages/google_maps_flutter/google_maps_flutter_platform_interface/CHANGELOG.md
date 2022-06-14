@@ -1,5 +1,15 @@
-## NEXT
+## 2.2.0
 
+* Adds new versions of `buildView` and `updateOptions` that take a new option
+  class instead of a dictionary, to remove the cross-package dependency on
+  magic string keys.
+* Adopts several parameter objects in the new `buildView` variant to
+  future-proof it against future changes.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.1.7
+
+* Updates code for stricter analysis options.
 * Removes unnecessary imports.
 
 ## 2.1.6

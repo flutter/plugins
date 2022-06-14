@@ -188,7 +188,7 @@ void main() {
     });
 
     test('driving under folder "test_driver"', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -203,8 +203,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       setMockFlutterDevicesOutput();
       final List<String> output =
@@ -308,10 +307,51 @@ void main() {
       );
     });
 
+    test('integration tests using test(...) fail validation', () async {
+      setMockFlutterDevicesOutput();
+      final RepositoryPackage package = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/foo_test.dart',
+          'example/android/android.java',
+        ],
+        platformSupport: <String, PlatformDetails>{
+          platformAndroid: const PlatformDetails(PlatformSupport.inline),
+          platformIOS: const PlatformDetails(PlatformSupport.inline),
+        },
+      );
+      package.directory
+          .childDirectory('example')
+          .childDirectory('integration_test')
+          .childFile('foo_test.dart')
+          .writeAsStringSync('''
+   test('this is the wrong kind of test!'), () {
+     ...
+   }
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('foo_test.dart failed validation'),
+        ]),
+      );
+    });
+
     test(
         'driving under folder "test_driver" when targets are under "integration_test"',
         () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -328,8 +368,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       setMockFlutterDevicesOutput();
       final List<String> output =
@@ -401,7 +440,7 @@ void main() {
     });
 
     test('driving on a Linux plugin', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -414,8 +453,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -474,7 +512,7 @@ void main() {
     });
 
     test('driving on a macOS plugin', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -487,8 +525,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -546,7 +583,7 @@ void main() {
     });
 
     test('driving a web plugin', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -559,8 +596,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -596,7 +632,7 @@ void main() {
     });
 
     test('driving a web plugin with CHROME_EXECUTABLE', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -609,8 +645,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       mockPlatform.environment['CHROME_EXECUTABLE'] = '/path/to/chrome';
 
@@ -674,7 +709,7 @@ void main() {
     });
 
     test('driving on a Windows plugin', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -687,8 +722,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -722,7 +756,7 @@ void main() {
     });
 
     test('driving on an Android plugin', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -735,8 +769,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       setMockFlutterDevicesOutput();
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -861,7 +894,7 @@ void main() {
     });
 
     test('enable-experiment flag', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -876,8 +909,7 @@ void main() {
         },
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
 
       setMockFlutterDevicesOutput();
       await runCapturingPrint(runner, <String>[
@@ -1006,7 +1038,7 @@ void main() {
     });
 
     test('reports test failures', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
@@ -1048,8 +1080,7 @@ void main() {
         ]),
       );
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
+      final Directory pluginExampleDirectory = getExampleDir(plugin);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -1082,13 +1113,13 @@ void main() {
 
     group('packages', () {
       test('can be driven', () async {
-        final Directory package =
+        final RepositoryPackage package =
             createFakePackage('a_package', packagesDir, extraFiles: <String>[
           'example/integration_test/foo_test.dart',
           'example/test_driver/integration_test.dart',
           'example/web/index.html',
         ]);
-        final Directory exampleDirectory = package.childDirectory('example');
+        final Directory exampleDirectory = getExampleDir(package);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'drive-examples',
@@ -1150,7 +1181,8 @@ void main() {
       });
 
       test('drive only supported examples if there is more than one', () async {
-        final Directory package = createFakePackage('a_package', packagesDir,
+        final RepositoryPackage package = createFakePackage(
+            'a_package', packagesDir,
             isFlutter: true,
             examples: <String>[
               'with_web',
@@ -1164,7 +1196,7 @@ void main() {
               'example/without_web/test_driver/integration_test.dart',
             ]);
         final Directory supportedExampleDirectory =
-            package.childDirectory('example').childDirectory('with_web');
+            getExampleDir(package).childDirectory('with_web');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'drive-examples',

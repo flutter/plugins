@@ -46,7 +46,7 @@ class WebView extends StatefulWidget {
   final String? initialUrl;
 
   @override
-  _WebViewState createState() => _WebViewState();
+  State<WebView> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {

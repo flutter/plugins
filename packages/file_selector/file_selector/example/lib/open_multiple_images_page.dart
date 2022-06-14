@@ -10,7 +10,11 @@ import 'package:flutter/material.dart';
 
 /// Screen that shows an example of openFiles
 class OpenMultipleImagesPage extends StatelessWidget {
+  /// Default Constructor
+  const OpenMultipleImagesPage({Key? key}) : super(key: key);
+
   Future<void> _openImageFile(BuildContext context) async {
+    // #docregion MultiOpen
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: <String>['jpg', 'jpeg'],
@@ -23,6 +27,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
       jpgsTypeGroup,
       pngTypeGroup,
     ]);
+    // #enddocregion MultiOpen
     if (files.isEmpty) {
       // Operation was canceled by the user.
       return;
@@ -45,7 +50,10 @@ class OpenMultipleImagesPage extends StatelessWidget {
           children: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                // ignore: deprecated_member_use
                 primary: Colors.blue,
+                // ignore: deprecated_member_use
                 onPrimary: Colors.white,
               ),
               child: const Text('Press to open multiple images (png, jpg)'),
@@ -61,7 +69,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
 /// Widget that displays a text file in a dialog
 class MultipleImagesDisplay extends StatelessWidget {
   /// Default Constructor
-  const MultipleImagesDisplay(this.files);
+  const MultipleImagesDisplay(this.files, {Key? key}) : super(key: key);
 
   /// The files containing the images
   final List<XFile> files;

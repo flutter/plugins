@@ -5,22 +5,10 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-// Defines polyline UI options writable from Flutter.
-@protocol FLTGoogleMapPolylineOptionsSink
-- (void)setConsumeTapEvents:(BOOL)consume;
-- (void)setVisible:(BOOL)visible;
-- (void)setColor:(UIColor *)color;
-- (void)setStrokeWidth:(CGFloat)width;
-- (void)setPoints:(NSArray<CLLocation *> *)points;
-- (void)setZIndex:(int)zIndex;
-- (void)setGeodesic:(BOOL)isGeodesic;
-@end
-
 // Defines polyline controllable by Flutter.
-@interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
-@property(atomic, readonly) NSString *polylineId;
+@interface FLTGoogleMapPolylineController : NSObject
 - (instancetype)initPolylineWithPath:(GMSMutablePath *)path
-                          polylineId:(NSString *)polylineId
+                          identifier:(NSString *)identifier
                              mapView:(GMSMapView *)mapView;
 - (void)removePolyline;
 @end
@@ -31,7 +19,7 @@
            registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)addPolylines:(NSArray *)polylinesToAdd;
 - (void)changePolylines:(NSArray *)polylinesToChange;
-- (void)removePolylineIds:(NSArray *)polylineIdsToRemove;
-- (void)onPolylineTap:(NSString *)polylineId;
-- (bool)hasPolylineWithId:(NSString *)polylineId;
+- (void)removePolylineWithIdentifiers:(NSArray *)identifiers;
+- (void)didTapPolylineWithIdentifier:(NSString *)identifier;
+- (bool)hasPolylineWithIdentifier:(NSString *)identifier;
 @end

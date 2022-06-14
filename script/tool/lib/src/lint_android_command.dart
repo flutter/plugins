@@ -40,7 +40,7 @@ class LintAndroidCommand extends PackageLoopingCommand {
 
     bool failed = false;
     for (final RepositoryPackage example in package.getExamples()) {
-      final GradleProject project = GradleProject(example.directory,
+      final GradleProject project = GradleProject(example,
           processRunner: processRunner, platform: platform);
 
       if (!project.isConfigured()) {

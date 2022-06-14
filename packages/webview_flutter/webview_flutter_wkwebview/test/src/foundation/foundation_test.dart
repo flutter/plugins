@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/web_kit.pigeon.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
+import 'package:webview_flutter_wkwebview/src/foundation/foundation_api_impls.dart';
 
 import '../common/test_web_kit.pigeon.dart';
 import 'foundation_test.mocks.dart';
@@ -22,7 +25,7 @@ void main() {
     late InstanceManager instanceManager;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
     });
 
     group('NSObject', () {
@@ -35,7 +38,7 @@ void main() {
         TestNSObjectHostApi.setup(mockPlatformHostApi);
 
         object = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(object);
+        instanceManager.addDartCreatedInstance(object);
       });
 
       tearDown(() {
@@ -44,7 +47,7 @@ void main() {
 
       test('addObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.addObserver(
           observer,
@@ -57,8 +60,8 @@ void main() {
 
         final List<NSKeyValueObservingOptionsEnumData?> optionsData =
             verify(mockPlatformHostApi.addObserver(
-          instanceManager.getInstanceId(object),
-          instanceManager.getInstanceId(observer),
+          instanceManager.getIdentifier(object),
+          instanceManager.getIdentifier(observer),
           'aKeyPath',
           captureAny,
         )).captured.single as List<NSKeyValueObservingOptionsEnumData?>;
@@ -76,23 +79,70 @@ void main() {
 
       test('removeObserver', () async {
         final NSObject observer = NSObject(instanceManager: instanceManager);
-        instanceManager.tryAddInstance(observer);
+        instanceManager.addDartCreatedInstance(observer);
 
         await object.removeObserver(observer, keyPath: 'aKeyPath');
 
         verify(mockPlatformHostApi.removeObserver(
-          instanceManager.getInstanceId(object),
-          instanceManager.getInstanceId(observer),
+          instanceManager.getIdentifier(object),
+          instanceManager.getIdentifier(observer),
           'aKeyPath',
         ));
       });
 
       test('dispose', () async {
-        final int instanceId = instanceManager.getInstanceId(object)!;
+        int? callbackIdentifier;
+        final InstanceManager instanceManager =
+            InstanceManager(onWeakReferenceRemoved: (int identifier) {
+          callbackIdentifier = identifier;
+        });
 
-        await object.dispose();
-        verify(
-          mockPlatformHostApi.dispose(instanceId),
+        final NSObject object = NSObject(instanceManager: instanceManager);
+        final int identifier = instanceManager.addDartCreatedInstance(object);
+
+        NSObject.dispose(object);
+        expect(callbackIdentifier, identifier);
+      });
+
+      test('observeValue', () async {
+        final Completer<List<Object?>> argsCompleter =
+            Completer<List<Object?>>();
+
+        FoundationFlutterApis.instance = FoundationFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        object = NSObject(
+          instanceManager: instanceManager,
+          observeValue: (
+            String keyPath,
+            NSObject object,
+            Map<NSKeyValueChangeKey, Object?> change,
+          ) {
+            argsCompleter.complete(<Object?>[keyPath, object, change]);
+          },
+        );
+        instanceManager.addHostCreatedInstance(object, 1);
+
+        FoundationFlutterApis.instance.object.observeValue(
+          1,
+          'keyPath',
+          1,
+          <NSKeyValueChangeKeyEnumData>[
+            NSKeyValueChangeKeyEnumData(value: NSKeyValueChangeKeyEnum.oldValue)
+          ],
+          <Object?>['value'],
+        );
+
+        expect(
+          argsCompleter.future,
+          completion(<Object?>[
+            'keyPath',
+            object,
+            <NSKeyValueChangeKey, Object?>{
+              NSKeyValueChangeKey.oldValue: 'value',
+            },
+          ]),
         );
       });
     });

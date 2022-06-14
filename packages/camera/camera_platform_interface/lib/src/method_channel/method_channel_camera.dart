@@ -12,6 +12,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+import 'type_conversion.dart';
+
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
 /// An implementation of [CameraPlatform] that uses method channels.
@@ -47,6 +49,12 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   final StreamController<DeviceEvent> deviceEventStreamController =
       StreamController<DeviceEvent>.broadcast();
+
+  // The stream to receive frames from the native code.
+  StreamSubscription<dynamic>? _platformImageStreamSubscription;
+
+  // The stream for vending frames to platform interface clients.
+  StreamController<CameraImageData>? _frameStreamController;
 
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
       cameraEventStreamController.stream
@@ -266,6 +274,52 @@ class MethodChannelCamera extends CameraPlatform {
         'resumeVideoRecording',
         <String, dynamic>{'cameraId': cameraId},
       );
+
+  @override
+  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
+      {CameraImageStreamOptions? options}) {
+    _frameStreamController = StreamController<CameraImageData>(
+      onListen: _onFrameStreamListen,
+      onPause: _onFrameStreamPauseResume,
+      onResume: _onFrameStreamPauseResume,
+      onCancel: _onFrameStreamCancel,
+    );
+    return _frameStreamController!.stream;
+  }
+
+  void _onFrameStreamListen() {
+    _startPlatformStream();
+  }
+
+  Future<void> _startPlatformStream() async {
+    await _channel.invokeMethod<void>('startImageStream');
+    const EventChannel cameraEventChannel =
+        EventChannel('plugins.flutter.io/camera/imageStream');
+    _platformImageStreamSubscription =
+        cameraEventChannel.receiveBroadcastStream().listen((dynamic imageData) {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          _channel.invokeMethod<void>('receivedImageStreamData');
+        } on PlatformException catch (e) {
+          throw CameraException(e.code, e.message);
+        }
+      }
+      _frameStreamController!
+          .add(cameraImageFromPlatformData(imageData as Map<dynamic, dynamic>));
+    });
+  }
+
+  FutureOr<void> _onFrameStreamCancel() async {
+    await _channel.invokeMethod<void>('stopImageStream');
+    await _platformImageStreamSubscription?.cancel();
+    _platformImageStreamSubscription = null;
+    _frameStreamController = null;
+  }
+
+  void _onFrameStreamPauseResume() {
+    throw CameraException('InvalidCall',
+        'Pause and resume are not supported for onStreamedFrameAvailable');
+  }
 
   @override
   Future<void> setFlashMode(int cameraId, FlashMode mode) =>

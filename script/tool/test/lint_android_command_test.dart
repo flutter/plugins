@@ -40,7 +40,7 @@ void main() {
     });
 
     test('runs gradle lint', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
         'example/android/gradlew',
       ], platformSupport: <String, PlatformDetails>{
@@ -48,7 +48,7 @@ void main() {
       });
 
       final Directory androidDir =
-          pluginDir.childDirectory('example').childDirectory('android');
+          plugin.getExamples().first.platformDirectory(FlutterPlatform.android);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['lint-android']);
@@ -74,7 +74,7 @@ void main() {
 
     test('runs on all examples', () async {
       final List<String> examples = <String>['example1', 'example2'];
-      final Directory pluginDir = createFakePlugin('plugin1', packagesDir,
+      final RepositoryPackage plugin = createFakePlugin('plugin1', packagesDir,
           examples: examples,
           extraFiles: <String>[
             'example/example1/android/gradlew',
@@ -84,11 +84,9 @@ void main() {
             platformAndroid: const PlatformDetails(PlatformSupport.inline)
           });
 
-      final Iterable<Directory> exampleAndroidDirs = examples.map(
-          (String example) => pluginDir
-              .childDirectory('example')
-              .childDirectory(example)
-              .childDirectory('android'));
+      final Iterable<Directory> exampleAndroidDirs = plugin.getExamples().map(
+          (RepositoryPackage example) =>
+              example.platformDirectory(FlutterPlatform.android));
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['lint-android']);
@@ -136,16 +134,17 @@ void main() {
     });
 
     test('fails if linting finds issues', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
         'example/android/gradlew',
       ], platformSupport: <String, PlatformDetails>{
         platformAndroid: const PlatformDetails(PlatformSupport.inline)
       });
 
-      final String gradlewPath = pluginDir
-          .childDirectory('example')
-          .childDirectory('android')
+      final String gradlewPath = plugin
+          .getExamples()
+          .first
+          .platformDirectory(FlutterPlatform.android)
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[

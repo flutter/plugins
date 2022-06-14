@@ -57,7 +57,7 @@ void main() {
     );
     expect(
       fourthCaption.text,
-      '- [ Machinery Beeping ]\n- I\'m not sure what that was,',
+      "- [ Machinery Beeping ]\n- I'm not sure what that was,",
     );
   });
 
