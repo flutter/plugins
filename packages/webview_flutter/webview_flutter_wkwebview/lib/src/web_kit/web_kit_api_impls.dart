@@ -908,11 +908,25 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   Future<Object?> evaluateJavaScriptForInstances(
     WKWebView instance,
     String javaScriptString,
-  ) {
-    return evaluateJavaScript(
-      instanceManager.getIdentifier(instance)!,
-      javaScriptString,
-    );
+  ) async {
+    try {
+      final Object? result = await evaluateJavaScript(
+        instanceManager.getIdentifier(instance)!,
+        javaScriptString,
+      );
+      return result;
+    } on PlatformException catch (exception) {
+      if (exception.details is! NSErrorData) {
+        rethrow;
+      }
+
+      throw PlatformException(
+        code: exception.code,
+        message: exception.message,
+        stacktrace: exception.stacktrace,
+        details: (exception.details as NSErrorData).toNSError(),
+      );
+    }
   }
 
   /// Calls [setNavigationDelegate] with the ids of the provided object instances.
