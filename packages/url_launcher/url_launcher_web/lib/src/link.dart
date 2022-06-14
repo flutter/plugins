@@ -118,7 +118,13 @@ class LinkViewController extends PlatformViewController {
     final int viewId = params.id;
     final LinkViewController controller = LinkViewController(viewId, context);
     controller._initialize().then((_) {
-      params.onPlatformViewCreated(viewId);
+      /// Because _initialize is async, it can happen that [LinkViewController.dispose]
+      /// may get called before this `then` callback.
+      /// Check that the `controller` that was created by this factory is not
+      /// disposed before calling `onPlatformViewCreated`.
+      if (_instances[viewId] == controller) {
+        params.onPlatformViewCreated(viewId);
+      }
     });
     return controller;
   }
