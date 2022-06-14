@@ -154,6 +154,7 @@ void main() {
         object = NSObject(instanceManager: instanceManager);
         instanceManager.addHostCreatedInstance(object, 1);
 
+        instanceManager.removeWeakReference(object);
         FoundationFlutterApis.instance.object.dispose(1);
 
         expect(instanceManager.containsIdentifier(1), isFalse);
