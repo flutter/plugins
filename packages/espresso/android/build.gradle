@@ -76,7 +76,7 @@ dependencies {
         exclude(group = "org.checkerframework", module = "checker")
     }
     api 'androidx.test.espresso:espresso-intents:3.4.0'
-    api 'androidx.test.espresso:espresso-accessibility:3.4.0' {
+    api ('androidx.test.espresso:espresso-accessibility:3.4.0') {
         // Workaround for https://github.com/android/android-test/issues/861
         exclude(group = "org.checkerframework", module = "checker")
     }
