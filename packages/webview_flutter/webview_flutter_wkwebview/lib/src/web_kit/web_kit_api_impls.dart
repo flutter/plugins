@@ -994,12 +994,13 @@ class WKWebViewHostApiImpl extends WKWebViewHostApi {
   Future<Object?> evaluateJavaScriptForInstances(
     WKWebView instance,
     String javaScriptString,
-  ) {
+  ) async {
     try {
-      return evaluateJavaScript(
+      final Object? result = await evaluateJavaScript(
         instanceManager.getIdentifier(instance)!,
         javaScriptString,
       );
+      return result;
     } on PlatformException catch (exception) {
       if (exception.details is! NSErrorData) {
         rethrow;
