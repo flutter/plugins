@@ -383,6 +383,7 @@
 
   XCTAssertNil(returnValue);
   FWFNSErrorData *errorData = returnError.details;
+  XCTAssertTrue([errorData isKindOfClass:[FWFNSErrorData class]]);
   XCTAssertEqualObjects(errorData.code, @0);
   XCTAssertEqualObjects(errorData.domain, @"errorDomain");
   XCTAssertEqualObjects(errorData.localizedDescription, @"description");
