@@ -327,40 +327,4 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
     return mapController.widget!;
   }
-
-  // Only available for tests that use the `GoogleMap` widget to pass, while the
-  // core plugin migrates to the new MapConfiguration instead of using the mapOptions.
-  @Deprecated('Use buildViewWithConfiguration instead.')
-  @visibleForTesting
-  @override
-  Widget buildView(
-    int creationId,
-    PlatformViewCreatedCallback onPlatformViewCreated, {
-    required CameraPosition initialCameraPosition,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
-        const <Factory<OneSequenceGestureRecognizer>>{},
-    Map<String, dynamic> mapOptions = const <String, dynamic>{},
-  }) {
-    return buildViewWithConfiguration(
-      creationId,
-      onPlatformViewCreated,
-      widgetConfiguration: MapWidgetConfiguration(
-        initialCameraPosition: initialCameraPosition,
-        textDirection: TextDirection.ltr,
-      ),
-      mapObjects: MapObjects(
-        markers: markers,
-        polygons: polygons,
-        polylines: polylines,
-        circles: circles,
-        tileOverlays: tileOverlays,
-      ),
-      mapConfiguration: const MapConfiguration(),
-    );
-  }
 }
