@@ -1,7 +1,5 @@
-## 2.1.8
+## NEXT
 
-* Switches to new platform interface versions of `buildView` and
-  `updateOptions`, making it compatible with `google_maps_flutter_web` 0.4.0.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 
 ## 2.1.7
