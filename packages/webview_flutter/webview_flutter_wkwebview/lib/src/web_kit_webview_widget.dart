@@ -70,6 +70,12 @@ class _WebKitWebViewWidgetState extends State<WebKitWebViewWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    controller._dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return widget.onBuildWidget(controller);
   }
@@ -93,6 +99,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   bool _zoomEnabled = true;
   bool _hasNavigationDelegate = false;
+  bool _progressObserverSet = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -452,17 +459,20 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  Future<void> _setHasProgressTracking(bool hasProgressTracking) {
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
     if (hasProgressTracking) {
-      return webView.addObserver(
+      _progressObserverSet = true;
+      await webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
         options: <NSKeyValueObservingOptions>{
           NSKeyValueObservingOptions.newValue,
         },
       );
-    } else {
-      return webView.removeObserver(webView, keyPath: 'estimatedProgress');
+    } else if (_progressObserverSet) {
+      // Calls to removeObserver before addObserver causes a crash.
+      _progressObserverSet = false;
+      await webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
 
@@ -592,6 +602,16 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     }
 
     return value.toString();
+  }
+
+  void _dispose() {
+    if (_progressObserverSet) {
+      _progressObserverSet = false;
+      // It is recommended by Apple's documentation that this should be called
+      // before the WebView is deallocated:
+      // https://developer.apple.com/documentation/objectivec/nsobject/1408054-removeobserver?language=objc
+      webView.removeObserver(webView, keyPath: 'estimatedProgress');
+    }
   }
 }
 
