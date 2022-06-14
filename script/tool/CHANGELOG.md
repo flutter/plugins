@@ -3,6 +3,7 @@
 - Supports empty custom analysis allow list files.
 - `drive-examples` now validates files to ensure that they don't accidentally
   use `test(...)`.
+- Adds a new `dependabot-check` command to ensure complete Dependabot coverage.
 
 ## 0.8.6
 
