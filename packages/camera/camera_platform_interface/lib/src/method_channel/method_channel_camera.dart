@@ -131,7 +131,8 @@ class MethodChannelCamera extends CameraPlatform {
         'imageFormatGroup': imageFormatGroup.name(),
       },
     )
-        // TODO(srawlins): Fix this static issue,
+        // TODO(srawlins): This should return a value of the future's type. This
+        // will fail upcoming analysis checks with
         // https://github.com/flutter/flutter/issues/105750.
         // ignore: body_might_complete_normally_catch_error
         .catchError(
