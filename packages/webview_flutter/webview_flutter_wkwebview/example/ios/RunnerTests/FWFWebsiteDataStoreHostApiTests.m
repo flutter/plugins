@@ -70,7 +70,7 @@
                                         blockError = error;
                                       }];
   XCTAssertEqualObjects(returnValue, @YES);
-  // Asserts whether the NSNumber value represents a BOOL.
+  // Asserts whether the NSNumber will be deserialized by the standard codec as a boolean.
   XCTAssertEqual(CFBooleanGetTypeID(), CFGetTypeID((__bridge CFTypeRef)(returnValue)));
   XCTAssertNil(blockError);
 }
