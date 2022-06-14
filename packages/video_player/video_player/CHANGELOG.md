@@ -1,6 +1,7 @@
 ## NEXT
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+* Fixes open files with ? and # chars in filename (https://github.com/flutter/flutter/issues/105950).
 
 ## 2.4.4
 
