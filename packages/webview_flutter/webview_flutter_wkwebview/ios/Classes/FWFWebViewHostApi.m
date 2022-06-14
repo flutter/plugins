@@ -170,11 +170,12 @@
       evaluateJavaScript:javaScriptString
        completionHandler:^(id _Nullable result, NSError *_Nullable error) {
          id returnValue = nil;
+         FlutterError *flutterError = nil;
          if (!error) {
            if (!result || [result isKindOfClass:[NSString class]] ||
                [result isKindOfClass:[NSNumber class]]) {
              returnValue = result;
-           } else {
+           } else if (![result isKindOfClass:[NSNull class]]) {
              NSString *className = NSStringFromClass([result class]);
              NSLog(@"Return type of evaluateJavaScript is not directly supported: %@. Returned "
                    @"description of value.",
@@ -182,10 +183,12 @@
              returnValue = [result description];
            }
          } else {
-           returnValue = FWFNSErrorDataFromNSError(error);
+           flutterError = [FlutterError errorWithCode:@"FWFEvaluateJavaScriptError"
+                                              message:@"Failed evaluating JavaScript."
+                                              details:FWFNSErrorDataFromNSError(error)];
          }
 
-         completion(returnValue, nil);
+         completion(returnValue, flutterError);
        }];
 }
 
