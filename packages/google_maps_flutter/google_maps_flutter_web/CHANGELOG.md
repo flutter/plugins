@@ -6,7 +6,7 @@
   versions of those methods, so this version can only be adopted when updating
   `google_maps_flutter` to a version that uses the new methods. This will be
   noted in the `google_maps_flutter` changelog as adding compatibility with
-  ``google_maps_flutter_web` 0.4.0.
+  `google_maps_flutter_web` 0.4.0.
 * Adds `const` constructor parameters in example tests.
 
 ## 0.3.3
