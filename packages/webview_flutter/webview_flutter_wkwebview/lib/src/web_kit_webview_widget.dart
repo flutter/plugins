@@ -70,12 +70,6 @@ class _WebKitWebViewWidgetState extends State<WebKitWebViewWidget> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    controller._dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return widget.onBuildWidget(controller);
   }
@@ -602,16 +596,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     }
 
     return value.toString();
-  }
-
-  void _dispose() {
-    if (_progressObserverSet) {
-      _progressObserverSet = false;
-      // It is recommended by Apple's documentation that this should be called
-      // before the WebView is deallocated:
-      // https://developer.apple.com/documentation/objectivec/nsobject/1408054-removeobserver?language=objc
-      webView.removeObserver(webView, keyPath: 'estimatedProgress');
-    }
   }
 }
 
