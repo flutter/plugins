@@ -8,7 +8,7 @@
 @interface FWFUIDelegateFlutterApiImpl ()
 // BinaryMessenger and InstanceManager must be weak to prevent a circular reference
 // with the objects it stores.
-@property(weak) id<FlutterBinaryMessenger> binaryMessenger;
+@property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 

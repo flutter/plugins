@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles making callbacks to Dart for a WKUIDelegate.
  */
 @interface FWFUIDelegateFlutterApiImpl : FWFWKUIDelegateFlutterApi
-@property(readonly) FWFWebViewConfigurationFlutterApiImpl *webViewConfigurationFlutterApi;
+@property(readonly, nonatomic) FWFWebViewConfigurationFlutterApiImpl *webViewConfigurationFlutterApi;
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end
