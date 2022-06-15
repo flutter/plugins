@@ -573,6 +573,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         return '"<null>"';
       }
       return '(null)';
+    } else if (value is bool) {
+      return value ? '1' : '0';
+    } else if (value is double && value.truncate() == value) {
+      return value.truncate().toString();
     } else if (value is List) {
       final List<String> stringValues = <String>[];
       for (final Object? listValue in value) {

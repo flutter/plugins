@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -814,6 +815,30 @@ void main() {
         when(mockPlatformHostApi.evaluateJavaScript(webViewInstanceId, 'gogo'))
             .thenAnswer((_) => Future<String>.value('stopstop'));
         expect(webView.evaluateJavaScript('gogo'), completion('stopstop'));
+      });
+
+      test('evaluateJavaScript returns NSError', () {
+        when(mockPlatformHostApi.evaluateJavaScript(webViewInstanceId, 'gogo'))
+            .thenThrow(
+          PlatformException(
+            code: '',
+            details: NSErrorData(
+              code: 0,
+              domain: 'domain',
+              localizedDescription: 'desc',
+            ),
+          ),
+        );
+        expect(
+          webView.evaluateJavaScript('gogo'),
+          throwsA(
+            isA<PlatformException>().having(
+              (PlatformException exception) => exception.details,
+              'details',
+              isA<NSError>(),
+            ),
+          ),
+        );
       });
     });
 

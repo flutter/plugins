@@ -634,6 +634,42 @@ void main() {
         );
       });
 
+      testWidgets('evaluateJavascript with bool return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(true),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies bool
+        // is represented the way it is in Objective-C.
+        // `NSNumber.description` converts bool values to a 1 or 0.
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('1'),
+        );
+      });
+
+      testWidgets('evaluateJavascript with double return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(1.0),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies
+        // double is represented the way it is in Objective-C. If a double
+        // doesn't contain any decimal values, it gets truncated to an int.
+        // This should be happenning because NSNumber convertes float values
+        // with no decimals to an int when using `NSNumber.description`.
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('1'),
+        );
+      });
+
       testWidgets('evaluateJavascript with list return value',
           (WidgetTester tester) async {
         await buildWidget(tester);
