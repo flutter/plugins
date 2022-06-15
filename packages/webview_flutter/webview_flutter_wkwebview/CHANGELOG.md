@@ -1,3 +1,7 @@
+## 2.8.1
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
 ## 2.8.0
 
 * Raises minimum Dart version to 2.17 and Flutter version to 3.0.0.

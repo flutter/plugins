@@ -102,10 +102,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
-    assert(optionsUpdate != null);
+  Future<void> _updateMapConfiguration(MapConfiguration update) {
     return GoogleMapsFlutterPlatform.instance
-        .updateMapOptions(optionsUpdate, mapId: mapId);
+        .updateMapConfiguration(update, mapId: mapId);
   }
 
   /// Updates marker configuration.

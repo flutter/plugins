@@ -1,5 +1,6 @@
-## NEXT
+## 5.1.3
 
+* Updates references to the obsolete master branch.
 * Removes unnecessary imports.
 
 ## 5.1.2

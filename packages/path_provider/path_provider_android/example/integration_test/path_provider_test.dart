@@ -61,7 +61,8 @@ void main() {
   ];
 
   for (final StorageDirectory? type in _allDirs) {
-    test('getExternalStorageDirectories (type: $type)', () async {
+    testWidgets('getExternalStorageDirectories (type: $type)',
+        (WidgetTester tester) async {
       final PathProviderPlatform provider = PathProviderPlatform.instance;
 
       final List<String>? directories =

@@ -47,11 +47,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   /// This attempts to merge the new `optionsUpdate` passed in, with the previous
   /// options passed to the map (in other updates, or when creating it).
   @override
-  Future<void> updateMapOptions(
-    Map<String, dynamic> optionsUpdate, {
+  Future<void> updateMapConfiguration(
+    MapConfiguration update, {
     required int mapId,
   }) async {
-    _map(mapId).updateRawOptions(optionsUpdate);
+    _map(mapId).updateMapConfiguration(update);
   }
 
   /// Applies the passed in `markerUpdates` to the `mapId`.
@@ -144,9 +144,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     String? mapStyle, {
     required int mapId,
   }) async {
-    _map(mapId).updateRawOptions(<String, dynamic>{
-      'styles': _mapStyles(mapStyle),
-    });
+    _map(mapId).updateStyles(_mapStyles(mapStyle));
   }
 
   /// Returns the bounds of the current viewport.
@@ -298,19 +296,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   @override
-  Widget buildView(
+  Widget buildViewWithConfiguration(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
-    required CameraPosition initialCameraPosition,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Set<Heatmap> heatmaps = const <Heatmap>{},
-    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
-        const <Factory<OneSequenceGestureRecognizer>>{},
-    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+    required MapWidgetConfiguration widgetConfiguration,
+    MapObjects mapObjects = const MapObjects(),
+    MapConfiguration mapConfiguration = const MapConfiguration(),
   }) {
     // Bail fast if we've already rendered this map ID...
     if (_mapById[creationId]?.widget != null) {
@@ -321,15 +312,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         StreamController<MapEvent<Object?>>.broadcast();
 
     final GoogleMapController mapController = GoogleMapController(
-      initialCameraPosition: initialCameraPosition,
       mapId: creationId,
       streamController: controller,
-      markers: markers,
-      polygons: polygons,
-      polylines: polylines,
-      circles: circles,
-      heatmaps: heatmaps,
-      mapOptions: mapOptions,
+      widgetConfiguration: widgetConfiguration,
+      mapObjects: mapObjects,
+      mapConfiguration: mapConfiguration,
     )..init(); // Initialize the controller
 
     _mapById[creationId] = mapController;
