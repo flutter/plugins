@@ -147,9 +147,9 @@
   if (data.count != 2) {
     return nil;
   }
-  return
-      [[GMUWeightedLatLng alloc] initWithCoordinate:[FLTGoogleMapJSONConversions locationFromLatLong:data[0]]
-                                          intensity:[data[1] doubleValue]];
+  return [[GMUWeightedLatLng alloc]
+      initWithCoordinate:[FLTGoogleMapJSONConversions locationFromLatLong:data[0]]
+               intensity:[data[1] doubleValue]];
 }
 
 + (NSArray<GMUWeightedLatLng *> *)toWeightedData:(NSArray *)data {
@@ -171,10 +171,9 @@
     [colors addObject:[FLTGoogleMapJSONConversions colorFromRGBA:colorCode]];
   }
 
-  return [[GMUGradient alloc]
-      initWithColors:colors
-         startPoints:data[@"startPoints"]
-        colorMapSize:[data[@"colorMapSize"] intValue]];
+  return [[GMUGradient alloc] initWithColors:colors
+                                 startPoints:data[@"startPoints"]
+                                colorMapSize:[data[@"colorMapSize"] intValue]];
 }
 
 @end

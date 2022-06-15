@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #import "GoogleMapHeatmapController.h"
-#import "FLTGoogleMapJSONConversions.h""
+#import "FLTGoogleMapJSONConversions.h"
+        "
 @import GoogleMapsUtils;
 
 @implementation FLTGoogleMapHeatmapController
