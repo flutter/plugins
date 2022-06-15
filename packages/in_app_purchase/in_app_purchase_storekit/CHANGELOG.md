@@ -1,3 +1,7 @@
+## 0.3.0+10
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
 ## 0.3.0+9
 
 * Updates references to the obsolete master branch.

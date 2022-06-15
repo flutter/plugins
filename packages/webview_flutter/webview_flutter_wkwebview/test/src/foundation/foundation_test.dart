@@ -94,7 +94,7 @@ void main() {
         ));
       });
 
-      test('dispose', () async {
+      test('NSObjectHostApi.dispose', () async {
         int? callbackIdentifier;
         final InstanceManager instanceManager =
             InstanceManager(onWeakReferenceRemoved: (int identifier) {
@@ -150,6 +150,20 @@ void main() {
             },
           ]),
         );
+      });
+
+      test('NSObjectFlutterApi.dispose', () {
+        FoundationFlutterApis.instance = FoundationFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        object = NSObject.detached(instanceManager: instanceManager);
+        instanceManager.addHostCreatedInstance(object, 1);
+
+        instanceManager.removeWeakReference(object);
+        FoundationFlutterApis.instance.object.dispose(1);
+
+        expect(instanceManager.containsIdentifier(1), isFalse);
       });
     });
   });

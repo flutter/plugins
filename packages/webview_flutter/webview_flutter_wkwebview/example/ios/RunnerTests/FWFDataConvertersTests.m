@@ -25,6 +25,16 @@
   XCTAssertEqualObjects(request.allHTTPHeaderFields, @{@"a" : @"header"});
 }
 
+- (void)testFWFNSURLRequestFromRequestDataDoesNotOverrideDefaultValuesWithNull {
+  NSURLRequest *request =
+      FWFNSURLRequestFromRequestData([FWFNSUrlRequestData makeWithUrl:@"https://flutter.dev"
+                                                           httpMethod:nil
+                                                             httpBody:nil
+                                                  allHttpHeaderFields:@{}]);
+
+  XCTAssertEqualObjects(request.HTTPMethod, @"GET");
+}
+
 - (void)testFWFNSHTTPCookieFromCookieData {
   NSHTTPCookie *cookie = FWFNSHTTPCookieFromCookieData([FWFNSHttpCookieData
       makeWithPropertyKeys:@[ [FWFNSHttpCookiePropertyKeyEnumData

@@ -278,6 +278,7 @@ class WebKitFlutterApis {
   final WKUIDelegateFlutterApiImpl uiDelegate;
 
   /// Flutter Api for [WKWebViewConfiguration].
+  @visibleForTesting
   final WKWebViewConfigurationFlutterApiImpl webViewConfiguration;
 
   /// Ensures all the Flutter APIs have been set up to receive calls from native code.

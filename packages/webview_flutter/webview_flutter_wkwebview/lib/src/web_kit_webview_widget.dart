@@ -93,7 +93,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   bool _zoomEnabled = true;
   bool _hasNavigationDelegate = false;
-  bool _hasProgressTracking = false;
+  bool _progressObserverSet = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -272,11 +272,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
-  Future<String?> currentUrl() {
-    return webView.getUrl();
-  }
-
-  @override
   Future<void> loadUrl(String url, Map<String, String>? headers) async {
     final NSUrlRequest request = NSUrlRequest(
       url: url,
@@ -357,6 +352,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<String?> getTitle() => webView.getTitle();
+
+  @override
+  Future<String?> currentUrl() => webView.getUrl();
 
   @override
   Future<void> scrollTo(int x, int y) async {
@@ -457,12 +455,8 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   }
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
-    // Calls to removeObserver before addObserver causes a crash.
-    if (_hasProgressTracking == hasProgressTracking) {
-      return;
-    }
-    _hasProgressTracking = hasProgressTracking;
     if (hasProgressTracking) {
+      _progressObserverSet = true;
       await webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
@@ -470,7 +464,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
           NSKeyValueObservingOptions.newValue,
         },
       );
-    } else {
+    } else if (_progressObserverSet) {
+      // Calls to removeObserver before addObserver causes a crash.
+      _progressObserverSet = false;
       await webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
@@ -582,6 +578,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         return '"<null>"';
       }
       return '(null)';
+    } else if (value is bool) {
+      return value ? '1' : '0';
+    } else if (value is double && value.truncate() == value) {
+      return value.truncate().toString();
     } else if (value is List) {
       final List<String> stringValues = <String>[];
       for (final Object? listValue in value) {

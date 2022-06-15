@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
 ## 0.8.4+3
 
 * Improves API docs and examples.

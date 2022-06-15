@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
                      completion:(void (^)(NSError *_Nullable))completion;
 @end
 
+/**
+ * Implementation of WKWebViewConfiguration for FWFWebViewConfigurationHostApiImpl.
+ */
 @interface FWFWebViewConfiguration : WKWebViewConfiguration
 @property(readonly, nonnull, nonatomic) FWFObjectFlutterApiImpl *objectApi;
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger

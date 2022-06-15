@@ -23,9 +23,7 @@ NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data
   if (data.httpBody) {
     [request setHTTPBody:data.httpBody.data];
   }
-  if (data.allHttpHeaderFields) {
-    [request setAllHTTPHeaderFields:data.allHttpHeaderFields];
-  }
+  [request setAllHTTPHeaderFields:data.allHttpHeaderFields];
 
   return request;
 }
