@@ -1195,6 +1195,16 @@ void main() {
 
         verify(mockCallbacksHandler.onProgress(32));
       });
+
+      testWidgets('progress observer is not removed without being set first',
+          (WidgetTester tester) async {
+        await buildWidget(tester, hasProgressTracking: false);
+
+        verifyNever(mockWebView.removeObserver(
+          mockWebView,
+          keyPath: 'estimatedProgress',
+        ));
+      });
     });
 
     group('JavascriptChannelRegistry', () {
