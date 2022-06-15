@@ -1989,6 +1989,17 @@ NSObject<FlutterMessageCodec> *FWFNSObjectFlutterApiGetCodec() {
                    completion(nil);
                  }];
 }
+- (void)disposeObjectWithIdentifier:(NSNumber *)arg_identifier
+                         completion:(void (^)(NSError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.NSObjectFlutterApi.dispose"
+             binaryMessenger:self.binaryMessenger
+                       codec:FWFNSObjectFlutterApiGetCodec()];
+  [channel sendMessage:@[ arg_identifier ?: [NSNull null] ]
+                 reply:^(id reply) {
+                   completion(nil);
+                 }];
+}
 @end
 @interface FWFWKWebViewHostApiCodecReader : FlutterStandardReader
 @end

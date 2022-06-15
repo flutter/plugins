@@ -1770,6 +1770,7 @@ abstract class NSObjectFlutterApi {
       int objectIdentifier,
       List<NSKeyValueChangeKeyEnumData?> changeKeys,
       List<Object?> changeValues);
+  void dispose(int identifier);
   static void setup(NSObjectFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1802,6 +1803,25 @@ abstract class NSObjectFlutterApi {
               'Argument for dev.flutter.pigeon.NSObjectFlutterApi.observeValue was null, expected non-null List<Object?>.');
           api.observeValue(arg_identifier!, arg_keyPath!, arg_objectIdentifier!,
               arg_changeKeys!, arg_changeValues!);
+          return;
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.NSObjectFlutterApi.dispose', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.NSObjectFlutterApi.dispose was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null,
+              'Argument for dev.flutter.pigeon.NSObjectFlutterApi.dispose was null, expected non-null int.');
+          api.dispose(arg_identifier!);
           return;
         });
       }

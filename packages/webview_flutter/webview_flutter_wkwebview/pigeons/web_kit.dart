@@ -510,6 +510,9 @@ abstract class NSObjectFlutterApi {
     List<NSKeyValueChangeKeyEnumData?> changeKeys,
     List<Object?> changeValues,
   );
+
+  @ObjCSelector('disposeObjectWithIdentifier:')
+  void dispose(int identifier);
 }
 
 /// Mirror of WKWebView.

@@ -451,6 +451,8 @@ NSObject<FlutterMessageCodec> *FWFNSObjectFlutterApiGetCodec(void);
                                  changeKeys:(NSArray<FWFNSKeyValueChangeKeyEnumData *> *)changeKeys
                                changeValues:(NSArray<id> *)changeValues
                                  completion:(void (^)(NSError *_Nullable))completion;
+- (void)disposeObjectWithIdentifier:(NSNumber *)identifier
+                         completion:(void (^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FWFWKWebViewHostApi.
 NSObject<FlutterMessageCodec> *FWFWKWebViewHostApiGetCodec(void);
