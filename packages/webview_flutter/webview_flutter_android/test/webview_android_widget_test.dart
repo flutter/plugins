@@ -888,8 +888,7 @@ void main() {
               });
 
       webViewClient.urlLoading(MockWebView(), 'https://flutter.dev');
-      await completer.future;
-      expect(completer.isCompleted, isTrue);
+      expect(completer.future, completes);
     });
 
     test(
@@ -983,12 +982,11 @@ void main() {
               });
 
       webViewClient.requestLoading(MockWebView(), mockRequest);
-      await completer.future;
-      expect(completer.isCompleted, isTrue);
+      expect(completer.future, completes);
     });
 
     test(
-        'requestLoading should not call onLoadUrlCallback when onNavigationRequestCallback returns false',
+        'requestLoading should not call loadUrl when onNavigationRequestCallback returns false',
         () {
       final MockWebResourceRequest mockRequest = MockWebResourceRequest();
       when(mockRequest.isForMainFrame).thenReturn(true);
@@ -1012,7 +1010,7 @@ void main() {
     });
 
     test(
-        'requestLoading should not call onLoadUrlCallback when onNavigationRequestCallback returns a Future false',
+        'requestLoading should not call loadUrl when onNavigationRequestCallback returns a Future false',
         () {
       final MockWebResourceRequest mockRequest = MockWebResourceRequest();
       when(mockRequest.isForMainFrame).thenReturn(true);
