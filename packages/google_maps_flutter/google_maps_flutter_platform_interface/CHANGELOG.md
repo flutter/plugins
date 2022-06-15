@@ -1,6 +1,15 @@
-## 2.2.0
+## 2.3.0
 
 * Adds options for gesture handling and tilt controls on web.
+
+## 2.2.0
+
+* Adds new versions of `buildView` and `updateOptions` that take a new option
+  class instead of a dictionary, to remove the cross-package dependency on
+  magic string keys.
+* Adopts several parameter objects in the new `buildView` variant to
+  future-proof it against future changes.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 
 ## 2.1.7
 

@@ -1,3 +1,7 @@
+## 0.2.0+9
+
+* Ignores the warning for the upcoming deprecation of `DecoderCallback`.
+
 ## 0.2.0+8
 
 * Ignores the warning for the upcoming deprecation of `ImageProvider.load` in the correct line.

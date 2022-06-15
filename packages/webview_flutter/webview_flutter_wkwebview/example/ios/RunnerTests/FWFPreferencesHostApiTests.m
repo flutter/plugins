@@ -14,13 +14,13 @@
 @implementation FWFPreferencesHostApiTests
 - (void)testCreateFromWebViewConfigurationWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFPreferencesHostApiImpl *hostApi =
+  FWFPreferencesHostApiImpl *hostAPI =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+  [instanceManager addDartCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  [hostAPI createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
   WKPreferences *preferences = (WKPreferences *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([preferences isKindOfClass:[WKPreferences class]]);
   XCTAssertNil(error);
@@ -30,13 +30,13 @@
   WKPreferences *mockPreferences = OCMClassMock([WKPreferences class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockPreferences withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockPreferences withIdentifier:0];
 
-  FWFPreferencesHostApiImpl *hostApi =
+  FWFPreferencesHostApiImpl *hostAPI =
       [[FWFPreferencesHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setJavaScriptEnabledForPreferencesWithIdentifier:@0 isEnabled:@YES error:&error];
+  [hostAPI setJavaScriptEnabledForPreferencesWithIdentifier:@0 isEnabled:@YES error:&error];
   OCMVerify([mockPreferences setJavaScriptEnabled:YES]);
   XCTAssertNil(error);
 }

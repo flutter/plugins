@@ -1,4 +1,4 @@
-name: example
+name: file_selector_example
 description: A new Flutter project.
 publish_to: none
 
@@ -17,8 +17,10 @@ dependencies:
     path: ../
   flutter:
     sdk: flutter
+  path_provider: ^2.0.9
 
 dev_dependencies:
+  build_runner: ^2.1.10
   flutter_test:
     sdk: flutter
 

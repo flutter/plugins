@@ -1,6 +1,14 @@
-## 0.3.4
+## 0.4.1
 
 * Adds options for gesture handling and tilt controls.
+
+## 0.4.0
+
+* Implements the new platform interface versions of `buildView` and
+  `updateOptions` with structured option types.
+* **BREAKING CHANGE**: No longer implements the unstructured option dictionary
+  versions of those methods, so this version can only be used with
+  `google_maps_flutter` 2.1.8 or later.
 * Adds `const` constructor parameters in example tests.
 
 ## 0.3.3
