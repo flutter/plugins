@@ -10,3 +10,13 @@ enum RetrieveType {
   /// A video. See [ImagePicker.pickVideo].
   video
 }
+
+/// Serializes the value of the [RetrieveType] enum.
+String serializeRetrieveType(RetrieveType type) {
+  switch (type) {
+    case RetrieveType.image:
+      return 'image';
+    case RetrieveType.video:
+      return 'video';
+  }
+}

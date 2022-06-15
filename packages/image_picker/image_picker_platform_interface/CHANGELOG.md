@@ -1,3 +1,7 @@
+## 2.6.0
+
+* Adds `getRecentMedia` function for directly retrieving recent media items. 
+
 ## 2.5.0
 
 * Deprecates `getImage` in favor of a new method `getImageFromSource`.

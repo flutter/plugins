@@ -200,6 +200,47 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<List<XFile>?> getRecentMedia({
+    required RetrieveType type,
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+    int limit = 1,
+  }) async {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxImageWidth != null && maxImageWidth < 0) {
+      throw ArgumentError.value(
+          maxImageWidth, 'maxWidth', 'cannot be negative');
+    }
+
+    if (maxImageHeight != null && maxImageHeight < 0) {
+      throw ArgumentError.value(
+          maxImageHeight, 'maxHeight', 'cannot be negative');
+    }
+
+    if (limit <= 0) {
+      throw ArgumentError.value(limit, 'limit', 'must be larger than 0');
+    }
+
+    final List<dynamic>? paths = await _channel.invokeMethod<List<dynamic>?>(
+      'pickRecentMedia',
+      <String, dynamic>{
+        'type': serializeRetrieveType(type),
+        'maxWidth': maxImageWidth,
+        'maxHeight': maxImageHeight,
+        'imageQuality': imageQuality,
+        'limit': limit,
+      },
+    );
+
+    return paths?.map((dynamic path) => XFile(path as String)).toList();
+  }
+
+  @override
   Future<XFile?> getImageFromSource({
     required ImageSource source,
     ImagePickerOptions options = const ImagePickerOptions(),

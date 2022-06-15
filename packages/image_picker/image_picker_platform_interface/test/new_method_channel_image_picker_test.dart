@@ -937,6 +937,306 @@ void main() {
       });
     });
 
+    group('#getRecentMedia', () {
+      test('calls the method correctly', () async {
+        returnValue = <dynamic>['0', '1'];
+        await picker.getRecentMedia(type: RetrieveType.image);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'limit': 1,
+              'type': 'image',
+            }),
+          ],
+        );
+      });
+
+      test('passes the limit correctly', () async {
+        returnValue = <dynamic>['0', '1'];
+        await picker.getRecentMedia(type: RetrieveType.image, limit: 5);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'limit': 5,
+              'type': 'image',
+            }),
+          ],
+        );
+      });
+
+      test('passes the type correctly', () async {
+        returnValue = <dynamic>['0', '1'];
+        await picker.getRecentMedia(type: RetrieveType.video);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+              'limit': 1,
+              'type': 'video',
+            }),
+          ],
+        );
+      });
+
+      test('passes the width and height arguments correctly', () async {
+        returnValue = <dynamic>['0', '1'];
+        await picker.getRecentMedia(type: RetrieveType.image);
+        await picker.getRecentMedia(
+          type: RetrieveType.image,
+          maxImageWidth: 10.0,
+        );
+        await picker.getRecentMedia(
+          type: RetrieveType.image,
+          maxImageHeight: 10.0,
+        );
+        await picker.getRecentMedia(
+          type: RetrieveType.image,
+          maxImageWidth: 10.0,
+          maxImageHeight: 20.0,
+        );
+        await picker.getRecentMedia(
+          type: RetrieveType.image,
+          maxImageWidth: 10.0,
+          imageQuality: 70,
+        );
+        await picker.getRecentMedia(
+          type: RetrieveType.image,
+          maxImageHeight: 10.0,
+          imageQuality: 70,
+        );
+        await picker.getRecentMedia(
+          type: RetrieveType.image,
+          maxImageWidth: 10.0,
+          maxImageHeight: 20.0,
+          imageQuality: 70,
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': 70,
+            }),
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': 70,
+            }),
+            isMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+              'type': 'image',
+              'limit': 1,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': 70,
+            }),
+          ],
+        );
+      });
+
+      test('does not accept a 0 or negative limit argument', () {
+        returnValue = <dynamic>['0', '1'];
+        expect(
+          () => picker.getRecentMedia(type: RetrieveType.image, limit: -1),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getRecentMedia(type: RetrieveType.image, limit: 0),
+          throwsArgumentError,
+        );
+      });
+
+      test('does not accept a negative width or height argument', () {
+        returnValue = <dynamic>['0', '1'];
+        expect(
+          () => picker.getRecentMedia(
+              type: RetrieveType.image, maxImageWidth: -1.0),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getRecentMedia(
+              type: RetrieveType.image, maxImageHeight: -1.0),
+          throwsArgumentError,
+        );
+      });
+
+      test('does not accept an invalid imageQuality argument', () {
+        returnValue = <dynamic>['0', '1'];
+        expect(
+          () =>
+              picker.getRecentMedia(type: RetrieveType.image, imageQuality: -1),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.getRecentMedia(
+              type: RetrieveType.image, imageQuality: 101),
+          throwsArgumentError,
+        );
+      });
+
+      test('handles a null image path response gracefully', () async {
+        picker.channel
+            .setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(await picker.getRecentMedia(type: RetrieveType.image), isNull);
+      });
+    });
+
+    group('#getVideo', () {
+      test('passes the image source argument correctly', () async {
+        await picker.getVideo(source: ImageSource.camera);
+        await picker.getVideo(source: ImageSource.gallery);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'cameraDevice': 0,
+              'maxDuration': null,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 1,
+              'cameraDevice': 0,
+              'maxDuration': null,
+            }),
+          ],
+        );
+      });
+
+      test('passes the duration argument correctly', () async {
+        await picker.getVideo(source: ImageSource.camera);
+        await picker.getVideo(
+          source: ImageSource.camera,
+          maxDuration: const Duration(seconds: 10),
+        );
+        await picker.getVideo(
+          source: ImageSource.camera,
+          maxDuration: const Duration(minutes: 1),
+        );
+        await picker.getVideo(
+          source: ImageSource.camera,
+          maxDuration: const Duration(hours: 1),
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': null,
+              'cameraDevice': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': 10,
+              'cameraDevice': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': 60,
+              'cameraDevice': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': 3600,
+              'cameraDevice': 0,
+            }),
+          ],
+        );
+      });
+
+      test('handles a null video path response gracefully', () async {
+        picker.channel
+            .setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(await picker.getVideo(source: ImageSource.gallery), isNull);
+        expect(await picker.getVideo(source: ImageSource.camera), isNull);
+      });
+
+      test('camera position defaults to back', () async {
+        await picker.getVideo(source: ImageSource.camera);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'cameraDevice': 0,
+              'maxDuration': null,
+            }),
+          ],
+        );
+      });
+
+      test('camera position can set to front', () async {
+        await picker.getVideo(
+          source: ImageSource.camera,
+          preferredCameraDevice: CameraDevice.front,
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': null,
+              'cameraDevice': 1,
+            }),
+          ],
+        );
+      });
+    });
+
     group('#getLostData', () {
       test('getLostData get success response', () async {
         picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {

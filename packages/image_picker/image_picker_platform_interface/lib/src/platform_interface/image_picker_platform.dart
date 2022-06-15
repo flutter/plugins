@@ -186,6 +186,33 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getImage() has not been implemented.');
   }
 
+  /// Returns a [List<XFile>] with the most recent images or videos
+  /// from the user's gallery.
+  ///
+  /// If specified, images will be at most `maxWidth` wide and
+  /// `maxHeight` tall. Otherwise images will be returned at their
+  /// original width and height.
+  ///
+  /// The `imageQuality` argument modifies the quality of images, ranging from 0-100
+  /// where 100 is the original/max quality. If `imageQuality` is null, the
+  /// images will be returned with their original quality. Compression is only
+  /// supported for certain image types such as JPEG. If compression is not supported
+  /// for the image that is picked, a warning message will be logged.
+  ///
+  /// The `limit` argument specifies how many items will be returned at most.
+  /// By default, this is 1 item.
+  ///
+  /// The `allowedType` argument specifies which types of media can be returned.
+  Future<List<XFile>?> getRecentMedia({
+    required RetrieveType type,
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+    int limit = 1,
+  }) async {
+    throw UnimplementedError('getRecentMedia() has not been implemented.');
+  }
+
   /// Returns a [List<XFile>] with the images that were picked.
   ///
   /// The images come from the [ImageSource.gallery].
