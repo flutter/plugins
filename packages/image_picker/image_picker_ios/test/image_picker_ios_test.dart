@@ -72,6 +72,19 @@ class _ApiLogger implements TestHostImagePickerApi {
     }));
     return returnValue as String?;
   }
+
+  @override
+  Future<List<String?>?> pickRecentMedia(
+      IOSRetrieveTypeData type, MaxSize maxSize, int? imageQuality, int limit) {
+    calls.add(_LoggedMethodCall('pickRecentMedia', arguments: <String, dynamic>{
+      'type': type.value,
+      'maxWidth': maxSize.width,
+      'maxHeight': maxSize.height,
+      'imageQuality': imageQuality,
+      'limit': limit,
+    }));
+    throw UnimplementedError();
+  }
 }
 
 void main() {

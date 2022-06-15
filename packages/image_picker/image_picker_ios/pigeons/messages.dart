@@ -16,6 +16,7 @@ import 'package:pigeon/pigeon.dart';
 ))
 class MaxSize {
   MaxSize(this.width, this.height);
+
   double? width;
   double? height;
 }
@@ -26,8 +27,18 @@ enum SourceCamera { rear, front }
 // Corresponds to `ImageSource` from the platform interface package.
 enum SourceType { camera, gallery }
 
+// Corresponds to `RetrieveType` from the platform interface package.
+enum IOSRetrieveType { image, video }
+
+// TODO(BeMacized): Enums need be wrapped in a data class because thay can't
+// be used as primitive arguments. See https://github.com/flutter/flutter/issues/87307
+class IOSRetrieveTypeData {
+  late IOSRetrieveType value;
+}
+
 class SourceSpecification {
   SourceSpecification(this.type, this.camera);
+
   SourceType type;
   SourceCamera? camera;
 }
@@ -38,10 +49,17 @@ abstract class ImagePickerApi {
   @ObjCSelector('pickImageWithSource:maxSize:quality:')
   String? pickImage(
       SourceSpecification source, MaxSize maxSize, int? imageQuality);
+
   @async
   @ObjCSelector('pickMultiImageWithMaxSize:quality:')
   List<String>? pickMultiImage(MaxSize maxSize, int? imageQuality);
+
   @async
   @ObjCSelector('pickVideoWithSource:maxDuration:')
   String? pickVideo(SourceSpecification source, int? maxDurationSeconds);
+
+  @async
+  @ObjCSelector('pickRecentMediaWithType:maxSize:quality:limit:')
+  List<String>? pickRecentMedia(
+      IOSRetrieveTypeData type, MaxSize maxSize, int? imageQuality, int limit);
 }

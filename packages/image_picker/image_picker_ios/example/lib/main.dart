@@ -294,6 +294,23 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Icon(Icons.videocam),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green,
+              onPressed: () async {
+                final List<XFile>? imageFiles = await _picker.getRecentMedia(
+                    type: RetrieveType.image, limit: 3);
+                final List<XFile>? videoFiles = await _picker.getRecentMedia(
+                    type: RetrieveType.video, limit: 3);
+                print(imageFiles!.map((XFile file) => file.path).toList());
+                print(videoFiles!.map((XFile file) => file.path).toList());
+              },
+              heroTag: 'video1',
+              tooltip: 'Get Recents',
+              child: const Icon(Icons.access_time_filled),
+            ),
+          ),
         ],
       ),
     );

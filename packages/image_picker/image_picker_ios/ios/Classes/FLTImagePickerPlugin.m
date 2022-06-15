@@ -15,7 +15,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
-#import "FLTPHPickerSaveImageToPathOperation.h"
+#import "FLTPHPickerSaveItemToPathOperation.h"
 #import "messages.g.h"
 
 @implementation FLTImagePickerMethodCallContext
@@ -195,6 +195,61 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                                       camera:FLTSourceCameraRear]
                                 context:context];
   }
+}
+
+- (void)pickRecentMediaWithType:(nonnull FLTIOSRetrieveTypeData *)type
+                        maxSize:(nonnull FLTMaxSize *)maxSize
+                        quality:(nullable NSNumber *)imageQuality
+                          limit:(nonnull NSNumber *)limit
+                     completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
+                                                  FlutterError *_Nullable))completion {
+  PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+  fetchOptions.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
+                                                                  ascending:NO] ];
+  dispatch_queue_t backgroundQueue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+  dispatch_async(backgroundQueue, ^{
+    PHFetchResult *assetsFetchResult;
+    switch (type.value) {
+      case FLTIOSRetrieveTypeImage: {
+        assetsFetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage
+                                                      options:fetchOptions];
+
+        break;
+      }
+      case FLTIOSRetrieveTypeVideo: {
+        assetsFetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo
+                                                      options:fetchOptions];
+        break;
+      }
+    }
+    NSArray<PHAsset *> *assets = [assetsFetchResult
+        objectsAtIndexes:[NSIndexSet
+                             indexSetWithIndexesInRange:NSMakeRange(
+                                                            0, MIN(assetsFetchResult.count, 3))]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    NSMutableArray *pathList = [self createNSMutableArrayWithSize:assets.count];
+    for (int i = 0; i < assets.count; i++) {
+      PHAsset *asset = assets[i];
+      if (@available(iOS 14, *)) {
+        FLTPHPickerSaveItemToPathOperation *operation = [[FLTPHPickerSaveItemToPathOperation alloc]
+                  initWithAsset:asset
+                 maxImageHeight:maxSize.height
+                  maxImageWidth:maxSize.width
+            desiredImageQuality:[self getDesiredImageQuality:imageQuality]
+                 savedPathBlock:^(NSString *savedPath) {
+                   pathList[i] = savedPath;
+                 }];
+        [operationQueue addOperation:operation];
+      } else {
+        // TODO
+      }
+    }
+    [operationQueue waitUntilAllOperationsAreFinished];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self sendCallResultWithSavedPathList:pathList];
+    });
+  });
 }
 
 - (void)pickVideoWithSource:(nonnull FLTSourceSpecification *)source
@@ -473,14 +528,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerSaveImageToPathOperation *operation =
-          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
-                                                            maxHeight:maxHeight
-                                                             maxWidth:maxWidth
-                                                  desiredImageQuality:desiredImageQuality
-                                                       savedPathBlock:^(NSString *savedPath) {
-                                                         pathList[i] = savedPath;
-                                                       }];
+      FLTPHPickerSaveItemToPathOperation *operation =
+          [[FLTPHPickerSaveItemToPathOperation alloc] initWithResult:result
+                                                      maxImageHeight:maxHeight
+                                                       maxImageWidth:maxWidth
+                                                 desiredImageQuality:desiredImageQuality
+                                                      savedPathBlock:^(NSString *savedPath) {
+                                                        pathList[i] = savedPath;
+                                                      }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];

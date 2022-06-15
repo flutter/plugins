@@ -206,4 +206,54 @@ class ImagePickerIOS extends ImagePickerPlatform {
     );
     return path != null ? XFile(path) : null;
   }
+
+  @override
+  Future<List<XFile>?> getRecentMedia({
+    required RetrieveType type,
+    double? maxImageWidth,
+    double? maxImageHeight,
+    int? imageQuality,
+    int limit = 1,
+  }) async {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxImageWidth != null && maxImageWidth < 0) {
+      throw ArgumentError.value(
+          maxImageWidth, 'maxWidth', 'cannot be negative');
+    }
+
+    if (maxImageHeight != null && maxImageHeight < 0) {
+      throw ArgumentError.value(
+          maxImageHeight, 'maxHeight', 'cannot be negative');
+    }
+
+    if (limit < 0) {
+      throw ArgumentError.value(limit, 'limit', 'must be larger than 0');
+    }
+
+    IOSRetrieveType iosType;
+    switch (type) {
+      case RetrieveType.image:
+        iosType = IOSRetrieveType.image;
+        break;
+      case RetrieveType.video:
+        iosType = IOSRetrieveType.video;
+        break;
+    }
+
+    // TODO(BeMacized): Remove the cast once Pigeon supports non-nullable
+    //  generics, https://github.com/flutter/flutter/issues/97848
+    final List<String>? paths = (await _hostApi.pickRecentMedia(
+      IOSRetrieveTypeData(value: iosType),
+      MaxSize(width: maxImageWidth, height: maxImageHeight),
+      imageQuality,
+      limit,
+    ))
+        ?.cast<String>();
+
+    return paths?.map((dynamic path) => XFile(path as String)).toList();
+  }
 }
