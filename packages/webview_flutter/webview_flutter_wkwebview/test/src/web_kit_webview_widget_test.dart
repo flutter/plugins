@@ -783,6 +783,14 @@ void main() {
         expect(testController.getTitle(), completion('Web Title'));
       });
 
+      testWidgets('currentUrl', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.getUrl())
+            .thenAnswer((_) => Future<String>.value('myUrl.com'));
+        expect(testController.currentUrl(), completion('myUrl.com'));
+      });
+
       testWidgets('scrollTo', (WidgetTester tester) async {
         await buildWidget(tester);
 
