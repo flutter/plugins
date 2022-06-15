@@ -513,8 +513,6 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       return '';
     }
     final File file = packagesDir.fileSystem.file(path);
-    print('PREPRINT');
-    print(file.readAsStringSync());
     if (!file.existsSync()) {
       printError('${indentation}No such file: $path');
       throw ToolExit(_exitMissingChangeDescriptionFile);
