@@ -71,7 +71,7 @@
                                       }];
   XCTAssertEqualObjects(returnValue, @YES);
   // Asserts whether the NSNumber will be deserialized by the standard codec as a boolean.
-  XCTAssertEqual(CFBooleanGetTypeID(), CFGetTypeID((__bridge CFTypeRef)(returnValue)));
+  XCTAssertEqual(CFGetTypeID((__bridge CFTypeRef)(returnValue)), CFBooleanGetTypeID());
   XCTAssertNil(blockError);
 }
 @end
