@@ -5,7 +5,7 @@ updates:
     commit-message:
       prefix: "[camera]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -229,7 +229,7 @@ updates:
     commit-message:
       prefix: "[shared_pref]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -269,7 +269,7 @@ updates:
     commit-message:
       prefix: "[video_player]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
