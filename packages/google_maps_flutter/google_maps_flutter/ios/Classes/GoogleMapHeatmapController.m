@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapHeatmapController.h"
-#import "JsonConversions.h"
+#import "FLTGoogleMapJSONConversions.h""
 @import GoogleMapsUtils;
 
 @implementation FLTGoogleMapHeatmapController
@@ -68,32 +68,32 @@
 - (void)interpretOptions:(NSDictionary *)data sink:(id<FLTGoogleMapHeatmapOptionsSink>)sink {
   NSArray *weightedData = data[@"data"];
   if (weightedData != nil) {
-    [sink setWeightedData:[FLTGoogleMapJsonConversions toWeightedData:weightedData]];
+    [sink setWeightedData:[FLTGoogleMapJSONConversions toWeightedData:weightedData]];
   }
 
   NSDictionary *gradient = data[@"gradient"];
   if (gradient != nil) {
-    [sink setGradient:[FLTGoogleMapJsonConversions toGradient:gradient]];
+    [sink setGradient:[FLTGoogleMapJSONConversions toGradient:gradient]];
   }
 
   NSNumber *opacity = data[@"opacity"];
   if (opacity != nil) {
-    [sink setOpacity:[FLTGoogleMapJsonConversions toDouble:opacity]];
+    [sink setOpacity:[opacity doubleValue]];
   }
 
   NSNumber *radius = data[@"radius"];
   if (radius != nil) {
-    [sink setRadius:[FLTGoogleMapJsonConversions toInt:radius]];
+    [sink setRadius:[radius intValue]];
   }
 
   NSNumber *minimumZoomIntensity = data[@"minimumZoomIntensity"];
   if (minimumZoomIntensity != nil) {
-    [sink setMinimumZoomIntensity:[FLTGoogleMapJsonConversions toInt:minimumZoomIntensity]];
+    [sink setMinimumZoomIntensity:[minimumZoomIntensity intValue]];
   }
 
   NSNumber *maximumZoomIntensity = data[@"maximumZoomIntensity"];
   if (maximumZoomIntensity != nil) {
-    [sink setMaximumZoomIntensity:[FLTGoogleMapJsonConversions toInt:maximumZoomIntensity]];
+    [sink setMaximumZoomIntensity:[maximumZoomIntensity intValue]];
   }
 
   // The map must be set each time for options to update

@@ -1,3 +1,7 @@
+## 2.8.9
+
+* Updates Gradle to 7.2.1.
+
 ## 2.8.8
 
 * Minor fixes for new analysis options.

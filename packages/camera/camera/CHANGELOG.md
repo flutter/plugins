@@ -1,3 +1,7 @@
+## 0.9.7+1
+
+* Moves streaming implementation to the platform interface package.
+
 ## 0.9.7
 
 * Returns all the available cameras on iOS.
