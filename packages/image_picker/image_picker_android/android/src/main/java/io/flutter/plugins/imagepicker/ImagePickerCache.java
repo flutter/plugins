@@ -13,6 +13,7 @@ import io.flutter.plugin.common.MethodCall;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,7 +105,7 @@ class ImagePickerCache {
   }
 
   void saveResult(
-      @Nullable ArrayList<String> path, @Nullable String errorCode, @Nullable String errorMessage) {
+      @Nullable List<String> path, @Nullable String errorCode, @Nullable String errorMessage) {
 
     Set<String> imageSet = new HashSet<>();
     imageSet.addAll(path);

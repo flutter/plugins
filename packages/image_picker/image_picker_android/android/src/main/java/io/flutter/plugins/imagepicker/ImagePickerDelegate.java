@@ -10,6 +10,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.hardware.camera2.CameraCharacteristics;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -81,6 +82,7 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
+  @VisibleForTesting static final int REQUEST_EXTERNAL_STORAGE_PERMISSION_LATEST = 2356;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -240,6 +242,80 @@ public class ImagePickerDelegate
       result.success(resultMap);
     }
     cache.clear();
+  }
+
+  private void getRecentMediaFromGallery() {
+    Integer limit = methodCall.argument("limit");
+    String type = methodCall.argument("type");
+    if (limit == null) limit = 1;
+
+    List<Cursor> cursors = new ArrayList<>();
+    Cursor cursor;
+    String[] projection;
+    switch (type) {
+      case "image":
+        projection =
+            new String[] {
+              MediaStore.Images.ImageColumns.DATA,
+            };
+        cursor =
+            activity
+                .getApplicationContext()
+                .getContentResolver()
+                .query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    projection,
+                    null,
+                    null,
+                    MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+        break;
+      case "video":
+        projection =
+            new String[] {
+              MediaStore.Video.VideoColumns.DATA,
+            };
+        cursor =
+            activity
+                .getApplicationContext()
+                .getContentResolver()
+                .query(
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                    projection,
+                    null,
+                    null,
+                    MediaStore.Video.VideoColumns.DATE_TAKEN + " DESC");
+        break;
+      default:
+        finishWithError("invalid_type", "Provided type is currently unsupported");
+        return;
+    }
+
+    List<String> items = new ArrayList<>();
+    cursor.moveToFirst();
+    for (int i = 0; !cursor.isAfterLast() && i < limit; cursor.moveToNext(), i++) {
+      items.add(cursor.getString(0));
+    }
+
+    if (type.equals("image")) {
+      this.handleMultiImageResult(items, true);
+    } else {
+      this.finishWithListSuccess(items);
+    }
+  }
+
+  public void getRecentMedia(MethodCall call, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(call, result)) {
+      finishWithAlreadyActiveError(result);
+      return;
+    }
+
+    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      permissionManager.askForPermission(
+          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE_PERMISSION_LATEST);
+      return;
+    }
+
+    this.getRecentMediaFromGallery();
   }
 
   public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
@@ -441,6 +517,11 @@ public class ImagePickerDelegate
           launchTakeVideoWithCameraIntent();
         }
         break;
+      case REQUEST_EXTERNAL_STORAGE_PERMISSION_LATEST:
+        if (permissionGranted) {
+          getRecentMediaFromGallery();
+        }
+        break;
       default:
         return false;
     }
@@ -450,6 +531,10 @@ public class ImagePickerDelegate
         case REQUEST_CAMERA_IMAGE_PERMISSION:
         case REQUEST_CAMERA_VIDEO_PERMISSION:
           finishWithError("camera_access_denied", "The user did not allow camera access.");
+          break;
+        case REQUEST_EXTERNAL_STORAGE_PERMISSION_LATEST:
+          finishWithError(
+              "external_storage_access_denied", "The user did not allow external storage access.");
           break;
       }
     }
@@ -560,10 +645,9 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleMultiImageResult(
-      ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
+  private void handleMultiImageResult(List<String> paths, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
-      ArrayList<String> finalPath = new ArrayList<>();
+      List<String> finalPath = new ArrayList<>();
       for (int i = 0; i < paths.size(); i++) {
         String finalImagePath = getResizedImagePath(paths.get(i));
 
@@ -632,7 +716,7 @@ public class ImagePickerDelegate
     clearMethodCallAndResult();
   }
 
-  private void finishWithListSuccess(ArrayList<String> imagePaths) {
+  private void finishWithListSuccess(List<String> imagePaths) {
     if (pendingResult == null) {
       cache.saveResult(imagePaths, null, null);
       return;
