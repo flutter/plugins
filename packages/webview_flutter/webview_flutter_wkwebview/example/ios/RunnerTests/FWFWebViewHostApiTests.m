@@ -388,8 +388,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   NSString __block *returnValue;
   FlutterError __block *returnError;
