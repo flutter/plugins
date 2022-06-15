@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import io.flutter.plugin.common.MethodCall;
 
-public class AuthenticationErrorHandler {
+class AuthenticationErrorHandler {
   void handleCredentialsNotAvailableError(
       final FragmentActivity activity,
       boolean canTryUpdateSettings,
