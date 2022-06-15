@@ -312,6 +312,15 @@ abstract class WKWebViewConfigurationHostApi {
   );
 }
 
+/// Handles callbacks from an WKWebViewConfiguration instance.
+///
+/// See https://developer.apple.com/documentation/webkit/wkwebviewconfiguration?language=objc.
+@FlutterApi()
+abstract class WKWebViewConfigurationFlutterApi {
+  @ObjCSelector('createWithIdentifier:')
+  void create(int identifier);
+}
+
 /// Mirror of WKUserContentController.
 ///
 /// See https://developer.apple.com/documentation/webkit/wkusercontentcontroller?language=objc.

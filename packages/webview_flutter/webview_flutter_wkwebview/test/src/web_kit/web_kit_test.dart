@@ -70,6 +70,20 @@ void main() {
         TestWKWebViewConfigurationHostApi.setup(null);
       });
 
+      test('WKWebViewConfigurationFlutterApi.create', () {
+        final WebKitFlutterApis flutterApis = WebKitFlutterApis(
+          instanceManager: instanceManager,
+        );
+
+        flutterApis.webViewConfiguration.create(2);
+
+        expect(instanceManager.containsIdentifier(2), isTrue);
+        expect(
+          instanceManager.getInstanceWithWeakReference(2),
+          isA<WKWebViewConfiguration>(),
+        );
+      });
+
       test('createFromWebViewConfiguration', () {
         verify(mockPlatformHostApi.createFromWebViewConfiguration(
           instanceManager.getIdentifier(websiteDataStore),
