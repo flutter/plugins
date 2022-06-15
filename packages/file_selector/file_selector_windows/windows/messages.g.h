@@ -34,23 +34,26 @@ class FlutterError {
 };
 template <class T>
 class ErrorOr {
-  std::variant<std::unique_ptr<T>, T, FlutterError> v;
+  std::variant<T, FlutterError> v;
 
  public:
   ErrorOr(const T& rhs) { new (&v) T(rhs); }
+  ErrorOr(const T&& rhs) { v = std::move(rhs); }
   ErrorOr(const FlutterError& rhs) { new (&v) FlutterError(rhs); }
-  static ErrorOr<std::unique_ptr<T>> MakeWithUniquePtr(std::unique_ptr<T> rhs) {
-    ErrorOr<std::unique_ptr<T>> ret = ErrorOr<std::unique_ptr<T>>();
-    ret.v = std::move(rhs);
-    return ret;
-  }
+  ErrorOr(const FlutterError&& rhs) { v = std::move(rhs); }
   bool hasError() const { return std::holds_alternative<FlutterError>(v); }
   const T& value() const { return std::get<T>(v); };
   const FlutterError& error() const { return std::get<FlutterError>(v); };
 
+  // This object can potentially be quite large, so require move instead of
+  // copy to avoid accidental inefficiencies.
+  ErrorOr(const ErrorOr<T>&) = delete;
+  ErrorOr<T>& operator=(const ErrorOr<T>&) = delete;
+
  private:
+  friend class FileSelectorApi;
   ErrorOr() = default;
-  friend class ErrorOr;
+  T TakeValue() && { return std::get<T>(std::move(v)); }
 };
 
 /* Generated class from Pigeon that represents data sent in messages. */
@@ -120,11 +123,11 @@ class FileSelectorApi {
   FileSelectorApi(const FileSelectorApi&) = delete;
   FileSelectorApi& operator=(const FileSelectorApi&) = delete;
   virtual ~FileSelectorApi(){};
-  virtual ErrorOr<std::unique_ptr<flutter::EncodableList>> ShowOpenDialog(
+  virtual ErrorOr<flutter::EncodableList> ShowOpenDialog(
       const SelectionOptions& options,
       std::optional<std::string> initial_directory,
       std::optional<std::string> confirm_button_text) = 0;
-  virtual ErrorOr<std::unique_ptr<flutter::EncodableList>> ShowSaveDialog(
+  virtual ErrorOr<flutter::EncodableList> ShowSaveDialog(
       const SelectionOptions& options,
       std::optional<std::string> initial_directory,
       std::optional<std::string> suggested_name,

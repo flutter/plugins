@@ -158,37 +158,37 @@ class DialogWrapper {
         static_cast<UINT>(filter_specs.size()), filter_specs.data());
   }
 
-  // Displays the dialog, and returns the selected files, or null on error.
-  std::unique_ptr<EncodableList> Show(HWND parent_window) {
+  // Displays the dialog, and returns the selected files, or nullopt on error.
+  std::optional<EncodableList> Show(HWND parent_window) {
     assert(dialog_controller_);
     last_result_ = dialog_controller_->Show(parent_window);
     if (!SUCCEEDED(last_result_)) {
-      return nullptr;
+      return std::nullopt;
     }
 
-    auto files = std::make_unique<EncodableList>();
+    EncodableList files;
     if (is_open_dialog_) {
       IShellItemArrayPtr shell_items;
       last_result_ = dialog_controller_->GetResults(&shell_items);
       if (!SUCCEEDED(last_result_)) {
-        return nullptr;
+        return std::nullopt;
       }
       IEnumShellItemsPtr item_enumerator;
       last_result_ = shell_items->EnumItems(&item_enumerator);
       if (!SUCCEEDED(last_result_)) {
-        return nullptr;
+        return std::nullopt;
       }
       IShellItemPtr shell_item;
       while (item_enumerator->Next(1, &shell_item, nullptr) == S_OK) {
-        files->push_back(EncodableValue(GetPathForShellItem(shell_item)));
+        files.push_back(EncodableValue(GetPathForShellItem(shell_item)));
       }
     } else {
       IShellItemPtr shell_item;
       last_result_ = dialog_controller_->GetResult(&shell_item);
       if (!SUCCEEDED(last_result_)) {
-        return nullptr;
+        return std::nullopt;
       }
-      files->push_back(EncodableValue(GetPathForShellItem(shell_item)));
+      files.push_back(EncodableValue(GetPathForShellItem(shell_item)));
     }
     return files;
   }
@@ -205,7 +205,7 @@ class DialogWrapper {
   HRESULT last_result_;
 };
 
-ErrorOr<std::unique_ptr<flutter::EncodableList>> ShowDialog(
+ErrorOr<flutter::EncodableList> ShowDialog(
     const FileDialogControllerFactory& dialog_factory, HWND parent_window,
     DialogMode mode, const SelectionOptions& options,
     std::optional<std::string_view> initial_directory,
@@ -244,12 +244,12 @@ ErrorOr<std::unique_ptr<flutter::EncodableList>> ShowDialog(
     dialog.SetFileTypeFilters(options.allowed_types());
   }
 
-  std::unique_ptr<EncodableList> files = dialog.Show(parent_window);
+  std::optional<EncodableList> files = dialog.Show(parent_window);
   if (!files && dialog.last_result() != HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
     return FlutterError("System error", "Could not show dialog",
                         EncodableValue(dialog.last_result()));
   }
-  return files;
+  return std::move(files.value());
 }
 
 // Returns the top-level window that owns |view|.
@@ -279,7 +279,7 @@ FileSelectorPlugin::FileSelectorPlugin(
 
 FileSelectorPlugin::~FileSelectorPlugin() = default;
 
-ErrorOr<std::unique_ptr<flutter::EncodableList>>
+ErrorOr<flutter::EncodableList>
 FileSelectorPlugin::ShowOpenDialog(
     const SelectionOptions& options,
     std::optional<std::string> initialDirectory,
@@ -288,7 +288,7 @@ FileSelectorPlugin::ShowOpenDialog(
                     options, initialDirectory, std::nullopt, confirmButtonText);
 }
 
-ErrorOr<std::unique_ptr<flutter::EncodableList>>
+ErrorOr<flutter::EncodableList>
 FileSelectorPlugin::ShowSaveDialog(
     const SelectionOptions& options,
     std::optional<std::string> initialDirectory,
