@@ -1,3 +1,7 @@
+## 5.3.3
+
+* Updates references to the obsolete master branch.
+
 ## 5.3.2
 
 * Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.

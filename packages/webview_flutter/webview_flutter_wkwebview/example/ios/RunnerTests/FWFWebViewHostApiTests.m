@@ -351,4 +351,41 @@
   XCTAssertEqualObjects(returnValue, @"result");
   XCTAssertNil(returnError);
 }
+
+- (void)testEvaluateJavaScriptReturnsNSErrorData {
+  FWFWebView *mockWebView = OCMClassMock([FWFWebView class]);
+
+  OCMStub([mockWebView
+      evaluateJavaScript:@"runJavaScript"
+       completionHandler:([OCMArg invokeBlockWithArgs:[NSNull null],
+                                                      [NSError errorWithDomain:@"errorDomain"
+                                                                          code:0
+                                                                      userInfo:@{
+                                                                        NSLocalizedDescriptionKey :
+                                                                            @"description"
+                                                                      }],
+                                                      nil])]);
+
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
+
+  FWFWebViewHostApiImpl *hostAPI =
+      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+
+  NSString __block *returnValue;
+  FlutterError __block *returnError;
+  [hostAPI evaluateJavaScriptForWebViewWithIdentifier:@0
+                                     javaScriptString:@"runJavaScript"
+                                           completion:^(id result, FlutterError *error) {
+                                             returnValue = result;
+                                             returnError = error;
+                                           }];
+
+  XCTAssertNil(returnValue);
+  FWFNSErrorData *errorData = returnError.details;
+  XCTAssertTrue([errorData isKindOfClass:[FWFNSErrorData class]]);
+  XCTAssertEqualObjects(errorData.code, @0);
+  XCTAssertEqualObjects(errorData.domain, @"errorDomain");
+  XCTAssertEqualObjects(errorData.localizedDescription, @"description");
+}
 @end

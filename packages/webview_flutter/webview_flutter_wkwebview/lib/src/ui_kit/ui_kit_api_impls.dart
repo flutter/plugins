@@ -6,7 +6,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/painting.dart' show Color;
-import 'package:flutter/services.dart';
+
+import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 
 import '../common/instance_manager.dart';
 import '../common/web_kit.pigeon.dart';
@@ -17,10 +18,9 @@ import 'ui_kit.dart';
 class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   /// Constructs a [UIScrollViewHostApiImpl].
   UIScrollViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -75,10 +75,9 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
 class UIViewHostApiImpl extends UIViewHostApi {
   /// Constructs a [UIViewHostApiImpl].
   UIViewHostApiImpl({
-    BinaryMessenger? binaryMessenger,
+    super.binaryMessenger,
     InstanceManager? instanceManager,
-  })  : instanceManager = instanceManager ?? InstanceManager.instance,
-        super(binaryMessenger: binaryMessenger);
+  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;

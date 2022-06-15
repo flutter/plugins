@@ -11,7 +11,7 @@ readonly TARGET_DIR=$1
 #
 # Chromium builds can be located here: https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/
 #
-# Check: https://github.com/flutter/engine/blob/master/lib/web_ui/dev/browser_lock.yaml
+# Check: https://github.com/flutter/engine/blob/main/lib/web_ui/dev/browser_lock.yaml
 readonly CHROMIUM_BUILD=929514
 
 # The correct ChromeDriver is distributed alongside the chromium build above, as
