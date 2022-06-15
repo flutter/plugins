@@ -47,6 +47,8 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
     throw UnimplementedError('canLaunch() has not been implemented.');
   }
 
+  /// Passes [url] to the underlying platform for handling.
+  ///
   /// Returns `true` if the given [url] was successfully launched.
   ///
   /// For documentation on the other arguments, see the `launch` documentation
@@ -64,6 +66,8 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
     throw UnimplementedError('launch() has not been implemented.');
   }
 
+  /// Passes [url] to the underlying platform for handling.
+  ///
   /// Returns `true` if the given [url] was successfully launched.
   Future<bool> launchUrl(String url, LaunchOptions options) {
     final bool isWebURL = url.startsWith('http:') || url.startsWith('https:');
