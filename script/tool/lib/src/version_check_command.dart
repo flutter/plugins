@@ -517,6 +517,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       printError('${indentation}No such file: $path');
       throw ToolExit(_exitMissingChangeDescriptionFile);
     }
+    print(file.readAsStringSync());
     return file.readAsStringSync();
   }
 
