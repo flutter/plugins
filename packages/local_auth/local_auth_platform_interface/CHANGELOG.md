@@ -1,5 +1,6 @@
-## NEXT
+## 1.0.4
 
+* Updates references to the obsolete master branch.
 * Removes unnecessary imports.
 
 ## 1.0.3
