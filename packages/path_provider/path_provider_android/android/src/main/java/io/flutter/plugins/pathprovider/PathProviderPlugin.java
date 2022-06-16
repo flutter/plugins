@@ -7,164 +7,34 @@ package io.flutter.plugins.pathprovider;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.SettableFuture;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.BinaryMessenger.TaskQueue;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.StandardMethodCodec;
+import io.flutter.plugins.pathprovider.Messages.PathProviderApi;
 import io.flutter.util.PathUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import javax.annotation.Nullable;
 
-public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
+public class PathProviderPlugin implements FlutterPlugin, PathProviderApi {
   static final String TAG = "PathProviderPlugin";
   private Context context;
-  private MethodChannel channel;
-  private PathProviderImpl impl;
-
-  /**
-   * An abstraction over how to access the paths in a thread-safe manner.
-   *
-   * <p>We need this so on versions of Flutter that support Background Platform Channels this plugin
-   * can take advantage of it.
-   *
-   * <p>This can be removed after https://github.com/flutter/engine/pull/29147 becomes available on
-   * the stable branch.
-   */
-  private interface PathProviderImpl {
-    void getTemporaryDirectory(@NonNull Result result);
-
-    void getApplicationDocumentsDirectory(@NonNull Result result);
-
-    void getStorageDirectory(@NonNull Result result);
-
-    void getExternalCacheDirectories(@NonNull Result result);
-
-    void getExternalStorageDirectories(@NonNull String directoryName, @NonNull Result result);
-
-    void getApplicationSupportDirectory(@NonNull Result result);
-  }
-
-  /** The implementation for getting system paths that executes from the platform */
-  private class PathProviderPlatformThread implements PathProviderImpl {
-    private final Executor uiThreadExecutor = new UiThreadExecutor();
-    private final Executor executor =
-        Executors.newSingleThreadExecutor(
-            new ThreadFactoryBuilder()
-                .setNameFormat("path-provider-background-%d")
-                .setPriority(Thread.NORM_PRIORITY)
-                .build());
-
-    public void getTemporaryDirectory(@NonNull Result result) {
-      executeInBackground(() -> getPathProviderTemporaryDirectory(), result);
-    }
-
-    public void getApplicationDocumentsDirectory(@NonNull Result result) {
-      executeInBackground(() -> getPathProviderApplicationDocumentsDirectory(), result);
-    }
-
-    public void getStorageDirectory(@NonNull Result result) {
-      executeInBackground(() -> getPathProviderStorageDirectory(), result);
-    }
-
-    public void getExternalCacheDirectories(@NonNull Result result) {
-      executeInBackground(() -> getPathProviderExternalCacheDirectories(), result);
-    }
-
-    public void getExternalStorageDirectories(
-        @NonNull String directoryName, @NonNull Result result) {
-      executeInBackground(() -> getPathProviderExternalStorageDirectories(directoryName), result);
-    }
-
-    public void getApplicationSupportDirectory(@NonNull Result result) {
-      executeInBackground(() -> PathProviderPlugin.this.getApplicationSupportDirectory(), result);
-    }
-
-    private <T> void executeInBackground(Callable<T> task, Result result) {
-      final SettableFuture<T> future = SettableFuture.create();
-      Futures.addCallback(
-          future,
-          new FutureCallback<T>() {
-            public void onSuccess(T answer) {
-              result.success(answer);
-            }
-
-            public void onFailure(Throwable t) {
-              result.error(t.getClass().getName(), t.getMessage(), null);
-            }
-          },
-          uiThreadExecutor);
-      executor.execute(
-          () -> {
-            try {
-              future.set(task.call());
-            } catch (Throwable t) {
-              future.setException(t);
-            }
-          });
-    }
-  }
-
-  /** The implementation for getting system paths that executes from a background thread. */
-  private class PathProviderBackgroundThread implements PathProviderImpl {
-    public void getTemporaryDirectory(@NonNull Result result) {
-      result.success(getPathProviderTemporaryDirectory());
-    }
-
-    public void getApplicationDocumentsDirectory(@NonNull Result result) {
-      result.success(getPathProviderApplicationDocumentsDirectory());
-    }
-
-    public void getStorageDirectory(@NonNull Result result) {
-      result.success(getPathProviderStorageDirectory());
-    }
-
-    public void getExternalCacheDirectories(@NonNull Result result) {
-      result.success(getPathProviderExternalCacheDirectories());
-    }
-
-    public void getExternalStorageDirectories(
-        @NonNull String directoryName, @NonNull Result result) {
-      result.success(getPathProviderExternalStorageDirectories(directoryName));
-    }
-
-    public void getApplicationSupportDirectory(@NonNull Result result) {
-      result.success(PathProviderPlugin.this.getApplicationSupportDirectory());
-    }
-  }
 
   public PathProviderPlugin() {}
 
   private void setup(BinaryMessenger messenger, Context context) {
-    String channelName = "plugins.flutter.io/path_provider_android";
     TaskQueue taskQueue = messenger.makeBackgroundTaskQueue();
 
     try {
-      channel =
-          (MethodChannel)
-              new MethodChannel(messenger, channelName, StandardMethodCodec.INSTANCE, taskQueue);
-      impl = new PathProviderBackgroundThread();
+      PathProviderApi.setup(messenger, this);
     } catch (Exception ex) {
       Log.e(TAG, "Received exception while setting up PathProviderPlugin", ex);
     }
 
     this.context = context;
-    channel.setMethodCallHandler(this);
   }
 
   @SuppressWarnings("deprecation")
@@ -180,36 +50,38 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
-    channel = null;
+    PathProviderApi.setup(binding.getBinaryMessenger(), null);
   }
 
   @Override
-  public void onMethodCall(MethodCall call, @NonNull Result result) {
-    switch (call.method) {
-      case "getTemporaryDirectory":
-        impl.getTemporaryDirectory(result);
-        break;
-      case "getApplicationDocumentsDirectory":
-        impl.getApplicationDocumentsDirectory(result);
-        break;
-      case "getStorageDirectory":
-        impl.getStorageDirectory(result);
-        break;
-      case "getExternalCacheDirectories":
-        impl.getExternalCacheDirectories(result);
-        break;
-      case "getExternalStorageDirectories":
-        final Integer type = call.argument("type");
-        final String directoryName = StorageDirectoryMapper.androidType(type);
-        impl.getExternalStorageDirectories(directoryName, result);
-        break;
-      case "getApplicationSupportDirectory":
-        impl.getApplicationSupportDirectory(result);
-        break;
-      default:
-        result.notImplemented();
-    }
+  public @Nullable String getTemporaryPath() {
+    return getPathProviderTemporaryDirectory();
+  }
+
+  @Override
+  public @Nullable String getApplicationSupportPath() {
+    return getApplicationSupportDirectory();
+  }
+
+  @Override
+  public @Nullable String getApplicationDocumentsPath() {
+    return getPathProviderApplicationDocumentsDirectory();
+  }
+
+  @Override
+  public @Nullable String getExternalStoragePath() {
+    return getPathProviderStorageDirectory();
+  }
+
+  @Override
+  public @NonNull List<String> getExternalCachePaths() {
+    return getPathProviderExternalCacheDirectories();
+  }
+
+  @Override
+  public @NonNull List<String> getExternalStoragePaths(
+      @NonNull Messages.StorageDirectory directory) {
+    return getPathProviderExternalStorageDirectories(directory);
   }
 
   private String getPathProviderTemporaryDirectory() {
@@ -251,31 +123,50 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     return paths;
   }
 
-  private List<String> getPathProviderExternalStorageDirectories(String type) {
+  private String getStorageDirectoryString(@NonNull Messages.StorageDirectory directory) {
+    switch (directory) {
+      case music:
+        return "music";
+      case podcasts:
+        return "podcasts";
+      case ringtones:
+        return "ringtones";
+      case alarms:
+        return "alarms";
+      case notifications:
+        return "notifications";
+      case pictures:
+        return "pictures";
+      case movies:
+        return "movies";
+      case downloads:
+        return "downloads";
+      case dcim:
+        return "dcim";
+      case documents:
+        return "documents";
+      default:
+        throw new RuntimeException("Unrecognized directory: " + directory);
+    }
+  }
+
+  private List<String> getPathProviderExternalStorageDirectories(
+      @NonNull Messages.StorageDirectory directory) {
     final List<String> paths = new ArrayList<String>();
 
     if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-      for (File dir : context.getExternalFilesDirs(type)) {
+      for (File dir : context.getExternalFilesDirs(getStorageDirectoryString(directory))) {
         if (dir != null) {
           paths.add(dir.getAbsolutePath());
         }
       }
     } else {
-      File dir = context.getExternalFilesDir(type);
+      File dir = context.getExternalFilesDir(getStorageDirectoryString(directory));
       if (dir != null) {
         paths.add(dir.getAbsolutePath());
       }
     }
 
     return paths;
-  }
-
-  private static class UiThreadExecutor implements Executor {
-    private final Handler handler = new Handler(Looper.getMainLooper());
-
-    @Override
-    public void execute(Runnable command) {
-      handler.post(command);
-    }
   }
 }
