@@ -68,12 +68,12 @@
 - (void)interpretOptions:(NSDictionary *)data sink:(id<FLTGoogleMapHeatmapOptionsSink>)sink {
   NSArray *weightedData = data[@"data"];
   if (weightedData != nil) {
-    [sink setWeightedData:[FLTGoogleMapJSONConversions toWeightedData:weightedData]];
+    [sink setWeightedData:[FLTGoogleMapJSONConversions weightedDataFromArray:weightedData]];
   }
 
   NSDictionary *gradient = data[@"gradient"];
   if (gradient != nil) {
-    [sink setGradient:[FLTGoogleMapJSONConversions toGradient:gradient]];
+    [sink setGradient:[FLTGoogleMapJSONConversions gradientFromDictionary:gradient]];
   }
 
   NSNumber *opacity = data[@"opacity"];

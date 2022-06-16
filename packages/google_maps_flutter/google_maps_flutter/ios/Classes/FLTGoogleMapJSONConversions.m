@@ -142,7 +142,7 @@
   return nil;
 }
 
-+ (GMUWeightedLatLng *)toWeightedLatLng:(NSArray *)data {
++ (GMUWeightedLatLng *)weightedLatLngFromArray:(NSArray *)data {
   NSAssert(data.count == 2, @"WeightedLatLng data must have length of 2");
   if (data.count != 2) {
     return nil;
@@ -152,10 +152,11 @@
                intensity:[data[1] doubleValue]];
 }
 
-+ (NSArray<GMUWeightedLatLng *> *)toWeightedData:(NSArray *)data {
++ (NSArray<GMUWeightedLatLng *> *)weightedDataFromArray:(NSArray *)data {
   NSMutableArray<GMUWeightedLatLng *> *weightedData = [[NSMutableArray alloc] init];
   for (NSArray *latLng in data) {
-    GMUWeightedLatLng *weightedLatLng = [FLTGoogleMapJSONConversions toWeightedLatLng:latLng];
+    GMUWeightedLatLng *weightedLatLng =
+        [FLTGoogleMapJSONConversions weightedLatLngFromArray:latLng];
     if (weightedLatLng == nil) continue;
     [weightedData addObject:weightedLatLng];
   }
@@ -163,7 +164,7 @@
   return weightedData;
 }
 
-+ (GMUGradient *)toGradient:(NSDictionary *)data {
++ (GMUGradient *)gradientFromDictionary:(NSDictionary *)data {
   NSMutableArray<UIColor *> *colors = [[NSMutableArray alloc] init];
 
   NSArray *colorData = data[@"colors"];

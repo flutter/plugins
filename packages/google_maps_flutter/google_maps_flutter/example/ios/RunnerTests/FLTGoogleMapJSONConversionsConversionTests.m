@@ -287,4 +287,43 @@
   [classMockCameraUpdate stopMocking];
 }
 
+- (void)testWeightedLatLngFromArray {
+  NSArray *weightedLatLng = @[ @[ @1, @2 ], @3 ];
+
+  GMUWeightedLatLng *weightedLocation =
+      [FLTGoogleMapJSONConversions weightedLatLngFromArray:weightedLatLng];
+  // The location gets projected to different values
+  XCTAssertEqual([weightedLocation intensity], 3);
+}
+
+- (void)testWeightedDataFromArray {
+  NSArray *data = @[ @[ @[ @1, @2 ], @3 ], @[ @[ @4, @5 ], @6 ] ];
+
+  NSArray<GMUWeightedLatLng *> *weightedData =
+      [FLTGoogleMapJSONConversions weightedDataFromArray:data];
+  XCTAssertEqual([weightedData[0] intensity], 3);
+  XCTAssertEqual([weightedData[1] intensity], 6);
+}
+
+- (void)testGradientFromDictionary {
+  NSDictionary *gradientData = @{
+    @"colors" : @[
+      // Color.fromARGB(255, 0, 255, 255)
+      @4278255615,
+    ],
+    @"startPoints" : @[ @0.6 ],
+    @"colorMapSize" : @200,
+  };
+
+  GMUGradient *gradient = [FLTGoogleMapJSONConversions gradientFromDictionary:gradientData];
+  CGFloat red, green, blue, alpha;
+  [[gradient colors][0] getRed:&red green:&green blue:&blue alpha:&alpha];
+  XCTAssertEqual(red, 0);
+  XCTAssertEqual(green, 1);
+  XCTAssertEqual(blue, 1);
+  XCTAssertEqual(alpha, 1);
+  XCTAssertEqual([[gradient startPoints][0] doubleValue], 0.6);
+  XCTAssertEqual([gradient mapSize], 200);
+}
+
 @end
