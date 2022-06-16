@@ -17,27 +17,27 @@
   return self;
 }
 
-- (UIView *)viewForIdentifier:(NSNumber *)instanceId {
-  return (UIView *)[self.instanceManager instanceForIdentifier:instanceId.longValue];
+- (UIView *)viewForIdentifier:(NSNumber *)identifier {
+  return (UIView *)[self.instanceManager instanceForIdentifier:identifier.longValue];
 }
 
-- (void)setBackgroundColorForViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)setBackgroundColorForViewWithIdentifier:(nonnull NSNumber *)identifier
                                         toValue:(nullable NSNumber *)color
                                           error:(FlutterError *_Nullable *_Nonnull)error {
   if (!color) {
-    [[self viewForIdentifier:instanceId] setBackgroundColor:nil];
+    [[self viewForIdentifier:identifier] setBackgroundColor:nil];
   }
   int colorInt = color.intValue;
   UIColor *colorObject = [UIColor colorWithRed:(colorInt >> 16 & 0xff) / 255.0
                                          green:(colorInt >> 8 & 0xff) / 255.0
                                           blue:(colorInt & 0xff) / 255.0
                                          alpha:(colorInt >> 24 & 0xff) / 255.0];
-  [[self viewForIdentifier:instanceId] setBackgroundColor:colorObject];
+  [[self viewForIdentifier:identifier] setBackgroundColor:colorObject];
 }
 
-- (void)setOpaqueForViewWithIdentifier:(nonnull NSNumber *)instanceId
+- (void)setOpaqueForViewWithIdentifier:(nonnull NSNumber *)identifier
                               isOpaque:(nonnull NSNumber *)opaque
                                  error:(FlutterError *_Nullable *_Nonnull)error {
-  [[self viewForIdentifier:instanceId] setOpaque:opaque.boolValue];
+  [[self viewForIdentifier:identifier] setOpaque:opaque.boolValue];
 }
 @end

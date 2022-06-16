@@ -1,14 +1,12 @@
 # Plugins that deliberately use their own analysis_options.yaml.
 #
-# This only exists to allow incrementally switching to the newer, stricter
-# analysis_options.yaml based on flutter/flutter, rather than the original
-# rules based on pedantic (now at analysis_options_legacy.yaml).
+# This only exists to allow incrementally adopting new analysis options in
+# cases where a new option can't be applied to the entire repository at
+# once. Do not add anything to this file without an issue reference and
+# a concrete plan for removing it relatively quickly.
 #
 # DO NOT move or delete this file without updating
 # https://github.com/dart-lang/sdk/blob/master/tools/bots/flutter/analyze_flutter_plugins.sh
 # which references this file from source, but out-of-repo.
 # Contact stuartmorgan or devoncarew for assistance if necessary.
 
-# TODO(ecosystem): Remove everything from this list. See:
-# https://github.com/flutter/flutter/issues/76229
-- google_maps_flutter/google_maps_flutter_platform_interface
