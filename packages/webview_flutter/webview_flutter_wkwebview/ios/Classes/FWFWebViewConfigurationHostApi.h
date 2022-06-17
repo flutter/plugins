@@ -11,6 +11,18 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * Flutter api implementation for WKWebViewConfiguration.
+ *
+ * Handles making callbacks to Dart for a WKWebViewConfiguration.
+ */
+@interface FWFWebViewConfigurationFlutterApiImpl : FWFWKWebViewConfigurationFlutterApi
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
+- (void)createWithConfiguration:(WKWebViewConfiguration *)configuration
+                     completion:(void (^)(NSError *_Nullable))completion;
+@end
+
+/**
  * Host api implementation for WKWebViewConfiguration.
  *
  * Handles creating WKWebViewConfiguration that intercommunicate with a paired Dart object.

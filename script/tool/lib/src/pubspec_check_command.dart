@@ -64,7 +64,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  bool get includeSubpackages => true;
+  PackageLoopingType get packageLoopingType =>
+      PackageLoopingType.includeAllSubpackages;
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
@@ -189,6 +190,11 @@ class PubspecCheckCommand extends PackageLoopingCommand {
       if (!pubspec.repository!.path.endsWith(relativePackagePath)) {
         errorMessages
             .add('The "repository" link should end with the package path.');
+      }
+
+      if (pubspec.repository!.path.contains('/master/')) {
+        errorMessages
+            .add('The "repository" link should use "main", not "master".');
       }
     }
 

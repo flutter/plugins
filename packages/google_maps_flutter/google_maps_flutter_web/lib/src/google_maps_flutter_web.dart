@@ -14,23 +14,24 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   // A cache of map controllers by map Id.
-  Map _mapById = Map<int, GoogleMapController>();
+  Map<int, GoogleMapController> _mapById = <int, GoogleMapController>{};
 
   /// Allows tests to inject controllers without going through the buildView flow.
   @visibleForTesting
+  // ignore: use_setters_to_change_properties
   void debugSetMapById(Map<int, GoogleMapController> mapById) {
     _mapById = mapById;
   }
 
   // Convenience getter for a stream of events filtered by their mapId.
-  Stream<MapEvent> _events(int mapId) => _map(mapId).events;
+  Stream<MapEvent<Object?>> _events(int mapId) => _map(mapId).events;
 
   // Convenience getter for a map controller by its mapId.
   GoogleMapController _map(int mapId) {
-    final controller = _mapById[mapId];
+    final GoogleMapController? controller = _mapById[mapId];
     assert(controller != null,
         'Maps cannot be retrieved before calling buildView!');
-    return controller;
+    return controller!;
   }
 
   @override
@@ -46,11 +47,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   /// This attempts to merge the new `optionsUpdate` passed in, with the previous
   /// options passed to the map (in other updates, or when creating it).
   @override
-  Future<void> updateMapOptions(
-    Map<String, dynamic> optionsUpdate, {
+  Future<void> updateMapConfiguration(
+    MapConfiguration update, {
     required int mapId,
   }) async {
-    _map(mapId).updateRawOptions(optionsUpdate);
+    _map(mapId).updateMapConfiguration(update);
   }
 
   /// Applies the passed in `markerUpdates` to the `mapId`.
@@ -134,9 +135,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     String? mapStyle, {
     required int mapId,
   }) async {
-    _map(mapId).updateRawOptions({
-      'styles': _mapStyles(mapStyle),
-    });
+    _map(mapId).updateStyles(_mapStyles(mapStyle));
   }
 
   /// Returns the bounds of the current viewport.
@@ -288,41 +287,35 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   @override
-  Widget buildView(
+  Widget buildViewWithConfiguration(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
-    required CameraPosition initialCameraPosition,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
-        const <Factory<OneSequenceGestureRecognizer>>{},
-    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+    required MapWidgetConfiguration widgetConfiguration,
+    MapObjects mapObjects = const MapObjects(),
+    MapConfiguration mapConfiguration = const MapConfiguration(),
   }) {
     // Bail fast if we've already rendered this map ID...
     if (_mapById[creationId]?.widget != null) {
-      return _mapById[creationId].widget;
+      return _mapById[creationId]!.widget!;
     }
 
-    final StreamController<MapEvent> controller =
-        StreamController<MapEvent>.broadcast();
+    final StreamController<MapEvent<Object?>> controller =
+        StreamController<MapEvent<Object?>>.broadcast();
 
-    final mapController = GoogleMapController(
-      initialCameraPosition: initialCameraPosition,
+    final GoogleMapController mapController = GoogleMapController(
       mapId: creationId,
       streamController: controller,
-      markers: markers,
-      polygons: polygons,
-      polylines: polylines,
-      circles: circles,
-      mapOptions: mapOptions,
+      widgetConfiguration: widgetConfiguration,
+      mapObjects: mapObjects,
+      mapConfiguration: mapConfiguration,
     )..init(); // Initialize the controller
 
     _mapById[creationId] = mapController;
 
-    mapController.events.whereType<WebMapReadyEvent>().first.then((event) {
+    mapController.events
+        .whereType<WebMapReadyEvent>()
+        .first
+        .then((WebMapReadyEvent event) {
       assert(creationId == event.mapId,
           'Received WebMapReadyEvent for the wrong map');
       // Notify the plugin now that there's a fully initialized controller.
