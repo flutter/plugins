@@ -191,9 +191,9 @@ void FileSelectorApi::SetUp(flutter::BinaryMessenger* binary_messenger,
                 wrapped.emplace(flutter::EncodableValue("error"),
                                 WrapError(output.error()));
               } else {
-                wrapped.emplace(flutter::EncodableValue("result"),
-                                flutter::CustomEncodableValue(
-                                    std::move(output).TakeValue()));
+                wrapped.emplace(
+                    flutter::EncodableValue("result"),
+                    flutter::EncodableValue(std::move(output).TakeValue()));
               }
             } catch (const std::exception& exception) {
               wrapped.emplace(flutter::EncodableValue("error"),
@@ -243,9 +243,9 @@ void FileSelectorApi::SetUp(flutter::BinaryMessenger* binary_messenger,
                 wrapped.emplace(flutter::EncodableValue("error"),
                                 WrapError(output.error()));
               } else {
-                wrapped.emplace(flutter::EncodableValue("result"),
-                                flutter::CustomEncodableValue(
-                                    std::move(output).TakeValue()));
+                wrapped.emplace(
+                    flutter::EncodableValue("result"),
+                    flutter::EncodableValue(std::move(output).TakeValue()));
               }
             } catch (const std::exception& exception) {
               wrapped.emplace(flutter::EncodableValue("error"),
