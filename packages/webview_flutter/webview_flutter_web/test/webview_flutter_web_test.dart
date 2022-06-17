@@ -65,7 +65,8 @@ void main() {
       // Run
       controller.loadHtmlString('test html');
       // Verify
-      verify(mockElement.src = 'data:text/html,${Uri.encodeFull('test html')}');
+      verify(mockElement.src =
+          'data:text/html;charset=utf-8,${Uri.encodeFull('test html')}');
     });
 
     test('loadHtmlString escapes "#" correctly', () {
