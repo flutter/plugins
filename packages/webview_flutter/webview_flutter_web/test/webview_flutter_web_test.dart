@@ -152,7 +152,7 @@ void main() {
         );
         final MockHttpRequest mockHttpRequest = MockHttpRequest();
         when(mockHttpRequest.getResponseHeader('content-type'))
-            .thenReturn('text/plain');
+            .thenReturn('text/html');
         when(mockHttpRequest.responseText).thenReturn('#');
         final MockHttpRequestFactory mockHttpRequestFactory =
             MockHttpRequestFactory();
@@ -172,7 +172,7 @@ void main() {
               headers: <String, String>{'Foo': 'Bar'}),
         );
         // Verify
-        verify(mockElement.src = 'data:text/plain;charset=utf-8,%23');
+        verify(mockElement.src = 'data:text/html;charset=utf-8,%23');
       });
     });
   });
