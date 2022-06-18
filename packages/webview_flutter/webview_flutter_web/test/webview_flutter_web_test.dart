@@ -140,7 +140,7 @@ void main() {
           sendData: Uint8List.fromList('test body'.codeUnits),
         ));
         verify(mockElement.src =
-            'data:text/plain;charset=utf-8,${Uri.encodeFull('test data')}');
+            'data:;charset=utf-8,${Uri.encodeFull('test data')}');
       });
 
       test('loadRequest escapes "#" correctly', () async {
