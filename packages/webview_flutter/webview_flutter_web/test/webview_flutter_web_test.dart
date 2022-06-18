@@ -55,31 +55,33 @@ void main() {
       verify(mockElement.src = 'test url');
     });
 
-    test('loadHtmlString loads html into iframe', () {
-      // Setup
-      final MockIFrameElement mockElement = MockIFrameElement();
-      final WebWebViewPlatformController controller =
-          WebWebViewPlatformController(
-        mockElement,
-      );
-      // Run
-      controller.loadHtmlString('test html');
-      // Verify
-      verify(mockElement.src =
-          'data:text/html;charset=utf-8,${Uri.encodeFull('test html')}');
-    });
+    group('loadHtmlString', () {
+      test('loadHtmlString loads html into iframe', () {
+        // Setup
+        final MockIFrameElement mockElement = MockIFrameElement();
+        final WebWebViewPlatformController controller =
+            WebWebViewPlatformController(
+          mockElement,
+        );
+        // Run
+        controller.loadHtmlString('test html');
+        // Verify
+        verify(mockElement.src =
+            'data:text/html;charset=utf-8,${Uri.encodeFull('test html')}');
+      });
 
-    test('loadHtmlString escapes "#" correctly', () {
-      // Setup
-      final MockIFrameElement mockElement = MockIFrameElement();
-      final WebWebViewPlatformController controller =
-          WebWebViewPlatformController(
-        mockElement,
-      );
-      // Run
-      controller.loadHtmlString('#');
-      // Verify
-      verify(mockElement.src = 'data:text/html;charset=utf-8,%23');
+      test('loadHtmlString escapes "#" correctly', () {
+        // Setup
+        final MockIFrameElement mockElement = MockIFrameElement();
+        final WebWebViewPlatformController controller =
+            WebWebViewPlatformController(
+          mockElement,
+        );
+        // Run
+        controller.loadHtmlString('#');
+        // Verify
+        verify(mockElement.src = 'data:text/html;charset=utf-8,%23');
+      });
     });
 
     group('loadRequest', () {
