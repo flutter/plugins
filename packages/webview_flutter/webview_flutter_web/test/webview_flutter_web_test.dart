@@ -137,11 +137,8 @@ void main() {
           requestHeaders: <String, String>{'Foo': 'Bar'},
           sendData: Uint8List.fromList('test body'.codeUnits),
         ));
-        verify(mockElement.src = Uri.dataFromString(
-          'test data',
-          mimeType: 'text/plain',
-          encoding: utf8,
-        ).toString());
+        verify(mockElement.src =
+            'data:text/plain;charset=utf-8,${Uri.encodeFull('test data')}');
       });
     });
   });
