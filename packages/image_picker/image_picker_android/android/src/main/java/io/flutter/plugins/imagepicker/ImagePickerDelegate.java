@@ -248,6 +248,7 @@ public class ImagePickerDelegate
     Integer limit = methodCall.argument("limit");
     String type = methodCall.argument("type");
     if (limit == null) limit = 1;
+    if (type == null) type = "unknown";
 
     List<Cursor> cursors = new ArrayList<>();
     Cursor cursor;

@@ -21,10 +21,13 @@ import static org.mockito.Mockito.when;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
@@ -39,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 
 public class ImagePickerDelegateTest {
   private static final Double WIDTH = 10.0;
@@ -222,6 +226,133 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
+  public void getRecentMedia_WhenExternalStoragePermissionNotPresent_RequestsForPermission() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
+        .thenReturn(false);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.getRecentMedia(mockMethodCall, mockResult);
+
+    verify(mockPermissionManager)
+        .askForPermission(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            ImagePickerDelegate.REQUEST_EXTERNAL_STORAGE_PERMISSION_LATEST);
+  }
+
+  @Test
+  public void getRecentMedia_ReturnsRecentVideos() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
+        .thenReturn(true);
+    when(mockMethodCall.argument("limit")).thenReturn(3);
+    when(mockMethodCall.argument("type")).thenReturn("video");
+    Context mockContext = mock(Context.class);
+    ContentResolver mockContentResolver = mock(ContentResolver.class);
+    Cursor mockCursor = mock(Cursor.class);
+    when(mockCursor.isAfterLast()).thenReturn(false);
+    when(mockCursor.getString(0)).thenReturn("/example/path.mp4");
+    when(mockContentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            new String[] {
+              MediaStore.Video.VideoColumns.DATA,
+            },
+            null,
+            null,
+            MediaStore.Video.VideoColumns.DATE_TAKEN + " DESC"))
+        .thenReturn(mockCursor);
+    when(mockContext.getContentResolver()).thenReturn(mockContentResolver);
+    when(mockActivity.getApplicationContext()).thenReturn(mockContext);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.getRecentMedia(mockMethodCall, mockResult);
+
+    verify(mockResult)
+        .success(
+            new ArrayList<String>() {
+              {
+                for (int i = 0; i < 3; i++) {
+                  add("/example/path.mp4");
+                }
+              }
+            });
+  }
+
+  @Test
+  public void getRecentMedia_ReturnsRecentImages() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
+        .thenReturn(true);
+    when(mockMethodCall.argument("limit")).thenReturn(3);
+    when(mockMethodCall.argument("type")).thenReturn("image");
+    Context mockContext = mock(Context.class);
+    ContentResolver mockContentResolver = mock(ContentResolver.class);
+    Cursor mockCursor = mock(Cursor.class);
+    when(mockCursor.isAfterLast()).thenReturn(false);
+    when(mockCursor.getString(0)).thenReturn("pathFromUri");
+    when(mockContentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            new String[] {
+              MediaStore.Images.ImageColumns.DATA,
+            },
+            null,
+            null,
+            MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"))
+        .thenReturn(mockCursor);
+    when(mockContext.getContentResolver()).thenReturn(mockContentResolver);
+    when(mockActivity.getApplicationContext()).thenReturn(mockContext);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.getRecentMedia(mockMethodCall, mockResult);
+
+    verify(mockResult)
+        .success(
+            new ArrayList<String>() {
+              {
+                for (int i = 0; i < 3; i++) {
+                  add("originalPath");
+                }
+              }
+            });
+  }
+
+  @Test
+  public void getRecentMedia_ReturnsRecentImages_WithResize() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
+        .thenReturn(true);
+    when(mockMethodCall.argument("limit")).thenReturn(3);
+    when(mockMethodCall.argument("type")).thenReturn("image");
+    when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+    when(mockMethodCall.argument("maxHeight")).thenReturn(HEIGHT);
+    Context mockContext = mock(Context.class);
+    ContentResolver mockContentResolver = mock(ContentResolver.class);
+    Cursor mockCursor = mock(Cursor.class);
+    when(mockCursor.isAfterLast()).thenReturn(false);
+    when(mockCursor.getString(0)).thenReturn("pathFromUri");
+    when(mockContentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            new String[] {
+              MediaStore.Images.ImageColumns.DATA,
+            },
+            null,
+            null,
+            MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"))
+        .thenReturn(mockCursor);
+    when(mockContext.getContentResolver()).thenReturn(mockContentResolver);
+    when(mockActivity.getApplicationContext()).thenReturn(mockContext);
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.getRecentMedia(mockMethodCall, mockResult);
+
+    verify(mockResult)
+        .success(
+            new ArrayList<String>() {
+              {
+                for (int i = 0; i < 3; i++) {
+                  add("scaledPath");
+                }
+              }
+            });
+  }
+
+  @Test
   public void onRequestPermissionsResult_WhenCameraPermissionDenied_FinishesWithError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
@@ -262,6 +393,20 @@ public class ImagePickerDelegateTest {
     verify(mockActivity)
         .startActivityForResult(
             any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
+  }
+
+  @Test
+  public void
+      onRequestExternalStoragePermissionsResult_WhenExternalStoragePermissionGranted_CallsGetRecentMediaFromGallery() {
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_EXTERNAL_STORAGE_PERMISSION_LATEST,
+        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+        new int[] {PackageManager.PERMISSION_GRANTED});
+
+    verify(mockResult).error("invalid_type", "Provided type is currently unsupported", null);
+    verifyNoMoreInteractions(mockResult);
   }
 
   @Test
