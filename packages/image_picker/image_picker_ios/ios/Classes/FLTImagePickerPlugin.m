@@ -203,6 +203,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                           limit:(nonnull NSNumber *)limit
                      completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
                                                   FlutterError *_Nullable))completion {
+    [self cancelInProgressCall];
+    FLTImagePickerMethodCallContext *context = [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
+    self.callContext = context;
+    
   PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
   fetchOptions.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
                                                                   ascending:NO] ];
@@ -226,12 +230,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSArray<PHAsset *> *assets = [assetsFetchResult
         objectsAtIndexes:[NSIndexSet
                              indexSetWithIndexesInRange:NSMakeRange(
-                                                            0, MIN(assetsFetchResult.count, 3))]];
+                                                            0, MIN(assetsFetchResult.count, [limit unsignedLongValue]))]];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
     NSMutableArray *pathList = [self createNSMutableArrayWithSize:assets.count];
     for (int i = 0; i < assets.count; i++) {
       PHAsset *asset = assets[i];
-      if (@available(iOS 14, *)) {
         FLTPHPickerSaveItemToPathOperation *operation = [[FLTPHPickerSaveItemToPathOperation alloc]
                   initWithAsset:asset
                  maxImageHeight:maxSize.height
@@ -241,9 +244,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                    pathList[i] = savedPath;
                  }];
         [operationQueue addOperation:operation];
-      } else {
-        // TODO
-      }
     }
     [operationQueue waitUntilAllOperationsAreFinished];
     dispatch_async(dispatch_get_main_queue(), ^{
