@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -58,7 +59,13 @@ public class WebViewActivity extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            view.loadUrl(url);
+            if (url.startsWith("http") || url.startsWith("https")) {
+              view.loadUrl(url);
+            } else {
+              Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+              view.getContext().startActivity(intent);
+              return true;
+            }
             return false;
           }
           return super.shouldOverrideUrlLoading(view, url);
@@ -68,7 +75,14 @@ public class WebViewActivity extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.loadUrl(request.getUrl().toString());
+            String url = request.getUrl().toString();
+            if (url.startsWith("http") || url.startsWith("https")) {
+              view.loadUrl(url);
+            } else {
+              Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
+              view.getContext().startActivity(intent);
+              return true;
+            }
           }
           return false;
         }
