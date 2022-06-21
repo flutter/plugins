@@ -286,6 +286,36 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
 }
 
+/// A class which mocks [WebResourceRequest].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWebResourceRequest extends _i1.Mock
+    implements _i2.WebResourceRequest {
+  MockWebResourceRequest() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get url =>
+      (super.noSuchMethod(Invocation.getter(#url), returnValue: '') as String);
+  @override
+  bool get isForMainFrame => (super
+          .noSuchMethod(Invocation.getter(#isForMainFrame), returnValue: false)
+      as bool);
+  @override
+  bool get hasGesture =>
+      (super.noSuchMethod(Invocation.getter(#hasGesture), returnValue: false)
+          as bool);
+  @override
+  String get method =>
+      (super.noSuchMethod(Invocation.getter(#method), returnValue: '')
+          as String);
+  @override
+  Map<String, String> get requestHeaders =>
+      (super.noSuchMethod(Invocation.getter(#requestHeaders),
+          returnValue: <String, String>{}) as Map<String, String>);
+}
+
 /// A class which mocks [WebViewAndroidDownloadListener].
 ///
 /// See the documentation for Mockito's code generation for more information.
