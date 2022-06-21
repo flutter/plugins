@@ -1,5 +1,6 @@
-## NEXT
+## 6.1.4
 
+* Enables Android WebView to open non-https urls, e.g. `mailto:`, `sms:`
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/105648).
 
 ## 6.1.3

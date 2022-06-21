@@ -1,4 +1,4 @@
-## NEXT
+## 6.0.18
 
 * Enables Android WebView to open non-https urls, e.g. `mailto:`, `sms:`
 

@@ -27,3 +27,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  url_launcher_android:
+    path: ../../../url_launcher/url_launcher_android
