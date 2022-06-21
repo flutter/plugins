@@ -1,3 +1,7 @@
+## 2.8.13
+
+* Fixes a bug which causes an exception when the `onNavigationRequestCallback` return `false`.
+
 ## 2.8.12
 
 * Bumps mockito-inline from 3.11.1 to 4.6.1.

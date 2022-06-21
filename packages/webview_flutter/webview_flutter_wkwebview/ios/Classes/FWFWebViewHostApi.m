@@ -141,7 +141,7 @@
            if (!result || [result isKindOfClass:[NSString class]] ||
                [result isKindOfClass:[NSNumber class]]) {
              returnValue = result;
-           } else {
+           } else if (![result isKindOfClass:[NSNull class]]) {
              NSString *className = NSStringFromClass([result class]);
              NSLog(@"Return type of evaluateJavaScript is not directly supported: %@. Returned "
                    @"description of value.",
@@ -151,7 +151,7 @@
          } else {
            flutterError = [FlutterError errorWithCode:@"FWFEvaluateJavaScriptError"
                                               message:@"Failed evaluating JavaScript."
-                                              details:error];
+                                              details:FWFNSErrorDataFromNSError(error)];
          }
 
          completion(returnValue, flutterError);
