@@ -1,3 +1,7 @@
+## 2.8.14
+
+* Bumps androidx.annotation from 1.0.0 to 1.4.0.
+
 ## 2.8.13
 
 * Fixes a bug which causes an exception when the `onNavigationRequestCallback` return `false`.
