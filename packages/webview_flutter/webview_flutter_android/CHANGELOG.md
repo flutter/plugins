@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
 ## 2.8.14
 
 * Bumps androidx.annotation from 1.0.0 to 1.4.0.
