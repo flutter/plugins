@@ -4,10 +4,14 @@
 
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'web_kit_cookie_manager.dart';
+
 /// Handles all cookie operations for the current platform.
 class WKWebViewCookieManager extends WebViewCookieManagerPlatform {
+  final WebKitCookieManager _webKitManager = WebKitCookieManager();
+
   @override
-  Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
+  Future<bool> clearCookies() => _webKitManager.clearCookies();
 
   @override
   Future<void> setCookie(WebViewCookie cookie) {
@@ -15,7 +19,7 @@ class WKWebViewCookieManager extends WebViewCookieManagerPlatform {
       throw ArgumentError(
           'The path property for the provided cookie was not given a legal value.');
     }
-    return MethodChannelWebViewPlatform.setCookie(cookie);
+    return _webKitManager.setCookie(cookie);
   }
 
   bool _isValidPath(String path) {
