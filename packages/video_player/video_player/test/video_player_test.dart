@@ -373,6 +373,17 @@ void main() {
       expect(await controller.position, isNull);
     });
 
+    test('calling dispose() on disposed controller does not throw', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+
+      await controller.initialize();
+      await controller.dispose();
+
+      expect(() async => await controller.dispose(), returnsNormally);
+    });
+
     test('play', () async {
       final VideoPlayerController controller = VideoPlayerController.network(
         'https://127.0.0.1',
