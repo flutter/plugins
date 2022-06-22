@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:url_launcher/src/type_conversion.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+import 'type_conversion.dart';
 import 'types.dart';
 
 /// String version of [launchUrl].
