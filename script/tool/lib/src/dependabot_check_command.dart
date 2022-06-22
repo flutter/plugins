@@ -68,7 +68,7 @@ class DependabotCheckCommand extends PackageLoopingCommand {
     bool skipped = true;
     final List<String> errors = <String>[];
 
-    final RunState gradleState = _validateGradle(package);
+    final RunState gradleState = _validateDependabotGradleCoverage(package);
     skipped = skipped && gradleState == RunState.skipped;
     if (gradleState == RunState.failed) {
       printError('${indentation}Missing Gradle coverage.');
@@ -85,11 +85,12 @@ class DependabotCheckCommand extends PackageLoopingCommand {
         : PackageResult.fail(errors);
   }
 
-  /// Returns the state for the Gradle ecosystem coverage of [package]:
+  /// Returns the state for the Dependabot coverage of the Gradle ecosystem for
+  /// [package]:
   /// - succeeded if it includes gradle and is covered.
   /// - failed if it includes gradle and is not covered.
   /// - skipped if it doesn't include gradle.
-  RunState _validateGradle(RepositoryPackage package) {
+  RunState _validateDependabotGradleCoverage(RepositoryPackage package) {
     final Directory androidDir =
         package.platformDirectory(FlutterPlatform.android);
     final Directory appDir = androidDir.childDirectory('app');
