@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Added ability to purchase mutliple quanitity of one product
+* Adds ability to purchase more than one of a product.
 
 ## 0.3.0+10
 
