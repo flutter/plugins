@@ -1,9 +1,6 @@
-## 0.11.0
-
-* **Breaking Change** Bumps default camera_web package version to 0.3.0 which renames permission exception code from `cameraPermission` to `CameraAccessDenied`.
-
 ## 0.10.0
 
+* **Breaking Change** Bumps default camera_web package version to 0.3.0 which renames permission exception code from `cameraPermission` to `CameraAccessDenied`.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 0.9.8+1
