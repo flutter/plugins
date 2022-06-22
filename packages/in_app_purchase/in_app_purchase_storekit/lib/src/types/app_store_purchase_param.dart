@@ -30,6 +30,6 @@ class AppStorePurchaseParam extends PurchaseParam {
   /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
   final bool simulatesAskToBuyInSandbox;
 
-  /// Quantity of the product user requested to buy
+  /// Quantity of the product user requested to buy.
   int quantity;
 }
