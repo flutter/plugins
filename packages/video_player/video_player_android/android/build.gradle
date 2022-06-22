@@ -45,7 +45,7 @@ android {
     dependencies {
         implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.17.1'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.17.1'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.0'
         implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.17.1'
         testImplementation 'junit:junit:4.13.2'
         testImplementation 'androidx.test:core:1.3.0'
