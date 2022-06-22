@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface FWFWebView : WKWebView <FlutterPlatformView>
 @property(readonly, nonnull, nonatomic) FWFObjectFlutterApiImpl *objectApi;
+
 - (instancetype)initWithFrame:(CGRect)frame
                 configuration:(nonnull WKWebViewConfiguration *)configuration
               binaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
@@ -39,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FWFWebViewHostApiImpl : NSObject <FWFWKWebViewHostApi>
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
+
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager
                                  bundle:(NSBundle *)bundle

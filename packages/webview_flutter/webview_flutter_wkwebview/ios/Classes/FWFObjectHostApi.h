@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FWFObjectFlutterApiImpl : FWFNSObjectFlutterApi
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
+
 - (void)observeValueForObject:(NSObject *)instance
                       keyPath:(NSString *)keyPath
                        object:(NSObject *)object
@@ -29,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface FWFObject : NSObject
 @property(readonly, nonnull, nonatomic) FWFObjectFlutterApiImpl *objectApi;
+
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end
