@@ -291,6 +291,8 @@ final class VideoPlayer {
     return exoPlayer.getCurrentPosition();
   }
 
+  long getDuration() { return exoPlayer.getDuration(); }
+
   @SuppressWarnings("SuspiciousNameCombination")
   @VisibleForTesting
   void sendInitialized() {

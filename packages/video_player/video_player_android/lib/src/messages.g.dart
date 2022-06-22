@@ -157,6 +157,31 @@ class PositionMessage {
   }
 }
 
+class DurationMessage {
+  DurationMessage({
+    required this.textureId,
+    required this.duration,
+  });
+
+  int textureId;
+  int duration;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['duration'] = duration;
+    return pigeonMap;
+  }
+
+  static DurationMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return DurationMessage(
+      textureId: pigeonMap['textureId']! as int,
+      duration: pigeonMap['duration']! as int,
+    );
+  }
+}
+
 class CreateMessage {
   CreateMessage({
     this.asset,
@@ -227,28 +252,32 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else 
-    if (value is LoopingMessage) {
+    if (value is DurationMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
     } else 
-    if (value is MixWithOthersMessage) {
+    if (value is LoopingMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else 
-    if (value is PlaybackSpeedMessage) {
+    if (value is MixWithOthersMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else 
-    if (value is PositionMessage) {
+    if (value is PlaybackSpeedMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else 
-    if (value is TextureMessage) {
+    if (value is PositionMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
     } else 
-    if (value is VolumeMessage) {
+    if (value is TextureMessage) {
       buffer.putUint8(135);
+      writeValue(buffer, value.encode());
+    } else 
+    if (value is VolumeMessage) {
+      buffer.putUint8(136);
       writeValue(buffer, value.encode());
     } else 
 {
@@ -265,21 +294,24 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
         return CreateMessage.decode(readValue(buffer)!);
       
       case 130:       
-        return LoopingMessage.decode(readValue(buffer)!);
+        return DurationMessage.decode(readValue(buffer)!);
       
       case 131:       
-        return MixWithOthersMessage.decode(readValue(buffer)!);
+        return LoopingMessage.decode(readValue(buffer)!);
       
       case 132:       
-        return PlaybackSpeedMessage.decode(readValue(buffer)!);
+        return MixWithOthersMessage.decode(readValue(buffer)!);
       
       case 133:       
-        return PositionMessage.decode(readValue(buffer)!);
+        return PlaybackSpeedMessage.decode(readValue(buffer)!);
       
       case 134:       
-        return TextureMessage.decode(readValue(buffer)!);
+        return PositionMessage.decode(readValue(buffer)!);
       
       case 135:       
+        return TextureMessage.decode(readValue(buffer)!);
+      
+      case 136:       
         return VolumeMessage.decode(readValue(buffer)!);
       
       default:      
@@ -504,6 +536,33 @@ class AndroidVideoPlayerApi {
       );
     } else {
       return (replyMap['result'] as PositionMessage?)!;
+    }
+  }
+
+  Future<DurationMessage> duration(TextureMessage arg_msg) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AndroidVideoPlayerApi.duration', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as DurationMessage?)!;
     }
   }
 
