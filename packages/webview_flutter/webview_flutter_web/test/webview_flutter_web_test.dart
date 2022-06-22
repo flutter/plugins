@@ -79,7 +79,7 @@ void main() {
         // Run
         controller.loadHtmlString('#');
         // Verify
-        verify(mockElement.src = 'data:text/html;charset=utf-8,%23');
+        verify(mockElement.src = argThat(contains("%23")));
       });
     });
 
@@ -171,7 +171,7 @@ void main() {
               headers: <String, String>{'Foo': 'Bar'}),
         );
         // Verify
-        verify(mockElement.src = 'data:text/html;charset=utf-8,%23');
+        verify(mockElement.src = argThat(contains("%23")));
       });
     });
   });
