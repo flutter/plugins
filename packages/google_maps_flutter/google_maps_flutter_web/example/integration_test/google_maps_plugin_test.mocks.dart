@@ -4,6 +4,7 @@
 
 import 'dart:async' as _i2;
 
+import 'package:google_maps/google_maps.dart' as _i5;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
     as _i3;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as _i4;
@@ -68,8 +69,12 @@ class MockGoogleMapController extends _i1.Mock
   void init() => super.noSuchMethod(Invocation.method(#init, []),
       returnValueForMissingStub: null);
   @override
-  void updateRawOptions(Map<String, dynamic>? optionsUpdate) =>
-      super.noSuchMethod(Invocation.method(#updateRawOptions, [optionsUpdate]),
+  void updateMapConfiguration(_i3.MapConfiguration? update) =>
+      super.noSuchMethod(Invocation.method(#updateMapConfiguration, [update]),
+          returnValueForMissingStub: null);
+  @override
+  void updateStyles(List<_i5.MapTypeStyle>? styles) =>
+      super.noSuchMethod(Invocation.method(#updateStyles, [styles]),
           returnValueForMissingStub: null);
   @override
   _i2.Future<_i3.LatLngBounds> getVisibleRegion() => (super.noSuchMethod(

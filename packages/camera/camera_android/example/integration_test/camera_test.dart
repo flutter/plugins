@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:camera_android/camera_android.dart';
 import 'package:camera_example/camera_controller.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/painting.dart';
@@ -19,6 +20,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
+    CameraPlatform.instance = AndroidCamera();
     final Directory extDir = await getTemporaryDirectory();
     testDir = await Directory('${extDir.path}/test').create(recursive: true);
   });

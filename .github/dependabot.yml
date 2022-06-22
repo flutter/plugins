@@ -5,7 +5,7 @@ updates:
     commit-message:
       prefix: "[camera]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -13,7 +13,7 @@ updates:
     commit-message:
       prefix: "[camera]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -21,7 +21,7 @@ updates:
     commit-message:
       prefix: "[espresso]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -29,7 +29,7 @@ updates:
     commit-message:
       prefix: "[espresso]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -37,7 +37,7 @@ updates:
     commit-message:
       prefix: "[lifecycle]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -45,7 +45,7 @@ updates:
     commit-message:
       prefix: "[lifecycle]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -53,7 +53,7 @@ updates:
     commit-message:
       prefix: "[google_maps]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -61,7 +61,7 @@ updates:
     commit-message:
       prefix: "[google_maps]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -69,7 +69,7 @@ updates:
     commit-message:
       prefix: "[sign_in]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -77,7 +77,7 @@ updates:
     commit-message:
       prefix: "[sign_in]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -85,7 +85,7 @@ updates:
     commit-message:
       prefix: "[sign_in]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -93,7 +93,7 @@ updates:
     commit-message:
       prefix: "[in_app_pur]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -101,7 +101,7 @@ updates:
     commit-message:
       prefix: "[in_app_pur]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -109,7 +109,7 @@ updates:
     commit-message:
       prefix: "[in_app_pur]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -117,7 +117,7 @@ updates:
     commit-message:
       prefix: "[image_picker]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -125,7 +125,7 @@ updates:
     commit-message:
       prefix: "[image_picker]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -133,7 +133,7 @@ updates:
     commit-message:
       prefix: "[image_picker]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -141,7 +141,7 @@ updates:
     commit-message:
       prefix: "[local_auth]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -149,7 +149,7 @@ updates:
     commit-message:
       prefix: "[local_auth]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -157,7 +157,7 @@ updates:
     commit-message:
       prefix: "[local_auth]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -165,7 +165,7 @@ updates:
     commit-message:
       prefix: "[path_provider]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -173,7 +173,7 @@ updates:
     commit-message:
       prefix: "[path_provider]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -181,7 +181,7 @@ updates:
     commit-message:
       prefix: "[path_provider]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -189,7 +189,7 @@ updates:
     commit-message:
       prefix: "[quick_actions]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -197,7 +197,7 @@ updates:
     commit-message:
       prefix: "[quick_actions]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -205,7 +205,7 @@ updates:
     commit-message:
       prefix: "[quick_actions]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -213,7 +213,7 @@ updates:
     commit-message:
       prefix: "[shared_pref]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -221,7 +221,7 @@ updates:
     commit-message:
       prefix: "[shared_pref]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -229,7 +229,7 @@ updates:
     commit-message:
       prefix: "[url_launcher]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -237,7 +237,7 @@ updates:
     commit-message:
       prefix: "[url_launcher]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -245,7 +245,7 @@ updates:
     commit-message:
       prefix: "[url_launcher]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -253,7 +253,7 @@ updates:
     commit-message:
       prefix: "[video_player]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -261,7 +261,7 @@ updates:
     commit-message:
       prefix: "[video_player]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -269,7 +269,7 @@ updates:
     commit-message:
       prefix: "[webview]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -277,7 +277,7 @@ updates:
     commit-message:
       prefix: "[webview]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
@@ -285,7 +285,7 @@ updates:
     commit-message:
       prefix: "[webview]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
     
   - package-ecosystem: "github-actions"
@@ -293,5 +293,5 @@ updates:
     commit-message:
       prefix: "[gh_actions]"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10

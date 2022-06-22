@@ -93,6 +93,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   bool _zoomEnabled = true;
   bool _hasNavigationDelegate = false;
+  bool _progressObserverSet = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -355,6 +356,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   Future<String?> getTitle() => webView.getTitle();
 
   @override
+  Future<String?> currentUrl() => webView.getUrl();
+
+  @override
   Future<void> scrollTo(int x, int y) async {
     webView.scrollView.setContentOffset(Point<double>(
       x.toDouble(),
@@ -452,17 +456,20 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  Future<void> _setHasProgressTracking(bool hasProgressTracking) {
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
     if (hasProgressTracking) {
-      return webView.addObserver(
+      _progressObserverSet = true;
+      await webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
         options: <NSKeyValueObservingOptions>{
           NSKeyValueObservingOptions.newValue,
         },
       );
-    } else {
-      return webView.removeObserver(webView, keyPath: 'estimatedProgress');
+    } else if (_progressObserverSet) {
+      // Calls to removeObserver before addObserver causes a crash.
+      _progressObserverSet = false;
+      await webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
 
@@ -573,6 +580,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         return '"<null>"';
       }
       return '(null)';
+    } else if (value is bool) {
+      return value ? '1' : '0';
+    } else if (value is double && value.truncate() == value) {
+      return value.truncate().toString();
     } else if (value is List) {
       final List<String> stringValues = <String>[];
       for (final Object? listValue in value) {
