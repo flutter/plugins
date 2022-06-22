@@ -104,6 +104,10 @@ public class QuickActionsTest {
 
   @Test
   public void appShortcutLaunchActivityAfterPressing() throws UiObjectNotFoundException {
+    Log.i(
+        QuickActionsTest.class.getSimpleName(),
+        "Start running appShortcutLaunchActivityAfterPressing test");
+
     // Arrange
     List<ShortcutInfo> shortcuts = createMockShortcuts();
     String appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
@@ -116,6 +120,7 @@ public class QuickActionsTest {
     UiObject appShortcut =
         device.findObject(new UiSelector().text(firstShortcut.getShortLabel().toString()));
     appShortcut.clickAndWaitForNewWindow();
+    device.wait(Until.hasObject(By.descContains("On home screen")), 1000);
     AtomicReference<QuickActionsTestActivity> currentActivity = new AtomicReference<>();
     scenario.onActivity(currentActivity::set);
 
@@ -162,7 +167,9 @@ public class QuickActionsTest {
   }
 
   private UiObject findAppIcon(UiDevice device, String appName) throws UiObjectNotFoundException {
-    device.pressHome();
+    Log.i(QuickActionsTest.class.getSimpleName(), "Find app icon, pressing home...");
+    boolean pressHomeResult = device.pressHome();
+    Log.i(QuickActionsTest.class.getSimpleName(), "Press home result: " + pressHomeResult);
 
     // Swipe up to open App Drawer
     UiScrollable homeView = new UiScrollable(new UiSelector().scrollable(true));

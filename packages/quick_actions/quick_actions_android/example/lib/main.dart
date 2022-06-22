@@ -75,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(shortcut),
       ),
       body: const Center(
+        // Remember to update android/app/src/androidTest/java/io/flutter/plugins/quickactionsexample/QuickActionsTest.java appShortcutLaunchActivityAfterPressing if you change this.
         child: Text('On home screen, long press the app icon to '
             'get Action one or Action two options. Tapping on that action should  '
             'set the toolbar title.'),
