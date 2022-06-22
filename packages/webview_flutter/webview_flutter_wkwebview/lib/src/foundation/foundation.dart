@@ -237,13 +237,12 @@ class NSHttpCookie {
 /// The root class of most Objective-C class hierarchies.
 @immutable
 class NSObject with Copyable {
-  // TODO(bparrishMines): Change constructor name to `detached`.
   /// Constructs a [NSObject] without creating the associated
   /// Objective-C object.
   ///
   /// This should only be used by subclasses created by this library or to
   /// create copies.
-  NSObject({
+  NSObject.detached({
     this.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -253,6 +252,11 @@ class NSObject with Copyable {
         ) {
     // Ensures FlutterApis for the Foundation library are set up.
     FoundationFlutterApis.instance.ensureSetUp();
+  }
+
+  /// Release the reference to the Objective-C object.
+  static void dispose(NSObject instance) {
+    instance._api.instanceManager.removeWeakReference(instance);
   }
 
   /// Global instance of [InstanceManager].
@@ -290,30 +294,12 @@ class NSObject with Copyable {
     return _api.removeObserverForInstances(this, observer, keyPath);
   }
 
-  /// Release the reference to the Objective-C object.
-  static void dispose(NSObject instance) {
-    instance._api.instanceManager.removeWeakReference(instance);
-  }
-
   @override
-  Copyable copy() {
-    return NSObject(
+  NSObject copy() {
+    return NSObject.detached(
       observeValue: observeValue,
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
     );
-  }
-
-  @override
-  int get hashCode {
-    return Object.hash(_api, _api.instanceManager.getIdentifier(this));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is NSObject &&
-        _api == other._api &&
-        _api.instanceManager.getIdentifier(this) ==
-            other._api.instanceManager.getIdentifier(other);
   }
 }

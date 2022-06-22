@@ -6,9 +6,10 @@
 #import "FWFDataConverters.h"
 
 @interface FWFUIDelegateFlutterApiImpl ()
-// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
-// with the objects it stores.
+// BinaryMessenger must be weak to prevent a circular reference with the host API it
+// references.
 @property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
@@ -84,13 +85,19 @@
 @end
 
 @interface FWFUIDelegateHostApiImpl ()
+// BinaryMessenger must be weak to prevent a circular reference with the host API it
+// references.
+@property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFUIDelegateHostApiImpl
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
   self = [self init];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
   }
   return self;
@@ -102,7 +109,8 @@
 
 - (void)createWithIdentifier:(nonnull NSNumber *)identifier
                        error:(FlutterError *_Nullable *_Nonnull)error {
-  FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] init];
+  FWFUIDelegate *uIDelegate = [[FWFUIDelegate alloc] initWithBinaryMessenger:self.binaryMessenger
+                                                             instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:uIDelegate withIdentifier:identifier.longValue];
 }
 @end

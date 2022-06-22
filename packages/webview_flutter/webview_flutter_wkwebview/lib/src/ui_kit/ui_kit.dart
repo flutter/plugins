@@ -4,6 +4,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
 import 'package:flutter/painting.dart' show Color;
@@ -14,25 +15,42 @@ import '../foundation/foundation.dart';
 import '../web_kit/web_kit.dart';
 import 'ui_kit_api_impls.dart';
 
-// TODO(bparrishMines): All subclasses of NSObject need to pass their
-// InstanceManager and BinaryMessenger to its parent. They also need to
-// override copy();
-
 /// A view that allows the scrolling and zooming of its contained views.
 ///
 /// Wraps [UIScrollView](https://developer.apple.com/documentation/uikit/uiscrollview?language=objc).
+@immutable
 class UIScrollView extends UIView {
   /// Constructs a [UIScrollView] that is owned by [webView].
-  UIScrollView.fromWebView(
+  factory UIScrollView.fromWebView(
     WKWebView webView, {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _scrollViewApi = UIScrollViewHostApiImpl(
+  }) {
+    final UIScrollView scrollView = UIScrollView.detached(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    );
+    scrollView._scrollViewApi.createFromWebViewForInstances(
+      scrollView,
+      webView,
+    );
+    return scrollView;
+  }
+
+  /// Constructs a [UIScrollView] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  UIScrollView.detached({
+    super.observeValue,
+    super.binaryMessenger,
+    super.instanceManager,
+  })  : _scrollViewApi = UIScrollViewHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        ) {
-    _scrollViewApi.createFromWebViewForInstances(this, webView);
-  }
+        ),
+        super.detached();
 
   final UIScrollViewHostApiImpl _scrollViewApi;
 
@@ -59,21 +77,36 @@ class UIScrollView extends UIView {
   Future<void> setContentOffset(Point<double> offset) {
     return _scrollViewApi.setContentOffsetForInstances(this, offset);
   }
+
+  @override
+  UIScrollView copy() {
+    return UIScrollView.detached(
+      observeValue: observeValue,
+      binaryMessenger: _viewApi.binaryMessenger,
+      instanceManager: _viewApi.instanceManager,
+    );
+  }
 }
 
 /// Manages the content for a rectangular area on the screen.
 ///
 /// Wraps [UIView](https://developer.apple.com/documentation/uikit/uiview?language=objc).
+@immutable
 class UIView extends NSObject {
-  /// Constructs an [NSObject].
-  UIView({
+  /// Constructs a [UIView] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  UIView.detached({
     super.observeValue,
-    BinaryMessenger? binaryMessenger,
-    InstanceManager? instanceManager,
-  }) : _viewApi = UIViewHostApiImpl(
+    super.binaryMessenger,
+    super.instanceManager,
+  })  : _viewApi = UIViewHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        );
+        ),
+        super.detached();
 
   final UIViewHostApiImpl _viewApi;
 
@@ -91,5 +124,14 @@ class UIView extends NSObject {
   /// Sets [UIView.opaque](https://developer.apple.com/documentation/uikit/uiview?language=objc).
   Future<void> setOpaque(bool opaque) {
     return _viewApi.setOpaqueForInstances(this, opaque);
+  }
+
+  @override
+  UIView copy() {
+    return UIView.detached(
+      observeValue: observeValue,
+      binaryMessenger: _viewApi.binaryMessenger,
+      instanceManager: _viewApi.instanceManager,
+    );
   }
 }

@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/painting.dart' show Color;
+import 'package:flutter/services.dart';
 
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 
@@ -18,9 +19,16 @@ import 'ui_kit.dart';
 class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
   /// Constructs a [UIScrollViewHostApiImpl].
   UIScrollViewHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
@@ -75,9 +83,16 @@ class UIScrollViewHostApiImpl extends UIScrollViewHostApi {
 class UIViewHostApiImpl extends UIViewHostApi {
   /// Constructs a [UIViewHostApiImpl].
   UIViewHostApiImpl({
-    super.binaryMessenger,
+    this.binaryMessenger,
     InstanceManager? instanceManager,
-  }) : instanceManager = instanceManager ?? NSObject.globalInstanceManager;
+  })  : instanceManager = instanceManager ?? NSObject.globalInstanceManager,
+        super(binaryMessenger: binaryMessenger);
+
+  /// Sends binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
 
   /// Maintains instances stored to communicate with Objective-C objects.
   final InstanceManager instanceManager;
