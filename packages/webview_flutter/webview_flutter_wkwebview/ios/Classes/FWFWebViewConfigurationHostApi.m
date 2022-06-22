@@ -6,6 +6,29 @@
 #import "FWFDataConverters.h"
 #import "FWFWebViewConfigurationHostApi.h"
 
+@interface FWFWebViewConfigurationFlutterApiImpl ()
+// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
+// with the objects it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@end
+
+@implementation FWFWebViewConfigurationFlutterApiImpl
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self initWithBinaryMessenger:binaryMessenger];
+  if (self) {
+    _instanceManager = instanceManager;
+  }
+  return self;
+}
+
+- (void)createWithConfiguration:(WKWebViewConfiguration *)configuration
+                     completion:(void (^)(NSError *_Nullable))completion {
+  long identifier = [self.instanceManager addHostCreatedInstance:configuration];
+  [self createWithIdentifier:@(identifier) completion:completion];
+}
+@end
+
 @interface FWFWebViewConfigurationHostApiImpl ()
 @property(nonatomic) FWFInstanceManager *instanceManager;
 @end

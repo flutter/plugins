@@ -68,7 +68,13 @@
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:1];
 
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-  [instanceManager addDartCreatedInstance:configuration withIdentifier:2];
+  id mockConfigurationFlutterApi = OCMPartialMock(mockFlutterAPI.webViewConfigurationFlutterApi);
+  NSNumber *__block configurationIdentifier;
+  OCMStub([mockConfigurationFlutterApi createWithIdentifier:[OCMArg checkWithBlock:^BOOL(id value) {
+                                         configurationIdentifier = value;
+                                         return YES;
+                                       }]
+                                                 completion:OCMOCK_ANY]);
 
   WKNavigationAction *mockNavigationAction = OCMClassMock([WKNavigationAction class]);
   OCMStub([mockNavigationAction request])
@@ -85,7 +91,7 @@
   OCMVerify([mockFlutterAPI
       onCreateWebViewForDelegateWithIdentifier:@0
                              webViewIdentifier:@1
-                       configurationIdentifier:@2
+                       configurationIdentifier:configurationIdentifier
                               navigationAction:[OCMArg
                                                    isKindOfClass:[FWFWKNavigationActionData class]]
                                     completion:OCMOCK_ANY]);

@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
 ## 0.3.0
 
 * **BREAKING CHANGE**: Renames error code `cameraPermission` to `CameraAccessDenied` to be consistent with other platforms.
