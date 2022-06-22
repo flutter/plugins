@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "FLTWebViewFlutterPlugin.h"
-#import "FLTCookieManager.h"
 #import "FWFGeneratedWebKitApis.h"
 #import "FWFHTTPCookieStoreHostApi.h"
 #import "FWFInstanceManager.h"
@@ -18,7 +17,6 @@
 #import "FWFWebViewConfigurationHostApi.h"
 #import "FWFWebViewHostApi.h"
 #import "FWFWebsiteDataStoreHostApi.h"
-#import "FlutterWebView.h"
 
 @interface FWFWebViewFactory : NSObject <FlutterPlatformViewFactory>
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
