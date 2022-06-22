@@ -99,6 +99,7 @@ class MockUrlLauncher extends Fake
     expect(options.webViewConfiguration.enableDomStorage, enableDomStorage);
     expect(options.webViewConfiguration.headers, headers);
     expect(options.webOnlyWindowName, webOnlyWindowName);
+    launchCalled = true;
     return response!;
   }
 
