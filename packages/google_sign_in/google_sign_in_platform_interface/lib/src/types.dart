@@ -55,6 +55,10 @@ class SignInInitParameters {
   /// The default is null, which means that the client ID will be sourced from a
   /// configuration file, if required on the current platform. A value specified
   /// here takes precedence over a value specified in a configuration file.
+  /// See also:
+  ///
+  ///   * [Platform Integration](https://github.com/flutter/plugins/tree/main/packages/google_sign_in/google_sign_in#platform-integration),
+  ///     where you can find the details about the configuration files.
   final String? clientId;
 
   /// The OAuth client ID of the backend server.
@@ -63,6 +67,11 @@ class SignInInitParameters {
   /// from a configuration file, if available and supported on the current
   /// platform. A value specified here takes precedence over a value specified
   /// in a configuration file.
+  ///
+  /// See also:
+  ///
+  ///   * [Platform Integration](https://github.com/flutter/plugins/tree/main/packages/google_sign_in/google_sign_in#platform-integration),
+  ///     where you can find the details about the configuration files.
   final String? serverClientId;
 
   /// If true, ensures the authorization code can be exchanged for an access
