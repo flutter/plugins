@@ -59,9 +59,10 @@
 @end
 
 @interface FWFWebViewHostApiImpl ()
-// BinaryMessenger and InstanceManager must be weak to prevent a circular reference
-// with the objects it stores.
+// BinaryMessenger must be weak to prevent a circular reference with the host API it
+// references.
 @property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @property NSBundle *bundle;
 @property FWFAssetManager *assetManager;
