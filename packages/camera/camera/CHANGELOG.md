@@ -1,6 +1,5 @@
-## 0.9.8+2
+## NEXT
 
-* Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 0.9.8+1
