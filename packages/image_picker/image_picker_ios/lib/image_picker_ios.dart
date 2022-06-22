@@ -230,7 +230,7 @@ class ImagePickerIOS extends ImagePickerPlatform {
           maxImageHeight, 'maxHeight', 'cannot be negative');
     }
 
-    if (limit < 0) {
+    if (limit <= 0) {
       throw ArgumentError.value(limit, 'limit', 'must be larger than 0');
     }
 

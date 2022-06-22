@@ -28,6 +28,58 @@
 
 @implementation ImagePickerPluginTests
 
+- (void)testPluginPickRecentImages {
+    XCTestExpectation *pickExpectation = [self expectationWithDescription:@"Picking completed"];
+
+    FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+    [plugin setImagePickerControllerOverrides:@[ controller ]];
+    
+    NSArray<PHAsset *> *assets = @[];
+    PHFetchResult * mockFetchResult = OCMClassMock([PHFetchResult class]);
+    OCMStub([mockFetchResult objectsAtIndexes:[OCMArg anyPointer]]).andReturn(assets);
+    id phAssetMock = OCMClassMock([PHAsset class]);
+    OCMStub([phAssetMock fetchAssetsWithMediaType:PHAssetMediaTypeImage
+                                          options:[OCMArg anyPointer]]).andReturn(mockFetchResult);
+
+    [plugin pickRecentMediaWithType:[FLTIOSRetrieveTypeData makeWithValue:FLTIOSRetrieveTypeImage] maxSize:[FLTMaxSize makeWithWidth:nil height:nil] quality:nil limit:@3 completion:^(NSArray<NSString *> * _Nullable paths, FlutterError * _Nullable error) {
+        [pickExpectation fulfill];
+    }];
+    
+    [self waitForExpectations:@[ pickExpectation ] timeout:30];
+    OCMVerify([phAssetMock fetchAssetsWithMediaType:PHAssetMediaTypeImage options:[OCMArg any]]);
+    OCMVerify([mockFetchResult objectsAtIndexes:[OCMArg checkWithBlock:^BOOL(id value) {
+        return [((NSIndexSet*)value) isEqualToIndexSet:[NSIndexSet
+                                                        indexSetWithIndexesInRange:NSMakeRange(0, 3)]];
+    }]]);
+}
+
+//- (void)testPluginPickRecentVideos {
+//    XCTestExpectation *pickExpectation = [self expectationWithDescription:@"Picking completed"];
+//
+//    FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+//    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+//    [plugin setImagePickerControllerOverrides:@[ controller ]];
+//
+//    NSArray<PHAsset *> *assets = @[];
+//    PHFetchResult * mockFetchResult = OCMClassMock([PHFetchResult class]);
+//    OCMStub([mockFetchResult objectsAtIndexes:[OCMArg anyPointer]]).andReturn(assets);
+//    id phAssetMock = OCMClassMock([PHAsset class]);
+//    OCMStub([phAssetMock fetchAssetsWithMediaType:PHAssetMediaTypeImage
+//                                          options:[OCMArg anyPointer]]).andReturn(mockFetchResult);
+//
+//    [plugin pickRecentMediaWithType:[FLTIOSRetrieveTypeData makeWithValue:FLTIOSRetrieveTypeVideo] maxSize:[FLTMaxSize makeWithWidth:nil height:nil] quality:nil limit:@3 completion:^(NSArray<NSString *> * _Nullable paths, FlutterError * _Nullable error) {
+//        [pickExpectation fulfill];
+//    }];
+//
+//    [self waitForExpectations:@[ pickExpectation ] timeout:30];
+//    OCMVerify([phAssetMock fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:[OCMArg any]]);
+//    OCMVerify([mockFetchResult objectsAtIndexes:[OCMArg checkWithBlock:^BOOL(id value) {
+//        return [((NSIndexSet*)value) isEqualToIndexSet:[NSIndexSet
+//                                                        indexSetWithIndexesInRange:NSMakeRange(0, 3)]];
+//    }]]);
+//}
+
 - (void)testPluginPickImageDeviceBack {
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
   id mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);

@@ -150,100 +150,99 @@ typedef void (^GetSavedPath)(NSString *);
 }
 
 - (void)startForAsset {
-    switch (self.asset.mediaType) {
-      case PHAssetMediaTypeImage: {
-        [[PHImageManager defaultManager]
-            requestImageForAsset:self.asset
-                      targetSize:CGSizeMake(0, 0)
-                     contentMode:PHImageContentModeDefault
-                         options:nil
-                   resultHandler:^(UIImage *image, NSDictionary *info) {
-                     [self processImage:image];
-                   }];
-        break;
-      }
-      case PHAssetMediaTypeVideo: {
-        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-        options.version = PHVideoRequestOptionsVersionOriginal;
-        [[PHImageManager defaultManager]
-            requestAVAssetForVideo:self.asset
-                           options:options
-                     resultHandler:^(AVAsset *_Nullable asset, AVAudioMix *_Nullable audioMix,
-                                     NSDictionary *_Nullable info) {
-                       NSURL *url = nil;
-                       if ([asset isKindOfClass:[AVURLAsset class]]) {
-                         url = ((AVURLAsset *)asset).URL;
-                       }
-                       [self processVideo:url];
-                     }];
-        break;
-      }
-      default: {
-        [self setFinished:YES];
-        break;
-      }
+  switch (self.asset.mediaType) {
+    case PHAssetMediaTypeImage: {
+      [[PHImageManager defaultManager] requestImageForAsset:self.asset
+                                                 targetSize:CGSizeMake(0, 0)
+                                                contentMode:PHImageContentModeDefault
+                                                    options:nil
+                                              resultHandler:^(UIImage *image, NSDictionary *info) {
+                                                [self processImage:image];
+                                              }];
+      break;
     }
+    case PHAssetMediaTypeVideo: {
+      PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+      options.version = PHVideoRequestOptionsVersionOriginal;
+      [[PHImageManager defaultManager]
+          requestAVAssetForVideo:self.asset
+                         options:options
+                   resultHandler:^(AVAsset *_Nullable asset, AVAudioMix *_Nullable audioMix,
+                                   NSDictionary *_Nullable info) {
+                     NSURL *url = nil;
+                     if ([asset isKindOfClass:[AVURLAsset class]]) {
+                       url = ((AVURLAsset *)asset).URL;
+                     }
+                     [self processVideo:url];
+                   }];
+      break;
+    }
+    default: {
+      [self setFinished:YES];
+      break;
+    }
+  }
 }
 
 /**
  * Processes the image.
  */
 - (void)processImage:(UIImage *)localImage {
-    PHAsset *originalAsset = self.asset;
-    if (originalAsset == nil) {
-        if (@available(iOS 14, *)) {
-            originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
-        }
+  PHAsset *originalAsset = self.asset;
+  if (originalAsset == nil) {
+    if (@available(iOS 14, *)) {
+      originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:self.result];
     }
-        
-        if (self.maxImageWidth != nil || self.maxImageHeight != nil) {
-            localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                                     maxWidth:self.maxImageWidth
-                                                    maxHeight:self.maxImageHeight
-                                          isMetadataAvailable:originalAsset != nil];
-        }
-        if (originalAsset) {
-            void (^resultHandler)(NSData *imageData, NSString *dataUTI, NSDictionary *info) =
-            ^(NSData *_Nullable imageData, NSString *_Nullable dataUTI, NSDictionary *_Nullable info) {
-                // maxWidth and maxHeight are used only for GIF images.
-                NSString *savedPath = [FLTImagePickerPhotoAssetUtil
-                                       saveImageWithOriginalImageData:imageData
+  }
+
+  if (self.maxImageWidth != nil || self.maxImageHeight != nil) {
+    localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                             maxWidth:self.maxImageWidth
+                                            maxHeight:self.maxImageHeight
+                                  isMetadataAvailable:originalAsset != nil];
+  }
+  if (originalAsset) {
+    void (^resultHandler)(NSData *imageData, NSString *dataUTI, NSDictionary *info) =
+        ^(NSData *_Nullable imageData, NSString *_Nullable dataUTI, NSDictionary *_Nullable info) {
+          // maxWidth and maxHeight are used only for GIF images.
+          NSString *savedPath = [FLTImagePickerPhotoAssetUtil
+              saveImageWithOriginalImageData:imageData
                                        image:localImage
-                                       maxWidth:self.maxImageWidth
-                                       maxHeight:self.maxImageHeight
-                                       imageQuality:self.desiredImageQuality];
-                [self completeOperationWithPath:savedPath];
-            };
-            if (@available(iOS 13.0, *)) {
-                [[PHImageManager defaultManager]
-                 requestImageDataAndOrientationForAsset:originalAsset
-                 options:nil
-                 resultHandler:^(NSData *_Nullable imageData,
-                                 NSString *_Nullable dataUTI,
-                                 CGImagePropertyOrientation orientation,
-                                 NSDictionary *_Nullable info) {
-                    resultHandler(imageData, dataUTI, info);
-                }];
-            } else {
+                                    maxWidth:self.maxImageWidth
+                                   maxHeight:self.maxImageHeight
+                                imageQuality:self.desiredImageQuality];
+          [self completeOperationWithPath:savedPath];
+        };
+    if (@available(iOS 13.0, *)) {
+      [[PHImageManager defaultManager]
+          requestImageDataAndOrientationForAsset:originalAsset
+                                         options:nil
+                                   resultHandler:^(NSData *_Nullable imageData,
+                                                   NSString *_Nullable dataUTI,
+                                                   CGImagePropertyOrientation orientation,
+                                                   NSDictionary *_Nullable info) {
+                                     resultHandler(imageData, dataUTI, info);
+                                   }];
+    } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                [[PHImageManager defaultManager]
-                 requestImageDataForAsset:originalAsset
-                 options:nil
-                 resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                 UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                    resultHandler(imageData, dataUTI, info);
-                }];
+      [[PHImageManager defaultManager]
+          requestImageDataForAsset:originalAsset
+                           options:nil
+                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                       resultHandler(imageData, dataUTI, info);
+                     }];
 #pragma clang diagnostic pop
-            }
-        } else {
-            // Image picked without an original asset (e.g. User pick image without permission)
-            NSString *savedPath =
-            [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                            image:localImage
-                                                     imageQuality:self.desiredImageQuality];
-            [self completeOperationWithPath:savedPath];
-        }
+    }
+  } else {
+    // Image picked without an original asset (e.g. User pick image without permission)
+    NSString *savedPath =
+        [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                        image:localImage
+                                                 imageQuality:self.desiredImageQuality];
+    [self completeOperationWithPath:savedPath];
+  }
 }
 
 /**

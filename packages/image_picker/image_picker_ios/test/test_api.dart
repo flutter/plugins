@@ -12,7 +12,8 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/src/messages.g.dart';
+// Manually changed due to https://github.com/flutter/flutter/issues/97744
+import 'package:image_picker_ios/src/messages.g.dart';
 
 class _TestHostImagePickerApiCodec extends StandardMessageCodec {
   const _TestHostImagePickerApiCodec();

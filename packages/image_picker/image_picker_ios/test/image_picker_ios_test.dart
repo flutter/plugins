@@ -74,8 +74,8 @@ class _ApiLogger implements TestHostImagePickerApi {
   }
 
   @override
-  Future<List<String?>?> pickRecentMedia(
-      IOSRetrieveTypeData type, MaxSize maxSize, int? imageQuality, int limit) {
+  Future<List<String?>?> pickRecentMedia(IOSRetrieveTypeData type,
+      MaxSize maxSize, int? imageQuality, int limit) async {
     calls.add(_LoggedMethodCall('pickRecentMedia', arguments: <String, dynamic>{
       'type': type.value,
       'maxWidth': maxSize.width,
@@ -83,7 +83,7 @@ class _ApiLogger implements TestHostImagePickerApi {
       'imageQuality': imageQuality,
       'limit': limit,
     }));
-    throw UnimplementedError();
+    return returnValue as List<String?>?;
   }
 }
 
@@ -841,6 +841,172 @@ void main() {
 
       expect(await picker.getMultiImage(), isNull);
       expect(await picker.getMultiImage(), isNull);
+    });
+  });
+
+  group('#getRecentMedia', () {
+    test('calls the method correctly', () async {
+      log.returnValue = <String>['0', '1'];
+      await picker.getRecentMedia(type: RetrieveType.image);
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+        ],
+      );
+    });
+
+    test('passes the width and height arguments correctly', () async {
+      log.returnValue = <String>['0', '1'];
+      await picker.getRecentMedia(type: RetrieveType.image);
+      await picker.getRecentMedia(
+        type: RetrieveType.image,
+        maxImageWidth: 10.0,
+      );
+      await picker.getRecentMedia(
+        type: RetrieveType.image,
+        maxImageHeight: 10.0,
+      );
+      await picker.getRecentMedia(
+        type: RetrieveType.image,
+        maxImageWidth: 10.0,
+        maxImageHeight: 20.0,
+      );
+      await picker.getRecentMedia(
+        type: RetrieveType.image,
+        maxImageWidth: 10.0,
+        imageQuality: 70,
+      );
+      await picker.getRecentMedia(
+        type: RetrieveType.image,
+        maxImageHeight: 10.0,
+        imageQuality: 70,
+      );
+      await picker.getRecentMedia(
+        type: RetrieveType.image,
+        maxImageWidth: 10.0,
+        maxImageHeight: 20.0,
+        imageQuality: 70,
+      );
+
+      expect(
+        log.calls,
+        <_LoggedMethodCall>[
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': null,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': null,
+              }),
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': 10.0,
+                'maxHeight': null,
+                'imageQuality': 70,
+              }),
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': null,
+                'maxHeight': 10.0,
+                'imageQuality': 70,
+              }),
+          const _LoggedMethodCall('pickRecentMedia',
+              arguments: <String, dynamic>{
+                'type': IOSRetrieveType.image,
+                'limit': 1,
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
+                'imageQuality': 70,
+              }),
+        ],
+      );
+    });
+
+    test('does not accept a negative width or height argument', () {
+      log.returnValue = <String>['0', '1'];
+      expect(
+        () => picker.getRecentMedia(
+            type: RetrieveType.image, maxImageWidth: -1.0),
+        throwsArgumentError,
+      );
+
+      expect(
+        () => picker.getRecentMedia(
+            type: RetrieveType.image, maxImageWidth: -1.0),
+        throwsArgumentError,
+      );
+    });
+
+    test('does not accept a limit argument lower than 1', () {
+      log.returnValue = <String>['0', '1'];
+      expect(
+        () => picker.getRecentMedia(type: RetrieveType.image, limit: -1),
+        throwsArgumentError,
+      );
+
+      expect(
+        () => picker.getRecentMedia(type: RetrieveType.image, limit: 0),
+        throwsArgumentError,
+      );
+    });
+
+    test('does not accept a invalid imageQuality argument', () {
+      log.returnValue = <String>['0', '1'];
+      expect(
+        () => picker.getRecentMedia(type: RetrieveType.image, imageQuality: -1),
+        throwsArgumentError,
+      );
+
+      expect(
+        () =>
+            picker.getRecentMedia(type: RetrieveType.image, imageQuality: 101),
+        throwsArgumentError,
+      );
+    });
+
+    test('handles a null image path response gracefully', () async {
+      log.returnValue = null;
+
+      expect(await picker.getRecentMedia(type: RetrieveType.image), isNull);
+      expect(await picker.getRecentMedia(type: RetrieveType.image), isNull);
     });
   });
 

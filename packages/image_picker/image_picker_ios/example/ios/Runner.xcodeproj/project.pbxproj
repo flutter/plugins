@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -19,7 +19,6 @@
 		680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
 		6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */; };
 		86430DF9272D71E9002D9D6C /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
-		86E9A893272754860017E6E0 /* PickerSaveImageToPathOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 86E9A892272754860017E6E0 /* PickerSaveImageToPathOperationTests.m */; };
 		86E9A894272754A30017E6E0 /* webpImage.webp in Resources */ = {isa = PBXBuildFile; fileRef = 86E9A88F272747B90017E6E0 /* webpImage.webp */; };
 		86E9A895272769130017E6E0 /* pngImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 680049352280F2B8006DD6AB /* pngImage.png */; };
 		86E9A896272769150017E6E0 /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
@@ -30,6 +29,9 @@
 		9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		BE6173D826A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */; };
+		E49AB7B32861F10000914519 /* PickerSaveItemToPathOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E49AB7B22861F10000914519 /* PickerSaveItemToPathOperationTests.m */; };
+		E49AB7B52861F44100914519 /* movVideo.mov in Resources */ = {isa = PBXBuildFile; fileRef = E49AB7B42861F44100914519 /* movVideo.mov */; };
+		E49AB7B72861F44900914519 /* mp4Video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E49AB7B62861F44900914519 /* mp4Video.mp4 */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
 /* End PBXBuildFile section */
 
@@ -85,7 +87,6 @@
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		86E9A88F272747B90017E6E0 /* webpImage.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = webpImage.webp; sourceTree = "<group>"; };
-		86E9A892272754860017E6E0 /* PickerSaveImageToPathOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PickerSaveImageToPathOperationTests.m; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +99,9 @@
 		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtilTests.m; sourceTree = "<group>"; };
 		BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromLimitedGalleryUITests.m; sourceTree = "<group>"; };
 		DC6FCAAD4E7580C9B3C2E21D /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E49AB7B22861F10000914519 /* PickerSaveItemToPathOperationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickerSaveItemToPathOperationTests.m; sourceTree = "<group>"; };
+		E49AB7B42861F44100914519 /* movVideo.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = movVideo.mov; sourceTree = "<group>"; };
+		E49AB7B62861F44900914519 /* mp4Video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = mp4Video.mp4; sourceTree = "<group>"; };
 		EC32F6993F4529982D9519F1 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerTestImages.h; sourceTree = "<group>"; };
 		F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerTestImages.m; sourceTree = "<group>"; };
@@ -133,27 +137,29 @@
 		334733F32668136400DCC49E /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
+				E49AB7B22861F10000914519 /* PickerSaveItemToPathOperationTests.m */,
 				9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */,
 				680049252280D736006DD6AB /* MetaDataUtilTests.m */,
 				68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */,
 				F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */,
 				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
 				68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */,
-				86E9A892272754860017E6E0 /* PickerSaveImageToPathOperationTests.m */,
 				334733F62668136400DCC49E /* Info.plist */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
 		};
-		680049282280E33D006DD6AB /* TestImages */ = {
+		680049282280E33D006DD6AB /* TestItems */ = {
 			isa = PBXGroup;
 			children = (
+				E49AB7B62861F44900914519 /* mp4Video.mp4 */,
+				E49AB7B42861F44100914519 /* movVideo.mov */,
 				86E9A88F272747B90017E6E0 /* webpImage.webp */,
 				9FC8F0E8229FA49E00C8D58F /* gifImage.gif */,
 				680049362280F2B8006DD6AB /* jpgImage.jpg */,
 				680049352280F2B8006DD6AB /* pngImage.png */,
 			);
-			path = TestImages;
+			path = TestItems;
 			sourceTree = "<group>";
 		};
 		6801C8372555D726009DAF8D /* RunnerUITests */ = {
@@ -191,7 +197,7 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
-				680049282280E33D006DD6AB /* TestImages */,
+				680049282280E33D006DD6AB /* TestItems */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				334733F32668136400DCC49E /* RunnerTests */,
@@ -364,6 +370,8 @@
 				86430DF9272D71E9002D9D6C /* gifImage.gif in Resources */,
 				86E9A894272754A30017E6E0 /* webpImage.webp in Resources */,
 				86E9A895272769130017E6E0 /* pngImage.png in Resources */,
+				E49AB7B72861F44900914519 /* mp4Video.mp4 in Resources */,
+				E49AB7B52861F44100914519 /* movVideo.mov in Resources */,
 				86E9A896272769150017E6E0 /* jpgImage.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -469,8 +477,8 @@
 			files = (
 				334733FD266813F100DCC49E /* MetaDataUtilTests.m in Sources */,
 				334733FF266813FA00DCC49E /* ImagePickerTestImages.m in Sources */,
-				86E9A893272754860017E6E0 /* PickerSaveImageToPathOperationTests.m in Sources */,
 				334733FC266813EE00DCC49E /* ImageUtilTests.m in Sources */,
+				E49AB7B32861F10000914519 /* PickerSaveItemToPathOperationTests.m in Sources */,
 				33473400266813FD00DCC49E /* ImagePickerPluginTests.m in Sources */,
 				334733FE266813F400DCC49E /* PhotoAssetUtilTests.m in Sources */,
 			);

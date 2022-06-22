@@ -203,10 +203,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                           limit:(nonnull NSNumber *)limit
                      completion:(nonnull void (^)(NSArray<NSString *> *_Nullable,
                                                   FlutterError *_Nullable))completion {
-    [self cancelInProgressCall];
-    FLTImagePickerMethodCallContext *context = [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
-    self.callContext = context;
-    
+  [self cancelInProgressCall];
+  FLTImagePickerMethodCallContext *context =
+      [[FLTImagePickerMethodCallContext alloc] initWithResult:completion];
+  self.callContext = context;
+
   PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
   fetchOptions.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"creationDate"
                                                                   ascending:NO] ];
@@ -218,7 +219,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       case FLTIOSRetrieveTypeImage: {
         assetsFetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage
                                                       options:fetchOptions];
-
         break;
       }
       case FLTIOSRetrieveTypeVideo: {
@@ -230,20 +230,21 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSArray<PHAsset *> *assets = [assetsFetchResult
         objectsAtIndexes:[NSIndexSet
                              indexSetWithIndexesInRange:NSMakeRange(
-                                                            0, MIN(assetsFetchResult.count, [limit unsignedLongValue]))]];
+                                                            0, MIN(assetsFetchResult.count,
+                                                                   [limit unsignedLongValue]))]];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
     NSMutableArray *pathList = [self createNSMutableArrayWithSize:assets.count];
     for (int i = 0; i < assets.count; i++) {
       PHAsset *asset = assets[i];
-        FLTPHPickerSaveItemToPathOperation *operation = [[FLTPHPickerSaveItemToPathOperation alloc]
-                  initWithAsset:asset
-                 maxImageHeight:maxSize.height
-                  maxImageWidth:maxSize.width
-            desiredImageQuality:[self getDesiredImageQuality:imageQuality]
-                 savedPathBlock:^(NSString *savedPath) {
-                   pathList[i] = savedPath;
-                 }];
-        [operationQueue addOperation:operation];
+      FLTPHPickerSaveItemToPathOperation *operation = [[FLTPHPickerSaveItemToPathOperation alloc]
+                initWithAsset:asset
+               maxImageHeight:maxSize.height
+                maxImageWidth:maxSize.width
+          desiredImageQuality:[self getDesiredImageQuality:imageQuality]
+               savedPathBlock:^(NSString *savedPath) {
+                 pathList[i] = savedPath;
+               }];
+      [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -514,7 +515,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [picker dismissViewControllerAnimated:YES completion:nil];
   if (results.count == 0) {
     [self sendCallResultWithSavedPathList:nil];
-    return;
+    retur
   }
   dispatch_queue_t backgroundQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
