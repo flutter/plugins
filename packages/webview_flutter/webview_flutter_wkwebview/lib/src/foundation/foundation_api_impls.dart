@@ -183,4 +183,9 @@ class NSObjectFlutterApiImpl extends NSObjectFlutterApi {
       ), changeValues),
     );
   }
+
+  @override
+  void dispose(int identifier) {
+    instanceManager.remove(identifier);
+  }
 }

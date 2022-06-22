@@ -187,6 +187,8 @@ task:
         - flutter config --enable-linux-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: linux-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           CHANNEL: "master"
@@ -216,6 +218,8 @@ task:
   matrix:
     ### Android tasks ###
     - name: android-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
@@ -316,6 +320,8 @@ task:
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### macOS desktop tasks ###
     - name: macos-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           CHANNEL: "master"
@@ -351,6 +357,8 @@ task:
     # tests are reliable on the ARM infrastructure. See discussion at
     # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
     - name: ios-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         PATH: $PATH:/usr/local/bin
         matrix:

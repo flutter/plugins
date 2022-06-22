@@ -14,14 +14,15 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.flutter.plugins.camera
-        pluginClass: CameraPlugin
+        default_package: camera_android
       ios:
-        pluginClass: CameraPlugin
+        default_package: camera_avfoundation
       web:
         default_package: camera_web
 
 dependencies:
+  camera_android: ^0.9.7+1
+  camera_avfoundation: ^0.9.7+1
   camera_platform_interface: ^2.2.0
   camera_web: ^0.3.0
   flutter:

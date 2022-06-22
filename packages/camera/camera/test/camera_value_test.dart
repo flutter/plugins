@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

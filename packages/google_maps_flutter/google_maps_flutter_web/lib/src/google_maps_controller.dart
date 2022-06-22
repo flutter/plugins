@@ -15,20 +15,17 @@ class GoogleMapController {
   GoogleMapController({
     required int mapId,
     required StreamController<MapEvent<Object?>> streamController,
-    required CameraPosition initialCameraPosition,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+    required MapWidgetConfiguration widgetConfiguration,
+    MapObjects mapObjects = const MapObjects(),
+    MapConfiguration mapConfiguration = const MapConfiguration(),
   })  : _mapId = mapId,
         _streamController = streamController,
-        _initialCameraPosition = initialCameraPosition,
-        _markers = markers,
-        _polygons = polygons,
-        _polylines = polylines,
-        _circles = circles,
-        _rawMapOptions = mapOptions {
+        _initialCameraPosition = widgetConfiguration.initialCameraPosition,
+        _markers = mapObjects.markers,
+        _polygons = mapObjects.polygons,
+        _polylines = mapObjects.polylines,
+        _circles = mapObjects.circles,
+        _lastMapConfiguration = mapConfiguration {
     _circlesController = CirclesController(stream: _streamController);
     _polygonsController = PolygonsController(stream: _streamController);
     _polylinesController = PolylinesController(stream: _streamController);
@@ -56,9 +53,10 @@ class GoogleMapController {
   final Set<Polygon> _polygons;
   final Set<Polyline> _polylines;
   final Set<Circle> _circles;
-  // The raw options passed by the user, before converting to gmaps.
+  // The configuraiton passed by the user, before converting to gmaps.
   // Caching this allows us to re-create the map faithfully when needed.
-  Map<String, dynamic> _rawMapOptions = <String, dynamic>{};
+  MapConfiguration _lastMapConfiguration = const MapConfiguration();
+  List<gmaps.MapTypeStyle> _lastStyles = const <gmaps.MapTypeStyle>[];
 
   // Creates the 'viewType' for the _widget
   String _getViewType(int mapId) => 'plugins.flutter.io/google_maps_$mapId';
@@ -158,7 +156,8 @@ class GoogleMapController {
   /// Failure to call this method would result in the GMap not rendering at all,
   /// and most of the public methods on this class no-op'ing.
   void init() {
-    gmaps.MapOptions options = _rawOptionsToGmapsOptions(_rawMapOptions);
+    gmaps.MapOptions options = _configurationAndStyleToGmapsOptions(
+        _lastMapConfiguration, _lastStyles);
     // Initial position can only to be set here!
     options = _applyInitialPosition(_initialCameraPosition, options);
 
@@ -177,7 +176,7 @@ class GoogleMapController {
       polylines: _polylines,
     );
 
-    _setTrafficLayer(map, _isTrafficLayerEnabled(_rawMapOptions));
+    _setTrafficLayer(map, _lastMapConfiguration.trafficEnabled ?? false);
   }
 
   // Funnels map gmap events into the plugin's stream controller.
@@ -260,27 +259,33 @@ class GoogleMapController {
     _polylinesController!.addPolylines(polylines);
   }
 
-  // Merges new options coming from the plugin into the _rawMapOptions map.
+  // Merges new options coming from the plugin into _lastConfiguration.
   //
-  // Returns the updated _rawMapOptions object.
-  Map<String, dynamic> _mergeRawOptions(Map<String, dynamic> newOptions) {
-    _rawMapOptions = <String, dynamic>{
-      ..._rawMapOptions,
-      ...newOptions,
-    };
-    return _rawMapOptions;
+  // Returns the updated _lastConfiguration object.
+  MapConfiguration _mergeConfigurations(MapConfiguration update) {
+    _lastMapConfiguration = _lastMapConfiguration.applyDiff(update);
+    return _lastMapConfiguration;
   }
 
-  /// Updates the map options from a `Map<String, dynamic>`.
+  /// Updates the map options from a [MapConfiguration].
   ///
-  /// This method converts the map into the proper [gmaps.MapOptions]
-  void updateRawOptions(Map<String, dynamic> optionsUpdate) {
+  /// This method converts the map into the proper [gmaps.MapOptions].
+  void updateMapConfiguration(MapConfiguration update) {
     assert(_googleMap != null, 'Cannot update options on a null map.');
 
-    final Map<String, dynamic> newOptions = _mergeRawOptions(optionsUpdate);
+    final MapConfiguration newConfiguration = _mergeConfigurations(update);
+    final gmaps.MapOptions newOptions =
+        _configurationAndStyleToGmapsOptions(newConfiguration, _lastStyles);
 
-    _setOptions(_rawOptionsToGmapsOptions(newOptions));
-    _setTrafficLayer(_googleMap!, _isTrafficLayerEnabled(newOptions));
+    _setOptions(newOptions);
+    _setTrafficLayer(_googleMap!, newConfiguration.trafficEnabled ?? false);
+  }
+
+  /// Updates the map options with a new list of [styles].
+  void updateStyles(List<gmaps.MapTypeStyle> styles) {
+    _lastStyles = styles;
+    _setOptions(
+        _configurationAndStyleToGmapsOptions(_lastMapConfiguration, styles));
   }
 
   // Sets new [gmaps.MapOptions] on the wrapped map.

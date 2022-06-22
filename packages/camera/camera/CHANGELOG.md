@@ -1,7 +1,18 @@
-## 0.10.0
+## 0.11.0
 
 * **Breaking Change** Bumps default camera_web package version to 0.3.0 which renames permission exception code from `cameraPermission` to `CameraAccessDenied`.
-* **Breaking Change** Updates Android camera access permission error codes to be consistent with other platforms. If your app still handles the legacy `cameraPermission` exception, please update it to handle the new permission exception codes that are noted in the README.
+
+## 0.10.0
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.9.8+1
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.9.8
+
+* Moves Android and iOS implementations to federated packages.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 
 ## 0.9.7+1
