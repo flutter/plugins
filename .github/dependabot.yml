@@ -1,7 +1,15 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/packages/camera/camera/android"
+    directory: "/packages/camera/camera_android/android"
+    commit-message:
+      prefix: "[camera]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/camera/camera_android/example/android/app"
     commit-message:
       prefix: "[camera]"
     schedule:
@@ -217,6 +225,14 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
+    directory: "/packages/shared_preferences/shared_preferences_android/android"
+    commit-message:
+      prefix: "[shared_pref]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
     directory: "/packages/shared_preferences/shared_preferences_android/example/android/app"
     commit-message:
       prefix: "[shared_pref]"
@@ -244,6 +260,14 @@ updates:
     directory: "/packages/url_launcher/url_launcher/example/android/app"
     commit-message:
       prefix: "[url_launcher]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/video_player/video_player/example/android/app"
+    commit-message:
+      prefix: "[video_player]"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -281,13 +305,13 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
-    directory: "/packages/webview_flutter/webview_flutter_android/example/android"
+    directory: "/packages/webview_flutter/webview_flutter_android/example/android/app"
     commit-message:
       prefix: "[webview]"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
-    
+
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
