@@ -1,3 +1,7 @@
+## 0.10.1+3
+
+* Updates references to the obsolete master branch.
+
 ## 0.10.1+2
 
 * Minor fixes for new analysis options.

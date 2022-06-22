@@ -1,6 +1,16 @@
-## 0.9.7+2
+## 0.9.8+2
 
 * Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.9.8+1
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.9.8
+
+* Moves Android and iOS implementations to federated packages.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
 
 ## 0.9.7+1
 

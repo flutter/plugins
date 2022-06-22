@@ -79,19 +79,19 @@ Future<void> _handleSignIn() async {
 
 ## Example
 
-Find the example wiring in the [Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
+Find the example wiring in the [Google sign-in example application](https://github.com/flutter/plugins/blob/main/packages/google_sign_in/google_sign_in/example/lib/main.dart).
 
 ## API details
 
-See the [google_sign_in.dart](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/lib/google_sign_in.dart) for more API details.
+See the [google_sign_in.dart](https://github.com/flutter/plugins/blob/main/packages/google_sign_in/google_sign_in/lib/google_sign_in.dart) for more API details.
 
 ## Contributions and Testing
 
 Tests are crucial for contributions to this package. All new contributions should be reasonably tested.
 
-**Check the [`test/README.md` file](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in_web/test/README.md)** for more information on how to run tests on this package.
+**Check the [`test/README.md` file](https://github.com/flutter/plugins/blob/main/packages/google_sign_in/google_sign_in_web/test/README.md)** for more information on how to run tests on this package.
 
-Contributions to this package are welcome. Read the [Contributing to Flutter Plugins](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md) guide to get started.
+Contributions to this package are welcome. Read the [Contributing to Flutter Plugins](https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md) guide to get started.
 
 ## Issues and feedback
 
