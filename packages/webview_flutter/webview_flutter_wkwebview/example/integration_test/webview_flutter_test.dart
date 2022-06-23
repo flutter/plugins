@@ -13,6 +13,7 @@ import 'dart:io';
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1169,6 +1170,9 @@ Future<void> main() async {
 // JavaScript booleans evaluate to different string values on Android and iOS.
 // This utility method returns the string boolean value of the current platform.
 String _webviewBool(bool value) {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return value ? '1' : '0';
+  }
   return value ? 'true' : 'false';
 }
 
