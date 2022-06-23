@@ -5,7 +5,6 @@
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
@@ -26,7 +25,12 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
           processRunner: processRunner,
           platform: platform,
           gitDir: gitDir,
-        );
+        ) {
+    argParser.addFlag(_requireExcerptsArg,
+        help: 'Require that Dart code blocks be managed by code-excerpt.');
+  }
+
+  static const String _requireExcerptsArg = 'require-excerpts';
 
   // Standardized capitalizations for platforms that a plugin can support.
   static const Map<String, String> _standardPlatformNames = <String, String>{
@@ -50,22 +54,20 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final File readme = package.readmeFile;
-
-    if (!readme.existsSync()) {
-      return PackageResult.fail(<String>['Missing README.md']);
+    final List<String> errors = _validateReadme(package.readmeFile,
+        mainPackage: package, isExample: false);
+    for (final RepositoryPackage packageToCheck in package.getExamples()) {
+      errors.addAll(_validateReadme(packageToCheck.readmeFile,
+          mainPackage: package, isExample: true));
     }
 
-    final List<String> errors = <String>[];
-
-    final Pubspec pubspec = package.parsePubspec();
-    final bool isPlugin = pubspec.flutter?['plugin'] != null;
-
-    if (isPlugin && (!package.isFederated || package.isAppFacing)) {
-      final String? error = _validateSupportedPlatforms(package, pubspec);
-      if (error != null) {
-        errors.add(error);
-      }
+    // If there's an example/README.md for a multi-example package, validate
+    // that as well, as it will be shown on pub.dev.
+    final Directory exampleDir = package.directory.childDirectory('example');
+    final File exampleDirReadme = exampleDir.childFile('README.md');
+    if (exampleDir.existsSync() && !isPackage(exampleDir)) {
+      errors.addAll(_validateReadme(exampleDirReadme,
+          mainPackage: package, isExample: true));
     }
 
     return errors.isEmpty
@@ -73,23 +75,133 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
         : PackageResult.fail(errors);
   }
 
+  List<String> _validateReadme(File readme,
+      {required RepositoryPackage mainPackage, required bool isExample}) {
+    if (!readme.existsSync()) {
+      if (isExample) {
+        print('${indentation}No README for '
+            '${getRelativePosixPath(readme.parent, from: mainPackage.directory)}');
+        return <String>[];
+      } else {
+        printError('${indentation}No README found at '
+            '${getRelativePosixPath(readme, from: mainPackage.directory)}');
+        return <String>['Missing README.md'];
+      }
+    }
+
+    print('${indentation}Checking '
+        '${getRelativePosixPath(readme, from: mainPackage.directory)}...');
+
+    final List<String> readmeLines = readme.readAsLinesSync();
+    final List<String> errors = <String>[];
+
+    final String? blockValidationError = _validateCodeBlocks(readmeLines);
+    if (blockValidationError != null) {
+      errors.add(blockValidationError);
+    }
+
+    if (_containsTemplateBoilerplate(readmeLines)) {
+      printError('${indentation}The boilerplate section about getting started '
+          'with Flutter should not be left in.');
+      errors.add('Contains template boilerplate');
+    }
+
+    // Check if this is the main readme for a plugin, and if so enforce extra
+    // checks.
+    if (!isExample) {
+      final Pubspec pubspec = mainPackage.parsePubspec();
+      final bool isPlugin = pubspec.flutter?['plugin'] != null;
+      if (isPlugin && (!mainPackage.isFederated || mainPackage.isAppFacing)) {
+        final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
+        if (error != null) {
+          errors.add(error);
+        }
+      }
+    }
+
+    return errors;
+  }
+
+  /// Validates that code blocks (``` ... ```) follow repository standards.
+  String? _validateCodeBlocks(List<String> readmeLines) {
+    final RegExp codeBlockDelimiterPattern = RegExp(r'^\s*```\s*([^ ]*)\s*');
+    final List<int> missingLanguageLines = <int>[];
+    final List<int> missingExcerptLines = <int>[];
+    bool inBlock = false;
+    for (int i = 0; i < readmeLines.length; ++i) {
+      final RegExpMatch? match =
+          codeBlockDelimiterPattern.firstMatch(readmeLines[i]);
+      if (match == null) {
+        continue;
+      }
+      if (inBlock) {
+        inBlock = false;
+        continue;
+      }
+      inBlock = true;
+
+      final int humanReadableLineNumber = i + 1;
+
+      // Ensure that there's a language tag.
+      final String infoString = match[1] ?? '';
+      if (infoString.isEmpty) {
+        missingLanguageLines.add(humanReadableLineNumber);
+        continue;
+      }
+
+      // Check for code-excerpt usage if requested.
+      if (getBoolArg(_requireExcerptsArg) && infoString == 'dart') {
+        const String excerptTagStart = '<?code-excerpt ';
+        if (i == 0 || !readmeLines[i - 1].trim().startsWith(excerptTagStart)) {
+          missingExcerptLines.add(humanReadableLineNumber);
+        }
+      }
+    }
+
+    String? errorSummary;
+
+    if (missingLanguageLines.isNotEmpty) {
+      for (final int lineNumber in missingLanguageLines) {
+        printError('${indentation}Code block at line $lineNumber is missing '
+            'a language identifier.');
+      }
+      printError(
+          '\n${indentation}For each block listed above, add a language tag to '
+          'the opening block. For instance, for Dart code, use:\n'
+          '${indentation * 2}```dart\n');
+      errorSummary = 'Missing language identifier for code block';
+    }
+
+    if (missingExcerptLines.isNotEmpty) {
+      for (final int lineNumber in missingExcerptLines) {
+        printError('${indentation}Dart code block at line $lineNumber is not '
+            'managed by code-excerpt.');
+      }
+      printError(
+          '\n${indentation}For each block listed above, add <?code-excerpt ...> '
+          'tag on the previous line, and ensure that a build.excerpt.yaml is '
+          'configured for the source example.\n');
+      errorSummary ??= 'Missing code-excerpt management for code block';
+    }
+
+    return errorSummary;
+  }
+
   /// Validates that the plugin has a supported platforms table following the
   /// expected format, returning an error string if any issues are found.
   String? _validateSupportedPlatforms(
-      RepositoryPackage package, Pubspec pubspec) {
-    final List<String> contents = package.readmeFile.readAsLinesSync();
-
+      List<String> readmeLines, Pubspec pubspec) {
     // Example table following expected format:
     // |                | Android | iOS      | Web                    |
     // |----------------|---------|----------|------------------------|
     // | **Support**    | SDK 21+ | iOS 10+* | [See `camera_web `][1] |
-    final int detailsLineNumber =
-        contents.indexWhere((String line) => line.startsWith('| **Support**'));
+    final int detailsLineNumber = readmeLines
+        .indexWhere((String line) => line.startsWith('| **Support**'));
     if (detailsLineNumber == -1) {
       return 'No OS support table found';
     }
     final int osLineNumber = detailsLineNumber - 2;
-    if (osLineNumber < 0 || !contents[osLineNumber].startsWith('|')) {
+    if (osLineNumber < 0 || !readmeLines[osLineNumber].startsWith('|')) {
       return 'OS support table does not have the expected header format';
     }
 
@@ -111,7 +223,7 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
     final YamlMap platformSupportMaps = platformsEntry as YamlMap;
     final Set<String> actuallySupportedPlatform =
         platformSupportMaps.keys.toSet().cast<String>();
-    final Iterable<String> documentedPlatforms = contents[osLineNumber]
+    final Iterable<String> documentedPlatforms = readmeLines[osLineNumber]
         .split('|')
         .map((String entry) => entry.trim())
         .where((String entry) => entry.isNotEmpty);
@@ -148,5 +260,12 @@ ${indentation * 2}Please use standard capitalizations: ${sortedListString(expect
     // consistent with what the current implementations require. See
     // https://github.com/flutter/flutter/issues/84200
     return null;
+  }
+
+  /// Returns true if the README still has the boilerplate from the
+  /// `flutter create` templates.
+  bool _containsTemplateBoilerplate(List<String> readmeLines) {
+    return readmeLines.any((String line) =>
+        line.contains('For help getting started with Flutter'));
   }
 }

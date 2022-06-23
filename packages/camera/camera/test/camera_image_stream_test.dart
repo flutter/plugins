@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'camera_test.dart';
-import 'utils/method_channel_mock.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  late MockStreamingCameraPlatform mockPlatform;
 
   setUp(() {
-    CameraPlatform.instance = MockCameraPlatform();
+    mockPlatform = MockStreamingCameraPlatform();
+    CameraPlatform.instance = mockPlatform;
   });
 
   test('startImageStream() throws $CameraException when uninitialized', () {
@@ -87,13 +90,6 @@ void main() {
   });
 
   test('startImageStream() calls CameraPlatform', () async {
-    final MethodChannelMock cameraChannelMock = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
-        methods: <String, dynamic>{'startImageStream': <String, dynamic>{}});
-    final MethodChannelMock streamChannelMock = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera/imageStream',
-        methods: <String, dynamic>{'listen': <String, dynamic>{}});
-
     final CameraController cameraController = CameraController(
         const CameraDescription(
             name: 'cam',
@@ -104,10 +100,8 @@ void main() {
 
     await cameraController.startImageStream((CameraImage image) => null);
 
-    expect(cameraChannelMock.log,
-        <Matcher>[isMethodCall('startImageStream', arguments: null)]);
-    expect(streamChannelMock.log,
-        <Matcher>[isMethodCall('listen', arguments: null)]);
+    expect(mockPlatform.streamCallLog,
+        <String>['onStreamedFrameAvailable', 'listen']);
   });
 
   test('stopImageStream() throws $CameraException when uninitialized', () {
@@ -178,19 +172,6 @@ void main() {
   });
 
   test('stopImageStream() intended behaviour', () async {
-    final MethodChannelMock cameraChannelMock = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera',
-        methods: <String, dynamic>{
-          'startImageStream': <String, dynamic>{},
-          'stopImageStream': <String, dynamic>{}
-        });
-    final MethodChannelMock streamChannelMock = MethodChannelMock(
-        channelName: 'plugins.flutter.io/camera/imageStream',
-        methods: <String, dynamic>{
-          'listen': <String, dynamic>{},
-          'cancel': <String, dynamic>{}
-        });
-
     final CameraController cameraController = CameraController(
         const CameraDescription(
             name: 'cam',
@@ -201,14 +182,33 @@ void main() {
     await cameraController.startImageStream((CameraImage image) => null);
     await cameraController.stopImageStream();
 
-    expect(cameraChannelMock.log, <Matcher>[
-      isMethodCall('startImageStream', arguments: null),
-      isMethodCall('stopImageStream', arguments: null)
-    ]);
-
-    expect(streamChannelMock.log, <Matcher>[
-      isMethodCall('listen', arguments: null),
-      isMethodCall('cancel', arguments: null)
-    ]);
+    expect(mockPlatform.streamCallLog,
+        <String>['onStreamedFrameAvailable', 'listen', 'cancel']);
   });
+}
+
+class MockStreamingCameraPlatform extends MockCameraPlatform {
+  List<String> streamCallLog = <String>[];
+
+  StreamController<CameraImageData>? _streamController;
+
+  @override
+  Stream<CameraImageData> onStreamedFrameAvailable(int cameraId,
+      {CameraImageStreamOptions? options}) {
+    streamCallLog.add('onStreamedFrameAvailable');
+    _streamController = StreamController<CameraImageData>(
+      onListen: _onFrameStreamListen,
+      onCancel: _onFrameStreamCancel,
+    );
+    return _streamController!.stream;
+  }
+
+  void _onFrameStreamListen() {
+    streamCallLog.add('listen');
+  }
+
+  FutureOr<void> _onFrameStreamCancel() async {
+    streamCallLog.add('cancel');
+    _streamController = null;
+  }
 }

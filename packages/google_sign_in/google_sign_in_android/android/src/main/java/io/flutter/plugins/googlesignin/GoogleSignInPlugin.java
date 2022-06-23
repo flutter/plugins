@@ -44,7 +44,7 @@ import java.util.concurrent.Future;
 
 /** Google sign-in plugin for Flutter. */
 public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
-  private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
+  private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in_android";
 
   private static final String METHOD_INIT = "init";
   private static final String METHOD_SIGN_IN_SILENTLY = "signInSilently";
@@ -76,6 +76,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   }
 
   @VisibleForTesting
+  @SuppressWarnings("deprecation")
   public void setUpRegistrar(PluginRegistry.Registrar registrar) {
     delegate.setUpRegistrar(registrar);
   }
@@ -267,6 +268,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
     private final Context context;
     // Only set registrar for v1 embedder.
+    @SuppressWarnings("deprecation")
     private PluginRegistry.Registrar registrar;
     // Only set activity for v2 embedder. Always access activity from getActivity() method.
     private Activity activity;
@@ -282,6 +284,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       this.googleSignInWrapper = googleSignInWrapper;
     }
 
+    @SuppressWarnings("deprecation")
     public void setUpRegistrar(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       registrar.addActivityResultListener(this);

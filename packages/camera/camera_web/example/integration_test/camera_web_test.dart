@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:html';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:async/async.dart';
@@ -76,9 +78,9 @@ void main() {
     });
 
     setUpAll(() {
-      registerFallbackValue<MediaStreamTrack>(MockMediaStreamTrack());
-      registerFallbackValue<CameraOptions>(MockCameraOptions());
-      registerFallbackValue<FlashMode>(FlashMode.off);
+      registerFallbackValue(MockMediaStreamTrack());
+      registerFallbackValue(MockCameraOptions());
+      registerFallbackValue(FlashMode.off);
     });
 
     testWidgets('CameraPlugin is the live instance',
@@ -498,7 +500,7 @@ void main() {
               isA<CameraException>().having(
                 (CameraException e) => e.code,
                 'code',
-                exception.code.toString(),
+                exception.code,
               ),
             ),
           );
@@ -759,7 +761,7 @@ void main() {
               isA<PlatformException>().having(
                 (PlatformException e) => e.code,
                 'code',
-                exception.name.toString(),
+                exception.name,
               ),
             ),
           );
@@ -2495,7 +2497,7 @@ void main() {
             equals(
               CameraErrorEvent(
                 cameraId,
-                'Error code: ${CameraErrorCode.abort}, error message: The video element\'s source has not fully loaded.',
+                "Error code: ${CameraErrorCode.abort}, error message: The video element's source has not fully loaded.",
               ),
             ),
           );

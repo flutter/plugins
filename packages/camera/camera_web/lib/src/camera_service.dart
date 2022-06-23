@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:html' as html;
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -82,7 +84,7 @@ class CameraService {
           throw CameraWebException(
             cameraId,
             CameraErrorCode.type,
-            'The camera options are incorrect or attempted'
+            'The camera options are incorrect or attempted '
             'to access the media input from an insecure context.',
           );
         case 'AbortError':

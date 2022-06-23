@@ -4,6 +4,7 @@
 
 export 'camera_description.dart';
 export 'camera_exception.dart';
+export 'camera_image_data.dart';
 export 'exposure_mode.dart';
 export 'flash_mode.dart';
 export 'focus_mode.dart';

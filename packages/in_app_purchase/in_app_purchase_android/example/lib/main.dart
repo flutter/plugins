@@ -37,7 +37,7 @@ const List<String> _kProductIds = <String>[
 
 class _MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  State<_MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<_MyApp> {
@@ -187,8 +187,8 @@ class _MyAppState extends State<_MyApp> {
     final Widget storeHeader = ListTile(
       leading: Icon(_isAvailable ? Icons.check : Icons.block,
           color: _isAvailable ? Colors.green : ThemeData.light().errorColor),
-      title: Text(
-          'The store is ' + (_isAvailable ? 'available' : 'unavailable') + '.'),
+      title:
+          Text('The store is ${_isAvailable ? 'available' : 'unavailable'}.'),
     );
     final List<Widget> children = <Widget>[storeHeader];
 
@@ -264,9 +264,10 @@ class _MyAppState extends State<_MyApp> {
                     },
                     icon: const Icon(Icons.upgrade))
                 : TextButton(
-                    child: Text(productDetails.price),
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.green[800],
+                      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                      // ignore: deprecated_member_use
                       primary: Colors.white,
                     ),
                     onPressed: () {
@@ -297,6 +298,7 @@ class _MyAppState extends State<_MyApp> {
                             purchaseParam: purchaseParam);
                       }
                     },
+                    child: Text(productDetails.price),
                   ));
       },
     ));
@@ -337,9 +339,9 @@ class _MyAppState extends State<_MyApp> {
       const Divider(),
       GridView.count(
         crossAxisCount: 5,
-        children: tokens,
         shrinkWrap: true,
         padding: const EdgeInsets.all(16.0),
+        children: tokens,
       )
     ]));
   }
