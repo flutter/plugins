@@ -35,6 +35,7 @@ class SignInInitParameters {
     this.signInOption = SignInOption.standard,
     this.hostedDomain,
     this.clientId,
+    this.serverClientId,
     this.forceCodeForRefreshToken = false,
   });
 
@@ -49,8 +50,29 @@ class SignInInitParameters {
   /// By default, the list of accounts will not be restricted.
   final String? hostedDomain;
 
-  /// The client ID to use when signing in.
+  /// The OAuth client ID of the app.
+  ///
+  /// The default is null, which means that the client ID will be sourced from a
+  /// configuration file, if required on the current platform. A value specified
+  /// here takes precedence over a value specified in a configuration file.
+  /// See also:
+  ///
+  ///   * [Platform Integration](https://github.com/flutter/plugins/tree/main/packages/google_sign_in/google_sign_in#platform-integration),
+  ///     where you can find the details about the configuration files.
   final String? clientId;
+
+  /// The OAuth client ID of the backend server.
+  ///
+  /// The default is null, which means that the server client ID will be sourced
+  /// from a configuration file, if available and supported on the current
+  /// platform. A value specified here takes precedence over a value specified
+  /// in a configuration file.
+  ///
+  /// See also:
+  ///
+  ///   * [Platform Integration](https://github.com/flutter/plugins/tree/main/packages/google_sign_in/google_sign_in#platform-integration),
+  ///     where you can find the details about the configuration files.
+  final String? serverClientId;
 
   /// If true, ensures the authorization code can be exchanged for an access
   /// token.
