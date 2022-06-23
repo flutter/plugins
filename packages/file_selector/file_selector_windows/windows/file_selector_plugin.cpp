@@ -86,7 +86,7 @@ class DialogWrapper {
 
   // Attempts to set the default folder for the dialog to |path|,
   // if it exists.
-  void SetDefaultFolder(const std::string_view& path) {
+  void SetDefaultFolder(std::string_view path) {
     std::wstring wide_path = Utf16FromUtf8(path);
     IShellItemPtr item;
     last_result_ = SHCreateItemFromParsingName(wide_path.c_str(), nullptr,
@@ -98,13 +98,13 @@ class DialogWrapper {
   }
 
   // Sets the file name that is initially shown in the dialog.
-  void SetFileName(const std::string_view& name) {
+  void SetFileName(std::string_view name) {
     std::wstring wide_name = Utf16FromUtf8(name);
     last_result_ = dialog_controller_->SetFileName(wide_name.c_str());
   }
 
   // Sets the label of the confirmation button.
-  void SetOkButtonLabel(const std::string_view& label) {
+  void SetOkButtonLabel(std::string_view label) {
     std::wstring wide_label = Utf16FromUtf8(label);
     last_result_ = dialog_controller_->SetOkButtonLabel(wide_label.c_str());
   }
