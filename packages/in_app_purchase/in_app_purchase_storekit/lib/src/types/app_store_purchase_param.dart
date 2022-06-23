@@ -31,5 +31,5 @@ class AppStorePurchaseParam extends PurchaseParam {
   final bool simulatesAskToBuyInSandbox;
 
   /// Quantity of the product user requested to buy.
-  int quantity;
+  final int quantity;
 }
