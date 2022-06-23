@@ -208,8 +208,7 @@ class DialogWrapper {
 ErrorOr<flutter::EncodableList> ShowDialog(
     const FileDialogControllerFactory& dialog_factory, HWND parent_window,
     DialogMode mode, const SelectionOptions& options,
-    const std::string* initial_directory,
-    const std::string* suggested_name,
+    const std::string* initial_directory, const std::string* suggested_name,
     const std::string* confirm_label) {
   IID dialog_type =
       mode == DialogMode::save ? CLSID_FileSaveDialog : CLSID_FileOpenDialog;
@@ -245,9 +244,13 @@ ErrorOr<flutter::EncodableList> ShowDialog(
   }
 
   std::optional<EncodableList> files = dialog.Show(parent_window);
-  if (!files && dialog.last_result() != HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
-    return FlutterError("System error", "Could not show dialog",
-                        EncodableValue(dialog.last_result()));
+  if (!files) {
+    if (dialog.last_result() != HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+      return FlutterError("System error", "Could not show dialog",
+                          EncodableValue(dialog.last_result()));
+    } else {
+      return EncodableList();
+    }
   }
   return std::move(files.value());
 }
@@ -279,21 +282,16 @@ FileSelectorPlugin::FileSelectorPlugin(
 
 FileSelectorPlugin::~FileSelectorPlugin() = default;
 
-ErrorOr<flutter::EncodableList>
-FileSelectorPlugin::ShowOpenDialog(
-    const SelectionOptions& options,
-    const std::string* initialDirectory,
+ErrorOr<flutter::EncodableList> FileSelectorPlugin::ShowOpenDialog(
+    const SelectionOptions& options, const std::string* initialDirectory,
     const std::string* confirmButtonText) {
   return ShowDialog(*controller_factory_, get_root_window_(), DialogMode::open,
                     options, initialDirectory, nullptr, confirmButtonText);
 }
 
-ErrorOr<flutter::EncodableList>
-FileSelectorPlugin::ShowSaveDialog(
-    const SelectionOptions& options,
-    const std::string* initialDirectory,
-    const std::string* suggestedName,
-    const std::string* confirmButtonText) {
+ErrorOr<flutter::EncodableList> FileSelectorPlugin::ShowSaveDialog(
+    const SelectionOptions& options, const std::string* initialDirectory,
+    const std::string* suggestedName, const std::string* confirmButtonText) {
   return ShowDialog(*controller_factory_, get_root_window_(), DialogMode::save,
                     options, initialDirectory, suggestedName,
                     confirmButtonText);
