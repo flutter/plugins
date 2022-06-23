@@ -28,10 +28,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-# FOR TESTING ONLY. DO NOT MERGE.
-dependency_overrides:
-  google_sign_in_android:
-    path: ../../../google_sign_in/google_sign_in_android
-  google_sign_in_platform_interface:
-    path: ../../../google_sign_in/google_sign_in_platform_interface
