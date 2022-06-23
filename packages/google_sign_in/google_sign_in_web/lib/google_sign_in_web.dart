@@ -41,10 +41,10 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   late Future<void> _isAuthInitialized;
   bool _isInitCalled = false;
 
-  // This method throws if initWithParams hasn't been called at some point in
-  // the past. It is used by the [initialized] getter to ensure that users can't
-  // await on a Future that will never resolve.
-  void _assertIsInitializeCalled() {
+  // This method throws if init or initWithParams hasn't been called at some
+  // point in the past. It is used by the [initialized] getter to ensure that
+  // users can't await on a Future that will never resolve.
+  void _assertIsInitCalled() {
     if (!_isInitCalled) {
       throw StateError(
         'GoogleSignInPlugin::init() or GoogleSignInPlugin::initWithParams() '
@@ -56,7 +56,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   /// A future that resolves when both GAPI and Auth2 have been correctly initialized.
   @visibleForTesting
   Future<void> get initialized {
-    _assertIsInitializeCalled();
+    _assertIsInitCalled();
     return Future.wait(<Future<void>>[_isGapiInitialized, _isAuthInitialized]);
   }
 
@@ -89,7 +89,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         appClientId != null,
         'ClientID not set. Either set it on a '
         '<meta name="google-signin-client_id" content="CLIENT_ID" /> tag,'
-        ' or pass clientId when calling initialize()');
+        ' or pass clientId when initializing GoogleSignIn');
 
     assert(params.serverClientId == null,
         'serverClientId is not supported on Web.');

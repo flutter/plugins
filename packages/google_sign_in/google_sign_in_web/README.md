@@ -63,7 +63,10 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 ```
+
 [Full list of available scopes](https://developers.google.com/identity/protocols/googlescopes).
+
+Note that the `serverClientId` parameter of the `GoogleSignIn` constructor is not supported on Web.
 
 You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
 
