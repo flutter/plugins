@@ -14,6 +14,15 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 
 static NSString *const kServerClientIdKey = @"SERVER_CLIENT_ID";
 
+static NSDictionary<NSString *, id> *loadGoogleServiceInfo() {
+  NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
+                                                        ofType:@"plist"];
+  if (plistPath) {
+    return [[NSDictionary alloc] initWithContentsOfFile:plistPath];
+  }
+  return nil;
+}
+
 // These error codes must match with ones declared on Android and Dart sides.
 static NSString *const kErrorReasonSignInRequired = @"sign_in_required";
 static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
@@ -52,6 +61,9 @@ static FlutterError *getFlutterError(NSError *error) {
 // sign in, sign out, and requesting additional scopes.
 @property(strong, readonly) GIDSignIn *signIn;
 
+// The contents of GoogleService-Info.plist, if it exists.
+@property(strong, nullable) NSDictionary<NSString *, id> *googleServiceProperties;
+
 // Redeclared as not a designated initializer.
 - (instancetype)init;
 
@@ -73,9 +85,15 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (instancetype)initWithSignIn:(GIDSignIn *)signIn {
+  return [self initWithSignIn:signIn withGoogleServiceProperties:loadGoogleServiceInfo()];
+}
+
+- (instancetype)initWithSignIn:(GIDSignIn *)signIn
+    withGoogleServiceProperties:(nullable NSDictionary<NSString *, id> *)googleServiceProperties {
   self = [super init];
   if (self) {
     _signIn = signIn;
+    _googleServiceProperties = googleServiceProperties;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -91,6 +109,7 @@ static FlutterError *getFlutterError(NSError *error) {
   if ([call.method isEqualToString:@"init"]) {
     GIDConfiguration *configuration =
         [self configurationWithClientIdArgument:call.arguments[@"clientId"]
+                         serverClientIdArgument:call.arguments[@"serverClientId"]
                            hostedDomainArgument:call.arguments[@"hostedDomain"]];
     if (configuration != nil) {
       if ([call.arguments[@"scopes"] isKindOfClass:[NSArray class]]) {
@@ -100,7 +119,8 @@ static FlutterError *getFlutterError(NSError *error) {
       result(nil);
     } else {
       result([FlutterError errorWithCode:@"missing-config"
-                                 message:@"GoogleService-Info.plist file not found"
+                                 message:@"GoogleService-Info.plist file not found and clientId "
+                                         @"was not provided programmatically."
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
@@ -113,6 +133,7 @@ static FlutterError *getFlutterError(NSError *error) {
     @try {
       GIDConfiguration *configuration = self.configuration
                                             ?: [self configurationWithClientIdArgument:nil
+                                                                serverClientIdArgument:nil
                                                                   hostedDomainArgument:nil];
       [self.signIn signInWithConfiguration:configuration
                   presentingViewController:[self topViewController]
@@ -198,25 +219,32 @@ static FlutterError *getFlutterError(NSError *error) {
 
 #pragma mark - private methods
 
-/// @return @c nil if GoogleService-Info.plist not found.
+/// @return @c nil if GoogleService-Info.plist not found and clientId is not provided.
 - (GIDConfiguration *)configurationWithClientIdArgument:(id)clientIDArg
+                                 serverClientIdArgument:(id)serverClientIDArg
                                    hostedDomainArgument:(id)hostedDomainArg {
-  NSString *plistPath = [NSBundle.mainBundle pathForResource:@"GoogleService-Info" ofType:@"plist"];
-  if (plistPath == nil) {
+  NSString *clientID;
+  BOOL hasDynamicClientId = [clientIDArg isKindOfClass:[NSString class]];
+  if (hasDynamicClientId) {
+    clientID = clientIDArg;
+  } else if (self.googleServiceProperties) {
+    clientID = self.googleServiceProperties[kClientIdKey];
+  } else {
+    // We couldn't resolve a clientId, without which we cannot create a GIDConfiguration.
     return nil;
   }
 
-  NSDictionary<NSString *, id> *plist = [[NSDictionary alloc] initWithContentsOfFile:plistPath];
-
-  BOOL hasDynamicClientId = [clientIDArg isKindOfClass:[NSString class]];
-  NSString *clientID = hasDynamicClientId ? clientIDArg : plist[kClientIdKey];
+  BOOL hasDynamicServerClientId = [serverClientIDArg isKindOfClass:[NSString class]];
+  NSString *serverClientID = hasDynamicServerClientId
+                                 ? serverClientIDArg
+                                 : self.googleServiceProperties[kServerClientIdKey];
 
   NSString *hostedDomain = nil;
   if (hostedDomainArg != [NSNull null]) {
     hostedDomain = hostedDomainArg;
   }
   return [[GIDConfiguration alloc] initWithClientID:clientID
-                                     serverClientID:plist[kServerClientIdKey]
+                                     serverClientID:serverClientID
                                        hostedDomain:hostedDomain
                                         openIDRealm:nil];
 }

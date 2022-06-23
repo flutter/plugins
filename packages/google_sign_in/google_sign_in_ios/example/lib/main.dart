@@ -31,7 +31,8 @@ class SignInDemo extends StatefulWidget {
 class SignInDemoState extends State<SignInDemo> {
   GoogleSignInUserData? _currentUser;
   String _contactText = '';
-  // Future that completes when `init` has completed on the sign in instance.
+  // Future that completes when `initWithParams` has completed on the sign in
+  // instance.
   Future<void>? _initialization;
 
   @override
@@ -41,14 +42,16 @@ class SignInDemoState extends State<SignInDemo> {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.init(
+    return _initialization ??=
+        GoogleSignInPlatform.instance.initWithParams(const SignInInitParameters(
       scopes: <String>[
         'email',
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
-    )..catchError((dynamic _) {
-        _initialization = null;
-      });
+    ))
+          ..catchError((dynamic _) {
+            _initialization = null;
+          });
   }
 
   void _setUser(GoogleSignInUserData? user) {

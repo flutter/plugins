@@ -16,7 +16,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  google_sign_in_platform_interface: ^2.1.0
+  google_sign_in_platform_interface: ^2.2.0
   http: ^0.13.0
 
 dev_dependencies:
@@ -27,3 +27,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  google_sign_in_ios:
+    path: ../../../google_sign_in/google_sign_in_ios
+  google_sign_in_platform_interface:
+    path: ../../../google_sign_in/google_sign_in_platform_interface

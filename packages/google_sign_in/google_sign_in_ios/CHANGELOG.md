@@ -1,3 +1,8 @@
+## 5.4.0
+
+* Adds support for `serverClientId` configuration option.
+* Makes `Google-Services.info` file optional.
+
 ## 5.3.1
 
 * Suppresses warnings for pre-iOS-13 codepaths.
@@ -17,4 +22,4 @@
 
 ## 5.2.5
 
-* Splits from `video_player` as a federated implementation.
+* Splits from `google_sign_in` as a federated implementation.
