@@ -1,3 +1,7 @@
+## 0.8.3
+
+* Converts the method channel to Pigeon.
+
 ## 0.8.2
 
 * Moves source to flutter/plugins, and restructures to allow for unit testing.
