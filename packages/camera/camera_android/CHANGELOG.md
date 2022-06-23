@@ -1,3 +1,7 @@
+## 0.9.8+3
+
+* Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
+
 ## 0.9.8+2
 
 * Fixes exception in registerWith caused by the switch to an in-package method channel.
