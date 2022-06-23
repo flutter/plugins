@@ -35,3 +35,32 @@
                savedPathBlock:(void (^)(NSString *))savedPathBlock;
 
 @end
+
+/*!
+ @class FLTPHPickerSaveImageToPathOperationFactory
+
+ @brief The FLTPHPickerSaveImageToPathOperationFactory class
+
+ @discussion This class was implemented to assist in creating instances of the
+ FLTPHPickerSaveItemToPathOperation class. This factoy is required for the operation's creation to
+ be stubbable in unit tests.
+
+ @superclass SuperClass: NSObject\n
+ @helps It helps FLTImagePickerPlugin class.
+ */
+@interface FLTPHPickerSaveItemToPathOperationFactory : NSObject
+
++ (FLTPHPickerSaveItemToPathOperation *)operationWithResult:(PHPickerResult *)result
+                                             maxImageHeight:(NSNumber *)maxImageHeight
+                                              maxImageWidth:(NSNumber *)maxImageWidth
+                                        desiredImageQuality:(NSNumber *)desiredImageQuality
+                                             savedPathBlock:(void (^)(NSString *))savedPathBlock
+    API_AVAILABLE(ios(14));
+
++ (FLTPHPickerSaveItemToPathOperation *)operationWithAsset:(PHAsset *)asset
+                                            maxImageHeight:(NSNumber *)maxImageHeight
+                                             maxImageWidth:(NSNumber *)maxImageWidth
+                                       desiredImageQuality:(NSNumber *)desiredImageQuality
+                                            savedPathBlock:(void (^)(NSString *))savedPathBlock;
+
+@end

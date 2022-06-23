@@ -5,6 +5,7 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "FLTPHPickerSaveItemToPathOperation.h"
+#import "FLTPHPickerSaveItemToPathOperation_Test.h"
 
 API_AVAILABLE(ios(14))
 @interface FLTPHPickerSaveItemToPathOperation ()
@@ -52,7 +53,7 @@ typedef void (^GetSavedPath)(NSString *);
                maxImageHeight:(NSNumber *)maxImageHeight
                 maxImageWidth:(NSNumber *)maxImageWidth
           desiredImageQuality:(NSNumber *)desiredImageQuality
-               savedPathBlock:(GetSavedPath)savedPathBlock API_AVAILABLE(ios(14)) {
+               savedPathBlock:(GetSavedPath)savedPathBlock {
   if (self = [super init]) {
     if (asset) {
       self.asset = asset;
@@ -96,9 +97,9 @@ typedef void (^GetSavedPath)(NSString *);
 }
 
 - (void)completeOperationWithPath:(NSString *)savedPath {
+  getSavedPath(savedPath);
   [self setExecuting:NO];
   [self setFinished:YES];
-  getSavedPath(savedPath);
 }
 
 - (void)start {
@@ -270,4 +271,31 @@ typedef void (^GetSavedPath)(NSString *);
   }
 }
 
+@end
+
+@implementation FLTPHPickerSaveItemToPathOperationFactory
++ (FLTPHPickerSaveItemToPathOperation *)operationWithResult:(PHPickerResult *)result
+                                             maxImageHeight:(NSNumber *)maxImageHeight
+                                              maxImageWidth:(NSNumber *)maxImageWidth
+                                        desiredImageQuality:(NSNumber *)desiredImageQuality
+                                             savedPathBlock:(GetSavedPath)savedPathBlock
+    API_AVAILABLE(ios(14)) {
+  return [[FLTPHPickerSaveItemToPathOperation alloc] initWithResult:result
+                                                     maxImageHeight:maxImageHeight
+                                                      maxImageWidth:maxImageWidth
+                                                desiredImageQuality:desiredImageQuality
+                                                     savedPathBlock:savedPathBlock];
+}
+
++ (FLTPHPickerSaveItemToPathOperation *)operationWithAsset:(PHAsset *)asset
+                                            maxImageHeight:(NSNumber *)maxImageHeight
+                                             maxImageWidth:(NSNumber *)maxImageWidth
+                                       desiredImageQuality:(NSNumber *)desiredImageQuality
+                                            savedPathBlock:(GetSavedPath)savedPathBlock {
+  return [[FLTPHPickerSaveItemToPathOperation alloc] initWithAsset:asset
+                                                    maxImageHeight:maxImageHeight
+                                                     maxImageWidth:maxImageWidth
+                                               desiredImageQuality:desiredImageQuality
+                                                    savedPathBlock:savedPathBlock];
+}
 @end

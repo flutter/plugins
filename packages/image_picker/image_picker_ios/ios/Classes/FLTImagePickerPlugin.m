@@ -236,13 +236,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSMutableArray *pathList = [self createNSMutableArrayWithSize:assets.count];
     for (int i = 0; i < assets.count; i++) {
       PHAsset *asset = assets[i];
-      FLTPHPickerSaveItemToPathOperation *operation = [[FLTPHPickerSaveItemToPathOperation alloc]
-                initWithAsset:asset
+      int l = i;
+      FLTPHPickerSaveItemToPathOperation *operation = [FLTPHPickerSaveItemToPathOperationFactory
+           operationWithAsset:asset
                maxImageHeight:maxSize.height
                 maxImageWidth:maxSize.width
           desiredImageQuality:[self getDesiredImageQuality:imageQuality]
                savedPathBlock:^(NSString *savedPath) {
-                 pathList[i] = savedPath;
+                 pathList[l] = savedPath;
                }];
       [operationQueue addOperation:operation];
     }
@@ -515,7 +516,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   [picker dismissViewControllerAnimated:YES completion:nil];
   if (results.count == 0) {
     [self sendCallResultWithSavedPathList:nil];
-    retur
+    return;
   }
   dispatch_queue_t backgroundQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);

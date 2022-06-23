@@ -76,109 +76,27 @@
 }
 
 - (void)testSaveWebPImageFromAsset {
-    id imageManagerMock = OCMClassMock([PHImageManager class]);
-    OCMStub([imageManagerMock defaultManager]).andReturn(imageManagerMock);
-    NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"webpImage"
-                                                               withExtension:@"webp"];
-    UIImage* image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageURL]];
-    OCMStub([imageManagerMock requestImageForAsset:[OCMArg anyPointer]
-                                        targetSize:CGSizeMake(0,0)
-                                       contentMode:PHImageContentModeDefault
-                                           options:nil
-                                     resultHandler:([OCMArg invokeBlockWithArgs:OCMOCK_VALUE(image), OCMOCK_VALUE([NSNull null]), nil])
-            ]);
-    PHAsset *asset = OCMClassMock([PHAsset class]);
-    OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeImage);
-
-  [self verifySavingItemWithAsset:asset];
+  [self saveImageFromAssetForResource:@"webpImage" withExtension:@"webp"];
 }
 
 - (void)testSavePNGImageFromAsset {
-    id imageManagerMock = OCMClassMock([PHImageManager class]);
-    OCMStub([imageManagerMock defaultManager]).andReturn(imageManagerMock);
-    NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"pngImage"
-                                                               withExtension:@"png"];
-    UIImage* image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageURL]];
-    OCMStub([imageManagerMock requestImageForAsset:[OCMArg anyPointer]
-                                        targetSize:CGSizeMake(0,0)
-                                       contentMode:PHImageContentModeDefault
-                                           options:nil
-                                     resultHandler:([OCMArg invokeBlockWithArgs:image, nil, nil])
-            ]);
-    PHAsset *asset = OCMClassMock([PHAsset class]);
-    OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeImage);
-
-  [self verifySavingItemWithAsset:asset];
+  [self saveImageFromAssetForResource:@"pngImage" withExtension:@"png"];
 }
 
 - (void)testSaveJPGImageFromAsset {
-    id imageManagerMock = OCMClassMock([PHImageManager class]);
-    OCMStub([imageManagerMock defaultManager]).andReturn(imageManagerMock);
-    NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"jpgImage"
-                                                               withExtension:@"jpg"];
-    UIImage* image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageURL]];
-    OCMStub([imageManagerMock requestImageForAsset:[OCMArg anyPointer]
-                                        targetSize:CGSizeMake(0,0)
-                                       contentMode:PHImageContentModeDefault
-                                           options:nil
-                                     resultHandler:([OCMArg invokeBlockWithArgs:image, nil, nil])
-            ]);
-    PHAsset *asset = OCMClassMock([PHAsset class]);
-    OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeImage);
-
-  [self verifySavingItemWithAsset:asset];
+  [self saveImageFromAssetForResource:@"jpgImage" withExtension:@"jpg"];
 }
 
-- (void)testSaveGIFImageFromAsset{
-    id imageManagerMock = OCMClassMock([PHImageManager class]);
-    OCMStub([imageManagerMock defaultManager]).andReturn(imageManagerMock);
-    NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"gifImage"
-                                                               withExtension:@"gif"];
-    UIImage* image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageURL]];
-    OCMStub([imageManagerMock requestImageForAsset:[OCMArg anyPointer]
-                                        targetSize:CGSizeMake(0,0)
-                                       contentMode:PHImageContentModeDefault
-                                           options:nil
-                                     resultHandler:([OCMArg invokeBlockWithArgs:image, nil, nil])
-            ]);
-    PHAsset *asset = OCMClassMock([PHAsset class]);
-    OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeImage);
-
-  [self verifySavingItemWithAsset:asset];
+- (void)testSaveGIFImageFromAsset {
+  [self saveImageFromAssetForResource:@"gifImage" withExtension:@"gif"];
 }
 
 - (void)testSaveMP4VideoFromAsset {
-    id imageManagerMock = OCMClassMock([PHImageManager class]);
-    OCMStub([imageManagerMock defaultManager]).andReturn(imageManagerMock);
-    NSURL *videoURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"mp4Video"
-                                                               withExtension:@"mp4"];
-    AVURLAsset* urlAsset = OCMClassMock([AVURLAsset class]);
-    OCMStub([urlAsset URL]).andReturn(videoURL);
-    OCMStub([imageManagerMock requestAVAssetForVideo:[OCMArg anyPointer]
-                                             options:[OCMArg anyPointer]
-                                     resultHandler:([OCMArg invokeBlockWithArgs:urlAsset, nil, nil, nil])
-            ]);
-    PHAsset *asset = OCMClassMock([PHAsset class]);
-    OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeVideo);
-
-  [self verifySavingItemWithAsset:asset];
+  [self saveVideoFromAssetForResource:@"mp4Video" withExtension:@"mp4"];
 }
 
 - (void)testSaveMOVVideoFromAsset {
-    id imageManagerMock = OCMClassMock([PHImageManager class]);
-    OCMStub([imageManagerMock defaultManager]).andReturn(imageManagerMock);
-    NSURL *videoURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"movVideo"
-                                                               withExtension:@"mov"];
-    AVURLAsset* urlAsset = OCMClassMock([AVURLAsset class]);
-    OCMStub([urlAsset URL]).andReturn(videoURL);
-    OCMStub([imageManagerMock requestAVAssetForVideo:[OCMArg anyPointer]
-                                             options:[OCMArg anyPointer]
-                                     resultHandler:([OCMArg invokeBlockWithArgs:urlAsset, nil, nil, nil])
-            ]);
-    PHAsset *asset = OCMClassMock([PHAsset class]);
-    OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeVideo);
-
-  [self verifySavingItemWithAsset:asset];
+  [self saveVideoFromAssetForResource:@"movVideo" withExtension:@"mov"];
 }
 
 /**
@@ -235,7 +153,7 @@
   XCTestExpectation *pathExpectation = [self expectationWithDescription:@"Path was created"];
 
   FLTPHPickerSaveItemToPathOperation *operation = [[FLTPHPickerSaveItemToPathOperation alloc]
-           initWithAsset:asset
+            initWithAsset:asset
            maxImageHeight:@100
             maxImageWidth:@100
       desiredImageQuality:@100
@@ -247,6 +165,65 @@
 
   [operation start];
   [self waitForExpectations:@[ pathExpectation ] timeout:30];
+}
+
+- (void)saveImageFromAssetForResource:(NSString *)resource withExtension:(NSString *)withExtension {
+  id imageManagerMock = OCMClassMock([PHImageManager class]);
+  OCMStub(ClassMethod([imageManagerMock defaultManager])).andReturn(imageManagerMock);
+  NSURL *imageURL = [[NSBundle bundleForClass:[self class]] URLForResource:resource
+                                                             withExtension:withExtension];
+  NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+  UIImage *image = [UIImage imageWithData:imageData];
+  OCMStub([imageManagerMock
+      requestImageForAsset:[OCMArg any]
+                targetSize:CGSizeMake(0, 0)
+               contentMode:PHImageContentModeDefault
+                   options:nil
+             resultHandler:([OCMArg invokeBlockWithArgs:image, OCMOCK_VALUE(nil), nil])]);
+
+  PHAsset *asset = OCMClassMock([PHAsset class]);
+  OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeImage);
+
+  if (@available(iOS 13, *)) {
+    OCMStub([imageManagerMock
+        requestImageDataAndOrientationForAsset:asset
+                                       options:nil
+                                 resultHandler:([OCMArg invokeBlockWithArgs:
+                                                            imageData, OCMOCK_VALUE(nil),
+                                                            OCMOCK_VALUE(
+                                                                kCGImagePropertyOrientationDown),
+                                                            OCMOCK_VALUE(nil), nil])]);
+  } else {
+    OCMStub([imageManagerMock
+        requestImageDataForAsset:asset
+                         options:nil
+                   resultHandler:([OCMArg invokeBlockWithArgs:imageData, OCMOCK_VALUE(nil),
+                                                              OCMOCK_VALUE(
+                                                                  kCGImagePropertyOrientationDown),
+                                                              OCMOCK_VALUE(nil), nil])]);
+  }
+
+  [self verifySavingItemWithAsset:asset];
+}
+
+- (void)saveVideoFromAssetForResource:(NSString *)resource withExtension:(NSString *)withExtension {
+  id imageManagerMock = OCMClassMock([PHImageManager class]);
+  OCMStub(ClassMethod([imageManagerMock defaultManager])).andReturn(imageManagerMock);
+  NSURL *videoURL = [[NSBundle bundleForClass:[self class]] URLForResource:resource
+                                                             withExtension:withExtension];
+  AVURLAsset *urlAsset = OCMClassMock([AVURLAsset class]);
+  OCMStub([urlAsset URL]).andReturn(videoURL);
+
+  OCMStub([imageManagerMock
+      requestAVAssetForVideo:[OCMArg any]
+                     options:[OCMArg any]
+               resultHandler:([OCMArg invokeBlockWithArgs:urlAsset, OCMOCK_VALUE(nil),
+                                                          OCMOCK_VALUE(nil), nil])]);
+
+  PHAsset *asset = OCMClassMock([PHAsset class]);
+  OCMStub([asset mediaType]).andReturn(PHAssetMediaTypeVideo);
+
+  [self verifySavingItemWithAsset:asset];
 }
 
 @end
