@@ -1,3 +1,7 @@
+## 2.0.11
+
+* Lower minimim version back to 2.8.
+
 ## 2.0.10
 
 * Switches backend to pigeon.

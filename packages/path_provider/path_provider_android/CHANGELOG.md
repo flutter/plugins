@@ -1,3 +1,7 @@
+## 2.0.16
+
+* Lower minimim version back to 2.8.1.
+
 ## 2.0.15
 
 * Switches the medium from MethodChannels to Pigeon.
