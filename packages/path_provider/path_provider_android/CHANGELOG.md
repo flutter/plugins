@@ -1,3 +1,7 @@
+## 2.0.16
+
+* Fixes bug with `getExternalStoragePaths(null)`.
+
 ## 2.0.15
 
 * Switches the medium from MethodChannels to Pigeon.
