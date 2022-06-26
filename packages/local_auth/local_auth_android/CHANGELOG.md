@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Fixes show dialog when biometrics is not enrolled.
+
 ## 1.0.4
 
 * Minor fixes for new analysis options.
