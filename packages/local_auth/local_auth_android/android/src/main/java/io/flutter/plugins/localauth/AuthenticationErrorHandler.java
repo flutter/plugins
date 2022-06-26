@@ -17,6 +17,9 @@ import androidx.fragment.app.FragmentActivity;
 import io.flutter.plugin.common.MethodCall;
 
 class AuthenticationErrorHandler {
+  /**
+   * Handling the error when the users device does not have hardware support for biometrics.
+   */
   void handleCredentialsNotAvailableError(
       final FragmentActivity activity,
       boolean canTryUpdateSettings,
