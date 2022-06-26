@@ -114,10 +114,8 @@ void main() {
     final RepositoryPackage mainPackage = createFakePackage('a', packagesDir);
     final Directory otherPackagesDir =
         mainPackage.directory.childDirectory('other_packages');
-    final RepositoryPackage subpackage1 =
-        createFakePackage('subpackage1', otherPackagesDir);
-    final RepositoryPackage subpackage2 =
-        createFakePackage('subpackage2', otherPackagesDir);
+    createFakePackage('subpackage1', otherPackagesDir);
+    createFakePackage('subpackage2', otherPackagesDir);
 
     await runCapturingPrint(runner, <String>['analyze', '--lib-only']);
 

@@ -9,23 +9,21 @@ import 'package:yaml_edit/yaml_edit.dart';
 import 'common/package_looping_command.dart';
 import 'common/repository_package.dart';
 
-/// A command to remove dependencies that aren't used by the library code
-/// itself, such as `build_runner` and `pigeon`.
+/// A command to remove dev_dependencies, wich are not used by package clients.
 ///
 /// This is intended for use with legacy Flutter version testing, to allow
-/// running analysis or tests with versions that are supported for clients of
-/// the library, but not for development of the library.
-class TrimDevDependenciesCommand extends PackageLoopingCommand {
+/// running analysis (with --lib-only) with versions that are supported for
+/// clients of the library, but not for development of the library.
+class RemoveDevDependenciesCommand extends PackageLoopingCommand {
   /// Creates a publish metadata updater command instance.
-  TrimDevDependenciesCommand(Directory packagesDir) : super(packagesDir);
+  RemoveDevDependenciesCommand(Directory packagesDir) : super(packagesDir);
 
   @override
-  final String name = 'trim-dev-dependencies';
+  final String name = 'remove-dev-dependencies';
 
   @override
-  final String description = 'Removes a known set of packages that are never '
-      'included by Dart code, but used in plugin development in the '
-      'repository, to allow more legacy testing.';
+  final String description = 'Removes any dev_dependencies section from a '
+      'package, to allow more legacy testing.';
 
   @override
   bool get hasLongOutput => false;
@@ -36,12 +34,7 @@ class TrimDevDependenciesCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    const Set<String> targetDependencies = <String>{
-      'build_runner',
-      'pigeon',
-    };
-
-    bool removedPackage = false;
+    bool changed = false;
     final YamlEditor editablePubspec =
         YamlEditor(package.pubspecFile.readAsStringSync());
     const String devDependenciesKey = 'dev_dependencies';
@@ -49,20 +42,16 @@ class TrimDevDependenciesCommand extends PackageLoopingCommand {
     final YamlMap? devDependencies =
         (root as YamlMap)[devDependenciesKey] as YamlMap?;
     if (devDependencies != null) {
-      for (final String dependency in targetDependencies) {
-        if (devDependencies[dependency] != null) {
-          removedPackage = true;
-          print('${indentation}Removed $dependency');
-          editablePubspec.remove(<String>[devDependenciesKey, dependency]);
-        }
-      }
+      changed = true;
+      print('${indentation}Removed dev_dependencies');
+      editablePubspec.remove(<String>[devDependenciesKey]);
     }
 
-    if (removedPackage) {
+    if (changed) {
       package.pubspecFile.writeAsStringSync(editablePubspec.toString());
     }
 
-    return removedPackage
+    return changed
         ? PackageResult.success()
         : PackageResult.skip('Nothing to remove.');
   }

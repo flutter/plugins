@@ -28,8 +28,8 @@ import 'publish_check_command.dart';
 import 'publish_plugin_command.dart';
 import 'pubspec_check_command.dart';
 import 'readme_check_command.dart';
+import 'remove_dev_dependencies.dart';
 import 'test_command.dart';
-import 'trim_dev_dependencies.dart';
 import 'update_excerpts_command.dart';
 import 'update_release_info_command.dart';
 import 'version_check_command.dart';
@@ -72,8 +72,8 @@ void main(List<String> args) {
     ..addCommand(PublishPluginCommand(packagesDir))
     ..addCommand(PubspecCheckCommand(packagesDir))
     ..addCommand(ReadmeCheckCommand(packagesDir))
+    ..addCommand(RemoveDevDependenciesCommand(packagesDir))
     ..addCommand(TestCommand(packagesDir))
-    ..addCommand(TrimDevDependenciesCommand(packagesDir))
     ..addCommand(UpdateExcerptsCommand(packagesDir))
     ..addCommand(UpdateReleaseInfoCommand(packagesDir))
     ..addCommand(VersionCheckCommand(packagesDir))

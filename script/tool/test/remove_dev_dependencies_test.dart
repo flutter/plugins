@@ -5,7 +5,7 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_plugin_tools/src/trim_dev_dependencies.dart';
+import 'package:flutter_plugin_tools/src/remove_dev_dependencies.dart';
 import 'package:test/test.dart';
 
 import 'util.dart';
@@ -19,7 +19,7 @@ void main() {
     fileSystem = MemoryFileSystem();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
 
-    final TrimDevDependenciesCommand command = TrimDevDependenciesCommand(
+    final RemoveDevDependenciesCommand command = RemoveDevDependenciesCommand(
       packagesDir,
     );
     runner = CommandRunner<void>('trim_dev_dependencies_command',
@@ -39,7 +39,7 @@ $addition
     createFakePackage('a_package', packagesDir, version: '1.0.0');
 
     final List<String> output =
-        await runCapturingPrint(runner, <String>['trim-dev-dependencies']);
+        await runCapturingPrint(runner, <String>['remove-dev-dependencies']);
 
     expect(
       output,
@@ -49,48 +49,29 @@ $addition
     );
   });
 
-  test('removes build_runner', () async {
+  test('removes dev_dependencies', () async {
     final RepositoryPackage package =
         createFakePackage('a_package', packagesDir, version: '1.0.0');
 
     _addToPubspec(package, '''
 dev_dependencies:
-  build_runner: ^2.1.8
-  something_else: ^1.0.0
+  some_dependency: ^2.1.8
+  another_dependency: ^1.0.0
 ''');
 
     final List<String> output =
-        await runCapturingPrint(runner, <String>['trim-dev-dependencies']);
+        await runCapturingPrint(runner, <String>['remove-dev-dependencies']);
 
     expect(
       output,
       containsAllInOrder(<Matcher>[
-        contains('Removed build_runner'),
+        contains('Removed dev_dependencies'),
       ]),
     );
-    expect(package.pubspecFile.readAsStringSync(), contains('something_else:'));
-  });
-
-  test('removes pigeon', () async {
-    final RepositoryPackage package =
-        createFakePackage('a_package', packagesDir, version: '1.0.0');
-
-    _addToPubspec(package, '''
-dev_dependencies:
-  pigeon: ^3.2.0
-  something_else: ^1.0.0
-''');
-
-    final List<String> output =
-        await runCapturingPrint(runner, <String>['trim-dev-dependencies']);
-
-    expect(
-      output,
-      containsAllInOrder(<Matcher>[
-        contains('Removed pigeon'),
-      ]),
-    );
-    expect(package.pubspecFile.readAsStringSync(), contains('something_else:'));
+    expect(package.pubspecFile.readAsStringSync(),
+        isNot(contains('some_dependency:')));
+    expect(package.pubspecFile.readAsStringSync(),
+        isNot(contains('another_dependency:')));
   });
 
   test('removes from examples', () async {
@@ -100,19 +81,22 @@ dev_dependencies:
     final RepositoryPackage example = package.getExamples().first;
     _addToPubspec(example, '''
 dev_dependencies:
-  pigeon: ^3.2.0
-  something_else: ^1.0.0
+  some_dependency: ^2.1.8
+  another_dependency: ^1.0.0
 ''');
 
     final List<String> output =
-        await runCapturingPrint(runner, <String>['trim-dev-dependencies']);
+        await runCapturingPrint(runner, <String>['remove-dev-dependencies']);
 
     expect(
       output,
       containsAllInOrder(<Matcher>[
-        contains('Removed pigeon'),
+        contains('Removed dev_dependencies'),
       ]),
     );
-    expect(example.pubspecFile.readAsStringSync(), contains('something_else:'));
+    expect(package.pubspecFile.readAsStringSync(),
+        isNot(contains('some_dependency:')));
+    expect(package.pubspecFile.readAsStringSync(),
+        isNot(contains('another_dependency:')));
   });
 }

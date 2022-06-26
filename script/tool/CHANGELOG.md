@@ -4,7 +4,7 @@
 - `drive-examples` now validates files to ensure that they don't accidentally
   use `test(...)`.
 - Adds a new `dependabot-check` command to ensure complete Dependabot coverage.
-- Adds a new `trim-dev-dependencies` command to remove some `dev_dependencies`
+- Adds a new `remove-dev-dependencies` command to remove `dev_dependencies`
   entries to make legacy version analysis possible in more cases.
 - Adds a `--lib-only` option to `analyze` to allow only analyzing the client
   parts of a library for legacy verison compatibility.
