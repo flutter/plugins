@@ -15,7 +15,7 @@ import java.util.Objects;
 
 /**
  * Represents a response of a <a
- * href="https://github.com/dart-lang/sdk/blob/master/runtime/vm/service/service.md#getvm">getVM()</a>
+ * href="https://github.com/dart-lang/sdk/blob/main/runtime/vm/service/service.md#getvm">getVM()</a>
  * request.
  */
 public class GetVmResponse {

@@ -5,8 +5,77 @@
 #import "FWFObjectHostApi.h"
 #import "FWFDataConverters.h"
 
+@interface FWFObjectFlutterApiImpl ()
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
+@end
+
+@implementation FWFObjectFlutterApiImpl
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self initWithBinaryMessenger:binaryMessenger];
+  if (self) {
+    _instanceManager = instanceManager;
+  }
+  return self;
+}
+
+- (long)identifierForObject:(NSObject *)instance {
+  return [self.instanceManager identifierWithStrongReferenceForInstance:instance];
+}
+
+- (void)observeValueForObject:(NSObject *)instance
+                      keyPath:(NSString *)keyPath
+                       object:(NSObject *)object
+                       change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                   completion:(void (^)(NSError *_Nullable))completion {
+  NSMutableArray<FWFNSKeyValueChangeKeyEnumData *> *changeKeys = [NSMutableArray array];
+  NSMutableArray<id> *changeValues = [NSMutableArray array];
+
+  [change enumerateKeysAndObjectsUsingBlock:^(NSKeyValueChangeKey key, id value, BOOL *stop) {
+    [changeKeys addObject:FWFNSKeyValueChangeKeyEnumDataFromNSKeyValueChangeKey(key)];
+    [changeValues addObject:value];
+  }];
+
+  NSNumber *objectIdentifier =
+      @([self.instanceManager identifierWithStrongReferenceForInstance:object]);
+  [self observeValueForObjectWithIdentifier:@([self identifierForObject:instance])
+                                    keyPath:keyPath
+                           objectIdentifier:objectIdentifier
+                                 changeKeys:changeKeys
+                               changeValues:changeValues
+                                 completion:completion];
+}
+@end
+
+@implementation FWFObject
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self init];
+  if (self) {
+    _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                          instanceManager:instanceManager];
+  }
+  return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(void *)context {
+  [self.objectApi observeValueForObject:self
+                                keyPath:keyPath
+                                 object:object
+                                 change:change
+                             completion:^(NSError *error) {
+                               NSAssert(!error, @"%@", error);
+                             }];
+}
+@end
+
 @interface FWFObjectHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFObjectHostApiImpl

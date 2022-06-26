@@ -28,7 +28,7 @@ void main() {
     late InstanceManager instanceManager;
 
     setUp(() {
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
     });
 
     group('UIScrollView', () {
@@ -97,7 +97,7 @@ void main() {
         mockPlatformHostApi = MockTestUIViewHostApi();
         TestUIViewHostApi.setup(mockPlatformHostApi);
 
-        view = UIView(instanceManager: instanceManager);
+        view = UIView.detached(instanceManager: instanceManager);
         viewInstanceId = instanceManager.addDartCreatedInstance(view);
       });
 
