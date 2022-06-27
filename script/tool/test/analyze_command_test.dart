@@ -108,6 +108,23 @@ void main() {
         ]));
   });
 
+  test('skips when missing lib/ directory with --lib-only', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.libDirectory.deleteSync();
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['analyze', '--lib-only']);
+
+    expect(processRunner.recordedCalls, isEmpty);
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('SKIPPING: No lib/ directory'),
+      ]),
+    );
+  });
+
   test(
       'does not run flutter pub get for non-example subpackages with --lib-only',
       () async {

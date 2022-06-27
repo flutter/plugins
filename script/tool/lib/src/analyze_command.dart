@@ -108,6 +108,11 @@ class AnalyzeCommand extends PackageLoopingCommand {
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final bool libOnly = getBoolArg(_libOnlyFlag);
+
+    if (libOnly && !package.libDirectory.existsSync()) {
+      return PackageResult.skip('No lib/ directory.');
+    }
+
     // Analysis runs over the package and all subpackages (unless only lib/ is
     // being analyzed), so all of them need `flutter pub get` run before
     // analyzing. `example` packages can be skipped since 'flutter packages get'
