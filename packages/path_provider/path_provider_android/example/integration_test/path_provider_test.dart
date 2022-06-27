@@ -68,6 +68,7 @@ void main() {
       final List<String>? directories =
           await provider.getExternalStoragePaths(type: type);
       expect(directories, isNotNull);
+      expect(directories, isNotEmpty);
       for (final String result in directories!) {
         _verifySampleFile(result, '$type');
       }
