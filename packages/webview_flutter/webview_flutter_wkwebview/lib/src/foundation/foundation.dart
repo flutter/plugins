@@ -267,7 +267,16 @@ class NSObject with Copyable {
 
   final NSObjectHostApiImpl _api;
 
-  /// Informs the observing object when the value at the specified key path has changed.
+  /// Informs the observing object when the value at the specified key path has
+  /// changed.
+  ///
+  /// {@template webview_flutter_wkwebview.foundation.callbacks}
+  /// It is strongly recommended that this Function doesn't contain a strong
+  /// reference to the encapsulating class instance. If done, the associated
+  /// Objective-C object would fail to be automatically garbage collected.
+  /// Consider using `WeakReference` when using objects not passed as a
+  /// parameter.
+  /// {@endtemplate}
   final void Function(
     String keyPath,
     NSObject object,

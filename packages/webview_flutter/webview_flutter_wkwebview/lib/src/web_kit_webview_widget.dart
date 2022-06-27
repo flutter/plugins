@@ -130,20 +130,24 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   late final WKNavigationDelegate navigationDelegate =
       webViewProxy.createNavigationDelegate(
     didFinishNavigation: (WKWebView webView, String? url) {
-      callbacksHandler.onPageFinished(url ?? '');
+      _weakSelf.target?.callbacksHandler.onPageFinished(url ?? '');
     },
     didStartProvisionalNavigation: (WKWebView webView, String? url) {
-      callbacksHandler.onPageStarted(url ?? '');
+      _weakSelf.target?.callbacksHandler.onPageStarted(url ?? '');
     },
     decidePolicyForNavigationAction: (
       WKWebView webView,
       WKNavigationAction action,
     ) async {
-      if (!_hasNavigationDelegate) {
+      if (_weakSelf.target == null) {
+        return WKNavigationActionPolicy.allow;
+      }
+      if (!_weakSelf.target!._hasNavigationDelegate) {
         return WKNavigationActionPolicy.allow;
       }
 
-      final bool allow = await callbacksHandler.onNavigationRequest(
+      final bool allow =
+          await _weakSelf.target!.callbacksHandler.onNavigationRequest(
         url: action.request.url,
         isForMainFrame: action.targetFrame.isMainFrame,
       );
@@ -153,13 +157,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
           : WKNavigationActionPolicy.cancel;
     },
     didFailNavigation: (WKWebView webView, NSError error) {
-      callbacksHandler.onWebResourceError(_toWebResourceError(error));
+      _weakSelf.target?.callbacksHandler
+          .onWebResourceError(_toWebResourceError(error));
     },
     didFailProvisionalNavigation: (WKWebView webView, NSError error) {
-      callbacksHandler.onWebResourceError(_toWebResourceError(error));
+      _weakSelf.target?.callbacksHandler
+          .onWebResourceError(_toWebResourceError(error));
     },
     webViewWebContentProcessDidTerminate: (WKWebView webView) {
-      callbacksHandler.onWebResourceError(WebResourceError(
+      _weakSelf.target?.callbacksHandler.onWebResourceError(WebResourceError(
         errorCode: WKErrorCode.webContentProcessTerminated,
         // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
         domain: 'WKErrorDomain',
@@ -168,6 +174,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       ));
     },
   );
+
+  // Callback methods require a weak reference to the instance they belong to.
+  late final WeakReference<WebKitWebViewPlatformController> _weakSelf =
+      WeakReference<WebKitWebViewPlatformController>(this);
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -185,7 +195,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       Map<NSKeyValueChangeKey, Object?> change,
     ) {
       final double progress = change[NSKeyValueChangeKey.newValue]! as double;
-      callbacksHandler.onProgress((progress * 100).round());
+      _weakSelf.target?.callbacksHandler.onProgress((progress * 100).round());
     });
 
     webView.setUIDelegate(uiDelegate);
@@ -408,21 +418,29 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await Future.wait<void>(
       javascriptChannelNames.where(
         (String channelName) {
-          return !_scriptMessageHandlers.containsKey(channelName);
+          if (_weakSelf.target == null) {
+            return false;
+          }
+          return !_weakSelf.target!._scriptMessageHandlers
+              .containsKey(channelName);
         },
       ).map<Future<void>>(
-        (String channelName) {
-          final WKScriptMessageHandler handler =
-              webViewProxy.createScriptMessageHandler(didReceiveScriptMessage: (
+        (String channelName) async {
+          if (_weakSelf.target == null) {
+            return;
+          }
+          final WKScriptMessageHandler handler = _weakSelf.target!.webViewProxy
+              .createScriptMessageHandler(didReceiveScriptMessage: (
             WKUserContentController userContentController,
             WKScriptMessage message,
           ) {
-            javascriptChannelRegistry.onJavascriptChannelMessage(
+            _weakSelf.target!.javascriptChannelRegistry
+                .onJavascriptChannelMessage(
               message.name,
               message.body!.toString(),
             );
           });
-          _scriptMessageHandlers[channelName] = handler;
+          _weakSelf.target!._scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
               'window.$channelName = webkit.messageHandlers.$channelName;';
@@ -431,9 +449,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
             WKUserScriptInjectionTime.atDocumentStart,
             isMainFrameOnly: false,
           );
-          webView.configuration.userContentController
+          _weakSelf.target!.webView.configuration.userContentController
               .addUserScript(wrapperScript);
-          return webView.configuration.userContentController
+          await _weakSelf.target!.webView.configuration.userContentController
               .addScriptMessageHandler(
             handler,
             channelName,
