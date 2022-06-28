@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
+
 ## 0.9.8+2
 
 * Fixes exception in registerWith caused by the switch to an in-package method channel.
