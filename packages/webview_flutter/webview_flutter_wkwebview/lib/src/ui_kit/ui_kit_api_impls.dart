@@ -5,6 +5,8 @@
 import 'dart:async';
 import 'dart:math';
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'package:flutter/painting.dart' show Color;
 import 'package:flutter/services.dart';
 
