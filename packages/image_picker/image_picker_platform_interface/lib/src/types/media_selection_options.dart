@@ -18,10 +18,12 @@ class MediaSelectionOptions {
             ];
 
   /// The types of allowed media to be picked.
+  ///
   /// Allows all types by default.
   final List<MediaSelectionType> types;
 
   /// Allow multiple items to be picked.
+  ///
   /// false by default.
   final bool allowMultiple;
 
@@ -39,15 +41,17 @@ class ImageAdjustmentOptions {
   });
 
   /// If specified, a picked image will be at most [maxWidth] wide.
+  ///
   /// Otherwise the image will be returned at its original width.
   final double? maxWidth;
 
   /// If specified, a picked image will be at most [maxHeight] tall.
+  ///
   /// Otherwise the image will be returned at its original height.
   final double? maxHeight;
 
-  /// [quality] modifies the quality of a picked image, ranging
-  /// from 0-100 where 100 is the original/max quality.
+  /// [quality] modifies the quality of a picked image, ranging from 0-100 where 100 is the original/max quality.
+  ///
   /// By default, the image with the original quality will be returned.
   /// Compression is only supported for certain image types such as JPEG and
   /// on Android PNG and WebP. If compression is not supported for the image

@@ -12,16 +12,3 @@ enum MediaSelectionType {
   /// Videos.
   video,
 }
-
-/// Serializes a [MediaSelectionType] value into a String value.
-String serializeMediaSelectionType(MediaSelectionType type) {
-  switch (type) {
-    case MediaSelectionType.image:
-      return 'image';
-    case MediaSelectionType.video:
-      return 'video';
-    default:
-      throw UnimplementedError(
-          'No serialized value has yet been implemented for MediaSelectionType "$type"');
-  }
-}
