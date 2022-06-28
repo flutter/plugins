@@ -426,10 +426,12 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
-    // TODO(bparrishMines): Uncomment this line when it doesn't cause the wrong
-    // initial coordinate on Android.
+    // TODO(bparrishMines): Remove this line when resizing virtual displays doesn't
+    // clamp displays that are smaller than the screen.
     // See https://github.com/flutter/flutter/issues/106750
-    // await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+    await tester.binding.setSurfaceSize(const Size(800, 600));
+
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Key key = GlobalKey();
@@ -476,6 +478,7 @@ void main() {
               .round());
     }
     await tester.binding.setSurfaceSize(null);
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
