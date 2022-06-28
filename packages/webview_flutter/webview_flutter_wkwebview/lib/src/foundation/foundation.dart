@@ -271,11 +271,12 @@ class NSObject with Copyable {
   /// changed.
   ///
   /// {@template webview_flutter_wkwebview.foundation.callbacks}
-  /// It is strongly recommended that this Function doesn't contain a strong
-  /// reference to the encapsulating class instance. If done, the associated
-  /// Objective-C object would fail to be automatically garbage collected.
-  /// Consider using `WeakReference` when using objects not passed as a
-  /// parameter.
+  /// For the associated Objective-C object to be automatically garbage
+  /// collected, it is required that this Function doesn't contain a strong
+  /// reference to the encapsulating class instance. Consider using
+  /// `WeakReference` when referencing an object not received as a parameter.
+  /// Otherwise, use [NSObject.dispose] to release the associated Objective-C
+  /// object manually.
   /// {@endtemplate}
   final void Function(
     String keyPath,
