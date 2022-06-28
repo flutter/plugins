@@ -426,7 +426,9 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
+    // TODO(bparrishMines): This line causes the wrong initial coordinate on
+    // Android. See https://github.com/flutter/flutter/issues/106750
+    // await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Key key = GlobalKey();
