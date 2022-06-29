@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -27,6 +28,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import io.flutter.plugin.common.MethodCall;
 import java.util.concurrent.Executor;
+import java.util.List;
 
 /**
  * Authenticates the user with biometrics and sends corresponding response back to Flutter.
@@ -74,7 +76,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       FragmentActivity activity,
       MethodCall call,
       AuthCompletionHandler completionHandler,
-      boolean allowCredentials) {
+      List<String> authenticationOptions) {
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
@@ -90,11 +92,30 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
-    if (allowCredentials) {
-      promptBuilder.setDeviceCredentialAllowed(true);
-    } else {
+    boolean credentialsAllowed = false;
+    int allowedAuthenticators = 0;
+
+    for (String option : authenticationOptions) {
+      switch (option) {
+        case "weak":
+          allowedAuthenticators |= BiometricManager.Authenticators.BIOMETRIC_WEAK;
+          break;
+        case "strong":
+          allowedAuthenticators |= BiometricManager.Authenticators.BIOMETRIC_STRONG;
+          break;
+        case "deviceCredential":
+          credentialsAllowed = true;
+          allowedAuthenticators |= BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+          break;
+      }
+    }
+
+    promptBuilder.setAllowedAuthenticators(allowedAuthenticators);
+
+    if (!credentialsAllowed) {
       promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
+
     this.promptInfo = promptBuilder.build();
   }
 
