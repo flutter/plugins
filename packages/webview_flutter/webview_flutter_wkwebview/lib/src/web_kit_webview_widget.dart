@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'common/weak_self_provider.dart';
 import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
@@ -76,7 +77,8 @@ class _WebKitWebViewWidgetState extends State<WebKitWebViewWidget> {
 }
 
 /// An implementation of [WebViewPlatformController] with the WebKit api.
-class WebKitWebViewPlatformController extends WebViewPlatformController {
+class WebKitWebViewPlatformController extends WebViewPlatformController
+    with WeakSelfProvider<WebKitWebViewPlatformController> {
   /// Construct a [WebKitWebViewPlatformController].
   WebKitWebViewPlatformController({
     required CreationParams creationParams,
@@ -127,57 +129,56 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   /// Methods for handling navigation changes and tracking navigation requests.
   @visibleForTesting
-  late final WKNavigationDelegate navigationDelegate =
-      webViewProxy.createNavigationDelegate(
-    didFinishNavigation: (WKWebView webView, String? url) {
-      _weakSelf.target?.callbacksHandler.onPageFinished(url ?? '');
-    },
-    didStartProvisionalNavigation: (WKWebView webView, String? url) {
-      _weakSelf.target?.callbacksHandler.onPageStarted(url ?? '');
-    },
-    decidePolicyForNavigationAction: (
-      WKWebView webView,
-      WKNavigationAction action,
-    ) async {
-      if (_weakSelf.target == null) {
-        return WKNavigationActionPolicy.allow;
-      }
-      if (!_weakSelf.target!._hasNavigationDelegate) {
-        return WKNavigationActionPolicy.allow;
-      }
+  late final WKNavigationDelegate navigationDelegate = withWeakSelf(
+    (WeakReference<WebKitWebViewPlatformController> weakSelf) {
+      return webViewProxy.createNavigationDelegate(
+        didFinishNavigation: (WKWebView webView, String? url) {
+          weakSelf.target?.callbacksHandler.onPageFinished(url ?? '');
+        },
+        didStartProvisionalNavigation: (WKWebView webView, String? url) {
+          weakSelf.target?.callbacksHandler.onPageStarted(url ?? '');
+        },
+        decidePolicyForNavigationAction: (
+          WKWebView webView,
+          WKNavigationAction action,
+        ) async {
+          if (weakSelf.target == null) {
+            return WKNavigationActionPolicy.allow;
+          }
+          if (!weakSelf.target!._hasNavigationDelegate) {
+            return WKNavigationActionPolicy.allow;
+          }
 
-      final bool allow =
-          await _weakSelf.target!.callbacksHandler.onNavigationRequest(
-        url: action.request.url,
-        isForMainFrame: action.targetFrame.isMainFrame,
+          final bool allow =
+              await weakSelf.target!.callbacksHandler.onNavigationRequest(
+            url: action.request.url,
+            isForMainFrame: action.targetFrame.isMainFrame,
+          );
+
+          return allow
+              ? WKNavigationActionPolicy.allow
+              : WKNavigationActionPolicy.cancel;
+        },
+        didFailNavigation: (WKWebView webView, NSError error) {
+          weakSelf.target?.callbacksHandler
+              .onWebResourceError(_toWebResourceError(error));
+        },
+        didFailProvisionalNavigation: (WKWebView webView, NSError error) {
+          weakSelf.target?.callbacksHandler
+              .onWebResourceError(_toWebResourceError(error));
+        },
+        webViewWebContentProcessDidTerminate: (WKWebView webView) {
+          weakSelf.target?.callbacksHandler.onWebResourceError(WebResourceError(
+            errorCode: WKErrorCode.webContentProcessTerminated,
+            // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+            domain: 'WKErrorDomain',
+            description: '',
+            errorType: WebResourceErrorType.webContentProcessTerminated,
+          ));
+        },
       );
-
-      return allow
-          ? WKNavigationActionPolicy.allow
-          : WKNavigationActionPolicy.cancel;
-    },
-    didFailNavigation: (WKWebView webView, NSError error) {
-      _weakSelf.target?.callbacksHandler
-          .onWebResourceError(_toWebResourceError(error));
-    },
-    didFailProvisionalNavigation: (WKWebView webView, NSError error) {
-      _weakSelf.target?.callbacksHandler
-          .onWebResourceError(_toWebResourceError(error));
-    },
-    webViewWebContentProcessDidTerminate: (WKWebView webView) {
-      _weakSelf.target?.callbacksHandler.onWebResourceError(WebResourceError(
-        errorCode: WKErrorCode.webContentProcessTerminated,
-        // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
-        domain: 'WKErrorDomain',
-        description: '',
-        errorType: WebResourceErrorType.webContentProcessTerminated,
-      ));
     },
   );
-
-  // Callback methods require a weak reference to the instance they belong to.
-  late final WeakReference<WebKitWebViewPlatformController> _weakSelf =
-      WeakReference<WebKitWebViewPlatformController>(this);
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -189,13 +190,17 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       autoMediaPlaybackPolicy: params.autoMediaPlaybackPolicy,
     );
 
-    webView = webViewProxy.createWebView(configuration, observeValue: (
-      String keyPath,
-      NSObject object,
-      Map<NSKeyValueChangeKey, Object?> change,
+    webView = withWeakSelf((
+      WeakReference<WebKitWebViewPlatformController> weakSelf,
     ) {
-      final double progress = change[NSKeyValueChangeKey.newValue]! as double;
-      _weakSelf.target?.callbacksHandler.onProgress((progress * 100).round());
+      return webViewProxy.createWebView(configuration, observeValue: (
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) {
+        final double progress = change[NSKeyValueChangeKey.newValue]! as double;
+        weakSelf.target?.callbacksHandler.onProgress((progress * 100).round());
+      });
     });
 
     webView.setUIDelegate(uiDelegate);
@@ -415,50 +420,54 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) async {
-    await Future.wait<void>(
-      javascriptChannelNames.where(
-        (String channelName) {
-          if (_weakSelf.target == null) {
-            return false;
-          }
-          return !_weakSelf.target!._scriptMessageHandlers
-              .containsKey(channelName);
-        },
-      ).map<Future<void>>(
-        (String channelName) async {
-          if (_weakSelf.target == null) {
-            return;
-          }
-          final WKScriptMessageHandler handler = _weakSelf.target!.webViewProxy
-              .createScriptMessageHandler(didReceiveScriptMessage: (
-            WKUserContentController userContentController,
-            WKScriptMessage message,
-          ) {
-            _weakSelf.target!.javascriptChannelRegistry
-                .onJavascriptChannelMessage(
-              message.name,
-              message.body!.toString(),
-            );
-          });
-          _weakSelf.target!._scriptMessageHandlers[channelName] = handler;
+    await withWeakSelf((
+      WeakReference<WebKitWebViewPlatformController> weakSelf,
+    ) {
+      return Future.wait<void>(
+        javascriptChannelNames.where(
+          (String channelName) {
+            if (weakSelf.target == null) {
+              return false;
+            }
+            return !weakSelf.target!._scriptMessageHandlers
+                .containsKey(channelName);
+          },
+        ).map<Future<void>>(
+          (String channelName) async {
+            if (weakSelf.target == null) {
+              return;
+            }
+            final WKScriptMessageHandler handler = weakSelf.target!.webViewProxy
+                .createScriptMessageHandler(didReceiveScriptMessage: (
+              WKUserContentController userContentController,
+              WKScriptMessage message,
+            ) {
+              weakSelf.target!.javascriptChannelRegistry
+                  .onJavascriptChannelMessage(
+                message.name,
+                message.body!.toString(),
+              );
+            });
+            weakSelf.target!._scriptMessageHandlers[channelName] = handler;
 
-          final String wrapperSource =
-              'window.$channelName = webkit.messageHandlers.$channelName;';
-          final WKUserScript wrapperScript = WKUserScript(
-            wrapperSource,
-            WKUserScriptInjectionTime.atDocumentStart,
-            isMainFrameOnly: false,
-          );
-          _weakSelf.target!.webView.configuration.userContentController
-              .addUserScript(wrapperScript);
-          await _weakSelf.target!.webView.configuration.userContentController
-              .addScriptMessageHandler(
-            handler,
-            channelName,
-          );
-        },
-      ),
-    );
+            final String wrapperSource =
+                'window.$channelName = webkit.messageHandlers.$channelName;';
+            final WKUserScript wrapperScript = WKUserScript(
+              wrapperSource,
+              WKUserScriptInjectionTime.atDocumentStart,
+              isMainFrameOnly: false,
+            );
+            weakSelf.target!.webView.configuration.userContentController
+                .addUserScript(wrapperScript);
+            await weakSelf.target!.webView.configuration.userContentController
+                .addScriptMessageHandler(
+              handler,
+              channelName,
+            );
+          },
+        ),
+      );
+    });
   }
 
   @override
