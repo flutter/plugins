@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../common/instance_manager.dart';
+import '../common/weak_reference_callback.dart';
 import '../foundation/foundation.dart';
 import '../ui_kit/ui_kit.dart';
 import 'web_kit_api_impls.dart';
@@ -764,7 +765,8 @@ class WKUIDelegate extends NSObject {
 class WKNavigationDelegate extends NSObject {
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate({
-    this.didFinishNavigation,
+    WeakReferenceCallback<void Function(WKWebView webView, String? url)>?
+        didFinishNavigation,
     this.didStartProvisionalNavigation,
     this.decidePolicyForNavigationAction,
     this.didFailNavigation,
@@ -773,9 +775,14 @@ class WKNavigationDelegate extends NSObject {
     super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
+    Object? callbackReference,
   })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
+        ),
+        didFinishNavigation = passWeakReferenceToCallback(
+          didFinishNavigation,
+          callbackReference,
         ),
         super.detached() {
     // Ensures FlutterApis for the WebKit library are set up.
@@ -789,7 +796,8 @@ class WKNavigationDelegate extends NSObject {
   /// This should only be used outside of tests by subclasses created by this
   /// library or to create a copy for an InstanceManager.
   WKNavigationDelegate.detached({
-    this.didFinishNavigation,
+    WeakReferenceCallback<void Function(WKWebView webView, String? url)>?
+        didFinishNavigation,
     this.didStartProvisionalNavigation,
     this.decidePolicyForNavigationAction,
     this.didFailNavigation,
@@ -798,9 +806,14 @@ class WKNavigationDelegate extends NSObject {
     super.observeValue,
     super.binaryMessenger,
     super.instanceManager,
+    Object? callbackReference,
   })  : _navigationDelegateApi = WKNavigationDelegateHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
+        ),
+        didFinishNavigation = passWeakReferenceToCallback(
+          didFinishNavigation,
+          callbackReference,
         ),
         super.detached();
 
@@ -844,7 +857,8 @@ class WKNavigationDelegate extends NSObject {
   @override
   WKNavigationDelegate copy() {
     return WKNavigationDelegate.detached(
-      didFinishNavigation: didFinishNavigation,
+      didFinishNavigation:
+          didFinishNavigation == null ? null : ([_]) => didFinishNavigation!,
       didStartProvisionalNavigation: didStartProvisionalNavigation,
       decidePolicyForNavigationAction: decidePolicyForNavigationAction,
       didFailNavigation: didFailNavigation,

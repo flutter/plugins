@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'common/weak_reference_callback.dart';
 import 'common/weak_self_provider.dart';
 import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
@@ -132,8 +133,13 @@ class WebKitWebViewPlatformController extends WebViewPlatformController
   late final WKNavigationDelegate navigationDelegate = withWeakSelf(
     (WeakReference<WebKitWebViewPlatformController> weakSelf) {
       return webViewProxy.createNavigationDelegate(
-        didFinishNavigation: (WKWebView webView, String? url) {
-          weakSelf.target?.callbacksHandler.onPageFinished(url ?? '');
+        ref: this,
+        didFinishNavigation: ([WeakReference<dynamic>? weakRef]) {
+          return (WKWebView webView, String? url) {
+            (weakRef!.target as WebKitWebViewPlatformController?)
+                ?.callbacksHandler
+                .onPageFinished(url ?? '');
+          };
         },
         didStartProvisionalNavigation: (WKWebView webView, String? url) {
           weakSelf.target?.callbacksHandler.onPageStarted(url ?? '');
@@ -420,54 +426,52 @@ class WebKitWebViewPlatformController extends WebViewPlatformController
 
   @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) async {
-    await withWeakSelf((
-      WeakReference<WebKitWebViewPlatformController> weakSelf,
-    ) {
-      return Future.wait<void>(
-        javascriptChannelNames.where(
-          (String channelName) {
-            if (weakSelf.target == null) {
-              return false;
-            }
-            return !weakSelf.target!._scriptMessageHandlers
-                .containsKey(channelName);
-          },
-        ).map<Future<void>>(
-          (String channelName) async {
-            if (weakSelf.target == null) {
-              return;
-            }
-            final WKScriptMessageHandler handler = weakSelf.target!.webViewProxy
-                .createScriptMessageHandler(didReceiveScriptMessage: (
-              WKUserContentController userContentController,
-              WKScriptMessage message,
-            ) {
-              weakSelf.target!.javascriptChannelRegistry
-                  .onJavascriptChannelMessage(
-                message.name,
-                message.body!.toString(),
-              );
-            });
-            weakSelf.target!._scriptMessageHandlers[channelName] = handler;
+    final WeakReference<WebKitWebViewPlatformController> weakSelf =
+        WeakReference<WebKitWebViewPlatformController>(this);
+    return Future.wait<void>(
+      javascriptChannelNames.where(
+        (String channelName) {
+          if (weakSelf.target == null) {
+            return false;
+          }
+          return !weakSelf.target!._scriptMessageHandlers
+              .containsKey(channelName);
+        },
+      ).map<Future<void>>(
+        (String channelName) async {
+          if (weakSelf.target == null) {
+            return;
+          }
+          final WKScriptMessageHandler handler = weakSelf.target!.webViewProxy
+              .createScriptMessageHandler(didReceiveScriptMessage: (
+            WKUserContentController userContentController,
+            WKScriptMessage message,
+          ) {
+            weakSelf.target!.javascriptChannelRegistry
+                .onJavascriptChannelMessage(
+              message.name,
+              message.body!.toString(),
+            );
+          });
+          weakSelf.target!._scriptMessageHandlers[channelName] = handler;
 
-            final String wrapperSource =
-                'window.$channelName = webkit.messageHandlers.$channelName;';
-            final WKUserScript wrapperScript = WKUserScript(
-              wrapperSource,
-              WKUserScriptInjectionTime.atDocumentStart,
-              isMainFrameOnly: false,
-            );
-            weakSelf.target!.webView.configuration.userContentController
-                .addUserScript(wrapperScript);
-            await weakSelf.target!.webView.configuration.userContentController
-                .addScriptMessageHandler(
-              handler,
-              channelName,
-            );
-          },
-        ),
-      );
-    });
+          final String wrapperSource =
+              'window.$channelName = webkit.messageHandlers.$channelName;';
+          final WKUserScript wrapperScript = WKUserScript(
+            wrapperSource,
+            WKUserScriptInjectionTime.atDocumentStart,
+            isMainFrameOnly: false,
+          );
+          weakSelf.target!.webView.configuration.userContentController
+              .addUserScript(wrapperScript);
+          await weakSelf.target!.webView.configuration.userContentController
+              .addScriptMessageHandler(
+            handler,
+            channelName,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -679,10 +683,7 @@ class WebViewWidgetProxy {
 
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate createNavigationDelegate({
-    void Function(
-      WKWebView webView,
-      String? url,
-    )?
+    WeakReferenceCallback<void Function(WKWebView webView, String? url)>?
         didFinishNavigation,
     void Function(WKWebView webView, String? url)?
         didStartProvisionalNavigation,
@@ -695,6 +696,7 @@ class WebViewWidgetProxy {
     void Function(WKWebView webView, NSError error)?
         didFailProvisionalNavigation,
     void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
+    Object? callbackReference,
   }) {
     return WKNavigationDelegate(
       didFinishNavigation: didFinishNavigation,
@@ -704,6 +706,7 @@ class WebViewWidgetProxy {
       didFailProvisionalNavigation: didFailProvisionalNavigation,
       webViewWebContentProcessDidTerminate:
           webViewWebContentProcessDidTerminate,
+      callbackReference: callbackReference,
     );
   }
 }
