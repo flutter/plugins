@@ -11,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'common/weak_reference_utils.dart';
 import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
@@ -86,52 +85,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     WKWebViewConfiguration? configuration,
     @visibleForTesting this.webViewProxy = const WebViewWidgetProxy(),
   }) : super(callbacksHandler) {
-    _setCreationParams(
-      creationParams,
-      configuration: configuration ?? WKWebViewConfiguration(),
-    );
-  }
-
-  bool _zoomEnabled = true;
-  bool _hasNavigationDelegate = false;
-  bool _progressObserverSet = false;
-
-  final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
-      <String, WKScriptMessageHandler>{};
-
-  /// Handles callbacks that are made by navigation.
-  final WebViewPlatformCallbacksHandler callbacksHandler;
-
-  /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
-  final JavascriptChannelRegistry javascriptChannelRegistry;
-
-  /// Handles constructing a [WKWebView].
-  ///
-  /// This should only be changed when used for testing.
-  final WebViewWidgetProxy webViewProxy;
-
-  /// Represents the WebView maintained by platform code.
-  late final WKWebView webView;
-
-  /// Used to integrate custom user interface elements into web view interactions.
-  @visibleForTesting
-  late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate(
-    onCreateWebView: (
-      WKWebView webView,
-      WKWebViewConfiguration configuration,
-      WKNavigationAction navigationAction,
-    ) {
-      if (!navigationAction.targetFrame.isMainFrame) {
-        webView.loadRequest(navigationAction.request);
-      }
-    },
-  );
-
-  /// Methods for handling navigation changes and tracking navigation requests.
-  @visibleForTesting
-  late final WKNavigationDelegate navigationDelegate = withWeakRef(this,
-      (WeakReference<WebKitWebViewPlatformController> weakRef) {
-    return webViewProxy.createNavigationDelegate(
+    final WeakReference<WebKitWebViewPlatformController> weakRef =
+        WeakReference<WebKitWebViewPlatformController>(this);
+    navigationDelegate = webViewProxy.createNavigationDelegate(
       didFinishNavigation: (WKWebView webView, String? url) {
         weakRef.target?.callbacksHandler.onPageFinished(url ?? '');
       },
@@ -180,7 +136,49 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         ));
       },
     );
-  });
+
+    _setCreationParams(
+      creationParams,
+      configuration: configuration ?? WKWebViewConfiguration(),
+    );
+  }
+
+  bool _zoomEnabled = true;
+  bool _hasNavigationDelegate = false;
+  bool _progressObserverSet = false;
+
+  final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
+      <String, WKScriptMessageHandler>{};
+
+  /// Handles callbacks that are made by navigation.
+  final WebViewPlatformCallbacksHandler callbacksHandler;
+
+  /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
+  final JavascriptChannelRegistry javascriptChannelRegistry;
+
+  /// Handles constructing a [WKWebView].
+  ///
+  /// This should only be changed when used for testing.
+  final WebViewWidgetProxy webViewProxy;
+
+  /// Represents the WebView maintained by platform code.
+  late final WKWebView webView;
+
+  /// Used to integrate custom user interface elements into web view interactions.
+  @visibleForTesting
+  late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate(
+    onCreateWebView: (
+      WKWebView webView,
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    ) {
+      if (!navigationAction.targetFrame.isMainFrame) {
+        webView.loadRequest(navigationAction.request);
+      }
+    },
+  );
+
+  late final WKNavigationDelegate navigationDelegate;
 
   Future<void> _setCreationParams(
     CreationParams params, {
@@ -192,22 +190,18 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       autoMediaPlaybackPolicy: params.autoMediaPlaybackPolicy,
     );
 
+    final WeakReference<WebViewPlatformCallbacksHandler> weakRef =
+        WeakReference<WebViewPlatformCallbacksHandler>(callbacksHandler);
     webView = webViewProxy.createWebView(
       configuration,
-      observeValue: withWeakRef(
-        callbacksHandler,
-        (WeakReference<WebViewPlatformCallbacksHandler> weakRef) {
-          return (
-            String keyPath,
-            NSObject object,
-            Map<NSKeyValueChangeKey, Object?> change,
-          ) {
-            final double progress =
-                change[NSKeyValueChangeKey.newValue]! as double;
-            weakRef.target?.onProgress((progress * 100).round());
-          };
-        },
-      ),
+      observeValue: (
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) {
+        final double progress = change[NSKeyValueChangeKey.newValue]! as double;
+        weakRef.target?.onProgress((progress * 100).round());
+      },
     );
 
     webView.setUIDelegate(uiDelegate);
@@ -427,6 +421,10 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) async {
+    final WeakReference<JavascriptChannelRegistry> weakRef =
+        WeakReference<JavascriptChannelRegistry>(
+      javascriptChannelRegistry,
+    );
     await Future.wait<void>(
       javascriptChannelNames.where(
         (String channelName) {
@@ -436,20 +434,15 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         (String channelName) {
           final WKScriptMessageHandler handler =
               webViewProxy.createScriptMessageHandler(
-            didReceiveScriptMessage: withWeakRef(
-              javascriptChannelRegistry,
-              (WeakReference<JavascriptChannelRegistry> weakRef) {
-                return (
-                  WKUserContentController userContentController,
-                  WKScriptMessage message,
-                ) {
-                  weakRef.target?.onJavascriptChannelMessage(
-                    message.name,
-                    message.body!.toString(),
-                  );
-                };
-              },
-            ),
+            didReceiveScriptMessage: (
+              WKUserContentController userContentController,
+              WKScriptMessage message,
+            ) {
+              weakRef.target?.onJavascriptChannelMessage(
+                message.name,
+                message.body!.toString(),
+              );
+            },
           );
           _scriptMessageHandlers[channelName] = handler;
 

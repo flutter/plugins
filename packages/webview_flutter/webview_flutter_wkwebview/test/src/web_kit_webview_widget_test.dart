@@ -186,7 +186,10 @@ void main() async {
       verify(mockWebView.loadRequest(request));
     });
 
-    test('callback methods do not cause a self reference', () async {
+    test(
+        'navigation delegate callback methods do not cause a circular reference',
+        () async {
+      // ignore: unused_local_variable
       WebKitWebViewPlatformController? controller =
           WebKitWebViewPlatformController(
         creationParams: CreationParams(
@@ -201,9 +204,7 @@ void main() async {
         configuration: mockWebViewConfiguration,
       );
 
-      controller.navigationDelegate;
-
-      final dynamic didStartProvisionalNavigation =
+      final void Function(WKWebView, String) didStartProvisionalNavigation =
           verify(mockWebViewWidgetProxy.createNavigationDelegate(
         didFinishNavigation: anyNamed('didFinishNavigation'),
         didStartProvisionalNavigation:
@@ -215,12 +216,101 @@ void main() async {
         webViewWebContentProcessDidTerminate:
             anyNamed('webViewWebContentProcessDidTerminate'),
       )).captured.single as void Function(WKWebView, String);
-      controller = null;
 
+      controller = null;
       await runGarbageCollection();
 
       didStartProvisionalNavigation(mockWebView, 'https://google.com');
+      verifyNever(mockCallbacksHandler.onPageStarted('https://google.com'));
+    });
 
+    test('uidelgate callback methods do not cause a circular reference',
+        () async {
+      // ignore: unused_local_variable
+      WebKitWebViewPlatformController? controller =
+          WebKitWebViewPlatformController(
+        creationParams: CreationParams(
+            webSettings: WebSettings(
+          userAgent: const WebSetting<String?>.absent(),
+          hasNavigationDelegate: false,
+          hasProgressTracking: false,
+        )),
+        callbacksHandler: mockCallbacksHandler,
+        javascriptChannelRegistry: mockJavascriptChannelRegistry,
+        webViewProxy: mockWebViewWidgetProxy,
+        configuration: mockWebViewConfiguration,
+      );
+
+      // Lazy initialization.
+      // ignore: unnecessary_statements
+      controller.uiDelegate;
+
+      final void Function(WKWebView, String) didStartProvisionalNavigation =
+          verify(mockWebViewWidgetProxy.createNavigationDelegate(
+        didFinishNavigation: anyNamed('didFinishNavigation'),
+        didStartProvisionalNavigation:
+            captureAnyNamed('didStartProvisionalNavigation'),
+        decidePolicyForNavigationAction:
+            anyNamed('decidePolicyForNavigationAction'),
+        didFailNavigation: anyNamed('didFailNavigation'),
+        didFailProvisionalNavigation: anyNamed('didFailProvisionalNavigation'),
+        webViewWebContentProcessDidTerminate:
+            anyNamed('webViewWebContentProcessDidTerminate'),
+      )).captured.single as void Function(WKWebView, String);
+
+      controller = null;
+      await runGarbageCollection();
+
+      didStartProvisionalNavigation(mockWebView, 'https://google.com');
+      verifyNever(mockCallbacksHandler.onPageStarted('https://google.com'));
+    });
+
+    test(
+        'ScriptMessageHandler callback method does not cause a circular reference',
+        () async {
+      // ignore: unused_local_variable
+      WebKitWebViewPlatformController? controller =
+          WebKitWebViewPlatformController(
+        creationParams: CreationParams(
+            webSettings: WebSettings(
+          userAgent: const WebSetting<String?>.absent(),
+          hasNavigationDelegate: false,
+          hasProgressTracking: false,
+        )),
+        callbacksHandler: mockCallbacksHandler,
+        javascriptChannelRegistry: mockJavascriptChannelRegistry,
+        webViewProxy: mockWebViewWidgetProxy,
+        configuration: mockWebViewConfiguration,
+      );
+
+      when(
+        mockWebViewWidgetProxy.createScriptMessageHandler(
+          didReceiveScriptMessage: anyNamed('didReceiveScriptMessage'),
+        ),
+      ).thenReturn(MockWKScriptMessageHandler());
+
+      await controller.addJavascriptChannels(<String>{'oijw'});
+
+      final void Function(WKWebView, String) didStartProvisionalNavigation =
+          verify(mockWebViewWidgetProxy.createNavigationDelegate(
+        didFinishNavigation: anyNamed('didFinishNavigation'),
+        didStartProvisionalNavigation:
+            captureAnyNamed('didStartProvisionalNavigation'),
+        decidePolicyForNavigationAction:
+            anyNamed('decidePolicyForNavigationAction'),
+        didFailNavigation: anyNamed('didFailNavigation'),
+        didFailProvisionalNavigation: anyNamed('didFailProvisionalNavigation'),
+        webViewWebContentProcessDidTerminate:
+            anyNamed('webViewWebContentProcessDidTerminate'),
+      )).captured.single as void Function(WKWebView, String);
+
+      controller = null;
+      await runGarbageCollection();
+      await runGarbageCollection();
+      await runGarbageCollection();
+      await runGarbageCollection();
+
+      didStartProvisionalNavigation(mockWebView, 'https://google.com');
       verifyNever(mockCallbacksHandler.onPageStarted('https://google.com'));
     });
 
