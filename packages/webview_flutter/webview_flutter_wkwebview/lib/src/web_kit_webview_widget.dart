@@ -669,7 +669,6 @@ class WebViewWidgetProxy {
 
   /// Constructs a [WKUIDelegate].
   WKUIDelegate createUIDelgate({
-    Object? callbackReference,
     void Function(
       WKWebView webView,
       WKWebViewConfiguration configuration,

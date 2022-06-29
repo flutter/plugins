@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:developer';
+import 'dart:isolate';
 import 'dart:math';
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
@@ -13,6 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:vm_service/vm_service.dart' as vm_service;
+import 'package:vm_service/vm_service_io.dart' as vm_service_io;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/src/foundation/foundation.dart';
 import 'package:webview_flutter_wkwebview/src/ui_kit/ui_kit.dart';
@@ -20,10 +23,6 @@ import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
 import 'web_kit_webview_widget_test.mocks.dart';
-
-import 'dart:isolate';
-import 'package:vm_service/vm_service_io.dart' as vm_service_io;
-import 'package:vm_service/vm_service.dart' as vm_service_io;
 
 List<String> _cleanupPathSegments(Uri uri) {
   final List<String> pathSegments = <String>[];
@@ -153,7 +152,7 @@ void main() async {
     Future<void> runGarbageCollection() async {
       final Uri? serverUri = (await Service.getInfo()).serverUri;
       final String isolateId = Service.getIsolateID(Isolate.current)!;
-      final vm_service_io.VmService vmService =
+      final vm_service.VmService vmService =
           await vm_service_io.vmServiceConnectUri(_toWebSocket(serverUri!));
       await vmService.getAllocationProfile(isolateId, gc: true);
     }
@@ -185,6 +184,44 @@ void main() async {
       );
 
       verify(mockWebView.loadRequest(request));
+    });
+
+    test('callback methods do not cause a self reference', () async {
+      WebKitWebViewPlatformController? controller =
+          WebKitWebViewPlatformController(
+        creationParams: CreationParams(
+            webSettings: WebSettings(
+          userAgent: const WebSetting<String?>.absent(),
+          hasNavigationDelegate: false,
+          hasProgressTracking: false,
+        )),
+        callbacksHandler: mockCallbacksHandler,
+        javascriptChannelRegistry: mockJavascriptChannelRegistry,
+        webViewProxy: mockWebViewWidgetProxy,
+        configuration: mockWebViewConfiguration,
+      );
+
+      controller.navigationDelegate;
+
+      final dynamic didStartProvisionalNavigation =
+          verify(mockWebViewWidgetProxy.createNavigationDelegate(
+        didFinishNavigation: anyNamed('didFinishNavigation'),
+        didStartProvisionalNavigation:
+            captureAnyNamed('didStartProvisionalNavigation'),
+        decidePolicyForNavigationAction:
+            anyNamed('decidePolicyForNavigationAction'),
+        didFailNavigation: anyNamed('didFailNavigation'),
+        didFailProvisionalNavigation: anyNamed('didFailProvisionalNavigation'),
+        webViewWebContentProcessDidTerminate:
+            anyNamed('webViewWebContentProcessDidTerminate'),
+      )).captured.single as void Function(WKWebView, String);
+      controller = null;
+
+      await runGarbageCollection();
+
+      didStartProvisionalNavigation(mockWebView, 'https://google.com');
+
+      verifyNever(mockCallbacksHandler.onPageStarted('https://google.com'));
     });
 
     group('CreationParams', () {
@@ -1020,65 +1057,6 @@ void main() async {
           webViewWebContentProcessDidTerminate:
               anyNamed('webViewWebContentProcessDidTerminate'),
         )).captured.single as void Function(WKWebView, String);
-        didStartProvisionalNavigation(mockWebView, 'https://google.com');
-
-        verify(mockCallbacksHandler.onPageStarted('https://google.com'));
-      });
-
-      group('WebViewPlatformCallbacksHandler', () {
-        testWidgets('onPageStarted a', (WidgetTester tester) async {
-          await buildWidget(tester);
-
-          final dynamic didStartProvisionalNavigation =
-          verify(mockWebViewWidgetProxy.createNavigationDelegate(
-            didFinishNavigation: anyNamed('didFinishNavigation'),
-            didStartProvisionalNavigation:
-            captureAnyNamed('didStartProvisionalNavigation'),
-            decidePolicyForNavigationAction:
-            anyNamed('decidePolicyForNavigationAction'),
-            didFailNavigation: anyNamed('didFailNavigation'),
-            didFailProvisionalNavigation:
-            anyNamed('didFailProvisionalNavigation'),
-            webViewWebContentProcessDidTerminate:
-            anyNamed('webViewWebContentProcessDidTerminate'),
-          )).captured.single as void Function(WKWebView, String);
-          didStartProvisionalNavigation(mockWebView, 'https://google.com');
-
-          verify(mockCallbacksHandler.onPageStarted('https://google.com'));
-        });
-
-      test('navigation delgate does not reference self', () async {
-        WebKitWebViewPlatformController? controller =
-            WebKitWebViewPlatformController(
-          creationParams: CreationParams(
-              webSettings: WebSettings(
-            userAgent: const WebSetting<String?>.absent(),
-            hasNavigationDelegate: false,
-            hasProgressTracking: false,
-          )),
-          callbacksHandler: mockCallbacksHandler,
-          javascriptChannelRegistry: mockJavascriptChannelRegistry,
-          webViewProxy: mockWebViewWidgetProxy,
-          configuration: mockWebViewConfiguration,
-        );
-
-        final dynamic didStartProvisionalNavigation =
-            verify(mockWebViewWidgetProxy.createNavigationDelegate(
-          didFinishNavigation: anyNamed('didFinishNavigation'),
-          didStartProvisionalNavigation:
-              captureAnyNamed('didStartProvisionalNavigation'),
-          decidePolicyForNavigationAction:
-              anyNamed('decidePolicyForNavigationAction'),
-          didFailNavigation: anyNamed('didFailNavigation'),
-          didFailProvisionalNavigation:
-              anyNamed('didFailProvisionalNavigation'),
-          webViewWebContentProcessDidTerminate:
-              anyNamed('webViewWebContentProcessDidTerminate'),
-        )).captured.single as void Function(WKWebView, String);
-        controller = null;
-
-        await runGarbageCollection();
-
         didStartProvisionalNavigation(mockWebView, 'https://google.com');
 
         verify(mockCallbacksHandler.onPageStarted('https://google.com'));
