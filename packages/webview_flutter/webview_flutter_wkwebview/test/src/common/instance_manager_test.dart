@@ -2,16 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:developer';
-import 'dart:isolate';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vm_service/vm_service.dart' as vm_service;
-import 'package:vm_service/vm_service_io.dart';
 import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
-import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 
 void main() {
   group('InstanceManager', () {
@@ -140,28 +132,6 @@ void main() {
       )!;
       expect(identical(object, newWeakCopy), isFalse);
     });
-
-    test('withWeakRefenceTo allows encapsulating class to be garbage collected',
-        () async {
-      final Completer<int> gcCompleter = Completer<int>();
-      final InstanceManager instanceManager = InstanceManager(
-        onWeakReferenceRemoved: gcCompleter.complete,
-      );
-
-      ClassWithCallbackClass? instance = ClassWithCallbackClass();
-      instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
-      instance = null;
-
-      // Force garbage collection.
-      final Uri serverUri = (await Service.getInfo()).serverUri!;
-
-      final String isolateId = Service.getIsolateID(Isolate.current)!;
-      final vm_service.VmService vmService =
-          await vmServiceConnectUri(_toWebSocket(serverUri));
-      await vmService.getAllocationProfile(isolateId, gc: true);
-
-      expect(gcCompleter.future, completion(0));
-    });
   });
 }
 
@@ -180,50 +150,4 @@ class CopyableObject with Copyable {
   bool operator ==(Object other) {
     return other is CopyableObject;
   }
-}
-
-class CopyableObjectWithCallback with Copyable {
-  CopyableObjectWithCallback(this.callback);
-
-  final VoidCallback callback;
-
-  @override
-  CopyableObjectWithCallback copy() {
-    return CopyableObjectWithCallback(callback);
-  }
-}
-
-class ClassWithCallbackClass {
-  ClassWithCallbackClass() {
-    callbackClass = CopyableObjectWithCallback(
-      withWeakRefenceTo(
-        this,
-        (WeakReference<ClassWithCallbackClass> weakReference) {
-          return () {
-            // Weak reference to `this` in callback.
-            // ignore: unnecessary_statements
-            weakReference;
-          };
-        },
-      ),
-    );
-  }
-
-  late final CopyableObjectWithCallback callbackClass;
-}
-
-List<String> _cleanupPathSegments(Uri uri) {
-  final List<String> pathSegments = <String>[];
-  if (uri.pathSegments.isNotEmpty) {
-    pathSegments.addAll(uri.pathSegments.where(
-      (String s) => s.isNotEmpty,
-    ));
-  }
-  return pathSegments;
-}
-
-String _toWebSocket(Uri uri) {
-  final List<String> pathSegments = _cleanupPathSegments(uri);
-  pathSegments.add('ws');
-  return uri.replace(scheme: 'ws', pathSegments: pathSegments).toString();
 }

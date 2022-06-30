@@ -30,4 +30,3 @@ dev_dependencies:
   mockito: ^5.1.0
   pedantic: ^1.10.0
   pigeon: ^3.0.3
-  vm_service: ^8.3.0
