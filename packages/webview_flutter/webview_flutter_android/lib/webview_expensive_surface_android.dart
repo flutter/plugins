@@ -23,7 +23,7 @@ import 'webview_android_widget.dart';
 /// with the [WebView] at the cost of some performance on Android versions below
 /// 10. See https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
 /// information.
-class SurfaceAndroidWebView extends AndroidWebView {
+class ExpensiveSurfaceAndroidWebView extends AndroidWebView {
   @override
   Widget build({
     required BuildContext context,
@@ -53,7 +53,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
             );
           },
           onCreatePlatformView: (PlatformViewCreationParams params) {
-            return PlatformViewsService.initSurfaceAndroidView(
+            return PlatformViewsService.initExpensiveAndroidView(
               id: params.id,
               viewType: 'plugins.flutter.io/webview',
               // WebView content is not affected by the Android view's layout direction,
