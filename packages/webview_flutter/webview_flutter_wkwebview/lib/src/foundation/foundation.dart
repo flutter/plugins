@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 
 import '../common/instance_manager.dart';
 import 'foundation_api_impls.dart';
@@ -277,6 +278,8 @@ class NSObject with Copyable {
   /// `WeakReference` when referencing an object not received as a parameter.
   /// Otherwise, use [NSObject.dispose] to release the associated Objective-C
   /// object manually.
+  ///
+  /// See [withWeakRefenceTo].
   /// {@endtemplate}
   final void Function(
     String keyPath,
