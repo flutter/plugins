@@ -1,9 +1,12 @@
-## NEXT
+## 0.8.7
 
 - Supports empty custom analysis allow list files.
 - `drive-examples` now validates files to ensure that they don't accidentally
   use `test(...)`.
 - Adds a new `dependabot-check` command to ensure complete Dependabot coverage.
+- Adds `skip-if-not-supporting-dart-version` to allow for the same use cases
+  as `skip-if-not-supporting-flutter-version` but for packages without Flutter
+  constraints.
 
 ## 0.8.6
 
