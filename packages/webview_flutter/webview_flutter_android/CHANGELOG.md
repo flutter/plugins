@@ -2,7 +2,8 @@
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 * Fixes bug where `Directionality` from context didn't affect `SurfaceAndroidWebView`.
-* Fixes bug where default text direction is different for `SurfaceAndroidWebView` and `AndroidWebView`.
+* Fixes bug where default text direction was different for `SurfaceAndroidWebView` and `AndroidWebView`.
+  Default is now `TextDirection.ltr` for both.
 * Adds support for hybrid composition though `ExpensiveSurfaceAndroidWebView`.
 
 ## 2.8.14

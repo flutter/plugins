@@ -20,7 +20,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_android/webview_android.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
-import 'package:webview_flutter_android/webview_expensive_surface_android.dart';
 import 'package:webview_flutter_android_example/navigation_decision.dart';
 import 'package:webview_flutter_android_example/navigation_request.dart';
 import 'package:webview_flutter_android_example/web_view.dart';
@@ -1382,98 +1381,6 @@ Future<void> main() async {
 
   testWidgets(
     'clearCache should clear local storage',
-    (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      final Completer<void> onPageFinished = Completer<void>();
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: primaryUrl,
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (_) => onPageFinished.complete(),
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-          ),
-        ),
-      );
-
-      final WebViewController controller = await controllerCompleter.future;
-      await onPageFinished.future;
-
-      await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
-
-      expect(
-        controller.runJavascriptReturningResult(
-          'localStorage.getItem("myCat");',
-        ),
-        completion('"Tom"'),
-      );
-
-      await controller.clearCache();
-
-      expect(
-        controller.runJavascriptReturningResult(
-          'localStorage.getItem("myCat");',
-        ),
-        completion('null'),
-      );
-    },
-  );
-
-  testWidgets(
-    'clearCache should clear local storage',
-    (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      final Completer<void> onPageFinished = Completer<void>();
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: primaryUrl,
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (_) => onPageFinished.complete(),
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-          ),
-        ),
-      );
-
-      final WebViewController controller = await controllerCompleter.future;
-      await onPageFinished.future;
-
-      await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
-
-      expect(
-        controller.runJavascriptReturningResult(
-          'localStorage.getItem("myCat");',
-        ),
-        completion('"Tom"'),
-      );
-
-      await controller.clearCache();
-
-      expect(
-        controller.runJavascriptReturningResult(
-          'localStorage.getItem("myCat");',
-        ),
-        completion('null'),
-      );
-    },
-  );
-
-  setUpAll(() {
-    WebView.platform = SurfaceAndroidWebView();
-  });
-
-  testWidgets(
-    'ExpensiveSurfaceAndroidWebView uses ExpensiveAndroidViewController',
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
