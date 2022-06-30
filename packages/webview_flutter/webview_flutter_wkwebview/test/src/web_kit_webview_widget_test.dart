@@ -24,22 +24,6 @@ import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
 
 import 'web_kit_webview_widget_test.mocks.dart';
 
-List<String> _cleanupPathSegments(Uri uri) {
-  final List<String> pathSegments = <String>[];
-  if (uri.pathSegments.isNotEmpty) {
-    pathSegments.addAll(uri.pathSegments.where(
-      (String s) => s.isNotEmpty,
-    ));
-  }
-  return pathSegments;
-}
-
-String _toWebSocket(Uri uri) {
-  final List<String> pathSegments = _cleanupPathSegments(uri);
-  pathSegments.add('ws');
-  return uri.replace(scheme: 'ws', pathSegments: pathSegments).toString();
-}
-
 @GenerateMocks(<Type>[
   UIScrollView,
   WKNavigationDelegate,
@@ -147,14 +131,6 @@ void main() async {
         },
       ));
       await tester.pumpAndSettle();
-    }
-
-    Future<void> runGarbageCollection() async {
-      final Uri? serverUri = (await Service.getInfo()).serverUri;
-      final String isolateId = Service.getIsolateID(Isolate.current)!;
-      final vm_service.VmService vmService =
-          await vm_service_io.vmServiceConnectUri(_toWebSocket(serverUri!));
-      await vmService.getAllocationProfile(isolateId, gc: true);
     }
 
     testWidgets('build $WebKitWebViewWidget', (WidgetTester tester) async {
