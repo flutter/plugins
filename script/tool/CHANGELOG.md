@@ -1,9 +1,10 @@
-## NEXT
+## 0.8.7
 
 - Supports empty custom analysis allow list files.
 - `drive-examples` now validates files to ensure that they don't accidentally
   use `test(...)`.
 - Adds a new `dependabot-check` command to ensure complete Dependabot coverage.
+- Allows pre-release versions in `version-check`.
 
 ## 0.8.6
 
