@@ -73,10 +73,7 @@ Future<void> main() async {
       (WidgetTester tester) async {
     final Completer<int> gcCompleter = Completer<int>();
     final InstanceManager instanceManager = InstanceManager(
-      onWeakReferenceRemoved: (_) {
-        print(_);
-        gcCompleter.complete(_);
-      },
+      onWeakReferenceRemoved: gcCompleter.complete,
     );
 
     ClassWithCallbackClass? instance = ClassWithCallbackClass();
