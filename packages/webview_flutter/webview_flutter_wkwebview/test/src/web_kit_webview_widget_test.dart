@@ -34,7 +34,7 @@ import 'web_kit_webview_widget_test.mocks.dart';
   WebViewPlatformCallbacksHandler,
   WebViewWidgetProxy,
 ])
-void main() async {
+void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('WebKitWebViewWidget', () {
