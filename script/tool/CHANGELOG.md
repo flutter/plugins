@@ -1,3 +1,7 @@
+## 0.8.8
+
+- Allows pre-release versions in `version-check`.
+
 ## 0.8.7
 
 - Supports empty custom analysis allow list files.
