@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Removes usages of `FingerprintManager` and other `BiometricManager` deprecated method usages.
+
 ## 1.0.5
 
 * Updates references to the obsolete master branch.

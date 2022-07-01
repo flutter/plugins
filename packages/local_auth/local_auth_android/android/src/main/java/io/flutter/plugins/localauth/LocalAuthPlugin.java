@@ -186,7 +186,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       }
     }
 
-    // No authentication available, throw error
+    // Unable to authenticate
     int errorCode =
         isBiometricOnly
             ? biometricManager.canAuthenticate(
