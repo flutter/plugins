@@ -1286,14 +1286,15 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': true,
             }),
           ],
         );
       });
 
-      test('passes the width and height arguments correctly', () async {
+      test('passes the width, height and imageQuality arguments correctly',
+          () async {
         returnValue = <dynamic>['0', '1'];
         await picker.getMultiImageWithOptions();
         await picker.getMultiImageWithOptions(
@@ -1334,25 +1335,25 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': 10.0,
               'maxHeight': null,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': 10.0,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': 10.0,
               'maxHeight': 20.0,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
@@ -1431,7 +1432,7 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': true,
             }),
           ],
@@ -1450,7 +1451,7 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': null,
+              'imageQuality': 100,
               'requestFullMetadata': false,
             }),
           ],
