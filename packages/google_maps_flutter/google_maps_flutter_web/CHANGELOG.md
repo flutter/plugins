@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* Updates `README.md` to describe a hit-testing issue when Flutter widgets are overlaid on top of the Map widget.
+
 ## 0.4.0
 
 * Implements the new platform interface versions of `buildView` and
@@ -6,7 +10,6 @@
   versions of those methods, so this version can only be used with
   `google_maps_flutter` 2.1.8 or later.
 * Adds `const` constructor parameters in example tests.
-* Update the `README.md` to discuss mouse issue when stacked.
 
 ## 0.3.3
 
