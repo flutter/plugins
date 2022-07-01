@@ -177,6 +177,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
+  @Deprecated('Use `getImageFromSource` instead.')
   Future<XFile?> getImage({
     required ImageSource source,
     double? maxWidth,
@@ -207,6 +208,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// a warning message will be logged.
   ///
   /// If no images were picked, the return value is null.
+  @Deprecated('Use `getMultiImageWithOptions` instead.')
   Future<List<XFile>?> getMultiImage({
     double? maxWidth,
     double? maxHeight,

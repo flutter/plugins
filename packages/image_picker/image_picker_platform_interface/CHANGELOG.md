@@ -1,4 +1,5 @@
 ## 2.6.0
+
 * Deprecates `getMultiImage` in favor of a new method `getMultiImageWithOptions`.
     * Adds `requestFullMetadata` option that allows disabling extra permission requests
       on certain platforms.

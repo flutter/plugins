@@ -9,7 +9,7 @@ class MultiImagePickerOptions {
   const MultiImagePickerOptions({
     this.maxHeight,
     this.maxWidth,
-    this.imageQuality,
+    this.imageQuality = 100,
     this.requestFullMetadata = true,
   });
 
@@ -31,7 +31,7 @@ class MultiImagePickerOptions {
   /// message will be logged.
   ///
   /// If null, the image will be returned with the original quality.
-  final int? imageQuality;
+  final int imageQuality;
 
   /// If true, requests full image metadata, which may require extra permissions
   /// on some platforms, (e.g., NSPhotoLibraryUsageDescription on iOS).
