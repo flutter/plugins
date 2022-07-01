@@ -6,6 +6,7 @@
   versions of those methods, so this version can only be used with
   `google_maps_flutter` 2.1.8 or later.
 * Adds `const` constructor parameters in example tests.
+* Update the `README.md` to discuss mouse issue when stacked.
 
 ## 0.3.3
 
