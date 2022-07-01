@@ -56,14 +56,14 @@ void main() {
       });
 
       test(
-          'Should throw CameraException when create throws a PlatformException',
+          'Should throw StateError when create is called while camera permissions request ongoing',
           () {
         // Arrange
         MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: <String, dynamic>{
               'create': PlatformException(
-                code: 'TESTING_ERROR_CODE',
+                code: 'CameraPermissionsRequestOngoing',
                 message: 'Mock error message used during testing.',
               )
             });
@@ -71,22 +71,16 @@ void main() {
 
         // Act
         expect(
-          () => camera.createCamera(
-            const CameraDescription(
-              name: 'Test',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 0,
-            ),
-            ResolutionPreset.high,
-          ),
-          throwsA(
-            isA<CameraException>()
-                .having(
-                    (CameraException e) => e.code, 'code', 'TESTING_ERROR_CODE')
-                .having((CameraException e) => e.description, 'description',
-                    'Mock error message used during testing.'),
-          ),
-        );
+            () => camera.createCamera(
+                  const CameraDescription(
+                    name: 'Test',
+                    lensDirection: CameraLensDirection.back,
+                    sensorOrientation: 0,
+                  ),
+                  ResolutionPreset.high,
+                ),
+            throwsStateError,
+            reason: 'Mock error message used during testing.');
       });
 
       test(
