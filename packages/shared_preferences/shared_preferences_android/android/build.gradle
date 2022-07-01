@@ -42,7 +42,7 @@ android {
         baseline file("lint-baseline.xml")
     }
     dependencies {
-        testImplementation 'junit:junit:4.12'
+        testImplementation 'junit:junit:4.13.2'
         testImplementation 'org.mockito:mockito-inline:3.9.0'
     }
 

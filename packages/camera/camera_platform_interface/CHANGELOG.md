@@ -2,6 +2,7 @@
 
 * Handles Android camera permissions error code that indicates a request being made while another was in progress.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+* Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
 
 ## 2.2.0
 

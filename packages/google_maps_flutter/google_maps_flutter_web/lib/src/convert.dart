@@ -13,16 +13,6 @@ final gmaps.LatLngBounds _nullGmapsLatLngBounds =
 const String _defaultCssColor = '#000000';
 const double _defaultCssOpacity = 0.0;
 
-// Indices in the plugin side don't match with the ones
-// in the gmaps lib. This translates from plugin -> gmaps.
-final Map<int, gmaps.MapTypeId> _mapTypeToMapTypeId = <int, gmaps.MapTypeId>{
-  0: gmaps.MapTypeId.ROADMAP, // "none" in the plugin
-  1: gmaps.MapTypeId.ROADMAP,
-  2: gmaps.MapTypeId.SATELLITE,
-  3: gmaps.MapTypeId.TERRAIN,
-  4: gmaps.MapTypeId.HYBRID,
-};
-
 // Converts a [Color] into a valid CSS value #RRGGBB.
 String _getCssColor(Color color) {
   if (color == null) {
@@ -55,47 +45,62 @@ double _getCssOpacity(Color color) {
 // indoorViewEnabled seems to not have an equivalent in web
 // buildingsEnabled seems to not have an equivalent in web
 // padding seems to behave differently in web than mobile. You can't move UI elements in web.
-gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, Object?> rawOptions) {
+gmaps.MapOptions _configurationAndStyleToGmapsOptions(
+    MapConfiguration configuration, List<gmaps.MapTypeStyle> styles) {
   final gmaps.MapOptions options = gmaps.MapOptions();
 
-  if (_mapTypeToMapTypeId.containsKey(rawOptions['mapType'])) {
-    options.mapTypeId = _mapTypeToMapTypeId[rawOptions['mapType']];
+  if (configuration.mapType != null) {
+    options.mapTypeId = _gmapTypeIDForPluginType(configuration.mapType!);
   }
 
-  if (rawOptions['minMaxZoomPreference'] != null) {
-    final List<Object?> minMaxPreference =
-        rawOptions['minMaxZoomPreference']! as List<Object?>;
+  final MinMaxZoomPreference? zoomPreference =
+      configuration.minMaxZoomPreference;
+  if (zoomPreference != null) {
     options
-      ..minZoom = minMaxPreference[0] as num?
-      ..maxZoom = minMaxPreference[1] as num?;
+      ..minZoom = zoomPreference.minZoom
+      ..maxZoom = zoomPreference.maxZoom;
   }
 
-  if (rawOptions['cameraTargetBounds'] != null) {
+  if (configuration.cameraTargetBounds != null) {
     // Needs gmaps.MapOptions.restriction and gmaps.MapRestriction
     // see: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions.restriction
   }
 
-  if (rawOptions['zoomControlsEnabled'] != null) {
-    options.zoomControl = rawOptions['zoomControlsEnabled'] as bool?;
+  if (configuration.zoomControlsEnabled != null) {
+    options.zoomControl = configuration.zoomControlsEnabled;
   }
 
-  if (rawOptions['styles'] != null) {
-    options.styles = rawOptions['styles'] as List<gmaps.MapTypeStyle?>?;
-  }
-
-  if (rawOptions['scrollGesturesEnabled'] == false ||
-      rawOptions['zoomGesturesEnabled'] == false) {
+  if (configuration.scrollGesturesEnabled == false ||
+      configuration.zoomGesturesEnabled == false) {
     options.gestureHandling = 'none';
   } else {
     options.gestureHandling = 'auto';
   }
 
-  // These don't have any rawOptions entry, but they seem to be off in the native maps.
+  // These don't have any configuration entries, but they seem to be off in the
+  // native maps.
   options.mapTypeControl = false;
   options.fullscreenControl = false;
   options.streetViewControl = false;
 
+  options.styles = styles;
+
   return options;
+}
+
+gmaps.MapTypeId _gmapTypeIDForPluginType(MapType type) {
+  switch (type) {
+    case MapType.satellite:
+      return gmaps.MapTypeId.SATELLITE;
+    case MapType.terrain:
+      return gmaps.MapTypeId.TERRAIN;
+    case MapType.hybrid:
+      return gmaps.MapTypeId.HYBRID;
+    case MapType.normal:
+    case MapType.none:
+    default:
+      return gmaps.MapTypeId.ROADMAP;
+  }
 }
 
 gmaps.MapOptions _applyInitialPosition(
@@ -109,11 +114,6 @@ gmaps.MapOptions _applyInitialPosition(
         initialPosition.target.latitude, initialPosition.target.longitude);
   }
   return options;
-}
-
-// Extracts the status of the traffic layer from the rawOptions map.
-bool _isTrafficLayerEnabled(Map<String, Object?> rawOptions) {
-  return rawOptions['trafficEnabled'] as bool? ?? false;
 }
 
 // The keys we'd expect to see in a serialized MapTypeStyle JSON object.

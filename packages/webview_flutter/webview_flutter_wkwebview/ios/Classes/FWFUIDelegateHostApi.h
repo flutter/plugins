@@ -8,6 +8,7 @@
 #import "FWFGeneratedWebKitApis.h"
 #import "FWFInstanceManager.h"
 #import "FWFObjectHostApi.h"
+#import "FWFWebViewConfigurationHostApi.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles making callbacks to Dart for a WKUIDelegate.
  */
 @interface FWFUIDelegateFlutterApiImpl : FWFWKUIDelegateFlutterApi
+@property(readonly, nonatomic)
+    FWFWebViewConfigurationFlutterApiImpl *webViewConfigurationFlutterApi;
+
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end
@@ -26,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface FWFUIDelegate : FWFObject <WKUIDelegate>
 @property(readonly, nonnull, nonatomic) FWFUIDelegateFlutterApiImpl *UIDelegateAPI;
+
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
                         instanceManager:(FWFInstanceManager *)instanceManager;
 @end
@@ -36,7 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Handles creating WKUIDelegate that intercommunicate with a paired Dart object.
  */
 @interface FWFUIDelegateHostApiImpl : NSObject <FWFWKUIDelegateHostApi>
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager;
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager;
 @end
 
 NS_ASSUME_NONNULL_END
