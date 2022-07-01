@@ -237,13 +237,13 @@ class NSHttpCookie {
 /// The root class of most Objective-C class hierarchies.
 @immutable
 class NSObject with Copyable {
-  // TODO(bparrishMines): Change constructor name to `detached`.
   /// Constructs a [NSObject] without creating the associated
   /// Objective-C object.
   ///
   /// This should only be used by subclasses created by this library or to
   /// create copies.
-  NSObject({
+  NSObject.detached({
+    this.observeValue,
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) : _api = NSObjectHostApiImpl(
@@ -254,6 +254,11 @@ class NSObject with Copyable {
     FoundationFlutterApis.instance.ensureSetUp();
   }
 
+  /// Release the reference to the Objective-C object.
+  static void dispose(NSObject instance) {
+    instance._api.instanceManager.removeWeakReference(instance);
+  }
+
   /// Global instance of [InstanceManager].
   static final InstanceManager globalInstanceManager =
       InstanceManager(onWeakReferenceRemoved: (int instanceId) {
@@ -261,6 +266,13 @@ class NSObject with Copyable {
   });
 
   final NSObjectHostApiImpl _api;
+
+  /// Informs the observing object when the value at the specified key path has changed.
+  final void Function(
+    String keyPath,
+    NSObject object,
+    Map<NSKeyValueChangeKey, Object?> change,
+  )? observeValue;
 
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
@@ -282,41 +294,12 @@ class NSObject with Copyable {
     return _api.removeObserverForInstances(this, observer, keyPath);
   }
 
-  /// Release the reference to the Objective-C object.
-  static void dispose(NSObject instance) {
-    instance._api.instanceManager.removeWeakReference(instance);
-  }
-
-  /// Informs the observing object when the value at the specified key path has changed.
-  Future<void> setObserveValue(
-    void Function(
-      String keyPath,
-      NSObject object,
-      Map<NSKeyValueChangeKey, Object?> change,
-    )?
-        observeValue,
-  ) {
-    throw UnimplementedError();
-  }
-
   @override
-  Copyable copy() {
-    return NSObject(
+  NSObject copy() {
+    return NSObject.detached(
+      observeValue: observeValue,
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
     );
-  }
-
-  @override
-  int get hashCode {
-    return Object.hash(_api, _api.instanceManager.getIdentifier(this));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is NSObject &&
-        _api == other._api &&
-        _api.instanceManager.getIdentifier(this) ==
-            other._api.instanceManager.getIdentifier(other);
   }
 }

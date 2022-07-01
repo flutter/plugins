@@ -1,3 +1,13 @@
+## 6.1.4
+
+* Adopts new platform interface method for launching URLs.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/105648).
+
+## 6.1.3
+
+* Updates README section about query permissions to better reflect changes to
+  `canLaunchUrl` recommendations.
+
 ## 6.1.2
 
 * Minor fixes for new analysis options.

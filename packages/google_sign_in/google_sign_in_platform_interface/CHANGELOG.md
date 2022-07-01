@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Adds support for the `serverClientId` parameter.
+
 ## 2.1.3
 
 * Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.

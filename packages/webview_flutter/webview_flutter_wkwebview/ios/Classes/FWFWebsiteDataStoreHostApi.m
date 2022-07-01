@@ -7,7 +7,8 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFWebsiteDataStoreHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
 @implementation FWFWebsiteDataStoreHostApiImpl
@@ -60,7 +61,7 @@
                       modifiedSince:[NSDate dateWithTimeIntervalSince1970:
                                                 modificationTimeInSecondsSinceEpoch.doubleValue]
                   completionHandler:^{
-                    completion(@(records.count > 0), nil);
+                    completion([NSNumber numberWithBool:(records.count > 0)], nil);
                   }];
             }];
 }
