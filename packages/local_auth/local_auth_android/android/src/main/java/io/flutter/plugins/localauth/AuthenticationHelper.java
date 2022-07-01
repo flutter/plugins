@@ -27,8 +27,8 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import io.flutter.plugin.common.MethodCall;
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
-import java.util.List;
 
 /**
  * Authenticates the user with biometrics and sends corresponding response back to Flutter.
@@ -76,7 +76,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       FragmentActivity activity,
       MethodCall call,
       AuthCompletionHandler completionHandler,
-      List<String> authenticationOptions) {
+      ArrayList<String> authenticationMethods) {
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
@@ -95,7 +95,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     boolean credentialsAllowed = false;
     int allowedAuthenticators = 0;
 
-    for (String option : authenticationOptions) {
+    for (String option : authenticationMethods) {
       switch (option) {
         case "weak":
           allowedAuthenticators |= BiometricManager.Authenticators.BIOMETRIC_WEAK;
