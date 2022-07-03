@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +40,9 @@ class VideoPlayerValue {
     this.size = Size.zero,
     this.position = Duration.zero,
     this.caption = Caption.none,
+    this.caption1 = Caption.none,
     this.captionOffset = Duration.zero,
+    this.captionOffset1 = Duration.zero, 
     this.buffered = const <DurationRange>[],
     this.isInitialized = false,
     this.isPlaying = false,
@@ -49,7 +50,6 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
-    this.rotationCorrection = 0,
     this.errorDescription,
   });
 
@@ -82,10 +82,14 @@ class VideoPlayerValue {
   /// [position], this will be a [Caption.none] object.
   final Caption caption;
 
+  final Caption caption1;
+
   /// The [Duration] that should be used to offset the current [position] to get the correct [Caption].
   ///
   /// Defaults to Duration.zero.
   final Duration captionOffset;
+
+  final Duration captionOffset1;
 
   /// The currently buffered ranges.
   final List<DurationRange> buffered;
@@ -113,9 +117,6 @@ class VideoPlayerValue {
   /// The [size] of the currently loaded video.
   final Size size;
 
-  /// Degrees to rotate the video (clockwise) so it is displayed correctly.
-  final int rotationCorrection;
-
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
@@ -141,13 +142,15 @@ class VideoPlayerValue {
   }
 
   /// Returns a new instance that has the same values as this current instance,
-  /// except for any overrides passed in as arguments to [copyWith].
+  /// except for any overrides passed in as arguments to [copyWidth].
   VideoPlayerValue copyWith({
     Duration? duration,
     Size? size,
     Duration? position,
     Caption? caption,
+    Caption? caption1,
     Duration? captionOffset,
+    Duration? captionOffset1,
     List<DurationRange>? buffered,
     bool? isInitialized,
     bool? isPlaying,
@@ -155,7 +158,6 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? volume,
     double? playbackSpeed,
-    int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
   }) {
     return VideoPlayerValue(
@@ -163,7 +165,9 @@ class VideoPlayerValue {
       size: size ?? this.size,
       position: position ?? this.position,
       caption: caption ?? this.caption,
+      caption1: caption1 ?? this.caption1,
       captionOffset: captionOffset ?? this.captionOffset,
+      captionOffset1: captionOffset1 ?? this.captionOffset1,
       buffered: buffered ?? this.buffered,
       isInitialized: isInitialized ?? this.isInitialized,
       isPlaying: isPlaying ?? this.isPlaying,
@@ -171,7 +175,6 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
-      rotationCorrection: rotationCorrection ?? this.rotationCorrection,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
           : this.errorDescription,
@@ -185,7 +188,9 @@ class VideoPlayerValue {
         'size: $size, '
         'position: $position, '
         'caption: $caption, '
+        'caption1: $caption1, '
         'captionOffset: $captionOffset, '
+        'captionOffset1: $captionOffset1, '
         'buffered: [${buffered.join(', ')}], '
         'isInitialized: $isInitialized, '
         'isPlaying: $isPlaying, '
@@ -216,8 +221,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.asset(this.dataSource,
       {this.package,
       Future<ClosedCaptionFile>? closedCaptionFile,
+      Future<ClosedCaptionFile>? closedCaptionFile1,
       this.videoPlayerOptions})
       : _closedCaptionFileFuture = closedCaptionFile,
+        _closedCaptionFileFuture1 = closedCaptionFile1,
         dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const <String, String>{},
@@ -236,9 +243,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     this.dataSource, {
     this.formatHint,
     Future<ClosedCaptionFile>? closedCaptionFile,
+    Future<ClosedCaptionFile>? closedCaptionFile1,
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
   })  : _closedCaptionFileFuture = closedCaptionFile,
+        _closedCaptionFileFuture1 = closedCaptionFile1,
         dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
@@ -248,8 +257,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file,
-      {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
+      {Future<ClosedCaptionFile>? closedCaptionFile,Future<ClosedCaptionFile>? closedCaptionFile1, this.videoPlayerOptions})
       : _closedCaptionFileFuture = closedCaptionFile,
+        _closedCaptionFileFuture1 = closedCaptionFile1,
         dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -262,10 +272,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the video from the input content-URI.
   /// This is supported on Android only.
   VideoPlayerController.contentUri(Uri contentUri,
-      {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
+      {Future<ClosedCaptionFile>? closedCaptionFile,Future<ClosedCaptionFile>? closedCaptionFile1, this.videoPlayerOptions})
       : assert(defaultTargetPlatform == TargetPlatform.android,
             'VideoPlayerController.contentUri is only supported on Android.'),
         _closedCaptionFileFuture = closedCaptionFile,
+        _closedCaptionFileFuture1 = closedCaptionFile1,
         dataSource = contentUri.toString(),
         dataSourceType = DataSourceType.contentUri,
         package = null,
@@ -297,7 +308,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final String? package;
 
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
+  Future<ClosedCaptionFile>? _closedCaptionFileFuture1;
   ClosedCaptionFile? _closedCaptionFile;
+  ClosedCaptionFile? _closedCaptionFile1;
   Timer? _timer;
   bool _isDisposed = false;
   Completer<void>? _creatingCompleter;
@@ -375,7 +388,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
-            rotationCorrection: event.rotationCorrection,
             isInitialized: event.duration != null,
             errorDescription: null,
           );
@@ -408,6 +420,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_closedCaptionFileFuture != null) {
       await _updateClosedCaptionWithFuture(_closedCaptionFileFuture);
     }
+    if (_closedCaptionFileFuture1 != null) {
+      await _updateClosedCaptionWithFuture(_closedCaptionFileFuture1);
+    }
 
     void errorListener(Object obj) {
       final PlatformException e = obj as PlatformException;
@@ -426,10 +441,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   @override
   Future<void> dispose() async {
-    if (_isDisposed) {
-      return;
-    }
-
     if (_creatingCompleter != null) {
       await _creatingCompleter!.future;
       if (!_isDisposed) {
@@ -621,6 +632,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       caption: _getCaptionAt(value.position),
     );
   }
+  void setCaptionOffset1(Duration offset) {
+    value = value.copyWith(
+      captionOffset1: offset,
+      caption1: _getCaptionAt1(value.position),
+    );
+  }
 
   /// The closed caption based on the current [position] in the video.
   ///
@@ -645,9 +662,28 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return Caption.none;
   }
 
+  Caption _getCaptionAt1(Duration position) {
+    if (_closedCaptionFile1 == null) {
+      return Caption.none;
+    }
+
+    final Duration delayedPosition = position + value.captionOffset1;
+    // TODO(johnsonmh): This would be more efficient as a binary search.
+    for (final Caption caption in _closedCaptionFile1!.captions) {
+      if (caption.start <= delayedPosition && caption.end >= delayedPosition) {
+        return caption;
+      }
+    }
+
+    return Caption.none;
+  }
+
   /// Returns the file containing closed captions for the video, if any.
   Future<ClosedCaptionFile>? get closedCaptionFile {
     return _closedCaptionFileFuture;
+  }
+  Future<ClosedCaptionFile>? get closedCaptionFile1 {
+    return _closedCaptionFileFuture1;
   }
 
   /// Sets a closed caption file.
@@ -659,12 +695,24 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _updateClosedCaptionWithFuture(closedCaptionFile);
     _closedCaptionFileFuture = closedCaptionFile;
   }
+  Future<void> setClosedCaptionFile1(
+    Future<ClosedCaptionFile>? closedCaptionFile1,
+  ) async {
+    await _updateClosedCaptionWithFuture1(closedCaptionFile1);
+    _closedCaptionFileFuture1 = closedCaptionFile1;
+  }
 
   Future<void> _updateClosedCaptionWithFuture(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {
     _closedCaptionFile = await closedCaptionFile;
     value = value.copyWith(caption: _getCaptionAt(value.position));
+  }
+  Future<void> _updateClosedCaptionWithFuture1(
+    Future<ClosedCaptionFile>? closedCaptionFile1,
+  ) async {
+    _closedCaptionFile1 = await closedCaptionFile1;
+    value = value.copyWith(caption1: _getCaptionAt1(value.position));
   }
 
   void _updatePosition(Duration position) {
@@ -673,7 +721,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       caption: _getCaptionAt(position),
     );
   }
-
+  void _updatePosition1(Duration position) {
+    value = value.copyWith(
+      position: position,
+      caption1: _getCaptionAt1(position),
+    );
+  }
   @override
   void removeListener(VoidCallback listener) {
     // Prevent VideoPlayer from causing an exception to be thrown when attempting to
@@ -773,27 +826,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == VideoPlayerController.kUninitializedTextureId
         ? Container()
-        : _VideoPlayerWithRotation(
-            rotation: widget.controller.value.rotationCorrection,
-            child: _videoPlayerPlatform.buildView(_textureId),
-          );
+        : _videoPlayerPlatform.buildView(_textureId);
   }
-}
-
-class _VideoPlayerWithRotation extends StatelessWidget {
-  const _VideoPlayerWithRotation(
-      {Key? key, required this.rotation, required this.child})
-      : super(key: key);
-  final int rotation;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => rotation == 0
-      ? child
-      : Transform.rotate(
-          angle: rotation * math.pi / 180,
-          child: child,
-        );
 }
 
 /// Used to configure the [VideoProgressIndicator] widget's colors for how it
