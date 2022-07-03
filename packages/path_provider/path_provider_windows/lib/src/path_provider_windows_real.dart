@@ -256,4 +256,40 @@ class PathProviderWindows extends PathProviderPlatform {
     }
     return sanitized.isEmpty ? null : sanitized;
   }
+
+  String? _getExternalStorageFolderID(StorageDirectory type) {
+    switch (type) {
+      case StorageDirectory.documents:
+        return WindowsKnownFolder.Documents;
+
+      case StorageDirectory.downloads:
+        return WindowsKnownFolder.Downloads;
+      case StorageDirectory.pictures:
+        return WindowsKnownFolder.Pictures;
+      case StorageDirectory.music:
+        return WindowsKnownFolder.Music;
+
+      default:
+        return null;
+    }
+  }
+
+  @override
+  Future<List<String>?> getExternalStoragePaths(
+      {StorageDirectory? type}) async {
+    if (type == null) {
+      return null;
+    }
+    final String? folderID = _getExternalStorageFolderID(type);
+
+    if (folderID == null) {
+      return null;
+    }
+
+    final String? path = await getPath(folderID);
+    if (path == null) {
+      return null;
+    }
+    return <String>[path];
+  }
 }
