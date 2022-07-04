@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
+import 'package:image_picker_platform_interface/src/types/image_options.dart';
 import 'package:image_picker_platform_interface/src/types/multi_image_picker_options.dart';
 
 void main() {
@@ -1298,34 +1299,46 @@ void main() {
         returnValue = <dynamic>['0', '1'];
         await picker.getMultiImageWithOptions();
         await picker.getMultiImageWithOptions(
-          options: const MultiImagePickerOptions(maxWidth: 10.0),
-        );
-        await picker.getMultiImageWithOptions(
-          options: const MultiImagePickerOptions(maxHeight: 10.0),
-        );
-        await picker.getMultiImageWithOptions(
           options: const MultiImagePickerOptions(
-            maxWidth: 10.0,
-            maxHeight: 20.0,
+            imageOptions: ImageOptions(maxWidth: 10.0),
           ),
         );
         await picker.getMultiImageWithOptions(
           options: const MultiImagePickerOptions(
-            maxWidth: 10.0,
-            imageQuality: 70,
+            imageOptions: ImageOptions(maxHeight: 10.0),
           ),
         );
         await picker.getMultiImageWithOptions(
           options: const MultiImagePickerOptions(
-            maxHeight: 10.0,
-            imageQuality: 70,
+            imageOptions: ImageOptions(
+              maxWidth: 10.0,
+              maxHeight: 20.0,
+            ),
           ),
         );
         await picker.getMultiImageWithOptions(
           options: const MultiImagePickerOptions(
-            maxWidth: 10.0,
-            maxHeight: 20.0,
-            imageQuality: 70,
+            imageOptions: ImageOptions(
+              maxWidth: 10.0,
+              imageQuality: 70,
+            ),
+          ),
+        );
+        await picker.getMultiImageWithOptions(
+          options: const MultiImagePickerOptions(
+            imageOptions: ImageOptions(
+              maxHeight: 10.0,
+              imageQuality: 70,
+            ),
+          ),
+        );
+        await picker.getMultiImageWithOptions(
+          options: const MultiImagePickerOptions(
+            imageOptions: ImageOptions(
+              maxWidth: 10.0,
+              maxHeight: 20.0,
+              imageQuality: 70,
+            ),
           ),
         );
 
@@ -1382,14 +1395,18 @@ void main() {
         returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.getMultiImageWithOptions(
-            options: const MultiImagePickerOptions(maxWidth: -1.0),
+            options: const MultiImagePickerOptions(
+              imageOptions: ImageOptions(maxWidth: -1.0),
+            ),
           ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getMultiImageWithOptions(
-            options: const MultiImagePickerOptions(maxHeight: -1.0),
+            options: const MultiImagePickerOptions(
+              imageOptions: ImageOptions(maxHeight: -1.0),
+            ),
           ),
           throwsArgumentError,
         );
@@ -1399,14 +1416,18 @@ void main() {
         returnValue = <dynamic>['0', '1'];
         expect(
           () => picker.getMultiImageWithOptions(
-            options: const MultiImagePickerOptions(imageQuality: -1),
+            options: const MultiImagePickerOptions(
+              imageOptions: ImageOptions(imageQuality: -1),
+            ),
           ),
           throwsArgumentError,
         );
 
         expect(
           () => picker.getMultiImageWithOptions(
-            options: const MultiImagePickerOptions(imageQuality: 101),
+            options: const MultiImagePickerOptions(
+              imageOptions: ImageOptions(imageQuality: 101),
+            ),
           ),
           throwsArgumentError,
         );
@@ -1442,7 +1463,9 @@ void main() {
       test('passes the request full metadata argument correctly', () async {
         returnValue = <dynamic>['0', '1'];
         await picker.getMultiImageWithOptions(
-          options: const MultiImagePickerOptions(requestFullMetadata: false),
+          options: const MultiImagePickerOptions(
+            imageOptions: ImageOptions(requestFullMetadata: false),
+          ),
         );
 
         expect(

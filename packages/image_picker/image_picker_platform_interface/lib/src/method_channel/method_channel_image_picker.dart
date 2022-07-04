@@ -237,17 +237,17 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  Future<List<XFile>?> getMultiImageWithOptions({
+  Future<List<XFile>> getMultiImageWithOptions({
     MultiImagePickerOptions options = const MultiImagePickerOptions(),
   }) async {
     final List<dynamic>? paths = await _getMultiImagePath(
-      maxWidth: options.maxWidth,
-      maxHeight: options.maxHeight,
-      imageQuality: options.imageQuality,
-      requestFullMetadata: options.requestFullMetadata,
+      maxWidth: options.imageOptions.maxWidth,
+      maxHeight: options.imageOptions.maxHeight,
+      imageQuality: options.imageOptions.imageQuality,
+      requestFullMetadata: options.imageOptions.requestFullMetadata,
     );
     if (paths == null) {
-      return null;
+      return <XFile>[];
     }
 
     return paths.map((dynamic path) => XFile(path as String)).toList();
