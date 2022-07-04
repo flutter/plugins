@@ -1,10 +1,7 @@
-## NEXT
-
-* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
-
 ## 0.8.5+6
 
 * Updated description
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 0.8.5+5
 
