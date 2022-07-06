@@ -1,3 +1,7 @@
+## 0.9.8+2
+
+* Fixes exception in registerWith caused by the switch to an in-package method channel.
+
 ## 0.9.8+1
 
 * Ignores deprecation warnings for upcoming styleFrom button API changes.

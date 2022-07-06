@@ -31,8 +31,8 @@ enum NextVersionType {
   /// A bugfix change.
   PATCH,
 
-  /// The release of an existing prerelease version.
-  RELEASE,
+  /// The release of an existing pre-1.0 version.
+  V1_RELEASE,
 }
 
 /// The state of a package's version relative to the comparison base.
@@ -53,8 +53,8 @@ enum _CurrentVersionState {
   unknown,
 }
 
-/// Returns the set of allowed next versions, with their change type, for
-/// [version].
+/// Returns the set of allowed next non-prerelease versions, with their change
+/// type, for [version].
 ///
 /// [newVersion] is used to check whether this is a pre-1.0 version bump, as
 /// those have different semver rules.
@@ -78,17 +78,17 @@ Map<Version, NextVersionType> getAllowedNextVersions(
       final int currentBuildNumber = version.build.first as int;
       nextBuildNumber = currentBuildNumber + 1;
     }
-    final Version preReleaseVersion = Version(
+    final Version nextBuildVersion = Version(
       version.major,
       version.minor,
       version.patch,
       build: nextBuildNumber.toString(),
     );
     allowedNextVersions.clear();
-    allowedNextVersions[version.nextMajor] = NextVersionType.RELEASE;
+    allowedNextVersions[version.nextMajor] = NextVersionType.V1_RELEASE;
     allowedNextVersions[version.nextMinor] = NextVersionType.BREAKING_MAJOR;
     allowedNextVersions[version.nextPatch] = NextVersionType.MINOR;
-    allowedNextVersions[preReleaseVersion] = NextVersionType.PATCH;
+    allowedNextVersions[nextBuildVersion] = NextVersionType.PATCH;
   }
   return allowedNextVersions;
 }
@@ -337,12 +337,11 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
     // Check for reverts when doing local validation.
     if (!getBoolArg(_againstPubFlag) && currentVersion < previousVersion) {
-      final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
-          getAllowedNextVersions(currentVersion, newVersion: previousVersion);
       // Since this skips validation, try to ensure that it really is likely
       // to be a revert rather than a typo by checking that the transition
       // from the lower version to the new version would have been valid.
-      if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
+      if (_shouldAllowVersionChange(
+          oldVersion: currentVersion, newVersion: previousVersion)) {
         logWarning('${indentation}New version is lower than previous version. '
             'This is assumed to be a revert.');
         return _CurrentVersionState.validRevert;
@@ -352,7 +351,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final Map<Version, NextVersionType> allowedNextVersions =
         getAllowedNextVersions(previousVersion, newVersion: currentVersion);
 
-    if (allowedNextVersions.containsKey(currentVersion)) {
+    if (_shouldAllowVersionChange(
+        oldVersion: previousVersion, newVersion: currentVersion)) {
       print('$indentation$previousVersion -> $currentVersion');
     } else {
       printError('${indentation}Incorrectly updated version.\n'
@@ -361,7 +361,13 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       return _CurrentVersionState.invalidChange;
     }
 
-    if (allowedNextVersions[currentVersion] == NextVersionType.BREAKING_MAJOR &&
+    // Check whether the version (or for a pre-release, the version that
+    // pre-release would eventually be released as) is a breaking change, and
+    // if so, validate it.
+    final Version targetReleaseVersion =
+        currentVersion.isPreRelease ? currentVersion.nextPatch : currentVersion;
+    if (allowedNextVersions[targetReleaseVersion] ==
+            NextVersionType.BREAKING_MAJOR &&
         !_validateBreakingChange(package)) {
       printError('${indentation}Breaking change detected.\n'
           '${indentation}Breaking changes to platform interfaces are not '
@@ -518,6 +524,27 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       throw ToolExit(_exitMissingChangeDescriptionFile);
     }
     return file.readAsStringSync();
+  }
+
+  /// Returns true if the given version transition should be allowed.
+  bool _shouldAllowVersionChange(
+      {required Version oldVersion, required Version newVersion}) {
+    // Get the non-pre-release next version mapping.
+    final Map<Version, NextVersionType> allowedNextVersions =
+        getAllowedNextVersions(oldVersion, newVersion: newVersion);
+
+    if (allowedNextVersions.containsKey(newVersion)) {
+      return true;
+    }
+    // Allow a pre-release version of a version that would be a valid
+    // transition.
+    if (newVersion.isPreRelease) {
+      final Version targetReleaseVersion = newVersion.nextPatch;
+      if (allowedNextVersions.containsKey(targetReleaseVersion)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// Returns an error string if the changes to this package should have

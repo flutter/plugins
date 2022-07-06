@@ -14,8 +14,9 @@
 @implementation FWFWebViewHostApiTests
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   [instanceManager addDartCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
 
@@ -32,8 +33,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   FWFNSUrlRequestData *requestData = [FWFNSUrlRequestData makeWithUrl:@"https://www.flutter.dev"
@@ -57,8 +59,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   FWFNSUrlRequestData *requestData = [FWFNSUrlRequestData makeWithUrl:@"%invalidUrl%"
@@ -78,8 +81,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI setUserAgentForWebViewWithIdentifier:@0 userAgent:@"userA" error:&error];
@@ -94,8 +98,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   XCTAssertEqualObjects([hostAPI URLForWebViewWithIdentifier:@0 error:&error],
@@ -110,8 +115,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   XCTAssertEqualObjects([hostAPI canGoBackForWebViewWithIdentifier:@0 error:&error], @YES);
@@ -124,8 +130,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   id<WKUIDelegate> mockDelegate = OCMProtocolMock(@protocol(WKUIDelegate));
   [instanceManager addDartCreatedInstance:mockDelegate withIdentifier:1];
@@ -142,8 +149,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   id<WKNavigationDelegate> mockDelegate = OCMProtocolMock(@protocol(WKNavigationDelegate));
   [instanceManager addDartCreatedInstance:mockDelegate withIdentifier:1];
@@ -161,8 +169,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   XCTAssertEqualObjects([hostAPI estimatedProgressForWebViewWithIdentifier:@0 error:&error], @34.0);
@@ -175,8 +184,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI loadHTMLForWebViewWithIdentifier:@0
@@ -193,8 +203,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI loadFileForWebViewWithIdentifier:@0
@@ -222,10 +233,11 @@
   OCMStub([mockBundle URLForResource:@"myFolder/assets/index" withExtension:@"html"])
       .andReturn([NSURL URLWithString:@"webview_flutter/myFolder/assets/index.html"]);
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager
-                                                      bundle:mockBundle
-                                                assetManager:mockAssetManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager
+                       bundle:mockBundle
+                 assetManager:mockAssetManager];
 
   FlutterError *error;
   [hostAPI loadAssetForWebViewWithIdentifier:@0 assetKey:@"assets/index.html" error:&error];
@@ -243,8 +255,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   XCTAssertEqualObjects([hostAPI canGoForwardForWebViewWithIdentifier:@0 error:&error], @NO);
@@ -257,8 +270,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI goBackForWebViewWithIdentifier:@0 error:&error];
@@ -272,8 +286,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI goForwardForWebViewWithIdentifier:@0 error:&error];
@@ -287,8 +302,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI reloadWebViewWithIdentifier:@0 error:&error];
@@ -303,8 +319,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   XCTAssertEqualObjects([hostAPI titleForWebViewWithIdentifier:@0 error:&error], @"myTitle");
@@ -317,8 +334,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI setAllowsBackForwardForWebViewWithIdentifier:@0 isAllowed:@YES error:&error];
@@ -336,8 +354,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   NSString __block *returnValue;
   FlutterError __block *returnError;
@@ -369,8 +388,9 @@
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
-  FWFWebViewHostApiImpl *hostAPI =
-      [[FWFWebViewHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   NSString __block *returnValue;
   FlutterError __block *returnError;

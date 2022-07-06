@@ -1178,6 +1178,186 @@ ${indentation}HTTP response: null
         ]),
       );
     });
+
+    group('prelease versions', () {
+      test(
+          'allow an otherwise-valid transition that also adds a pre-release component',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '2.0.0-dev');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.0.0'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.0.0 -> 2.0.0-dev'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('allow releasing a pre-release', () async {
+        createFakePlugin('plugin', packagesDir, version: '1.2.0');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.2.0-dev'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.2.0-dev -> 1.2.0'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      // Allow abandoning a pre-release version in favor of a different version
+      // change type.
+      test(
+          'allow an otherwise-valid transition that also removes a pre-release component',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '2.0.0');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.2.0-dev'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.2.0-dev -> 2.0.0'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('allow changing only the pre-release version', () async {
+        createFakePlugin('plugin', packagesDir, version: '1.2.0-dev.2');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.2.0-dev.1'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.2.0-dev.1 -> 1.2.0-dev.2'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('denies invalid version change that also adds a pre-release',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '0.2.0-dev');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 0.0.1'),
+        ];
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Incorrectly updated version.'),
+            ]));
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('denies invalid version change that also removes a pre-release',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '0.2.0');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 0.0.1-dev'),
+        ];
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Incorrectly updated version.'),
+            ]));
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('denies invalid version change between pre-releases', () async {
+        createFakePlugin('plugin', packagesDir, version: '0.2.0-dev');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 0.0.1-dev'),
+        ];
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Incorrectly updated version.'),
+            ]));
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+    });
   });
 
   group('Pre 1.0', () {

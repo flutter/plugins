@@ -12,6 +12,18 @@
 @end
 
 @implementation FWFWebView
+- (instancetype)initWithFrame:(CGRect)frame
+                configuration:(nonnull WKWebViewConfiguration *)configuration
+              binaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+              instanceManager:(FWFInstanceManager *)instanceManager {
+  self = [self initWithFrame:frame configuration:configuration];
+  if (self) {
+    _objectApi = [[FWFObjectFlutterApiImpl alloc] initWithBinaryMessenger:binaryMessenger
+                                                          instanceManager:instanceManager];
+  }
+  return self;
+}
+
 - (void)setFrame:(CGRect)frame {
   [super setFrame:frame];
   // Prevents the contentInsets from being adjusted by iOS and gives control to Flutter.
@@ -28,29 +40,50 @@
   }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(void *)context {
+  [self.objectApi observeValueForObject:self
+                                keyPath:keyPath
+                                 object:object
+                                 change:change
+                             completion:^(NSError *error) {
+                               NSAssert(!error, @"%@", error);
+                             }];
+}
+
 - (nonnull UIView *)view {
   return self;
 }
 @end
 
 @interface FWFWebViewHostApiImpl ()
-@property(nonatomic) FWFInstanceManager *instanceManager;
+// BinaryMessenger must be weak to prevent a circular reference with the host API it
+// references.
+@property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
+@property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @property NSBundle *bundle;
 @property FWFAssetManager *assetManager;
 @end
 
 @implementation FWFWebViewHostApiImpl
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager {
-  return [self initWithInstanceManager:instanceManager
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager {
+  return [self initWithBinaryMessenger:binaryMessenger
+                       instanceManager:instanceManager
                                 bundle:[NSBundle mainBundle]
                           assetManager:[[FWFAssetManager alloc] init]];
 }
 
-- (instancetype)initWithInstanceManager:(FWFInstanceManager *)instanceManager
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger
+                        instanceManager:(FWFInstanceManager *)instanceManager
                                  bundle:(NSBundle *)bundle
                            assetManager:(FWFAssetManager *)assetManager {
   self = [self init];
   if (self) {
+    _binaryMessenger = binaryMessenger;
     _instanceManager = instanceManager;
     _bundle = bundle;
     _assetManager = assetManager;
@@ -77,7 +110,9 @@
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationIdentifier.longValue];
   FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)
-                                            configuration:configuration];
+                                            configuration:configuration
+                                          binaryMessenger:self.binaryMessenger
+                                          instanceManager:self.instanceManager];
   [self.instanceManager addDartCreatedInstance:webView withIdentifier:identifier.longValue];
 }
 

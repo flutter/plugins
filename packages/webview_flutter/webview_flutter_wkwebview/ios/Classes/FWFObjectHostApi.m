@@ -6,7 +6,7 @@
 #import "FWFDataConverters.h"
 
 @interface FWFObjectFlutterApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
@@ -74,7 +74,7 @@
 @end
 
 @interface FWFObjectHostApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
