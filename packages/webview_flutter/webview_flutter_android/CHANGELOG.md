@@ -4,7 +4,9 @@
 * Fixes bug where `Directionality` from context didn't affect `SurfaceAndroidWebView`.
 * Fixes bug where default text direction was different for `SurfaceAndroidWebView` and `AndroidWebView`.
   Default is now `TextDirection.ltr` for both.
-* Adds support for hybrid composition through `ExpensiveSurfaceAndroidWebView`.
+* Fixes bug where setting WebView to a transparent background could cause visual errors when using
+  `SurfaceAndroidWebView`. Hybrid composition is now used when the background color is not 100%
+  opaque.
 * Raises minimum Flutter version to 3.0.0.
 
 ## 2.8.14
