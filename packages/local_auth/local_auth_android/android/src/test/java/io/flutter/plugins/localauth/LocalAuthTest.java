@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -20,6 +19,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.NativeActivity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import androidx.biometric.BiometricManager;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -91,9 +92,7 @@ public class LocalAuthTest {
     when(plugin.isDeviceSupported()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
@@ -117,7 +116,6 @@ public class LocalAuthTest {
         new ArrayList<String>(Arrays.asList("weak", "strong")));
   }
 
-  @Config(sdk = 30)
   @Test
   public void authenticate_properlyConfiguresBiometricAndDeviceCredentialAuthenticationRequest() {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
@@ -125,9 +123,7 @@ public class LocalAuthTest {
     when(plugin.isDeviceSupported()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
@@ -151,39 +147,6 @@ public class LocalAuthTest {
         new ArrayList<String>(Arrays.asList("weak", "strong", "deviceCredential")));
   }
 
-  @Config(sdk = 28)
-  @Test
-  public void
-      authenticate_properlyConfiguresBiometricAndDeviceCredentialAuthenticationRequestWithWeakSpecified() {
-    final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
-    setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
-    when(plugin.isDeviceSupported()).thenReturn(true);
-
-    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
-        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
-    plugin.setBiometricManager(mockBiometricManager);
-    ArrayList<String> biometrics = new ArrayList<String>();
-    biometrics.add("strong");
-    doReturn(biometrics).when(plugin).getEnrolledBiometrics();
-
-    ArgumentCaptor<ArrayList<String>> authenticationMethodsCaptor =
-        ArgumentCaptor.forClass(ArrayList.class);
-    doNothing()
-        .when(plugin)
-        .sendAuthenticationRequest(
-            any(MethodCall.class),
-            any(AuthCompletionHandler.class),
-            authenticationMethodsCaptor.capture());
-    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("biometricOnly", false);
-
-    plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
-    assertEquals(
-        authenticationMethodsCaptor.getValue(), new ArrayList<String>(Arrays.asList("strong")));
-  }
-
   @Config(sdk = 30)
   @Test
   public void authenticate_properlyConfiguresDeviceCredentialOnlyAuthenticationRequest() {
@@ -192,9 +155,7 @@ public class LocalAuthTest {
     when(plugin.isDeviceSupported()).thenReturn(true);
 
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
@@ -216,6 +177,32 @@ public class LocalAuthTest {
     assertEquals(
         authenticationMethodsCaptor.getValue(),
         new ArrayList<String>(Arrays.asList("deviceCredential")));
+  }
+
+  @Config(sdk = 28)
+  public void authenticate_properlyConfiguresDeviceCredentialOnlyIntent() {
+    final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
+    final Activity mockActivity = mock(FragmentActivity.class);
+    setPluginActivity(plugin, buildMockActivityWithContext(mockActivity));
+    when(plugin.isDeviceSupported()).thenReturn(true);
+
+    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
+        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
+    plugin.setBiometricManager(mockBiometricManager);
+
+    ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+    doNothing().when(mockActivity).startActivity(intentCaptor.capture(), any(Bundle.class));
+
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("biometricOnly", false);
+
+    plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
+    assertEquals(intentCaptor.getValue(), "signInTitle");
+    assertEquals(intentCaptor.getValue(), "localizedReason");
   }
 
   @Test
@@ -262,8 +249,11 @@ public class LocalAuthTest {
   }
 
   @Test
-  public void authenticate_returnsErrorWhenAuthenticationNotSupported() {
+  public void authenticate_returnsErrorWhenAuthenticationUnavailable() {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    final AuthCompletionHandler mockAuthCompletionHandler = mock(AuthCompletionHandler.class);
+    when(plugin.createAuthCompletionHandler(mockResult)).thenReturn(mockAuthCompletionHandler);
     setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
     when(plugin.isDeviceSupported()).thenReturn(true);
 
@@ -272,13 +262,34 @@ public class LocalAuthTest {
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE);
     plugin.setBiometricManager(mockBiometricManager);
 
-    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("biometricOnly", false);
 
     plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
-    verify(mockResult)
-        .error("NotSupported", "This device does not support required security features", null);
+    verify(mockAuthCompletionHandler)
+        .onError("NotAvailable", "No requested authenticators supported or enabled");
+  }
+
+  @Test
+  public void authenticate_returnsErrorWhenSecurityUpdateRequired() {
+    final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
+    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    final AuthCompletionHandler mockAuthCompletionHandler = mock(AuthCompletionHandler.class);
+    when(plugin.createAuthCompletionHandler(mockResult)).thenReturn(mockAuthCompletionHandler);
+    setPluginActivity(plugin, buildMockActivityWithContext(mock(FragmentActivity.class)));
+    when(plugin.isDeviceSupported()).thenReturn(true);
+
+    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
+    when(mockBiometricManager.canAuthenticate(anyInt()))
+        .thenReturn(BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED);
+    plugin.setBiometricManager(mockBiometricManager);
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("biometricOnly", false);
+
+    plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
+    verify(mockAuthCompletionHandler)
+        .onError("NotSupported", "This device requires a security update");
   }
 
   @Test
@@ -294,9 +305,7 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
     plugin.setBiometricManager(mockBiometricManager);
     plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
@@ -308,9 +317,7 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     plugin.setBiometricManager(mockBiometricManager);
     plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
@@ -322,9 +329,7 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
     plugin.setBiometricManager(mockBiometricManager);
     plugin.onMethodCall(new MethodCall("deviceSupportsBiometrics", null), mockResult);
@@ -429,9 +434,7 @@ public class LocalAuthTest {
     setPluginActivity(plugin, buildMockActivityWithContext(mock(Activity.class)));
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG))
+    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG))
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);

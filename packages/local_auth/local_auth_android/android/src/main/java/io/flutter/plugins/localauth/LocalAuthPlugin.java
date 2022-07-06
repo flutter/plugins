@@ -42,8 +42,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth_android";
   private static final int LOCK_REQUEST_CODE = 221;
   private Activity activity;
-
-  @VisibleForTesting AuthenticationHelper authHelper;
+  private AuthenticationHelper authHelper;
 
   @VisibleForTesting final AtomicBoolean authInProgress = new AtomicBoolean(false);
 
@@ -151,17 +150,13 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     AuthCompletionHandler completionHandler = createAuthCompletionHandler(result);
 
     boolean isBiometricOnly = call.argument("biometricOnly");
-    ArrayList<String> authenticationMethods = getEnrolledBiometrics(); //this is wrong?
+    ArrayList<String> authenticationMethods = getEnrolledBiometrics();
 
     // Handle case where any biometrics are available
     if (canAuthenticateWithBiometrics()) {
-      if (!isBiometricOnly
-          && canAuthenticateWithDeviceCredential()
-          && ((Build.VERSION.SDK_INT >= 30 || Build.VERSION.SDK_INT <= 27)
-              || authenticationMethods.contains("weak"))) {
+      if (!isBiometricOnly && canAuthenticateWithDeviceCredential()) {
         authenticationMethods.add("deviceCredential");
       }
-      // if is biometricOnly the biometric prompt will be tried, but may not work
       sendAuthenticationRequest(call, completionHandler, authenticationMethods);
       return;
     }
@@ -172,14 +167,14 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         sendAuthenticationRequest(
             call, completionHandler, new ArrayList<String>(Arrays.asList("deviceCredential")));
         return;
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+      } else if (Build.VERSION.SDK_INT >= 23
           && keyguardManager != null
           && keyguardManager.isDeviceSecure()) {
         String title = call.argument("signInTitle");
         String reason = call.argument("localizedReason");
         Intent authIntent = keyguardManager.createConfirmDeviceCredentialIntent(title, reason);
 
-        // save result for async response
+        // Save result for async response
         lockRequestResult = result;
         activity.startActivityForResult(authIntent, LOCK_REQUEST_CODE);
         return;
@@ -189,12 +184,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     // Unable to authenticate
     int errorCode =
         isBiometricOnly
-            ? biometricManager.canAuthenticate(
-                BiometricManager.Authenticators.BIOMETRIC_WEAK
-                    | BiometricManager.Authenticators.BIOMETRIC_STRONG)
+            ? biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
             : biometricManager.canAuthenticate(
                 BiometricManager.Authenticators.BIOMETRIC_WEAK
-                    | BiometricManager.Authenticators.BIOMETRIC_STRONG
                     | BiometricManager.Authenticators.DEVICE_CREDENTIAL);
 
     switch (errorCode) {
@@ -205,9 +197,12 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         completionHandler.onError(
             "NotEnrolled", "No requested authenticators enrolled on this device");
         break;
-      default:
-        result.error(
-            "NotSupported", "This device does not support required security features", null);
+      case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+        completionHandler.onError(
+            "NotAvailable", "No requested authenticators supported or enabled");
+        break;
+      case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
+        completionHandler.onError("NotSupported", "This device requires a security update");
         break;
     }
 
@@ -316,23 +311,18 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @VisibleForTesting
   public boolean isDeviceSupported() {
     if (keyguardManager == null) return false;
-    return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
+    return (Build.VERSION.SDK_INT >= 23 && keyguardManager.isDeviceSecure());
   }
 
-  @VisibleForTesting
-  public boolean canAuthenticateWithBiometrics() {
+  private boolean canAuthenticateWithBiometrics() {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG)
+    return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
         == BiometricManager.BIOMETRIC_SUCCESS;
   }
 
   private boolean hasBiometricHardware() {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK
-                | BiometricManager.Authenticators.BIOMETRIC_STRONG)
+    return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
         != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
   }
 

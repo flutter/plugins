@@ -115,7 +115,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     if (!credentialsAllowed) {
       promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
-
     this.promptInfo = promptBuilder.build();
   }
 
