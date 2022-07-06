@@ -163,7 +163,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         .getLaunchIntentForPackage(packageName)
         .setAction(Intent.ACTION_RUN)
         .putExtra(EXTRA_ACTION, type)
-        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
   }
 
   private static class UiThreadExecutor implements Executor {
