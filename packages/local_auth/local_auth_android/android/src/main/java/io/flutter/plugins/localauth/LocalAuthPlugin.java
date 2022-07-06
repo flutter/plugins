@@ -204,6 +204,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
         completionHandler.onError("NotSupported", "This device requires a security update");
         break;
+      default:
+        result.error(
+            "NotSupported", "This device does not support required security features", null);
+        break;
     }
 
     return;
