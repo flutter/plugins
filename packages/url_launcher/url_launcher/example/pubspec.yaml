@@ -18,6 +18,7 @@ dependencies:
     path: ../
 
 dev_dependencies:
+  build_runner: ^2.1.10
   flutter_driver:
     sdk: flutter
   integration_test:

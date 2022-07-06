@@ -1,3 +1,7 @@
+## 6.1.5
+
+* Migrates `README.md` examples to the [`code-excerpt` system](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#readme-code).
+
 ## 6.1.4
 
 * Adopts new platform interface method for launching URLs.
