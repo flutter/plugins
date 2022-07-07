@@ -32,12 +32,11 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   /** Passes arguments from {@link WebChromeClient#onProgressChanged} to Dart. */
   public void onProgressChanged(
       WebChromeClient webChromeClient, WebView webView, Long progress, Reply<Void> callback) {
-    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
-    if (webViewIdentifier == null) {
-      throw new IllegalStateException("Could not find identifier for WebView.");
-    }
     super.onProgressChanged(
-        getIdentifierForClient(webChromeClient), webViewIdentifier, progress, callback);
+        instanceManager.getInstanceId(webChromeClient),
+        instanceManager.getInstanceId(webView),
+        progress,
+        callback);
   }
 
   /**
@@ -47,18 +46,11 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
    * @param callback reply callback with return value from Dart
    */
   public void dispose(WebChromeClient webChromeClient, Reply<Void> callback) {
-    if (instanceManager.containsInstance(webChromeClient)) {
-      dispose(getIdentifierForClient(webChromeClient), callback);
+    final Long instanceId = instanceManager.removeInstance(webChromeClient);
+    if (instanceId != null) {
+      dispose(instanceId, callback);
     } else {
       callback.reply(null);
     }
-  }
-
-  private long getIdentifierForClient(WebChromeClient webChromeClient) {
-    final Long identifier = instanceManager.getIdentifierForStrongReference(webChromeClient);
-    if (identifier == null) {
-      throw new IllegalStateException("Could not find identifier for WebChromeClient.");
-    }
-    return identifier;
   }
 }

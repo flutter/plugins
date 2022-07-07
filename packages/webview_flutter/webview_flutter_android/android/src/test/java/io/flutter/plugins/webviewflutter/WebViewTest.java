@@ -21,7 +21,6 @@ import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientI
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.InputAwareWebViewPlatformView;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
 import java.util.HashMap;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,17 +43,11 @@ public class WebViewTest {
 
   @Before
   public void setUp() {
-    testInstanceManager = InstanceManager.open(identifier -> {});
-
+    testInstanceManager = new InstanceManager();
     when(mockWebViewProxy.createWebView(mockContext)).thenReturn(mockWebView);
     testHostApiImpl =
         new WebViewHostApiImpl(testInstanceManager, mockWebViewProxy, mockContext, null);
     testHostApiImpl.create(0L, true);
-  }
-
-  @After
-  public void tearDown() {
-    testInstanceManager.close();
   }
 
   @Test
@@ -315,7 +308,7 @@ public class WebViewTest {
   @Test
   public void setWebViewClient() {
     final WebViewClient mockWebViewClient = mock(WebViewClient.class);
-    testInstanceManager.addDartCreatedInstance(mockWebViewClient, 1L);
+    testInstanceManager.addInstance(mockWebViewClient, 1L);
 
     testHostApiImpl.setWebViewClient(0L, 1L);
     verify(mockWebView).setWebViewClient(mockWebViewClient);
@@ -325,7 +318,7 @@ public class WebViewTest {
   public void addJavaScriptChannel() {
     final JavaScriptChannel javaScriptChannel =
         new JavaScriptChannel(mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
-    testInstanceManager.addDartCreatedInstance(javaScriptChannel, 1L);
+    testInstanceManager.addInstance(javaScriptChannel, 1L);
 
     testHostApiImpl.addJavaScriptChannel(0L, 1L);
     verify(mockWebView).addJavascriptInterface(javaScriptChannel, "aName");
@@ -335,7 +328,7 @@ public class WebViewTest {
   public void removeJavaScriptChannel() {
     final JavaScriptChannel javaScriptChannel =
         new JavaScriptChannel(mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
-    testInstanceManager.addDartCreatedInstance(javaScriptChannel, 1L);
+    testInstanceManager.addInstance(javaScriptChannel, 1L);
 
     testHostApiImpl.removeJavaScriptChannel(0L, 1L);
     verify(mockWebView).removeJavascriptInterface("aName");
@@ -344,7 +337,7 @@ public class WebViewTest {
   @Test
   public void setDownloadListener() {
     final DownloadListener mockDownloadListener = mock(DownloadListener.class);
-    testInstanceManager.addDartCreatedInstance(mockDownloadListener, 1L);
+    testInstanceManager.addInstance(mockDownloadListener, 1L);
 
     testHostApiImpl.setDownloadListener(0L, 1L);
     verify(mockWebView).setDownloadListener(mockDownloadListener);
@@ -353,7 +346,7 @@ public class WebViewTest {
   @Test
   public void setWebChromeClient() {
     final WebChromeClient mockWebChromeClient = mock(WebChromeClient.class);
-    testInstanceManager.addDartCreatedInstance(mockWebChromeClient, 1L);
+    testInstanceManager.addInstance(mockWebChromeClient, 1L);
 
     testHostApiImpl.setWebChromeClient(0L, 1L);
     verify(mockWebView).setWebChromeClient(mockWebChromeClient);

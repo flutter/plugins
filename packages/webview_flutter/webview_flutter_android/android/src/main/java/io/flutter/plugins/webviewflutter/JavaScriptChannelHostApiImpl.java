@@ -70,6 +70,6 @@ public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
     final JavaScriptChannel javaScriptChannel =
         javaScriptChannelCreator.createJavaScriptChannel(
             flutterApi, channelName, platformThreadHandler);
-    instanceManager.addDartCreatedInstance(javaScriptChannel, instanceId);
+    instanceManager.addInstance(javaScriptChannel, instanceId);
   }
 }

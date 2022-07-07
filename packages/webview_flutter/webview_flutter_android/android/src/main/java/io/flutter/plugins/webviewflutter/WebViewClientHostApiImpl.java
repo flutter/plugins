@@ -244,6 +244,6 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   public void create(Long instanceId, Boolean shouldOverrideUrlLoading) {
     final WebViewClient webViewClient =
         webViewClientCreator.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
-    instanceManager.addDartCreatedInstance(webViewClient, instanceId);
+    instanceManager.addInstance(webViewClient, instanceId);
   }
 }

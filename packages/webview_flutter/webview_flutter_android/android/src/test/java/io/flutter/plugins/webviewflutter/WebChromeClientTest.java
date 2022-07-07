@@ -23,7 +23,6 @@ import android.webkit.WebView.WebViewTransport;
 import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientCreator;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,10 +46,9 @@ public class WebChromeClientTest {
 
   @Before
   public void setUp() {
-    instanceManager = InstanceManager.open(identifier -> {});
-
-    instanceManager.addDartCreatedInstance(mockWebView, 0L);
-    instanceManager.addDartCreatedInstance(mockWebViewClient, 1L);
+    instanceManager = new InstanceManager();
+    instanceManager.addInstance(mockWebView, 0L);
+    instanceManager.addInstance(mockWebViewClient, 1L);
 
     final WebChromeClientCreator webChromeClientCreator =
         new WebChromeClientCreator() {
@@ -65,11 +63,6 @@ public class WebChromeClientTest {
     hostApiImpl =
         new WebChromeClientHostApiImpl(instanceManager, webChromeClientCreator, mockFlutterApi);
     hostApiImpl.create(2L, 1L);
-  }
-
-  @After
-  public void tearDown() {
-    instanceManager.close();
   }
 
   @Test
