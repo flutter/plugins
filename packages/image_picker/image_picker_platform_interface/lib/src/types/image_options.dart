@@ -9,7 +9,7 @@ class ImageOptions {
   const ImageOptions({
     this.maxHeight,
     this.maxWidth,
-    this.imageQuality = 100,
+    this.imageQuality,
     this.requestFullMetadata = true,
   });
 
@@ -30,8 +30,8 @@ class ImageOptions {
   /// compression is not supported for the image that is picked, a warning
   /// message will be logged.
   ///
-  /// Defaults to 100 (the original quality).
-  final int imageQuality;
+  /// If null, the image will be returned with the original quality.
+  final int? imageQuality;
 
   /// If true, requests full image metadata, which may require extra permissions
   /// on some platforms, (e.g., NSPhotoLibraryUsageDescription on iOS).

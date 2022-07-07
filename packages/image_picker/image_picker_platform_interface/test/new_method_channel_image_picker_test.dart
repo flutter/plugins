@@ -1287,7 +1287,7 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': true,
             }),
           ],
@@ -1348,25 +1348,25 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': 10.0,
               'maxHeight': null,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': 10.0,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': 10.0,
               'maxHeight': 20.0,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': true,
             }),
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
@@ -1453,7 +1453,7 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': true,
             }),
           ],
@@ -1474,7 +1474,7 @@ void main() {
             isMethodCall('pickMultiImage', arguments: <String, dynamic>{
               'maxWidth': null,
               'maxHeight': null,
-              'imageQuality': 100,
+              'imageQuality': null,
               'requestFullMetadata': false,
             }),
           ],
