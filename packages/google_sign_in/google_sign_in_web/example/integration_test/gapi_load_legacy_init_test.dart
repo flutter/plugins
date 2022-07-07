@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file is a copy of `gapi_load_test.dart`, before it was migrated to the
+// new `initWithParams` method, and is kept to ensure test coverage of the
+// deprecated `init` method, until it is removed.
+
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -34,12 +38,9 @@ void main() {
     expect(() {
       plugin.initialized;
     }, throwsStateError,
-        reason: 'The plugin should throw if checking for `initialized` before '
-            'calling .initWithParams');
-    await plugin.initWithParams(const SignInInitParameters(
-      hostedDomain: '',
-      clientId: '',
-    ));
+        reason:
+            'The plugin should throw if checking for `initialized` before calling .init');
+    await plugin.init(hostedDomain: '', clientId: '');
     await plugin.initialized;
     expect(
       plugin.initialized,
