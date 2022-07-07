@@ -61,13 +61,6 @@ import java.util.Locale;
     info.put("purchaseTime", purchase.getPurchaseTime());
     info.put("purchaseToken", purchase.getPurchaseToken());
     info.put("signature", purchase.getSignature());
-    // TODO(garyq): Remove deprecated `sku`.
-    // `sku` was deprecated in billion 4.0, but we cannot directly remove it from our
-    // API instantly. Thus, for backwards compatibility, we pass the first sku here
-    // and include the rest of the list under `skus`.
-    if (!skus.isEmpty()) {
-      info.put("sku", skus.get(0));
-    }
     info.put("skus", skus);
     info.put("isAutoRenewing", purchase.isAutoRenewing());
     info.put("originalJson", purchase.getOriginalJson());
@@ -90,13 +83,6 @@ import java.util.Locale;
     info.put("purchaseTime", purchaseHistoryRecord.getPurchaseTime());
     info.put("purchaseToken", purchaseHistoryRecord.getPurchaseToken());
     info.put("signature", purchaseHistoryRecord.getSignature());
-    // TODO(garyq): Remove deprecated `sku`.
-    // `sku` was deprecated in billion 4.0, but we cannot directly remove it from our
-    // API instantly. Thus, for backwards compatibility, we pass the first sku here
-    // and include the rest of the list under `skus`.
-    if (!skus.isEmpty()) {
-      info.put("sku", skus.get(0));
-    }
     info.put("skus", skus);
     info.put("developerPayload", purchaseHistoryRecord.getDeveloperPayload());
     info.put("originalJson", purchaseHistoryRecord.getOriginalJson());
