@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
 import io.flutter.plugins.webviewflutter.JavaScriptChannelHostApiImpl.JavaScriptChannelCreator;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +32,9 @@ public class JavaScriptChannelTest {
 
   @Before
   public void setUp() {
-    instanceManager = new InstanceManager();
+    instanceManager = InstanceManager.open(identifier -> {
+
+    });
 
     final JavaScriptChannelCreator javaScriptChannelCreator =
         new JavaScriptChannelCreator() {
@@ -50,6 +54,11 @@ public class JavaScriptChannelTest {
         new JavaScriptChannelHostApiImpl(
             instanceManager, javaScriptChannelCreator, mockFlutterApi, new Handler());
     hostApiImpl.create(0L, "aChannelName");
+  }
+
+  @After
+  public void tearDown() {
+    instanceManager.close();
   }
 
   @Test
