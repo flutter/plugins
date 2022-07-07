@@ -2,6 +2,10 @@
 
 * **Breaking Change** Updates Android camera access permission error codes to be consistent with other platforms. If your app still handles the legacy `cameraPermission` exception, please update it to handle the new permission exception codes that are noted in the README.
 
+## 0.9.8+3
+
+* Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
+
 ## 0.9.8+2
 
 * Fixes exception in registerWith caused by the switch to an in-package method channel.
