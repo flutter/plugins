@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
 ## 0.9.8+1
 
 * Ignores deprecation warnings for upcoming styleFrom button API changes.

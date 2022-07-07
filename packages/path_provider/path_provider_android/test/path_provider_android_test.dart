@@ -89,12 +89,6 @@ void main() {
       });
     } // end of for-loop
 
-    test('getExternalStoragePaths with null android succeeds', () async {
-      final List<String>? result =
-          await pathProvider.getExternalStoragePaths(type: null);
-      expect(result!.length, 0);
-    });
-
     test('getDownloadsPath fails', () async {
       try {
         await pathProvider.getDownloadsPath();

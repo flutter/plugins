@@ -19,20 +19,18 @@ const MethodChannel _channel =
 
 /// An iOS implementation of [CameraPlatform] based on AVFoundation.
 class AVFoundationCamera extends CameraPlatform {
-  /// Construct a new method channel camera instance.
-  AVFoundationCamera() {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/camera_avfoundation/fromPlatform');
-    channel.setMethodCallHandler(
-        (MethodCall call) => handleDeviceMethodCall(call));
-  }
-
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith() {
     CameraPlatform.instance = AVFoundationCamera();
   }
 
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};
+
+  /// The name of the channel that device events from the platform side are
+  /// sent on.
+  @visibleForTesting
+  static const String deviceEventChannelName =
+      'plugins.flutter.io/camera_avfoundation/fromPlatform';
 
   /// The controller we need to broadcast the different events coming
   /// from handleMethodCall, specific to camera events.
@@ -50,11 +48,15 @@ class AVFoundationCamera extends CameraPlatform {
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
-  /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
-  @visibleForTesting
-  final StreamController<DeviceEvent> deviceEventStreamController =
-      StreamController<DeviceEvent>.broadcast();
+  late final StreamController<DeviceEvent> _deviceEventStreamController =
+      _createDeviceEventStreamController();
+
+  StreamController<DeviceEvent> _createDeviceEventStreamController() {
+    // Set up the method handler lazily.
+    const MethodChannel channel = MethodChannel(deviceEventChannelName);
+    channel.setMethodCallHandler(_handleDeviceMethodCall);
+    return StreamController<DeviceEvent>.broadcast();
+  }
 
   // The stream to receive frames from the native code.
   StreamSubscription<dynamic>? _platformImageStreamSubscription;
@@ -192,7 +194,7 @@ class AVFoundationCamera extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    return deviceEventStreamController.stream
+    return _deviceEventStreamController.stream
         .whereType<DeviceOrientationChangedEvent>();
   }
 
@@ -523,14 +525,10 @@ class AVFoundationCamera extends CameraPlatform {
   }
 
   /// Converts messages received from the native platform into device events.
-  ///
-  /// This is only exposed for test purposes. It shouldn't be used by clients of
-  /// the plugin as it may break or change at any time.
-  @visibleForTesting
-  Future<dynamic> handleDeviceMethodCall(MethodCall call) async {
+  Future<dynamic> _handleDeviceMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'orientation_changed':
-        deviceEventStreamController.add(DeviceOrientationChangedEvent(
+        _deviceEventStreamController.add(DeviceOrientationChangedEvent(
             deserializeDeviceOrientation(
                 call.arguments['orientation']! as String)));
         break;

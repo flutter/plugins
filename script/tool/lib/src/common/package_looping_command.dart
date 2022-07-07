@@ -96,10 +96,17 @@ abstract class PackageLoopingCommand extends PluginCommand {
       help: 'Skip any packages that require a Flutter version newer than '
           'the provided version.',
     );
+    argParser.addOption(
+      _skipByDartVersionArg,
+      help: 'Skip any packages that require a Dart version newer than '
+          'the provided version.',
+    );
   }
 
   static const String _skipByFlutterVersionArg =
       'skip-if-not-supporting-flutter-version';
+  static const String _skipByDartVersionArg =
+      'skip-if-not-supporting-dart-version';
 
   /// Packages that had at least one [logWarning] call.
   final Set<PackageEnumerationEntry> _packagesWithWarnings =
@@ -264,6 +271,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
     final Version? minFlutterVersion = minFlutterVersionArg.isEmpty
         ? null
         : Version.parse(minFlutterVersionArg);
+    final String minDartVersionArg = getStringArg(_skipByDartVersionArg);
+    final Version? minDartVersion =
+        minDartVersionArg.isEmpty ? null : Version.parse(minDartVersionArg);
 
     final DateTime runStart = DateTime.now();
 
@@ -289,7 +299,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
       PackageResult result;
       try {
         result = await _runForPackageIfSupported(entry.package,
-            minFlutterVersion: minFlutterVersion);
+            minFlutterVersion: minFlutterVersion,
+            minDartVersion: minDartVersion);
       } catch (e, stack) {
         printError(e.toString());
         printError(stack.toString());
@@ -337,6 +348,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   Future<PackageResult> _runForPackageIfSupported(
     RepositoryPackage package, {
     Version? minFlutterVersion,
+    Version? minDartVersion,
   }) async {
     if (minFlutterVersion != null) {
       final Pubspec pubspec = package.parsePubspec();
@@ -346,6 +358,15 @@ abstract class PackageLoopingCommand extends PluginCommand {
           !flutterConstraint.allows(minFlutterVersion)) {
         return PackageResult.skip(
             'Does not support Flutter ${minFlutterVersion.toString()}');
+      }
+    }
+
+    if (minDartVersion != null) {
+      final Pubspec pubspec = package.parsePubspec();
+      final VersionConstraint? dartConstraint = pubspec.environment?['sdk'];
+      if (dartConstraint != null && !dartConstraint.allows(minDartVersion)) {
+        return PackageResult.skip(
+            'Does not support Dart ${minDartVersion.toString()}');
       }
     }
 
