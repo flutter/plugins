@@ -16,9 +16,10 @@ public class InstanceManager {
   // Host uses identifiers >= 2^16 and Dart is expected to use values n where,
   // 0 <= n < 2^16.
   private static final long MIN_HOST_CREATED_IDENTIFIER = 65536;
+  private static final long CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL = 30000;
 
   public interface FinalizationListener {
-    void finalize(long identifier);
+    void onFinalize(long identifier);
   }
 
   private final WeakHashMap<Object, Long> identifiers = new WeakHashMap<>();
@@ -30,16 +31,16 @@ public class InstanceManager {
 
   private final Handler handler = new Handler();
 
-  private final FinalizationListener finalizedCallback;
+  private final FinalizationListener finalizationListener;
   private long nextIdentifier = MIN_HOST_CREATED_IDENTIFIER;
 
   public static InstanceManager open(FinalizationListener finalizedCallback) {
     return new InstanceManager(finalizedCallback);
   }
 
-  private InstanceManager(FinalizationListener finalizedCallback) {
-    this.finalizedCallback = finalizedCallback;
-    handler.postDelayed(this::releaseAllFinalizedInstances, 5000);
+  private InstanceManager(FinalizationListener finalizationListener) {
+    this.finalizationListener = finalizationListener;
+    handler.postDelayed(this::releaseAllFinalizedInstances, CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL);
   }
 
   public <T> T remove(long identifier) {
@@ -79,16 +80,17 @@ public class InstanceManager {
   }
 
   private void releaseAllFinalizedInstances() {
+    System.out.println("I be running");
     WeakReference<Object> reference;
     while((reference = (WeakReference<Object>) referenceQueue.poll()) != null) {
       final Long identifier = weakReferencesToIdentifiers.remove(reference);
       if (identifier != null) {
         weakInstances.remove(identifier);
         strongInstances.remove(identifier);
-        finalizedCallback.finalize(identifier);
+        finalizationListener.onFinalize(identifier);
       }
     }
-    handler.postDelayed(this::releaseAllFinalizedInstances, 2000);
+    handler.postDelayed(this::releaseAllFinalizedInstances, CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL);
   }
 
   private void addInstance(Object instance, long identifier) {
