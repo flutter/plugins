@@ -125,6 +125,8 @@ public class PathProviderPlugin implements FlutterPlugin, PathProviderApi {
 
   private String getStorageDirectoryString(@NonNull Messages.StorageDirectory directory) {
     switch (directory) {
+      case root:
+        return null;
       case music:
         return "music";
       case podcasts:

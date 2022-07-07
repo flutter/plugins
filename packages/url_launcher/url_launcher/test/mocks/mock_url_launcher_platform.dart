@@ -11,6 +11,7 @@ class MockUrlLauncher extends Fake
     with MockPlatformInterfaceMixin
     implements UrlLauncherPlatform {
   String? url;
+  PreferredLaunchMode? launchMode;
   bool? useSafariVC;
   bool? useWebView;
   bool? enableJavaScript;
@@ -32,8 +33,9 @@ class MockUrlLauncher extends Fake
 
   void setLaunchExpectations({
     required String url,
-    required bool? useSafariVC,
-    required bool useWebView,
+    PreferredLaunchMode? launchMode,
+    bool? useSafariVC,
+    bool? useWebView,
     required bool enableJavaScript,
     required bool enableDomStorage,
     required bool universalLinksOnly,
@@ -41,6 +43,7 @@ class MockUrlLauncher extends Fake
     required String? webOnlyWindowName,
   }) {
     this.url = url;
+    this.launchMode = launchMode;
     this.useSafariVC = useSafariVC;
     this.useWebView = useWebView;
     this.enableJavaScript = enableJavaScript;
@@ -84,6 +87,18 @@ class MockUrlLauncher extends Fake
     expect(universalLinksOnly, this.universalLinksOnly);
     expect(headers, this.headers);
     expect(webOnlyWindowName, this.webOnlyWindowName);
+    launchCalled = true;
+    return response!;
+  }
+
+  @override
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
+    expect(url, this.url);
+    expect(options.mode, launchMode);
+    expect(options.webViewConfiguration.enableJavaScript, enableJavaScript);
+    expect(options.webViewConfiguration.enableDomStorage, enableDomStorage);
+    expect(options.webViewConfiguration.headers, headers);
+    expect(options.webOnlyWindowName, webOnlyWindowName);
     launchCalled = true;
     return response!;
   }
