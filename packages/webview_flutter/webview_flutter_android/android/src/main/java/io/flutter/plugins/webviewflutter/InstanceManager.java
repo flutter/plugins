@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
@@ -79,11 +83,11 @@ public class InstanceManager {
   }
 
   private void releaseAllFinalizedInstances() {
-    System.out.println("I be running");
     WeakReference<Object> reference;
     while ((reference = (WeakReference<Object>) referenceQueue.poll()) != null) {
       final Long identifier = weakReferencesToIdentifiers.remove(reference);
       if (identifier != null) {
+        System.out.println("I be running with " + identifier);
         weakInstances.remove(identifier);
         strongInstances.remove(identifier);
         finalizationListener.onFinalize(identifier);
@@ -97,7 +101,7 @@ public class InstanceManager {
     if (identifier < 0) {
       throw new IllegalArgumentException("Identifier must be >= 0.");
     }
-    final WeakReference<Object> weakReference = new WeakReference<>(instance);
+    final WeakReference<Object> weakReference = new WeakReference<>(instance, referenceQueue);
     identifiers.put(instance, identifier);
     weakInstances.put(identifier, weakReference);
     weakReferencesToIdentifiers.put(weakReference, identifier);
