@@ -59,42 +59,24 @@ class SurfaceAndroidWebView extends AndroidWebView {
             );
           },
           onCreatePlatformView: (PlatformViewCreationParams params) {
-            late final AndroidViewController viewController;
-
-            // On some Android devices, transparent backgrounds can cause
-            // rendering issues on the non hybrid composition
-            // AndroidViewSurface. This switches the WebView to Hybrid
-            // Composition when the background color is not 100% opaque.
             final Color? backgroundColor = creationParams.backgroundColor;
-            if (backgroundColor != null && backgroundColor.opacity < 1.0) {
-              viewController = PlatformViewsService.initExpensiveAndroidView(
-                id: params.id,
-                viewType: 'plugins.flutter.io/webview',
-                // WebView content is not affected by the Android view's layout direction,
-                // we explicitly set it here so that the widget doesn't require an ambient
-                // directionality.
-                layoutDirection:
-                    Directionality.maybeOf(context) ?? TextDirection.ltr,
-                creationParams:
-                    InstanceManager.instance.getInstanceId(controller.webView),
-                creationParamsCodec: const StandardMessageCodec(),
-              );
-            } else {
-              viewController = PlatformViewsService.initSurfaceAndroidView(
-                id: params.id,
-                viewType: 'plugins.flutter.io/webview',
-                // WebView content is not affected by the Android view's layout direction,
-                // we explicitly set it here so that the widget doesn't require an ambient
-                // directionality.
-                layoutDirection:
-                    Directionality.maybeOf(context) ?? TextDirection.ltr,
-                creationParams:
-                    InstanceManager.instance.getInstanceId(controller.webView),
-                creationParamsCodec: const StandardMessageCodec(),
-              );
-            }
-
-            return viewController
+            return _createViewController(
+              // On some Android devices, transparent backgrounds can cause
+              // rendering issues on the non hybrid composition
+              // AndroidViewSurface. This switches the WebView to Hybrid
+              // Composition when the background color is not 100% opaque.
+              hybridComposition:
+                  backgroundColor != null && backgroundColor.opacity < 1.0,
+              id: params.id,
+              viewType: 'plugins.flutter.io/webview',
+              // WebView content is not affected by the Android view's layout direction,
+              // we explicitly set it here so that the widget doesn't require an ambient
+              // directionality.
+              layoutDirection:
+                  Directionality.maybeOf(context) ?? TextDirection.ltr,
+              webViewIdentifier:
+                  InstanceManager.instance.getInstanceId(controller.webView)!,
+            )
               ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
               ..addOnPlatformViewCreatedListener((int id) {
                 if (onWebViewPlatformCreated != null) {
@@ -105,6 +87,31 @@ class SurfaceAndroidWebView extends AndroidWebView {
           },
         );
       },
+    );
+  }
+
+  AndroidViewController _createViewController({
+    required bool hybridComposition,
+    required int id,
+    required String viewType,
+    required TextDirection layoutDirection,
+    required int webViewIdentifier,
+  }) {
+    if (hybridComposition) {
+      return PlatformViewsService.initExpensiveAndroidView(
+        id: id,
+        viewType: viewType,
+        layoutDirection: layoutDirection,
+        creationParams: webViewIdentifier,
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    }
+    return PlatformViewsService.initSurfaceAndroidView(
+      id: id,
+      viewType: viewType,
+      layoutDirection: layoutDirection,
+      creationParams: webViewIdentifier,
+      creationParamsCodec: const StandardMessageCodec(),
     );
   }
 }
