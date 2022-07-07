@@ -2,7 +2,7 @@ name: quick_actions_android
 description: An implementation for the Android platform of the Flutter `quick_actions` plugin.
 repository: https://github.com/flutter/plugins/tree/main/packages/quick_actions/quick_actions_android
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+in_app_purchase%22
-version: 0.6.0+10
+version: 0.6.0+11
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
