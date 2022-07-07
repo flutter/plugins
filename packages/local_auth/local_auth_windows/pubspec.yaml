@@ -1,8 +1,8 @@
 name: local_auth_windows
 description: Windows implementation of the local_auth plugin.
-repository: https://github.com/flutter/plugins/tree/master/packages/local_auth/local_auth_windows
+repository: https://github.com/flutter/plugins/tree/main/packages/local_auth/local_auth_windows
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+local_auth%22
-version: 1.0.0
+version: 1.0.1
 
 environment:
   sdk: ">=2.14.0 <3.0.0"

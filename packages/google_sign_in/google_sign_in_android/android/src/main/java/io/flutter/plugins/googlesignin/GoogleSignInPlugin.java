@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -76,6 +77,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   }
 
   @VisibleForTesting
+  @SuppressWarnings("deprecation")
   public void setUpRegistrar(PluginRegistry.Registrar registrar) {
     delegate.setUpRegistrar(registrar);
   }
@@ -137,7 +139,9 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
         String clientId = call.argument("clientId");
-        delegate.init(result, signInOption, requestedScopes, hostedDomain, clientId);
+        String serverClientId = call.argument("serverClientId");
+        delegate.init(
+            result, signInOption, requestedScopes, hostedDomain, clientId, serverClientId);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -193,7 +197,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String signInOption,
         List<String> requestedScopes,
         String hostedDomain,
-        String clientId);
+        String clientId,
+        String serverClientId);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -267,6 +272,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
     private final Context context;
     // Only set registrar for v1 embedder.
+    @SuppressWarnings("deprecation")
     private PluginRegistry.Registrar registrar;
     // Only set activity for v2 embedder. Always access activity from getActivity() method.
     private Activity activity;
@@ -282,6 +288,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       this.googleSignInWrapper = googleSignInWrapper;
     }
 
+    @SuppressWarnings("deprecation")
     public void setUpRegistrar(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       registrar.addActivityResultListener(this);
@@ -318,7 +325,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String signInOption,
         List<String> requestedScopes,
         String hostedDomain,
-        String clientId) {
+        String clientId,
+        String serverClientId) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
@@ -335,20 +343,38 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
             throw new IllegalStateException("Unknown signInOption");
         }
 
-        // Only requests a clientId if google-services.json was present and parsed
-        // by the google-services Gradle script.
-        // TODO(jackson): Perhaps we should provide a mechanism to override this
-        // behavior.
-        int clientIdIdentifier =
-            context
-                .getResources()
-                .getIdentifier("default_web_client_id", "string", context.getPackageName());
+        // The clientId parameter is not supported on Android.
+        // Android apps are identified by their package name and the SHA-1 of their signing key.
+        // https://developers.google.com/android/guides/client-auth
+        // https://developers.google.com/identity/sign-in/android/start#configure-a-google-api-project
         if (!Strings.isNullOrEmpty(clientId)) {
-          optionsBuilder.requestIdToken(clientId);
-          optionsBuilder.requestServerAuthCode(clientId);
-        } else if (clientIdIdentifier != 0) {
-          optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
-          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier));
+          if (Strings.isNullOrEmpty(serverClientId)) {
+            Log.w(
+                "google_sing_in",
+                "clientId is not supported on Android and is interpreted as serverClientId."
+                    + "Use serverClientId instead to suppress this warning.");
+            serverClientId = clientId;
+          } else {
+            Log.w("google_sing_in", "clientId is not supported on Android and is ignored.");
+          }
+        }
+
+        if (Strings.isNullOrEmpty(serverClientId)) {
+          // Only requests a clientId if google-services.json was present and parsed
+          // by the google-services Gradle script.
+          // TODO(jackson): Perhaps we should provide a mechanism to override this
+          // behavior.
+          int webClientIdIdentifier =
+              context
+                  .getResources()
+                  .getIdentifier("default_web_client_id", "string", context.getPackageName());
+          if (webClientIdIdentifier != 0) {
+            serverClientId = context.getString(webClientIdIdentifier);
+          }
+        }
+        if (!Strings.isNullOrEmpty(serverClientId)) {
+          optionsBuilder.requestIdToken(serverClientId);
+          optionsBuilder.requestServerAuthCode(serverClientId);
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
@@ -358,7 +384,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         }
 
         this.requestedScopes = requestedScopes;
-        signInClient = GoogleSignIn.getClient(context, optionsBuilder.build());
+        signInClient = googleSignInWrapper.getClient(context, optionsBuilder.build());
         result.success(null);
       } catch (Exception e) {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);

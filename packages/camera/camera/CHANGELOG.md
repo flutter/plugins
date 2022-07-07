@@ -1,3 +1,24 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.9.8+1
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.9.8
+
+* Moves Android and iOS implementations to federated packages.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 0.9.7+1
+
+* Moves streaming implementation to the platform interface package.
+
+## 0.9.7
+
+* Returns all the available cameras on iOS.
+
 ## 0.9.6
 
 * Adds audio access permission handling logic on iOS to fix an issue with `prepareForVideoRecording` not awaiting for the audio permission request result.

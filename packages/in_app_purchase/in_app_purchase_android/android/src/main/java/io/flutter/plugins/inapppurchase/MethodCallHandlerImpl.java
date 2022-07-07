@@ -42,7 +42,7 @@ class MethodCallHandlerImpl
 
   private static final String TAG = "InAppPurchasePlugin";
   private static final String LOAD_SKU_DOC_URL =
-      "https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/README.md#loading-products-for-sale";
+      "https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/README.md#loading-products-for-sale";
 
   @Nullable private BillingClient billingClient;
   private final BillingClientFactory billingClientFactory;

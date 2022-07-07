@@ -14,11 +14,12 @@
 @implementation FWFWebViewConfigurationHostApiTests
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFWebViewConfigurationHostApiImpl *hostApi =
-      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewConfigurationHostApiImpl *hostAPI = [[FWFWebViewConfigurationHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi createWithIdentifier:@0 error:&error];
+  [hostAPI createWithIdentifier:@0 error:&error];
   WKWebViewConfiguration *configuration =
       (WKWebViewConfiguration *)[instanceManager instanceForIdentifier:0];
   XCTAssertTrue([configuration isKindOfClass:[WKWebViewConfiguration class]]);
@@ -27,15 +28,16 @@
 
 - (void)testCreateFromWebViewWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFWebViewConfigurationHostApiImpl *hostApi =
-      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewConfigurationHostApiImpl *hostAPI = [[FWFWebViewConfigurationHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   WKWebView *mockWebView = OCMClassMock([WKWebView class]);
   OCMStub([mockWebView configuration]).andReturn(OCMClassMock([WKWebViewConfiguration class]));
-  [instanceManager addInstance:mockWebView withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockWebView withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
+  [hostAPI createFromWebViewWithIdentifier:@1 webViewIdentifier:@0 error:&error];
   WKWebViewConfiguration *configuration =
       (WKWebViewConfiguration *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([configuration isKindOfClass:[WKWebViewConfiguration class]]);
@@ -46,13 +48,14 @@
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockWebViewConfiguration withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
-  FWFWebViewConfigurationHostApiImpl *hostApi =
-      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewConfigurationHostApiImpl *hostAPI = [[FWFWebViewConfigurationHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
+  [hostAPI setAllowsInlineMediaPlaybackForConfigurationWithIdentifier:@0
                                                             isAllowed:@NO
                                                                 error:&error];
   OCMVerify([mockWebViewConfiguration setAllowsInlineMediaPlayback:NO]);
@@ -63,13 +66,14 @@
   WKWebViewConfiguration *mockWebViewConfiguration = OCMClassMock([WKWebViewConfiguration class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockWebViewConfiguration withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockWebViewConfiguration withIdentifier:0];
 
-  FWFWebViewConfigurationHostApiImpl *hostApi =
-      [[FWFWebViewConfigurationHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFWebViewConfigurationHostApiImpl *hostAPI = [[FWFWebViewConfigurationHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi
+  [hostAPI
       setMediaTypesRequiresUserActionForConfigurationWithIdentifier:@0
                                                            forTypes:@[
                                                              [FWFWKAudiovisualMediaTypeEnumData

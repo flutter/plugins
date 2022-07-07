@@ -1,6 +1,10 @@
-## 0.6.0+11
+## 0.6.0+12
 
 * Update gradle version to 7.2.1 on Android.
+
+## 0.6.0+11
+
+* Updates references to the obsolete master branch.
 
 ## 0.6.0+10
 

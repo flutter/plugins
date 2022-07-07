@@ -123,6 +123,36 @@ void main() {
       final html.Element anchor = _findSingleAnchor();
       expect(anchor.hasAttribute('href'), false);
     });
+
+    testWidgets('can be created and disposed', (WidgetTester tester) async {
+      final Uri uri = Uri.parse('http://foobar');
+      const int itemCount = 500;
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: MediaQuery(
+            data: const MediaQueryData(),
+            child: ListView.builder(
+              itemCount: itemCount,
+              itemBuilder: (_, int index) => WebLinkDelegate(TestLinkInfo(
+                uri: uri,
+                target: LinkTarget.defaultTarget,
+                builder: (BuildContext context, FollowLink? followLink) =>
+                    Text('#$index', textAlign: TextAlign.center),
+              )),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('#${itemCount - 1}'),
+        2500,
+        maxScrolls: 1000,
+      );
+    });
   });
 }
 

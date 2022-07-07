@@ -26,7 +26,7 @@ packages/webview_flutter/**                              @bparrishMines
 packages/**/*_web/**                                     @ditman
 
 # - Android
-packages/camera/camera/android/**                        @camsim99
+packages/camera/camera_android/**                        @camsim99
 packages/espresso/**                                     @blasten
 packages/flutter_plugin_android_lifecycle/**             @blasten
 packages/google_maps_flutter/google_maps_flutter/android/**  @GaryQian
@@ -40,7 +40,7 @@ packages/url_launcher/url_launcher_android/**            @GaryQian
 packages/video_player/video_player_android/**            @blasten
 
 # - iOS
-packages/camera/camera/ios/**                            @hellohuanlin
+packages/camera/camera_avfoundation/**                   @hellohuanlin
 packages/google_maps_flutter/google_maps_flutter/ios/**  @cyanglaz
 packages/google_sign_in/google_sign_in_ios/**            @jmagman
 packages/image_picker/image_picker_ios/**                @cyanglaz

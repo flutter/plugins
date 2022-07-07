@@ -213,6 +213,18 @@ void main() {
           ]));
     });
 
+    test('allows an empty config file', () async {
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
+      final File allowFile = packagesDir.childFile('custom.yaml');
+      allowFile.createSync();
+
+      await expectLater(
+          () => runCapturingPrint(
+              runner, <String>['analyze', '--custom-analysis', allowFile.path]),
+          throwsA(isA<ToolExit>()));
+    });
+
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
       createFakePlugin('foo', packagesDir,
