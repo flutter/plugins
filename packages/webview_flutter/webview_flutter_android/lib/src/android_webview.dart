@@ -49,10 +49,6 @@ abstract class JavaObject with Copyable {
 /// [Web-based content](https://developer.android.com/guide/webapps).
 ///
 /// When a [WebView] is no longer needed [release] must be called.
-@immutable
-// TODO(bparrishMines): Final implementation of this class must be immutable for
-// copyable.
-// ignore: must_be_immutable
 class WebView extends JavaObject {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) : super.detached() {
@@ -447,7 +443,6 @@ class CookieManager {
 /// obtained from [WebView.settings] is tied to the life of the WebView. If a
 /// WebView has been destroyed, any method call on [WebSettings] will throw an
 /// Exception.
-@immutable
 class WebSettings extends JavaObject {
   /// Constructs a [WebSettings].
   ///
@@ -595,7 +590,6 @@ class WebSettings extends JavaObject {
 /// Exposes a channel to receive calls from javaScript.
 ///
 /// See [WebView.addJavaScriptChannel].
-@immutable
 class JavaScriptChannel extends JavaObject {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(
@@ -632,7 +626,6 @@ class JavaScriptChannel extends JavaObject {
 }
 
 /// Receive various notifications and requests for [WebView].
-@immutable
 class WebViewClient extends JavaObject {
   /// Constructs a [WebViewClient].
   WebViewClient({
@@ -860,7 +853,6 @@ class WebViewClient extends JavaObject {
 
 /// The interface to be used when content can not be handled by the rendering
 /// engine for [WebView], and should be downloaded instead.
-@immutable
 class DownloadListener extends JavaObject {
   /// Constructs a [DownloadListener].
   DownloadListener({
@@ -912,7 +904,6 @@ class DownloadListener extends JavaObject {
 }
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
-@immutable
 class WebChromeClient extends JavaObject {
   /// Constructs a [WebChromeClient].
   WebChromeClient({
@@ -1016,7 +1007,6 @@ class FlutterAssetManager {
 /// Manages the JavaScript storage APIs provided by the [WebView].
 ///
 /// Wraps [WebStorage](https://developer.android.com/reference/android/webkit/WebStorage).
-@immutable
 class WebStorage extends JavaObject {
   /// Constructs a [WebStorage].
   ///
