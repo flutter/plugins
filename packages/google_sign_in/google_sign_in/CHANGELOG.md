@@ -1,3 +1,8 @@
+## 5.4.0
+
+* Adds support for configuring `serverClientId` through `GoogleSignIn` constructor.
+* Adds support for Dart-based configuration as alternative to `GoogleService-Info.plist` for iOS.
+
 ## 5.3.3
 
 * Updates references to the obsolete master branch.
