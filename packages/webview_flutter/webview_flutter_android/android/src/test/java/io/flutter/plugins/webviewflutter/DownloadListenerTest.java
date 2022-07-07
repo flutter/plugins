@@ -31,7 +31,7 @@ public class DownloadListenerTest {
 
   @Before
   public void setUp() {
-    instanceManager = new InstanceManager();
+    instanceManager = new InstanceManager.open();
 
     final DownloadListenerCreator downloadListenerCreator =
         new DownloadListenerCreator() {
