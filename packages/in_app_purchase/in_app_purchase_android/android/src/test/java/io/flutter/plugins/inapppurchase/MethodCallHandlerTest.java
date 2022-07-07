@@ -14,13 +14,13 @@ import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.L
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_DISCONNECT;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_PURCHASES_UPDATED;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASES;
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASES_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_SKU_DETAILS;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.START_CONNECTION;
 import static io.flutter.plugins.inapppurchase.Translator.fromBillingResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchaseHistoryRecordList;
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
-import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 import static java.util.Arrays.asList;
 import static java.util.Collections.list;
@@ -57,7 +57,6 @@ import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.PriceChangeConfirmationListener;
 import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
@@ -295,7 +294,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -328,8 +326,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
-    assertNull(params.getOldSku());
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(fromBillingResult(billingResult));
@@ -381,8 +377,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
-    assertEquals(params.getOldSku(), oldSkuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -414,7 +408,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -452,10 +445,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
-    assertEquals(params.getOldSku(), oldSkuId);
-    assertEquals(params.getOldSkuPurchaseToken(), purchaseToken);
-    assertEquals(params.getReplaceSkusProrationMode(), prorationMode);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -527,7 +516,6 @@ public class MethodCallHandlerTest {
         ArgumentCaptor.forClass(BillingFlowParams.class);
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
-    assertEquals(params.getSku(), skuId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -590,47 +578,6 @@ public class MethodCallHandlerTest {
     // Assert that we sent an error back.
     verify(result).error(contains("IN_APP_PURCHASE_INVALID_OLD_SKU"), contains(oldSkuId), any());
     verify(result, never()).success(any());
-  }
-
-  @Test
-  public void queryPurchasesAsync() {
-    establishConnectedBillingClient(null, null);
-    PurchasesResult purchasesResult = mock(PurchasesResult.class);
-    Purchase purchase = buildPurchase("foo");
-    when(purchasesResult.getPurchasesList()).thenReturn(asList(purchase));
-    BillingResult billingResult =
-        BillingResult.newBuilder()
-            .setResponseCode(100)
-            .setDebugMessage("dummy debug message")
-            .build();
-    when(purchasesResult.getBillingResult()).thenReturn(billingResult);
-    when(mockBillingClient.queryPurchasesAsync(
-        any(QueryPurchasesParams.class),
-        any(PurchaseHistoryResponseListener.class)
-    )).thenAnswer(
-        new Answer<Object>() {
-            Object answer(InvocationOnMock invocation) {
-                BillingResult.Builder builder = BillingResult.newBuilder();
-                builder.setDebugMessage("debug message");
-                builder.setResponseCode(10);
-                ((Callback<Response>) invocation.getArguments()[1]).onPurchaseHistoryResponse(
-                    builder.build(),
-                    List.of(PurchaseHistoryRecord("{}", "signature"))
-                );
-                return null;
-            }
-        }
-    );
-
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("skuType", SkuType.INAPP);
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
-
-    // Verify we pass the response to result
-    ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
-    verify(result, never()).error(any(), any(), any());
-    verify(result, times(1)).success(resultCaptor.capture());
-    assertEquals(fromPurchasesResult(purchasesResult), resultCaptor.getValue());
   }
 
   @Test

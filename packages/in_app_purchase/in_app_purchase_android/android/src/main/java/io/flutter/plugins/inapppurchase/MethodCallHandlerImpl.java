@@ -184,6 +184,7 @@ class MethodCallHandlerImpl
     result.success(billingClient.isReady());
   }
 
+  // TODO(garyq): Migrate to new subscriptions API: https://developer.android.com/google/play/billing/migrate-gpblv5
   private void querySkuDetailsAsync(
       final String skuType, final List<String> skusList, final MethodChannel.Result result) {
     if (billingClientError(result)) {
