@@ -109,52 +109,36 @@ class _WebViewExampleState extends State<_WebViewExample> {
           _SampleMenu(_controller.future),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 200,
-            child: WebView(
-              initialUrl: 'https://flutter.dev',
-              onWebViewCreated: (WebViewController controller) {
-                _controller.complete(controller);
-              },
-              onProgress: (int progress) {
-                print('WebView is loading (progress : $progress%)');
-              },
-              navigationDelegate: (NavigationRequest request) {
-                if (request.url.startsWith('https://www.youtube.com/')) {
-                  print('blocking navigation to $request}');
-                  return NavigationDecision.prevent;
-                }
-                print('allowing navigation to $request');
-                return NavigationDecision.navigate;
-              },
-              onPageStarted: (String url) {
-                print('Page started loading: $url');
-              },
-              onPageFinished: (String url) {
-                print('Page finished loading: $url');
-              },
-              javascriptChannels: _createJavascriptChannels(context),
-              javascriptMode: JavascriptMode.unrestricted,
-              userAgent: 'Custom_User_Agent',
-              backgroundColor: const Color(0x80000000),
-            ),
-          ),
-          if (toggleWebView)
-            Container(
-              height: 200,
-              child: WebView(
-                initialUrl: 'https://flutter.dev',
-              ),
-            ),
-        ],
+      body: WebView(
+        initialUrl: 'https://flutter.dev',
+        onWebViewCreated: (WebViewController controller) {
+          _controller.complete(controller);
+        },
+        onProgress: (int progress) {
+          print('WebView is loading (progress : $progress%)');
+        },
+        navigationDelegate: (NavigationRequest request) {
+          if (request.url.startsWith('https://www.youtube.com/')) {
+            print('blocking navigation to $request}');
+            return NavigationDecision.prevent;
+          }
+          print('allowing navigation to $request');
+          return NavigationDecision.navigate;
+        },
+        onPageStarted: (String url) {
+          print('Page started loading: $url');
+        },
+        onPageFinished: (String url) {
+          print('Page finished loading: $url');
+        },
+        javascriptChannels: _createJavascriptChannels(context),
+        javascriptMode: JavascriptMode.unrestricted,
+        userAgent: 'Custom_User_Agent',
+        backgroundColor: const Color(0x80000000),
       ),
       floatingActionButton: favoriteButton(),
     );
   }
-
-  bool toggleWebView = true;
 
   Widget favoriteButton() {
     return FutureBuilder<WebViewController>(
@@ -164,13 +148,10 @@ class _WebViewExampleState extends State<_WebViewExample> {
           if (controller.hasData) {
             return FloatingActionButton(
               onPressed: () async {
-                setState(() {
-                  toggleWebView = !toggleWebView;
-                });
-                // final String url = (await controller.data!.currentUrl())!;
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(content: Text('Favorited $url')),
-                // );
+                final String url = (await controller.data!.currentUrl())!;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Favorited $url')),
+                );
               },
               child: const Icon(Icons.favorite),
             );
