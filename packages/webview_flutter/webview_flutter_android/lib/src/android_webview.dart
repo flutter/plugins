@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // TODO(bparrishMines): Replace unused callback methods in constructors with
-// variables once automatic garbage collection is fully implemented.
+// variables once automatic garbage collection is fully implemented. See
+// https://github.com/flutter/flutter/issues/107199.
 // ignore_for_file: avoid_unused_constructor_parameters
 
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)

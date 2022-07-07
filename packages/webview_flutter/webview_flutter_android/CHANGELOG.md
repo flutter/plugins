@@ -1,6 +1,8 @@
 ## NEXT
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Updates Android WebView classes as Copyable. This is a part of moving the api to handle garbage
+  collection automatically. See https://github.com/flutter/flutter/issues/107199.
 
 ## 2.8.14
 
