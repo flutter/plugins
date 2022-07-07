@@ -37,10 +37,7 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
       throw new IllegalStateException("Could not find identifier for WebView.");
     }
     super.onProgressChanged(
-        getIdentifierForClient(webChromeClient),
-        webViewIdentifier,
-        progress,
-        callback);
+        getIdentifierForClient(webChromeClient), webViewIdentifier, progress, callback);
   }
 
   /**
@@ -58,7 +55,7 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   }
 
   private long getIdentifierForClient(WebChromeClient webChromeClient) {
-    final Long identifier =  instanceManager.getIdentifierForStrongReference(webChromeClient);
+    final Long identifier = instanceManager.getIdentifierForStrongReference(webChromeClient);
     if (identifier == null) {
       throw new IllegalStateException("Could not find identifier for WebChromeClient.");
     }

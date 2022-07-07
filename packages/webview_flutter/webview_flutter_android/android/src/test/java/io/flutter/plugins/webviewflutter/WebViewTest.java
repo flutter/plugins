@@ -21,7 +21,6 @@ import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientI
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.InputAwareWebViewPlatformView;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
 import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,9 +44,8 @@ public class WebViewTest {
 
   @Before
   public void setUp() {
-    testInstanceManager = InstanceManager.open(identifier -> {
+    testInstanceManager = InstanceManager.open(identifier -> {});
 
-    });
     when(mockWebViewProxy.createWebView(mockContext)).thenReturn(mockWebView);
     testHostApiImpl =
         new WebViewHostApiImpl(testInstanceManager, mockWebViewProxy, mockContext, null);

@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.webkit.DownloadListener;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
@@ -50,7 +49,7 @@ public class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi
   }
 
   private long getIdentifierForJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
-    final Long identifier =  instanceManager.getIdentifierForStrongReference(javaScriptChannel);
+    final Long identifier = instanceManager.getIdentifierForStrongReference(javaScriptChannel);
     if (identifier == null) {
       throw new IllegalStateException("Could not find identifier for JavaScriptChannel.");
     }

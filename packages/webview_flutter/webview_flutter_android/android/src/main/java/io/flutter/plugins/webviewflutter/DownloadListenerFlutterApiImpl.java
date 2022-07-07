@@ -62,7 +62,7 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
   }
 
   private long getIdentifierForListener(DownloadListener listener) {
-    final Long identifier =  instanceManager.getIdentifierForStrongReference(listener);
+    final Long identifier = instanceManager.getIdentifierForStrongReference(listener);
     if (identifier == null) {
       throw new IllegalStateException("Could not find identifier for DownloadListener.");
     }

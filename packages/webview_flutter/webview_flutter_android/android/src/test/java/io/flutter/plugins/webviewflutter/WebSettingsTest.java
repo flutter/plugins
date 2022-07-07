@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import android.webkit.WebSettings;
 import io.flutter.plugins.webviewflutter.WebSettingsHostApiImpl.WebSettingsCreator;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,9 +30,8 @@ public class WebSettingsTest {
 
   @Before
   public void setUp() {
-    testInstanceManager = InstanceManager.open(identifier -> {
+    testInstanceManager = InstanceManager.open(identifier -> {});
 
-    });
     when(mockWebSettingsCreator.createWebSettings(any())).thenReturn(mockWebSettings);
     testHostApiImpl = new WebSettingsHostApiImpl(testInstanceManager, mockWebSettingsCreator);
     testHostApiImpl.create(0L, 0L);

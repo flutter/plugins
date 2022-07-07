@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.webkit.DownloadListener;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerCreator;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,9 +32,7 @@ public class DownloadListenerTest {
 
   @Before
   public void setUp() {
-    instanceManager = InstanceManager.open(identifier -> {
-
-    });
+    instanceManager = InstanceManager.open(identifier -> {});
 
     final DownloadListenerCreator downloadListenerCreator =
         new DownloadListenerCreator() {

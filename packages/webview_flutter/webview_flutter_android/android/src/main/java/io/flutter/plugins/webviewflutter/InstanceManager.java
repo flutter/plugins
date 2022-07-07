@@ -1,9 +1,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
-
 import androidx.annotation.Nullable;
-
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -40,7 +38,8 @@ public class InstanceManager {
 
   private InstanceManager(FinalizationListener finalizationListener) {
     this.finalizationListener = finalizationListener;
-    handler.postDelayed(this::releaseAllFinalizedInstances, CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL);
+    handler.postDelayed(
+        this::releaseAllFinalizedInstances, CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL);
   }
 
   public <T> T remove(long identifier) {
@@ -82,7 +81,7 @@ public class InstanceManager {
   private void releaseAllFinalizedInstances() {
     System.out.println("I be running");
     WeakReference<Object> reference;
-    while((reference = (WeakReference<Object>) referenceQueue.poll()) != null) {
+    while ((reference = (WeakReference<Object>) referenceQueue.poll()) != null) {
       final Long identifier = weakReferencesToIdentifiers.remove(reference);
       if (identifier != null) {
         weakInstances.remove(identifier);
@@ -90,7 +89,8 @@ public class InstanceManager {
         finalizationListener.onFinalize(identifier);
       }
     }
-    handler.postDelayed(this::releaseAllFinalizedInstances, CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL);
+    handler.postDelayed(
+        this::releaseAllFinalizedInstances, CLEAR_FINALIZED_WEAK_REFERENCES_INTERVAL);
   }
 
   private void addInstance(Object instance, long identifier) {

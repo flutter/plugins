@@ -20,7 +20,6 @@ import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCompatImpl;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCreator;
 import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,9 +41,8 @@ public class WebViewClientTest {
 
   @Before
   public void setUp() {
-    instanceManager = InstanceManager.open(identifier -> {
+    instanceManager = InstanceManager.open(identifier -> {});
 
-    });
     instanceManager.addDartCreatedInstance(mockWebView, 0L);
 
     final WebViewClientCreator webViewClientCreator =

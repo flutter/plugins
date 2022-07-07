@@ -6,7 +6,6 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -82,11 +81,7 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     if (webViewIdentifier == null) {
       throw new IllegalStateException("Could not find identifier for WebView.");
     }
-    onPageStarted(
-        getIdentifierForClient(webViewClient),
-        webViewIdentifier,
-        urlArg,
-        callback);
+    onPageStarted(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
   /** Passes arguments from {@link WebViewClient#onPageFinished} to Dart. */
@@ -96,11 +91,7 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     if (webViewIdentifier == null) {
       throw new IllegalStateException("Could not find identifier for WebView.");
     }
-    onPageFinished(
-        getIdentifierForClient(webViewClient),
-        webViewIdentifier,
-        urlArg,
-        callback);
+    onPageFinished(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
   /**
@@ -203,11 +194,7 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     if (webViewIdentifier == null) {
       throw new IllegalStateException("Could not find identifier for WebView.");
     }
-    urlLoading(
-        getIdentifierForClient(webViewClient),
-        webViewIdentifier,
-        urlArg,
-        callback);
+    urlLoading(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
   /**
@@ -225,7 +212,7 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   }
 
   private long getIdentifierForClient(WebViewClient webViewClient) {
-    final Long identifier =  instanceManager.getIdentifierForStrongReference(webViewClient);
+    final Long identifier = instanceManager.getIdentifierForStrongReference(webViewClient);
     if (identifier == null) {
       throw new IllegalStateException("Could not find identifier for WebViewClient.");
     }

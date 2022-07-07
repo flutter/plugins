@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.webkit.WebStorage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,9 +28,8 @@ public class WebStorageHostApiImplTest {
 
   @Before
   public void setUp() {
-    testInstanceManager = InstanceManager.open(identifier -> {
+    testInstanceManager = InstanceManager.open(identifier -> {});
 
-    });
     when(mockWebStorageCreator.createWebStorage()).thenReturn(mockWebStorage);
     testHostApiImpl = new WebStorageHostApiImpl(testInstanceManager, mockWebStorageCreator);
     testHostApiImpl.create(0L);
