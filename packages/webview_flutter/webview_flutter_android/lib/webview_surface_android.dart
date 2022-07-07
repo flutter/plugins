@@ -24,8 +24,9 @@ import 'webview_android_widget.dart';
 /// with the [WebView] at the cost of some performance on Android versions below
 /// 10.
 ///
-/// To support transparent backgrounds, this implementation uses hybrid
-/// composition when `CreationParams.backgroundColor` is less than 1.0. See
+/// To support transparent backgrounds on all Android devices, this
+/// implementation uses hybrid composition when the opacity of
+/// `CreationParams.backgroundColor` is less than 1.0. See
 /// https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
 /// information.
 class SurfaceAndroidWebView extends AndroidWebView {
@@ -62,8 +63,8 @@ class SurfaceAndroidWebView extends AndroidWebView {
 
             // On some Android devices, transparent backgrounds can cause
             // rendering issues on the non hybrid composition
-            // AndroidViewSurface. This switches the WebView to Hybric
-            // Composition when then background color is not 100% opaque.
+            // AndroidViewSurface. This switches the WebView to Hybrid
+            // Composition when the background color is not 100% opaque.
             final Color? backgroundColor = creationParams.backgroundColor;
             if (backgroundColor != null && backgroundColor.opacity < 1.0) {
               viewController = PlatformViewsService.initExpensiveAndroidView(
