@@ -1,4 +1,4 @@
-## 1.0.5+1
+## 1.0.6
 
 * Update gradle version to 7.2.1 on Android.
 
