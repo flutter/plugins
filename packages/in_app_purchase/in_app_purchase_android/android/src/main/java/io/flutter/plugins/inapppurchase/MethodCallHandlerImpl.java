@@ -29,11 +29,11 @@ import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
-import com.android.billingclient.api.QueryPurchaseHistoryParams;
-import com.android.billingclient.api.QueryPurchasesParams;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
@@ -312,18 +312,17 @@ class MethodCallHandlerImpl
     billingClient.queryPurchasesAsync(
         paramsBuilder.build(),
         new PurchasesResponseListener() {
-            @Override
-            public void onQueryPurchasesResponse(
-                BillingResult billingResult, List<Purchase> purchasesList) {
-              final Map<String, Object> serialized = new HashMap<>();
-              // The response code is no longer passed, as part of billing 4.0, so we pass OK here
-              // as success is implied by calling this callback.
-              serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
-              serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-              serialized.put(
-                  "purchaseList", fromPurchasesList(purchasesList));
-              result.success(serialized);
-            }
+          @Override
+          public void onQueryPurchasesResponse(
+              BillingResult billingResult, List<Purchase> purchasesList) {
+            final Map<String, Object> serialized = new HashMap<>();
+            // The response code is no longer passed, as part of billing 4.0, so we pass OK here
+            // as success is implied by calling this callback.
+            serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
+            serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+            serialized.put("purchaseList", fromPurchasesList(purchasesList));
+            result.success(serialized);
+          }
         });
   }
 
