@@ -161,11 +161,15 @@ void main() {
     await tester.pumpWidget(VideoPlayer(controller));
     final Transform actualRotationCorrection =
         find.byType(Transform).evaluate().single.widget as Transform;
-    final Float64List actualRotationCorrectionStorage = actualRotationCorrection.transform.storage;
-    final Float64List expectedMatrixStorage = Matrix4.rotationZ(math.pi).storage;
-    expect(actualRotationCorrectionStorage.length, equals(expectedMatrixStorage.length));
-    for (int i = 0; i < actualRotationCorrectionStorage.length; i ++) {
-      expect(actualRotationCorrectionStorage[i], moreOrLessEquals(expectedMatrixStorage[i]));
+    final Float64List actualRotationCorrectionStorage =
+        actualRotationCorrection.transform.storage;
+    final Float64List expectedMatrixStorage =
+        Matrix4.rotationZ(math.pi).storage;
+    expect(actualRotationCorrectionStorage.length,
+        equals(expectedMatrixStorage.length));
+    for (int i = 0; i < actualRotationCorrectionStorage.length; i++) {
+      expect(actualRotationCorrectionStorage[i],
+          moreOrLessEquals(expectedMatrixStorage[i]));
     }
   });
 
