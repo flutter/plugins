@@ -70,7 +70,8 @@ void main() {
   ];
 
   for (final StorageDirectory? type in _allDirs) {
-    test('getExternalStorageDirectories (type: $type)', () async {
+    testWidgets('getExternalStorageDirectories (type: $type)',
+        (WidgetTester tester) async {
       if (Platform.isIOS) {
         final Future<List<Directory>?> result =
             getExternalStorageDirectories(type: null);

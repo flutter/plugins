@@ -79,10 +79,13 @@ void main() {
             <int, GoogleMapController>{};
         plugin.debugSetMapById(cache);
 
-        final Widget widget = plugin.buildView(
+        final Widget widget = plugin.buildViewWithConfiguration(
           testMapId,
           onPlatformViewCreated,
-          initialCameraPosition: initialCameraPosition,
+          widgetConfiguration: const MapWidgetConfiguration(
+            initialCameraPosition: initialCameraPosition,
+            textDirection: TextDirection.ltr,
+          ),
         );
 
         expect(widget, isA<HtmlElementView>());
@@ -114,10 +117,13 @@ void main() {
           testMapId: controller,
         });
 
-        final Widget widget = plugin.buildView(
+        final Widget widget = plugin.buildViewWithConfiguration(
           testMapId,
           onPlatformViewCreated,
-          initialCameraPosition: initialCameraPosition,
+          widgetConfiguration: const MapWidgetConfiguration(
+            initialCameraPosition: initialCameraPosition,
+            textDirection: TextDirection.ltr,
+          ),
         );
 
         expect(widget, equals(expected));
@@ -130,10 +136,13 @@ void main() {
             <int, GoogleMapController>{};
         plugin.debugSetMapById(cache);
 
-        plugin.buildView(
+        plugin.buildViewWithConfiguration(
           testMapId,
           onPlatformViewCreated,
-          initialCameraPosition: initialCameraPosition,
+          widgetConfiguration: const MapWidgetConfiguration(
+            initialCameraPosition: initialCameraPosition,
+            textDirection: TextDirection.ltr,
+          ),
         );
 
         // Simulate Google Maps JS SDK being "ready"
@@ -176,11 +185,10 @@ void main() {
         await plugin.setMapStyle(mapStyle, mapId: 0);
 
         final dynamic captured =
-            verify(controller.updateRawOptions(captureThat(isMap))).captured[0];
+            verify(controller.updateStyles(captureThat(isList))).captured[0];
 
-        expect(captured, contains('styles'));
         final List<gmaps.MapTypeStyle> styles =
-            captured['styles'] as List<gmaps.MapTypeStyle>;
+            captured as List<gmaps.MapTypeStyle>;
         expect(styles.length, 1);
         // Let's peek inside the styles...
         final gmaps.MapTypeStyle style = styles[0];
@@ -221,14 +229,13 @@ void main() {
         plugin.debugSetMapById(<int, GoogleMapController>{mapId: controller});
       });
       // Options
-      testWidgets('updateMapOptions', (WidgetTester tester) async {
-        final Map<String, dynamic> expectedMapOptions = <String, dynamic>{
-          'someOption': 12345
-        };
+      testWidgets('updateMapConfiguration', (WidgetTester tester) async {
+        const MapConfiguration configuration =
+            MapConfiguration(mapType: MapType.satellite);
 
-        await plugin.updateMapOptions(expectedMapOptions, mapId: mapId);
+        await plugin.updateMapConfiguration(configuration, mapId: mapId);
 
-        verify(controller.updateRawOptions(expectedMapOptions));
+        verify(controller.updateMapConfiguration(configuration));
       });
       // Geometry
       testWidgets('updateMarkers', (WidgetTester tester) async {

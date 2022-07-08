@@ -54,7 +54,7 @@ android {
 dependencies {
     implementation 'androidx.annotation:annotation:1.0.0'
     implementation 'com.android.billingclient:billing:3.0.2'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.json:json:20180813'
     testImplementation 'org.mockito:mockito-core:3.6.0'
     androidTestImplementation 'androidx.test:runner:1.1.1'

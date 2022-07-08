@@ -54,7 +54,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     androidTestImplementation 'org.hamcrest:hamcrest:2.2'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.0"
     api 'androidx.test:runner:1.1.1'
     api 'androidx.test.espresso:espresso-core:3.1.1'
