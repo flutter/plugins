@@ -1,3 +1,7 @@
+## 0.2.0+3
+
+* Bumps okhttp to 4.10.0.
+
 ## 0.2.0+2
 
 * Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
