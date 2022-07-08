@@ -27,7 +27,10 @@ void main() => runApp(
 
 Future<void> _openFile() async {
   // Prepare a file within tmp
-  final String tempFilePath = p.joinAll(<String>[...p.split(Directory.systemTemp.path), 'flutter_url_launcher_example.txt']);
+  final String tempFilePath = p.joinAll(<String>[
+    ...p.split(Directory.systemTemp.path),
+    'flutter_url_launcher_example.txt'
+  ]);
   final File testFile = File(tempFilePath);
   await testFile.writeAsString('Hello, world!');
 // #docregion file

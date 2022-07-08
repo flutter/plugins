@@ -15,7 +15,8 @@ import 'package:url_launcher/url_launcher.dart';
 // #docregion encode-query-parameters
 String? encodeQueryParameters(Map<String, String> params) {
   return params.entries
-      .map((MapEntry<String, String> e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .map((MapEntry<String, String> e) =>
+          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
       .join('&');
 }
 // #enddocregion encode-query-parameters
@@ -46,7 +47,7 @@ void _composeMail() {
     scheme: 'mailto',
     path: 'smith@example.com',
     query: encodeQueryParameters(<String, String>{
-      'subject': 'Example Subject & Symbols are allowed!'
+      'subject': 'Example Subject & Symbols are allowed!',
     }),
   );
 

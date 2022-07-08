@@ -149,7 +149,8 @@ converted to `+` in many cases.
 ```dart
 String? encodeQueryParameters(Map<String, String> params) {
   return params.entries
-      .map((MapEntry<String, String> e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .map((MapEntry<String, String> e) =>
+          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
       .join('&');
 }
 // ···
@@ -157,7 +158,7 @@ String? encodeQueryParameters(Map<String, String> params) {
     scheme: 'mailto',
     path: 'smith@example.com',
     query: encodeQueryParameters(<String, String>{
-      'subject': 'Example Subject & Symbols are allowed!'
+      'subject': 'Example Subject & Symbols are allowed!',
     }),
   );
 
