@@ -1,3 +1,7 @@
+## 6.0.1
+
+* Updates gradle version to 7.2.1 on Android.
+
 ## 6.0.0
 
 * Deprecates `clientId` and adds support for `serverClientId` instead.
