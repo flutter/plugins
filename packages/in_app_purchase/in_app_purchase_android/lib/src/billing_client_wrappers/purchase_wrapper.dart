@@ -35,7 +35,7 @@ class PurchaseWrapper {
     required this.signature,
     @Deprecated('Use skus instead')
     String? sku, // Deprecated
-    this.skus,
+    required this.skus,
     required this.isAutoRenewing,
     required this.originalJson,
     this.developerPayload,
@@ -43,7 +43,7 @@ class PurchaseWrapper {
     required this.purchaseState,
     this.obfuscatedAccountId,
     this.obfuscatedProfileId,
-  }) : _sku(sku);
+  }) : _sku = sku;
 
   /// Factory for creating a [PurchaseWrapper] from a [Map] with the purchase details.
   factory PurchaseWrapper.fromJson(Map<String, dynamic> map) =>
@@ -108,7 +108,7 @@ class PurchaseWrapper {
   /// The product ID of this purchase.
   @JsonKey(defaultValue: '')
   @Deprecated('Use skus instead')
-  final String get sku => _sku ?? skus.first;
+  String get sku => _sku ?? skus.first;
   final String? _sku;
 
   /// The product IDs of this purchase.

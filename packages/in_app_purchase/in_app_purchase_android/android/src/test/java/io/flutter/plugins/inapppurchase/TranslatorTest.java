@@ -200,7 +200,6 @@ public class TranslatorTest {
     assertEquals(expected.getPurchaseToken(), serialized.get("purchaseToken"));
     assertEquals(expected.getSignature(), serialized.get("signature"));
     assertEquals(expected.getOriginalJson(), serialized.get("originalJson"));
-    assertEquals(expected.getSkus().get(0), serialized.get("sku"));
     assertEquals(expected.getSkus(), serialized.get("skus"));
     assertEquals(expected.getDeveloperPayload(), serialized.get("developerPayload"));
     assertEquals(expected.isAcknowledged(), serialized.get("isAcknowledged"));
@@ -220,7 +219,6 @@ public class TranslatorTest {
     assertEquals(expected.getPurchaseToken(), serialized.get("purchaseToken"));
     assertEquals(expected.getSignature(), serialized.get("signature"));
     assertEquals(expected.getOriginalJson(), serialized.get("originalJson"));
-    assertEquals(expected.getSkus().get(0), serialized.get("sku"));
     assertEquals(expected.getSkus(), serialized.get("skus"));
     assertEquals(expected.getDeveloperPayload(), serialized.get("developerPayload"));
   }

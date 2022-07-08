@@ -41,6 +41,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.Log;
+
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
@@ -62,6 +64,7 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -615,7 +618,7 @@ public class MethodCallHandlerTest {
 
     // Verify we pass the data to result
     verify(mockBillingClient)
-        .queryPurchaseHistoryAsync(eq(SkuType.INAPP), listenerCaptor.capture());
+        .queryPurchaseHistoryAsync(any(QueryPurchaseHistoryParams.class), listenerCaptor.capture());
     listenerCaptor.getValue().onPurchaseHistoryResponse(billingResult, purchasesList);
     verify(result).success(resultCaptor.capture());
     HashMap<String, Object> resultData = resultCaptor.getValue();

@@ -142,6 +142,7 @@ class MethodCallHandlerImpl
         queryPurchasesAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
+        Log.e("flutter", (String) call.argument("skuType"));
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC:
@@ -219,7 +220,6 @@ class MethodCallHandlerImpl
     if (billingClientError(result)) {
       return;
     }
-
     SkuDetails skuDetails = cachedSkus.get(sku);
     if (skuDetails == null) {
       result.error(
@@ -266,13 +266,13 @@ class MethodCallHandlerImpl
     if (obfuscatedProfileId != null && !obfuscatedProfileId.isEmpty()) {
       paramsBuilder.setObfuscatedProfileId(obfuscatedProfileId);
     }
-    if (oldSku != null && !oldSku.isEmpty()) {
-      BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
-          BillingFlowParams.SubscriptionUpdateParams.newBuilder();
-      subscriptionUpdateParamsBuilder.setOldSkuPurchaseToken(purchaseToken);
+    BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
+        BillingFlowParams.SubscriptionUpdateParams.newBuilder();
+    if (oldSku != null && !oldSku.isEmpty() && purchaseToken != null) {
+      subscriptionUpdateParamsBuilder.setOldPurchaseToken(purchaseToken);
       // The proration mode value has to match one of the following declared in
       // https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
-      subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(prorationMode);
+      subscriptionUpdateParamsBuilder.setReplaceProrationMode(prorationMode);
       paramsBuilder.setSubscriptionUpdateParams(subscriptionUpdateParamsBuilder.build());
     }
     result.success(
