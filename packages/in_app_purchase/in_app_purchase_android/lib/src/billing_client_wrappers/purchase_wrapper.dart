@@ -106,9 +106,8 @@ class PurchaseWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  @JsonKey(defaultValue: '')
   @Deprecated('Use skus instead')
-  String get sku => _sku ?? skus.first;
+  String get sku => _sku ?? (skus.isNotEmpty ? skus.first : '');
   final String? _sku;
 
   /// The product IDs of this purchase.
@@ -187,11 +186,11 @@ class PurchaseHistoryRecordWrapper {
     required this.purchaseToken,
     required this.signature,
     @Deprecated('Use skus instead')
-    this.sku = '', // Deprecated
+    String? sku, // Deprecated
     required this.skus,
     required this.originalJson,
     required this.developerPayload,
-  });
+  }) : _sku = sku;
 
   /// Factory for creating a [PurchaseHistoryRecordWrapper] from a [Map] with the record details.
   factory PurchaseHistoryRecordWrapper.fromJson(Map<String, dynamic> map) =>
@@ -211,9 +210,10 @@ class PurchaseHistoryRecordWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  @JsonKey(defaultValue: '')
   @Deprecated('Use skus instead')
-  final String sku;
+  String get sku => _sku ?? (skus.isNotEmpty ? skus.first : '');
+
+  final String? _sku;
 
   /// The product ID of this purchase.
   @JsonKey(defaultValue: <String>[])

@@ -41,8 +41,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.util.Log;
-
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
