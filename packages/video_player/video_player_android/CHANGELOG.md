@@ -1,7 +1,3 @@
-## 2.3.7
-
-* Bumps gradle version to 7.2.1.
-
 ## 2.3.6
 
 * Updates references to the obsolete master branch.
