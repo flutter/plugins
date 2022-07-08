@@ -179,8 +179,6 @@ class InstanceManager {
     final Copyable copy = instance.copy();
     _identifiers[copy] = identifier;
     _strongInstances[identifier] = copy;
-
-    assert(instance == copy);
   }
 
   /// Whether this manager contains the given [identifier].

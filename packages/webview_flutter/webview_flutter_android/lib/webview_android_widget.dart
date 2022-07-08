@@ -652,8 +652,8 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
     if (returnValue is bool && returnValue) {
       loadUrl!(url, <String, String>{});
-    } else {
-      (returnValue as Future<bool>).then((bool shouldLoadUrl) {
+    } else if (returnValue is Future<bool>) {
+      returnValue.then((bool shouldLoadUrl) {
         if (shouldLoadUrl) {
           loadUrl!(url, <String, String>{});
         }
@@ -677,8 +677,8 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
     if (returnValue is bool && returnValue) {
       loadUrl!(request.url, <String, String>{});
-    } else {
-      (returnValue as Future<bool>).then((bool shouldLoadUrl) {
+    } else if (returnValue is Future<bool>) {
+      returnValue.then((bool shouldLoadUrl) {
         if (shouldLoadUrl) {
           loadUrl!(request.url, <String, String>{});
         }

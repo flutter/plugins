@@ -131,6 +131,8 @@ class Camera
 
   /** An additional thread for running tasks that shouldn't block the UI. */
   private HandlerThread backgroundHandlerThread;
+  /** True when backgroundHandlerThread is in the process of being stopped. */
+  private boolean stoppingBackgroundHandlerThread = false;
 
   private CameraDeviceWrapper cameraDevice;
   private CameraCaptureSession captureSession;
@@ -382,8 +384,8 @@ class Camera
         backgroundHandler);
   }
 
-  private void createCaptureSession(int templateType, Surface... surfaces)
-      throws CameraAccessException {
+  @VisibleForTesting
+  void createCaptureSession(int templateType, Surface... surfaces) throws CameraAccessException {
     createCaptureSession(templateType, null, surfaces);
   }
 
@@ -391,7 +393,7 @@ class Camera
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {
     // Close any existing capture session.
-    closeCaptureSession();
+    captureSession = null;
 
     // Create a new capture builder.
     previewRequestBuilder = cameraDevice.createCaptureRequest(templateType);
@@ -669,7 +671,11 @@ class Camera
 
   /** Stops the background thread and its {@link Handler}. */
   public void stopBackgroundThread() {
+    if (stoppingBackgroundHandlerThread) {
+      return;
+    }
     if (backgroundHandlerThread != null) {
+      stoppingBackgroundHandlerThread = true;
       backgroundHandlerThread.quitSafely();
       try {
         backgroundHandlerThread.join();
@@ -679,6 +685,7 @@ class Camera
     }
     backgroundHandlerThread = null;
     backgroundHandler = null;
+    stoppingBackgroundHandlerThread = false;
   }
 
   /** Start capturing a picture, doing autofocus first. */
@@ -1173,12 +1180,19 @@ class Camera
 
   public void close() {
     Log.i(TAG, "close");
-    closeCaptureSession();
 
     if (cameraDevice != null) {
       cameraDevice.close();
       cameraDevice = null;
+
+      // Closing the CameraDevice without closing the CameraCaptureSession is recommended
+      // for quickly closing the camera:
+      // https://developer.android.com/reference/android/hardware/camera2/CameraCaptureSession#close()
+      captureSession = null;
+    } else {
+      closeCaptureSession();
     }
+
     if (pictureImageReader != null) {
       pictureImageReader.close();
       pictureImageReader = null;

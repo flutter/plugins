@@ -19,7 +19,7 @@ void main() {
     UrlLauncherPlatform.instance = mock;
   });
 
-  group('$Link', () {
+  group('Link', () {
     testWidgets('handles null uri correctly', (WidgetTester tester) async {
       bool isBuilt = false;
       FollowLink? followLink;
@@ -55,8 +55,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: 'http://example.com/foobar',
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.externalApplication,
           universalLinksOnly: false,
           enableJavaScript: true,
           enableDomStorage: true,
@@ -85,8 +84,7 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: 'http://example.com/foobar',
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           universalLinksOnly: false,
           enableJavaScript: true,
           enableDomStorage: true,

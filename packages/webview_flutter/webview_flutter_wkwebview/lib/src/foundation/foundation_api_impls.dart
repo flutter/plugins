@@ -89,7 +89,6 @@ class FoundationFlutterApis {
 }
 
 /// Host api implementation for [NSObject].
-@immutable
 class NSObjectHostApiImpl extends NSObjectHostApi {
   /// Constructs an [NSObjectHostApiImpl].
   NSObjectHostApiImpl({
@@ -133,18 +132,6 @@ class NSObjectHostApiImpl extends NSObjectHostApi {
       instanceManager.getIdentifier(observer)!,
       keyPath,
     );
-  }
-
-  @override
-  int get hashCode {
-    return Object.hash(binaryMessenger, instanceManager);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is NSObjectHostApiImpl &&
-        binaryMessenger == other.binaryMessenger &&
-        instanceManager == other.instanceManager;
   }
 }
 

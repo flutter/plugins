@@ -7,7 +7,7 @@
 #import "FWFWebViewConfigurationHostApi.h"
 
 @interface FWFNavigationDelegateFlutterApiImpl ()
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
@@ -183,8 +183,10 @@
 @end
 
 @interface FWFNavigationDelegateHostApiImpl ()
-@property(weak) id<FlutterBinaryMessenger> binaryMessenger;
-// This reference must be weak to prevent a circular reference with the objects it stores.
+// BinaryMessenger must be weak to prevent a circular reference with the host API it
+// references.
+@property(nonatomic, weak) id<FlutterBinaryMessenger> binaryMessenger;
+// InstanceManager must be weak to prevent a circular reference with the object it stores.
 @property(nonatomic, weak) FWFInstanceManager *instanceManager;
 @end
 
