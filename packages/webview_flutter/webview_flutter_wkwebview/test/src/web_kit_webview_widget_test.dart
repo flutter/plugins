@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -634,6 +636,42 @@ void main() {
         );
       });
 
+      testWidgets('evaluateJavascript with bool return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(true),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies bool
+        // is represented the way it is in Objective-C.
+        // `NSNumber.description` converts bool values to a 1 or 0.
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('1'),
+        );
+      });
+
+      testWidgets('evaluateJavascript with double return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(1.0),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies
+        // double is represented the way it is in Objective-C. If a double
+        // doesn't contain any decimal values, it gets truncated to an int.
+        // This should be happenning because NSNumber convertes float values
+        // with no decimals to an int when using `NSNumber.description`.
+        expect(
+          testController.evaluateJavascript('runJavaScript'),
+          completion('1'),
+        );
+      });
+
       testWidgets('evaluateJavascript with list return value',
           (WidgetTester tester) async {
         await buildWidget(tester);
@@ -745,6 +783,14 @@ void main() {
         when(mockWebView.getTitle())
             .thenAnswer((_) => Future<String>.value('Web Title'));
         expect(testController.getTitle(), completion('Web Title'));
+      });
+
+      testWidgets('currentUrl', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.getUrl())
+            .thenAnswer((_) => Future<String>.value('myUrl.com'));
+        expect(testController.currentUrl(), completion('myUrl.com'));
       });
 
       testWidgets('scrollTo', (WidgetTester tester) async {
@@ -1150,6 +1196,16 @@ void main() {
         );
 
         verify(mockCallbacksHandler.onProgress(32));
+      });
+
+      testWidgets('progress observer is not removed without being set first',
+          (WidgetTester tester) async {
+        await buildWidget(tester, hasProgressTracking: false);
+
+        verifyNever(mockWebView.removeObserver(
+          mockWebView,
+          keyPath: 'estimatedProgress',
+        ));
       });
     });
 

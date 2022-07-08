@@ -7,8 +7,6 @@ import 'dart:async';
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,8 +88,8 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   Future<void> init(int mapId) async {}
 
   @override
-  Future<void> updateMapOptions(
-    Map<String, dynamic> optionsUpdate, {
+  Future<void> updateMapConfiguration(
+    MapConfiguration update, {
     required int mapId,
   }) async {}
 
@@ -278,18 +276,12 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   }
 
   @override
-  Widget buildView(
+  Widget buildViewWithConfiguration(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
-    required CameraPosition initialCameraPosition,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
-        const <Factory<OneSequenceGestureRecognizer>>{},
-    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+    required MapWidgetConfiguration widgetConfiguration,
+    MapObjects mapObjects = const MapObjects(),
+    MapConfiguration mapConfiguration = const MapConfiguration(),
   }) {
     onPlatformViewCreated(0);
     createdIds.add(creationId);

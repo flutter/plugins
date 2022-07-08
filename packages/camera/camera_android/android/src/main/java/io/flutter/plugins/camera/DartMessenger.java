@@ -64,8 +64,9 @@ public class DartMessenger {
    *     the main thread. The handler is mainly supplied so it will be easier test this class.
    */
   DartMessenger(BinaryMessenger messenger, long cameraId, @NonNull Handler handler) {
-    cameraChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
-    deviceChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/device");
+    cameraChannel =
+        new MethodChannel(messenger, "plugins.flutter.io/camera_android/camera" + cameraId);
+    deviceChannel = new MethodChannel(messenger, "plugins.flutter.io/camera_android/fromPlatform");
     this.handler = handler;
   }
 

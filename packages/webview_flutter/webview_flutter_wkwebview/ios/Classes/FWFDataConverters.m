@@ -17,8 +17,12 @@ NSURLRequest *_Nullable FWFNSURLRequestFromRequestData(FWFNSUrlRequestData *data
     return nil;
   }
 
-  [request setHTTPMethod:data.httpMethod];
-  [request setHTTPBody:data.httpBody.data];
+  if (data.httpMethod) {
+    [request setHTTPMethod:data.httpMethod];
+  }
+  if (data.httpBody) {
+    [request setHTTPBody:data.httpBody.data];
+  }
   [request setAllHTTPHeaderFields:data.allHttpHeaderFields];
 
   return request;

@@ -57,6 +57,25 @@ void main() {
         );
       },
     );
+
+    test(
+      'default implementation of `buildViewWithConfiguration` delegates to `buildViewWithTextDirection`',
+      () {
+        final GoogleMapsFlutterPlatform platform =
+            BuildViewGoogleMapsFlutterPlatform();
+        expect(
+          platform.buildViewWithConfiguration(
+            0,
+            (_) {},
+            widgetConfiguration: const MapWidgetConfiguration(
+              initialCameraPosition: CameraPosition(target: LatLng(0.0, 0.0)),
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+          isA<Text>(),
+        );
+      },
+    );
   });
 }
 

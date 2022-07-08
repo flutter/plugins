@@ -16,6 +16,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 import 'package:stream_transform/stream_transform.dart';
 
 import '../types/tile_overlay_updates.dart';
+import '../types/utils/map_configuration_serialization.dart';
 
 /// Error thrown when an unknown map ID is provided to a method channel API.
 class UnknownMapIDError extends Error {
@@ -484,28 +485,22 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// Defaults to false.
   bool useAndroidViewSurface = false;
 
-  @override
-  Widget buildViewWithTextDirection(
+  Widget _buildView(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
-    required CameraPosition initialCameraPosition,
-    required TextDirection textDirection,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    required MapWidgetConfiguration widgetConfiguration,
+    MapObjects mapObjects = const MapObjects(),
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': initialCameraPosition.toMap(),
+      'initialCameraPosition':
+          widgetConfiguration.initialCameraPosition.toMap(),
       'options': mapOptions,
-      'markersToAdd': serializeMarkerSet(markers),
-      'polygonsToAdd': serializePolygonSet(polygons),
-      'polylinesToAdd': serializePolylineSet(polylines),
-      'circlesToAdd': serializeCircleSet(circles),
-      'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+      'markersToAdd': serializeMarkerSet(mapObjects.markers),
+      'polygonsToAdd': serializePolygonSet(mapObjects.polygons),
+      'polylinesToAdd': serializePolylineSet(mapObjects.polylines),
+      'circlesToAdd': serializeCircleSet(mapObjects.circles),
+      'tileOverlaysToAdd': serializeTileOverlaySet(mapObjects.tileOverlays),
     };
 
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -518,8 +513,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           ) {
             return AndroidViewSurface(
               controller: controller as AndroidViewController,
-              gestureRecognizers: gestureRecognizers ??
-                  const <Factory<OneSequenceGestureRecognizer>>{},
+              gestureRecognizers: widgetConfiguration.gestureRecognizers,
               hitTestBehavior: PlatformViewHitTestBehavior.opaque,
             );
           },
@@ -528,7 +522,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
                 PlatformViewsService.initSurfaceAndroidView(
               id: params.id,
               viewType: 'plugins.flutter.io/google_maps',
-              layoutDirection: textDirection,
+              layoutDirection: widgetConfiguration.textDirection,
               creationParams: creationParams,
               creationParamsCodec: const StandardMessageCodec(),
               onFocus: () => params.onFocusChanged(true),
@@ -548,7 +542,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         return AndroidView(
           viewType: 'plugins.flutter.io/google_maps',
           onPlatformViewCreated: onPlatformViewCreated,
-          gestureRecognizers: gestureRecognizers,
+          gestureRecognizers: widgetConfiguration.gestureRecognizers,
           creationParams: creationParams,
           creationParamsCodec: const StandardMessageCodec(),
         );
@@ -557,7 +551,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       return UiKitView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
-        gestureRecognizers: gestureRecognizers,
+        gestureRecognizers: widgetConfiguration.gestureRecognizers,
         creationParams: creationParams,
         creationParamsCodec: const StandardMessageCodec(),
       );
@@ -565,6 +559,53 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
     return Text(
         '$defaultTargetPlatform is not yet supported by the maps plugin');
+  }
+
+  @override
+  Widget buildViewWithConfiguration(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required MapWidgetConfiguration widgetConfiguration,
+    MapConfiguration mapConfiguration = const MapConfiguration(),
+    MapObjects mapObjects = const MapObjects(),
+  }) {
+    return _buildView(
+      creationId,
+      onPlatformViewCreated,
+      widgetConfiguration: widgetConfiguration,
+      mapObjects: mapObjects,
+      mapOptions: jsonForMapConfiguration(mapConfiguration),
+    );
+  }
+
+  @override
+  Widget buildViewWithTextDirection(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    required TextDirection textDirection,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    return _buildView(
+      creationId,
+      onPlatformViewCreated,
+      widgetConfiguration: MapWidgetConfiguration(
+          initialCameraPosition: initialCameraPosition,
+          textDirection: textDirection),
+      mapObjects: MapObjects(
+          markers: markers,
+          polygons: polygons,
+          polylines: polylines,
+          circles: circles,
+          tileOverlays: tileOverlays),
+      mapOptions: mapOptions,
+    );
   }
 
   @override

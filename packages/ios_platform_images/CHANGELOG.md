@@ -1,3 +1,7 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
 ## 0.2.0+9
 
 * Ignores the warning for the upcoming deprecation of `DecoderCallback`.
