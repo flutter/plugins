@@ -1,3 +1,5 @@
+<?code-excerpt path-base="excerpts/packages/url_launcher_example"?>
+
 # url_launcher
 
 [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dev/packages/url_launcher)
@@ -14,6 +16,7 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 
 ### Example
 
+<?code-excerpt "basic.dart (basic-example)"?>
 ``` dart
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,8 +36,10 @@ void main() => runApp(
       ),
     );
 
-void _launchUrl() async {
-  if (!await launchUrl(_url)) throw 'Could not launch $_url';
+Future<void> _launchUrl() async {
+  if (!await launchUrl(_url)) {
+    throw 'Could not launch $_url';
+  }
 }
 ```
 
@@ -65,17 +70,24 @@ on Android 11 (API 30) or higher. A `<queries>`
 element must be added to your manifest as a child of the root element.
 
 Example:
+
+<?code-excerpt "../../android/app/src/main/AndroidManifest.xml (android-queries)"?>
 ``` xml
+<!-- Provide required visibility configuration for API level 30 and above -->
 <queries>
-  <!-- If your app checks for SMS support -->
   <intent>
     <action android:name="android.intent.action.VIEW" />
-    <data android:scheme="sms" />
+    <data android:scheme="https" />
   </intent>
   <!-- If your app checks for call support -->
   <intent>
     <action android:name="android.intent.action.VIEW" />
     <data android:scheme="tel" />
+  </intent>
+  <!-- If your app checks for SMS support -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="sms" />
   </intent>
 </queries>
 ```
@@ -133,22 +145,36 @@ due to [a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
 encodes query parameters. Using `queryParameters` will result in spaces being
 converted to `+` in many cases.
 
+<?code-excerpt "encoding.dart (encode-query-parameters)"?>
 ```dart
 String? encodeQueryParameters(Map<String, String> params) {
   return params.entries
-      .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .map((MapEntry<String, String> e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
       .join('&');
 }
+// ···
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: 'smith@example.com',
+    query: encodeQueryParameters(<String, String>{
+      'subject': 'Example Subject & Symbols are allowed!'
+    }),
+  );
 
-final Uri emailLaunchUri = Uri(
-  scheme: 'mailto',
-  path: 'smith@example.com',
-  query: encodeQueryParameters(<String, String>{
-    'subject': 'Example Subject & Symbols are allowed!'
-  }),
+  launchUrl(emailLaunchUri);
+```
+
+Encoding for `sms` is slightly different:
+
+<?code-excerpt "encoding.dart (sms)"?>
+```dart
+final Uri smsLaunchUri = Uri(
+  scheme: 'sms',
+  path: '0118 999 881 999 119 7253',
+  queryParameters: <String, String>{
+    'body': Uri.encodeComponent('Example Subject & Symbols are allowed!'),
+  },
 );
-
-launchUrl(emailLaunchUri);
 ```
 
 ### URLs not handled by `Uri`
@@ -168,14 +194,17 @@ original APIs.
 We recommend checking first whether the directory or file exists before calling `launchUrl`.
 
 Example:
+
+<?code-excerpt "files.dart (file)"?>
 ```dart
-var filePath = '/path/to/file';
+final String filePath = testFile.absolute.path;
 final Uri uri = Uri.file(filePath);
 
-if (await File(uri.toFilePath()).exists()) {
-  if (!await launchUrl(uri)) {
-    throw 'Could not launch $uri';
-  }
+if (!File(uri.toFilePath()).existsSync() || !await canLaunchUrl(uri)) {
+  throw "$uri does not exist, or there's no handler registered for it!";
+}
+if (!await launchUrl(uri)) {
+  throw 'Could not launch $uri';
 }
 ```
 
