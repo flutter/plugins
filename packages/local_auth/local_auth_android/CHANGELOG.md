@@ -1,6 +1,6 @@
 ## 1.0.6
 
-* Update gradle version to 7.2.1 on Android.
+* Updates gradle version to 7.2.1 on Android.
 
 ## 1.0.5
 
