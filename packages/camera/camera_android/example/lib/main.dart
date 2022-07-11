@@ -165,7 +165,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             child: ListView(
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
-              children: _cameraTogglesRowWidget(),
+              children: <Widget>[
+                ..._cameraTogglesRowWidget(),
+                _thumbnailWidget(),
+              ],
             ),
           ),
         ],
