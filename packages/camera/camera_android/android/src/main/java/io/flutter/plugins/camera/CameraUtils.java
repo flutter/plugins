@@ -4,23 +4,18 @@
 
 package io.flutter.plugins.camera;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
-import android.os.Build;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 
 /** Provides various utilities for camera. */
 public final class CameraUtils {
@@ -108,11 +103,11 @@ public final class CameraUtils {
     int i = 0;
 
     while (expectingCamera) {
-      try{
+      try {
         String cameraName = String.valueOf(i);
         cameraNames.remove(cameraName);
         CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-        Map<String,Object> details = serializeCameraCharacteristics(cameraName, characteristics);
+        Map<String, Object> details = serializeCameraCharacteristics(cameraName, characteristics);
         cameras.add(details);
         i++;
       } catch (Exception e) {
@@ -133,13 +128,14 @@ public final class CameraUtils {
       }
 
       CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-      Map<String,Object> details = serializeCameraCharacteristics(cameraName, characteristics);
+      Map<String, Object> details = serializeCameraCharacteristics(cameraName, characteristics);
       cameras.add(details);
     }
     return cameras;
   }
 
-  private static Map<String, Object> serializeCameraCharacteristics(String name, CameraCharacteristics cameraCharacteristics ) {
+  private static Map<String, Object> serializeCameraCharacteristics(
+      String name, CameraCharacteristics cameraCharacteristics) {
     HashMap<String, Object> details = new HashMap<>();
     details.put("name", name);
     int sensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
