@@ -1,6 +1,7 @@
 ## 2.2.0
 
 * Adds support for heatmap layers.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 2.1.8
 

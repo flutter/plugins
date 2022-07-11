@@ -33,7 +33,8 @@ class PurchaseWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
-    required this.sku,
+    @Deprecated('Use skus instead') String? sku,
+    required this.skus,
     required this.isAutoRenewing,
     required this.originalJson,
     this.developerPayload,
@@ -41,7 +42,7 @@ class PurchaseWrapper {
     required this.purchaseState,
     this.obfuscatedAccountId,
     this.obfuscatedProfileId,
-  });
+  }) : _sku = sku;
 
   /// Factory for creating a [PurchaseWrapper] from a [Map] with the purchase details.
   factory PurchaseWrapper.fromJson(Map<String, dynamic> map) =>
@@ -104,8 +105,13 @@ class PurchaseWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  @JsonKey(defaultValue: '')
-  final String sku;
+  @Deprecated('Use skus instead')
+  String get sku => _sku ?? (skus.isNotEmpty ? skus.first : '');
+  final String? _sku;
+
+  /// The product IDs of this purchase.
+  @JsonKey(defaultValue: <String>[])
+  final List<String> skus;
 
   /// True for subscriptions that renew automatically. Does not apply to
   /// [SkuType.inapp] products.
@@ -178,10 +184,11 @@ class PurchaseHistoryRecordWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
-    required this.sku,
+    @Deprecated('Use skus instead') String? sku,
+    required this.skus,
     required this.originalJson,
     required this.developerPayload,
-  });
+  }) : _sku = sku;
 
   /// Factory for creating a [PurchaseHistoryRecordWrapper] from a [Map] with the record details.
   factory PurchaseHistoryRecordWrapper.fromJson(Map<String, dynamic> map) =>
@@ -201,8 +208,14 @@ class PurchaseHistoryRecordWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  @JsonKey(defaultValue: '')
-  final String sku;
+  @Deprecated('Use skus instead')
+  String get sku => _sku ?? (skus.isNotEmpty ? skus.first : '');
+
+  final String? _sku;
+
+  /// The product ID of this purchase.
+  @JsonKey(defaultValue: <String>[])
+  final List<String> skus;
 
   /// Details about this purchase, in JSON.
   ///
