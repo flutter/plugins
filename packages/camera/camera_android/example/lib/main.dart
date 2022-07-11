@@ -158,14 +158,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ),
           _captureControlRowWidget(),
           _modeControlRowWidget(),
-          Padding(
+          Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _cameraTogglesRowWidget(),
-                _thumbnailWidget(),
-              ],
+            height: 50,
+            child: ListView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              children: _cameraTogglesRowWidget(),
             ),
           ),
         ],
@@ -586,7 +586,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
-  Widget _cameraTogglesRowWidget() {
+  List<Widget> _cameraTogglesRowWidget() {
     final List<Widget> toggles = <Widget>[];
 
     void onChanged(CameraDescription? description) {
@@ -601,7 +601,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
         showInSnackBar('No camera found.');
       });
-      return const Text('None');
+      return <Widget>[const Text('None')];
     } else {
       for (final CameraDescription cameraDescription in _cameras) {
         toggles.add(
@@ -621,7 +621,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       }
     }
 
-    return Row(children: toggles);
+    return toggles;
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();

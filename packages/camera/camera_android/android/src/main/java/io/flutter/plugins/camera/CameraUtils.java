@@ -4,17 +4,23 @@
 
 package io.flutter.plugins.camera;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
+import android.os.Build;
+
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 
 /** Provides various utilities for camera. */
 public final class CameraUtils {
@@ -94,8 +100,27 @@ public final class CameraUtils {
   public static List<Map<String, Object>> getAvailableCameras(Activity activity)
       throws CameraAccessException {
     CameraManager cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
-    String[] cameraNames = cameraManager.getCameraIdList();
+
+    List<String> cameraNames = new ArrayList<>(Arrays.asList(cameraManager.getCameraIdList()));
     List<Map<String, Object>> cameras = new ArrayList<>();
+
+    boolean expectingCamera = true;
+    int i = 0;
+
+    while (expectingCamera) {
+      try{
+        String cameraName = String.valueOf(i);
+        cameraNames.remove(cameraName);
+        CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
+        Map<String,Object> details = serializeCameraCharacteristics(cameraName, characteristics);
+        cameras.add(details);
+        i++;
+      } catch (Exception e) {
+        // retrieving Camera failed, most probably there is no other physical non-removable camera.
+        expectingCamera = false;
+      }
+    }
+
     for (String cameraName : cameraNames) {
       int cameraId;
       try {
@@ -107,26 +132,30 @@ public final class CameraUtils {
         continue;
       }
 
-      HashMap<String, Object> details = new HashMap<>();
       CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-      details.put("name", cameraName);
-      int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-      details.put("sensorOrientation", sensorOrientation);
-
-      int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
-      switch (lensFacing) {
-        case CameraMetadata.LENS_FACING_FRONT:
-          details.put("lensFacing", "front");
-          break;
-        case CameraMetadata.LENS_FACING_BACK:
-          details.put("lensFacing", "back");
-          break;
-        case CameraMetadata.LENS_FACING_EXTERNAL:
-          details.put("lensFacing", "external");
-          break;
-      }
+      Map<String,Object> details = serializeCameraCharacteristics(cameraName, characteristics);
       cameras.add(details);
     }
     return cameras;
+  }
+
+  private static Map<String, Object> serializeCameraCharacteristics(String name, CameraCharacteristics cameraCharacteristics ) {
+    HashMap<String, Object> details = new HashMap<>();
+    details.put("name", name);
+    int sensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+    details.put("sensorOrientation", sensorOrientation);
+    int lensFacing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
+    switch (lensFacing) {
+      case CameraMetadata.LENS_FACING_FRONT:
+        details.put("lensFacing", "front");
+        break;
+      case CameraMetadata.LENS_FACING_BACK:
+        details.put("lensFacing", "back");
+        break;
+      case CameraMetadata.LENS_FACING_EXTERNAL:
+        details.put("lensFacing", "external");
+        break;
+    }
+    return details;
   }
 }

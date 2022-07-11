@@ -5,6 +5,7 @@
     android:icon="@mipmap/ic_launcher"
     android:label="camera_example">
     <activity
+      android:exported="true"
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
