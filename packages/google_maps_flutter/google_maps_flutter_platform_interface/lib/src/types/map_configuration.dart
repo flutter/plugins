@@ -60,6 +60,8 @@ class MapConfiguration {
   final bool? rotateGesturesEnabled;
 
   /// True if scroll gestures should be enabled.
+  /// 
+  /// Android/iOS only. For web, see [webGestureHandling].
   final bool? scrollGesturesEnabled;
 
   /// True if tilt gestures should be enabled.
@@ -75,6 +77,8 @@ class MapConfiguration {
   final bool? zoomControlsEnabled;
 
   /// True if zoom gestures should be enabled.
+  /// 
+  /// Android/iOS only. For web, see [webGestureHandling].
   final bool? zoomGesturesEnabled;
 
   /// True if the map should use Lite Mode, showing a limited-interactivity

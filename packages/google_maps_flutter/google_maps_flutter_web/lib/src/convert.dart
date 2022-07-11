@@ -72,9 +72,6 @@ gmaps.MapOptions _configurationAndStyleToGmapsOptions(
 
   if (configuration.webGestureHandling != null) {
     options.gestureHandling = configuration.webGestureHandling!.name;
-  } else if (configuration.scrollGesturesEnabled == false ||
-      configuration.zoomGesturesEnabled == false) {
-    options.gestureHandling = WebGestureHandling.none.name;
   } else {
     options.gestureHandling = WebGestureHandling.auto.name;
   }
