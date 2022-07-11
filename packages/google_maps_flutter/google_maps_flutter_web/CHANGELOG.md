@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* Updates `README.md` to describe a hit-testing issue when Flutter widgets are overlaid on top of the Map widget.
+
 ## 0.4.0
 
 * Implements the new platform interface versions of `buildView` and
