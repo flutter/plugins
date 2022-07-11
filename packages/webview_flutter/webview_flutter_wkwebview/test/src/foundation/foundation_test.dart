@@ -37,7 +37,7 @@ void main() {
         mockPlatformHostApi = MockTestNSObjectHostApi();
         TestNSObjectHostApi.setup(mockPlatformHostApi);
 
-        object = NSObject(instanceManager: instanceManager);
+        object = NSObject.detached(instanceManager: instanceManager);
         instanceManager.addDartCreatedInstance(object);
       });
 
@@ -46,7 +46,9 @@ void main() {
       });
 
       test('addObserver', () async {
-        final NSObject observer = NSObject(instanceManager: instanceManager);
+        final NSObject observer = NSObject.detached(
+          instanceManager: instanceManager,
+        );
         instanceManager.addDartCreatedInstance(observer);
 
         await object.addObserver(
@@ -78,7 +80,9 @@ void main() {
       });
 
       test('removeObserver', () async {
-        final NSObject observer = NSObject(instanceManager: instanceManager);
+        final NSObject observer = NSObject.detached(
+          instanceManager: instanceManager,
+        );
         instanceManager.addDartCreatedInstance(observer);
 
         await object.removeObserver(observer, keyPath: 'aKeyPath');
@@ -97,7 +101,9 @@ void main() {
           callbackIdentifier = identifier;
         });
 
-        final NSObject object = NSObject(instanceManager: instanceManager);
+        final NSObject object = NSObject.detached(
+          instanceManager: instanceManager,
+        );
         final int identifier = instanceManager.addDartCreatedInstance(object);
 
         NSObject.dispose(object);
@@ -112,7 +118,7 @@ void main() {
           instanceManager: instanceManager,
         );
 
-        object = NSObject(
+        object = NSObject.detached(
           instanceManager: instanceManager,
           observeValue: (
             String keyPath,
@@ -151,7 +157,7 @@ void main() {
           instanceManager: instanceManager,
         );
 
-        object = NSObject(instanceManager: instanceManager);
+        object = NSObject.detached(instanceManager: instanceManager);
         instanceManager.addHostCreatedInstance(object, 1);
 
         instanceManager.removeWeakReference(object);

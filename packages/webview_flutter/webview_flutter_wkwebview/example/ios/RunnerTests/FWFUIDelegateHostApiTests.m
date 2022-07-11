@@ -45,8 +45,9 @@
 
 - (void)testCreateWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFUIDelegateHostApiImpl *hostAPI =
-      [[FWFUIDelegateHostApiImpl alloc] initWithInstanceManager:instanceManager];
+  FWFUIDelegateHostApiImpl *hostAPI = [[FWFUIDelegateHostApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
 
   FlutterError *error;
   [hostAPI createWithIdentifier:@0 error:&error];

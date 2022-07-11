@@ -1,6 +1,7 @@
 ## 2.2.0
 
 * Adds options for gesture handling and tilt controls on web.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 2.1.8
 

@@ -1,3 +1,9 @@
+## 0.2.3
+
+* Upgrades Google Play Billing Library to 5.0
+* Migrates APIs to support breaking changes in new Google Play Billing API
+* `PurchaseWrapper` and `PurchaseHistoryRecordWrapper` now handles `skus` a list of sku strings. `sku` is deprecated.
+
 ## 0.2.2+8
 
 * Ignores deprecation warnings for upcoming styleFrom button API changes.
