@@ -27,7 +27,6 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import io.flutter.plugin.common.MethodCall;
-import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 /**
@@ -76,7 +75,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       FragmentActivity activity,
       MethodCall call,
       AuthCompletionHandler completionHandler,
-      ArrayList<String> authenticationMethods) {
+      boolean allowCredentials) {
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
@@ -92,29 +91,17 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
-    boolean credentialsAllowed = false;
-    int allowedAuthenticators = 0;
+    int allowedAuthenticators =
+        BiometricManager.Authenticators.BIOMETRIC_WEAK
+            | BiometricManager.Authenticators.BIOMETRIC_STRONG;
 
-    for (String option : authenticationMethods) {
-      switch (option) {
-        case "weak":
-          allowedAuthenticators |= BiometricManager.Authenticators.BIOMETRIC_WEAK;
-          break;
-        case "strong":
-          allowedAuthenticators |= BiometricManager.Authenticators.BIOMETRIC_STRONG;
-          break;
-        case "deviceCredential":
-          credentialsAllowed = true;
-          allowedAuthenticators |= BiometricManager.Authenticators.DEVICE_CREDENTIAL;
-          break;
-      }
+    if (allowCredentials) {
+      allowedAuthenticators |= BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+    } else {
+      promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
 
     promptBuilder.setAllowedAuthenticators(allowedAuthenticators);
-
-    if (!credentialsAllowed) {
-      promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
-    }
     this.promptInfo = promptBuilder.build();
   }
 

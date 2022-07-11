@@ -29,7 +29,6 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -150,35 +149,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     AuthCompletionHandler completionHandler = createAuthCompletionHandler(result);
 
     boolean isBiometricOnly = call.argument("biometricOnly");
-    ArrayList<String> authenticationMethods = getEnrolledBiometrics();
+    boolean allowCredentials = !isBiometricOnly && canAuthenticateWithDeviceCredential();
 
-    // Handle case where any biometrics are available
-    if (canAuthenticateWithBiometrics()) {
-      if (!isBiometricOnly && canAuthenticateWithDeviceCredential()) {
-        authenticationMethods.add("deviceCredential");
-      }
-      sendAuthenticationRequest(call, completionHandler, authenticationMethods);
-      return;
-    }
-
-    // Handle case where only device credential is available
-    if (!isBiometricOnly && canAuthenticateWithDeviceCredential()) {
-      if (Build.VERSION.SDK_INT >= 30) {
-        sendAuthenticationRequest(
-            call, completionHandler, new ArrayList<String>(Arrays.asList("deviceCredential")));
-        return;
-      } else if (Build.VERSION.SDK_INT >= 23
-          && keyguardManager != null
-          && keyguardManager.isDeviceSecure()) {
-        String title = call.argument("signInTitle");
-        String reason = call.argument("localizedReason");
-        Intent authIntent = keyguardManager.createConfirmDeviceCredentialIntent(title, reason);
-
-        // Save result for async response
-        lockRequestResult = result;
-        activity.startActivityForResult(authIntent, LOCK_REQUEST_CODE);
-        return;
-      }
+    if (canAuthenticateWithBiometrics() || canAuthenticateWithDeviceCredential()) {
+      sendAuthenticationRequest(call, completionHandler, allowCredentials);
     }
 
     // Unable to authenticate
@@ -237,12 +211,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @VisibleForTesting
   public void sendAuthenticationRequest(
-      MethodCall call,
-      AuthCompletionHandler completionHandler,
-      ArrayList<String> authenticationMethods) {
+      MethodCall call, AuthCompletionHandler completionHandler, boolean allowCredentials) {
     authHelper =
         new AuthenticationHelper(
-            lifecycle, (FragmentActivity) activity, call, completionHandler, authenticationMethods);
+            lifecycle, (FragmentActivity) activity, call, completionHandler, allowCredentials);
 
     authHelper.authenticate();
   }

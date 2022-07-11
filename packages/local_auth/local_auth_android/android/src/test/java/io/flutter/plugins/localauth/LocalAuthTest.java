@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -33,7 +34,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import org.junit.Test;
@@ -98,22 +98,19 @@ public class LocalAuthTest {
         .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
     plugin.setBiometricManager(mockBiometricManager);
 
-    ArgumentCaptor<ArrayList<String>> authenticationMethodsCaptor =
-        ArgumentCaptor.forClass(ArrayList.class);
+    ArgumentCaptor<Boolean> allowCredentialsCaptor = ArgumentCaptor.forClass(Boolean.class);
     doNothing()
         .when(plugin)
         .sendAuthenticationRequest(
             any(MethodCall.class),
             any(AuthCompletionHandler.class),
-            authenticationMethodsCaptor.capture());
+            allowCredentialsCaptor.capture());
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("biometricOnly", true);
 
     plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
-    assertEquals(
-        authenticationMethodsCaptor.getValue(),
-        new ArrayList<String>(Arrays.asList("weak", "strong")));
+    assertFalse(allowCredentialsCaptor.getValue());
   }
 
   @Test
@@ -129,22 +126,19 @@ public class LocalAuthTest {
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     plugin.setBiometricManager(mockBiometricManager);
 
-    ArgumentCaptor<ArrayList<String>> authenticationMethodsCaptor =
-        ArgumentCaptor.forClass(ArrayList.class);
+    ArgumentCaptor<Boolean> allowCredentialsCaptor = ArgumentCaptor.forClass(Boolean.class);
     doNothing()
         .when(plugin)
         .sendAuthenticationRequest(
             any(MethodCall.class),
             any(AuthCompletionHandler.class),
-            authenticationMethodsCaptor.capture());
+            allowCredentialsCaptor.capture());
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("biometricOnly", false);
 
     plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
-    assertEquals(
-        authenticationMethodsCaptor.getValue(),
-        new ArrayList<String>(Arrays.asList("weak", "strong", "deviceCredential")));
+    assertTrue(allowCredentialsCaptor.getValue());
   }
 
   @Config(sdk = 30)
@@ -161,22 +155,19 @@ public class LocalAuthTest {
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     plugin.setBiometricManager(mockBiometricManager);
 
-    ArgumentCaptor<ArrayList<String>> authenticationMethodsCaptor =
-        ArgumentCaptor.forClass(ArrayList.class);
+    ArgumentCaptor<Boolean> allowCredentialsCaptor = ArgumentCaptor.forClass(Boolean.class);
     doNothing()
         .when(plugin)
         .sendAuthenticationRequest(
             any(MethodCall.class),
             any(AuthCompletionHandler.class),
-            authenticationMethodsCaptor.capture());
+            allowCredentialsCaptor.capture());
     final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("biometricOnly", false);
 
     plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
-    assertEquals(
-        authenticationMethodsCaptor.getValue(),
-        new ArrayList<String>(Arrays.asList("deviceCredential")));
+    assertTrue(allowCredentialsCaptor.getValue());
   }
 
   @Config(sdk = 28)
