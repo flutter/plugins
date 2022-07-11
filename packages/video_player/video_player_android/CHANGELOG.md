@@ -1,5 +1,6 @@
-## NEXT
+## 2.3.7
 
+* Bumps gradle version to 7.2.1.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 2.3.6
