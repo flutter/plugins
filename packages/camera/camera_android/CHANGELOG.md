@@ -2,6 +2,10 @@
 
 * Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
 
+## 0.9.9
+
+* Fixes getAvailableCameras to return all possible cameras.
+
 ## 0.9.8+3
 
 * Skips duplicate calls to stop background thread and removes unnecessary closings of camera capture sessions on Android.
