@@ -1,3 +1,7 @@
+## 0.2.3+1
+
+* Updates `json_serializable` to fix warnings in generated code.
+
 ## 0.2.3
 
 * Upgrades Google Play Billing Library to 5.0
