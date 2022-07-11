@@ -1,10 +1,7 @@
-## NEXT
-
-* Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
-
 ## 0.9.9
 
 * Fixes getAvailableCameras to return all possible cameras.
+* Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
 
 ## 0.9.8+3
 
