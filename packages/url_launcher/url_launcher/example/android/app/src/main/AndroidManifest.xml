@@ -10,20 +10,24 @@
   <!--#docregion android-queries-->
   <!-- Provide required visibility configuration for API level 30 and above -->
   <queries>
+    <!-- If your app checks for SMS support -->
     <intent>
       <action android:name="android.intent.action.VIEW" />
-      <data android:scheme="https" />
+      <data android:scheme="sms" />
     </intent>
     <!-- If your app checks for call support -->
     <intent>
       <action android:name="android.intent.action.VIEW" />
       <data android:scheme="tel" />
     </intent>
-    <!-- If your app checks for SMS support -->
+    <!--#enddocregion android-queries-->
+    <!-- The "https" scheme is only required for integration tests of this package.
+         It shouldn't be needed in most actual apps, or show up in the README! -->
     <intent>
       <action android:name="android.intent.action.VIEW" />
-      <data android:scheme="sms" />
+      <data android:scheme="https" />
     </intent>
+    <!--#docregion android-queries-->
   </queries>
   <!--#enddocregion android-queries-->
 

@@ -37,8 +37,8 @@ Future<void> _openFile() async {
   final String filePath = testFile.absolute.path;
   final Uri uri = Uri.file(filePath);
 
-  if (!File(uri.toFilePath()).existsSync() || !await canLaunchUrl(uri)) {
-    throw "$uri does not exist, or there's no handler registered for it!";
+  if (!File(uri.toFilePath()).existsSync()) {
+    throw '$uri does not exist!';
   }
   if (!await launchUrl(uri)) {
     throw 'Could not launch $uri';

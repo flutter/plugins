@@ -71,23 +71,19 @@ element must be added to your manifest as a child of the root element.
 
 Example:
 
-<?code-excerpt "../../android/app/src/main/AndroidManifest.xml (android-queries)"?>
+<?code-excerpt "../../android/app/src/main/AndroidManifest.xml (android-queries)" plaster="none"?>
 ``` xml
 <!-- Provide required visibility configuration for API level 30 and above -->
 <queries>
+  <!-- If your app checks for SMS support -->
   <intent>
     <action android:name="android.intent.action.VIEW" />
-    <data android:scheme="https" />
+    <data android:scheme="sms" />
   </intent>
   <!-- If your app checks for call support -->
   <intent>
     <action android:name="android.intent.action.VIEW" />
     <data android:scheme="tel" />
-  </intent>
-  <!-- If your app checks for SMS support -->
-  <intent>
-    <action android:name="android.intent.action.VIEW" />
-    <data android:scheme="sms" />
   </intent>
 </queries>
 ```
@@ -201,8 +197,8 @@ Example:
 final String filePath = testFile.absolute.path;
 final Uri uri = Uri.file(filePath);
 
-if (!File(uri.toFilePath()).existsSync() || !await canLaunchUrl(uri)) {
-  throw "$uri does not exist, or there's no handler registered for it!";
+if (!File(uri.toFilePath()).existsSync()) {
+  throw '$uri does not exist!';
 }
 if (!await launchUrl(uri)) {
   throw 'Could not launch $uri';
