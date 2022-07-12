@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -160,8 +161,16 @@ void main() {
     await tester.pumpWidget(VideoPlayer(controller));
     final Transform actualRotationCorrection =
         find.byType(Transform).evaluate().single.widget as Transform;
-    expect(
-        actualRotationCorrection.transform, equals(Matrix4.rotationZ(math.pi)));
+    final Float64List actualRotationCorrectionStorage =
+        actualRotationCorrection.transform.storage;
+    final Float64List expectedMatrixStorage =
+        Matrix4.rotationZ(math.pi).storage;
+    expect(actualRotationCorrectionStorage.length,
+        equals(expectedMatrixStorage.length));
+    for (int i = 0; i < actualRotationCorrectionStorage.length; i++) {
+      expect(actualRotationCorrectionStorage[i],
+          moreOrLessEquals(expectedMatrixStorage[i]));
+    }
   });
 
   testWidgets('no transform when rotationCorrection is zero',
