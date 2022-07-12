@@ -57,10 +57,13 @@
         FWFObjectFlutterApiImpl *objectApi = [[FWFObjectFlutterApiImpl alloc]
             initWithBinaryMessenger:registrar.messenger
                     instanceManager:[[FWFInstanceManager alloc] init]];
-        [objectApi disposeObjectWithIdentifier:@(identifier)
-                                    completion:^(NSError *error) {
-                                      NSAssert(!error, @"%@", error);
-                                    }];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [objectApi disposeObjectWithIdentifier:@(identifier)
+                                      completion:^(NSError *error) {
+                                        NSAssert(!error, @"%@", error);
+                                      }];
+        });
       }];
   FWFWKHttpCookieStoreHostApiSetup(
       registrar.messenger,
