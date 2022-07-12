@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutter;
 
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 

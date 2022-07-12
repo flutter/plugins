@@ -42,8 +42,7 @@ public class InstanceManagerTest {
 
   @Test
   public void remove() {
-    final InstanceManager instanceManager = InstanceManager.open(identifier -> {
-    });
+    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
 
     Object object = new Object();
     instanceManager.addDartCreatedInstance(object, 0);
