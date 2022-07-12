@@ -1,3 +1,6 @@
+## NEXT
+
+* Fixes `NullPointerException` that crashes the app, triggered by immediately disposing widget after its creation.
 
 ## 2.1.12
 
