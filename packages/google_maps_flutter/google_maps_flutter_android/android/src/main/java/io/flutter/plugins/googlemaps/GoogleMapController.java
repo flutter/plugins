@@ -890,10 +890,11 @@ final class GoogleMapController
     }
     // This fixes an issue where the mapView is still being used by the render thread after disposal.
     // Delaying the actual mapView disposal to the next frame avoids the issue.
-    postFrameCallback(() -> {
-      mapView.onDestroy();
-      mapView = null;
-    });
+    postFrameCallback(
+        () -> {
+          mapView.onDestroy();
+          mapView = null;
+        });
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
