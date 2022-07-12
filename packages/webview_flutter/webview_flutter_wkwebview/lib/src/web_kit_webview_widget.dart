@@ -603,6 +603,8 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   // objects to strings before returning them to Dart. This method attempts
   // to converts Dart objects to Strings the way it is done in Objective-C
   // to avoid breaking users expecting the same String format.
+  // TODO(bparrishMines): Remove this method with the next breaking change.
+  // See https://github.com/flutter/flutter/issues/107491
   String _asObjectiveCString(Object? value, {bool inContainer = false}) {
     if (value == null) {
       // An NSNull inside an NSArray or NSDictionary is represented as a String
