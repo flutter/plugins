@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.localauth;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -20,8 +19,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.NativeActivity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import androidx.biometric.BiometricManager;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -37,12 +34,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
-@RunWith(RobolectricTestRunner.class)
 public class LocalAuthTest {
   @Test
   public void authenticate_returnsErrorWhenAuthInProgress() {
@@ -141,7 +134,6 @@ public class LocalAuthTest {
     assertTrue(allowCredentialsCaptor.getValue());
   }
 
-  @Config(sdk = 30)
   @Test
   public void authenticate_properlyConfiguresDeviceCredentialOnlyAuthenticationRequest() {
     final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
@@ -168,32 +160,6 @@ public class LocalAuthTest {
 
     plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
     assertTrue(allowCredentialsCaptor.getValue());
-  }
-
-  @Config(sdk = 28)
-  public void authenticate_properlyConfiguresDeviceCredentialOnlyIntent() {
-    final LocalAuthPlugin plugin = spy(new LocalAuthPlugin());
-    final Activity mockActivity = mock(FragmentActivity.class);
-    setPluginActivity(plugin, buildMockActivityWithContext(mockActivity));
-    when(plugin.isDeviceSupported()).thenReturn(true);
-
-    final BiometricManager mockBiometricManager = mock(BiometricManager.class);
-    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
-        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
-    when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
-        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
-    plugin.setBiometricManager(mockBiometricManager);
-
-    ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-    doNothing().when(mockActivity).startActivity(intentCaptor.capture(), any(Bundle.class));
-
-    final MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("biometricOnly", false);
-
-    plugin.onMethodCall(new MethodCall("authenticate", arguments), mockResult);
-    assertEquals(intentCaptor.getValue(), "signInTitle");
-    assertEquals(intentCaptor.getValue(), "localizedReason");
   }
 
   @Test
