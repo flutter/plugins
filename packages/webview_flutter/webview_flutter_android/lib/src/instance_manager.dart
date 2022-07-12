@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 // TODO(bparrishMines): Uncomment annotation once
 // https://github.com/flutter/plugins/pull/5831 lands or when making a breaking
 // change for https://github.com/flutter/flutter/issues/107199.
+// @immutable
 mixin Copyable {
   /// Instantiates and returns a functionally identical object to oneself.
   ///
