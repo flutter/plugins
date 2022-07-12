@@ -88,7 +88,7 @@ public class LocalAuthTest {
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK))
         .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     when(mockBiometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL))
-        .thenReturn(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED);
+        .thenReturn(BiometricManager.BIOMETRIC_SUCCESS);
     plugin.setBiometricManager(mockBiometricManager);
 
     ArgumentCaptor<Boolean> allowCredentialsCaptor = ArgumentCaptor.forClass(Boolean.class);
