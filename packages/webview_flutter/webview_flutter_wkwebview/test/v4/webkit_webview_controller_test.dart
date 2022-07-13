@@ -51,9 +51,7 @@ void main() {
           .thenReturn(mockWebsiteDataStore ?? MockWKWebsiteDataStore());
 
       final PlatformWebViewControllerCreationParams controllerCreationParams =
-          WebKitWebViewControllerCreationParams
-              .fromPlatformWebViewControllerCreationParams(
-        const PlatformWebViewControllerCreationParams(),
+          WebKitWebViewControllerCreationParams(
         webKitProxy: WebKitProxy(
           onCreateWebViewConfiguration: () => nonNullMockWebViewConfiguration,
         ),
@@ -459,11 +457,9 @@ void main() {
       );
 
       final WebKitJavaScriptChannelParams javaScriptChannelParams =
-          WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
-        JavaScriptChannelParams(
-          name: 'name',
-          onMessageReceived: (JavaScriptMessage message) {},
-        ),
+          WebKitJavaScriptChannelParams(
+        name: 'name',
+        onMessageReceived: (JavaScriptMessage message) {},
         webKitProxy: webKitProxy,
       );
 
@@ -507,11 +503,9 @@ void main() {
       );
 
       final WebKitJavaScriptChannelParams javaScriptChannelParams =
-          WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
-        JavaScriptChannelParams(
-          name: 'name',
-          onMessageReceived: (JavaScriptMessage message) {},
-        ),
+          WebKitJavaScriptChannelParams(
+        name: 'name',
+        onMessageReceived: (JavaScriptMessage message) {},
         webKitProxy: webKitProxy,
       );
 
