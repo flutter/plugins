@@ -8,11 +8,6 @@ class WebKitWebViewPlatform extends WebViewPlatform {
   WebKitWebViewController createPlatformWebViewController(
     PlatformWebViewControllerCreationParams params,
   ) {
-    return WebKitWebViewController(
-      params is WebKitWebViewControllerCreationParams
-          ? params
-          : WebKitWebViewControllerCreationParams
-              .fromPlatformWebViewControllerCreationParams(params),
-    );
+    return WebKitWebViewController(params);
   }
 }

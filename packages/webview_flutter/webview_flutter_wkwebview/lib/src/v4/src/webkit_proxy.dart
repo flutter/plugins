@@ -5,36 +5,32 @@ import '../../web_kit/web_kit.dart';
 /// native library.
 class WebKitProxy {
   /// Constructs a [WebKitProxy].
-  const WebKitProxy();
+  const WebKitProxy({
+    this.onCreateWebView = WKWebView.new,
+    this.onCreateWebViewConfiguration = WKWebViewConfiguration.new,
+    this.onCreateScriptMessageHandler = WKScriptMessageHandler.new,
+  });
 
   /// Constructs a [WKWebView].
-  WKWebView createWebView(
+  final WKWebView Function(
     WKWebViewConfiguration configuration, {
     void Function(
       String keyPath,
       NSObject object,
       Map<NSKeyValueChangeKey, Object?> change,
-    )?
+    )
         observeValue,
-  }) {
-    return WKWebView(configuration, observeValue: observeValue);
-  }
+  }) onCreateWebView;
 
   /// Constructs a [WKWebViewConfiguration].
-  WKWebViewConfiguration createWebViewConfiguration() {
-    return WKWebViewConfiguration();
-  }
+  final WKWebViewConfiguration Function() onCreateWebViewConfiguration;
 
   /// Constructs a [WKScriptMessageHandler].
-  WKScriptMessageHandler createScriptMessageHandler({
+  final WKScriptMessageHandler Function({
     required void Function(
       WKUserContentController userContentController,
       WKScriptMessage message,
     )
         didReceiveScriptMessage,
-  }) {
-    return WKScriptMessageHandler(
-      didReceiveScriptMessage: didReceiveScriptMessage,
-    );
-  }
+  }) onCreateScriptMessageHandler;
 }

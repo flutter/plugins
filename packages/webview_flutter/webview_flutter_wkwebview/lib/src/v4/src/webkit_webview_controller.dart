@@ -22,7 +22,7 @@ class WebKitWebViewControllerCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : _configuration = webKitProxy.createWebViewConfiguration();
+  }) : _configuration = webKitProxy.onCreateWebViewConfiguration();
 
   final WKWebViewConfiguration _configuration;
 }
@@ -31,12 +31,17 @@ class WebKitWebViewControllerCreationParams
 class WebKitWebViewController extends PlatformWebViewController {
   /// Constructs a [WebKitWebViewController].
   WebKitWebViewController(
-    WebKitWebViewControllerCreationParams super.params, {
+    PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  })  : _webView = webKitProxy.createWebView(params._configuration),
-        super.implementation();
+  }) : super.implementation(params is WebKitWebViewControllerCreationParams
+            ? params
+            : WebKitWebViewControllerCreationParams
+                .fromPlatformWebViewControllerCreationParams(params)) {
+    _webView = webKitProxy.onCreateWebView(
+        (params as WebKitWebViewControllerCreationParams)._configuration);
+  }
 
-  final WKWebView _webView;
+  late final WKWebView _webView;
 
   final Map<String, WebKitJavaScriptChannelParams> _javaScriptChannelParams =
       <String, WebKitJavaScriptChannelParams>{};
@@ -303,7 +308,7 @@ class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
   WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
     JavaScriptChannelParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  })  : _messageHandler = webKitProxy.createScriptMessageHandler(
+  })  : _messageHandler = webKitProxy.onCreateScriptMessageHandler(
           didReceiveScriptMessage: withWeakRefenceTo(
             params.onMessageReceived,
             (WeakReference<void Function(JavaScriptMessage)> weakReference) {
