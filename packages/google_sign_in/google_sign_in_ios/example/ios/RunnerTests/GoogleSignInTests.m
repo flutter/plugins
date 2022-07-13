@@ -73,34 +73,7 @@
   OCMVerify([self.mockSignIn disconnect]);
 }
 
-- (void)testClearAuthCache {
-  FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"clearAuthCache"
-                                                                    arguments:nil];
-
-  XCTestExpectation *expectation = [self expectationWithDescription:@"expect result returns true"];
-  [self.plugin handleMethodCall:methodCall
-                         result:^(id result) {
-                           XCTAssertNil(result);
-                           [expectation fulfill];
-                         }];
-  [self waitForExpectationsWithTimeout:5.0 handler:nil];
-}
-
 #pragma mark - Init
-
-- (void)testInitGamesSignInUnsupported {
-  FlutterMethodCall *methodCall =
-      [FlutterMethodCall methodCallWithMethodName:@"init"
-                                        arguments:@{@"signInOption" : @"SignInOption.games"}];
-
-  XCTestExpectation *expectation = [self expectationWithDescription:@"expect result returns true"];
-  [self.plugin handleMethodCall:methodCall
-                         result:^(FlutterError *result) {
-                           XCTAssertEqualObjects(result.code, @"unsupported-options");
-                           [expectation fulfill];
-                         }];
-  [self waitForExpectationsWithTimeout:5.0 handler:nil];
-}
 
 - (void)testInitGoogleServiceInfoPlist {
   FlutterMethodCall *methodCall = [FlutterMethodCall

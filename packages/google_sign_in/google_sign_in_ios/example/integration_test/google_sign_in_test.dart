@@ -13,4 +13,12 @@ void main() {
     final GoogleSignInPlatform signIn = GoogleSignInPlatform.instance;
     expect(signIn, isNotNull);
   });
+
+  testWidgets('Method channel handler is present', (WidgetTester tester) async {
+    // isSignedIn can be called without initialization, so use it to validate
+    // that the native method handler is present (e.g., that the channel name
+    // is correct).
+    final GoogleSignInPlatform signIn = GoogleSignInPlatform.instance;
+    await expectLater(signIn.isSignedIn(), completes);
+  });
 }

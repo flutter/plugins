@@ -7,7 +7,7 @@ package io.flutter.plugins.googlemaps;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
-import com.google.android.gms.internal.maps.zzz;
+import com.google.android.gms.internal.maps.zzad;
 import com.google.android.gms.maps.model.Polyline;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -16,7 +16,7 @@ public class PolylineControllerTest {
 
   @Test
   public void controller_SetsStrokeDensity() {
-    final zzz z = mock(zzz.class);
+    final zzad z = mock(zzad.class);
     final Polyline polyline = spy(new Polyline(z));
 
     final float density = 5;

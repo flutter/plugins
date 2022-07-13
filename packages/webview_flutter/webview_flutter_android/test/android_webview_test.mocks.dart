@@ -10,7 +10,7 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:webview_flutter_android/src/android_webview.dart' as _i2;
 import 'package:webview_flutter_android/src/android_webview.pigeon.dart' as _i3;
 
-import 'android_webview.pigeon.dart' as _i5;
+import 'test_android_webview.pigeon.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -277,9 +277,8 @@ class MockTestWebViewHostApi extends _i1.Mock
       super.noSuchMethod(Invocation.method(#postUrl, [instanceId, url, data]),
           returnValueForMissingStub: null);
   @override
-  String getUrl(int? instanceId) =>
-      (super.noSuchMethod(Invocation.method(#getUrl, [instanceId]),
-          returnValue: '') as String);
+  String? getUrl(int? instanceId) =>
+      (super.noSuchMethod(Invocation.method(#getUrl, [instanceId])) as String?);
   @override
   bool canGoBack(int? instanceId) =>
       (super.noSuchMethod(Invocation.method(#canGoBack, [instanceId]),
@@ -306,16 +305,16 @@ class MockTestWebViewHostApi extends _i1.Mock
           Invocation.method(#clearCache, [instanceId, includeDiskFiles]),
           returnValueForMissingStub: null);
   @override
-  _i4.Future<String> evaluateJavascript(
+  _i4.Future<String?> evaluateJavascript(
           int? instanceId, String? javascriptString) =>
       (super.noSuchMethod(
           Invocation.method(
               #evaluateJavascript, [instanceId, javascriptString]),
-          returnValue: Future<String>.value('')) as _i4.Future<String>);
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
   @override
-  String getTitle(int? instanceId) =>
-      (super.noSuchMethod(Invocation.method(#getTitle, [instanceId]),
-          returnValue: '') as String);
+  String? getTitle(int? instanceId) =>
+      (super.noSuchMethod(Invocation.method(#getTitle, [instanceId]))
+          as String?);
   @override
   void scrollTo(int? instanceId, int? x, int? y) =>
       super.noSuchMethod(Invocation.method(#scrollTo, [instanceId, x, y]),

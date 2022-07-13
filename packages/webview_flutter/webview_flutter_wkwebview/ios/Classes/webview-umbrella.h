@@ -7,6 +7,9 @@
 #import <webview_flutter_wkwebview/FLTWKNavigationDelegate.h>
 #import <webview_flutter_wkwebview/FLTWKProgressionDelegate.h>
 #import <webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>
+#import <webview_flutter_wkwebview/FWFDataConverters.h>
+#import <webview_flutter_wkwebview/FWFGeneratedWebKitApis.h>
 #import <webview_flutter_wkwebview/FWFInstanceManager.h>
+#import <webview_flutter_wkwebview/FWFWebViewHostApi.h>
 #import <webview_flutter_wkwebview/FlutterWebView.h>
 #import <webview_flutter_wkwebview/JavaScriptChannelHandler.h>

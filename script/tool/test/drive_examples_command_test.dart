@@ -708,40 +708,6 @@ void main() {
           ]));
     });
 
-    test('driving UWP is a no-op', () async {
-      createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test_driver/plugin_test.dart',
-          'example/test_driver/plugin.dart',
-        ],
-        platformSupport: <String, PlatformDetails>{
-          platformWindows: const PlatformDetails(PlatformSupport.inline,
-              variants: <String>[platformVariantWinUwp]),
-        },
-      );
-
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'drive-examples',
-        '--winuwp',
-      ]);
-
-      expect(
-        output,
-        containsAllInOrder(<Matcher>[
-          contains('Driving UWP applications is not yet supported'),
-          contains('Running for plugin'),
-          contains('SKIPPING: Drive does not yet support UWP'),
-          contains('No issues found!'),
-        ]),
-      );
-
-      // Output should be empty since running drive-examples --windows on a
-      // non-Windows plugin is a no-op.
-      expect(processRunner.recordedCalls, <ProcessCall>[]);
-    });
-
     test('driving on an Android plugin', () async {
       final Directory pluginDirectory = createFakePlugin(
         'plugin',

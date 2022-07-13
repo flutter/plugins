@@ -1,7 +1,18 @@
-## NEXT
+## 0.8.4
 
+- `readme-check` now validates that there's a info tag on code blocks to
+  identify (and for supported languages, syntax highlight) the language.
+- `readme-check` now has a `--require-excerpts` flag to require that any Dart
+  code blocks be managed by `code_excerpter`.
+
+## 0.8.3
+
+- Adds a new `update-excerpts` command to maintain README files using the
+  `code-excerpter` package from flutter/site-shared.
+- `license-check` now ignores submodules.
 - Allows `make-deps-path-based` to skip packages it has alredy rewritten, so
   that running multiple times won't fail after the first time.
+- Removes UWP support, since Flutter has dropped support for UWP.
 
 ## 0.8.2+1
 

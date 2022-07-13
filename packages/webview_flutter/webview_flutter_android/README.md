@@ -9,7 +9,10 @@ normally. This package will be automatically included in your app when you do.
 
 ## Contributing
 
-This package uses [pigeon][3] to generate the communication layer between Flutter and the host platform (Android). The communication interface is defined in the `pigeons/android_webview.dart` file. After editing the communication interface regenerate the communication layer by running the `./generatePigeons.sh` shell script.
+This package uses [pigeon][3] to generate the communication layer between Flutter and the host
+platform (Android). The communication interface is defined in the `pigeons/android_webview.dart`
+file. After editing the communication interface regenerate the communication layer by running
+`flutter pub run pigeon --input pigeons/android_webview.dart`.
 
 Due to [flutter/flutter#97744](https://github.com/flutter/flutter/issues/97744), the generated test
 pigeon file needs one of its imports updated to properly work with `mockito`.
@@ -26,7 +29,8 @@ to
 import 'package:webview_flutter_android/src/android_webview.pigeon.dart';
 ```
 
-Besides [pigeon][3] this package also uses [mockito][4] to generate mock objects for testing purposes. To generate the mock objects run the following command:
+Besides [pigeon][3] this package also uses [mockito][4] to generate mock objects for testing
+purposes. To generate the mock objects run the following command:
 ```bash
 flutter packages pub run build_runner build --delete-conflicting-outputs
 ```

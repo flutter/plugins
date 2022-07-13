@@ -313,7 +313,7 @@ void main() {
     });
 
     test(
-        'building for win32 when plugin is not set up for Windows results in no-op',
+        'building for Windows when plugin is not set up for Windows results in no-op',
         () async {
       mockPlatform.isWindows = true;
       createFakePlugin('plugin', packagesDir);
@@ -325,7 +325,7 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for plugin'),
-          contains('Win32 is not supported by this plugin'),
+          contains('Windows is not supported by this plugin'),
         ]),
       );
 
@@ -334,7 +334,7 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for win32', () async {
+    test('building for Windows', () async {
       mockPlatform.isWindows = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformDetails>{
@@ -350,7 +350,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING plugin/example for Win32 (windows)',
+          '\nBUILDING plugin/example for Windows',
         ]),
       );
 
@@ -361,88 +361,6 @@ void main() {
                 getFlutterCommand(mockPlatform),
                 const <String>['build', 'windows'],
                 pluginExampleDirectory.path),
-          ]));
-    });
-
-    test('building for UWP when plugin does not support UWP is a no-op',
-        () async {
-      createFakePlugin('plugin', packagesDir);
-
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--winuwp']);
-
-      expect(
-        output,
-        containsAllInOrder(<Matcher>[
-          contains('Running for plugin'),
-          contains('UWP is not supported by this plugin'),
-        ]),
-      );
-
-      // Output should be empty since running build-examples --macos with no macos
-      // implementation is a no-op.
-      expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-    });
-
-    test('building for UWP', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ], platformSupport: <String, PlatformDetails>{
-        platformWindows: const PlatformDetails(PlatformSupport.federated,
-            variants: <String>[platformVariantWinUwp]),
-      });
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--winuwp']);
-
-      expect(
-        output,
-        containsAllInOrder(<Matcher>[
-          contains('BUILDING plugin/example for UWP (winuwp)'),
-        ]),
-      );
-
-      expect(
-          processRunner.recordedCalls,
-          containsAll(<ProcessCall>[
-            ProcessCall(getFlutterCommand(mockPlatform),
-                const <String>['build', 'winuwp'], pluginExampleDirectory.path),
-          ]));
-    });
-
-    test('building for UWP creates a folder if necessary', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ], platformSupport: <String, PlatformDetails>{
-        platformWindows: const PlatformDetails(PlatformSupport.federated,
-            variants: <String>[platformVariantWinUwp]),
-      });
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--winuwp']);
-
-      expect(
-        output,
-        contains('Creating temporary winuwp folder'),
-      );
-
-      expect(
-          processRunner.recordedCalls,
-          orderedEquals(<ProcessCall>[
-            ProcessCall(
-                getFlutterCommand(mockPlatform),
-                const <String>['create', '--platforms=winuwp', '.'],
-                pluginExampleDirectory.path),
-            ProcessCall(getFlutterCommand(mockPlatform),
-                const <String>['build', 'winuwp'], pluginExampleDirectory.path),
           ]));
     });
 

@@ -14,12 +14,12 @@ To use this plugin, add `file_selector` as a [dependency in your pubspec.yaml fi
 ### macOS
 
 You will need to [add an entitlement][entitlement] for either read-only access:
-```
+```xml
   <key>com.apple.security.files.user-selected.read-only</key>
   <true/>
 ```
 or read/write access:
-```
+```xml
   <key>com.apple.security.files.user-selected.read-write</key>
   <true/>
 ```
