@@ -1,6 +1,7 @@
-## NEXT
+## 0.8.2+3
 
 * Ignores deprecation warnings for upcoming styleFrom button API changes.
+* Use `IFileDialog::SetFolder` to set `initialDirectory`
 
 ## 0.8.2+2
 

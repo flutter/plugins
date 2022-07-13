@@ -111,7 +111,7 @@ class DialogWrapper {
 
   // Attempts to set the default folder for the dialog to |path|,
   // if it exists.
-  void SetDefaultFolder(const std::string& path) {
+  void SetFolder(const std::string& path) {
     std::wstring wide_path = Utf16FromUtf8(path);
     IShellItemPtr item;
     last_result_ = SHCreateItemFromParsingName(wide_path.c_str(), nullptr,
@@ -119,7 +119,7 @@ class DialogWrapper {
     if (!SUCCEEDED(last_result_)) {
       return;
     }
-    dialog_controller_->SetDefaultFolder(item);
+    dialog_controller_->SetFolder(item);
   }
 
   // Sets the file name that is initially shown in the dialog.
@@ -279,7 +279,7 @@ void ShowDialog(const FileDialogControllerFactory& dialog_factory,
   const auto* initial_dir =
       std::get_if<std::string>(ValueOrNull(args, kInitialDirectoryKey));
   if (initial_dir) {
-    dialog.SetDefaultFolder(*initial_dir);
+    dialog.SetFolder(*initial_dir);
   }
   const auto* suggested_name =
       std::get_if<std::string>(ValueOrNull(args, kSuggestedNameKey));
