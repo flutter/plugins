@@ -186,3 +186,12 @@ Map<String, dynamic> buildTransactionMap(
   };
   return map;
 }
+
+final SKPaymentDiscountWrapper dummyPaymentDiscountWrapper =
+    SKPaymentDiscountWrapper.fromJson(const <String, dynamic>{
+  'identifier': 'dummy-discount-identifier',
+  'keyIdentifier': 'KEYIDTEST1',
+  'nonce': '00000000-0000-0000-0000-000000000000',
+  'signature': 'dummy-signature-string',
+  'timestamp': 1231231231,
+});

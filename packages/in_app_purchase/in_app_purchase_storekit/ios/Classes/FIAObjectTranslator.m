@@ -237,7 +237,7 @@
 
 + (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map
                                          withError:(NSString **)error {
-  if (!map || map.count <= 0) {
+  if (!map || [map isKindOfClass:[NSNull class]] || map.count <= 0) {
     return nil;
   }
 
@@ -277,7 +277,7 @@
     return nil;
   }
 
-  if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || [timestamp intValue] <= 0) {
+  if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || timestamp <= 0) {
     if (error) {
       *error = @"When specifying a payment discount the 'timestamp' field is mandatory.";
     }

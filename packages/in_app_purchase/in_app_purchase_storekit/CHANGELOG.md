@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Fixes `SKProductDiscountWrapper` with being sent trough the method channel as the expected parameter.
+
 ## 0.3.2+2
 
 * Updates imports for `prefer_relative_imports`.
