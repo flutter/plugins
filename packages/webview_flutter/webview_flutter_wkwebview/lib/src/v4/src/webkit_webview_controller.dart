@@ -15,6 +15,11 @@ import 'webkit_proxy.dart';
 @immutable
 class WebKitWebViewControllerCreationParams
     extends PlatformWebViewControllerCreationParams {
+  /// Constructs a [WebKitWebViewControllerCreationParams].
+  WebKitWebViewControllerCreationParams({
+    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+  }) : _configuration = webKitProxy.onCreateWebViewConfiguration();
+
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
   /// [PlatformWebViewControllerCreationParams].
   WebKitWebViewControllerCreationParams.fromPlatformWebViewControllerCreationParams(
@@ -22,7 +27,7 @@ class WebKitWebViewControllerCreationParams
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : _configuration = webKitProxy.onCreateWebViewConfiguration();
+  }) : this(webKitProxy: webKitProxy);
 
   final WKWebViewConfiguration _configuration;
 }
@@ -110,9 +115,12 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<void> removeJavaScriptChannel(String javaScriptChannelName) {
+  Future<void> removeJavaScriptChannel(String javaScriptChannelName) async {
     assert(javaScriptChannelName.isNotEmpty);
-    return _resetUserScripts(removedJavaScriptChannel: javaScriptChannelName);
+    if (!_javaScriptChannelParams.containsKey(javaScriptChannelName)) {
+      return;
+    }
+    await _resetUserScripts(removedJavaScriptChannel: javaScriptChannelName);
   }
 
   @override
@@ -272,7 +280,7 @@ class WebKitWebViewController extends PlatformWebViewController {
         .addUserScript(userScript);
   }
 
-  // WkWebView does not support removing a single user script, so all user
+  // WKWebView does not support removing a single user script, so all user
   // scripts and all message handlers are removed instead. And the JavaScript
   // channels that shouldn't be removed are re-registered. Note that this
   // workaround could interfere with exposing support for custom scripts from
@@ -303,14 +311,15 @@ class WebKitWebViewController extends PlatformWebViewController {
 /// See [WebKitWebViewController.addJavaScriptChannel].
 @immutable
 class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
-  /// Constructs a [WebKitJavaScriptChannelParams] using a
-  /// [JavaScriptChannelParams].
-  WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
-    JavaScriptChannelParams params, {
+  /// Constructs a [WebKitJavaScriptChannelParams].
+  WebKitJavaScriptChannelParams({
+    required super.name,
+    required super.onMessageReceived,
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  })  : _messageHandler = webKitProxy.onCreateScriptMessageHandler(
+  })  : assert(name.isNotEmpty),
+        _messageHandler = webKitProxy.onCreateScriptMessageHandler(
           didReceiveScriptMessage: withWeakRefenceTo(
-            params.onMessageReceived,
+            onMessageReceived,
             (WeakReference<void Function(JavaScriptMessage)> weakReference) {
               return (
                 WKUserContentController controller,
@@ -324,8 +333,18 @@ class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
               };
             },
           ),
-        ),
-        super(name: params.name, onMessageReceived: params.onMessageReceived);
+        );
+
+  /// Constructs a [WebKitJavaScriptChannelParams] using a
+  /// [JavaScriptChannelParams].
+  WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
+    JavaScriptChannelParams params, {
+    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+  }) : this(
+          name: params.name,
+          onMessageReceived: params.onMessageReceived,
+          webKitProxy: webKitProxy,
+        );
 
   final WKScriptMessageHandler _messageHandler;
 }
