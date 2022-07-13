@@ -152,16 +152,7 @@ public class ImagePickerDelegate
 
           @Override
           public void getFullImagePath(final Uri imageUri, final OnPathReadyListener listener) {
-            MediaScannerConnection.scanFile(
-                activity,
-                new String[] {(imageUri != null) ? imageUri.getPath() : ""},
-                null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                  @Override
-                  public void onScanCompleted(String path, Uri uri) {
-                    listener.onPathReady(path);
-                  }
-                });
+            listener.onPathReady((imageUri != null) ? imageUri.getPath() : "");
           }
         },
         new FileUtils());
