@@ -290,7 +290,7 @@ class CameraPlugin extends CameraPlatform {
         cameraEventStreamController.add(
           CameraErrorEvent(
             cameraId,
-            'Error code: ${CameraErrorCode.abort}, error message: The video element\'s source has not fully loaded.',
+            "Error code: ${CameraErrorCode.abort}, error message: The video element's source has not fully loaded.",
           ),
         );
       });
@@ -400,7 +400,7 @@ class CameraPlugin extends CameraPlatform {
         // This wrapper allows use of both the old and new APIs.
         dynamic fullScreen() => documentElement.requestFullscreen();
         await fullScreen();
-        await screenOrientation.lock(orientationType.toString());
+        await screenOrientation.lock(orientationType);
       } else {
         throw PlatformException(
           code: CameraErrorCode.orientationNotSupported.toString(),

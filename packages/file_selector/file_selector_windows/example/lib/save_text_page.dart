@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 /// Screen that allows the user to select a save location using `getSavePath`,
 /// then writes text to a file at that location.
 class SaveTextPage extends StatelessWidget {
+  /// Default Constructor
+  SaveTextPage({Key? key}) : super(key: key);
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
@@ -64,11 +67,14 @@ class SaveTextPage extends StatelessWidget {
             const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                // ignore: deprecated_member_use
                 primary: Colors.blue,
+                // ignore: deprecated_member_use
                 onPrimary: Colors.white,
               ),
-              child: const Text('Press to save a text file'),
               onPressed: _saveFile,
+              child: const Text('Press to save a text file'),
             ),
           ],
         ),

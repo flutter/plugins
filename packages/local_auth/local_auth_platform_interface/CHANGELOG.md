@@ -1,3 +1,8 @@
+## 1.0.4
+
+* Updates references to the obsolete master branch.
+* Removes unnecessary imports.
+
 ## 1.0.3
 
 * Fixes regression in the default method channel implementation of

@@ -10,10 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,7 +33,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -138,10 +140,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed: _requestTempDirectory,
                     child: const Text(
                       'Get Temporary Directory',
                     ),
-                    onPressed: _requestTempDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
@@ -155,10 +157,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed: _requestAppDocumentsDirectory,
                     child: const Text(
                       'Get Application Documents Directory',
                     ),
-                    onPressed: _requestAppDocumentsDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
@@ -172,10 +174,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed: _requestAppSupportDirectory,
                     child: const Text(
                       'Get Application Support Directory',
                     ),
-                    onPressed: _requestAppSupportDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
@@ -189,13 +191,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed:
+                        Platform.isAndroid ? null : _requestAppLibraryDirectory,
                     child: Text(
                       Platform.isAndroid
                           ? 'Application Library Directory unavailable'
                           : 'Get Application Library Directory',
                     ),
-                    onPressed:
-                        Platform.isAndroid ? null : _requestAppLibraryDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
@@ -209,14 +211,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed: !Platform.isAndroid
+                        ? null
+                        : _requestExternalStorageDirectory,
                     child: Text(
                       !Platform.isAndroid
                           ? 'External storage is unavailable'
                           : 'Get External Storage Directory',
                     ),
-                    onPressed: !Platform.isAndroid
-                        ? null
-                        : _requestExternalStorageDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(
@@ -230,11 +232,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text(
-                      !Platform.isAndroid
-                          ? 'External directories are unavailable'
-                          : 'Get External Storage Directories',
-                    ),
                     onPressed: !Platform.isAndroid
                         ? null
                         : () {
@@ -242,6 +239,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               StorageDirectory.music,
                             );
                           },
+                    child: Text(
+                      !Platform.isAndroid
+                          ? 'External directories are unavailable'
+                          : 'Get External Storage Directories',
+                    ),
                   ),
                 ),
                 FutureBuilder<List<Directory>?>(
@@ -255,14 +257,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed: !Platform.isAndroid
+                        ? null
+                        : _requestExternalCacheDirectories,
                     child: Text(
                       !Platform.isAndroid
                           ? 'External directories are unavailable'
                           : 'Get External Cache Directories',
                     ),
-                    onPressed: !Platform.isAndroid
-                        ? null
-                        : _requestExternalCacheDirectories,
                   ),
                 ),
                 FutureBuilder<List<Directory>?>(
@@ -276,14 +278,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
+                    onPressed: Platform.isAndroid || Platform.isIOS
+                        ? null
+                        : _requestDownloadsDirectory,
                     child: Text(
                       Platform.isAndroid || Platform.isIOS
                           ? 'Downloads directory is unavailable'
                           : 'Get Downloads Directory',
                     ),
-                    onPressed: Platform.isAndroid || Platform.isIOS
-                        ? null
-                        : _requestDownloadsDirectory,
                   ),
                 ),
                 FutureBuilder<Directory?>(

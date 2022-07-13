@@ -1,6 +1,20 @@
+## 1.0.7
+
+* Updates references to the obsolete master branch.
+
+## 1.0.6
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
+## 1.0.5
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 1.0.4
 
-* Fixes `deviceSupportsBiometrics` to return true when biometric hardware 
+* Fixes `deviceSupportsBiometrics` to return true when biometric hardware
   is available but not enrolled.
 
 ## 1.0.3

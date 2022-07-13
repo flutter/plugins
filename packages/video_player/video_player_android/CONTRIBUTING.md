@@ -25,7 +25,7 @@ Then, run the commands above. When you run `pub get` it should warn
 you that you're using an override. If you do this, you will need to
 publish pigeon before you can land the updates to this package, since
 the CI tests run the analysis using latest published version of
-pigeon, not your version or the version on master.
+pigeon, not your version or the version on `main`.
 
 In either case, the configuration will be obtained automatically from the
 `pigeons/messages.dart` file (see `ConfigurePigeon` at the top of that file).

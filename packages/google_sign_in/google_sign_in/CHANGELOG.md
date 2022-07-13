@@ -1,3 +1,24 @@
+## 5.4.0
+
+* Adds support for configuring `serverClientId` through `GoogleSignIn` constructor.
+* Adds support for Dart-based configuration as alternative to `GoogleService-Info.plist` for iOS.
+
+## 5.3.3
+
+* Updates references to the obsolete master branch.
+
+## 5.3.2
+
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
+* Updates tests to use a mock platform instead of relying on default
+  method channel implementation internals.
+* Removes example workaround to build for arm64 iOS simulators.
+
+## 5.3.1
+
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 5.3.0
 
 * Moves Android and iOS implementations to federated packages.

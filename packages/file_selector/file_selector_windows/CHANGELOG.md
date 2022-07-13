@@ -1,3 +1,17 @@
+## NEXT
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.8.2+2
+
+* Updates references to the obsolete master branch.
+
+## 0.8.2+1
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 0.8.2
 
 * Moves source to flutter/plugins, and restructures to allow for unit testing.

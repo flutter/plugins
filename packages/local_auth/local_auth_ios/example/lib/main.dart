@@ -10,16 +10,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'package:local_auth_platform_interface/types/auth_messages.dart';
-import 'package:local_auth_platform_interface/types/biometric_type.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -175,14 +175,14 @@ class _MyAppState extends State<MyApp> {
                 const Divider(height: 100),
                 Text('Device supports biometrics: $_canCheckBiometrics\n'),
                 ElevatedButton(
-                  child: const Text('Check biometrics'),
                   onPressed: _checkBiometrics,
+                  child: const Text('Check biometrics'),
                 ),
                 const Divider(height: 100),
                 Text('Enrolled biometrics: $_enrolledBiometrics\n'),
                 ElevatedButton(
-                  child: const Text('Get enrolled biometrics'),
                   onPressed: _getEnrolledBiometrics,
+                  child: const Text('Get enrolled biometrics'),
                 ),
                 const Divider(height: 100),
                 Text('Current State: $_authorized\n'),
@@ -201,6 +201,7 @@ class _MyAppState extends State<MyApp> {
                   Column(
                     children: <Widget>[
                       ElevatedButton(
+                        onPressed: _authenticate,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const <Widget>[
@@ -208,9 +209,9 @@ class _MyAppState extends State<MyApp> {
                             Icon(Icons.perm_device_information),
                           ],
                         ),
-                        onPressed: _authenticate,
                       ),
                       ElevatedButton(
+                        onPressed: _authenticateWithBiometrics,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
@@ -220,7 +221,6 @@ class _MyAppState extends State<MyApp> {
                             const Icon(Icons.fingerprint),
                           ],
                         ),
-                        onPressed: _authenticateWithBiometrics,
                       ),
                     ],
                   ),

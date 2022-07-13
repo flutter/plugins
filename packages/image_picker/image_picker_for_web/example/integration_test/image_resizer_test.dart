@@ -33,8 +33,8 @@ void main() {
   testWidgets('image is loaded correctly ', (WidgetTester tester) async {
     final html.ImageElement imageElement =
         await imageResizer.loadImage(pngFile.path);
-    expect(imageElement.width!, 10);
-    expect(imageElement.height!, 10);
+    expect(imageElement.width, 10);
+    expect(imageElement.height, 10);
   });
 
   testWidgets(

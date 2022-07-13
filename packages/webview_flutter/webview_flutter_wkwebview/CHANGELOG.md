@@ -1,3 +1,26 @@
+## 2.9.0
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Replaces platform implementation with WebKit API built with pigeon.
+
+## 2.8.1
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.8.0
+
+* Raises minimum Dart version to 2.17 and Flutter version to 3.0.0.
+
+## 2.7.5
+
+* Minor fixes for new analysis options.
+
+## 2.7.4
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 2.7.3
 
 * Removes two occurrences of the compiler warning: "'RequiresUserActionForMediaPlayback' is deprecated: first deprecated in ios 10.0".

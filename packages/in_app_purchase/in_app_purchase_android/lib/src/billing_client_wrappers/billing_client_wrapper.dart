@@ -10,8 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../billing_client_wrappers.dart';
 import '../channel.dart';
-import 'purchase_wrapper.dart';
-import 'sku_details_wrapper.dart';
 
 part 'billing_client_wrapper.g.dart';
 
@@ -86,7 +84,9 @@ class BillingClient {
   /// **Deprecation warning:** it is no longer required to call
   /// [enablePendingPurchases] when initializing your application.
   @Deprecated(
-      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
+      'The requirement to call `enablePendingPurchases()` has become obsolete '
+      "since Google Play no longer accepts app submissions that don't support "
+      'pending purchases.')
   void enablePendingPurchases() {
     // No-op, until it is time to completely remove this method from the API.
   }

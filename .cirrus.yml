@@ -1,9 +1,7 @@
-gcp_credentials: ENCRYPTED[!2c88dee9c9d9805b214c9f7ad8f3bc8fae936cdb0f881d562101151c408c7e024a41222677d5831df90c60d2dd6cd80a!]
+gcp_credentials: ENCRYPTED[!ebad0a1f4f7a446b77944c33651460a7ab010b4617273cb016cf354eb8fc22aa92e37a3c58bfa4a0c40a799351e027a6!]
 
-# Don't run on release tags since it creates O(n^2) tasks where n is the
-# number of plugins.
-# Don't run on 'master' since it's a mirror of 'main'.
-only_if: $CIRRUS_TAG == '' && $CIRRUS_BRANCH != 'master'
+# Run on PRs and main branch post submit only. Don't run tests when tagging.
+only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
@@ -57,8 +55,16 @@ macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for
   # PRs on macOS.
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+
+macos_intel_template: &MACOS_INTEL_TEMPLATE
+  << : *MACOS_TEMPLATE
   osx_instance:
     image: big-sur-xcode-13
+
+macos_arm_template: &MACOS_ARM_TEMPLATE
+  << : *MACOS_TEMPLATE
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-monterey-xcode:13.4
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -80,9 +86,6 @@ task:
         - dart pub run test
     - name: publishable
       env:
-        # TODO (mvanbeusekom): Temporary override to "stable" because of failure on "master".
-        # Remove override once https://github.com/dart-lang/pub/issues/3152 is resolved.
-        CHANNEL: stable
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
         # For pre-submit, pass the PR description to the script to allow for
@@ -110,6 +113,7 @@ task:
           # run with --require-excerpts and no exclusions.
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
+        dependabot_script: dart $PLUGIN_TOOL dependabot-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
       # rather than state.
@@ -157,11 +161,10 @@ task:
       depends_on: analyze
       env:
         matrix:
-          CHANNEL: "2.5.3"
+          CHANNEL: "2.10.5"
           CHANNEL: "2.8.1"
       analyze_script:
         - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
-        - echo "If this test fails, the minumum Flutter version should be updated"
     - name: readme_excerpts
       env:
         CIRRUS_CLONE_SUBMODULES: true
@@ -185,6 +188,8 @@ task:
         - flutter config --enable-linux-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: linux-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           CHANNEL: "master"
@@ -214,6 +219,8 @@ task:
   matrix:
     ### Android tasks ###
     - name: android-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
@@ -225,7 +232,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[4c11f1a80a5741d51e92ab609bc7214ab2aa015e68a490e4d6777ebdf84f9c899b97c0ded2f4b2e6adf2c8b5ead1e3c5]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[c84a06b85f9c906705732aea6142ef6f63ff1a6f07372dc36880a9d0c2c4b9cb35b2e35cd19edc6285167c2a5cc075ec]
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -299,15 +306,11 @@ task:
       drive_script:
         - ./script/tool_runner.sh drive-examples --web --exclude=script/configs/exclude_integration_web.yaml
 
-# macOS tasks.
+# ARM macOS tasks.
 task:
-  << : *MACOS_TEMPLATE
+  << : *MACOS_ARM_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
-    ### iOS+macOS tasks ***
-    - name: darwin-lint_podspecs
-      script:
-        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
     - name: ios-build_all_plugins
       env:
@@ -316,7 +319,47 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    ### macOS desktop tasks ###
+    - name: macos-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        PATH: $PATH:/usr/local/bin
+      build_script:
+        - flutter config --enable-macos-desktop
+        - ./script/tool_runner.sh build-examples --macos
+      xcode_analyze_script:
+        - ./script/tool_runner.sh xcode-analyze --macos
+      xcode_analyze_deprecation_script:
+        # Ensure we don't accidentally introduce deprecated code.
+        - ./script/tool_runner.sh xcode-analyze --macos --macos-min-version=12.3
+      native_test_script:
+        - ./script/tool_runner.sh native-test --macos
+      drive_script:
+        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml
+
+# Intel macOS tasks.
+task:
+  << : *MACOS_INTEL_TEMPLATE
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  matrix:
+    ### iOS+macOS tasks ***
+    # TODO(stuartmorgan): Move this to ARM once google_maps_flutter has ARM
+    # support. `pod lint` makes a synthetic target that doesn't respect the
+    # pod's arch exclusions, so fails to build.
+    - name: darwin-lint_podspecs
+      script:
+        - ./script/tool_runner.sh podspecs
+    ### iOS tasks ###
+    # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
+    # tests are reliable on the ARM infrastructure. See discussion at
+    # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
     - name: ios-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
@@ -335,6 +378,9 @@ task:
         - ./script/tool_runner.sh build-examples --ios
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --ios
+      xcode_analyze_deprecation_script:
+        # Ensure we don't accidentally introduce deprecated code.
+        - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=13.0
       native_test_script:
         - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
@@ -343,6 +389,8 @@ task:
         # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
         - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
+    # macos-platform_tests builds all the plugins on M1, so this build is run
+    # on Intel to give us build coverage of both host types.
     - name: macos-build_all_plugins
       env:
         BUILD_ALL_ARGS: "macos"
@@ -352,18 +400,3 @@ task:
       setup_script:
         - flutter config --enable-macos-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
-    - name: macos-platform_tests
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-        PATH: $PATH:/usr/local/bin
-      build_script:
-        - flutter config --enable-macos-desktop
-        - ./script/tool_runner.sh build-examples --macos
-      xcode_analyze_script:
-        - ./script/tool_runner.sh xcode-analyze --macos
-      native_test_script:
-        - ./script/tool_runner.sh native-test --macos
-      drive_script:
-        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml

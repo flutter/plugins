@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 
 void main() {
   runApp(
-    MaterialApp(
+    const MaterialApp(
       title: 'Google Sign In',
       home: SignInDemo(),
     ),
@@ -22,6 +22,8 @@ void main() {
 }
 
 class SignInDemo extends StatefulWidget {
+  const SignInDemo({Key? key}) : super(key: key);
+
   @override
   State createState() => SignInDemoState();
 }
@@ -29,7 +31,8 @@ class SignInDemo extends StatefulWidget {
 class SignInDemoState extends State<SignInDemo> {
   GoogleSignInUserData? _currentUser;
   String _contactText = '';
-  // Future that completes when `init` has completed on the sign in instance.
+  // Future that completes when `initWithParams` has completed on the sign in
+  // instance.
   Future<void>? _initialization;
 
   @override
@@ -39,14 +42,16 @@ class SignInDemoState extends State<SignInDemo> {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.init(
+    return _initialization ??=
+        GoogleSignInPlatform.instance.initWithParams(const SignInInitParameters(
       scopes: <String>[
         'email',
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
-    )..catchError((dynamic _) {
-        _initialization = null;
-      });
+    ))
+          ..catchError((dynamic _) {
+            _initialization = null;
+          });
   }
 
   void _setUser(GoogleSignInUserData? user) {
@@ -142,8 +147,8 @@ class SignInDemoState extends State<SignInDemo> {
           const Text('Signed in successfully.'),
           Text(_contactText),
           ElevatedButton(
-            child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
+            child: const Text('SIGN OUT'),
           ),
           ElevatedButton(
             child: const Text('REFRESH'),
@@ -157,8 +162,8 @@ class SignInDemoState extends State<SignInDemo> {
         children: <Widget>[
           const Text('You are not currently signed in.'),
           ElevatedButton(
-            child: const Text('SIGN IN'),
             onPressed: _handleSignIn,
+            child: const Text('SIGN IN'),
           ),
         ],
       );

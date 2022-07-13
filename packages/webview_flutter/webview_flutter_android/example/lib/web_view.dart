@@ -250,7 +250,7 @@ class WebView extends StatefulWidget {
   final Color? backgroundColor;
 
   @override
-  _WebViewState createState() => _WebViewState();
+  State<WebView> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {

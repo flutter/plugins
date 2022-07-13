@@ -41,5 +41,5 @@ If you would like to contribute to the plugin, check out our [contribution guide
 [2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
 [3]: https://pub.dev/packages/pigeon
 [4]: https://pub.dev/packages/mockito
-[5]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
+[5]: https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md
 

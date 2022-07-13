@@ -1,3 +1,29 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 2.1.8
+
+* Switches to new platform interface versions of `buildView` and
+  `updateOptions`.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.1.7
+
+* Objective-C code cleanup.
+
+## 2.1.6
+
+* Fixes issue in Flutter v3.0.0 where some updates to the map don't take effect on Android.
+* Fixes iOS native unit tests on M1 devices.
+* Minor fixes for new analysis options.
+
+## 2.1.5
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
 ## 2.1.4
 
 * Updates Android Google maps sdk version to `18.0.2`.
@@ -219,7 +245,7 @@ GoogleMapController is now uniformly driven by implementing `DefaultLifecycleObs
 
 ## 0.5.26+1
 
-* Removes a errorneously added method from the GoogleMapController.h header file.
+* Removes an erroneously added method from the GoogleMapController.h header file.
 
 ## 0.5.26
 

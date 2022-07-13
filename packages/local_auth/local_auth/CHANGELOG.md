@@ -1,3 +1,19 @@
+## 2.1.0
+
+* Adds Windows support.
+
+## 2.0.2
+
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.0.1
+
+* Restores the ability to import `error_codes.dart`.
+* Updates README to match API changes in 2.0, and to improve clarity in
+  general.
+* Removes unnecessary imports.
+
 ## 2.0.0
 
 * Migrates plugin to federated architecture.
@@ -5,11 +21,11 @@
 * BREAKING CHANGE: Deprecated method `authenticateWithBiometrics` has been removed.
   Use `authenticate` instead.
 * BREAKING CHANGE: Enum `BiometricType` has been expanded with options for `strong` and `weak`,
-  and applications should be updated to handle these accordingly. 
+  and applications should be updated to handle these accordingly.
 * BREAKING CHANGE: Parameters of `authenticate` have been changed.
-  
+
   Example:
-  ```dart  
+  ```dart
   // Old way of calling `authenticate`.
   Future<bool> authenticate(
     localizedReason: 'localized reason',

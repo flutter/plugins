@@ -8,7 +8,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:integration_test/integration_test.dart';
@@ -427,7 +426,12 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
+    // TODO(bparrishMines): Remove this line when resizing virtual displays doesn't
+    // clamp displays that are smaller than the screen.
+    // See https://github.com/flutter/flutter/issues/106750
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+    await tester.binding.setSurfaceSize(const Size(800, 600));
+
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Key key = GlobalKey();
@@ -474,6 +478,7 @@ void main() {
               .round());
     }
     await tester.binding.setSurfaceSize(null);
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
