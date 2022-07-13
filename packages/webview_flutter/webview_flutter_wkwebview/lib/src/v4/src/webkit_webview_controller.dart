@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
 import '../../foundation/foundation.dart';
+import 'webkit_proxy.dart';
 
 /// Object specifying creation parameters for a [WebKitWebViewController].
 @immutable
@@ -15,24 +17,12 @@ class WebKitWebViewControllerCreationParams
     extends PlatformWebViewControllerCreationParams {
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
   /// [PlatformWebViewControllerCreationParams].
-  factory WebKitWebViewControllerCreationParams.fromPlatformWebViewControllerCreationParams(
-    PlatformWebViewControllerCreationParams params,
-  ) {
-    return WebKitWebViewControllerCreationParams.fromNativeApi(
-      params,
-      configuration: WKWebViewConfiguration(),
-    );
-  }
-
-  /// Constructs a [WebKitWebViewControllerCreationParams] with classes from the
-  /// native api.
-  @visibleForTesting
-  const WebKitWebViewControllerCreationParams.fromNativeApi(
+  WebKitWebViewControllerCreationParams.fromPlatformWebViewControllerCreationParams(
     // Recommended placeholder to prevent being broken by platform interface.
     // ignore: avoid_unused_constructor_parameters
     PlatformWebViewControllerCreationParams params, {
-    required WKWebViewConfiguration configuration,
-  }) : _configuration = configuration;
+    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+  }) : _configuration = webKitProxy.createWebViewConfiguration();
 
   final WKWebViewConfiguration _configuration;
 }
@@ -40,15 +30,10 @@ class WebKitWebViewControllerCreationParams
 /// An implementation of [PlatformWebViewController] with the WebKit api.
 class WebKitWebViewController extends PlatformWebViewController {
   /// Constructs a [WebKitWebViewController].
-  WebKitWebViewController(WebKitWebViewControllerCreationParams params)
-      : this.fromNativeApi(params, webView: WKWebView(params._configuration));
-
-  /// Constructs a [WebKitWebViewController] with classes from the native api.
-  @visibleForTesting
-  WebKitWebViewController.fromNativeApi(
-    super.params, {
-    required WKWebView webView,
-  })  : _webView = webView,
+  WebKitWebViewController(
+    WebKitWebViewControllerCreationParams super.params, {
+    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+  })  : _webView = webKitProxy.createWebView(params._configuration),
         super.implementation();
 
   final WKWebView _webView;
@@ -224,7 +209,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   // TODO(bparrishMines): This is unique to iOS. Override should be removed if
   // this is removed from the platform interface before webview_flutter version
-  // 2.0.0.
+  // 4.0.0.
   @override
   Future<void> enableGestureNavigation(bool enabled) {
     return _webView.setAllowsBackForwardNavigationGestures(enabled);
@@ -315,34 +300,26 @@ class WebKitWebViewController extends PlatformWebViewController {
 class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
   /// Constructs a [WebKitJavaScriptChannelParams] using a
   /// [JavaScriptChannelParams].
-  factory WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
-    JavaScriptChannelParams params,
-  ) {
-    final WeakReference<void Function(JavaScriptMessage)>
-        weakOnMessageReceived = WeakReference<void Function(JavaScriptMessage)>(
-      params.onMessageReceived,
-    );
-    return WebKitJavaScriptChannelParams.fromNativeApi(
-      params,
-      messageHandler: WKScriptMessageHandler(
-        didReceiveScriptMessage: (_, WKScriptMessage message) {
-          if (weakOnMessageReceived.target != null) {
-            weakOnMessageReceived.target!(
-              JavaScriptMessage(message: message.body!.toString()),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  /// Constructs a [WebKitJavaScriptChannelParams] with classes from the native
-  /// api.
-  @visibleForTesting
-  WebKitJavaScriptChannelParams.fromNativeApi(
+  WebKitJavaScriptChannelParams.fromJavaScriptChannelParams(
     JavaScriptChannelParams params, {
-    required WKScriptMessageHandler messageHandler,
-  })  : _messageHandler = messageHandler,
+    @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
+  })  : _messageHandler = webKitProxy.createScriptMessageHandler(
+          didReceiveScriptMessage: withWeakRefenceTo(
+            params.onMessageReceived,
+            (WeakReference<void Function(JavaScriptMessage)> weakReference) {
+              return (
+                WKUserContentController controller,
+                WKScriptMessage message,
+              ) {
+                if (weakReference.target != null) {
+                  weakReference.target!(
+                    JavaScriptMessage(message: message.body!.toString()),
+                  );
+                }
+              };
+            },
+          ),
+        ),
         super(name: params.name, onMessageReceived: params.onMessageReceived);
 
   final WKScriptMessageHandler _messageHandler;
