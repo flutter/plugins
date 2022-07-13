@@ -1,5 +1,8 @@
-## NEXT
+## 0.10.0
 
+* **Breaking Change** Bumps default camera_web package version, which updates permission exception code from `cameraPermission` to `CameraAccessDenied`.
+* **Breaking Change** Bumps default camera_android package version, which updates permission exception code from `cameraPermission` to 
+  `CameraAccessDenied` and `AudioAccessDenied`.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 0.9.8+1
