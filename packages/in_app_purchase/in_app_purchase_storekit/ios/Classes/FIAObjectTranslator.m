@@ -233,7 +233,7 @@
 
 + (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map
                                          withError:(NSString **)error {
-  if (!map || map.count <= 0) {
+  if (!map || [map isKindOfClass:[NSNull class]] || map.count <= 0) {
     return nil;
   }
 

@@ -81,6 +81,20 @@ class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
     return true; // There's no error feedback from iOS here to return.
   }
 
+  static Future<bool> buyNonConsumableWithDiscount(
+      {required PurchaseParam purchaseParam, SKPaymentDiscountWrapper? discount}) async {
+    await _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
+      productIdentifier: purchaseParam.productDetails.id,
+      quantity: purchaseParam is AppStorePurchaseParam ? purchaseParam.quantity : 1,
+      applicationUsername: purchaseParam.applicationUserName,
+      simulatesAskToBuyInSandbox: purchaseParam is AppStorePurchaseParam && purchaseParam.simulatesAskToBuyInSandbox,
+      requestData: null,
+      paymentDiscount: discount,
+    ));
+
+    return true; // There's no error feedback from iOS here to return.
+  }
+
   @override
   Future<bool> buyConsumable(
       {required PurchaseParam purchaseParam, bool autoConsume = true}) {
