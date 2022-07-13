@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
-import 'package:webview_flutter_wkwebview/src/web_kit/web_kit.dart';
 
+import '../../common/weak_reference_utils.dart';
 import '../../foundation/foundation.dart';
+import '../../web_kit/web_kit.dart';
 import 'webkit_proxy.dart';
 
 /// Object specifying creation parameters for a [WebKitWebViewController].

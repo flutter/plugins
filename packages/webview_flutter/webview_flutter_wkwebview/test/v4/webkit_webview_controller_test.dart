@@ -287,6 +287,17 @@ void main() {
       verify(mockWebView.reload());
     });
 
+    test('enableGestureNavigation', () async {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      await controller.enableGestureNavigation(true);
+      verify(mockWebView.setAllowsBackForwardNavigationGestures(true));
+    });
+
     test('runJavaScriptReturningResult', () {
       final MockWKWebView mockWebView = MockWKWebView();
 
@@ -439,6 +450,23 @@ void main() {
       ).thenAnswer((_) => Future<bool>.value(false));
 
       expect(controller.clearCache(), completes);
+    });
+
+    test('clearLocalStorage', () {
+      final MockWKWebsiteDataStore mockWebsiteDataStore =
+          MockWKWebsiteDataStore();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockWebsiteDataStore: mockWebsiteDataStore,
+      );
+      when(
+        mockWebsiteDataStore.removeDataOfTypes(
+          <WKWebsiteDataType>{WKWebsiteDataType.localStorage},
+          DateTime.fromMillisecondsSinceEpoch(0),
+        ),
+      ).thenAnswer((_) => Future<bool>.value(false));
+
+      expect(controller.clearLocalStorage(), completes);
     });
 
     test('addJavaScriptChannel', () async {
