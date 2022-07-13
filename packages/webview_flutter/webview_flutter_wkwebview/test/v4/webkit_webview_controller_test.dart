@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -429,6 +433,83 @@ void main() {
         controller.getScrollPosition(),
         completion(const Point<double>(8.0, 16.0)),
       );
+    });
+
+    test('disable zoom', () async {
+      final MockWKUserContentController mockUserContentController =
+          MockWKUserContentController();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockUserContentController: mockUserContentController,
+      );
+
+      await controller.enableZoom(false);
+
+      final WKUserScript zoomScript =
+          verify(mockUserContentController.addUserScript(captureAny))
+              .captured
+              .first as WKUserScript;
+      expect(zoomScript.isMainFrameOnly, isTrue);
+      expect(zoomScript.injectionTime, WKUserScriptInjectionTime.atDocumentEnd);
+      expect(
+        zoomScript.source,
+        "var meta = document.createElement('meta');\n"
+        "meta.name = 'viewport';\n"
+        "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, "
+        "user-scalable=no';\n"
+        "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
+      );
+    });
+
+    test('setBackgroundColor', () async {
+      final MockWKWebView mockWebView = MockWKWebView();
+      final MockUIScrollView mockScrollView = MockUIScrollView();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+        mockScrollView: mockScrollView,
+      );
+
+      controller.setBackgroundColor(Colors.red);
+
+      verify(mockWebView.setOpaque(false));
+      verify(mockWebView.setBackgroundColor(Colors.transparent));
+      verify(mockScrollView.setBackgroundColor(Colors.red));
+    });
+
+    test('userAgent', () async {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      await controller.setUserAgent('MyUserAgent');
+      verify(mockWebView.setCustomUserAgent('MyUserAgent'));
+    });
+
+    test('enable JavaScript', () async {
+      final MockWKPreferences mockPreferences = MockWKPreferences();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockPreferences: mockPreferences,
+      );
+
+      await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+
+      verify(mockPreferences.setJavaScriptEnabled(true));
+    });
+
+    test('disable JavaScript', () async {
+      final MockWKPreferences mockPreferences = MockWKPreferences();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockPreferences: mockPreferences,
+      );
+
+      await controller.setJavaScriptMode(JavaScriptMode.disabled);
+
+      verify(mockPreferences.setJavaScriptEnabled(false));
     });
 
     test('clearCache', () {
