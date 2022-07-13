@@ -10,13 +10,13 @@ void main() {
 
   group('CameraLensDirection tests', () {
     test('CameraLensDirection should contain 3 options', () {
-      final values = CameraLensDirection.values;
+      const List<CameraLensDirection> values = CameraLensDirection.values;
 
       expect(values.length, 3);
     });
 
-    test("CameraLensDirection enum should have items in correct index", () {
-      final values = CameraLensDirection.values;
+    test('CameraLensDirection enum should have items in correct index', () {
+      const List<CameraLensDirection> values = CameraLensDirection.values;
 
       expect(values[0], CameraLensDirection.front);
       expect(values[1], CameraLensDirection.back);
@@ -26,7 +26,7 @@ void main() {
 
   group('CameraDescription tests', () {
     test('Constructor should initialize all properties', () {
-      final description = CameraDescription(
+      const CameraDescription description = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -38,12 +38,12 @@ void main() {
     });
 
     test('equals should return true if objects are the same', () {
-      final firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
       );
-      final secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -53,12 +53,12 @@ void main() {
     });
 
     test('equals should return false if name is different', () {
-      final firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
       );
-      final secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Testing',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -68,12 +68,12 @@ void main() {
     });
 
     test('equals should return false if lens direction is different', () {
-      final firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
       );
-      final secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.back,
         sensorOrientation: 90,
@@ -83,12 +83,12 @@ void main() {
     });
 
     test('equals should return true if sensor orientation is different', () {
-      final firstDescription = CameraDescription(
+      const CameraDescription firstDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 0,
       );
-      final secondDescription = CameraDescription(
+      const CameraDescription secondDescription = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 90,
@@ -97,15 +97,15 @@ void main() {
       expect(firstDescription == secondDescription, true);
     });
 
-    test('hashCode should match hashCode of all properties', () {
-      final description = CameraDescription(
+    test('hashCode should match hashCode of all equality-tested properties',
+        () {
+      const CameraDescription description = CameraDescription(
         name: 'Test',
         lensDirection: CameraLensDirection.front,
         sensorOrientation: 0,
       );
-      final expectedHashCode = description.name.hashCode ^
-          description.lensDirection.hashCode ^
-          description.sensorOrientation.hashCode;
+      final int expectedHashCode =
+          Object.hash(description.name, description.lensDirection);
 
       expect(description.hashCode, expectedHashCode);
     });

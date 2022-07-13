@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export 'src/link.dart' show Link;
 export 'package:url_launcher_platform_interface/link.dart'
     show FollowLink, LinkTarget, LinkWidgetBuilder;
+
+export 'src/link.dart' show Link;

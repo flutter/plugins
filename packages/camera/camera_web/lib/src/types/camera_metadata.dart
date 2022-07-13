@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
+import 'package:flutter/foundation.dart';
 
 /// Metadata used along the camera description
 /// to store additional web-specific camera details.
+@immutable
 class CameraMetadata {
   /// Creates a new instance of [CameraMetadata]
   /// with the given [deviceId] and [facingMode].
@@ -25,7 +26,9 @@ class CameraMetadata {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is CameraMetadata &&
         other.deviceId == deviceId &&
@@ -33,5 +36,5 @@ class CameraMetadata {
   }
 
   @override
-  int get hashCode => hashValues(deviceId.hashCode, facingMode.hashCode);
+  int get hashCode => Object.hash(deviceId.hashCode, facingMode.hashCode);
 }

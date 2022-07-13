@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:camera_platform_interface/camera_platform_interface.dart';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('camera_value', () {
     test('Can be created', () {
-      var cameraValue = const CameraValue(
+      const CameraValue cameraValue = CameraValue(
         isInitialized: false,
         errorDescription: null,
         previewSize: Size(10, 10),
@@ -36,7 +39,7 @@ void main() {
       expect(cameraValue, isA<CameraValue>());
       expect(cameraValue.isInitialized, isFalse);
       expect(cameraValue.errorDescription, null);
-      expect(cameraValue.previewSize, Size(10, 10));
+      expect(cameraValue.previewSize, const Size(10, 10));
       expect(cameraValue.isRecordingPaused, isFalse);
       expect(cameraValue.isRecordingVideo, isFalse);
       expect(cameraValue.isTakingPicture, isFalse);
@@ -53,7 +56,7 @@ void main() {
     });
 
     test('Can be created as uninitialized', () {
-      var cameraValue = const CameraValue.uninitialized();
+      const CameraValue cameraValue = CameraValue.uninitialized();
 
       expect(cameraValue, isA<CameraValue>());
       expect(cameraValue.isInitialized, isFalse);
@@ -75,8 +78,8 @@ void main() {
     });
 
     test('Can be copied with isInitialized', () {
-      var cv = const CameraValue.uninitialized();
-      var cameraValue = cv.copyWith(isInitialized: true);
+      const CameraValue cv = CameraValue.uninitialized();
+      final CameraValue cameraValue = cv.copyWith(isInitialized: true);
 
       expect(cameraValue, isA<CameraValue>());
       expect(cameraValue.isInitialized, isTrue);
@@ -98,24 +101,24 @@ void main() {
     });
 
     test('Has aspectRatio after setting size', () {
-      var cv = const CameraValue.uninitialized();
-      var cameraValue =
-          cv.copyWith(isInitialized: true, previewSize: Size(20, 10));
+      const CameraValue cv = CameraValue.uninitialized();
+      final CameraValue cameraValue =
+          cv.copyWith(isInitialized: true, previewSize: const Size(20, 10));
 
       expect(cameraValue.aspectRatio, 2.0);
     });
 
     test('hasError is true after setting errorDescription', () {
-      var cv = const CameraValue.uninitialized();
-      var cameraValue = cv.copyWith(errorDescription: 'error');
+      const CameraValue cv = CameraValue.uninitialized();
+      final CameraValue cameraValue = cv.copyWith(errorDescription: 'error');
 
       expect(cameraValue.hasError, isTrue);
       expect(cameraValue.errorDescription, 'error');
     });
 
     test('Recording paused is false when not recording', () {
-      var cv = const CameraValue.uninitialized();
-      var cameraValue = cv.copyWith(
+      const CameraValue cv = CameraValue.uninitialized();
+      final CameraValue cameraValue = cv.copyWith(
           isInitialized: true,
           isRecordingVideo: false,
           isRecordingPaused: true);
@@ -124,7 +127,7 @@ void main() {
     });
 
     test('toString() works as expected', () {
-      var cameraValue = const CameraValue(
+      const CameraValue cameraValue = CameraValue(
           isInitialized: false,
           errorDescription: null,
           previewSize: Size(10, 10),

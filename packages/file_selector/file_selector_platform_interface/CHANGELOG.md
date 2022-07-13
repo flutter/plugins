@@ -1,6 +1,16 @@
-## NEXT
+## 2.1.0
+
+* Adds `allowsAny` to `XTypeGroup` as a simple and future-proof way of identifying
+  wildcard groups.
+
+## 2.0.4
+
+* Removes dependency on `meta`.
+
+## 2.0.3
 
 * Minor code cleanup for new analysis rules.
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
 
 ## 2.0.2
 

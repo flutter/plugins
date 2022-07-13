@@ -63,7 +63,7 @@ std::string GetUrlArgument(const flutter::MethodCall<>& method_call) {
 void UrlLauncherPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrar* registrar) {
   auto channel = std::make_unique<flutter::MethodChannel<>>(
-      registrar->messenger(), "plugins.flutter.io/url_launcher",
+      registrar->messenger(), "plugins.flutter.io/url_launcher_windows",
       &flutter::StandardMethodCodec::GetInstance());
 
   std::unique_ptr<UrlLauncherPlugin> plugin =

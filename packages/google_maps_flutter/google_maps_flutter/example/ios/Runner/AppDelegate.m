@@ -9,10 +9,10 @@
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication*)application
-    didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Provide the GoogleMaps API key.
-  NSString* mapsApiKey = [[NSProcessInfo processInfo] environment][@"MAPS_API_KEY"];
+  NSString *mapsApiKey = [[NSProcessInfo processInfo] environment][@"MAPS_API_KEY"];
   if ([mapsApiKey length] == 0) {
     mapsApiKey = @"YOUR KEY HERE";
   }

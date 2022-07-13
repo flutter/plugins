@@ -2,36 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This test is run using `flutter drive` by the CI (see /script/tool/README.md
+// in this repository for details on driving that tooling manually), but can
+// also be run using `flutter test` directly during development.
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
+import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 import 'package:webview_flutter_wkwebview_example/navigation_decision.dart';
 import 'package:webview_flutter_wkwebview_example/navigation_request.dart';
 import 'package:webview_flutter_wkwebview_example/web_view.dart';
 
-void main() {
+Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  // URLs to navigate to in tests. These need to be URLs that we are confident will
-  // always be accessible, and won't do redirection. (E.g., just
-  // 'https://www.google.com/' will sometimes redirect traffic that looks
-  // like it's coming from a bot, which is true of these tests).
-  const String primaryUrl = 'https://flutter.dev/';
-  const String secondaryUrl = 'https://www.google.com/robots.txt';
+  final HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 0);
+  server.forEach((HttpRequest request) {
+    if (request.uri.path == '/hello.txt') {
+      request.response.writeln('Hello, world.');
+    } else if (request.uri.path == '/secondary.txt') {
+      request.response.writeln('How are you today?');
+    } else if (request.uri.path == '/headers') {
+      request.response.writeln('${request.headers}');
+    } else if (request.uri.path == '/favicon.ico') {
+      request.response.statusCode = HttpStatus.notFound;
+    } else {
+      fail('unexpected request: ${request.method} ${request.uri}');
+    }
+    request.response.close();
+  });
+  final String prefixUrl = 'http://${server.address.address}:${server.port}';
+  final String primaryUrl = '$prefixUrl/hello.txt';
+  final String secondaryUrl = '$prefixUrl/secondary.txt';
+  final String headersUrl = '$prefixUrl/headers';
 
-  // Set to `false` to include all flaky tests in the test run. See also https://github.com/flutter/flutter/issues/86757.
-  const bool _skipDueToIssue86757 = false;
-
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -50,9 +66,29 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
-  }, skip: _skipDueToIssue86757);
+  });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  testWidgets(
+      'withWeakRefenceTo allows encapsulating class to be garbage collected',
+      (WidgetTester tester) async {
+    final Completer<int> gcCompleter = Completer<int>();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: gcCompleter.complete,
+    );
+
+    ClassWithCallbackClass? instance = ClassWithCallbackClass();
+    instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
+    instance = null;
+
+    // Force garbage collection.
+    await IntegrationTestWidgetsFlutterBinding.instance
+        .watchPerformance(() async {
+      await tester.pumpAndSettle();
+    });
+
+    expect(gcCompleter.future, completion(0));
+  }, timeout: const Timeout(Duration(seconds: 10)));
+
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -72,7 +108,7 @@ void main() {
     await controller.loadUrl(secondaryUrl);
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, secondaryUrl);
-  }, skip: _skipDueToIssue86757);
+  });
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -123,10 +159,9 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'test_header': 'flutter_test_header'
     };
-    await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
-        headers: headers);
+    await controller.loadUrl(headersUrl, headers: headers);
     final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
+    expect(currentUrl, headersUrl);
 
     await pageStarts.stream.firstWhere((String url) => url == currentUrl);
     await pageLoads.stream.firstWhere((String url) => url == currentUrl);
@@ -196,7 +231,7 @@ void main() {
     await onPageFinished.future;
 
     resizeButtonTapped = true;
-    await tester.tap(find.byKey(const ValueKey('resizeButton')));
+    await tester.tap(find.byKey(const ValueKey<String>('resizeButton')));
     await tester.pumpAndSettle();
     expect(buttonTapResizeCompleter.future, completes);
   });
@@ -451,10 +486,10 @@ void main() {
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
+      final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -471,7 +506,7 @@ void main() {
                 onMessageReceived: (JavascriptMessage message) {
                   final double currentTime = double.parse(message.message);
                   // Let it play for at least 1 second to make sure the related video's properties are set.
-                  if (currentTime > 1) {
+                  if (currentTime > 1 && !videoPlaying.isCompleted) {
                     videoPlaying.complete(null);
                   }
                 },
@@ -485,7 +520,7 @@ void main() {
           ),
         ),
       );
-      WebViewController controller = await controllerCompleter.future;
+      final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
       // Pump once to trigger the video play.
@@ -494,7 +529,7 @@ void main() {
       // Makes sure we get the correct event that indicates the video is actually playing.
       await videoPlaying.future;
 
-      String fullScreen =
+      final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
@@ -502,10 +537,10 @@ void main() {
     testWidgets(
         'Video plays full screen when allowsInlineMediaPlayback is false',
         (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
+      final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -522,7 +557,7 @@ void main() {
                 onMessageReceived: (JavascriptMessage message) {
                   final double currentTime = double.parse(message.message);
                   // Let it play for at least 1 second to make sure the related video's properties are set.
-                  if (currentTime > 1) {
+                  if (currentTime > 1 && !videoPlaying.isCompleted) {
                     videoPlaying.complete(null);
                   }
                 },
@@ -536,7 +571,7 @@ void main() {
           ),
         ),
       );
-      WebViewController controller = await controllerCompleter.future;
+      final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
       // Pump once to trigger the video play.
@@ -545,7 +580,7 @@ void main() {
       // Makes sure we get the correct event that indicates the video is actually playing.
       await videoPlaying.future;
 
-      String fullScreen =
+      final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
     });
@@ -723,7 +758,7 @@ void main() {
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
-    final String getTitleTest = '''
+    const String getTitleTest = '''
         <!DOCTYPE html><html>
         <head><title>Some title</title>
         </head>
@@ -743,6 +778,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -760,13 +796,19 @@ void main() {
     await pageStarted.future;
     await pageLoaded.future;
 
+    // On at least iOS, it does not appear to be guaranteed that the native
+    // code has the title when the page load completes. Execute some JavaScript
+    // before checking the title to ensure that the page has been fully parsed
+    // and processed.
+    await controller.runJavascript('1;');
+
     final String? title = await controller.getTitle();
     expect(title, 'Some title');
   });
 
   group('Programmatic Scroll', () {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      final String scrollTestPage = '''
+      const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -813,7 +855,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      await tester.pumpAndSettle(Duration(seconds: 3));
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       int scrollPosX = await controller.getScrollX();
       int scrollPosY = await controller.getScrollY();
@@ -843,9 +885,9 @@ void main() {
   });
 
   group('NavigationDelegate', () {
-    final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
-    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
-        base64Encode(const Utf8Encoder().convert(blankPage));
+    const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
+    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,'
+        '${base64Encode(const Utf8Encoder().convert(blankPage))}';
 
     testWidgets('can allow requests', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
@@ -939,7 +981,7 @@ void main() {
     testWidgets(
       'onWebResourceError only called for main frame',
       (WidgetTester tester) async {
-        final String iframeTest = '''
+        const String iframeTest = '''
         <!DOCTYPE html>
         <html>
         <head>
@@ -1106,7 +1148,6 @@ void main() {
     expect(currentUrl, primaryUrl);
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
@@ -1144,7 +1185,8 @@ void main() {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion(primaryUrl));
     },
-    skip: _skipDueToIssue86757,
+    // Flaky; see https://github.com/flutter/flutter/issues/90976
+    skip: true,
   );
 }
 
@@ -1159,19 +1201,13 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return _runJavascriptReturningResult(controller, 'navigator.userAgent;');
-}
-
-Future<String> _runJavascriptReturningResult(
-    WebViewController controller, String js) async {
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.runJavascriptReturningResult(js);
-  }
-  return jsonDecode(await controller.runJavascriptReturningResult(js));
+  return await controller.runJavascriptReturningResult('navigator.userAgent;');
 }
 
 class ResizableWebView extends StatefulWidget {
-  ResizableWebView({required this.onResize, required this.onPageFinished});
+  const ResizableWebView(
+      {Key? key, required this.onResize, required this.onPageFinished})
+      : super(key: key);
 
   final JavascriptMessageHandler onResize;
   final VoidCallback onPageFinished;
@@ -1226,17 +1262,47 @@ class ResizableWebViewState extends State<ResizableWebView> {
             ),
           ),
           TextButton(
-            key: Key('resizeButton'),
+            key: const Key('resizeButton'),
             onPressed: () {
               setState(() {
                 webViewWidth += 100.0;
                 webViewHeight += 100.0;
               });
             },
-            child: Text('ResizeButton'),
+            child: const Text('ResizeButton'),
           ),
         ],
       ),
     );
   }
+}
+
+class CopyableObjectWithCallback with Copyable {
+  CopyableObjectWithCallback(this.callback);
+
+  final VoidCallback callback;
+
+  @override
+  CopyableObjectWithCallback copy() {
+    return CopyableObjectWithCallback(callback);
+  }
+}
+
+class ClassWithCallbackClass {
+  ClassWithCallbackClass() {
+    callbackClass = CopyableObjectWithCallback(
+      withWeakRefenceTo(
+        this,
+        (WeakReference<ClassWithCallbackClass> weakReference) {
+          return () {
+            // Weak reference to `this` in callback.
+            // ignore: unnecessary_statements
+            weakReference;
+          };
+        },
+      ),
+    );
+  }
+
+  late final CopyableObjectWithCallback callbackClass;
 }

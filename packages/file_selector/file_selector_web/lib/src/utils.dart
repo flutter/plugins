@@ -36,5 +36,5 @@ void _assertTypeGroupIsValid(XTypeGroup group) {
 
 /// Append a dot at the beggining if it is not there png -> .png
 String _normalizeExtension(String ext) {
-  return ext.isNotEmpty && ext[0] != '.' ? '.' + ext : ext;
+  return ext.isNotEmpty && ext[0] != '.' ? '.$ext' : ext;
 }

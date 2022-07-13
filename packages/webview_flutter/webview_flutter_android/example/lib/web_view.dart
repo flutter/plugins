@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'navigation_decision.dart';
@@ -15,7 +17,7 @@ import 'navigation_request.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
-typedef void WebViewCreatedCallback(WebViewController controller);
+typedef WebViewCreatedCallback = void Function(WebViewController controller);
 
 /// Decides how to handle a specific navigation request.
 ///
@@ -23,20 +25,20 @@ typedef void WebViewCreatedCallback(WebViewController controller);
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef FutureOr<NavigationDecision> NavigationDelegate(
+typedef NavigationDelegate = FutureOr<NavigationDecision> Function(
     NavigationRequest navigation);
 
 /// Signature for when a [WebView] has started loading a page.
-typedef void PageStartedCallback(String url);
+typedef PageStartedCallback = void Function(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
-typedef void PageFinishedCallback(String url);
+typedef PageFinishedCallback = void Function(String url);
 
 /// Signature for when a [WebView] is loading a page.
-typedef void PageLoadingCallback(int progress);
+typedef PageLoadingCallback = void Function(int progress);
 
 /// Signature for when a [WebView] has failed to load a resource.
-typedef void WebResourceErrorCallback(WebResourceError error);
+typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
 /// A web view widget for showing html content.
 ///
@@ -61,6 +63,7 @@ class WebView extends StatefulWidget {
     Key? key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.initialCookies = const <WebViewCookie>[],
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -76,28 +79,16 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
+    this.backgroundColor,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
 
-  static WebViewPlatform _platform = AndroidWebView();
-
   /// The WebView platform that's used by this WebView.
   ///
   /// The default value is [AndroidWebView].
-  static WebViewPlatform get platform => _platform;
-
-  /// Sets a custom [WebViewPlatform].
-  ///
-  /// This property can be set to use a custom platform implementation for WebViews.
-  ///
-  /// Setting `platform` doesn't affect [WebView]s that were already created.
-  ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
-  static set platform(WebViewPlatform platform) {
-    _platform = platform;
-  }
+  static WebViewPlatform platform = AndroidWebView();
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback? onWebViewCreated;
@@ -115,6 +106,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  /// The initial cookies to set.
+  final List<WebViewCookie> initialCookies;
 
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -249,8 +243,14 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// The background color of the [WebView].
+  ///
+  /// When `null` the platform's webview default background color is used. By
+  /// default [backgroundColor] is `null`.
+  final Color? backgroundColor;
+
   @override
-  _WebViewState createState() => _WebViewState();
+  State<WebView> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {
@@ -281,7 +281,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated:
           (WebViewPlatformController? webViewPlatformController) {
-        WebViewController controller = WebViewController(
+        final WebViewController controller = WebViewController(
           widget,
           webViewPlatformController!,
           _javascriptChannelRegistry,
@@ -300,6 +300,8 @@ class _WebViewState extends State<WebView> {
             _javascriptChannelRegistry.channels.keys.toSet(),
         autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
         userAgent: widget.userAgent,
+        backgroundColor: widget.backgroundColor,
+        cookies: widget.initialCookies,
       ),
       javascriptChannelRegistry: _javascriptChannelRegistry,
     );
@@ -345,6 +347,7 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     }
   }
 
+  @override
   void onWebResourceError(WebResourceError error) {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
@@ -375,6 +378,36 @@ class WebViewController {
 
   WebView _widget;
 
+  /// Loads the file located on the specified [absoluteFilePath].
+  ///
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(String absoluteFilePath) {
+    return _webViewPlatformController.loadFile(absoluteFilePath);
+  }
+
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// Throws an ArgumentError if [key] is not part of the specified assets
+  /// in the pubspec.yaml file.
+  Future<void> loadFlutterAsset(String key) {
+    return _webViewPlatformController.loadFlutterAsset(key);
+  }
+
+  /// Loads the supplied HTML string.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtmlString(String html, {String? baseUrl}) {
+    return _webViewPlatformController.loadHtmlString(
+      html,
+      baseUrl: baseUrl,
+    );
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
@@ -390,6 +423,11 @@ class WebViewController {
     assert(url != null);
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
+  }
+
+  /// Loads a page by making the specified request.
+  Future<void> loadRequest(WebViewRequest request) async {
+    return _webViewPlatformController.loadRequest(request);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
@@ -580,7 +618,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = const WebSetting<String?>.absent();
     bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
@@ -642,4 +680,22 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     userAgent: WebSetting<String?>.of(widget.userAgent),
     zoomEnabled: widget.zoomEnabled,
   );
+}
+
+/// App-facing cookie manager that exposes the correct platform implementation.
+class WebViewCookieManager extends WebViewCookieManagerPlatform {
+  WebViewCookieManager._();
+
+  /// Returns an instance of the cookie manager for the current platform.
+  static WebViewCookieManagerPlatform get instance {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      if (Platform.isAndroid) {
+        WebViewCookieManagerPlatform.instance = WebViewAndroidCookieManager();
+      } else {
+        throw AssertionError(
+            'This platform is currently unsupported for webview_flutter_android.');
+      }
+    }
+    return WebViewCookieManagerPlatform.instance!;
+  }
 }

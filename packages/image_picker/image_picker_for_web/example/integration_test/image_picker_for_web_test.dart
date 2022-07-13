@@ -11,16 +11,17 @@ import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
-final String expectedStringContents = 'Hello, world!';
-final String otherStringContents = 'Hello again, world!';
+const String expectedStringContents = 'Hello, world!';
+const String otherStringContents = 'Hello again, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents) as Uint8List;
 final Uint8List otherBytes = utf8.encode(otherStringContents) as Uint8List;
-final Map<String, dynamic> options = {
+final Map<String, dynamic> options = <String, dynamic>{
   'type': 'text/plain',
   'lastModified': DateTime.utc(2017, 12, 13).millisecondsSinceEpoch,
 };
-final html.File textFile = html.File([bytes], 'hello.txt', options);
-final html.File secondTextFile = html.File([otherBytes], 'secondFile.txt');
+final html.File textFile = html.File(<Uint8List>[bytes], 'hello.txt', options);
+final html.File secondTextFile =
+    html.File(<Uint8List>[otherBytes], 'secondFile.txt');
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -33,16 +34,17 @@ void main() {
   });
 
   testWidgets('Can select a file (Deprecated)', (WidgetTester tester) async {
-    final mockInput = html.FileUploadInputElement();
+    final html.FileUploadInputElement mockInput = html.FileUploadInputElement();
 
-    final overrides = ImagePickerPluginTestOverrides()
-      ..createInputElement = ((_, __) => mockInput)
-      ..getMultipleFilesFromInput = ((_) => [textFile]);
+    final ImagePickerPluginTestOverrides overrides =
+        ImagePickerPluginTestOverrides()
+          ..createInputElement = ((_, __) => mockInput)
+          ..getMultipleFilesFromInput = ((_) => <html.File>[textFile]);
 
-    final plugin = ImagePickerPlugin(overrides: overrides);
+    final ImagePickerPlugin plugin = ImagePickerPlugin(overrides: overrides);
 
     // Init the pick file dialog...
-    final file = plugin.pickFile();
+    final Future<PickedFile> file = plugin.pickFile();
 
     // Mock the browser behavior of selecting a file...
     mockInput.dispatchEvent(html.Event('change'));
@@ -54,16 +56,17 @@ void main() {
   });
 
   testWidgets('Can select a file', (WidgetTester tester) async {
-    final mockInput = html.FileUploadInputElement();
+    final html.FileUploadInputElement mockInput = html.FileUploadInputElement();
 
-    final overrides = ImagePickerPluginTestOverrides()
-      ..createInputElement = ((_, __) => mockInput)
-      ..getMultipleFilesFromInput = ((_) => [textFile]);
+    final ImagePickerPluginTestOverrides overrides =
+        ImagePickerPluginTestOverrides()
+          ..createInputElement = ((_, __) => mockInput)
+          ..getMultipleFilesFromInput = ((_) => <html.File>[textFile]);
 
-    final plugin = ImagePickerPlugin(overrides: overrides);
+    final ImagePickerPlugin plugin = ImagePickerPlugin(overrides: overrides);
 
     // Init the pick file dialog...
-    final image = plugin.getImage(source: ImageSource.camera);
+    final Future<XFile> image = plugin.getImage(source: ImageSource.camera);
 
     // Mock the browser behavior of selecting a file...
     mockInput.dispatchEvent(html.Event('change'));
@@ -85,16 +88,18 @@ void main() {
   });
 
   testWidgets('Can select multiple files', (WidgetTester tester) async {
-    final mockInput = html.FileUploadInputElement();
+    final html.FileUploadInputElement mockInput = html.FileUploadInputElement();
 
-    final overrides = ImagePickerPluginTestOverrides()
-      ..createInputElement = ((_, __) => mockInput)
-      ..getMultipleFilesFromInput = ((_) => [textFile, secondTextFile]);
+    final ImagePickerPluginTestOverrides overrides =
+        ImagePickerPluginTestOverrides()
+          ..createInputElement = ((_, __) => mockInput)
+          ..getMultipleFilesFromInput =
+              ((_) => <html.File>[textFile, secondTextFile]);
 
-    final plugin = ImagePickerPlugin(overrides: overrides);
+    final ImagePickerPlugin plugin = ImagePickerPlugin(overrides: overrides);
 
     // Init the pick file dialog...
-    final files = plugin.getMultiImage();
+    final Future<List<XFile>> files = plugin.getMultiImage();
 
     // Mock the browser behavior of selecting a file...
     mockInput.dispatchEvent(html.Event('change'));
@@ -135,7 +140,7 @@ void main() {
 
   group('createInputElement', () {
     testWidgets('accept: any, capture: null', (WidgetTester tester) async {
-      html.Element input = plugin.createInputElement('any', null);
+      final html.Element input = plugin.createInputElement('any', null);
 
       expect(input.attributes, containsPair('accept', 'any'));
       expect(input.attributes, isNot(contains('capture')));
@@ -143,7 +148,7 @@ void main() {
     });
 
     testWidgets('accept: any, capture: something', (WidgetTester tester) async {
-      html.Element input = plugin.createInputElement('any', 'something');
+      final html.Element input = plugin.createInputElement('any', 'something');
 
       expect(input.attributes, containsPair('accept', 'any'));
       expect(input.attributes, containsPair('capture', 'something'));
@@ -152,7 +157,7 @@ void main() {
 
     testWidgets('accept: any, capture: null, multi: true',
         (WidgetTester tester) async {
-      html.Element input =
+      final html.Element input =
           plugin.createInputElement('any', null, multiple: true);
 
       expect(input.attributes, containsPair('accept', 'any'));
@@ -162,7 +167,7 @@ void main() {
 
     testWidgets('accept: any, capture: something, multi: true',
         (WidgetTester tester) async {
-      html.Element input =
+      final html.Element input =
           plugin.createInputElement('any', 'something', multiple: true);
 
       expect(input.attributes, containsPair('accept', 'any'));

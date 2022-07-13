@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -18,7 +16,7 @@ part 'sku_details_wrapper.g.dart';
 ///
 /// This usually indicates a series underlining code issue in the plugin.
 @visibleForTesting
-const kInvalidBillingResultErrorMessage =
+const String kInvalidBillingResultErrorMessage =
     'Invalid billing result map from method channel.';
 
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
@@ -26,10 +24,11 @@ const kInvalidBillingResultErrorMessage =
 /// Contains the details of an available product in Google Play Billing.
 @JsonSerializable()
 @SkuTypeConverter()
+@immutable
 class SkuDetailsWrapper {
   /// Creates a [SkuDetailsWrapper] with the given purchase details.
   @visibleForTesting
-  SkuDetailsWrapper({
+  const SkuDetailsWrapper({
     required this.description,
     required this.freeTrialPeriod,
     required this.introductoryPrice,
@@ -50,8 +49,6 @@ class SkuDetailsWrapper {
     required this.originalPriceAmountMicros,
   }) : _introductoryPriceMicros = introductoryPriceMicros;
 
-  final String _introductoryPriceMicros;
-
   /// Constructs an instance of this from a key value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
@@ -59,6 +56,8 @@ class SkuDetailsWrapper {
   @visibleForTesting
   factory SkuDetailsWrapper.fromJson(Map<String, dynamic> map) =>
       _$SkuDetailsWrapperFromJson(map);
+
+  final String _introductoryPriceMicros;
 
   /// Textual description of the product.
   @JsonKey(defaultValue: '')
@@ -136,7 +135,7 @@ class SkuDetailsWrapper {
   final int originalPriceAmountMicros;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }
@@ -160,7 +159,7 @@ class SkuDetailsWrapper {
 
   @override
   int get hashCode {
-    return hashValues(
+    return Object.hash(
         description.hashCode,
         freeTrialPeriod.hashCode,
         introductoryPrice.hashCode,
@@ -182,10 +181,11 @@ class SkuDetailsWrapper {
 ///
 /// Returned by [BillingClient.querySkuDetails].
 @JsonSerializable()
+@immutable
 class SkuDetailsResponseWrapper {
   /// Creates a [SkuDetailsResponseWrapper] with the given purchase details.
   @visibleForTesting
-  SkuDetailsResponseWrapper(
+  const SkuDetailsResponseWrapper(
       {required this.billingResult, required this.skuDetailsList});
 
   /// Constructs an instance of this from a key value map of data.
@@ -203,7 +203,7 @@ class SkuDetailsResponseWrapper {
   final List<SkuDetailsWrapper> skuDetailsList;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }
@@ -214,15 +214,16 @@ class SkuDetailsResponseWrapper {
   }
 
   @override
-  int get hashCode => hashValues(billingResult, skuDetailsList);
+  int get hashCode => Object.hash(billingResult, skuDetailsList);
 }
 
 /// Params containing the response code and the debug message from the Play Billing API response.
 @JsonSerializable()
 @BillingResponseConverter()
+@immutable
 class BillingResultWrapper {
   /// Constructs the object with [responseCode] and [debugMessage].
-  BillingResultWrapper({required this.responseCode, this.debugMessage});
+  const BillingResultWrapper({required this.responseCode, this.debugMessage});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -230,7 +231,7 @@ class BillingResultWrapper {
   /// types of all of the members on this class.
   factory BillingResultWrapper.fromJson(Map<String, dynamic>? map) {
     if (map == null || map.isEmpty) {
-      return BillingResultWrapper(
+      return const BillingResultWrapper(
           responseCode: BillingResponse.error,
           debugMessage: kInvalidBillingResultErrorMessage);
     }
@@ -247,7 +248,7 @@ class BillingResultWrapper {
   final String? debugMessage;
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }
@@ -258,5 +259,5 @@ class BillingResultWrapper {
   }
 
   @override
-  int get hashCode => hashValues(responseCode, debugMessage);
+  int get hashCode => Object.hash(responseCode, debugMessage);
 }

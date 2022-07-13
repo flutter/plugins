@@ -6,7 +6,7 @@
 @import os.log;
 
 @interface GoogleMapsUITests : XCTestCase
-@property(nonatomic, strong) XCUIApplication* app;
+@property(nonatomic, strong) XCUIApplication *app;
 @end
 
 @implementation GoogleMapsUITests
@@ -21,9 +21,9 @@
   // See: https://github.com/flutter/flutter/issues/93325.
   [self
       addUIInterruptionMonitorWithDescription:@"Permission popups"
-                                      handler:^BOOL(XCUIElement* _Nonnull interruptingElement) {
+                                      handler:^BOOL(XCUIElement *_Nonnull interruptingElement) {
                                         if (@available(iOS 14, *)) {
-                                          XCUIElement* locationPermission =
+                                          XCUIElement *locationPermission =
                                               interruptingElement.buttons[@"Allow While Using App"];
                                           if (![locationPermission
                                                   waitForExistenceWithTimeout:30.0]) {
@@ -33,7 +33,7 @@
                                           [locationPermission tap];
 
                                         } else {
-                                          XCUIElement* allow =
+                                          XCUIElement *allow =
                                               interruptingElement.buttons[@"Allow"];
                                           if (![allow waitForExistenceWithTimeout:30.0]) {
                                             XCTFail(@"Failed due to not able to find Allow button");
@@ -46,19 +46,19 @@
 
 // Temporarily disabled due to https://github.com/flutter/flutter/issues/93325
 - (void)skip_testUserInterface {
-  XCUIApplication* app = self.app;
-  XCUIElement* userInteface = app.staticTexts[@"User interface"];
+  XCUIApplication *app = self.app;
+  XCUIElement *userInteface = app.staticTexts[@"User interface"];
   if (![userInteface waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find User interface");
   }
   [userInteface tap];
-  XCUIElement* platformView = app.otherElements[@"platform_view[0]"];
+  XCUIElement *platformView = app.otherElements[@"platform_view[0]"];
   if (![platformView waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find platform view");
   }
-  XCUIElement* compass = app.buttons[@"disable compass"];
+  XCUIElement *compass = app.buttons[@"disable compass"];
   if (![compass waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find compass button");
@@ -67,21 +67,21 @@
 }
 
 - (void)testMapCoordinatesPage {
-  XCUIApplication* app = self.app;
-  XCUIElement* mapCoordinates = app.staticTexts[@"Map coordinates"];
+  XCUIApplication *app = self.app;
+  XCUIElement *mapCoordinates = app.staticTexts[@"Map coordinates"];
   if (![mapCoordinates waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find 'Map coordinates''");
   }
   [mapCoordinates tap];
 
-  XCUIElement* platformView = app.otherElements[@"platform_view[0]"];
+  XCUIElement *platformView = app.otherElements[@"platform_view[0]"];
   if (![platformView waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find platform view");
   }
 
-  XCUIElement* getVisibleRegionBoundsButton = app.buttons[@"Get Visible Region Bounds"];
+  XCUIElement *getVisibleRegionBoundsButton = app.buttons[@"Get Visible Region Bounds"];
   if (![getVisibleRegionBoundsButton waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find 'Get Visible Region Bounds''");
@@ -90,15 +90,15 @@
 }
 
 - (void)testMapClickPage {
-  XCUIApplication* app = self.app;
-  XCUIElement* mapClick = app.staticTexts[@"Map click"];
+  XCUIApplication *app = self.app;
+  XCUIElement *mapClick = app.staticTexts[@"Map click"];
   if (![mapClick waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find 'Map click''");
   }
   [mapClick tap];
 
-  XCUIElement* platformView = app.otherElements[@"platform_view[0]"];
+  XCUIElement *platformView = app.otherElements[@"platform_view[0]"];
   if (![platformView waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find platform view");
@@ -106,7 +106,7 @@
 
   [platformView tap];
 
-  XCUIElement* tapped = app.staticTexts[@"Tapped"];
+  XCUIElement *tapped = app.staticTexts[@"Tapped"];
   if (![tapped waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find 'tapped''");
@@ -114,7 +114,7 @@
 
   [platformView pressForDuration:5.0];
 
-  XCUIElement* longPressed = app.staticTexts[@"Long pressed"];
+  XCUIElement *longPressed = app.staticTexts[@"Long pressed"];
   if (![longPressed waitForExistenceWithTimeout:30.0]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find 'longPressed''");

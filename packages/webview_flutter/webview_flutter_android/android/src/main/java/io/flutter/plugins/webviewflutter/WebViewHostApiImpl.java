@@ -28,16 +28,12 @@ import java.util.Map;
  * <p>Handles creating {@link WebView}s that intercommunicate with a paired Dart object.
  */
 public class WebViewHostApiImpl implements WebViewHostApi {
-  // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
-  // Workaround to represent null Strings since pigeon doesn't support null
-  // values.
-  private static final String nullStringIdentifier = "<null-value>";
-
   private final InstanceManager instanceManager;
   private final WebViewProxy webViewProxy;
-  private final Context context;
   // Only used with WebView using virtual displays.
   @Nullable private final View containerView;
+
+  private Context context;
 
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
@@ -317,6 +313,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     this.containerView = containerView;
   }
 
+  /**
+   * Sets the context to construct {@link WebView}s.
+   *
+   * @param context the new context.
+   */
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
   @Override
   public void create(Long instanceId, Boolean useHybridComposition) {
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
@@ -335,10 +340,29 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   @Override
   public void dispose(Long instanceId) {
-    final WebView instance = (WebView) instanceManager.removeInstanceWithId(instanceId);
+    final WebView instance = (WebView) instanceManager.getInstance(instanceId);
     if (instance != null) {
       ((Releasable) instance).release();
+      instanceManager.removeInstance(instance);
     }
+  }
+
+  @Override
+  public void loadData(Long instanceId, String data, String mimeType, String encoding) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.loadData(data, mimeType, encoding);
+  }
+
+  @Override
+  public void loadDataWithBaseUrl(
+      Long instanceId,
+      String baseUrl,
+      String data,
+      String mimeType,
+      String encoding,
+      String historyUrl) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
   }
 
   @Override
@@ -348,10 +372,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
+  public void postUrl(Long instanceId, String url, byte[] data) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.postUrl(url, data);
+  }
+
+  @Override
   public String getUrl(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    final String result = webView.getUrl();
-    return result != null ? result : nullStringIdentifier;
+    return webView.getUrl();
   }
 
   @Override
@@ -400,8 +429,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @Override
   public String getTitle(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    final String result = webView.getTitle();
-    return result != null ? result : nullStringIdentifier;
+    return webView.getTitle();
   }
 
   @Override
@@ -465,5 +493,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
+  }
+
+  @Override
+  public void setBackgroundColor(Long instanceId, Long color) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.setBackgroundColor(color.intValue());
   }
 }

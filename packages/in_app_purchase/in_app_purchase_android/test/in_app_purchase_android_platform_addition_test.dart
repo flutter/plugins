@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_android/src/channel.dart';
-import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
 
 import 'billing_client_wrappers/purchase_wrapper_test.dart';
 import 'stub_in_app_purchase_platform.dart';
@@ -29,11 +28,9 @@ void main() {
   setUp(() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
 
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-
     const String debugMessage = 'dummy message';
-    final BillingResponse responseCode = BillingResponse.ok;
-    final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+    const BillingResponse responseCode = BillingResponse.ok;
+    const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
         responseCode: responseCode, debugMessage: debugMessage);
     stubPlatform.addResponse(
         name: startConnectionCall,
@@ -47,9 +44,9 @@ void main() {
     const String consumeMethodName =
         'BillingClient#consumeAsync(String, ConsumeResponseListener)';
     test('consume purchase async success', () async {
-      final BillingResponse expectedCode = BillingResponse.ok;
+      const BillingResponse expectedCode = BillingResponse.ok;
       const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+      const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
           responseCode: expectedCode, debugMessage: debugMessage);
       stubPlatform.addResponse(
         name: consumeMethodName,
@@ -68,14 +65,14 @@ void main() {
       const String queryMethodName = 'BillingClient#queryPurchases(String)';
       test('handles error', () async {
         const String debugMessage = 'dummy message';
-        final BillingResponse responseCode = BillingResponse.developerError;
-        final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+        const BillingResponse responseCode = BillingResponse.developerError;
+        const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
             responseCode: responseCode, debugMessage: debugMessage);
 
         stubPlatform
             .addResponse(name: queryMethodName, value: <dynamic, dynamic>{
           'billingResult': buildBillingResultMap(expectedBillingResult),
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'purchasesList': <Map<String, dynamic>>[]
         });
         final QueryPurchaseDetailsResponse response =
@@ -89,14 +86,14 @@ void main() {
 
       test('returns SkuDetailsResponseWrapper', () async {
         const String debugMessage = 'dummy message';
-        final BillingResponse responseCode = BillingResponse.ok;
-        final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+        const BillingResponse responseCode = BillingResponse.ok;
+        const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
             responseCode: responseCode, debugMessage: debugMessage);
 
         stubPlatform
             .addResponse(name: queryMethodName, value: <String, dynamic>{
           'billingResult': buildBillingResultMap(expectedBillingResult),
-          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'responseCode': const BillingResponseConverter().toJson(responseCode),
           'purchasesList': <Map<String, dynamic>>[
             buildPurchaseMap(dummyPurchase),
           ]
@@ -113,21 +110,22 @@ void main() {
       test('should store platform exception in the response', () async {
         const String debugMessage = 'dummy message';
 
-        final BillingResponse responseCode = BillingResponse.developerError;
-        final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+        const BillingResponse responseCode = BillingResponse.developerError;
+        const BillingResultWrapper expectedBillingResult = BillingResultWrapper(
             responseCode: responseCode, debugMessage: debugMessage);
         stubPlatform.addResponse(
             name: queryMethodName,
             value: <dynamic, dynamic>{
-              'responseCode': BillingResponseConverter().toJson(responseCode),
+              'responseCode':
+                  const BillingResponseConverter().toJson(responseCode),
               'billingResult': buildBillingResultMap(expectedBillingResult),
               'purchasesList': <Map<String, dynamic>>[]
             },
-            additionalStepBeforeReturn: (_) {
+            additionalStepBeforeReturn: (dynamic _) {
               throw PlatformException(
                 code: 'error_code',
                 message: 'error_message',
-                details: {'info': 'error_info'},
+                details: <dynamic, dynamic>{'info': 'error_info'},
               );
             });
         final QueryPurchaseDetailsResponse response =
@@ -136,7 +134,8 @@ void main() {
         expect(response.error, isNotNull);
         expect(response.error!.code, 'error_code');
         expect(response.error!.message, 'error_message');
-        expect(response.error!.details, {'info': 'error_info'});
+        expect(
+            response.error!.details, <String, dynamic>{'info': 'error_info'});
       });
     });
   });
@@ -149,7 +148,8 @@ void main() {
       stubPlatform.addResponse(
         name: isFeatureSupportedMethodName,
         value: false,
-        additionalStepBeforeReturn: (value) => arguments = value,
+        additionalStepBeforeReturn: (dynamic value) =>
+            arguments = value as Map<dynamic, dynamic>,
       );
       final bool isSupported = await iapAndroidPlatformAddition
           .isFeatureSupported(BillingClientFeature.subscriptions);
@@ -162,7 +162,8 @@ void main() {
       stubPlatform.addResponse(
         name: isFeatureSupportedMethodName,
         value: true,
-        additionalStepBeforeReturn: (value) => arguments = value,
+        additionalStepBeforeReturn: (dynamic value) =>
+            arguments = value as Map<dynamic, dynamic>,
       );
       final bool isSupported = await iapAndroidPlatformAddition
           .isFeatureSupported(BillingClientFeature.subscriptions);
@@ -174,9 +175,10 @@ void main() {
   group('launchPriceChangeConfirmationFlow', () {
     const String launchPriceChangeConfirmationFlowMethodName =
         'BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)';
-    const dummySku = 'sku';
+    const String dummySku = 'sku';
 
-    final expectedBillingResultPriceChangeConfirmation = BillingResultWrapper(
+    const BillingResultWrapper expectedBillingResultPriceChangeConfirmation =
+        BillingResultWrapper(
       responseCode: BillingResponse.ok,
       debugMessage: 'dummy message',
     );

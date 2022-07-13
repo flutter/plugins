@@ -11,7 +11,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class MarkerIconsPage extends GoogleMapExampleAppPage {
-  MarkerIconsPage() : super(const Icon(Icons.image), 'Marker icons');
+  const MarkerIconsPage({Key? key})
+      : super(const Icon(Icons.image), 'Marker icons', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class MarkerIconsPage extends GoogleMapExampleAppPage {
 }
 
 class MarkerIconsBody extends StatefulWidget {
-  const MarkerIconsBody();
+  const MarkerIconsBody({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MarkerIconsBodyState();
@@ -60,13 +61,13 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
   Marker _createMarker() {
     if (_markerIcon != null) {
       return Marker(
-        markerId: MarkerId("marker_1"),
+        markerId: const MarkerId('marker_1'),
         position: _kMapCenter,
         icon: _markerIcon!,
       );
     } else {
-      return Marker(
-        markerId: MarkerId("marker_1"),
+      return const Marker(
+        markerId: MarkerId('marker_1'),
         position: _kMapCenter,
       );
     }
@@ -75,7 +76,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {
     if (_markerIcon == null) {
       final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context, size: Size.square(48));
+          createLocalImageConfiguration(context, size: const Size.square(48));
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/red_square.png')
           .then(_updateBitmap);

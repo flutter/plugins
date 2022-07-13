@@ -8,10 +8,10 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
   A macOS implementation of the Flutter plugin for getting commonly used locations on the filesystem.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_macos'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/main/packages/path_provider/path_provider_macos'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_macos' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/main/packages/path_provider/path_provider_macos' }
   s.source_files = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
 

@@ -10,18 +10,21 @@ import 'package:webview_flutter_android/src/android_webview.pigeon.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
-import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart';
+import 'test_android_webview.pigeon.dart';
 
-@GenerateMocks([
+@GenerateMocks(<Type>[
+  CookieManagerHostApi,
   DownloadListener,
   JavaScriptChannel,
   TestDownloadListenerHostApi,
   TestJavaScriptChannelHostApi,
   TestWebChromeClientHostApi,
   TestWebSettingsHostApi,
+  TestWebStorageHostApi,
   TestWebViewClientHostApi,
   TestWebViewHostApi,
+  TestAssetManagerHostApi,
   WebChromeClient,
   WebView,
   WebViewClient,
@@ -30,7 +33,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
-    group('$WebView', () {
+    group('WebView', () {
       late MockTestWebViewHostApi mockPlatformHostApi;
 
       late InstanceManager instanceManager;
@@ -53,9 +56,69 @@ void main() {
         verify(mockPlatformHostApi.create(webViewInstanceId, false));
       });
 
-      test('setWebContentsDebuggingEnabled', () {
+      test('setWebContentsDebuggingEnabled true', () {
         WebView.setWebContentsDebuggingEnabled(true);
         verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+      });
+
+      test('setWebContentsDebuggingEnabled false', () {
+        WebView.setWebContentsDebuggingEnabled(false);
+        verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(false));
+      });
+
+      test('loadData', () {
+        webView.loadData(
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+        );
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          'text/plain',
+          'base64',
+        ));
+      });
+
+      test('loadData with null values', () {
+        webView.loadData(data: 'hello', mimeType: null, encoding: null);
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          null,
+          null,
+        ));
+      });
+
+      test('loadDataWithBaseUrl', () {
+        webView.loadDataWithBaseUrl(
+          baseUrl: 'https://base.url',
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+          historyUrl: 'https://history.url',
+        );
+
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          'https://base.url',
+          'hello',
+          'text/plain',
+          'base64',
+          'https://history.url',
+        ));
+      });
+
+      test('loadDataWithBaseUrl with null values', () {
+        webView.loadDataWithBaseUrl(data: 'hello');
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          null,
+          'hello',
+          null,
+          null,
+          null,
+        ));
       });
 
       test('loadUrl', () {
@@ -257,7 +320,7 @@ void main() {
       });
     });
 
-    group('$WebSettings', () {
+    group('WebSettings', () {
       late MockTestWebSettingsHostApi mockPlatformHostApi;
 
       late InstanceManager instanceManager;
@@ -373,9 +436,17 @@ void main() {
           true,
         ));
       });
+
+      test('setAllowFileAccess', () {
+        webSettings.setAllowFileAccess(true);
+        verify(mockPlatformHostApi.setAllowFileAccess(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
     });
 
-    group('$JavaScriptChannel', () {
+    group('JavaScriptChannel', () {
       late JavaScriptChannelFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -403,7 +474,7 @@ void main() {
       });
     });
 
-    group('$WebViewClient', () {
+    group('WebViewClient', () {
       late WebViewClientFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -456,14 +527,15 @@ void main() {
         flutterApi.onReceivedRequestError(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
-          WebResourceRequestData()
-            ..url = 'https://www.google.com'
-            ..isForMainFrame = true
-            ..hasGesture = true
-            ..method = 'POST',
-          WebResourceErrorData()
-            ..errorCode = 34
-            ..description = 'error description',
+          WebResourceRequestData(
+            url: 'https://www.google.com',
+            isForMainFrame: true,
+            hasGesture: true,
+            method: 'POST',
+            isRedirect: false,
+            requestHeaders: <String?, String?>{},
+          ),
+          WebResourceErrorData(errorCode: 34, description: 'error description'),
         );
 
         verify(mockWebViewClient.onReceivedRequestError(
@@ -494,11 +566,14 @@ void main() {
         flutterApi.requestLoading(
           mockWebViewClientInstanceId,
           mockWebViewInstanceId,
-          WebResourceRequestData()
-            ..url = 'https://www.google.com'
-            ..isForMainFrame = true
-            ..hasGesture = true
-            ..method = 'POST',
+          WebResourceRequestData(
+            url: 'https://www.google.com',
+            isForMainFrame: true,
+            hasGesture: true,
+            method: 'POST',
+            isRedirect: true,
+            requestHeaders: <String?, String?>{},
+          ),
         );
 
         verify(mockWebViewClient.requestLoading(
@@ -518,7 +593,7 @@ void main() {
       });
     });
 
-    group('$DownloadListener', () {
+    group('DownloadListener', () {
       late DownloadListenerFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -556,7 +631,7 @@ void main() {
       });
     });
 
-    group('$WebChromeClient', () {
+    group('WebChromeClient', () {
       late WebChromeClientFlutterApiImpl flutterApi;
 
       late InstanceManager instanceManager;
@@ -589,6 +664,47 @@ void main() {
         );
         verify(mockWebChromeClient.onProgressChanged(mockWebView, 76));
       });
+    });
+  });
+
+  group('CookieManager', () {
+    test('setCookie calls setCookie on CookieManagerHostApi', () {
+      CookieManager.api = MockCookieManagerHostApi();
+      CookieManager.instance.setCookie('foo', 'bar');
+      verify(CookieManager.api.setCookie('foo', 'bar'));
+    });
+
+    test('clearCookies calls clearCookies on CookieManagerHostApi', () {
+      CookieManager.api = MockCookieManagerHostApi();
+      when(CookieManager.api.clearCookies())
+          .thenAnswer((_) => Future<bool>.value(true));
+      CookieManager.instance.clearCookies();
+      verify(CookieManager.api.clearCookies());
+    });
+  });
+
+  group('WebStorage', () {
+    late MockTestWebStorageHostApi mockPlatformHostApi;
+
+    late WebStorage webStorage;
+    late int webStorageInstanceId;
+
+    setUp(() {
+      mockPlatformHostApi = MockTestWebStorageHostApi();
+      TestWebStorageHostApi.setup(mockPlatformHostApi);
+
+      webStorage = WebStorage();
+      webStorageInstanceId =
+          WebStorage.api.instanceManager.getInstanceId(webStorage)!;
+    });
+
+    test('create', () {
+      verify(mockPlatformHostApi.create(webStorageInstanceId));
+    });
+
+    test('deleteAllData', () {
+      webStorage.deleteAllData();
+      verify(mockPlatformHostApi.deleteAllData(webStorageInstanceId));
     });
   });
 }

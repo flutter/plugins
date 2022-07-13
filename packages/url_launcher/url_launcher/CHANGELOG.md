@@ -1,3 +1,75 @@
+## 6.1.4
+
+* Adopts new platform interface method for launching URLs.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/105648).
+
+## 6.1.3
+
+* Updates README section about query permissions to better reflect changes to
+  `canLaunchUrl` recommendations.
+
+## 6.1.2
+
+* Minor fixes for new analysis options.
+
+## 6.1.1
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 6.1.0
+
+* Introduces new `launchUrl` and `canLaunchUrl` APIs; `launch` and `canLaunch`
+  are now deprecated. These new APIs:
+  * replace the `String` URL argument with a `Uri`, to prevent common issues
+    with providing invalid URL strings.
+  * replace `forceSafariVC` and `forceWebView` with `LaunchMode`, which makes
+    the API platform-neutral, and standardizes the default behavior between
+    Android and iOS.
+  * move web view configuration options into a new `WebViewConfiguration`
+    object. The default behavior for JavaScript and DOM storage is now enabled
+    rather than disabled.
+* Also deprecates `closeWebView` in favor of `closeInAppWebView` to clarify
+  that it is specific to the in-app web view launch option.
+* Adds OS version support information to README.
+* Reorganizes and clarifies README.
+
+## 6.0.20
+
+* Fixes a typo in `default_package` registration for Windows, macOS, and Linux.
+
+## 6.0.19
+
+* Updates README:
+  * Adds description for `file` scheme usage.
+  * Updates `Uri` class link to SDK documentation.
+
+## 6.0.18
+
+* Removes dependency on `meta`.
+
+## 6.0.17
+
+* Updates code for new analysis options.
+
+## 6.0.16
+
+* Moves Android and iOS implementations to federated packages.
+
+## 6.0.15
+
+* Updates README:
+  * Improves organization.
+  * Clarifies how `canLaunch` should be used.
+* Updates example application to demonstrate intended use of `canLaunch`.
+
+## 6.0.14
+
+* Updates readme to indicate that sending SMS messages on Android 11 requires to add a query to AndroidManifest.xml.
+* Fixes integration tests.
+* Updates example app Android compileSdkVersion to 31.
+
 ## 6.0.13
 
 * Fixed extracting browser headers when they are null error.

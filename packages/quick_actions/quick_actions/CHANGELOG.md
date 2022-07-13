@@ -1,3 +1,30 @@
+## NEXT
+
+* Minor fixes for new analysis options.
+
+## 0.6.0+11
+
+* Removes unnecessary imports.
+* Updates minimum Flutter version to 2.8.
+* Adds OS version support information to README.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 0.6.0+10
+
+* Moves Android and iOS implementations to federated packages.
+
+## 0.6.0+9
+
+* Updates Android compileSdkVersion to 31.
+* Updates code for analyzer changes.
+* Removes dependency on `meta`.
+
+## 0.6.0+8
+
+* Updates example app Android compileSdkVersion to 31.
+* Moves method call to background thread to fix CI failure.
+
 ## 0.6.0+7
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.

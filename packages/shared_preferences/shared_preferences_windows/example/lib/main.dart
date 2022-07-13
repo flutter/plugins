@@ -10,10 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -31,7 +33,7 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  final SharedPreferencesWindows prefs = SharedPreferencesWindows.instance;
+  final SharedPreferencesWindows prefs = SharedPreferencesWindows();
   late Future<int> _counter;
 
   Future<void> _incrementCounter() async {

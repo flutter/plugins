@@ -1,3 +1,30 @@
+## 2.2.0
+
+* Adds new versions of `buildView` and `updateOptions` that take a new option
+  class instead of a dictionary, to remove the cross-package dependency on
+  magic string keys.
+* Adopts several parameter objects in the new `buildView` variant to
+  future-proof it against future changes.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.1.7
+
+* Updates code for stricter analysis options.
+* Removes unnecessary imports.
+
+## 2.1.6
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+* Updates minimum Flutter version to 2.5.0.
+
+## 2.1.5
+
+Removes dependency on `meta`.
+
+## 2.1.4
+
+* Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
+
 ## 2.1.3
 
 * `LatLng` constructor maintains longitude precision when given within

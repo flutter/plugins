@@ -32,7 +32,7 @@ class WebViewRequest {
   WebViewRequest({
     required this.uri,
     required this.method,
-    this.headers = const {},
+    this.headers = const <String, String>{},
     this.body,
   });
 
@@ -49,10 +49,10 @@ class WebViewRequest {
   final Uint8List? body;
 
   /// Serializes the [WebViewRequest] to JSON.
-  Map<String, dynamic> toJson() => {
-        'uri': this.uri.toString(),
-        'method': this.method.serialize(),
-        'headers': this.headers,
-        'body': this.body,
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'uri': uri.toString(),
+        'method': method.serialize(),
+        'headers': headers,
+        'body': body,
       };
 }

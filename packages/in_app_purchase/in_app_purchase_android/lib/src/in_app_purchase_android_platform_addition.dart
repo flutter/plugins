@@ -7,37 +7,39 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../billing_client_wrappers.dart';
-import 'types/types.dart';
 
 /// Contains InApp Purchase features that are only available on PlayStore.
 class InAppPurchaseAndroidPlatformAddition
     extends InAppPurchasePlatformAddition {
   /// Creates a [InAppPurchaseAndroidPlatformAddition] which uses the supplied
   /// `BillingClient` to provide Android specific features.
-  InAppPurchaseAndroidPlatformAddition(this._billingClient) {
-    assert(
-      _enablePendingPurchase,
-      'enablePendingPurchases() must be called when initializing the application and before you access the [InAppPurchase.instance].',
-    );
-
-    _billingClient.enablePendingPurchases();
-  }
+  InAppPurchaseAndroidPlatformAddition(this._billingClient);
 
   /// Whether pending purchase is enabled.
   ///
+  ///  **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application. From now on
+  /// this is handled internally and the [enablePendingPurchase] property will
+  /// always return `true`.
+  ///
+  // ignore: deprecated_member_use_from_same_package
   /// See also [enablePendingPurchases] for more on pending purchases.
-  static bool get enablePendingPurchase => _enablePendingPurchase;
-  static bool _enablePendingPurchase = false;
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete '
+      "since Google Play no longer accepts app submissions that don't support "
+      'pending purchases.')
+  static bool get enablePendingPurchase => true;
 
   /// Enable the [InAppPurchaseConnection] to handle pending purchases.
   ///
-  /// This method is required to be called when initialize the application.
-  /// It is to acknowledge your application has been updated to support pending purchases.
-  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
-  /// for more details.
-  /// Failure to call this method before access [instance] will throw an exception.
+  /// **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application.
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete '
+      "since Google Play no longer accepts app submissions that don't support "
+      'pending purchases.')
   static void enablePendingPurchases() {
-    _enablePendingPurchase = true;
+    // No-op, until it is time to completely remove this method from the API.
   }
 
   final BillingClient _billingClient;
@@ -75,16 +77,16 @@ class InAppPurchaseAndroidPlatformAddition
     List<PurchasesResultWrapper> responses;
     PlatformException? exception;
     try {
-      responses = await Future.wait([
+      responses = await Future.wait(<Future<PurchasesResultWrapper>>[
         _billingClient.queryPurchases(SkuType.inapp),
         _billingClient.queryPurchases(SkuType.subs)
       ]);
     } on PlatformException catch (e) {
       exception = e;
-      responses = [
+      responses = <PurchasesResultWrapper>[
         PurchasesResultWrapper(
           responseCode: BillingResponse.error,
-          purchasesList: [],
+          purchasesList: const <PurchaseWrapper>[],
           billingResult: BillingResultWrapper(
             responseCode: BillingResponse.error,
             debugMessage: e.details.toString(),
@@ -92,7 +94,7 @@ class InAppPurchaseAndroidPlatformAddition
         ),
         PurchasesResultWrapper(
           responseCode: BillingResponse.error,
-          purchasesList: [],
+          purchasesList: const <PurchaseWrapper>[],
           billingResult: BillingResultWrapper(
             responseCode: BillingResponse.error,
             debugMessage: e.details.toString(),
@@ -101,17 +103,17 @@ class InAppPurchaseAndroidPlatformAddition
       ];
     }
 
-    Set errorCodeSet = responses
+    final Set<String> errorCodeSet = responses
         .where((PurchasesResultWrapper response) =>
             response.responseCode != BillingResponse.ok)
         .map((PurchasesResultWrapper response) =>
             response.responseCode.toString())
         .toSet();
 
-    String errorMessage =
+    final String errorMessage =
         errorCodeSet.isNotEmpty ? errorCodeSet.join(', ') : '';
 
-    List<GooglePlayPurchaseDetails> pastPurchases =
+    final List<GooglePlayPurchaseDetails> pastPurchases =
         responses.expand((PurchasesResultWrapper response) {
       return response.purchasesList;
     }).map((PurchaseWrapper purchaseWrapper) {

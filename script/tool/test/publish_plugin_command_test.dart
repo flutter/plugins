@@ -83,11 +83,11 @@ void main() {
 
   group('Initial validation', () {
     test('refuses to proceed with dirty files', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       processRunner.mockProcessesForExecutable['git-status'] = <io.Process>[
-        MockProcess(stdout: '?? ${pluginDir.childFile('tmp').path}\n')
+        MockProcess(stdout: '?? ${plugin.directory.childFile('tmp').path}\n')
       ];
 
       Error? commandError;
@@ -103,7 +103,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('There are files in the package directory that haven\'t '
+            contains("There are files in the package directory that haven't "
                 'been saved in git. Refusing to publish these files:\n\n'
                 '?? /packages/foo/tmp\n\n'
                 'If the directory should be clean, you can run `git clean -xdf && '
@@ -113,7 +113,7 @@ void main() {
           ]));
     });
 
-    test('fails immediately if the remote doesn\'t exist', () async {
+    test("fails immediately if the remote doesn't exist", () async {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
@@ -183,7 +183,7 @@ void main() {
     });
 
     test('forwards --pub-publish-flags to pub publish', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
@@ -198,14 +198,14 @@ void main() {
           contains(ProcessCall(
               flutterCommand,
               const <String>['pub', 'publish', '--dry-run', '--server=bar'],
-              pluginDir.path)));
+              plugin.path)));
     });
 
     test(
         '--skip-confirmation flag automatically adds --force to --pub-publish-flags',
         () async {
       _createMockCredentialFile();
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
@@ -221,7 +221,36 @@ void main() {
           contains(ProcessCall(
               flutterCommand,
               const <String>['pub', 'publish', '--server=bar', '--force'],
-              pluginDir.path)));
+              plugin.path)));
+    });
+
+    test('--force is only added once, regardless of plugin count', () async {
+      _createMockCredentialFile();
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin_a', packagesDir, examples: <String>[]);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin_b', packagesDir, examples: <String>[]);
+
+      await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=plugin_a,plugin_b',
+        '--skip-confirmation',
+        '--pub-publish-flags',
+        '--server=bar'
+      ]);
+
+      expect(
+          processRunner.recordedCalls,
+          containsAllInOrder(<ProcessCall>[
+            ProcessCall(
+                flutterCommand,
+                const <String>['pub', 'publish', '--server=bar', '--force'],
+                plugin1.path),
+            ProcessCall(
+                flutterCommand,
+                const <String>['pub', 'publish', '--server=bar', '--force'],
+                plugin2.path),
+          ]));
     });
 
     test('throws if pub publish fails', () async {
@@ -249,7 +278,7 @@ void main() {
     });
 
     test('publish, dry run', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       final List<String> output =
@@ -268,7 +297,7 @@ void main() {
           containsAllInOrder(<Matcher>[
             contains('=============== DRY RUN ==============='),
             contains('Running for foo'),
-            contains('Running `pub publish ` in ${pluginDir.path}...'),
+            contains('Running `pub publish ` in ${plugin.path}...'),
             contains('Tagging release foo-v0.0.1...'),
             contains('Pushing tag to upstream...'),
             contains('Published foo successfully!'),
@@ -386,7 +415,7 @@ void main() {
     });
 
     test('to upstream by default, dry run', () async {
-      final Directory pluginDir =
+      final RepositoryPackage plugin =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       mockStdin.readLineOutput = 'y';
@@ -402,7 +431,7 @@ void main() {
           output,
           containsAllInOrder(<Matcher>[
             contains('=============== DRY RUN ==============='),
-            contains('Running `pub publish ` in ${pluginDir.path}...'),
+            contains('Running `pub publish ` in ${plugin.path}...'),
             contains('Tagging release foo-v0.0.1...'),
             contains('Pushing tag to upstream...'),
             contains('Published foo successfully!'),
@@ -447,16 +476,17 @@ void main() {
       };
 
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin(
+      final RepositoryPackage plugin2 = createFakePlugin(
         'plugin2',
         packagesDir.childDirectory('plugin2'),
       );
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
       mockStdin.readLineOutput = 'y';
 
@@ -468,8 +498,8 @@ void main() {
           containsAllInOrder(<Matcher>[
             contains(
                 'Publishing all packages that have changed relative to "HEAD~"'),
-            contains('Running `pub publish ` in ${pluginDir1.path}...'),
-            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Running `pub publish ` in ${plugin1.path}...'),
+            contains('Running `pub publish ` in ${plugin2.path}...'),
             contains('plugin1 - \x1B[32mpublished\x1B[0m'),
             contains('plugin2/plugin2 - \x1B[32mpublished\x1B[0m'),
           ]));
@@ -503,9 +533,10 @@ void main() {
       // The existing plugin.
       createFakePlugin('plugin0', packagesDir);
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 =
+      final RepositoryPackage plugin2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
       // Git results for plugin0 having been released already, and plugin1 and
@@ -515,8 +546,8 @@ void main() {
       ];
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
 
       mockStdin.readLineOutput = 'y';
@@ -527,8 +558,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Running `pub publish ` in ${plugin1.path}...\n',
+            'Running `pub publish ` in ${plugin2.path}...\n',
           ]));
       expect(
           processRunner.recordedCalls,
@@ -552,15 +583,16 @@ void main() {
       };
 
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 =
+      final RepositoryPackage plugin2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
       mockStdin.readLineOutput = 'y';
 
@@ -576,11 +608,11 @@ void main() {
           output,
           containsAllInOrder(<Matcher>[
             contains('=============== DRY RUN ==============='),
-            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Running `pub publish ` in ${plugin1.path}...'),
             contains('Tagging release plugin1-v0.0.1...'),
             contains('Pushing tag to upstream...'),
             contains('Published plugin1 successfully!'),
-            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Running `pub publish ` in ${plugin2.path}...'),
             contains('Tagging release plugin2-v0.0.1...'),
             contains('Pushing tag to upstream...'),
             contains('Published plugin2 successfully!'),
@@ -603,17 +635,17 @@ void main() {
       };
 
       // Non-federated
-      final Directory pluginDir1 =
+      final RepositoryPackage plugin1 =
           createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      final Directory pluginDir2 = createFakePlugin(
+      final RepositoryPackage plugin2 = createFakePlugin(
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
 
       mockStdin.readLineOutput = 'y';
@@ -623,9 +655,9 @@ void main() {
       expect(
           output2,
           containsAllInOrder(<Matcher>[
-            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Running `pub publish ` in ${plugin1.path}...'),
             contains('Published plugin1 successfully!'),
-            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Running `pub publish ` in ${plugin2.path}...'),
             contains('Published plugin2 successfully!'),
           ]));
       expect(
@@ -652,17 +684,17 @@ void main() {
       };
 
       // Non-federated
-      final Directory pluginDir1 =
+      final RepositoryPackage plugin1 =
           createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      final Directory pluginDir2 =
+      final RepositoryPackage plugin2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
-      pluginDir2.deleteSync(recursive: true);
+      plugin2.directory.deleteSync(recursive: true);
 
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
 
       mockStdin.readLineOutput = 'y';
@@ -672,10 +704,10 @@ void main() {
       expect(
           output2,
           containsAllInOrder(<Matcher>[
-            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Running `pub publish ` in ${plugin1.path}...'),
             contains('Published plugin1 successfully!'),
             contains(
-                'The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n'),
+                'The pubspec file for plugin2/plugin2 does not exist, so no publishing will happen.\nSafe to ignore if the package is deleted in this commit.\n'),
             contains('SKIPPING: package deleted'),
             contains('skipped (with warning)'),
           ]));
@@ -698,17 +730,17 @@ void main() {
       };
 
       // Non-federated
-      final Directory pluginDir1 =
+      final RepositoryPackage plugin1 =
           createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      final Directory pluginDir2 = createFakePlugin(
+      final RepositoryPackage plugin2 = createFakePlugin(
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
       processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
         MockProcess(
@@ -748,17 +780,17 @@ void main() {
       };
 
       // Non-federated
-      final Directory pluginDir1 =
+      final RepositoryPackage plugin1 =
           createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      final Directory pluginDir2 = createFakePlugin(
+      final RepositoryPackage plugin2 = createFakePlugin(
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
-                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+            stdout: '${plugin1.pubspecFile.path}\n'
+                '${plugin2.pubspecFile.path}\n')
       ];
 
       Error? commandError;
@@ -785,15 +817,16 @@ void main() {
 
     test('No version change does not release any plugins', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 =
+      final RepositoryPackage plugin2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
-            stdout: '${pluginDir1.childFile('plugin1.dart').path}\n'
-                '${pluginDir2.childFile('plugin2.dart').path}\n')
+            stdout: '${plugin1.libDirectory.childFile('plugin1.dart').path}\n'
+                '${plugin2.libDirectory.childFile('plugin2.dart').path}\n')
       ];
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -812,10 +845,10 @@ void main() {
         'versions': <String>[],
       };
 
-      final Directory flutterPluginTools =
+      final RepositoryPackage flutterPluginTools =
           createFakePlugin('flutter_plugin_tools', packagesDir);
       processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
-        MockProcess(stdout: flutterPluginTools.childFile('pubspec.yaml').path)
+        MockProcess(stdout: flutterPluginTools.pubspecFile.path)
       ];
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -873,8 +906,8 @@ class MockStdin extends Mock implements io.Stdin {
   }
 
   @override
-  StreamSubscription<List<int>> listen(void onData(List<int> event)?,
-      {Function? onError, void onDone()?, bool? cancelOnError}) {
+  StreamSubscription<List<int>> listen(void Function(List<int> event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }

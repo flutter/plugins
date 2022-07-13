@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:mockito/mockito.dart';
 
 void main() {
@@ -27,6 +27,44 @@ void main() {
 
     test('Can be mocked with `implements`', () {
       GoogleSignInPlatform.instance = ImplementsWithIsMock();
+    });
+  });
+
+  group('GoogleSignInTokenData', () {
+    test('can be compared by == operator', () {
+      final GoogleSignInTokenData firstInstance = GoogleSignInTokenData(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      final GoogleSignInTokenData secondInstance = GoogleSignInTokenData(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      expect(firstInstance == secondInstance, isTrue);
+    });
+  });
+
+  group('GoogleSignInUserData', () {
+    test('can be compared by == operator', () {
+      final GoogleSignInUserData firstInstance = GoogleSignInUserData(
+        email: 'email',
+        id: 'id',
+        displayName: 'displayName',
+        photoUrl: 'photoUrl',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      final GoogleSignInUserData secondInstance = GoogleSignInUserData(
+        email: 'email',
+        id: 'id',
+        displayName: 'displayName',
+        photoUrl: 'photoUrl',
+        idToken: 'idToken',
+        serverAuthCode: 'serverAuthCode',
+      );
+      expect(firstInstance == secondInstance, isTrue);
     });
   });
 }

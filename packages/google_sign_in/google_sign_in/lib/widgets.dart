@@ -22,11 +22,13 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// in place of a profile photo, or a default profile photo if the user's
   /// identity does not specify a `displayName`.
   const GoogleUserCircleAvatar({
+    Key? key,
     required this.identity,
     this.placeholderPhotoUrl,
     this.foregroundColor,
     this.backgroundColor,
-  }) : assert(identity != null);
+  })  : assert(identity != null),
+        super(key: key);
 
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.
@@ -118,7 +120,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
 ///
 /// Those bytes come from `resources/transparentImage.gif`.
 final Uint8List _transparentImage = Uint8List.fromList(
-  [
+  <int>[
     0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, //
     0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x21, 0xf9, 0x04, 0x01, 0x00, //
     0x00, 0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, //

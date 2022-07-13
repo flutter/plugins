@@ -1,7 +1,38 @@
+## 2.0.10
+
+* Minor fixes for new analysis options.
+
+## 2.0.9
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.0.8
+
+* Ensures `buffering` state is only removed when the browser reports enough data
+  has been buffered so that the video can likely play through without stopping
+  (`onCanPlayThrough`). Issue [#94630](https://github.com/flutter/flutter/issues/94630).
+* Improves testability of the `_VideoPlayer` private class.
+* Ensures that tests that listen to a Stream fail "fast" (1 second max timeout).
+
+## 2.0.7
+
+* Internal code cleanup for stricter analysis options.
+
+## 2.0.6
+
+* Removes dependency on `meta`.
+
+## 2.0.5
+
+* Adds compatibility with `video_player_platform_interface` 5.0, which does not
+  include non-dev test dependencies.
+
 ## 2.0.4
 
 * Adopt `video_player_platform_interface` 4.2 and opt out of `contentUri` data source.
-  
+
 ## 2.0.3
 
 * Add `implements` to pubspec.

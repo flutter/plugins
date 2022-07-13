@@ -7,24 +7,35 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/license_check_command.dart';
+import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import 'common/plugin_command_test.mocks.dart';
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$LicenseCheckCommand', () {
+  group('LicenseCheckCommand', () {
     late CommandRunner<void> runner;
     late FileSystem fileSystem;
+    late Platform platform;
     late Directory root;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      platform = MockPlatformWithSeparator();
       final Directory packagesDir =
           fileSystem.currentDirectory.childDirectory('packages');
       root = packagesDir.parent;
 
+      final MockGitDir gitDir = MockGitDir();
+      when(gitDir.path).thenReturn(packagesDir.parent.path);
+
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
+        platform: platform,
+        gitDir: gitDir,
       );
       runner =
           CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');
@@ -120,6 +131,33 @@ void main() {
 
       for (final String name in ignoredFiles) {
         expect(output, isNot(contains('Checking $name')));
+      }
+    });
+
+    test('ignores submodules', () async {
+      const String submoduleName = 'a_submodule';
+
+      final File submoduleSpec = root.childFile('.gitmodules');
+      submoduleSpec.writeAsStringSync('''
+[submodule "$submoduleName"]
+  path = $submoduleName
+  url = https://github.com/foo/$submoduleName
+''');
+
+      const List<String> submoduleFiles = <String>[
+        '$submoduleName/foo.dart',
+        '$submoduleName/a/b/bar.dart',
+        '$submoduleName/LICENSE',
+      ];
+      for (final String filePath in submoduleFiles) {
+        root.childFile(filePath).createSync(recursive: true);
+      }
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['license-check']);
+
+      for (final String filePath in submoduleFiles) {
+        expect(output, isNot(contains('Checking $filePath')));
       }
     });
 
@@ -507,6 +545,11 @@ void main() {
           ]));
     });
   });
+}
+
+class MockPlatformWithSeparator extends MockPlatform {
+  @override
+  String get pathSeparator => isWindows ? r'\' : '/';
 }
 
 const String _correctLicenseFileText = '''

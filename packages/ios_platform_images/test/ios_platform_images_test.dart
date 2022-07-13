@@ -23,6 +23,6 @@ void main() {
   });
 
   test('resolveURL', () async {
-    expect(await IosPlatformImages.resolveURL("foobar"), '42');
+    expect(await IosPlatformImages.resolveURL('foobar'), '42');
   });
 }

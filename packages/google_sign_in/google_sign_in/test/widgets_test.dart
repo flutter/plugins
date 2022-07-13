@@ -18,9 +18,12 @@ class _TestGoogleIdentity extends GoogleIdentity {
     this.photoUrl,
   });
 
+  @override
   final String id;
+  @override
   final String email;
 
+  @override
   final String? photoUrl;
 
   @override
@@ -56,7 +59,7 @@ class _MockHttpRequest extends Fake implements HttpClientRequest {
 ///
 /// Those bytes come from `resources/transparentImage.gif`.
 final Uint8List _transparentImage = Uint8List.fromList(
-  [
+  <int>[
     0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, //
     0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x21, 0xf9, 0x04, 0x01, 0x00, //
     0x00, 0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, //
@@ -97,7 +100,7 @@ void main() {
       id: 'userId',
       photoUrl: 'photoUrl',
     );
-    tester.binding.window.physicalSizeTestValue = Size(100, 100);
+    tester.binding.window.physicalSizeTestValue = const Size(100, 100);
 
     await HttpOverrides.runZoned(
       () async {

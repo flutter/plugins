@@ -21,9 +21,21 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
     Platform platform = const LocalPlatform(),
   })  : _xcode = Xcode(processRunner: processRunner, log: true),
         super(packagesDir, processRunner: processRunner, platform: platform) {
-    argParser.addFlag(kPlatformIos, help: 'Analyze iOS');
-    argParser.addFlag(kPlatformMacos, help: 'Analyze macOS');
+    argParser.addFlag(platformIOS, help: 'Analyze iOS');
+    argParser.addFlag(platformMacOS, help: 'Analyze macOS');
+    argParser.addOption(_minIOSVersionArg,
+        help: 'Sets the minimum iOS deployment version to use when compiling, '
+            'overriding the default minimum version. This can be used to find '
+            'deprecation warnings that will affect the plugin in the future.');
+    argParser.addOption(_minMacOSVersionArg,
+        help:
+            'Sets the minimum macOS deployment version to use when compiling, '
+            'overriding the default minimum version. This can be used to find '
+            'deprecation warnings that will affect the plugin in the future.');
   }
+
+  static const String _minIOSVersionArg = 'ios-min-version';
+  static const String _minMacOSVersionArg = 'macos-min-version';
 
   final Xcode _xcode;
 
@@ -36,7 +48,7 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
 
   @override
   Future<void> initializeRun() async {
-    if (!(getBoolArg(kPlatformIos) || getBoolArg(kPlatformMacos))) {
+    if (!(getBoolArg(platformIOS) || getBoolArg(platformMacOS))) {
       printError('At least one platform flag must be provided.');
       throw ToolExit(exitInvalidArguments);
     }
@@ -44,28 +56,37 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final bool testIos = getBoolArg(kPlatformIos) &&
-        pluginSupportsPlatform(kPlatformIos, package,
+    final bool testIOS = getBoolArg(platformIOS) &&
+        pluginSupportsPlatform(platformIOS, package,
             requiredMode: PlatformSupport.inline);
-    final bool testMacos = getBoolArg(kPlatformMacos) &&
-        pluginSupportsPlatform(kPlatformMacos, package,
+    final bool testMacOS = getBoolArg(platformMacOS) &&
+        pluginSupportsPlatform(platformMacOS, package,
             requiredMode: PlatformSupport.inline);
 
     final bool multiplePlatformsRequested =
-        getBoolArg(kPlatformIos) && getBoolArg(kPlatformMacos);
-    if (!(testIos || testMacos)) {
+        getBoolArg(platformIOS) && getBoolArg(platformMacOS);
+    if (!(testIOS || testMacOS)) {
       return PackageResult.skip('Not implemented for target platform(s).');
     }
 
+    final String minIOSVersion = getStringArg(_minIOSVersionArg);
+    final String minMacOSVersion = getStringArg(_minMacOSVersionArg);
+
     final List<String> failures = <String>[];
-    if (testIos &&
+    if (testIOS &&
         !await _analyzePlugin(package, 'iOS', extraFlags: <String>[
           '-destination',
-          'generic/platform=iOS Simulator'
+          'generic/platform=iOS Simulator',
+          if (minIOSVersion.isNotEmpty)
+            'IPHONEOS_DEPLOYMENT_TARGET=$minIOSVersion',
         ])) {
       failures.add('iOS');
     }
-    if (testMacos && !await _analyzePlugin(package, 'macOS')) {
+    if (testMacOS &&
+        !await _analyzePlugin(package, 'macOS', extraFlags: <String>[
+          if (minMacOSVersion.isNotEmpty)
+            'MACOSX_DEPLOYMENT_TARGET=$minMacOSVersion',
+        ])) {
       failures.add('macOS');
     }
 

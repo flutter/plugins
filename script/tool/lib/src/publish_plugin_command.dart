@@ -13,7 +13,6 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
@@ -122,6 +121,8 @@ class PublishPluginCommand extends PackageLoopingCommand {
   List<String> _existingGitTags = <String>[];
   // The remote to push tags to.
   late _RemoteInfo _remote;
+  // Flags to pass to `pub publish`.
+  late List<String> _publishFlags;
 
   @override
   String get successSummaryMessage => 'published';
@@ -149,6 +150,11 @@ class PublishPluginCommand extends PackageLoopingCommand {
         await repository.runCommand(<String>['tag', '--sort=-committerdate']);
     _existingGitTags = (existingTagsResult.stdout as String).split('\n')
       ..removeWhere((String element) => element.isEmpty);
+
+    _publishFlags = <String>[
+      ...getStringListArg(_pubFlagsOption),
+      if (getBoolArg(_skipConfirmationFlag)) '--force',
+    ];
 
     if (getBoolArg(_dryRunFlag)) {
       print('=============== DRY RUN ===============');
@@ -217,16 +223,15 @@ class PublishPluginCommand extends PackageLoopingCommand {
   /// In cases where a non-null result is returned, that should be returned
   /// as the final result for the package, without further processing.
   Future<PackageResult?> _checkNeedsRelease(RepositoryPackage package) async {
-    final File pubspecFile = package.pubspecFile;
-    if (!pubspecFile.existsSync()) {
+    if (!package.pubspecFile.existsSync()) {
       logWarning('''
-The pubspec file at ${pubspecFile.path} does not exist. Publishing will not happen for ${pubspecFile.parent.basename}.
+The pubspec file for ${package.displayName} does not exist, so no publishing will happen.
 Safe to ignore if the package is deleted in this commit.
 ''');
       return PackageResult.skip('package deleted');
     }
 
-    final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+    final Pubspec pubspec = package.parsePubspec();
 
     if (pubspec.name == 'flutter_plugin_tools') {
       // Ignore flutter_plugin_tools package when running publishing through flutter_plugin_tools.
@@ -335,22 +340,18 @@ Safe to ignore if the package is deleted in this commit.
 
   Future<bool> _publish(RepositoryPackage package) async {
     print('Publishing...');
-    final List<String> publishFlags = getStringListArg(_pubFlagsOption);
-    print('Running `pub publish ${publishFlags.join(' ')}` in '
+    print('Running `pub publish ${_publishFlags.join(' ')}` in '
         '${package.directory.absolute.path}...\n');
     if (getBoolArg(_dryRunFlag)) {
       return true;
     }
 
-    if (getBoolArg(_skipConfirmationFlag)) {
-      publishFlags.add('--force');
-    }
-    if (publishFlags.contains('--force')) {
+    if (_publishFlags.contains('--force')) {
       _ensureValidPubCredential();
     }
 
     final io.Process publish = await processRunner.start(
-        flutterCommand, <String>['pub', 'publish'] + publishFlags,
+        flutterCommand, <String>['pub', 'publish', ..._publishFlags],
         workingDirectory: package.directory);
     publish.stdout.transform(utf8.decoder).listen((String data) => print(data));
     publish.stderr.transform(utf8.decoder).listen((String data) => print(data));

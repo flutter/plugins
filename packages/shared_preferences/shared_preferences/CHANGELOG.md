@@ -1,6 +1,34 @@
-## NEXT
+## 2.0.15
+
+* Minor fixes for new analysis options.
+
+## 2.0.14
+
+* Adds OS version support information to README.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.0.13
+
+* Updates documentation on README.md.
+
+## 2.0.12
+
+* Removes dependency on `meta`.
+
+## 2.0.11
+
+* Corrects example for mocking in readme.
+
+## 2.0.10
+
+* Removes obsolete manual registration of Windows and Linux implementations.
+
+## 2.0.9
 
 * Fixes newly enabled analyzer options.
+* Updates example app Android compileSdkVersion to 31.
+* Moved Android and iOS implementations to federated packages.
 
 ## 2.0.8
 

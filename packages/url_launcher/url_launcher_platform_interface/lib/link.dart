@@ -22,7 +22,7 @@ typedef LinkWidgetBuilder = Widget Function(
 /// Signature for a delegate function to build the [Link] widget.
 typedef LinkDelegate = Widget Function(LinkInfo linkWidget);
 
-final MethodCodec _codec = const JSONMethodCodec();
+const MethodCodec _codec = JSONMethodCodec();
 
 /// Defines where a Link URL should be open.
 ///
@@ -42,20 +42,21 @@ class LinkTarget {
   ///
   /// iOS, on the other hand, defaults to [self] for web URLs, and [blank] for
   /// non-web URLs.
-  static const defaultTarget = LinkTarget._(debugLabel: 'defaultTarget');
+  static const LinkTarget defaultTarget =
+      LinkTarget._(debugLabel: 'defaultTarget');
 
   /// On the web, this opens the link in the same tab where the flutter app is
   /// running.
   ///
   /// On Android and iOS, this opens the link in a webview within the app.
-  static const self = LinkTarget._(debugLabel: 'self');
+  static const LinkTarget self = LinkTarget._(debugLabel: 'self');
 
   /// On the web, this opens the link in a new tab or window (depending on the
   /// browser and user configuration).
   ///
   /// On Android and iOS, this opens the link in the browser or the relevant
   /// app.
-  static const blank = LinkTarget._(debugLabel: 'blank');
+  static const LinkTarget blank = LinkTarget._(debugLabel: 'blank');
 }
 
 /// Encapsulates all the information necessary to build a Link widget.
