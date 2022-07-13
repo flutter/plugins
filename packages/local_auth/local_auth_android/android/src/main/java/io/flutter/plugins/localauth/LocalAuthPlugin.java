@@ -153,6 +153,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
     if (canAuthenticateWithBiometrics() || canAuthenticateWithDeviceCredential()) {
       sendAuthenticationRequest(call, completionHandler, allowCredentials);
+      return;
     }
 
     // Unable to authenticate
