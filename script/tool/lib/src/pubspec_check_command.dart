@@ -5,7 +5,7 @@
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:platform/platform.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -64,7 +64,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  bool get includeSubpackages => true;
+  PackageLoopingType get packageLoopingType =>
+      PackageLoopingType.includeAllSubpackages;
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
@@ -100,9 +101,17 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     }
 
     if (isPlugin) {
-      final String? error = _checkForImplementsError(pubspec, package: package);
-      if (error != null) {
-        printError('$indentation$error');
+      final String? implementsError =
+          _checkForImplementsError(pubspec, package: package);
+      if (implementsError != null) {
+        printError('$indentation$implementsError');
+        passing = false;
+      }
+
+      final String? defaultPackageError =
+          _checkForDefaultPackageError(pubspec, package: package);
+      if (defaultPackageError != null) {
+        printError('$indentation$defaultPackageError');
         passing = false;
       }
     }
@@ -182,6 +191,11 @@ class PubspecCheckCommand extends PackageLoopingCommand {
         errorMessages
             .add('The "repository" link should end with the package path.');
       }
+
+      if (pubspec.repository!.path.contains('/master/')) {
+        errorMessages
+            .add('The "repository" link should use "main", not "master".');
+      }
     }
 
     if (pubspec.homepage != null) {
@@ -211,13 +225,14 @@ class PubspecCheckCommand extends PackageLoopingCommand {
       return '"description" is too long. pub.dev recommends package '
           'descriptions of 60-180 characters.';
     }
+    return null;
   }
 
   bool _checkIssueLink(Pubspec pubspec) {
     return pubspec.issueTracker
             ?.toString()
-            .startsWith(_expectedIssueLinkFormat) ==
-        true;
+            .startsWith(_expectedIssueLinkFormat) ??
+        false;
   }
 
   // Validates the "implements" keyword for a plugin, returning an error
@@ -239,6 +254,49 @@ class PubspecCheckCommand extends PackageLoopingCommand {
             'found "implements: $implements".';
       }
     }
+    return null;
+  }
+
+  // Validates any "default_package" entries a plugin, returning an error
+  // string if there are any issues.
+  //
+  // Should only be called on plugin packages.
+  String? _checkForDefaultPackageError(
+    Pubspec pubspec, {
+    required RepositoryPackage package,
+  }) {
+    final dynamic platformsEntry = pubspec.flutter!['plugin']!['platforms'];
+    if (platformsEntry == null) {
+      logWarning('Does not implement any platforms');
+      return null;
+    }
+    final YamlMap platforms = platformsEntry as YamlMap;
+    final String packageName = package.directory.basename;
+
+    // Validate that the default_package entries look correct (e.g., no typos).
+    final Set<String> defaultPackages = <String>{};
+    for (final MapEntry<dynamic, dynamic> platformEntry in platforms.entries) {
+      final String? defaultPackage =
+          platformEntry.value['default_package'] as String?;
+      if (defaultPackage != null) {
+        defaultPackages.add(defaultPackage);
+        if (!defaultPackage.startsWith('${packageName}_')) {
+          return '"$defaultPackage" is not an expected implementation name '
+              'for "$packageName"';
+        }
+      }
+    }
+
+    // Validate that all default_packages are also dependencies.
+    final Iterable<String> dependencies = pubspec.dependencies.keys;
+    final Iterable<String> missingPackages = defaultPackages
+        .where((String package) => !dependencies.contains(package));
+    if (missingPackages.isNotEmpty) {
+      return 'The following default_packages are missing '
+          'corresponding dependencies:\n'
+          '  ${missingPackages.join('\n  ')}';
+    }
+
     return null;
   }
 

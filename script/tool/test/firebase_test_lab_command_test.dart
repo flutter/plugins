@@ -8,14 +8,16 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/firebase_test_lab_command.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$FirebaseTestLabCommand', () {
+  group('FirebaseTestLabCommand', () {
     FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
@@ -38,15 +40,34 @@ void main() {
       runner.addCommand(command);
     });
 
+    void _writeJavaTestFile(RepositoryPackage plugin, String relativeFilePath,
+        {String runnerClass = 'FlutterTestRunner'}) {
+      childFileWithSubcomponents(
+              plugin.directory, p.posix.split(relativeFilePath))
+          .writeAsStringSync('''
+@DartIntegrationTest
+@RunWith($runnerClass.class)
+public class MainActivityTest {
+  @Rule
+  public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
+}
+''');
+    }
+
     test('fails if gcloud auth fails', () async {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
         MockProcess(exitCode: 1)
       ];
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -67,11 +88,16 @@ void main() {
         MockProcess(), // auth
         MockProcess(exitCode: 1), // config
       ];
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['firebase-test-lab']);
@@ -85,18 +111,24 @@ void main() {
     });
 
     test('only runs gcloud configuration once', () async {
-      createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
         'test/plugin_test.dart',
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
-      createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+      _writeJavaTestFile(plugin1, javaTestFileRelativePath);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
         'test/plugin_test.dart',
         'example/integration_test/bar_test.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin2, javaTestFileRelativePath);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
@@ -142,7 +174,7 @@ void main() {
               '/packages/plugin1/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin1/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin1/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin1/example'),
           ProcessCall(
@@ -156,7 +188,7 @@ void main() {
               '/packages/plugin2/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin2/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin2/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin2/example'),
         ]),
@@ -164,14 +196,18 @@ void main() {
     });
 
     test('runs integration tests', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'test/plugin_test.dart',
         'example/integration_test/bar_test.dart',
         'example/integration_test/foo_test.dart',
         'example/integration_test/should_not_run.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
@@ -219,7 +255,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
           ProcessCall(
@@ -229,25 +265,95 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/1/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/1/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
       );
     });
 
-    test('fails if a test fails', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+    test('runs for all examples', () async {
+      const List<String> examples = <String>['example1', 'example2'];
+      const String javaTestFileExampleRelativePath =
+          'android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin = createFakePlugin('plugin', packagesDir,
+          examples: examples,
+          extraFiles: <String>[
+            for (final String example in examples) ...<String>[
+              'example/$example/integration_test/a_test.dart',
+              'example/$example/android/gradlew',
+              'example/$example/$javaTestFileExampleRelativePath',
+            ],
+          ]);
+      for (final String example in examples) {
+        _writeJavaTestFile(
+            plugin, 'example/$example/$javaTestFileExampleRelativePath');
+      }
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'firebase-test-lab',
+        '--device',
+        'model=redfin,version=30',
+        '--device',
+        'model=seoul,version=26',
+        '--test-run-id',
+        'testRunId',
+        '--build-id',
+        'buildId',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Testing example/example1/integration_test/a_test.dart...'),
+          contains('Testing example/example2/integration_test/a_test.dart...'),
+        ]),
+      );
+
+      expect(
+        processRunner.recordedCalls,
+        containsAll(<ProcessCall>[
+          ProcessCall(
+              '/packages/plugin/example/example1/android/gradlew',
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/example1/integration_test/a_test.dart'
+                  .split(' '),
+              '/packages/plugin/example/example1/android'),
+          ProcessCall(
+              'gcloud',
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example1/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+                  .split(' '),
+              '/packages/plugin/example/example1'),
+          ProcessCall(
+              '/packages/plugin/example/example2/android/gradlew',
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/example2/integration_test/a_test.dart'
+                  .split(' '),
+              '/packages/plugin/example/example2/android'),
+          ProcessCall(
+              'gcloud',
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example2/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+                  .split(' '),
+              '/packages/plugin/example/example2'),
+        ]),
+      );
+    });
+
+    test('fails if a test fails twice', () async {
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/bar_test.dart',
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
         MockProcess(), // auth
         MockProcess(), // config
         MockProcess(exitCode: 1), // integration test #1
+        MockProcess(exitCode: 1), // integration test #1 retry
         MockProcess(), // integration test #2
       ];
 
@@ -258,12 +364,6 @@ void main() {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -282,6 +382,44 @@ void main() {
       );
     });
 
+    test('passes with warning if a test fails once, then passes on retry',
+        () async {
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/integration_test/bar_test.dart',
+        'example/integration_test/foo_test.dart',
+        'example/android/gradlew',
+        javaTestFileRelativePath,
+      ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
+
+      processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
+        MockProcess(), // auth
+        MockProcess(), // config
+        MockProcess(exitCode: 1), // integration test #1
+        MockProcess(), // integration test #1 retry
+        MockProcess(), // integration test #2
+      ];
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'firebase-test-lab',
+        '--device',
+        'model=redfin,version=30',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Testing example/integration_test/bar_test.dart...'),
+          contains('bar_test.dart failed on attempt 1. Retrying...'),
+          contains('Testing example/integration_test/foo_test.dart...'),
+          contains('Ran for 1 package(s) (1 with warnings)'),
+        ]),
+      );
+    });
+
     test('fails for packages with no androidTest directory', () async {
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
@@ -295,12 +433,6 @@ void main() {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -321,10 +453,14 @@ void main() {
     });
 
     test('fails for packages with no integration test files', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -333,12 +469,6 @@ void main() {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -358,6 +488,48 @@ void main() {
       );
     });
 
+    test('fails for packages with no integration_test runner', () async {
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'test/plugin_test.dart',
+        'example/integration_test/bar_test.dart',
+        'example/integration_test/foo_test.dart',
+        'example/integration_test/should_not_run.dart',
+        'example/android/gradlew',
+        javaTestFileRelativePath,
+      ]);
+      // Use the wrong @RunWith annotation.
+      _writeJavaTestFile(plugin, javaTestFileRelativePath,
+          runnerClass: 'AndroidJUnit4.class');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+        runner,
+        <String>[
+          'firebase-test-lab',
+          '--device',
+          'model=redfin,version=30',
+        ],
+        errorHandler: (Error e) {
+          commandError = e;
+        },
+      );
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No integration_test runner found. '
+              'See the integration_test package README for setup instructions.'),
+          contains('plugin:\n'
+              '    No integration_test runner.'),
+        ]),
+      );
+    });
+
     test('skips packages with no android directory', () async {
       createFakePackage('package', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
@@ -367,19 +539,13 @@ void main() {
         'firebase-test-lab',
         '--device',
         'model=redfin,version=30',
-        '--device',
-        'model=seoul,version=26',
-        '--test-run-id',
-        'testRunId',
-        '--build-id',
-        'buildId',
       ]);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for package'),
-          contains('package/example does not support Android'),
+          contains('No examples support Android'),
         ]),
       );
       expect(output,
@@ -392,17 +558,19 @@ void main() {
     });
 
     test('builds if gradlew is missing', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
         'model=redfin,version=30',
-        '--device',
-        'model=seoul,version=26',
         '--test-run-id',
         'testRunId',
         '--build-id',
@@ -445,7 +613,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
@@ -453,10 +621,14 @@ void main() {
     });
 
     test('fails if building to generate gradlew fails', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       processRunner.mockProcessesForExecutable['flutter'] = <Process>[
         MockProcess(exitCode: 1) // flutter build
@@ -484,15 +656,19 @@ void main() {
     });
 
     test('fails if assembleAndroidTest fails', () async {
-      final Directory pluginDir =
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
-      final String gradlewPath = pluginDir
-          .childDirectory('example')
-          .childDirectory('android')
+      final String gradlewPath = plugin
+          .getExamples()
+          .first
+          .platformDirectory(FlutterPlatform.android)
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
@@ -521,15 +697,19 @@ void main() {
     });
 
     test('fails if assembleDebug fails', () async {
-      final Directory pluginDir =
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
           createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
-      final String gradlewPath = pluginDir
-          .childDirectory('example')
-          .childDirectory('android')
+      final String gradlewPath = plugin
+          .getExamples()
+          .first
+          .platformDirectory(FlutterPlatform.android)
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
@@ -562,11 +742,15 @@ void main() {
     });
 
     test('experimental flag', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      const String javaTestFileRelativePath =
+          'example/android/app/src/androidTest/MainActivityTest.java';
+      final RepositoryPackage plugin =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
-        'example/android/app/src/androidTest/MainActivityTest.java',
+        javaTestFileRelativePath,
       ]);
+      _writeJavaTestFile(plugin, javaTestFileRelativePath);
 
       await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
@@ -601,7 +785,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/example/0/ --device model=redfin,version=30'
                   .split(' '),
               '/packages/plugin/example'),
         ]),

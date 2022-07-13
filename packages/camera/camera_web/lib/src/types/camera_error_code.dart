@@ -32,7 +32,7 @@ class CameraErrorCode {
   /// The camera cannot be used or the permission
   /// to access the camera is not granted.
   static const CameraErrorCode permissionDenied =
-      CameraErrorCode._('cameraPermission');
+      CameraErrorCode._('CameraAccessDenied');
 
   /// The camera options are incorrect or attempted
   /// to access the media input from an insecure context.
@@ -81,15 +81,15 @@ class CameraErrorCode {
   static CameraErrorCode fromMediaError(html.MediaError error) {
     switch (error.code) {
       case html.MediaError.MEDIA_ERR_ABORTED:
-        return CameraErrorCode._('mediaErrorAborted');
+        return const CameraErrorCode._('mediaErrorAborted');
       case html.MediaError.MEDIA_ERR_NETWORK:
-        return CameraErrorCode._('mediaErrorNetwork');
+        return const CameraErrorCode._('mediaErrorNetwork');
       case html.MediaError.MEDIA_ERR_DECODE:
-        return CameraErrorCode._('mediaErrorDecode');
+        return const CameraErrorCode._('mediaErrorDecode');
       case html.MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-        return CameraErrorCode._('mediaErrorSourceNotSupported');
+        return const CameraErrorCode._('mediaErrorSourceNotSupported');
       default:
-        return CameraErrorCode._('mediaErrorUnknown');
+        return const CameraErrorCode._('mediaErrorUnknown');
     }
   }
 }

@@ -16,7 +16,8 @@ public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
   private final JavaScriptChannelCreator javaScriptChannelCreator;
   private final JavaScriptChannelFlutterApiImpl flutterApi;
-  private final Handler platformThreadHandler;
+
+  private Handler platformThreadHandler;
 
   /** Handles creating {@link JavaScriptChannel}s for a {@link JavaScriptChannelHostApiImpl}. */
   public static class JavaScriptChannelCreator {
@@ -52,6 +53,15 @@ public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
     this.instanceManager = instanceManager;
     this.javaScriptChannelCreator = javaScriptChannelCreator;
     this.flutterApi = flutterApi;
+    this.platformThreadHandler = platformThreadHandler;
+  }
+
+  /**
+   * Sets the platformThreadHandler to make callbacks
+   *
+   * @param platformThreadHandler the new thread handler
+   */
+  public void setPlatformThreadHandler(Handler platformThreadHandler) {
     this.platformThreadHandler = platformThreadHandler;
   }
 

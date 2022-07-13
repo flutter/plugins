@@ -4,18 +4,59 @@
 
 import 'package:pigeon/pigeon.dart';
 
+@ConfigurePigeon(
+  PigeonOptions(
+    dartOut: 'lib/src/android_webview.pigeon.dart',
+    dartTestOut: 'test/test_android_webview.pigeon.dart',
+    dartOptions: DartOptions(copyrightHeader: <String>[
+      'Copyright 2013 The Flutter Authors. All rights reserved.',
+      'Use of this source code is governed by a BSD-style license that can be',
+      'found in the LICENSE file.',
+    ]),
+    javaOut:
+        'android/src/main/java/io/flutter/plugins/webviewflutter/GeneratedAndroidWebView.java',
+    javaOptions: JavaOptions(
+      package: 'io.flutter.plugins.webviewflutter',
+      className: 'GeneratedAndroidWebView',
+      copyrightHeader: <String>[
+        'Copyright 2013 The Flutter Authors. All rights reserved.',
+        'Use of this source code is governed by a BSD-style license that can be',
+        'found in the LICENSE file.',
+      ],
+    ),
+  ),
+)
 class WebResourceRequestData {
-  String? url;
-  bool? isForMainFrame;
+  WebResourceRequestData(
+    this.url,
+    this.isForMainFrame,
+    this.isRedirect,
+    this.hasGesture,
+    this.method,
+    this.requestHeaders,
+  );
+
+  String url;
+  bool isForMainFrame;
   bool? isRedirect;
-  bool? hasGesture;
-  String? method;
-  Map<String?, String?>? requestHeaders;
+  bool hasGesture;
+  String method;
+  Map<String?, String?> requestHeaders;
 }
 
 class WebResourceErrorData {
-  int? errorCode;
-  String? description;
+  WebResourceErrorData(this.errorCode, this.description);
+
+  int errorCode;
+  String description;
+}
+
+@HostApi()
+abstract class CookieManagerHostApi {
+  @async
+  bool clearCookies();
+
+  void setCookie(String url, String value);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebViewHostApi')
@@ -24,13 +65,35 @@ abstract class WebViewHostApi {
 
   void dispose(int instanceId);
 
+  void loadData(
+    int instanceId,
+    String data,
+    String? mimeType,
+    String? encoding,
+  );
+
+  void loadDataWithBaseUrl(
+    int instanceId,
+    String? baseUrl,
+    String data,
+    String? mimeType,
+    String? encoding,
+    String? historyUrl,
+  );
+
   void loadUrl(
     int instanceId,
     String url,
     Map<String, String> headers,
   );
 
-  String getUrl(int instanceId);
+  void postUrl(
+    int instanceId,
+    String url,
+    Uint8List data,
+  );
+
+  String? getUrl(int instanceId);
 
   bool canGoBack(int instanceId);
 
@@ -45,12 +108,12 @@ abstract class WebViewHostApi {
   void clearCache(int instanceId, bool includeDiskFiles);
 
   @async
-  String evaluateJavascript(
+  String? evaluateJavascript(
     int instanceId,
     String javascriptString,
   );
 
-  String getTitle(int instanceId);
+  String? getTitle(int instanceId);
 
   void scrollTo(int instanceId, int x, int y);
 
@@ -68,9 +131,11 @@ abstract class WebViewHostApi {
 
   void removeJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
 
-  void setDownloadListener(int instanceId, int listenerInstanceId);
+  void setDownloadListener(int instanceId, int? listenerInstanceId);
 
-  void setWebChromeClient(int instanceId, int clientInstanceId);
+  void setWebChromeClient(int instanceId, int? clientInstanceId);
+
+  void setBackgroundColor(int instanceId, int color);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
@@ -87,7 +152,7 @@ abstract class WebSettingsHostApi {
 
   void setJavaScriptEnabled(int instanceId, bool flag);
 
-  void setUserAgentString(int instanceId, String userAgentString);
+  void setUserAgentString(int instanceId, String? userAgentString);
 
   void setMediaPlaybackRequiresUserGesture(int instanceId, bool require);
 
@@ -100,6 +165,8 @@ abstract class WebSettingsHostApi {
   void setDisplayZoomControls(int instanceId, bool enabled);
 
   void setBuiltInZoomControls(int instanceId, bool enabled);
+
+  void setAllowFileAccess(int instanceId, bool enabled);
 }
 
 @HostApi(dartHostTestHandler: 'TestJavaScriptChannelHostApi')
@@ -175,9 +242,23 @@ abstract class WebChromeClientHostApi {
   void create(int instanceId, int webViewClientInstanceId);
 }
 
+@HostApi(dartHostTestHandler: 'TestAssetManagerHostApi')
+abstract class FlutterAssetManagerHostApi {
+  List<String> list(String path);
+
+  String getAssetFilePathByName(String name);
+}
+
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
   void dispose(int instanceId);
 
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+}
+
+@HostApi(dartHostTestHandler: 'TestWebStorageHostApi')
+abstract class WebStorageHostApi {
+  void create(int instanceId);
+
+  void deleteAllData(int instanceId);
 }

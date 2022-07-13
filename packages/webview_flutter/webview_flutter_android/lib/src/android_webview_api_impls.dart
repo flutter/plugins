@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 
 import 'android_webview.dart';
@@ -11,21 +15,20 @@ import 'instance_manager.dart';
 /// Converts [WebResourceRequestData] to [WebResourceRequest]
 WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {
   return WebResourceRequest(
-    url: data.url!,
-    isForMainFrame: data.isForMainFrame!,
+    url: data.url,
+    isForMainFrame: data.isForMainFrame,
     isRedirect: data.isRedirect,
-    hasGesture: data.hasGesture!,
-    method: data.method!,
-    requestHeaders:
-        data.requestHeaders?.cast<String, String>() ?? <String, String>{},
+    hasGesture: data.hasGesture,
+    method: data.method,
+    requestHeaders: data.requestHeaders.cast<String, String>(),
   );
 }
 
 /// Converts [WebResourceErrorData] to [WebResourceError].
 WebResourceError _toWebResourceError(WebResourceErrorData data) {
   return WebResourceError(
-    errorCode: data.errorCode!,
-    description: data.description!,
+    errorCode: data.errorCode,
+    description: data.description,
   );
 }
 
@@ -109,6 +112,40 @@ class WebViewHostApiImpl extends WebViewHostApi {
     instanceManager.removeInstance(instance);
   }
 
+  /// Helper method to convert the instances ids to objects.
+  Future<void> loadDataFromInstance(
+    WebView instance,
+    String data,
+    String? mimeType,
+    String? encoding,
+  ) {
+    return loadData(
+      instanceManager.getInstanceId(instance)!,
+      data,
+      mimeType,
+      encoding,
+    );
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> loadDataWithBaseUrlFromInstance(
+    WebView instance,
+    String? baseUrl,
+    String data,
+    String? mimeType,
+    String? encoding,
+    String? historyUrl,
+  ) {
+    return loadDataWithBaseUrl(
+      instanceManager.getInstanceId(instance)!,
+      baseUrl,
+      data,
+      mimeType,
+      encoding,
+      historyUrl,
+    );
+  }
+
   /// Helper method to convert instances ids to objects.
   Future<void> loadUrlFromInstance(
     WebView instance,
@@ -119,7 +156,16 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<String> getUrlFromInstance(WebView instance) {
+  Future<void> postUrlFromInstance(
+    WebView instance,
+    String url,
+    Uint8List data,
+  ) {
+    return postUrl(instanceManager.getInstanceId(instance)!, url, data);
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<String?> getUrlFromInstance(WebView instance) {
     return getUrl(instanceManager.getInstanceId(instance)!);
   }
 
@@ -157,16 +203,18 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<String> evaluateJavascriptFromInstance(
+  Future<String?> evaluateJavascriptFromInstance(
     WebView instance,
     String javascriptString,
   ) {
     return evaluateJavascript(
-        instanceManager.getInstanceId(instance)!, javascriptString);
+      instanceManager.getInstanceId(instance)!,
+      javascriptString,
+    );
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<String> getTitleFromInstance(WebView instance) {
+  Future<String?> getTitleFromInstance(WebView instance) {
     return getTitle(instanceManager.getInstanceId(instance)!);
   }
 
@@ -226,23 +274,28 @@ class WebViewHostApiImpl extends WebViewHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> setDownloadListenerFromInstance(
     WebView instance,
-    DownloadListener listener,
+    DownloadListener? listener,
   ) {
     return setDownloadListener(
       instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(listener)!,
+      listener != null ? instanceManager.getInstanceId(listener) : null,
     );
   }
 
   /// Helper method to convert instances ids to objects.
   Future<void> setWebChromeClientFromInstance(
     WebView instance,
-    WebChromeClient client,
+    WebChromeClient? client,
   ) {
     return setWebChromeClient(
       instanceManager.getInstanceId(instance)!,
-      instanceManager.getInstanceId(client)!,
+      client != null ? instanceManager.getInstanceId(client) : null,
     );
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setBackgroundColorFromInstance(WebView instance, int color) {
+    return setBackgroundColor(instanceManager.getInstanceId(instance)!, color);
   }
 }
 
@@ -320,7 +373,7 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
   /// Helper method to convert instances ids to objects.
   Future<void> setUserAgentStringFromInstance(
     WebSettings instance,
-    String userAgentString,
+    String? userAgentString,
   ) {
     return setUserAgentString(
       instanceManager.getInstanceId(instance)!,
@@ -387,6 +440,17 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
       enabled,
     );
   }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setAllowFileAccessFromInstance(
+    WebSettings instance,
+    bool enabled,
+  ) {
+    return setAllowFileAccess(
+      instanceManager.getInstanceId(instance)!,
+      enabled,
+    );
+  }
 }
 
 /// Host api implementation for [JavaScriptChannel].
@@ -428,9 +492,13 @@ class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
 
   @override
   void postMessage(int instanceId, String message) {
-    final JavaScriptChannel instance =
-        instanceManager.getInstance(instanceId) as JavaScriptChannel;
-    instance.postMessage(message);
+    final JavaScriptChannel? instance =
+        instanceManager.getInstance(instanceId) as JavaScriptChannel?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an JavaScriptChannel with instanceId: $instanceId',
+    );
+    instance!.postMessage(message);
   }
 }
 
@@ -473,22 +541,36 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 
   @override
   void onPageFinished(int instanceId, int webViewInstanceId, String url) {
-    final WebViewClient instance =
-        instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.onPageFinished(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
-      url,
+    final WebViewClient? instance =
+        instanceManager.getInstance(instanceId) as WebViewClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebViewClient with instanceId: $instanceId',
     );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    instance!.onPageFinished(webViewInstance!, url);
   }
 
   @override
   void onPageStarted(int instanceId, int webViewInstanceId, String url) {
-    final WebViewClient instance =
-        instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.onPageStarted(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
-      url,
+    final WebViewClient? instance =
+        instanceManager.getInstance(instanceId) as WebViewClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebViewClient with instanceId: $instanceId',
     );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    instance!.onPageStarted(webViewInstance!, url);
   }
 
   @override
@@ -499,11 +581,21 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     String description,
     String failingUrl,
   ) {
-    final WebViewClient instance =
-        instanceManager.getInstance(instanceId) as WebViewClient;
+    final WebViewClient? instance =
+        instanceManager.getInstance(instanceId) as WebViewClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebViewClient with instanceId: $instanceId',
+    );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
     // ignore: deprecated_member_use_from_same_package
-    instance.onReceivedError(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
+    instance!.onReceivedError(
+      webViewInstance!,
       errorCode,
       description,
       failingUrl,
@@ -517,10 +609,20 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     WebResourceRequestData request,
     WebResourceErrorData error,
   ) {
-    final WebViewClient instance =
-        instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.onReceivedRequestError(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
+    final WebViewClient? instance =
+        instanceManager.getInstance(instanceId) as WebViewClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebViewClient with instanceId: $instanceId',
+    );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    instance!.onReceivedRequestError(
+      webViewInstance!,
       _toWebResourceRequest(request),
       _toWebResourceError(error),
     );
@@ -532,12 +634,19 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     int webViewInstanceId,
     WebResourceRequestData request,
   ) {
-    final WebViewClient instance =
-        instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.requestLoading(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
-      _toWebResourceRequest(request),
+    final WebViewClient? instance =
+        instanceManager.getInstance(instanceId) as WebViewClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebViewClient with instanceId: $instanceId',
     );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    instance!.requestLoading(webViewInstance!, _toWebResourceRequest(request));
   }
 
   @override
@@ -546,12 +655,19 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     int webViewInstanceId,
     String url,
   ) {
-    final WebViewClient instance =
-        instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.urlLoading(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
-      url,
+    final WebViewClient? instance =
+        instanceManager.getInstance(instanceId) as WebViewClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebViewClient with instanceId: $instanceId',
     );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    instance!.urlLoading(webViewInstance!, url);
   }
 }
 
@@ -601,9 +717,13 @@ class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
     String mimetype,
     int contentLength,
   ) {
-    final DownloadListener instance =
-        instanceManager.getInstance(instanceId) as DownloadListener;
-    instance.onDownloadStart(
+    final DownloadListener? instance =
+        instanceManager.getInstance(instanceId) as DownloadListener?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an DownloadListener with instanceId: $instanceId',
+    );
+    instance!.onDownloadStart(
       url,
       userAgent,
       contentDisposition,
@@ -655,11 +775,45 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 
   @override
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress) {
-    final WebChromeClient instance =
-        instanceManager.getInstance(instanceId) as WebChromeClient;
-    instance.onProgressChanged(
-      instanceManager.getInstance(webViewInstanceId) as WebView,
-      progress,
+    final WebChromeClient? instance =
+        instanceManager.getInstance(instanceId) as WebChromeClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebChromeClient with instanceId: $instanceId',
     );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    instance!.onProgressChanged(webViewInstance!, progress);
+  }
+}
+
+/// Host api implementation for [WebStorage].
+class WebStorageHostApiImpl extends WebStorageHostApi {
+  /// Constructs a [WebStorageHostApiImpl].
+  WebStorageHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
+    this.instanceManager = instanceManager ?? InstanceManager.instance;
+  }
+
+  /// Maintains instances stored to communicate with java objects.
+  late final InstanceManager instanceManager;
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> createFromInstance(WebStorage instance) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      return create(instanceId);
+    }
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> deleteAllDataFromInstance(WebStorage instance) {
+    return deleteAllData(instanceManager.getInstanceId(instance)!);
   }
 }

@@ -10,14 +10,14 @@ import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-final String expectedStringContents = 'Hello, world!';
+const String expectedStringContents = 'Hello, world!';
 final List<int> bytes = utf8.encode(expectedStringContents);
-final html.File textFile = html.File([bytes], 'hello.txt');
+final html.File textFile = html.File(<List<int>>[bytes], 'hello.txt');
 final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {
   group('Create with an objectUrl', () {
-    final pickedFile = PickedFile(textFileUrl);
+    final PickedFile pickedFile = PickedFile(textFileUrl);
 
     test('Can be read as a string', () async {
       expect(await pickedFile.readAsString(), equals(expectedStringContents));

@@ -5,29 +5,24 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
-import android.view.View;
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
-import java.util.Map;
 
-public final class FlutterWebViewFactory extends PlatformViewFactory {
-  private final BinaryMessenger messenger;
-  private final View containerView;
+class FlutterWebViewFactory extends PlatformViewFactory {
+  private final InstanceManager instanceManager;
 
-  FlutterWebViewFactory(BinaryMessenger messenger, View containerView) {
+  FlutterWebViewFactory(InstanceManager instanceManager) {
     super(StandardMessageCodec.INSTANCE);
-    this.messenger = messenger;
-    this.containerView = containerView;
+    this.instanceManager = instanceManager;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public PlatformView create(Context context, int id, Object args) {
-    Map<String, Object> params = (Map<String, Object>) args;
-    MethodChannel methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    return new FlutterWebView(context, methodChannel, params, containerView);
+    final PlatformView view = (PlatformView) instanceManager.getInstance((Integer) args);
+    if (view == null) {
+      throw new IllegalStateException("Unable to find WebView instance: " + args);
+    }
+    return view;
   }
 }

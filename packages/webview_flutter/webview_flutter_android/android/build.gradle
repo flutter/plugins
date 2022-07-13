@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:7.2.1'
     }
 }
 
@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 19
@@ -35,10 +35,10 @@ android {
     }
 
     dependencies {
-        implementation 'androidx.annotation:annotation:1.0.0'
+        implementation 'androidx.annotation:annotation:1.4.0'
         implementation 'androidx.webkit:webkit:1.0.0'
-        testImplementation 'junit:junit:4.12'
-        testImplementation 'org.mockito:mockito-inline:3.11.1'
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.mockito:mockito-inline:4.6.1'
         testImplementation 'androidx.test:core:1.3.0'
     }
 
@@ -57,9 +57,5 @@ android {
                showStandardStreams = true
             }
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 }

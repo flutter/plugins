@@ -42,6 +42,14 @@ class XTypeGroup {
     };
   }
 
+  /// True if this type group should allow any file.
+  bool get allowsAny {
+    return (extensions?.isEmpty ?? true) &&
+        (mimeTypes?.isEmpty ?? true) &&
+        (macUTIs?.isEmpty ?? true) &&
+        (webWildCards?.isEmpty ?? true);
+  }
+
   static List<String>? _removeLeadingDots(List<String>? exts) => exts
       ?.map((String ext) => ext.startsWith('.') ? ext.substring(1) : ext)
       .toList();

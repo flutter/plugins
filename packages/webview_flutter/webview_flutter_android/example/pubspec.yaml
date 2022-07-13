@@ -8,6 +8,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  path_provider: ^2.0.6
+  
   webview_flutter_android:
     # When depending on this package from a real application you should use:
     #   webview_flutter: ^x.y.z
@@ -17,10 +20,10 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  espresso: ^0.1.0+2
-  flutter_test:
-    sdk: flutter
+  espresso: ^0.2.0
   flutter_driver:
+    sdk: flutter
+  flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
@@ -31,3 +34,5 @@ flutter:
   assets:
     - assets/sample_audio.ogg
     - assets/sample_video.mp4
+    - assets/www/index.html
+    - assets/www/styles/style.css

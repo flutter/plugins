@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable;
 
 import 'types.dart';
 
@@ -44,8 +41,8 @@ class TileOverlayId extends MapsObjectId<TileOverlay> {
 /// The coordinates of the tiles are measured from the top left (northwest) corner of the map.
 /// At zoom level N, the x values of the tile coordinates range from 0 to 2N - 1 and increase from
 /// west to east and the y values range from 0 to 2N - 1 and increase from north to south.
-///
-class TileOverlay implements MapsObject {
+@immutable
+class TileOverlay implements MapsObject<TileOverlay> {
   /// Creates an immutable representation of a [TileOverlay] to draw on [GoogleMap].
   const TileOverlay({
     required this.tileOverlayId,
@@ -109,9 +106,11 @@ class TileOverlay implements MapsObject {
     );
   }
 
+  @override
   TileOverlay clone() => copyWith();
 
   /// Converts this object to JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 
@@ -147,6 +146,6 @@ class TileOverlay implements MapsObject {
   }
 
   @override
-  int get hashCode => hashValues(tileOverlayId, fadeIn, tileProvider,
+  int get hashCode => Object.hash(tileOverlayId, fadeIn, tileProvider,
       transparency, zIndex, visible, tileSize);
 }

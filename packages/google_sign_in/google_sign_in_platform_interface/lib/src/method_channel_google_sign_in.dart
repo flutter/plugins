@@ -4,11 +4,10 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show visibleForTesting;
 
 import '../google_sign_in_platform_interface.dart';
-import 'types.dart';
 import 'utils.dart';
 
 /// An implementation of [GoogleSignInPlatform] that uses method channels.
@@ -26,11 +25,22 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
     String? hostedDomain,
     String? clientId,
   }) {
+    return initWithParams(SignInInitParameters(
+        scopes: scopes,
+        signInOption: signInOption,
+        hostedDomain: hostedDomain,
+        clientId: clientId));
+  }
+
+  @override
+  Future<void> initWithParams(SignInInitParameters params) {
     return channel.invokeMethod<void>('init', <String, dynamic>{
-      'signInOption': signInOption.toString(),
-      'scopes': scopes,
-      'hostedDomain': hostedDomain,
-      'clientId': clientId,
+      'signInOption': params.signInOption.toString(),
+      'scopes': params.scopes,
+      'hostedDomain': params.hostedDomain,
+      'clientId': params.clientId,
+      'serverClientId': params.serverClientId,
+      'forceCodeForRefreshToken': params.forceCodeForRefreshToken,
     });
   }
 
@@ -55,7 +65,7 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
         .invokeMapMethod<String, dynamic>('getTokens', <String, dynamic>{
       'email': email,
       'shouldRecoverAuth': shouldRecoverAuth,
-    }).then((result) => getTokenDataFromMap(result!));
+    }).then((Map<String, dynamic>? result) => getTokenDataFromMap(result!));
   }
 
   @override

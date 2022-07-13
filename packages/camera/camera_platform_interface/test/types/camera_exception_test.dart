@@ -7,21 +7,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('constructor should initialize properties', () {
-    final code = 'TEST_ERROR';
-    final description = 'This is a test error';
-    final exception = CameraException(code, description);
+    const String code = 'TEST_ERROR';
+    const String description = 'This is a test error';
+    final CameraException exception = CameraException(code, description);
 
     expect(exception.code, code);
     expect(exception.description, description);
   });
 
   test('toString: Should return a description of the exception', () {
-    final code = 'TEST_ERROR';
-    final description = 'This is a test error';
-    final expected = 'CameraException($code, $description)';
-    final exception = CameraException(code, description);
+    const String code = 'TEST_ERROR';
+    const String description = 'This is a test error';
+    const String expected = 'CameraException($code, $description)';
+    final CameraException exception = CameraException(code, description);
 
-    final actual = exception.toString();
+    final String actual = exception.toString();
 
     expect(actual, expected);
   });

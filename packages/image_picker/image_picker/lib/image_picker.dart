@@ -207,6 +207,17 @@ class ImagePicker {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+    if (maxWidth != null && maxWidth < 0) {
+      throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
+    }
+    if (maxHeight != null && maxHeight < 0) {
+      throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
+    }
+
     return platform.getImage(
       source: source,
       maxWidth: maxWidth,
@@ -245,6 +256,17 @@ class ImagePicker {
     double? maxHeight,
     int? imageQuality,
   }) {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+    if (maxWidth != null && maxWidth < 0) {
+      throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
+    }
+    if (maxHeight != null && maxHeight < 0) {
+      throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
+    }
+
     return platform.getMultiImage(
       maxWidth: maxWidth,
       maxHeight: maxHeight,

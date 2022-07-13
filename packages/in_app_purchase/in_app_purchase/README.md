@@ -5,11 +5,15 @@ A storefront-independent API for purchases in Flutter apps.
 This plugin supports in-app purchases (_IAP_) through an _underlying store_,
 which can be the App Store (on iOS) or Google Play (on Android).
 
+|             | Android | iOS  |
+|-------------|---------|------|
+| **Support** | SDK 16+ | 9.0+ |
+
 <p>
-  <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
+  <img src="https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
     alt="An animated image of the iOS in-app purchase UI" height="400"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true"
+  <img src="https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true"
    alt="An animated image of the Android in-app purchase UI" height="400"/>
 </p>
 
@@ -32,8 +36,12 @@ your app with each store. Both stores have extensive guides:
 * [App Store documentation](https://developer.apple.com/in-app-purchase/)
 * [Google Play documentation](https://developer.android.com/google/play/billing/billing_overview)
 
+> NOTE: Further in this document the App Store and Google Play will be referred
+> to as "the store" or "the underlying store", except when a feature is specific
+> to a particular store.
+
 For a list of steps for configuring in-app purchases in both stores, see the
-[example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/example/README.md).
+[example app README](https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/example/README.md).
 
 Once you've configured your in-app purchases in their respective stores, you
 can start using the plugin. Two basic options are available:
@@ -41,7 +49,7 @@ can start using the plugin. Two basic options are available:
 1. A generic, idiomatic Flutter API: [in_app_purchase](https://pub.dev/documentation/in_app_purchase/latest/in_app_purchase/in_app_purchase-library.html).
    This API supports most use cases for loading and making purchases.
 
-2. Platform-specific Dart APIs: [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase_ios/latest/store_kit_wrappers/store_kit_wrappers-library.html)
+2. Platform-specific Dart APIs: [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase_storekit/latest/store_kit_wrappers/store_kit_wrappers-library.html)
    and [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase_android/latest/billing_client_wrappers/billing_client_wrappers-library.html).
    These APIs expose platform-specific behavior and allow for more fine-tuned
    control when needed. However, if you use one of these APIs, your
@@ -54,7 +62,6 @@ See also the codelab for [in-app purchases in Flutter](https://codelabs.develope
 
 This section has examples of code for the following tasks:
 
-* [Initializing the plugin](#initializing-the-plugin)
 * [Listening to purchase updates](#listening-to-purchase-updates)
 * [Connecting to the underlying store](#connecting-to-the-underlying-store)
 * [Loading products for sale](#loading-products-for-sale)
@@ -64,27 +71,6 @@ This section has examples of code for the following tasks:
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
 * [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
 * [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
-
-### Initializing the plugin
-
-The following initialization code is required for Google Play:
-
-```dart
-// Import `in_app_purchase_android.dart` to be able to access the 
-// `InAppPurchaseAndroidPlatformAddition` class.
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:flutter/foundation.dart';
-
-void main() {
-  // Inform the plugin that this app supports pending purchases on Android.
-  // An error will occur on Android if you access the plugin `instance`
-  // without this call.
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-  }
-  runApp(MyApp());
-}
-```
 
 **Note:** It is not necessary to depend on `com.android.billingclient:billing` in your own app's `android/app/build.gradle` file. If you choose to do so know that conflicts might occur.
 
@@ -131,7 +117,7 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     } else {
       if (purchaseDetails.status == PurchaseStatus.error) {
         _handleError(purchaseDetails.error!);
-      } else if (purchaseDetails.status == PurchaseStatus.purchased || 
+      } else if (purchaseDetails.status == PurchaseStatus.purchased ||
                  purchaseDetails.status == PurchaseStatus.restored) {
         bool valid = await _verifyPurchase(purchaseDetails);
         if (valid) {
@@ -175,7 +161,7 @@ List<ProductDetails> products = response.productDetails;
 ### Restoring previous purchases
 
 Restored purchases will be emitted on the `InAppPurchase.purchaseStream`, make
-sure to validate restored purchases following the best practices for each 
+sure to validate restored purchases following the best practices for each
 underlying store:
 
 * [Verifying App Store purchases](https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store)
@@ -212,11 +198,15 @@ if (_isConsumable(productDetails)) {
 
 ### Completing a purchase
 
-The `InAppPurchase.purchaseStream` will send purchase updates after
-you initiate the purchase flow using `InAppPurchase.buyConsumable` 
-or `InAppPurchase.buyNonConsumable`. After delivering the content to 
-the user, call `InAppPurchase.completePurchase` to tell the App Store
-and Google Play that the purchase has been finished.
+The `InAppPurchase.purchaseStream` will send purchase updates after initiating
+the purchase flow using `InAppPurchase.buyConsumable` or
+`InAppPurchase.buyNonConsumable`. After verifying the purchase receipt and the
+delivering the content to the user it is important to call
+`InAppPurchase.completePurchase` to tell the underlying store that the
+purchase has been completed. Calling `InAppPurchase.completePurchase` will
+inform the underlying store that the app verified and processed the
+purchase and the store can proceed to finalize the transaction and bill
+the end user's payment account.
 
 > **Warning:** Failure to call `InAppPurchase.completePurchase` and
 > get a successful response within 3 days of the purchase will result a refund.
@@ -249,18 +239,18 @@ InAppPurchase.instance
 
 ### Confirming subscription price changes
 
-When the price of a subscription is changed the consumer will need to confirm that price change. If the consumer does not 
-confirm the price change the subscription will not be auto-renewed. By default on both iOS and Android the consumer will 
-automatically get a popup to confirm the price change, but App developers can override this mechanism and show the popup on a later moment so it doesn't interrupt the critical flow of the App. This works different on the Apple App Store and on the Google Play Store.
+When the price of a subscription is changed the consumer will need to confirm that price change. If the consumer does not
+confirm the price change the subscription will not be auto-renewed. By default on both iOS and Android the consumer will
+automatically get a popup to confirm the price change, but App developers can override this mechanism and show the popup on a later moment so it doesn't interrupt the critical flow of the App. This works different for each of the stores.
 
 #### Google Play Store (Android)
-When the subscription price is raised, the consumer should approve the price change within 7 days. The official 
+When the subscription price is raised, the consumer should approve the price change within 7 days. The official
 documentation can be found [here](https://support.google.com/googleplay/android-developer/answer/140504?hl=en#zippy=%2Cprice-changes).
 When the price is lowered the consumer will automatically receive the lower price and does not have to approve the price change.
 
 After 7 days the consumer will be notified through email and notifications on Google Play to agree with the new price. App developers have 7 days to explain the consumer that the price is going to change and ask them to accept this change. App developers have to keep track of whether or not the price change is already accepted within the app or in the backend. The [Google Play API](https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions) can be used to check whether or not the price change is accepted by the consumer by reading the `priceChange` property on a subscription object.
 
-The `InAppPurchaseAndroidPlatformAddition` can be used to show the price change confirmation flow. The additions contain the function `launchPriceChangeConfirmationFlow` which needs the SKU code of the subscription. 
+The `InAppPurchaseAndroidPlatformAddition` can be used to show the price change confirmation flow. The additions contain the function `launchPriceChangeConfirmationFlow` which needs the SKU code of the subscription.
 
 ```dart
 //import for InAppPurchaseAndroidPlatformAddition
@@ -272,7 +262,7 @@ if (Platform.isAndroid) {
   final InAppPurchaseAndroidPlatformAddition androidAddition =
     _inAppPurchase
       .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
-  var priceChangeConfirmationResult = 
+  var priceChangeConfirmationResult =
       await androidAddition.launchPriceChangeConfirmationFlow(
     sku: 'purchaseId',
   );
@@ -286,24 +276,24 @@ if (Platform.isAndroid) {
 
 #### Apple App Store (iOS)
 
-When the price of a subscription is raised iOS will also show a popup in the app. 
+When the price of a subscription is raised iOS will also show a popup in the app.
 The StoreKit Payment Queue will notify the app that it wants to show a price change confirmation popup.
-By default the queue will get the response that it can continue and show the popup. 
-However, it is possible to prevent this popup via the InAppPurchaseIosPlatformAddition and show the 
+By default the queue will get the response that it can continue and show the popup.
+However, it is possible to prevent this popup via the 'InAppPurchaseStoreKitPlatformAddition' and show the
 popup at a different time, for example after clicking a button.
 
 To know when the App Store wants to show a popup and prevent this from happening a queue delegate can be registered.
-The `InAppPurchaseIosPlatformAddition` contains a `setDelegate(SKPaymentQueueDelegateWrapper? delegate)` function that
+The `InAppPurchaseStoreKitPlatformAddition` contains a `setDelegate(SKPaymentQueueDelegateWrapper? delegate)` function that
 can be used to set a delegate or remove one by setting it to `null`.
 ```dart
-//import for InAppPurchaseIosPlatformAddition
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for InAppPurchaseStoreKitPlatformAddition
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 Future<void> initStoreInfo() async {
   if (Platform.isIOS) {
     var iosPlatformAddition = _inAppPurchase
-            .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
-    await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate()); 
+            .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+    await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
   }
 }
 
@@ -311,18 +301,18 @@ Future<void> initStoreInfo() async {
 Future<void> disposeStore() {
   if (Platform.isIOS) {
     var iosPlatformAddition = _inAppPurchase
-            .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+            .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
     await iosPlatformAddition.setDelegate(null);
   }
 }
 ```
-The delegate that is set should implement `SKPaymentQueueDelegateWrapper` and handle `shouldContinueTransaction` and 
+The delegate that is set should implement `SKPaymentQueueDelegateWrapper` and handle `shouldContinueTransaction` and
 `shouldShowPriceConsent`. When setting `shouldShowPriceConsent` to false the default popup will not be shown and the app
 needs to show this later.
 
 ```dart
 // import for SKPaymentQueueDelegateWrapper
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 class ExamplePaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
   @override
@@ -338,20 +328,20 @@ class ExamplePaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
 }
 ```
 
-The dialog can be shown by calling `showPriceConsentIfNeeded` on the `InAppPurchaseIosPlatformAddition`. This future
+The dialog can be shown by calling `showPriceConsentIfNeeded` on the `InAppPurchaseStoreKitPlatformAddition`. This future
 will complete immediately when the dialog is shown. A confirmed transaction will be delivered on the `purchaseStream`.
 ```dart
 if (Platform.isIOS) {
-  var iapIosPlatformAddition = _inAppPurchase
-      .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
-  await iapIosPlatformAddition.showPriceConsentIfNeeded();
+  var iapStoreKitPlatformAddition = _inAppPurchase
+      .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+  await iapStoreKitPlatformAddition.showPriceConsentIfNeeded();
 }
 ```
 
 ### Accessing platform specific product or purchase properties
 
-The function `_inAppPurchase.queryProductDetails(productIds);` provides a `ProductDetailsResponse` with a 
-list of purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class 
+The function `_inAppPurchase.queryProductDetails(productIds);` provides a `ProductDetailsResponse` with a
+list of purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class
 containing properties only available on all endorsed platforms. However, in some cases it is necessary to access platform specific properties. The `ProductDetails` instance is of subtype `GooglePlayProductDetails`
 when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails (on Android) or the skProduct (on iOS) provides all the information that is available in the original platform objects.
 
@@ -371,9 +361,9 @@ if (productDetails is GooglePlayProductDetails) {
 And this is the way to get the subscriptionGroupIdentifier of a subscription on iOS:
 ```dart
 //import for AppStoreProductDetails
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 //import for SKProductWrapper
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 if (productDetails is AppStoreProductDetails) {
   SKProductWrapper skProduct = (productDetails as AppStoreProductDetails).skProduct;
@@ -381,10 +371,10 @@ if (productDetails is AppStoreProductDetails) {
 }
 ```
 
-The `purchaseStream` provides objects of type `PurchaseDetails`. PurchaseDetails' provides all 
-information that is available on all endorsed platforms, such as purchaseID and transactionDate. In addition, it is 
-possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
-when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp. 
+The `purchaseStream` provides objects of type `PurchaseDetails`. PurchaseDetails' provides all
+information that is available on all endorsed platforms, such as purchaseID and transactionDate. In addition, it is
+possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails`
+when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp.
 skPaymentTransaction provides all the information that is available in the original platform objects.
 
 This is an example on how to get the `originalJson` on Android:
@@ -403,9 +393,9 @@ if (purchaseDetails is GooglePlayPurchaseDetails) {
 How to get the `transactionState` of a purchase in iOS:
 ```dart
 //import for AppStorePurchaseDetails
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 //import for SKProductWrapper
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 if (purchaseDetails is AppStorePurchaseDetails) {
   SKPaymentTransactionWrapper skProduct = (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
@@ -413,7 +403,7 @@ if (purchaseDetails is AppStorePurchaseDetails) {
 }
 ```
 
-Please note that it is required to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
+Please note that it is required to import `in_app_purchase_android` and/or `in_app_purchase_storekit`.
 
 ### Presenting a code redemption sheet (iOS 14)
 
@@ -422,18 +412,18 @@ codes that you've set up in App Store Connect. For more information on
 redeeming offer codes, see [Implementing Offer Codes in Your App](https://developer.apple.com/documentation/storekit/in-app_purchase/subscriptions_and_offers/implementing_offer_codes_in_your_app).
 
 ```dart
-InAppPurchaseIosPlatformAddition iosPlatformAddition = 
-  InAppPurchase.getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+InAppPurchaseStoreKitPlatformAddition iosPlatformAddition =
+  InAppPurchase.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
 iosPlatformAddition.presentCodeRedemptionSheet();
 ```
 
-> **note:** The `InAppPurchaseIosPlatformAddition` is defined in the `in_app_purchase_ios.dart` 
-> file so you need to import it into the file you will be using `InAppPurchaseIosPlatformAddition`:
+> **note:** The `InAppPurchaseStoreKitPlatformAddition` is defined in the `in_app_purchase_storekit.dart`
+> file so you need to import it into the file you will be using `InAppPurchaseStoreKitPlatformAddition`:
 > ```dart
-> import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+> import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 > ```
 
 ## Contributing to this plugin
 
 If you would like to contribute to the plugin, check out our
-[contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
+[contribution guide](https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md).

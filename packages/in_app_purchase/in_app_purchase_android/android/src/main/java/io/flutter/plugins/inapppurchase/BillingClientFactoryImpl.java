@@ -12,12 +12,9 @@ import io.flutter.plugin.common.MethodChannel;
 final class BillingClientFactoryImpl implements BillingClientFactory {
 
   @Override
-  public BillingClient createBillingClient(
-      Context context, MethodChannel channel, boolean enablePendingPurchases) {
-    BillingClient.Builder builder = BillingClient.newBuilder(context);
-    if (enablePendingPurchases) {
-      builder.enablePendingPurchases();
-    }
+  public BillingClient createBillingClient(Context context, MethodChannel channel) {
+    BillingClient.Builder builder = BillingClient.newBuilder(context).enablePendingPurchases();
+
     return builder.setListener(new PluginPurchaseListener(channel)).build();
   }
 }

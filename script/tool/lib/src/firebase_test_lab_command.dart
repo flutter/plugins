@@ -119,26 +119,59 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final RepositoryPackage example = package.getSingleExampleDeprecated();
+    final List<PackageResult> results = <PackageResult>[];
+    for (final RepositoryPackage example in package.getExamples()) {
+      results.add(await _runForExample(example, package: package));
+    }
+
+    // If all results skipped, report skip overall.
+    if (results
+        .every((PackageResult result) => result.state == RunState.skipped)) {
+      return PackageResult.skip('No examples support Android.');
+    }
+    // Otherwise, report failure if there were any failures.
+    final List<String> allErrors = results
+        .map((PackageResult result) =>
+            result.state == RunState.failed ? result.details : <String>[])
+        .expand((List<String> list) => list)
+        .toList();
+    return allErrors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(allErrors);
+  }
+
+  /// Runs the test for the given example of [package].
+  Future<PackageResult> _runForExample(
+    RepositoryPackage example, {
+    required RepositoryPackage package,
+  }) async {
     final Directory androidDirectory =
-        example.directory.childDirectory('android');
+        example.platformDirectory(FlutterPlatform.android);
     if (!androidDirectory.existsSync()) {
       return PackageResult.skip(
           '${example.displayName} does not support Android.');
     }
 
-    if (!androidDirectory
+    final Directory uiTestDirectory = androidDirectory
         .childDirectory('app')
         .childDirectory('src')
-        .childDirectory('androidTest')
-        .existsSync()) {
+        .childDirectory('androidTest');
+    if (!uiTestDirectory.existsSync()) {
       printError('No androidTest directory found.');
       return PackageResult.fail(
           <String>['No tests ran (use --exclude if this is intentional).']);
     }
 
+    // Ensure that the Dart integration tests will be run, not just native UI
+    // tests.
+    if (!await _testsContainDartIntegrationTestRunner(uiTestDirectory)) {
+      printError('No integration_test runner found. '
+          'See the integration_test package README for setup instructions.');
+      return PackageResult.fail(<String>['No integration_test runner.']);
+    }
+
     // Ensures that gradle wrapper exists
-    final GradleProject project = GradleProject(example.directory,
+    final GradleProject project = GradleProject(example,
         processRunner: processRunner, platform: platform);
     if (!await _ensureGradleWrapperExists(project)) {
       return PackageResult.fail(<String>['Unable to build example apk']);
@@ -155,7 +188,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // Used within the loop to ensure a unique GCS output location for each
     // test file's run.
     int resultsCounter = 0;
-    for (final File test in _findIntegrationTestFiles(package)) {
+    for (final File test in _findIntegrationTestFiles(example)) {
       final String testName =
           getRelativePosixPath(test, from: package.directory);
       print('Testing $testName...');
@@ -167,31 +200,24 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       final String buildId = getStringArg('build-id');
       final String testRunId = getStringArg('test-run-id');
       final String resultsDir =
-          'plugins_android_test/${package.displayName}/$buildId/$testRunId/${resultsCounter++}/';
-      final List<String> args = <String>[
-        'firebase',
-        'test',
-        'android',
-        'run',
-        '--type',
-        'instrumentation',
-        '--app',
-        'build/app/outputs/apk/debug/app-debug.apk',
-        '--test',
-        'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
-        '--timeout',
-        '7m',
-        '--results-bucket=${getStringArg('results-bucket')}',
-        '--results-dir=$resultsDir',
-      ];
-      for (final String device in getStringListArg('device')) {
-        args.addAll(<String>['--device', device]);
-      }
-      final int exitCode = await processRunner.runAndStream('gcloud', args,
-          workingDir: example.directory);
+          'plugins_android_test/${package.displayName}/$buildId/$testRunId/'
+          '${example.directory.basename}/${resultsCounter++}/';
 
-      if (exitCode != 0) {
-        printError('Test failure for $testName');
+      // Automatically retry failures; there is significant flake with these
+      // tests whose cause isn't yet understood, and having to re-run the
+      // entire shard for a flake in any one test is extremely slow. This should
+      // be removed once the root cause of the flake is understood.
+      // See https://github.com/flutter/flutter/issues/95063
+      const int maxRetries = 2;
+      bool passing = false;
+      for (int i = 1; i <= maxRetries && !passing; ++i) {
+        if (i > 1) {
+          logWarning('$testName failed on attempt ${i - 1}. Retrying...');
+        }
+        passing = await _runFirebaseTest(example, test, resultsDir: resultsDir);
+      }
+      if (!passing) {
+        printError('Test failure for $testName after $maxRetries attempts');
         errors.add('$testName failed tests');
       }
     }
@@ -230,6 +256,42 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return true;
   }
 
+  /// Runs [test] from [example] as a Firebase Test Lab test, returning true if
+  /// the test passed.
+  ///
+  /// [resultsDir] should be a unique-to-the-test-run directory to store the
+  /// results on the server.
+  Future<bool> _runFirebaseTest(
+    RepositoryPackage example,
+    File test, {
+    required String resultsDir,
+  }) async {
+    final List<String> args = <String>[
+      'firebase',
+      'test',
+      'android',
+      'run',
+      '--type',
+      'instrumentation',
+      '--app',
+      'build/app/outputs/apk/debug/app-debug.apk',
+      '--test',
+      'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
+      '--timeout',
+      '7m',
+      '--results-bucket=${getStringArg('results-bucket')}',
+      '--results-dir=$resultsDir',
+      for (final String device in getStringListArg('device')) ...<String>[
+        '--device',
+        device
+      ],
+    ];
+    final int exitCode = await processRunner.runAndStream('gcloud', args,
+        workingDir: example.directory);
+
+    return exitCode == 0;
+  }
+
   /// Builds [target] using Gradle in the given [project]. Assumes Gradle is
   /// already configured.
   ///
@@ -263,12 +325,10 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return true;
   }
 
-  /// Finds and returns all integration test files for [package].
-  Iterable<File> _findIntegrationTestFiles(RepositoryPackage package) sync* {
-    final Directory integrationTestDir = package
-        .getSingleExampleDeprecated()
-        .directory
-        .childDirectory('integration_test');
+  /// Finds and returns all integration test files for [example].
+  Iterable<File> _findIntegrationTestFiles(RepositoryPackage example) sync* {
+    final Directory integrationTestDir =
+        example.directory.childDirectory('integration_test');
 
     if (!integrationTestDir.existsSync()) {
       return;
@@ -279,5 +339,20 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         .where((FileSystemEntity file) =>
             file is File && file.basename.endsWith('_test.dart'))
         .cast<File>();
+  }
+
+  /// Returns true if any of the test files in [uiTestDirectory] contain the
+  /// annotation that means that the test will reports the results of running
+  /// the Dart integration tests.
+  Future<bool> _testsContainDartIntegrationTestRunner(
+      Directory uiTestDirectory) async {
+    return uiTestDirectory
+        .list(recursive: true, followLinks: false)
+        .where((FileSystemEntity entity) => entity is File)
+        .cast<File>()
+        .any((File file) {
+      return file.basename.endsWith('.java') &&
+          file.readAsStringSync().contains('@RunWith(FlutterTestRunner.class)');
+    });
   }
 }

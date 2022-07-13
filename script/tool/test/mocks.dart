@@ -30,6 +30,9 @@ class MockPlatform extends Mock implements Platform {
   Uri get script => isWindows
       ? Uri.file(r'C:\foo\bar', windows: true)
       : Uri.file('/foo/bar', windows: false);
+
+  @override
+  Map<String, String> environment = <String, String>{};
 }
 
 class MockProcess extends Mock implements io.Process {

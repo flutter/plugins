@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/src/types/javascript_channel.dart';
-import 'package:webview_flutter_platform_interface/src/types/types.dart';
 import 'package:webview_flutter_platform_interface/src/platform_interface/javascript_channel_registry.dart';
+import 'package:webview_flutter_platform_interface/src/types/types.dart';
 
 void main() {
   final Map<String, String> _log = <String, String>{};

@@ -8,24 +8,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('ExposureMode should contain 2 options', () {
-    final values = ExposureMode.values;
+    const List<ExposureMode> values = ExposureMode.values;
 
     expect(values.length, 2);
   });
 
-  test("ExposureMode enum should have items in correct index", () {
-    final values = ExposureMode.values;
+  test('ExposureMode enum should have items in correct index', () {
+    const List<ExposureMode> values = ExposureMode.values;
 
     expect(values[0], ExposureMode.auto);
     expect(values[1], ExposureMode.locked);
   });
 
-  test("serializeExposureMode() should serialize correctly", () {
-    expect(serializeExposureMode(ExposureMode.auto), "auto");
-    expect(serializeExposureMode(ExposureMode.locked), "locked");
+  test('serializeExposureMode() should serialize correctly', () {
+    expect(serializeExposureMode(ExposureMode.auto), 'auto');
+    expect(serializeExposureMode(ExposureMode.locked), 'locked');
   });
 
-  test("deserializeExposureMode() should deserialize correctly", () {
+  test('deserializeExposureMode() should deserialize correctly', () {
     expect(deserializeExposureMode('auto'), ExposureMode.auto);
     expect(deserializeExposureMode('locked'), ExposureMode.locked);
   });

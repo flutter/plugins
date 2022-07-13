@@ -5,9 +5,9 @@
 import 'dart:async';
 
 import 'package:cross_file/cross_file.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// The interface that implementations of image_picker must implement.
 ///
@@ -34,7 +34,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(ImagePickerPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
 
@@ -146,6 +146,8 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('retrieveLostData() has not been implemented.');
   }
 
+  /// This method is deprecated in favor of [getImageFromSource] and will be removed in a future update.
+  ///
   /// Returns an [XFile] with the image that was picked.
   ///
   /// The `source` argument controls where the image comes from. This can
@@ -250,5 +252,35 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///   information on MainActivity destruction.
   Future<LostDataResponse> getLostData() {
     throw UnimplementedError('getLostData() has not been implemented.');
+  }
+
+  /// Returns an [XFile] with the image that was picked.
+  ///
+  /// The `source` argument controls where the image comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// The `options` argument controls additional settings that can be used when
+  /// picking an image. See [ImagePickerOptions] for more details.
+  ///
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and
+  /// above only support HEIC images if used in addition to a size modification,
+  /// of which the usage is explained in [ImagePickerOptions].
+  ///
+  /// In Android, the MainActivity can be destroyed for various reasons. If that
+  /// happens, the result will be lost in this call. You can then call [getLostData]
+  /// when your app relaunches to retrieve the lost data.
+  ///
+  /// If no images were picked, the return value is null.
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) {
+    return getImage(
+      source: source,
+      maxHeight: options.maxHeight,
+      maxWidth: options.maxWidth,
+      imageQuality: options.imageQuality,
+      preferredCameraDevice: options.preferredCameraDevice,
+    );
   }
 }

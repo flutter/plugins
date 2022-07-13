@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_web/src/dom_helper.dart';
 import 'package:file_selector_web/src/utils.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:meta/meta.dart';
 
 /// The web implementation of [FileSelectorPlatform].
 ///

@@ -9,6 +9,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/web_kit_webview_widget.dart';
+
+import 'foundation/foundation.dart';
 
 /// Builds an iOS webview.
 ///
@@ -25,25 +28,33 @@ class CupertinoWebView implements WebViewPlatform {
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
-    return UiKitView(
-      viewType: 'plugins.flutter.io/webview',
-      onPlatformViewCreated: (int id) {
-        if (onWebViewPlatformCreated == null) {
-          return;
-        }
-        onWebViewPlatformCreated(MethodChannelWebViewPlatform(
-          id,
-          webViewPlatformCallbacksHandler,
-          javascriptChannelRegistry,
-        ));
+    return WebKitWebViewWidget(
+      creationParams: creationParams,
+      callbacksHandler: webViewPlatformCallbacksHandler,
+      javascriptChannelRegistry: javascriptChannelRegistry,
+      onBuildWidget: (WebKitWebViewPlatformController controller) {
+        return UiKitView(
+          viewType: 'plugins.flutter.io/webview',
+          onPlatformViewCreated: (int id) {
+            if (onWebViewPlatformCreated != null) {
+              onWebViewPlatformCreated(controller);
+            }
+          },
+          gestureRecognizers: gestureRecognizers,
+          creationParams:
+              NSObject.globalInstanceManager.getIdentifier(controller.webView),
+          creationParamsCodec: const StandardMessageCodec(),
+        );
       },
-      gestureRecognizers: gestureRecognizers,
-      creationParams:
-          MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
-      creationParamsCodec: const StandardMessageCodec(),
     );
   }
 
   @override
-  Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
+  Future<bool> clearCookies() {
+    if (WebViewCookieManagerPlatform.instance == null) {
+      throw Exception(
+          'Could not clear cookies as no implementation for WebViewCookieManagerPlatform has been registered.');
+    }
+    return WebViewCookieManagerPlatform.instance!.clearCookies();
+  }
 }

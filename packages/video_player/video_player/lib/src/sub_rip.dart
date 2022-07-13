@@ -28,8 +28,10 @@ class SubRipCaptionFile extends ClosedCaptionFile {
 
 List<Caption> _parseCaptionsFromSubRipString(String file) {
   final List<Caption> captions = <Caption>[];
-  for (List<String> captionLines in _readSubRipFile(file)) {
-    if (captionLines.length < 3) break;
+  for (final List<String> captionLines in _readSubRipFile(file)) {
+    if (captionLines.length < 3) {
+      break;
+    }
 
     final int captionNumber = int.parse(captionLines[0]);
     final _CaptionRange captionRange =
@@ -52,10 +54,10 @@ List<Caption> _parseCaptionsFromSubRipString(String file) {
 }
 
 class _CaptionRange {
+  _CaptionRange(this.start, this.end);
+
   final Duration start;
   final Duration end;
-
-  _CaptionRange(this.start, this.end);
 
   // Assumes format from an SubRip file.
   // For example:

@@ -10,7 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class MoveCameraPage extends GoogleMapExampleAppPage {
-  MoveCameraPage() : super(const Icon(Icons.map), 'Camera control');
+  const MoveCameraPage({Key? key})
+      : super(const Icon(Icons.map), 'Camera control', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class MoveCameraPage extends GoogleMapExampleAppPage {
 }
 
 class MoveCamera extends StatefulWidget {
-  const MoveCamera();
+  const MoveCamera({Key? key}) : super(key: key);
   @override
   State createState() => MoveCameraState();
 }
@@ -27,6 +28,7 @@ class MoveCamera extends StatefulWidget {
 class MoveCameraState extends State<MoveCamera> {
   GoogleMapController? mapController;
 
+  // ignore: use_setters_to_change_properties
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }

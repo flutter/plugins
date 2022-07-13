@@ -4,13 +4,16 @@
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 /// App for testing
 class MyApp extends StatelessWidget {
+  /// Default Constructor
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Directionality(
+    return const Directionality(
       textDirection: TextDirection.ltr,
       child: Text('Testing... Look at the console output for results!'),
     );
