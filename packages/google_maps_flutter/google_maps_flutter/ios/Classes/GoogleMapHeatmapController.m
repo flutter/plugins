@@ -6,13 +6,22 @@
 #import "FLTGoogleMapJSONConversions.h"
 @import GoogleMapsUtils;
 
+@interface FLTGoogleMapHeatmapController ()
+
+@property(nonatomic, strong) GMUHeatmapTileLayer *heatmapTileLayer;
+@property(nonatomic, weak) GMSMapView *mapView;
+
+@end
+
 @implementation FLTGoogleMapHeatmapController
 - (instancetype)initWithHeatmapTileLayer:(GMUHeatmapTileLayer *)heatmapTileLayer
-                                 mapView:(GMSMapView *)mapView {
+                                 mapView:(GMSMapView *)mapView
+                                 options:(NSDictionary *)options {
   self = [super init];
   if (self) {
     _heatmapTileLayer = heatmapTileLayer;
     _mapView = mapView;
+    [self interpretHeatmapOptions:options];
   }
   return self;
 }
@@ -54,6 +63,47 @@
 - (void)setMap {
   _heatmapTileLayer.map = _mapView;
 }
+- (void)interpretHeatmapOptions:(NSDictionary *)data {
+  NSArray *weightedData = data[@"data"];
+  if (weightedData != nil && weightedData != (id)[NSNull null]) {
+    [self setWeightedData:[FLTGoogleMapJSONConversions weightedDataFromArray:weightedData]];
+  }
+
+  NSDictionary *gradient = data[@"gradient"];
+  if (gradient != nil && gradient != (id)[NSNull null]) {
+    [self setGradient:[FLTGoogleMapJSONConversions gradientFromDictionary:gradient]];
+  }
+
+  NSNumber *opacity = data[@"opacity"];
+  if (opacity != nil && opacity != (id)[NSNull null]) {
+    [self setOpacity:[opacity doubleValue]];
+  }
+
+  NSNumber *radius = data[@"radius"];
+  if (radius != nil && radius != (id)[NSNull null]) {
+    [self setRadius:[radius intValue]];
+  }
+
+  NSNumber *minimumZoomIntensity = data[@"minimumZoomIntensity"];
+  if (minimumZoomIntensity != nil && minimumZoomIntensity != (id)[NSNull null]) {
+    [self setMinimumZoomIntensity:[minimumZoomIntensity intValue]];
+  }
+
+  NSNumber *maximumZoomIntensity = data[@"maximumZoomIntensity"];
+  if (maximumZoomIntensity != nil && maximumZoomIntensity != (id)[NSNull null]) {
+    [self setMaximumZoomIntensity:[maximumZoomIntensity intValue]];
+  }
+
+  // The map must be set each time for options to update
+  [self setMap];
+}
+@end
+
+@interface FLTHeatmapsController ()
+
+@property(nonatomic, strong) NSMutableDictionary *heatmapIdToController;
+@property(nonatomic, weak) GMSMapView *mapView;
+
 @end
 
 @implementation FLTHeatmapsController
@@ -65,48 +115,14 @@
   }
   return self;
 }
-- (void)interpretOptions:(NSDictionary *)data sink:(id<FLTGoogleMapHeatmapOptionsSink>)sink {
-  NSArray *weightedData = data[@"data"];
-  if (weightedData != nil) {
-    [sink setWeightedData:[FLTGoogleMapJSONConversions weightedDataFromArray:weightedData]];
-  }
-
-  NSDictionary *gradient = data[@"gradient"];
-  if (gradient != nil) {
-    [sink setGradient:[FLTGoogleMapJSONConversions gradientFromDictionary:gradient]];
-  }
-
-  NSNumber *opacity = data[@"opacity"];
-  if (opacity != nil) {
-    [sink setOpacity:[opacity doubleValue]];
-  }
-
-  NSNumber *radius = data[@"radius"];
-  if (radius != nil) {
-    [sink setRadius:[radius intValue]];
-  }
-
-  NSNumber *minimumZoomIntensity = data[@"minimumZoomIntensity"];
-  if (minimumZoomIntensity != nil) {
-    [sink setMinimumZoomIntensity:[minimumZoomIntensity intValue]];
-  }
-
-  NSNumber *maximumZoomIntensity = data[@"maximumZoomIntensity"];
-  if (maximumZoomIntensity != nil) {
-    [sink setMaximumZoomIntensity:[maximumZoomIntensity intValue]];
-  }
-
-  // The map must be set each time for options to update
-  [sink setMap];
-}
 - (void)addHeatmaps:(NSArray *)heatmapsToAdd {
   for (NSDictionary *heatmap in heatmapsToAdd) {
     NSString *heatmapId = [FLTHeatmapsController getHeatmapIdentifier:heatmap];
     GMUHeatmapTileLayer *heatmapTileLayer = [[GMUHeatmapTileLayer alloc] init];
     FLTGoogleMapHeatmapController *controller =
         [[FLTGoogleMapHeatmapController alloc] initWithHeatmapTileLayer:heatmapTileLayer
-                                                                mapView:_mapView];
-    [self interpretOptions:heatmap sink:controller];
+                                                                mapView:_mapView
+                                                                options:heatmap];
     _heatmapIdToController[heatmapId] = controller;
   }
 }
@@ -117,16 +133,13 @@
     if (!controller) {
       continue;
     }
-    [self interpretOptions:heatmap sink:controller];
+    [controller interpretHeatmapOptions:heatmap];
 
     [controller clearTileCache];
   }
 }
-- (void)removeHeatmapsWithIdentifiers:(NSArray *)heatmapIdsToRemove {
-  for (NSString *heatmapId in heatmapIdsToRemove) {
-    if (!heatmapId) {
-      continue;
-    }
+- (void)removeHeatmapsWithIdentifiers:(NSArray *)identifiers {
+  for (NSString *heatmapId in identifiers) {
     FLTGoogleMapHeatmapController *controller = _heatmapIdToController[heatmapId];
     if (!controller) {
       continue;
@@ -135,11 +148,11 @@
     [_heatmapIdToController removeObjectForKey:heatmapId];
   }
 }
-- (bool)hasHeatmapWithIdentifier:(NSString *)heatmapId {
-  if (!heatmapId) {
+- (bool)hasHeatmapWithIdentifier:(NSString *)identifier {
+  if (!identifier) {
     return NO;
   }
-  return _heatmapIdToController[heatmapId] != nil;
+  return _heatmapIdToController[identifier] != nil;
 }
 + (NSString *)getHeatmapIdentifier:(NSDictionary *)heatmap {
   return heatmap[@"heatmapId"];
