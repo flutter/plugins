@@ -194,13 +194,13 @@ class VideoPlayer {
 
   // Sends an [VideoEventType.initialized] [VideoEvent] with info about the wrapped video.
   void _sendInitialized() {
-    final Duration? duration = !_videoElement.duration.isNaN
+    final Duration? duration = _videoElement.duration.isFinite
         ? Duration(
             milliseconds: (_videoElement.duration * 1000).round(),
           )
         : null;
 
-    final Size? size = !_videoElement.videoHeight.isNaN
+    final Size? size = _videoElement.videoHeight.isFinite
         ? Size(
             _videoElement.videoWidth.toDouble(),
             _videoElement.videoHeight.toDouble(),
