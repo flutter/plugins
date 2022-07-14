@@ -25,9 +25,11 @@ String getUrlForAssetAsNetworkSource(String assetKey) {
 @JS()
 @anonymous
 class _Descriptor {
+  // May also contain "configurable" and "enumerable" bools.
+  // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#description
   external factory _Descriptor({
-    bool configurable,
-    bool enumerable,
+    // bool configurable,
+    // bool enumerable,
     bool writable,
     Object value,
   });
