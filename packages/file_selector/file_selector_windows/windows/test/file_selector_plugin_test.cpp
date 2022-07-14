@@ -107,7 +107,8 @@ TEST(FileSelectorPlugin, TestOpenWithArguments) {
     EXPECT_EQ(parent, fake_window);
 
     // Validate arguments.
-    EXPECT_EQ(dialog.GetSetFolderPath(), L"C:\\Program Files"); // Make sure FileDialogController::SetFolder is called correctly
+    // Make sure FileDialogController::SetFolder is called correctly
+    EXPECT_EQ(dialog.GetSetFolderPath(), L"C:\\Program Files");
     EXPECT_EQ(dialog.GetFileName(), L"a name");
     EXPECT_EQ(dialog.GetOkButtonLabel(), L"Open it!");
 
@@ -340,7 +341,8 @@ TEST(FileSelectorPlugin, TestSaveWithArguments) {
         EXPECT_EQ(parent, fake_window);
 
         // Validate arguments.
-        EXPECT_EQ(dialog.GetSetFolderPath(), L"C:\\Program Files"); // Make sure FileDialogController::SetFolder is called correctly
+        // Make sure FileDialogController::SetFolder is called correctly
+        EXPECT_EQ(dialog.GetSetFolderPath(), L"C:\\Program Files");
         EXPECT_EQ(dialog.GetOkButtonLabel(), L"Save it!");
 
         return MockShowResult(fake_result);
