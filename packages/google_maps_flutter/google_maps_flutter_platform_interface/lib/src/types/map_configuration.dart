@@ -60,7 +60,7 @@ class MapConfiguration {
   final bool? rotateGesturesEnabled;
 
   /// True if scroll gestures should be enabled.
-  /// 
+  ///
   /// Android/iOS only. For web, see [webGestureHandling].
   final bool? scrollGesturesEnabled;
 
@@ -77,7 +77,7 @@ class MapConfiguration {
   final bool? zoomControlsEnabled;
 
   /// True if zoom gestures should be enabled.
-  /// 
+  ///
   /// Android/iOS only. For web, see [webGestureHandling].
   final bool? zoomGesturesEnabled;
 
