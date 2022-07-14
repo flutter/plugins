@@ -20,6 +20,15 @@ TestFileDialogController::TestFileDialogController(IFileDialog* dialog,
 
 TestFileDialogController::~TestFileDialogController() {}
 
+HRESULT TestFileDialogController::SetFolder(IShellItem* folder) {
+  wchar_t* path_chars = nullptr;
+  if (!SUCCEEDED(folder->GetDisplayName(SIGDN_FILESYSPATH, &path_chars))) {
+    return S_FALSE;
+  }
+  set_folder_path_ = path_chars;
+  return FileDialogController::SetFolder(folder);
+}
+
 HRESULT TestFileDialogController::SetFileTypes(UINT count,
                                                COMDLG_FILTERSPEC* filters) {
   filter_groups_.clear();
@@ -56,7 +65,11 @@ HRESULT TestFileDialogController::GetResults(
   return S_OK;
 }
 
-std::wstring TestFileDialogController::GetDefaultFolderPath() const {
+std::wstring TestFileDialogController::GetSetFolderPath() const {
+  return set_folder_path_;
+}
+
+std::wstring TestFileDialogController::GetDialogFolderPath() const {
   IShellItemPtr item;
   if (!SUCCEEDED(dialog_->GetFolder(&item))) {
     return L"";

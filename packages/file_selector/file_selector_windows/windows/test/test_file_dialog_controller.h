@@ -51,6 +51,7 @@ class TestFileDialogController : public FileDialogController {
   ~TestFileDialogController();
 
   // FileDialogController:
+  HRESULT SetFolder(IShellItem* folder) override;
   HRESULT SetFileTypes(UINT count, COMDLG_FILTERSPEC* filters) override;
   HRESULT SetOkButtonLabel(const wchar_t* text) override;
   HRESULT Show(HWND parent) override;
@@ -58,7 +59,8 @@ class TestFileDialogController : public FileDialogController {
   HRESULT GetResults(IShellItemArray** out_items) const override;
 
   // Accessors for validating IFileDialogController setter calls.
-  std::wstring GetDefaultFolderPath() const;
+  std::wstring GetSetFolderPath() const;  // Get the folder path set by FileDialogController::SetFolder
+  std::wstring GetDialogFolderPath() const; // Get dialog folder path by calling IFileDialog::GetFolder
   std::wstring GetFileName() const;
   const std::vector<DialogFilter>& GetFileTypes() const;
   std::wstring GetOkButtonLabel() const;
@@ -70,6 +72,7 @@ class TestFileDialogController : public FileDialogController {
 
   // The last set values, for IFileDialog properties that have setters but no
   // corresponding getters.
+  std::wstring set_folder_path_;
   std::wstring ok_button_label_;
   std::vector<DialogFilter> filter_groups_;
 };
