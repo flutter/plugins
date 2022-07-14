@@ -411,7 +411,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertEqualObjects(errorData.localizedDescription, @"description");
 }
 
-- (void)testWebViewContentInsetBehaviorShouldBeNeverOnIOS11 {
+- (void)testWebViewContentInsetBehaviorShouldBeNeverOnIOS11 API_AVAILABLE(ios(11.0)) {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
@@ -423,13 +423,12 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [hostAPI createWithIdentifier:@1 configurationIdentifier:@0 error:&error];
   FWFWebView *webView = (FWFWebView *)[instanceManager instanceForIdentifier:1];
 
-  if (@available(iOS 11, *)) {
-    XCTAssertEqual(webView.scrollView.contentInsetAdjustmentBehavior,
-                   UIScrollViewContentInsetAdjustmentNever);
-  }
+  XCTAssertEqual(webView.scrollView.contentInsetAdjustmentBehavior,
+                 UIScrollViewContentInsetAdjustmentNever);
 }
 
-- (void)testScrollViewsAutomaticallyAdjustsScrollIndicatorInsetsShouldbeNoOnIOS13 {
+- (void)testScrollViewsAutomaticallyAdjustsScrollIndicatorInsetsShouldbeNoOnIOS13 API_AVAILABLE(
+    ios(13.0)) {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
@@ -441,9 +440,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [hostAPI createWithIdentifier:@1 configurationIdentifier:@0 error:&error];
   FWFWebView *webView = (FWFWebView *)[instanceManager instanceForIdentifier:1];
 
-  if (@available(iOS 13, *)) {
-    XCTAssertFalse(webView.scrollView.automaticallyAdjustsScrollIndicatorInsets);
-  }
+  XCTAssertFalse(webView.scrollView.automaticallyAdjustsScrollIndicatorInsets);
 }
 
 - (void)testContentInsetsSumAlwaysZeroAfterSetFrame {
