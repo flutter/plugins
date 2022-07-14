@@ -429,7 +429,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
-- (void)testWebViewScrollIndicatorAticautomaticallyAdjustsScrollIndicatorInsetsShouldbeNoOnIOS13 {
+- (void)testScrollViewsAutomaticallyAdjustsScrollIndicatorInsetsShouldbeNoOnIOS13 {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
   FWFWebViewHostApiImpl *hostAPI = [[FWFWebViewHostApiImpl alloc]
       initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
