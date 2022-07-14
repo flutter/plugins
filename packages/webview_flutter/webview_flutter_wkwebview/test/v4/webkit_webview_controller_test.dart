@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -684,6 +687,43 @@ void main() {
         "user-scalable=no';\n"
         "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
       );
+    });
+  });
+
+  group('WebKitJavaScriptChannelParams', () {
+    test('onMessageReceived', () async {
+      late final WKScriptMessageHandler messageHandler;
+
+      final WebKitProxy webKitProxy = WebKitProxy(
+        onCreateScriptMessageHandler: ({
+          required void Function(
+            WKUserContentController userContentController,
+            WKScriptMessage message,
+          )
+              didReceiveScriptMessage,
+        }) {
+          messageHandler = WKScriptMessageHandler.detached(
+            didReceiveScriptMessage: didReceiveScriptMessage,
+          );
+          return messageHandler;
+        },
+      );
+
+      late final String callbackMessage;
+      WebKitJavaScriptChannelParams(
+        name: 'name',
+        onMessageReceived: (JavaScriptMessage message) {
+          callbackMessage = message.message;
+        },
+        webKitProxy: webKitProxy,
+      );
+
+      messageHandler.didReceiveScriptMessage(
+        MockWKUserContentController(),
+        const WKScriptMessage(name: 'name', body: 'myMessage'),
+      );
+
+      expect(callbackMessage, 'myMessage');
     });
   });
 }
