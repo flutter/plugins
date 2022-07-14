@@ -10,6 +10,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/src/video_player.dart';
 
+import 'utils.dart';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -189,6 +191,25 @@ void main() {
 
         expect(events, hasLength(1));
         expect(events[0].eventType, VideoEventType.initialized);
+      });
+
+      // Issue: https://github.com/flutter/flutter/issues/105649
+      testWidgets('supports `Infinity` duration', (WidgetTester _) async {
+        setInfinityDuration(video);
+        expect(video.duration.isInfinite, isTrue);
+
+        final Future<List<VideoEvent>> stream = timedStream
+            .where((VideoEvent event) =>
+                event.eventType == VideoEventType.initialized)
+            .toList();
+
+        video.dispatchEvent(html.Event('canplay'));
+
+        final List<VideoEvent> events = await stream;
+
+        expect(events, hasLength(1));
+        expect(events[0].eventType, VideoEventType.initialized);
+        expect(events[0].duration, isNull);
       });
     });
   });
