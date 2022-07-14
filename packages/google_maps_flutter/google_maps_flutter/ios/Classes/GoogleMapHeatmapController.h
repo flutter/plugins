@@ -35,6 +35,6 @@
 - (void)interpretOptions:(NSDictionary *)data sink:(id<FLTGoogleMapHeatmapOptionsSink>)sink;
 - (void)addHeatmaps:(NSArray *)heatmapsToAdd;
 - (void)changeHeatmaps:(NSArray *)heatmapsToChange;
-- (void)removeHeatmapsWithIds:(NSArray *)heatmapIdsToRemove;
-- (bool)hasHeatmapWithId:(NSString *)heatmapId;
+- (void)removeHeatmapsWithIdentifiers:(NSArray *)heatmapIdsToRemove;
+- (bool)hasHeatmapWithIdentifier:(NSString *)heatmapId;
 @end

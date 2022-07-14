@@ -101,7 +101,7 @@
 }
 - (void)addHeatmaps:(NSArray *)heatmapsToAdd {
   for (NSDictionary *heatmap in heatmapsToAdd) {
-    NSString *heatmapId = [FLTHeatmapsController getHeatmapId:heatmap];
+    NSString *heatmapId = [FLTHeatmapsController getHeatmapIdentifier:heatmap];
     GMUHeatmapTileLayer *heatmapTileLayer = [[GMUHeatmapTileLayer alloc] init];
     FLTGoogleMapHeatmapController *controller =
         [[FLTGoogleMapHeatmapController alloc] initWithHeatmapTileLayer:heatmapTileLayer
@@ -112,7 +112,7 @@
 }
 - (void)changeHeatmaps:(NSArray *)heatmapsToChange {
   for (NSDictionary *heatmap in heatmapsToChange) {
-    NSString *heatmapId = [FLTHeatmapsController getHeatmapId:heatmap];
+    NSString *heatmapId = [FLTHeatmapsController getHeatmapIdentifier:heatmap];
     FLTGoogleMapHeatmapController *controller = _heatmapIdToController[heatmapId];
     if (!controller) {
       continue;
@@ -122,7 +122,7 @@
     [controller clearTileCache];
   }
 }
-- (void)removeHeatmapsWithIds:(NSArray *)heatmapIdsToRemove {
+- (void)removeHeatmapsWithIdentifiers:(NSArray *)heatmapIdsToRemove {
   for (NSString *heatmapId in heatmapIdsToRemove) {
     if (!heatmapId) {
       continue;
@@ -135,13 +135,13 @@
     [_heatmapIdToController removeObjectForKey:heatmapId];
   }
 }
-- (bool)hasHeatmapWithId:(NSString *)heatmapId {
+- (bool)hasHeatmapWithIdentifier:(NSString *)heatmapId {
   if (!heatmapId) {
     return NO;
   }
   return _heatmapIdToController[heatmapId] != nil;
 }
-+ (NSString *)getHeatmapId:(NSDictionary *)heatmap {
++ (NSString *)getHeatmapIdentifier:(NSDictionary *)heatmap {
   return heatmap[@"heatmapId"];
 }
 @end

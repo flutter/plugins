@@ -328,7 +328,7 @@
     }
     id heatmapIdsToRemove = call.arguments[@"heatmapIdsToRemove"];
     if ([heatmapIdsToRemove isKindOfClass:[NSArray class]]) {
-      [_heatmapsController removeHeatmapsWithIds:heatmapIdsToRemove];
+      [_heatmapsController removeHeatmapsWithIdentifiers:heatmapIdsToRemove];
     }
     result(nil);
   } else if ([call.method isEqualToString:@"tileOverlays#update"]) {

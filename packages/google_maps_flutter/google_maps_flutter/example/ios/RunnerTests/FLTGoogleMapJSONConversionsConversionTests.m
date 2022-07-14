@@ -292,8 +292,13 @@
 
   GMUWeightedLatLng *weightedLocation =
       [FLTGoogleMapJSONConversions weightedLatLngFromArray:weightedLatLng];
+
   // The location gets projected to different values
   XCTAssertEqual([weightedLocation intensity], 3);
+
+  weightedLatLng = @[];
+
+  XCTAssertThrows([FLTGoogleMapJSONConversions weightedLatLngFromArray:weightedLatLng]);
 }
 
 - (void)testWeightedDataFromArray {
@@ -322,7 +327,7 @@
   XCTAssertEqual(green, 1);
   XCTAssertEqual(blue, 1);
   XCTAssertEqual(alpha, 1);
-  XCTAssertEqual([[gradient startPoints][0] doubleValue], 0.6);
+  XCTAssertEqualWithAccuracy([[gradient startPoints][0] doubleValue], 0.6, 0);
   XCTAssertEqual([gradient mapSize], 200);
 }
 

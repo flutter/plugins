@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (GMSCoordinateBounds *)coordinateBoundsFromLatLongs:(NSArray *)latlongs;
 + (GMSMapViewType)mapViewTypeFromTypeValue:(NSNumber *)value;
 + (nullable GMSCameraUpdate *)cameraUpdateFromChannelValue:(NSArray *)channelValue;
-+ (GMUWeightedLatLng *)weightedLatLngFromArray:(NSArray *)data;
++ (nullable GMUWeightedLatLng *)weightedLatLngFromArray:(NSArray *)data;
 + (NSArray<GMUWeightedLatLng *> *)weightedDataFromArray:(NSArray *)data;
 + (GMUGradient *)gradientFromDictionary:(NSDictionary *)data;
 
