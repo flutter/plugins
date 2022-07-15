@@ -315,13 +315,24 @@ class MethodCallHandlerImpl
           @Override
           public void onQueryPurchasesResponse(
               BillingResult billingResult, List<Purchase> purchasesList) {
+                Handler(Looper.getMainLooper()).post(handleResponse(billingResult, purchaseList));
+          }
+
+          private void handleResponse(
+              BillingResult billingResult, List<Purchase> purchasesList) {
             final Map<String, Object> serialized = new HashMap<>();
-            // The response code is no longer passed, as part of billing 4.0, so we pass OK here
-            // as success is implied by calling this callback.
-            serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
-            serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-            serialized.put("purchaseList", fromPurchasesList(purchasesList));
-            result.success(serialized);
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+              serialized.put("responseCode", billingResult.getResponseCode());
+              serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+              serialized.put("purchaseList", fromPurchasesList(purchasesList));
+              result.success(serialized);
+            } else {
+              result.error(
+                "FAILED_TO_QUERY_PURCHASE",
+                billingResult.getResponseCode() + ": " + getDebugMessage(),
+                null
+              );
+            }
           }
         });
   }
