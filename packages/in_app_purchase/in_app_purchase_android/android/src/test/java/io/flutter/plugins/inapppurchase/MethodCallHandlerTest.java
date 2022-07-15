@@ -593,6 +593,20 @@ public class MethodCallHandlerTest {
   }
 
   @Test
+  public void queryPurchases_returns_success() {
+    establishConnectedBillingClient(null, null);
+    // Prepare the launch call after disconnecting the client
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
+
+    // Assert that we sent an error back.
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(any());
+  }
+
+  @Test
   public void queryPurchaseHistoryAsync() {
     // Set up an established billing client and all our mocked responses
     establishConnectedBillingClient(null, null);

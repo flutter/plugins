@@ -12,6 +12,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +38,7 @@ import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.lang.Runnable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -315,23 +318,35 @@ class MethodCallHandlerImpl
           @Override
           public void onQueryPurchasesResponse(
               BillingResult billingResult, List<Purchase> purchasesList) {
-                Handler(Looper.getMainLooper()).post(handleResponse(billingResult, purchaseList));
+            new Handler(Looper.getMainLooper()).post(new HandleQueryPurchases(billingResult, purchasesList, result));
           }
 
-          private void handleResponse(
-              BillingResult billingResult, List<Purchase> purchasesList) {
-            final Map<String, Object> serialized = new HashMap<>();
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-              serialized.put("responseCode", billingResult.getResponseCode());
-              serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-              serialized.put("purchaseList", fromPurchasesList(purchasesList));
-              result.success(serialized);
-            } else {
-              result.error(
-                "FAILED_TO_QUERY_PURCHASE",
-                billingResult.getResponseCode() + ": " + getDebugMessage(),
-                null
-              );
+          class HandleQueryPurchases implements Runnable {
+            HandleQueryPurchases(
+                BillingResult billingResult, List<Purchase> purchasesList, MethodChannel.Result result) {
+              this.billingResult = billingResult;
+              this.purchasesList = purchasesList;
+              this.result = result;
+            }
+
+            BillingResult billingResult;
+            List<Purchase> purchasesList;
+            MethodChannel.Result result;
+
+            public void run() {
+              final Map<String, Object> serialized = new HashMap<>();
+              if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                serialized.put("responseCode", billingResult.getResponseCode());
+                serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+                serialized.put("purchaseList", fromPurchasesList(purchasesList));
+                result.success(serialized);
+              } else {
+                result.error(
+                  "FAILED_TO_QUERY_PURCHASE",
+                  billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
+                  null
+                );
+              }
             }
           }
         });
