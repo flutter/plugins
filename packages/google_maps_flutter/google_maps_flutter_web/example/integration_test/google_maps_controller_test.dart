@@ -408,26 +408,6 @@ void main() {
           expect(capturedOptions!.tilt, 0);
         });
 
-        testWidgets('disables gestureHandling with scrollGesturesEnabled false',
-            (WidgetTester tester) async {
-          controller = _createController(
-              mapConfiguration: const MapConfiguration(
-            scrollGesturesEnabled: false,
-          ));
-          controller.debugSetOverrides(
-              createMap: (_, gmaps.MapOptions options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
-
-          expect(capturedOptions, isNotNull);
-          expect(capturedOptions!.gestureHandling, 'none',
-              reason:
-                  'disabling scroll gestures disables all gesture handling');
-        });
-
         testWidgets('translates fortyFiveDegreeImageryEnabled option',
             (WidgetTester tester) async {
           controller = _createController(
@@ -465,26 +445,6 @@ void main() {
 
           expect(capturedOptions, isNotNull);
           expect(capturedOptions!.gestureHandling, 'greedy');
-        });
-
-        testWidgets('disables gestureHandling with zoomGesturesEnabled false',
-            (WidgetTester tester) async {
-          controller = _createController(
-              mapConfiguration: const MapConfiguration(
-            zoomGesturesEnabled: false,
-          ));
-          controller.debugSetOverrides(
-              createMap: (_, gmaps.MapOptions options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
-
-          expect(capturedOptions, isNotNull);
-          expect(capturedOptions!.gestureHandling, 'none',
-              reason:
-                  'disabling scroll gestures disables all gesture handling');
         });
 
         testWidgets('sets initial position when passed',
