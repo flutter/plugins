@@ -95,13 +95,6 @@ class _ApiLogger implements TestHostVideoPlayerApi {
     log.add('setBitrate');
     bitrateMessage = arg;
   }
-
-  @override
-  DurationMessage duration(TextureMessage arg) {
-    log.add('duration');
-    textureMessage = arg;
-    return DurationMessage(textureId: arg.textureId, duration: 234);
-  }
 }
 
 void main() {
@@ -243,13 +236,6 @@ void main() {
       expect(log.log.last, 'position');
       expect(log.textureMessage?.textureId, 1);
       expect(position, const Duration(milliseconds: 234));
-    });
-
-    test('getDuration', () async {
-      final Duration duration = await player.getDuration(1);
-      expect(log.log.last, 'duration');
-      expect(log.textureMessage?.textureId, 1);
-      expect(duration, const Duration(milliseconds: 234));
     });
 
     test('videoEventsFor', () async {

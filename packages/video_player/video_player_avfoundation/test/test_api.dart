@@ -26,32 +26,28 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else 
-    if (value is DurationMessage) {
+    if (value is LoopingMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
     } else 
-    if (value is LoopingMessage) {
+    if (value is MixWithOthersMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else 
-    if (value is MixWithOthersMessage) {
+    if (value is PlaybackSpeedMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else 
-    if (value is PlaybackSpeedMessage) {
+    if (value is PositionMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else 
-    if (value is PositionMessage) {
+    if (value is TextureMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
     } else 
-    if (value is TextureMessage) {
-      buffer.putUint8(135);
-      writeValue(buffer, value.encode());
-    } else 
     if (value is VolumeMessage) {
-      buffer.putUint8(136);
+      buffer.putUint8(135);
       writeValue(buffer, value.encode());
     } else 
 {
@@ -68,24 +64,21 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
         return CreateMessage.decode(readValue(buffer)!);
       
       case 130:       
-        return DurationMessage.decode(readValue(buffer)!);
-      
-      case 131:       
         return LoopingMessage.decode(readValue(buffer)!);
       
-      case 132:       
+      case 131:       
         return MixWithOthersMessage.decode(readValue(buffer)!);
       
-      case 133:       
+      case 132:       
         return PlaybackSpeedMessage.decode(readValue(buffer)!);
       
-      case 134:       
+      case 133:       
         return PositionMessage.decode(readValue(buffer)!);
       
-      case 135:       
+      case 134:       
         return TextureMessage.decode(readValue(buffer)!);
       
-      case 136:       
+      case 135:       
         return VolumeMessage.decode(readValue(buffer)!);
       
       default:      
@@ -106,7 +99,6 @@ abstract class TestHostVideoPlayerApi {
   void setBitrate(BitrateMessage msg);
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
-  DurationMessage duration(TextureMessage msg);
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
@@ -248,22 +240,6 @@ abstract class TestHostVideoPlayerApi {
           final TextureMessage? arg_msg = (args[0] as TextureMessage?);
           assert(arg_msg != null, 'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.position was null, expected non-null TextureMessage.');
           final PositionMessage output = api.position(arg_msg!);
-          return <Object?, Object?>{'result': output};
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.AVFoundationVideoPlayerApi.duration', codec, binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMockMessageHandler(null);
-      } else {
-        channel.setMockMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.duration was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final TextureMessage? arg_msg = (args[0] as TextureMessage?);
-          assert(arg_msg != null, 'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.duration was null, expected non-null TextureMessage.');
-          final DurationMessage output = api.duration(arg_msg!);
           return <Object?, Object?>{'result': output};
         });
       }

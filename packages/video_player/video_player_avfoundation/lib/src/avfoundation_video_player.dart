@@ -127,13 +127,6 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<Duration> getDuration(int textureId) async {
-    final DurationMessage response =
-        await _api.duration(TextureMessage(textureId: textureId));
-    return Duration(milliseconds: response.duration);
-  }
-
-  @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return _eventChannelFor(textureId)
         .receiveBroadcastStream()

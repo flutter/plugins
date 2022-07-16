@@ -17,7 +17,6 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   TextureMessage? textureMessage;
   CreateMessage? createMessage;
   PositionMessage? positionMessage;
-  DurationMessage? durationMessage;
   LoopingMessage? loopingMessage;
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
@@ -65,13 +64,6 @@ class _ApiLogger implements TestHostVideoPlayerApi {
     log.add('position');
     textureMessage = arg;
     return PositionMessage(textureId: arg.textureId, position: 234);
-  }
-
-  @override
-  DurationMessage duration(TextureMessage arg) {
-    log.add('position');
-    textureMessage = arg;
-    return DurationMessage(textureId: arg.textureId, duration: 234);
   }
 
   @override
@@ -244,13 +236,6 @@ void main() {
       expect(log.log.last, 'position');
       expect(log.textureMessage?.textureId, 1);
       expect(position, const Duration(milliseconds: 234));
-    });
-
-    test('getDuration', () async {
-      final Duration duration = await player.getDuration(1);
-      expect(log.log.last, 'duration');
-      expect(log.textureMessage?.textureId, 1);
-      expect(duration, const Duration(milliseconds: 234));
     });
 
     test('videoEventsFor', () async {

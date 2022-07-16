@@ -498,11 +498,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             return;
           }
           final Duration? newPosition = await position;
-          final Duration? newDuration = await duration;
-          if (newPosition == null || newDuration == null) {
+          if (newPosition == null) {
             return;
           }
-          _updatePosition(newPosition, newDuration);
+          _updatePosition(newPosition);
         },
       );
 
@@ -560,14 +559,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return await _videoPlayerPlatform.getPosition(_textureId);
   }
 
-  /// The duration in the current video
-  Future<Duration?> get duration async {
-    if (_isDisposed) {
-      return null;
-    }
-    return await _videoPlayerPlatform.getDuration(_textureId);
-  }
-
   /// Sets the video's current timestamp to be at [moment]. The next
   /// time the video is played it will resume from the given [moment].
   ///
@@ -583,7 +574,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       position = const Duration();
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
-    _updatePosition(position, value.duration);
+    _updatePosition(position);
   }
 
   /// Sets the audio volume of [this].
@@ -629,6 +620,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyPlaybackSpeed();
   }
 
+  /// Set bitrate for the video
   Future<void> setBitrate(double bitrate) async {
     value = value.copyWith(bitrate: bitrate);
     await _applyBitrate();
@@ -695,10 +687,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(caption: _getCaptionAt(value.position));
   }
 
-  void _updatePosition(Duration position, Duration? duration) {
+  void _updatePosition(Duration position) {
     value = value.copyWith(
       position: position,
-      duration: duration,
       caption: _getCaptionAt(position),
     );
   }
