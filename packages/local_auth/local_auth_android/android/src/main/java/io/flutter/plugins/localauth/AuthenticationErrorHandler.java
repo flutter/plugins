@@ -16,9 +16,21 @@ import androidx.fragment.app.FragmentActivity;
 
 import io.flutter.plugin.common.MethodCall;
 
+/**
+ * Provides authentication error handling methods.
+ * <p>Commonly methods get {@link io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler}
+ * as parameter and call
+ * {@link io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler#onError}
+ * with corresponding error code and error message.
+ * </p>
+ * <p>Methods may present go to settings dialog if required.
+ * </p>
+ *
+ * @see io.flutter.plugins.localauth.AuthResultErrorCodes
+ */
 class AuthenticationErrorHandler {
   /**
-   * Handling the error when the users device does not have hardware support for biometrics.
+   * Handling the error when the user's device does not have hardware support for biometrics.
    */
   void handleCredentialsNotAvailableError(
       final FragmentActivity activity,
@@ -46,8 +58,9 @@ class AuthenticationErrorHandler {
 
   /**
    * Handling the error when the user has not enrolled any biometrics on the device.
+   *
    * @param isDeviceCredentialAllowed {@code true} the error handling can be skipped.
-   * In this case the user has other options to authenticate.
+   *                                  In this case the user has other options to authenticate.
    */
   void handleNotEnrolledError(
       final FragmentActivity activity,

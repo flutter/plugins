@@ -6,8 +6,7 @@ package io.flutter.plugins.localauth;
 /** Exception codes for `PlatformException` in Flutter returned by `authenticate`. */
 class AuthResultErrorCodes {
   /**
-   * Indicates that the user has not yet configured a passcode (iOS) or PIN/pattern/password
-   * (Android) on the device.
+   * Indicates that the user has not yet configured a PIN/pattern/password on the device.
    */
   static final String PASSCODE_NOT_SET = "PasscodeNotSet";
 
@@ -24,7 +23,7 @@ class AuthResultErrorCodes {
   static final String LOCKED_OUT = "LockedOut";
 
   /**
-   * Indicates the API is locked out more persistently than [lockedOut]. Strong authentication like
+   * Indicates the API is locked out more persistently than {@link #LOCKED_OUT}. Strong authentication like
    * PIN/Pattern/Password is required to unlock.
    */
   static final String PERMANENTLY_LOCKED_OUT = "PermanentlyLockedOut";
