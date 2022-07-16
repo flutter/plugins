@@ -25,25 +25,13 @@ dependencies:
     sdk: flutter
   html: ^0.15.0
   video_player_android: 
-    git:
-      url: git@github.com:apieceofcode1801/plugins.git
-      ref: main
-      path: packages/video_player/video_player_android
+    path: ../video_player_android
   video_player_avfoundation: 
-    git:
-      url: git@github.com:apieceofcode1801/plugins.git
-      ref: main
-      path: packages/video_player/video_player_avfoundation
+    path: ../video_player_avfoundation
   video_player_platform_interface: 
-    git:
-      url: git@github.com:apieceofcode1801/plugins.git
-      ref: main
-      path: packages/video_player/video_player_platform_interface
+    path: ../video_player_platform_interface
   video_player_web: 
-    git:
-      url: git@github.com:apieceofcode1801/plugins.git
-      ref: main
-      path: packages/video_player/video_player_web
+    path: ../video_player_web
 
 dev_dependencies:
   flutter_test:

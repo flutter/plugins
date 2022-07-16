@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTPlaybackSpeedMessage;
 @class FLTBitrateMessage;
 @class FLTPositionMessage;
-@class FLTDurationMessage;
 @class FLTCreateMessage;
 @class FLTMixWithOthersMessage;
 
@@ -73,15 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber * position;
 @end
 
-@interface FLTDurationMessage : NSObject
-/// `init` unavailable to enforce nonnull fields, see the `make` class method.
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithTextureId:(NSNumber *)textureId
-    duration:(NSNumber *)duration;
-@property(nonatomic, strong) NSNumber * textureId;
-@property(nonatomic, strong) NSNumber * duration;
-@end
-
 @interface FLTCreateMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
@@ -119,8 +109,6 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
 - (void)play:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable FLTPositionMessage *)position:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
-/// @return `nil` only when `error != nil`.
-- (nullable FLTDurationMessage *)duration:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)seekTo:(FLTPositionMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setMixWithOthers:(FLTMixWithOthersMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;

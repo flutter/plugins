@@ -23,10 +23,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   video_player_platform_interface: 
-    git:
-      url: git@github.com:apieceofcode1801/plugins.git
-      ref: main
-      path: packages/video_player/video_player_platform_interface
+    path: ../video_player_platform_interface
 
 dev_dependencies:
   flutter_test:
