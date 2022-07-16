@@ -22,13 +22,14 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   LoopingMessage? loopingMessage;
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
+  BitrateMessage? bitrateMessage;
   MixWithOthersMessage? mixWithOthersMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
     log.add('create');
     createMessage = arg;
-    return TextureMessage()..textureId = 3;
+    return TextureMessage(textureId: 3);
   }
 
   @override
@@ -64,7 +65,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
-    return PositionMessage()..position = 234;
+    return PositionMessage(position: 234, textureId: 1);
   }
 
   @override
@@ -89,6 +90,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setPlaybackSpeed(PlaybackSpeedMessage arg) {
     log.add('setPlaybackSpeed');
     playbackSpeedMessage = arg;
+  }
+
+  @override
+  void setBitrate(BitrateMessage arg) {
+    log.add('setBitrate');
+    bitrateMessage = arg;
   }
 }
 
@@ -221,6 +228,13 @@ void main() {
       expect(log.log.last, 'setPlaybackSpeed');
       expect(log.playbackSpeedMessage?.textureId, 1);
       expect(log.playbackSpeedMessage?.speed, 1.5);
+    });
+
+    test('setBitrate', () async {
+      await player.setBitrate(1, 17000.0);
+      expect(log.log.last, 'setBitrate');
+      expect(log.playbackSpeedMessage?.textureId, 1);
+      expect(log.playbackSpeedMessage?.speed, 17000.0);
     });
 
     test('seekTo', () async {

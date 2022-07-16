@@ -25,12 +25,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) {
-    return _api.dispose(TextureMessage()..textureId = textureId);
+    return _api.dispose(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<int?> create(DataSource dataSource) async {
-    final CreateMessage message = CreateMessage();
+    final CreateMessage message =
+        CreateMessage(httpHeaders: dataSource.httpHeaders);
 
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
@@ -40,7 +41,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       case DataSourceType.network:
         message.uri = dataSource.uri;
         message.formatHint = _videoFormatStringMap[dataSource.formatHint];
-        message.httpHeaders = dataSource.httpHeaders;
         break;
       case DataSourceType.file:
         message.uri = dataSource.uri;
@@ -56,49 +56,52 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setLooping(int textureId, bool looping) {
-    return _api.setLooping(LoopingMessage()
-      ..textureId = textureId
-      ..isLooping = looping);
+    return _api
+        .setLooping(LoopingMessage(isLooping: looping, textureId: textureId));
   }
 
   @override
   Future<void> play(int textureId) {
-    return _api.play(TextureMessage()..textureId = textureId);
+    return _api.play(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<void> pause(int textureId) {
-    return _api.pause(TextureMessage()..textureId = textureId);
+    return _api.pause(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<void> setVolume(int textureId, double volume) {
-    return _api.setVolume(VolumeMessage()
-      ..textureId = textureId
-      ..volume = volume);
+    return _api.setVolume(VolumeMessage(volume: volume, textureId: textureId));
   }
 
   @override
   Future<void> setPlaybackSpeed(int textureId, double speed) {
     assert(speed > 0);
 
-    return _api.setPlaybackSpeed(PlaybackSpeedMessage()
-      ..textureId = textureId
-      ..speed = speed);
+    return _api.setPlaybackSpeed(
+        PlaybackSpeedMessage(textureId: textureId, speed: speed));
+  }
+
+  @override
+  Future<void> setBitrate(int textureId, double bitrate) {
+    assert(bitrate > 0);
+
+    return _api
+        .setBitrate(BitrateMessage(textureId: textureId, bitrate: bitrate));
   }
 
   @override
   Future<void> seekTo(int textureId, Duration position) {
-    return _api.seekTo(PositionMessage()
-      ..textureId = textureId
-      ..position = position.inMilliseconds);
+    return _api.seekTo(PositionMessage(
+        textureId: textureId, position: position.inMilliseconds));
   }
 
   @override
   Future<Duration> getPosition(int textureId) async {
     final PositionMessage response =
-        await _api.position(TextureMessage()..textureId = textureId);
-    return Duration(milliseconds: response.position!);
+        await _api.position(TextureMessage(textureId: textureId));
+    return Duration(milliseconds: response.position);
   }
 
   @override
@@ -144,9 +147,8 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) {
-    return _api.setMixWithOthers(
-      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
-    );
+    return _api
+        .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
   }
 
   EventChannel _eventChannelFor(int textureId) {

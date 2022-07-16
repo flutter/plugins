@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+// import 'package:video_player_platform_interface/messages.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 import 'messages.g.dart';
@@ -99,6 +100,14 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
     return _api.setPlaybackSpeed(PlaybackSpeedMessage(
       textureId: textureId,
       speed: speed,
+    ));
+  }
+
+  @override
+  Future<void> setBitrate(int textureId, double bitrate) {
+    return _api.setBitrate(BitrateMessage(
+      textureId: textureId,
+      bitrate: bitrate,
     ));
   }
 
