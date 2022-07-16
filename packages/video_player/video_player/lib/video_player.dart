@@ -49,6 +49,7 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
+    this.bitrate = 0.0,
     this.rotationCorrection = 0,
     this.errorDescription,
   });
@@ -105,6 +106,9 @@ class VideoPlayerValue {
   /// The current speed of the playback.
   final double playbackSpeed;
 
+  /// The current bitrate of the playback.
+  final double bitrate;
+
   /// A description of the error if present.
   ///
   /// If [hasError] is false this is `null`.
@@ -155,6 +159,7 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? volume,
     double? playbackSpeed,
+    double? bitrate,
     int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
   }) {
@@ -171,6 +176,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
+      bitrate: bitrate ?? this.bitrate,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
@@ -193,6 +199,7 @@ class VideoPlayerValue {
         'isBuffering: $isBuffering, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
+        'bitrate: $bitrate, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -506,6 +513,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       // playing back. This is necessary because we do not set playback speed
       // when paused.
       await _applyPlaybackSpeed();
+      await _applyBitrate();
     } else {
       _timer?.cancel();
       await _videoPlayerPlatform.pause(_textureId);
@@ -534,6 +542,16 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _videoPlayerPlatform.setPlaybackSpeed(
       _textureId,
       value.playbackSpeed,
+    );
+  }
+
+  Future<void> _applyBitrate() async {
+    if (_isDisposedOrNotInitialized) {
+      return;
+    }
+    await _videoPlayerPlatform.setBitrate(
+      _textureId,
+      value.bitrate,
     );
   }
 
@@ -604,6 +622,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     value = value.copyWith(playbackSpeed: speed);
     await _applyPlaybackSpeed();
+  }
+
+  /// Set bitrate for the video
+  Future<void> setBitrate(double bitrate) async {
+    value = value.copyWith(bitrate: bitrate);
+    await _applyBitrate();
   }
 
   /// Sets the caption offset.

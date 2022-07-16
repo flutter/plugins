@@ -22,13 +22,14 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   LoopingMessage? loopingMessage;
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
+  BitrateMessage? bitrateMessage;
   MixWithOthersMessage? mixWithOthersMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
     log.add('create');
     createMessage = arg;
-    return TextureMessage()..textureId = 3;
+    return TextureMessage(textureId: 3);
   }
 
   @override
@@ -64,7 +65,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
-    return PositionMessage()..position = 234;
+    return PositionMessage(textureId: arg.textureId, position: 234);
   }
 
   @override
@@ -89,6 +90,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setPlaybackSpeed(PlaybackSpeedMessage arg) {
     log.add('setPlaybackSpeed');
     playbackSpeedMessage = arg;
+  }
+
+  @override
+  void setBitrate(BitrateMessage arg) {
+    log.add('setBitrate');
+    bitrateMessage = arg;
   }
 }
 

@@ -103,6 +103,14 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setBitrate(int textureId, double bitrate) {
+    return _api.setBitrate(BitrateMessage(
+      textureId: textureId,
+      bitrate: bitrate,
+    ));
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage(
       textureId: textureId,

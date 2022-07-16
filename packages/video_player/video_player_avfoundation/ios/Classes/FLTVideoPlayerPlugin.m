@@ -92,7 +92,7 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"playbackBufferFull"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
-
+  
   // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(itemDidPlayToEndTime:)
@@ -136,32 +136,32 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
                                                       withAsset:(AVAsset *)asset
                                                  withVideoTrack:(AVAssetTrack *)videoTrack {
   AVMutableVideoCompositionInstruction *instruction =
-      [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+  [AVMutableVideoCompositionInstruction videoCompositionInstruction];
   instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [asset duration]);
   AVMutableVideoCompositionLayerInstruction *layerInstruction =
-      [AVMutableVideoCompositionLayerInstruction
-          videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+  [AVMutableVideoCompositionLayerInstruction
+   videoCompositionLayerInstructionWithAssetTrack:videoTrack];
   [layerInstruction setTransform:_preferredTransform atTime:kCMTimeZero];
-
+  
   AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
   instruction.layerInstructions = @[ layerInstruction ];
   videoComposition.instructions = @[ instruction ];
-
+  
   // If in portrait mode, switch the width and height of the video
   CGFloat width = videoTrack.naturalSize.width;
   CGFloat height = videoTrack.naturalSize.height;
   NSInteger rotationDegrees =
-      (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
+  (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
   if (rotationDegrees == 90 || rotationDegrees == 270) {
     width = videoTrack.naturalSize.height;
     height = videoTrack.naturalSize.width;
   }
   videoComposition.renderSize = CGSizeMake(width, height);
-
+  
   // TODO(@recastrodiaz): should we use videoTrack.nominalFrameRate ?
   // Currently set at a constant 30 FPS
   videoComposition.frameDuration = CMTimeMake(1, 30);
-
+  
   return videoComposition;
 }
 
@@ -171,7 +171,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-
+  
   _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
                                              selector:@selector(onDisplayLink:)];
   [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
@@ -194,7 +194,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
                       frameUpdater:(FLTFrameUpdater *)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-
+  
   AVAsset *asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
     if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
@@ -212,9 +212,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
             // Video composition can only be used with file-based media and is not supported for
             // use with media served using HTTP Live Streaming.
             AVMutableVideoComposition *videoComposition =
-                [self getVideoCompositionWithTransform:self->_preferredTransform
-                                             withAsset:asset
-                                        withVideoTrack:videoTrack];
+            [self getVideoCompositionWithTransform:self->_preferredTransform
+                                         withAsset:asset
+                                    withVideoTrack:videoTrack];
             item.videoComposition = videoComposition;
           }
         };
@@ -223,16 +223,16 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
       }
     }
   };
-
+  
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-
+  
   [self createVideoOutputAndDisplayLink:frameUpdater];
-
+  
   [self addObservers:item];
-
+  
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-
+  
   return self;
 }
 
@@ -256,10 +256,10 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
       case AVPlayerItemStatusFailed:
         if (_eventSink != nil) {
           _eventSink([FlutterError
-              errorWithCode:@"VideoError"
-                    message:[@"Failed to load video: "
-                                stringByAppendingString:[item.error localizedDescription]]
-                    details:nil]);
+                      errorWithCode:@"VideoError"
+                      message:[@"Failed to load video: "
+                               stringByAppendingString:[item.error localizedDescription]]
+                      details:nil]);
         }
         break;
       case AVPlayerItemStatusUnknown:
@@ -315,7 +315,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     CGSize size = currentItem.presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
-
+    
     // Wait until tracks are loaded to check duration or if there are any videos.
     AVAsset *asset = currentItem.asset;
     if ([asset statusOfValueForKey:@"tracks" error:nil] != AVKeyValueStatusLoaded) {
@@ -332,10 +332,10 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
                            completionHandler:trackCompletionHandler];
       return;
     }
-
+    
     BOOL hasVideoTracks = [asset tracksWithMediaType:AVMediaTypeVideo].count != 0;
     BOOL hasNoTracks = asset.tracks.count == 0;
-
+    
     // The player has not yet initialized when it has no size, unless it is an audio-only track.
     // HLS m3u8 video files never load any tracks, and are also not yet initialized until they have
     // a size.
@@ -348,7 +348,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     if (duration == 0) {
       return;
     }
-
+    
     _isInitialized = YES;
     _eventSink(@{
       @"event" : @"initialized",
@@ -408,7 +408,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     }
     return;
   }
-
+  
   if (speed < 1.0 && !_player.currentItem.canPlaySlowForward) {
     if (_eventSink != nil) {
       _eventSink([FlutterError errorWithCode:@"VideoError"
@@ -417,8 +417,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     }
     return;
   }
-
+  
   _player.rate = speed;
+}
+
+- (void)setBitrate:(double)bitrate {
+  _player.currentItem.preferredPeakBitRate = bitrate;
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -467,7 +471,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   [currentItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp"];
   [currentItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
   [currentItem removeObserver:self forKeyPath:@"playbackBufferFull"];
-
+  
   [self.player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -483,7 +487,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry> *registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, strong, nonatomic)
-    NSMutableDictionary<NSNumber *, FLTVideoPlayer *> *playersByTextureId;
+NSMutableDictionary<NSNumber *, FLTVideoPlayer *> *playersByTextureId;
 @property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar> *registrar;
 @end
 
@@ -518,9 +522,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   int64_t textureId = [self.registry registerTexture:player];
   frameUpdater.textureId = textureId;
   FlutterEventChannel *eventChannel = [FlutterEventChannel
-      eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
-                                                      textureId]
-           binaryMessenger:_messenger];
+                                       eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
+                                                             textureId]
+                                       binaryMessenger:_messenger];
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
   self.playersByTextureId[@(textureId)] = player;
@@ -531,12 +535,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)initialize:(FlutterError *__autoreleasing *)error {
   // Allow audio playback when the Ring/Silent switch is set to silent
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-
+  
   [self.playersByTextureId
-      enumerateKeysAndObjectsUsingBlock:^(NSNumber *textureId, FLTVideoPlayer *player, BOOL *stop) {
-        [self.registry unregisterTexture:textureId.unsignedIntegerValue];
-        [player dispose];
-      }];
+   enumerateKeysAndObjectsUsingBlock:^(NSNumber *textureId, FLTVideoPlayer *player, BOOL *stop) {
+    [self.registry unregisterTexture:textureId.unsignedIntegerValue];
+    [player dispose];
+  }];
   [self.playersByTextureId removeAllObjects];
 }
 
@@ -579,10 +583,10 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   // stable And update the min flutter version of the plugin to the stable version.
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
                  dispatch_get_main_queue(), ^{
-                   if (!player.disposed) {
-                     [player dispose];
-                   }
-                 });
+    if (!player.disposed) {
+      [player dispose];
+    }
+  });
 }
 
 - (void)setLooping:(FLTLoopingMessage *)input error:(FlutterError **)error {
@@ -598,6 +602,11 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player setPlaybackSpeed:input.speed.doubleValue];
+}
+
+- (void)setBitrate:(FLTBitrateMessage *)input error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player setBitrate:input.bitrate.doubleValue];
 }
 
 - (void)play:(FLTTextureMessage *)input error:(FlutterError **)error {

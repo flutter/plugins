@@ -36,6 +36,12 @@ class PlaybackSpeedMessage {
   double speed;
 }
 
+class BitrateMessage {
+  BitrateMessage(this.textureId, this.bitrate);
+  int textureId;
+  double bitrate;
+}
+
 class PositionMessage {
   PositionMessage(this.textureId, this.position);
   int textureId;
@@ -64,6 +70,7 @@ abstract class AndroidVideoPlayerApi {
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  void setBitrate(BitrateMessage msg);
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);
