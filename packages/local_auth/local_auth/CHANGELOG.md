@@ -1,7 +1,3 @@
-## 2.1.1
-
-* Fixes show dialog when biometrics is not enrolled on Android devices.
-
 ## 2.1.0
 
 * Adds Windows support.
