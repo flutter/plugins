@@ -28,9 +28,11 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,6 +42,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+import android.os.Looper;
+import androidx.test.annotation.UiThreadTest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
@@ -56,7 +61,9 @@ import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -64,6 +71,9 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +84,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class MethodCallHandlerTest {
   private MethodCallHandlerImpl methodChannelHandler;
@@ -592,18 +604,85 @@ public class MethodCallHandlerTest {
     verify(result, never()).success(any());
   }
 
+  // @Test
+  // public void queryPurchases_returns_success() throws Exception {
+  //   establishConnectedBillingClient(null, null);
+
+  //   Log.e("LOOPER:", "" + Looper.getMainLooper());
+
+  //   HashMap<String, Object> arguments = new HashMap<>();
+  //   arguments.put("skuType", SkuType.INAPP);
+
+  //   CountDownLatch lock = new CountDownLatch(1);
+  //   doAnswer(new Answer() {
+  //     public Object answer(InvocationOnMock invocation) {
+  //       Log.e("TEST", "called success");
+  //        lock.countDown();
+  //        return null;
+  //     }
+  //   }).when(result).success(any(HashMap.class));
+
+  //   Log.e("TEST", "Setting up");
+  //   ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
+  //       ArgumentCaptor.forClass(PurchasesResponseListener.class);
+  //   doAnswer(new Answer() {
+  //     public Object answer(InvocationOnMock invocation) {
+  //       Log.e("TEST", "in answer");
+  //       BillingResult.Builder resultBuilder = BillingResult.newBuilder()
+  //           .setResponseCode(BillingClient.BillingResponseCode.OK)
+  //           .setDebugMessage("hello message");
+  //       purchasesResponseListenerArgumentCaptor.getValue().onQueryPurchasesResponse(resultBuilder.build(), new ArrayList<Purchase>());
+  //       return null;
+  //     }
+  //   }).when(mockBillingClient).queryPurchasesAsync(any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
+
+  //   methodChannelHandler.postQueryPurchasesOnMainThread(SkuType.INAPP, result, );
+
+  //   lock.await(5000, TimeUnit.MILLISECONDS);
+
+  //   verify(result, never()).error(any(), any(), any());
+  //   verify(result, times(1)).success(any(HashMap.class));
+  // }
+
   @Test
-  public void queryPurchases_returns_success() {
+  @UiThreadTest
+  public void queryPurchases_returns_success() throws Exception {
     establishConnectedBillingClient(null, null);
-    // Prepare the launch call after disconnecting the client
+
+    Log.e("LOOPER:", "" + Looper.getMainLooper());
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
+
+    CountDownLatch lock = new CountDownLatch(1);
+    doAnswer(new Answer() {
+      public Object answer(InvocationOnMock invocation) {
+        Log.e("TEST", "called success");
+         lock.countDown();
+         return null;
+      }
+    }).when(result).success(any(HashMap.class));
+
+    Log.e("TEST", "Setting up");
+    ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
+        ArgumentCaptor.forClass(PurchasesResponseListener.class);
+    doAnswer(new Answer() {
+      public Object answer(InvocationOnMock invocation) {
+        Log.e("TEST", "in answer");
+        BillingResult.Builder resultBuilder = BillingResult.newBuilder()
+            .setResponseCode(BillingClient.BillingResponseCode.OK)
+            .setDebugMessage("hello message");
+        purchasesResponseListenerArgumentCaptor.getValue().onQueryPurchasesResponse(resultBuilder.build(), new ArrayList<Purchase>());
+        return null;
+      }
+    }).when(mockBillingClient).queryPurchasesAsync(any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
+
     methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
-    // Assert that we sent an error back.
+    lock.await(5000, TimeUnit.MILLISECONDS);
+
     verify(result, never()).error(any(), any(), any());
-    verify(result, times(1)).success(any());
+    verify(result, times(1)).success(any(HashMap.class));
   }
 
   @Test

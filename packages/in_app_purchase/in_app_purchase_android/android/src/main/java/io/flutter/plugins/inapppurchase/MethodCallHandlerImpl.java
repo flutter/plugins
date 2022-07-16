@@ -17,6 +17,7 @@ import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
@@ -308,6 +309,44 @@ class MethodCallHandlerImpl
       return;
     }
 
+    Log.e("TEST", "OUTSIDE");
+    postQueryPurchasesOnMainThread(skuType, result, new Handler(Looper.getMainLooper()));
+    // Like in our connect call, consider the billing client responding a "success" here regardless
+    // of status code.
+    // QueryPurchasesParams.Builder paramsBuilder = QueryPurchasesParams.newBuilder();
+    // paramsBuilder.setProductType(skuType);
+    // billingClient.queryPurchasesAsync(
+    //     paramsBuilder.build(),
+    //     new PurchasesResponseListener() {
+    //       @Override
+    //       public void onQueryPurchasesResponse(
+    //           BillingResult billingResult, List<Purchase> purchasesList) {
+    //         Log.e("TEST", "INSIDE");
+    //         new Handler(Looper.getMainLooper()).post(new Runnable() {
+    //           public void run() {
+    //             Log.e("TEST", "IN HANDLER run");
+    //             final Map<String, Object> serialized = new HashMap<>();
+    //             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+    //               serialized.put("responseCode", billingResult.getResponseCode());
+    //               serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+    //               serialized.put("purchaseList", fromPurchasesList(purchasesList));
+    //               result.success(serialized);
+    //             } else {
+    //               result.error(
+    //                 "FAILED_TO_QUERY_PURCHASE",
+    //                 billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
+    //                 null
+    //               );
+    //             }
+    //           }
+    //         });
+    //         Log.e("TEST", "CALLLED POST");
+    //       }
+    //     });
+  }
+
+  @VisibleForTesting
+  public void postQueryPurchasesOnMainThread(String skuType, MethodChannel.Result result, Handler handler) {
     // Like in our connect call, consider the billing client responding a "success" here regardless
     // of status code.
     QueryPurchasesParams.Builder paramsBuilder = QueryPurchasesParams.newBuilder();
@@ -318,36 +357,26 @@ class MethodCallHandlerImpl
           @Override
           public void onQueryPurchasesResponse(
               BillingResult billingResult, List<Purchase> purchasesList) {
-            new Handler(Looper.getMainLooper()).post(new HandleQueryPurchases(billingResult, purchasesList, result));
-          }
-
-          class HandleQueryPurchases implements Runnable {
-            HandleQueryPurchases(
-                BillingResult billingResult, List<Purchase> purchasesList, MethodChannel.Result result) {
-              this.billingResult = billingResult;
-              this.purchasesList = purchasesList;
-              this.result = result;
-            }
-
-            BillingResult billingResult;
-            List<Purchase> purchasesList;
-            MethodChannel.Result result;
-
-            public void run() {
-              final Map<String, Object> serialized = new HashMap<>();
-              if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                serialized.put("responseCode", billingResult.getResponseCode());
-                serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-                serialized.put("purchaseList", fromPurchasesList(purchasesList));
-                result.success(serialized);
-              } else {
-                result.error(
-                  "FAILED_TO_QUERY_PURCHASE",
-                  billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
-                  null
-                );
+            Log.e("TEST", "INSIDE");
+            handler.post(new Runnable() {
+              public void run() {
+                Log.e("TEST", "IN HANDLER run");
+                final Map<String, Object> serialized = new HashMap<>();
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                  serialized.put("responseCode", billingResult.getResponseCode());
+                  serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+                  serialized.put("purchaseList", fromPurchasesList(purchasesList));
+                  result.success(serialized);
+                } else {
+                  result.error(
+                    "FAILED_TO_QUERY_PURCHASE",
+                    billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
+                    null
+                  );
+                }
               }
-            }
+            });
+            Log.e("TEST", "CALLLED POST");
           }
         });
   }
