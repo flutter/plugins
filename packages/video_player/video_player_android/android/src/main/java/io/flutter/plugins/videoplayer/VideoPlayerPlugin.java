@@ -18,6 +18,7 @@ import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
 import io.flutter.plugins.videoplayer.Messages.PositionMessage;
+import io.flutter.plugins.videoplayer.Messages.DurationMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
 import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
@@ -180,6 +181,11 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
     player.setPlaybackSpeed(arg.getSpeed());
   }
 
+  public void setBitrate(Messages.BitrateMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    player.setBitrate(arg.getBitrate());
+  }
+
   public void play(TextureMessage arg) {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
     player.play();
@@ -192,6 +198,17 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
             .setPosition(player.getPosition())
             .setTextureId(arg.getTextureId())
             .build();
+    player.sendBufferingUpdate();
+    return result;
+  }
+
+  public DurationMessage duration(TextureMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    DurationMessage result =
+            new DurationMessage.Builder()
+                    .setDuration(player.getDuration())
+                    .setTextureId(arg.getTextureId())
+                    .build();
     player.sendBufferingUpdate();
     return result;
   }

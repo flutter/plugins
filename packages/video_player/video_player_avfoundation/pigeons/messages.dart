@@ -37,10 +37,22 @@ class PlaybackSpeedMessage {
   double speed;
 }
 
+class BitrateMessage {
+  BitrateMessage(this.textureId, this.bitrate);
+  int textureId;
+  double bitrate;
+}
+
 class PositionMessage {
   PositionMessage(this.textureId, this.position);
   int textureId;
   int position;
+}
+
+class DurationMessage {
+  DurationMessage(this.textureId, this.duration);
+  int textureId;
+  int duration;
 }
 
 class CreateMessage {
@@ -71,10 +83,14 @@ abstract class AVFoundationVideoPlayerApi {
   void setVolume(VolumeMessage msg);
   @ObjCSelector('setPlaybackSpeed:')
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  @ObjCSelector('setBitrate:')
+  void setBitrate(BitrateMessage msg);
   @ObjCSelector('play:')
   void play(TextureMessage msg);
   @ObjCSelector('position:')
   PositionMessage position(TextureMessage msg);
+  @ObjCSelector('duration:')
+  DurationMessage duration(TextureMessage msg);
   @ObjCSelector('seekTo:')
   void seekTo(PositionMessage msg);
   @ObjCSelector('pause:')

@@ -89,9 +89,19 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
   }
 
+  /// Sets the bitrate to a [bitrate] value indicating the video bitrate.
+  Future<void> setBitrate(int textureId, double bitrate) {
+    throw UnimplementedError('setBitrate() has not been implemented.');
+  }
+
   /// Gets the video position as [Duration] from the start.
   Future<Duration> getPosition(int textureId) {
     throw UnimplementedError('getPosition() has not been implemented.');
+  }
+
+  /// Gets the video duration as [Duration].
+  Future<Duration> getDuration(int textureId) {
+    throw UnimplementedError('getDuration() has not been implemented.');
   }
 
   /// Returns a widget displaying the video with a given textureID.

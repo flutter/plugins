@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+// import 'package:video_player_platform_interface/messages.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 import 'messages.g.dart';
@@ -103,6 +104,14 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setBitrate(int textureId, double bitrate) {
+    return _api.setBitrate(BitrateMessage(
+      textureId: textureId,
+      bitrate: bitrate,
+    ));
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage(
       textureId: textureId,
@@ -115,6 +124,13 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
     final PositionMessage response =
         await _api.position(TextureMessage(textureId: textureId));
     return Duration(milliseconds: response.position);
+  }
+
+  @override
+  Future<Duration> getDuration(int textureId) async {
+    final DurationMessage response =
+        await _api.duration(TextureMessage(textureId: textureId));
+    return Duration(milliseconds: response.duration);
   }
 
   @override

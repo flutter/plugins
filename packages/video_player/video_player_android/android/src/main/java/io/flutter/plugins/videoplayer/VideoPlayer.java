@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
@@ -60,6 +61,8 @@ final class VideoPlayer {
 
   private final VideoPlayerOptions options;
 
+  private DefaultTrackSelector trackSelector;
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
@@ -71,8 +74,9 @@ final class VideoPlayer {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
     this.options = options;
+    trackSelector = new DefaultTrackSelector(context);
 
-    ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
+    ExoPlayer exoPlayer = new ExoPlayer.Builder(context).setTrackSelector(trackSelector).build();
 
     Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
@@ -273,6 +277,11 @@ final class VideoPlayer {
 
     exoPlayer.setPlaybackParameters(playbackParameters);
   }
+  
+  void setBitrate(double value) {
+    final DefaultTrackSelector.ParametersBuilder params = trackSelector.buildUponParameters().setMaxVideoBitrate((int)value);
+    trackSelector.setParameters(params);
+  }
 
   void seekTo(int location) {
     exoPlayer.seekTo(location);
@@ -281,6 +290,8 @@ final class VideoPlayer {
   long getPosition() {
     return exoPlayer.getCurrentPosition();
   }
+
+  long getDuration() { return exoPlayer.getDuration(); }
 
   @SuppressWarnings("SuspiciousNameCombination")
   @VisibleForTesting
