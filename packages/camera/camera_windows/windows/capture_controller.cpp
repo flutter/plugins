@@ -288,17 +288,19 @@ void CaptureControllerImpl::ResetCaptureController() {
   texture_handler_ = nullptr;
 }
 
-void CaptureControllerImpl::InitCaptureDevice(
+bool CaptureControllerImpl::InitCaptureDevice(
     flutter::TextureRegistrar* texture_registrar, const std::string& device_id,
     bool record_audio, ResolutionPreset resolution_preset) {
   assert(capture_controller_listener_);
 
   if (IsInitialized()) {
-    return capture_controller_listener_->OnCreateCaptureEngineFailed(
+    capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Capture device already initialized");
+    return false;
   } else if (capture_engine_state_ == CaptureEngineState::kInitializing) {
-    return capture_controller_listener_->OnCreateCaptureEngineFailed(
+    capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Capture device already initializing");
+    return false;
   }
 
   capture_engine_state_ = CaptureEngineState::kInitializing;
@@ -315,7 +317,7 @@ void CaptureControllerImpl::InitCaptureDevice(
       capture_controller_listener_->OnCreateCaptureEngineFailed(
           "Failed to create camera");
       ResetCaptureController();
-      return;
+      return false;
     }
 
     media_foundation_started_ = true;
@@ -326,8 +328,10 @@ void CaptureControllerImpl::InitCaptureDevice(
     capture_controller_listener_->OnCreateCaptureEngineFailed(
         "Failed to create camera");
     ResetCaptureController();
-    return;
+    return false;
   }
+
+  return true;
 }
 
 void CaptureControllerImpl::TakePicture(const std::string& file_path) {

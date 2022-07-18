@@ -182,7 +182,7 @@ class MockCamera : public Camera {
   MOCK_METHOD(camera_windows::CaptureController*, GetCaptureController, (),
               (override));
 
-  MOCK_METHOD(void, InitCamera,
+  MOCK_METHOD(bool, InitCamera,
               (flutter::TextureRegistrar * texture_registrar,
                flutter::BinaryMessenger* messenger, bool record_audio,
                ResolutionPreset resolution_preset),
@@ -212,7 +212,7 @@ class MockCaptureController : public CaptureController {
  public:
   ~MockCaptureController() = default;
 
-  MOCK_METHOD(void, InitCaptureDevice,
+  MOCK_METHOD(bool, InitCaptureDevice,
               (flutter::TextureRegistrar * texture_registrar,
                const std::string& device_id, bool record_audio,
                ResolutionPreset resolution_preset),
