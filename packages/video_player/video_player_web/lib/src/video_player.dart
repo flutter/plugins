@@ -32,6 +32,13 @@ const Map<int, String> _kErrorValueToErrorDescription = <int, String>{
 const String _kDefaultErrorMessage =
     'No further diagnostic information can be determined or provided.';
 
+/// The "length" of a video which doesn't have finite duration.
+/// Find TIME_UNSET in ExoPlayer2 and other platform implementations!
+@visibleForTesting
+const Duration TIME_UNSET = Duration(
+  milliseconds: -9223372036854775808,
+);
+
 /// Wraps a [html.VideoElement] so its API complies with what is expected by the plugin.
 class VideoPlayer {
   /// Create a [VideoPlayer] from a [html.VideoElement] instance.
@@ -194,11 +201,11 @@ class VideoPlayer {
 
   // Sends an [VideoEventType.initialized] [VideoEvent] with info about the wrapped video.
   void _sendInitialized() {
-    final Duration? duration = _videoElement.duration.isFinite
+    final Duration duration = _videoElement.duration.isFinite
         ? Duration(
             milliseconds: (_videoElement.duration * 1000).round(),
           )
-        : null;
+        : TIME_UNSET;
 
     final Size? size = _videoElement.videoHeight.isFinite
         ? Size(

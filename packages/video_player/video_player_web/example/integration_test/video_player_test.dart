@@ -209,7 +209,7 @@ void main() {
 
         expect(events, hasLength(1));
         expect(events[0].eventType, VideoEventType.initialized);
-        expect(events[0].duration, isNull);
+        expect(events[0].duration, equals(TIME_UNSET));
       });
     });
   });
