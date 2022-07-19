@@ -716,10 +716,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           // iOS only
           showInSnackBar('Audio access is restricted.');
           break;
-        case 'cameraPermission':
-          // Android & web only
-          showInSnackBar('Unknown permission error.');
-          break;
         default:
           _showCameraException(e);
           break;

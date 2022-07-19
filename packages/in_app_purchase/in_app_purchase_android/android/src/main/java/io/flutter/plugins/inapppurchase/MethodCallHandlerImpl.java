@@ -5,7 +5,7 @@
 package io.flutter.plugins.inapppurchase;
 
 import static io.flutter.plugins.inapppurchase.Translator.fromPurchaseHistoryRecordList;
-import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
+import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesList;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
@@ -25,8 +25,12 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.PriceChangeFlowParams;
+import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -131,10 +135,14 @@ class MethodCallHandlerImpl
                 : ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY,
             result);
         break;
-      case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES:
-        queryPurchases((String) call.argument("skuType"), result);
+      case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES: // Legacy method name.
+        queryPurchasesAsync((String) call.argument("skuType"), result);
+        break;
+      case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES_ASYNC:
+        queryPurchasesAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
+        Log.e("flutter", (String) call.argument("skuType"));
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC:
@@ -148,6 +156,9 @@ class MethodCallHandlerImpl
         break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW:
         launchPriceChangeConfirmationFlow((String) call.argument("sku"), result);
+        break;
+      case InAppPurchasePlugin.MethodNames.GET_CONNECTION_STATE:
+        getConnectionState(result);
         break;
       default:
         result.notImplemented();
@@ -174,6 +185,7 @@ class MethodCallHandlerImpl
     result.success(billingClient.isReady());
   }
 
+  // TODO(garyq): Migrate to new subscriptions API: https://developer.android.com/google/play/billing/migrate-gpblv5
   private void querySkuDetailsAsync(
       final String skuType, final List<String> skusList, final MethodChannel.Result result) {
     if (billingClientError(result)) {
@@ -208,7 +220,6 @@ class MethodCallHandlerImpl
     if (billingClientError(result)) {
       return;
     }
-
     SkuDetails skuDetails = cachedSkus.get(sku);
     if (skuDetails == null) {
       result.error(
@@ -255,12 +266,15 @@ class MethodCallHandlerImpl
     if (obfuscatedProfileId != null && !obfuscatedProfileId.isEmpty()) {
       paramsBuilder.setObfuscatedProfileId(obfuscatedProfileId);
     }
-    if (oldSku != null && !oldSku.isEmpty()) {
-      paramsBuilder.setOldSku(oldSku, purchaseToken);
+    BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
+        BillingFlowParams.SubscriptionUpdateParams.newBuilder();
+    if (oldSku != null && !oldSku.isEmpty() && purchaseToken != null) {
+      subscriptionUpdateParamsBuilder.setOldPurchaseToken(purchaseToken);
+      // The proration mode value has to match one of the following declared in
+      // https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
+      subscriptionUpdateParamsBuilder.setReplaceProrationMode(prorationMode);
+      paramsBuilder.setSubscriptionUpdateParams(subscriptionUpdateParamsBuilder.build());
     }
-    // The proration mode value has to match one of the following declared in
-    // https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
-    paramsBuilder.setReplaceSkusProrationMode(prorationMode);
     result.success(
         Translator.fromBillingResult(
             billingClient.launchBillingFlow(activity, paramsBuilder.build())));
@@ -286,14 +300,30 @@ class MethodCallHandlerImpl
     billingClient.consumeAsync(params, listener);
   }
 
-  private void queryPurchases(String skuType, MethodChannel.Result result) {
+  private void queryPurchasesAsync(String skuType, MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
 
     // Like in our connect call, consider the billing client responding a "success" here regardless
     // of status code.
-    result.success(fromPurchasesResult(billingClient.queryPurchases(skuType)));
+    QueryPurchasesParams.Builder paramsBuilder = QueryPurchasesParams.newBuilder();
+    paramsBuilder.setProductType(skuType);
+    billingClient.queryPurchasesAsync(
+        paramsBuilder.build(),
+        new PurchasesResponseListener() {
+          @Override
+          public void onQueryPurchasesResponse(
+              BillingResult billingResult, List<Purchase> purchasesList) {
+            final Map<String, Object> serialized = new HashMap<>();
+            // The response code is no longer passed, as part of billing 4.0, so we pass OK here
+            // as success is implied by calling this callback.
+            serialized.put("responseCode", BillingClient.BillingResponseCode.OK);
+            serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+            serialized.put("purchaseList", fromPurchasesList(purchasesList));
+            result.success(serialized);
+          }
+        });
   }
 
   private void queryPurchaseHistoryAsync(String skuType, final MethodChannel.Result result) {
@@ -302,7 +332,7 @@ class MethodCallHandlerImpl
     }
 
     billingClient.queryPurchaseHistoryAsync(
-        skuType,
+        QueryPurchaseHistoryParams.newBuilder().setProductType(skuType).build(),
         new PurchaseHistoryResponseListener() {
           @Override
           public void onPurchaseHistoryResponse(
@@ -314,6 +344,15 @@ class MethodCallHandlerImpl
             result.success(serialized);
           }
         });
+  }
+
+  private void getConnectionState(final MethodChannel.Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+    final Map<String, Object> serialized = new HashMap<>();
+    serialized.put("connectionState", billingClient.getConnectionState());
+    result.success(serialized);
   }
 
   private void startConnection(final int handle, final MethodChannel.Result result) {
