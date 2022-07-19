@@ -8,6 +8,7 @@ import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+import 'package:video_player_web/src/duration_utils.dart';
 import 'package:video_player_web/src/video_player.dart';
 
 import 'utils.dart';

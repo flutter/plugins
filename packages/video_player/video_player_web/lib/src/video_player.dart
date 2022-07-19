@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
+import 'duration_utils.dart';
+
 // An error code value to error name Map.
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
 const Map<int, String> _kErrorValueToErrorName = <int, String>{
@@ -31,13 +33,6 @@ const Map<int, String> _kErrorValueToErrorDescription = <int, String>{
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
 const String _kDefaultErrorMessage =
     'No further diagnostic information can be determined or provided.';
-
-/// The "length" of a video which doesn't have finite duration.
-// See: https://github.com/flutter/flutter/issues/107882
-@visibleForTesting
-const Duration jsCompatibleTimeUnset = Duration(
-  milliseconds: -9007199254740990, // Number.MIN_SAFE_INTEGER + 1. -(2^53 - 1)
-);
 
 /// Wraps a [html.VideoElement] so its API complies with what is expected by the plugin.
 class VideoPlayer {
@@ -201,11 +196,8 @@ class VideoPlayer {
 
   // Sends an [VideoEventType.initialized] [VideoEvent] with info about the wrapped video.
   void _sendInitialized() {
-    final Duration duration = _videoElement.duration.isFinite
-        ? Duration(
-            milliseconds: (_videoElement.duration * 1000).round(),
-          )
-        : jsCompatibleTimeUnset;
+    final Duration? duration =
+        convertNumVideoDurationToPluginDuration(_videoElement.duration);
 
     final Size? size = _videoElement.videoHeight.isFinite
         ? Size(
