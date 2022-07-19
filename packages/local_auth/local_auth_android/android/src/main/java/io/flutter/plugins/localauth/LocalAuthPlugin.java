@@ -151,7 +151,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     boolean isBiometricOnly = call.argument("biometricOnly");
     boolean allowCredentials = !isBiometricOnly && canAuthenticateWithDeviceCredential();
 
-    if (canAuthenticateWithBiometrics() || canAuthenticateWithDeviceCredential()) {
+    if (canAuthenticateWithBiometrics() || allowCredentials) {
       sendAuthenticationRequest(call, completionHandler, allowCredentials);
       return;
     }
