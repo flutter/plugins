@@ -14,11 +14,11 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
-    # Master uses a pinned, auto-rolled version to prevent out-of-band CI
-    # failures due to changes in Flutter.
-    # TODO(stuartmorgan): Investigate an autoroller for stable as well.
+    # Channels that are part of our normal test matrix use a pinned,
+    # auto-rolled version to prevent out-of-band CI failures due to changes in
+    # Flutter.
     - TARGET_TREEISH=$CHANNEL
-    - if [[ "$CHANNEL" == "master" ]]; then
+    - if [[ "$CHANNEL" == "master" || "$CHANNEL" == "stable" ]]; then
     -   TARGET_TREEISH=$(< .ci/flutter_$CHANNEL.version)
     - fi
     # Ensure that the repository has all the branches.
