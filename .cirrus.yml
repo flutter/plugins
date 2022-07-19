@@ -1,9 +1,7 @@
 gcp_credentials: ENCRYPTED[!ebad0a1f4f7a446b77944c33651460a7ab010b4617273cb016cf354eb8fc22aa92e37a3c58bfa4a0c40a799351e027a6!]
 
-# Don't run on release tags since it creates O(n^2) tasks where n is the
-# number of plugins.
-# Don't run on 'master' since it's a mirror of 'main'.
-only_if: $CIRRUS_TAG == '' && $CIRRUS_BRANCH != 'master'
+# Run on PRs and main branch post submit only. Don't run tests when tagging.
+only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
@@ -16,11 +14,11 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
-    # Master uses a pinned, auto-rolled version to prevent out-of-band CI
-    # failures due to changes in Flutter.
-    # TODO(stuartmorgan): Investigate an autoroller for stable as well.
+    # Channels that are part of our normal test matrix use a pinned,
+    # auto-rolled version to prevent out-of-band CI failures due to changes in
+    # Flutter.
     - TARGET_TREEISH=$CHANNEL
-    - if [[ "$CHANNEL" == "master" ]]; then
+    - if [[ "$CHANNEL" == "master" || "$CHANNEL" == "stable" ]]; then
     -   TARGET_TREEISH=$(< .ci/flutter_$CHANNEL.version)
     - fi
     # Ensure that the repository has all the branches.
@@ -88,9 +86,6 @@ task:
         - dart pub run test
     - name: publishable
       env:
-        # TODO (mvanbeusekom): Temporary override to "stable" because of failure on "master".
-        # Remove override once https://github.com/dart-lang/pub/issues/3152 is resolved.
-        CHANNEL: stable
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
         # For pre-submit, pass the PR description to the script to allow for
@@ -118,6 +113,7 @@ task:
           # run with --require-excerpts and no exclusions.
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
+        dependabot_script: dart $PLUGIN_TOOL dependabot-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
       # rather than state.
@@ -192,6 +188,8 @@ task:
         - flutter config --enable-linux-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: linux-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           CHANNEL: "master"
@@ -221,6 +219,8 @@ task:
   matrix:
     ### Android tasks ###
     - name: android-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
@@ -232,7 +232,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[4c11f1a80a5741d51e92ab609bc7214ab2aa015e68a490e4d6777ebdf84f9c899b97c0ded2f4b2e6adf2c8b5ead1e3c5]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[c84a06b85f9c906705732aea6142ef6f63ff1a6f07372dc36880a9d0c2c4b9cb35b2e35cd19edc6285167c2a5cc075ec]
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -321,6 +321,8 @@ task:
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### macOS desktop tasks ###
     - name: macos-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         matrix:
           CHANNEL: "master"
@@ -356,6 +358,8 @@ task:
     # tests are reliable on the ARM infrastructure. See discussion at
     # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
     - name: ios-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
       env:
         PATH: $PATH:/usr/local/bin
         matrix:

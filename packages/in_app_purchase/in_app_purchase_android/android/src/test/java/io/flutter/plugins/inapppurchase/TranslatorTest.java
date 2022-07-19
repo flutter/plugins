@@ -9,15 +9,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import androidx.annotation.NonNull;
 import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.SkuDetails;
 import java.util.Arrays;
@@ -139,37 +136,6 @@ public class TranslatorTest {
   }
 
   @Test
-  public void fromPurchasesResult() throws JSONException {
-    PurchasesResult result = mock(PurchasesResult.class);
-    final String purchase2Json =
-        "{\"orderId\":\"foo2\",\"packageName\":\"bar\",\"productId\":\"consumable\",\"purchaseTime\":11111111,\"purchaseState\":0,\"purchaseToken\":\"baz\",\"developerPayload\":\"dummy payload\",\"isAcknowledged\":\"true\"}";
-    final String signature = "signature";
-    final List<Purchase> expectedPurchases =
-        Arrays.asList(
-            new Purchase(PURCHASE_EXAMPLE_JSON, signature), new Purchase(purchase2Json, signature));
-    when(result.getPurchasesList()).thenReturn(expectedPurchases);
-    when(result.getResponseCode()).thenReturn(BillingClient.BillingResponseCode.OK);
-    BillingResult newBillingResult =
-        BillingResult.newBuilder()
-            .setDebugMessage("dummy debug message")
-            .setResponseCode(BillingClient.BillingResponseCode.OK)
-            .build();
-    when(result.getBillingResult()).thenReturn(newBillingResult);
-    final HashMap<String, Object> serialized = Translator.fromPurchasesResult(result);
-
-    assertEquals(BillingClient.BillingResponseCode.OK, serialized.get("responseCode"));
-    List<Map<String, Object>> serializedPurchases =
-        (List<Map<String, Object>>) serialized.get("purchasesList");
-    assertEquals(expectedPurchases.size(), serializedPurchases.size());
-    assertSerialized(expectedPurchases.get(0), serializedPurchases.get(0));
-    assertSerialized(expectedPurchases.get(1), serializedPurchases.get(1));
-
-    Map<String, Object> billingResultMap = (Map<String, Object>) serialized.get("billingResult");
-    assertEquals(billingResultMap.get("responseCode"), newBillingResult.getResponseCode());
-    assertEquals(billingResultMap.get("debugMessage"), newBillingResult.getDebugMessage());
-  }
-
-  @Test
   public void fromBillingResult() throws JSONException {
     BillingResult newBillingResult =
         BillingResult.newBuilder()
@@ -232,7 +198,7 @@ public class TranslatorTest {
     assertEquals(expected.getPurchaseToken(), serialized.get("purchaseToken"));
     assertEquals(expected.getSignature(), serialized.get("signature"));
     assertEquals(expected.getOriginalJson(), serialized.get("originalJson"));
-    assertEquals(expected.getSku(), serialized.get("sku"));
+    assertEquals(expected.getSkus(), serialized.get("skus"));
     assertEquals(expected.getDeveloperPayload(), serialized.get("developerPayload"));
     assertEquals(expected.isAcknowledged(), serialized.get("isAcknowledged"));
     assertEquals(expected.getPurchaseState(), serialized.get("purchaseState"));
@@ -251,7 +217,7 @@ public class TranslatorTest {
     assertEquals(expected.getPurchaseToken(), serialized.get("purchaseToken"));
     assertEquals(expected.getSignature(), serialized.get("signature"));
     assertEquals(expected.getOriginalJson(), serialized.get("originalJson"));
-    assertEquals(expected.getSku(), serialized.get("sku"));
+    assertEquals(expected.getSkus(), serialized.get("skus"));
     assertEquals(expected.getDeveloperPayload(), serialized.get("developerPayload"));
   }
 }

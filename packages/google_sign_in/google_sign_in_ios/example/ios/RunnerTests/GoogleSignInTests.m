@@ -96,6 +96,25 @@
 
 #pragma mark - Init
 
+- (void)testInitNoClientIdError {
+  // Init plugin without GoogleService-Info.plist.
+  self.plugin = [[FLTGoogleSignInPlugin alloc] initWithSignIn:self.mockSignIn
+                                  withGoogleServiceProperties:nil];
+
+  // init call does not provide a clientId.
+  FlutterMethodCall *initMethodCall = [FlutterMethodCall methodCallWithMethodName:@"init"
+                                                                        arguments:@{}];
+
+  XCTestExpectation *initExpectation =
+      [self expectationWithDescription:@"expect result returns true"];
+  [self.plugin handleMethodCall:initMethodCall
+                         result:^(FlutterError *result) {
+                           XCTAssertEqualObjects(result.code, @"missing-config");
+                           [initExpectation fulfill];
+                         }];
+  [self waitForExpectationsWithTimeout:5.0 handler:nil];
+}
+
 - (void)testInitGoogleServiceInfoPlist {
   FlutterMethodCall *initMethodCall =
       [FlutterMethodCall methodCallWithMethodName:@"init"
@@ -133,6 +152,10 @@
 }
 
 - (void)testInitDynamicClientIdNullDomain {
+  // Init plugin without GoogleService-Info.plist.
+  self.plugin = [[FLTGoogleSignInPlugin alloc] initWithSignIn:self.mockSignIn
+                                  withGoogleServiceProperties:nil];
+
   FlutterMethodCall *initMethodCall = [FlutterMethodCall
       methodCallWithMethodName:@"init"
                      arguments:@{@"hostedDomain" : [NSNull null], @"clientId" : @"mockClientId"}];
@@ -156,6 +179,40 @@
        signInWithConfiguration:[OCMArg checkWithBlock:^BOOL(GIDConfiguration *configuration) {
          return configuration.hostedDomain == nil &&
                 [configuration.clientID isEqualToString:@"mockClientId"];
+       }]
+      presentingViewController:[OCMArg isKindOfClass:[FlutterViewController class]]
+                          hint:nil
+              additionalScopes:OCMOCK_ANY
+                      callback:OCMOCK_ANY]);
+}
+
+- (void)testInitDynamicServerClientIdNullDomain {
+  FlutterMethodCall *initMethodCall =
+      [FlutterMethodCall methodCallWithMethodName:@"init"
+                                        arguments:@{
+                                          @"hostedDomain" : [NSNull null],
+                                          @"serverClientId" : @"mockServerClientId"
+                                        }];
+
+  XCTestExpectation *initExpectation =
+      [self expectationWithDescription:@"expect result returns true"];
+  [self.plugin handleMethodCall:initMethodCall
+                         result:^(id result) {
+                           XCTAssertNil(result);
+                           [initExpectation fulfill];
+                         }];
+  [self waitForExpectationsWithTimeout:5.0 handler:nil];
+
+  // Initialization values used in the next sign in request.
+  FlutterMethodCall *signInMethodCall = [FlutterMethodCall methodCallWithMethodName:@"signIn"
+                                                                          arguments:nil];
+  [self.plugin handleMethodCall:signInMethodCall
+                         result:^(id r){
+                         }];
+  OCMVerify([self.mockSignIn
+       signInWithConfiguration:[OCMArg checkWithBlock:^BOOL(GIDConfiguration *configuration) {
+         return configuration.hostedDomain == nil &&
+                [configuration.serverClientID isEqualToString:@"mockServerClientId"];
        }]
       presentingViewController:[OCMArg isKindOfClass:[FlutterViewController class]]
                           hint:nil

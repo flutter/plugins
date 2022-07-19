@@ -1,6 +1,31 @@
 ## 2.9.0
 
 * Adds Android implementation of the new webview_flutter_platform_interface (v4).
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 2.8.14
+
+* Bumps androidx.annotation from 1.0.0 to 1.4.0.
+
+## 2.8.13
+
+* Fixes a bug which causes an exception when the `onNavigationRequestCallback` return `false`.
+
+## 2.8.12
+
+* Bumps mockito-inline from 3.11.1 to 4.6.1.
+
+## 2.8.11
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.8.10
+
+* Updates references to the obsolete master branch.
+
+## 2.8.9
+
+* Updates Gradle to 7.2.1.
 
 ## 2.8.8
 
