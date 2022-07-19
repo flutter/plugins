@@ -33,10 +33,10 @@ const String _kDefaultErrorMessage =
     'No further diagnostic information can be determined or provided.';
 
 /// The "length" of a video which doesn't have finite duration.
-/// Find TIME_UNSET in ExoPlayer2 and other platform implementations!
+// See: https://github.com/flutter/flutter/issues/107882
 @visibleForTesting
-const Duration TIME_UNSET = Duration(
-  milliseconds: -9223372036854775808,
+const Duration jsCompatibleTimeUnset = Duration(
+  milliseconds: -9007199254740990, // Number.MIN_SAFE_INTEGER + 1. -(2^53 - 1)
 );
 
 /// Wraps a [html.VideoElement] so its API complies with what is expected by the plugin.
@@ -205,7 +205,7 @@ class VideoPlayer {
         ? Duration(
             milliseconds: (_videoElement.duration * 1000).round(),
           )
-        : TIME_UNSET;
+        : jsCompatibleTimeUnset;
 
     final Size? size = _videoElement.videoHeight.isFinite
         ? Size(
