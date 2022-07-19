@@ -311,7 +311,8 @@ class MethodCallHandlerImpl
   }
 
   @VisibleForTesting
-  public void postQueryPurchasesOnMainThread(String skuType, MethodChannel.Result result, Handler handler) {
+  public void postQueryPurchasesOnMainThread(
+      String skuType, MethodChannel.Result result, Handler handler) {
     // Like in our connect call, consider the billing client responding a "success" here regardless
     // of status code.
     QueryPurchasesParams.Builder paramsBuilder = QueryPurchasesParams.newBuilder();
@@ -322,23 +323,23 @@ class MethodCallHandlerImpl
           @Override
           public void onQueryPurchasesResponse(
               BillingResult billingResult, List<Purchase> purchasesList) {
-            handler.post(new Runnable() {
-              public void run() {
-                final Map<String, Object> serialized = new HashMap<>();
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                  serialized.put("responseCode", billingResult.getResponseCode());
-                  serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-                  serialized.put("purchaseList", fromPurchasesList(purchasesList));
-                  result.success(serialized);
-                } else {
-                  result.error(
-                    "FAILED_TO_QUERY_PURCHASE",
-                    billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
-                    null
-                  );
-                }
-              }
-            });
+            handler.post(
+                new Runnable() {
+                  public void run() {
+                    final Map<String, Object> serialized = new HashMap<>();
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                      serialized.put("responseCode", billingResult.getResponseCode());
+                      serialized.put("billingResult", Translator.fromBillingResult(billingResult));
+                      serialized.put("purchaseList", fromPurchasesList(purchasesList));
+                      result.success(serialized);
+                    } else {
+                      result.error(
+                          "FAILED_TO_QUERY_PURCHASE",
+                          billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
+                          null);
+                    }
+                  }
+                });
           }
         });
   }
