@@ -308,41 +308,7 @@ class MethodCallHandlerImpl
     if (billingClientError(result)) {
       return;
     }
-
-    Log.e("TEST", "OUTSIDE");
     postQueryPurchasesOnMainThread(skuType, result, new Handler(Looper.getMainLooper()));
-    // Like in our connect call, consider the billing client responding a "success" here regardless
-    // of status code.
-    // QueryPurchasesParams.Builder paramsBuilder = QueryPurchasesParams.newBuilder();
-    // paramsBuilder.setProductType(skuType);
-    // billingClient.queryPurchasesAsync(
-    //     paramsBuilder.build(),
-    //     new PurchasesResponseListener() {
-    //       @Override
-    //       public void onQueryPurchasesResponse(
-    //           BillingResult billingResult, List<Purchase> purchasesList) {
-    //         Log.e("TEST", "INSIDE");
-    //         new Handler(Looper.getMainLooper()).post(new Runnable() {
-    //           public void run() {
-    //             Log.e("TEST", "IN HANDLER run");
-    //             final Map<String, Object> serialized = new HashMap<>();
-    //             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-    //               serialized.put("responseCode", billingResult.getResponseCode());
-    //               serialized.put("billingResult", Translator.fromBillingResult(billingResult));
-    //               serialized.put("purchaseList", fromPurchasesList(purchasesList));
-    //               result.success(serialized);
-    //             } else {
-    //               result.error(
-    //                 "FAILED_TO_QUERY_PURCHASE",
-    //                 billingResult.getResponseCode() + ": " + billingResult.getDebugMessage(),
-    //                 null
-    //               );
-    //             }
-    //           }
-    //         });
-    //         Log.e("TEST", "CALLLED POST");
-    //       }
-    //     });
   }
 
   @VisibleForTesting
@@ -357,10 +323,8 @@ class MethodCallHandlerImpl
           @Override
           public void onQueryPurchasesResponse(
               BillingResult billingResult, List<Purchase> purchasesList) {
-            Log.e("TEST", "INSIDE");
             handler.post(new Runnable() {
               public void run() {
-                Log.e("TEST", "IN HANDLER run");
                 final Map<String, Object> serialized = new HashMap<>();
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                   serialized.put("responseCode", billingResult.getResponseCode());
@@ -376,7 +340,6 @@ class MethodCallHandlerImpl
                 }
               }
             });
-            Log.e("TEST", "CALLLED POST");
           }
         });
   }

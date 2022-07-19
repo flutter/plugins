@@ -37,6 +37,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,9 +45,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.os.Looper;
-import androidx.test.annotation.UiThreadTest;
+import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.annotation.UiThreadTest;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
@@ -71,6 +73,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.lang.Runnable;
 import java.util.concurrent.CountDownLatch;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -604,71 +607,20 @@ public class MethodCallHandlerTest {
     verify(result, never()).success(any());
   }
 
-  // @Test
-  // public void queryPurchases_returns_success() throws Exception {
-  //   establishConnectedBillingClient(null, null);
-
-  //   Log.e("LOOPER:", "" + Looper.getMainLooper());
-
-  //   HashMap<String, Object> arguments = new HashMap<>();
-  //   arguments.put("skuType", SkuType.INAPP);
-
-  //   CountDownLatch lock = new CountDownLatch(1);
-  //   doAnswer(new Answer() {
-  //     public Object answer(InvocationOnMock invocation) {
-  //       Log.e("TEST", "called success");
-  //        lock.countDown();
-  //        return null;
-  //     }
-  //   }).when(result).success(any(HashMap.class));
-
-  //   Log.e("TEST", "Setting up");
-  //   ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
-  //       ArgumentCaptor.forClass(PurchasesResponseListener.class);
-  //   doAnswer(new Answer() {
-  //     public Object answer(InvocationOnMock invocation) {
-  //       Log.e("TEST", "in answer");
-  //       BillingResult.Builder resultBuilder = BillingResult.newBuilder()
-  //           .setResponseCode(BillingClient.BillingResponseCode.OK)
-  //           .setDebugMessage("hello message");
-  //       purchasesResponseListenerArgumentCaptor.getValue().onQueryPurchasesResponse(resultBuilder.build(), new ArrayList<Purchase>());
-  //       return null;
-  //     }
-  //   }).when(mockBillingClient).queryPurchasesAsync(any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
-
-  //   methodChannelHandler.postQueryPurchasesOnMainThread(SkuType.INAPP, result, );
-
-  //   lock.await(5000, TimeUnit.MILLISECONDS);
-
-  //   verify(result, never()).error(any(), any(), any());
-  //   verify(result, times(1)).success(any(HashMap.class));
-  // }
-
   @Test
   @UiThreadTest
-  public void queryPurchases_returns_success() throws Exception {
+  public void queryPurchases_handler_posts() throws Exception {
     establishConnectedBillingClient(null, null);
-
-    Log.e("LOOPER:", "" + Looper.getMainLooper());
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
 
     CountDownLatch lock = new CountDownLatch(1);
-    doAnswer(new Answer() {
-      public Object answer(InvocationOnMock invocation) {
-        Log.e("TEST", "called success");
-         lock.countDown();
-         return null;
-      }
-    }).when(result).success(any(HashMap.class));
 
-    Log.e("TEST", "Setting up");
     ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
         ArgumentCaptor.forClass(PurchasesResponseListener.class);
     doAnswer(new Answer() {
       public Object answer(InvocationOnMock invocation) {
-        Log.e("TEST", "in answer");
         BillingResult.Builder resultBuilder = BillingResult.newBuilder()
             .setResponseCode(BillingClient.BillingResponseCode.OK)
             .setDebugMessage("hello message");
@@ -677,12 +629,84 @@ public class MethodCallHandlerTest {
       }
     }).when(mockBillingClient).queryPurchasesAsync(any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
 
-    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
+    Handler handler = spy(new Handler(Looper.myLooper()));
+    methodChannelHandler.postQueryPurchasesOnMainThread(SkuType.INAPP, result, handler);
+    // methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
     lock.await(5000, TimeUnit.MILLISECONDS);
 
     verify(result, never()).error(any(), any(), any());
-    verify(result, times(1)).success(any(HashMap.class));
+    // verify(result, times(1)).success(any(HashMap.class));
+    verify(handler, times(1)).post(any(Runnable.class));
+  }
+
+  @Test
+  @UiThreadTest
+  public void queryPurchases_calls_billingClient() throws Exception {
+    establishConnectedBillingClient(null, null);
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+
+
+    Handler handler = spy(new Handler(Looper.myLooper()));
+    methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
+
+    verify(mockBillingClient, times(1)).queryPurchasesAsync(any(QueryPurchasesParams.class), any(PurchasesResponseListener.class));
+    verify(result, never()).error(any(), any(), any());
+  }
+
+  @Test
+  @UiThreadTest
+  public void queryPurchases_returns_success() throws Exception {
+    establishConnectedBillingClient(null, null);
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", SkuType.INAPP);
+
+    CountDownLatch lock = new CountDownLatch(1);
+    doAnswer(new Answer() {
+      public Object answer(InvocationOnMock invocation) {
+         lock.countDown();
+         return null;
+      }
+    }).when(result).success(any(HashMap.class));
+
+    ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
+        ArgumentCaptor.forClass(PurchasesResponseListener.class);
+    doAnswer(new Answer() {
+      public Object answer(InvocationOnMock invocation) {
+        BillingResult.Builder resultBuilder = BillingResult.newBuilder()
+            .setResponseCode(BillingClient.BillingResponseCode.OK)
+            .setDebugMessage("hello message");
+        purchasesResponseListenerArgumentCaptor.getValue().onQueryPurchasesResponse(resultBuilder.build(), new ArrayList<Purchase>());
+        return null;
+      }
+    }).when(mockBillingClient).queryPurchasesAsync(any(QueryPurchasesParams.class), purchasesResponseListenerArgumentCaptor.capture());
+
+    Handler handler = spy(new Handler(Looper.myLooper()));
+    methodChannelHandler.postQueryPurchasesOnMainThread(SkuType.INAPP, result, handler);
+
+    lock.await(5000, TimeUnit.MILLISECONDS);
+
+    verify(result, never()).error(any(), any(), any());
+    ArgumentCaptor<Runnable> runnableCaptor =
+        ArgumentCaptor.forClass(Runnable.class);
+    verify(handler, times(1)).post(runnableCaptor.capture());
+
+    Runnable runnable = runnableCaptor.getValue();
+
+    runnable.run();
+
+    ArgumentCaptor<HashMap> hashMapCaptor =
+        ArgumentCaptor.forClass(HashMap.class);
+    verify(result, times(1)).success(hashMapCaptor.capture());
+
+    HashMap<String, Object> map = hashMapCaptor.getValue();
+    assert(map.containsKey("responseCode"));
+    assert(map.containsKey("billingResult"));
+    assert(map.containsKey("purchaseList"));
+    assert((int)map.get("responseCode") == 0);
   }
 
   @Test
