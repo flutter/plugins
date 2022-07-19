@@ -146,7 +146,6 @@ class MethodCallHandlerImpl
         queryPurchasesAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_PURCHASE_HISTORY_ASYNC:
-        Log.e("flutter", (String) call.argument("skuType"));
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC:

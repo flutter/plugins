@@ -43,12 +43,10 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.os.Looper;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.test.annotation.UiThreadTest;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
@@ -608,14 +606,11 @@ public class MethodCallHandlerTest {
   }
 
   @Test
-  @UiThreadTest
   public void queryPurchases_handler_posts() throws Exception {
     establishConnectedBillingClient(null, null);
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
-
-    CountDownLatch lock = new CountDownLatch(1);
 
     ArgumentCaptor<PurchasesResponseListener> purchasesResponseListenerArgumentCaptor =
         ArgumentCaptor.forClass(PurchasesResponseListener.class);
@@ -633,21 +628,17 @@ public class MethodCallHandlerTest {
     methodChannelHandler.postQueryPurchasesOnMainThread(SkuType.INAPP, result, handler);
     // methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
-    lock.await(5000, TimeUnit.MILLISECONDS);
-
     verify(result, never()).error(any(), any(), any());
     // verify(result, times(1)).success(any(HashMap.class));
     verify(handler, times(1)).post(any(Runnable.class));
   }
 
   @Test
-  @UiThreadTest
   public void queryPurchases_calls_billingClient() throws Exception {
     establishConnectedBillingClient(null, null);
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("skuType", SkuType.INAPP);
-
 
     Handler handler = spy(new Handler(Looper.myLooper()));
     methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
@@ -657,7 +648,6 @@ public class MethodCallHandlerTest {
   }
 
   @Test
-  @UiThreadTest
   public void queryPurchases_returns_success() throws Exception {
     establishConnectedBillingClient(null, null);
 
