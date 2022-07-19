@@ -599,8 +599,6 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
             'please add a line starting with\n'
             '$_missingChangelogChangeJustificationMarker\n'
             'to your PR description with an explanation of why.');
-        printError(
-            'Reported description for debugging:\n=====\n${_getChangeDescription()}\n====');
         return 'Missing CHANGELOG change';
       }
     }
