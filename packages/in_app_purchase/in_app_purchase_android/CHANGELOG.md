@@ -1,3 +1,7 @@
+## 0.2.3+2
+
+* Call `queryPurchasesAsync` on main UI thread instead of background thread.
+
 ## 0.2.3+1
 
 * Updates `json_serializable` to fix warnings in generated code.
