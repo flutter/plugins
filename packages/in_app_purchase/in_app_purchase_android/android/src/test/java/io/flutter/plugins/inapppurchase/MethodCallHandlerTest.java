@@ -632,10 +632,8 @@ public class MethodCallHandlerTest {
 
     Handler handler = spy(new Handler(Looper.myLooper()));
     methodChannelHandler.postQueryPurchasesOnMainThread(SkuType.INAPP, result, handler);
-    // methodChannelHandler.onMethodCall(new MethodCall(QUERY_PURCHASES_ASYNC, arguments), result);
 
     verify(result, never()).error(any(), any(), any());
-    // verify(result, times(1)).success(any(HashMap.class));
     verify(handler, times(1)).post(any(Runnable.class));
   }
 
