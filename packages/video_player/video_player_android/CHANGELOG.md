@@ -1,3 +1,7 @@
+## 2.3.8
+
+* Updates ExoPlayer to 2.18.0.
+
 ## 2.3.7
 
 * Bumps gradle version to 7.2.1.
