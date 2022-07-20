@@ -151,40 +151,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     boolean isBiometricOnly = call.argument("biometricOnly");
     boolean allowCredentials = !isBiometricOnly && canAuthenticateWithDeviceCredential();
 
-    if (canAuthenticateWithBiometrics() || allowCredentials) {
-      sendAuthenticationRequest(call, completionHandler, allowCredentials);
-      return;
-    }
-
-    // Unable to authenticate
-    int errorCode =
-        isBiometricOnly
-            ? biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
-            : biometricManager.canAuthenticate(
-                BiometricManager.Authenticators.BIOMETRIC_WEAK
-                    | BiometricManager.Authenticators.DEVICE_CREDENTIAL);
-
-    switch (errorCode) {
-      case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
-        completionHandler.onError("NoHardware", "No biometric hardware found");
-        break;
-      case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
-        completionHandler.onError(
-            "NotEnrolled", "No requested authenticators enrolled on this device");
-        break;
-      case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-        completionHandler.onError(
-            "NotAvailable", "No requested authenticators supported or enabled");
-        break;
-      case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
-        completionHandler.onError("NotSupported", "This device requires a security update");
-        break;
-      default:
-        result.error(
-            "NotSupported", "This device does not support required security features", null);
-        break;
-    }
-
+    sendAuthenticationRequest(call, completionHandler, allowCredentials);
     return;
   }
 
