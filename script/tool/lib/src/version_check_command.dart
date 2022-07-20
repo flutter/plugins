@@ -625,7 +625,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       return false;
     }
 
-    // A string that is in all Dependabot PRs, but extreemly unlikely to be in
+    // A string that is in all Dependabot PRs, but extremely unlikely to be in
     // any other PR, to identify Dependabot PRs.
     const String dependabotMarker = 'Dependabot commands and options';
     // Expression to extract the name of the dependency being updated.
