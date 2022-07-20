@@ -442,6 +442,8 @@ class WKScriptMessageHandler extends NSObject {
   /// Use this method to respond to a message sent from the webpage’s
   /// JavaScript code. Use the [message] parameter to get the message contents and
   /// to determine the originating web view.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(
     WKUserContentController userContentController,
     WKScriptMessage message,
@@ -733,6 +735,8 @@ class WKUIDelegate extends NSObject {
   final WKUIDelegateHostApiImpl _uiDelegateApi;
 
   /// Indicates a new [WKWebView] was requested to be created with [configuration].
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(
     WKWebView webView,
     WKWebViewConfiguration configuration,
@@ -803,26 +807,38 @@ class WKNavigationDelegate extends NSObject {
   final WKNavigationDelegateHostApiImpl _navigationDelegateApi;
 
   /// Called when navigation is complete.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(WKWebView webView, String? url)? didFinishNavigation;
 
   /// Called when navigation from the main frame has started.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(WKWebView webView, String? url)?
       didStartProvisionalNavigation;
 
   /// Called when permission is needed to navigate to new content.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final Future<WKNavigationActionPolicy> Function(
     WKWebView webView,
     WKNavigationAction navigationAction,
   )? decidePolicyForNavigationAction;
 
   /// Called when an error occurred during navigation.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(WKWebView webView, NSError error)? didFailNavigation;
 
   /// Called when an error occurred during the early navigation process.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(WKWebView webView, NSError error)?
       didFailProvisionalNavigation;
 
   /// Called when the web view’s content process was terminated.
+  ///
+  /// {@macro webview_flutter_wkwebview.foundation.callbacks}
   final void Function(WKWebView webView)? webViewWebContentProcessDidTerminate;
 
   @override

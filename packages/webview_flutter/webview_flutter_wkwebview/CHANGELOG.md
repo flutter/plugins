@@ -1,6 +1,11 @@
-## NEXT
+## 2.9.1
+
+* Fixes regression where the behavior for the `UIScrollView` insets were removed.
+
+## 2.9.0
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Replaces platform implementation with WebKit API built with pigeon.
 
 ## 2.8.1
 
