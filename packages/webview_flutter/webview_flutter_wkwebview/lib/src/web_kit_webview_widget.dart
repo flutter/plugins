@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'common/weak_reference_utils.dart';
 import 'foundation/foundation.dart';
 import 'web_kit/web_kit.dart';
 
@@ -93,6 +94,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   bool _zoomEnabled = true;
   bool _hasNavigationDelegate = false;
+  bool _progressObserverSet = false;
 
   final Map<String, WKScriptMessageHandler> _scriptMessageHandlers =
       <String, WKScriptMessageHandler>{};
@@ -113,58 +115,74 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
 
   /// Used to integrate custom user interface elements into web view interactions.
   @visibleForTesting
-  late final WKUIDelegate uiDelegate =
-      webViewProxy.createUIDelgate(onCreateWebView: (
-    WKWebView webView,
-    WKWebViewConfiguration configuration,
-    WKNavigationAction navigationAction,
-  ) {
-    if (!navigationAction.targetFrame.isMainFrame) {
-      webView.loadRequest(navigationAction.request);
-    }
-  });
+  late final WKUIDelegate uiDelegate = webViewProxy.createUIDelgate(
+    onCreateWebView: (
+      WKWebView webView,
+      WKWebViewConfiguration configuration,
+      WKNavigationAction navigationAction,
+    ) {
+      if (!navigationAction.targetFrame.isMainFrame) {
+        webView.loadRequest(navigationAction.request);
+      }
+    },
+  );
 
   /// Methods for handling navigation changes and tracking navigation requests.
   @visibleForTesting
-  late final WKNavigationDelegate navigationDelegate =
-      webViewProxy.createNavigationDelegate(
-    didFinishNavigation: (WKWebView webView, String? url) {
-      callbacksHandler.onPageFinished(url ?? '');
-    },
-    didStartProvisionalNavigation: (WKWebView webView, String? url) {
-      callbacksHandler.onPageStarted(url ?? '');
-    },
-    decidePolicyForNavigationAction: (
-      WKWebView webView,
-      WKNavigationAction action,
-    ) async {
-      if (!_hasNavigationDelegate) {
-        return WKNavigationActionPolicy.allow;
-      }
+  late final WKNavigationDelegate navigationDelegate = withWeakRefenceTo(
+    this,
+    (WeakReference<WebKitWebViewPlatformController> weakReference) {
+      return webViewProxy.createNavigationDelegate(
+        didFinishNavigation: (WKWebView webView, String? url) {
+          weakReference.target?.callbacksHandler.onPageFinished(url ?? '');
+        },
+        didStartProvisionalNavigation: (WKWebView webView, String? url) {
+          weakReference.target?.callbacksHandler.onPageStarted(url ?? '');
+        },
+        decidePolicyForNavigationAction: (
+          WKWebView webView,
+          WKNavigationAction action,
+        ) async {
+          if (weakReference.target == null) {
+            return WKNavigationActionPolicy.allow;
+          }
 
-      final bool allow = await callbacksHandler.onNavigationRequest(
-        url: action.request.url,
-        isForMainFrame: action.targetFrame.isMainFrame,
+          if (!weakReference.target!._hasNavigationDelegate) {
+            return WKNavigationActionPolicy.allow;
+          }
+
+          final bool allow =
+              await weakReference.target!.callbacksHandler.onNavigationRequest(
+            url: action.request.url,
+            isForMainFrame: action.targetFrame.isMainFrame,
+          );
+
+          return allow
+              ? WKNavigationActionPolicy.allow
+              : WKNavigationActionPolicy.cancel;
+        },
+        didFailNavigation: (WKWebView webView, NSError error) {
+          weakReference.target?.callbacksHandler.onWebResourceError(
+            _toWebResourceError(error),
+          );
+        },
+        didFailProvisionalNavigation: (WKWebView webView, NSError error) {
+          weakReference.target?.callbacksHandler.onWebResourceError(
+            _toWebResourceError(error),
+          );
+        },
+        webViewWebContentProcessDidTerminate: (WKWebView webView) {
+          weakReference.target?.callbacksHandler.onWebResourceError(
+            WebResourceError(
+              errorCode: WKErrorCode.webContentProcessTerminated,
+              // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
+              domain: 'WKErrorDomain',
+              description: '',
+              errorType: WebResourceErrorType.webContentProcessTerminated,
+            ),
+          );
+        },
       );
-
-      return allow
-          ? WKNavigationActionPolicy.allow
-          : WKNavigationActionPolicy.cancel;
-    },
-    didFailNavigation: (WKWebView webView, NSError error) {
-      callbacksHandler.onWebResourceError(_toWebResourceError(error));
-    },
-    didFailProvisionalNavigation: (WKWebView webView, NSError error) {
-      callbacksHandler.onWebResourceError(_toWebResourceError(error));
-    },
-    webViewWebContentProcessDidTerminate: (WKWebView webView) {
-      callbacksHandler.onWebResourceError(WebResourceError(
-        errorCode: WKErrorCode.webContentProcessTerminated,
-        // Value from https://developer.apple.com/documentation/webkit/wkerrordomain?language=objc.
-        domain: 'WKErrorDomain',
-        description: '',
-        errorType: WebResourceErrorType.webContentProcessTerminated,
-      ));
     },
   );
 
@@ -178,14 +196,23 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       autoMediaPlaybackPolicy: params.autoMediaPlaybackPolicy,
     );
 
-    webView = webViewProxy.createWebView(configuration, observeValue: (
-      String keyPath,
-      NSObject object,
-      Map<NSKeyValueChangeKey, Object?> change,
-    ) {
-      final double progress = change[NSKeyValueChangeKey.newValue]! as double;
-      callbacksHandler.onProgress((progress * 100).round());
-    });
+    webView = webViewProxy.createWebView(
+      configuration,
+      observeValue: withWeakRefenceTo(
+        callbacksHandler,
+        (WeakReference<WebViewPlatformCallbacksHandler> weakReference) {
+          return (
+            String keyPath,
+            NSObject object,
+            Map<NSKeyValueChangeKey, Object?> change,
+          ) {
+            final double progress =
+                change[NSKeyValueChangeKey.newValue]! as double;
+            weakReference.target?.onProgress((progress * 100).round());
+          };
+        },
+      ),
+    );
 
     webView.setUIDelegate(uiDelegate);
 
@@ -313,10 +340,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<String> evaluateJavascript(String javascript) async {
     final Object? result = await webView.evaluateJavaScript(javascript);
-    // The legacy implementation of webview_flutter_wkwebview would convert
-    // objects to strings before returning them to Dart. This method attempts
-    // to converts Dart objects to Strings the way it is done in Objective-C
-    // to avoid breaking users expecting the same String format.
     return _asObjectiveCString(result);
   }
 
@@ -329,8 +352,6 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
       // example, when running a void function. For ease of use, this specific
       // error is ignored when no return value is expected.
-      // TODO(bparrishMines): Ensure the platform code includes the NSError in
-      // the FlutterError.details.
       if (exception.details is! NSError ||
           exception.details.code !=
               WKErrorCode.javaScriptResultTypeIsUnsupported) {
@@ -348,7 +369,7 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         'Use `runJavascript` when expecting a null return value.',
       );
     }
-    return result.toString();
+    return _asObjectiveCString(result);
   }
 
   @override
@@ -414,15 +435,22 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
       ).map<Future<void>>(
         (String channelName) {
           final WKScriptMessageHandler handler =
-              webViewProxy.createScriptMessageHandler(didReceiveScriptMessage: (
-            WKUserContentController userContentController,
-            WKScriptMessage message,
-          ) {
-            javascriptChannelRegistry.onJavascriptChannelMessage(
-              message.name,
-              message.body!.toString(),
-            );
-          });
+              webViewProxy.createScriptMessageHandler(
+            didReceiveScriptMessage: withWeakRefenceTo(
+              javascriptChannelRegistry,
+              (WeakReference<JavascriptChannelRegistry> weakReference) {
+                return (
+                  WKUserContentController userContentController,
+                  WKScriptMessage message,
+                ) {
+                  weakReference.target?.onJavascriptChannelMessage(
+                    message.name,
+                    message.body!.toString(),
+                  );
+                };
+              },
+            ),
+          );
           _scriptMessageHandlers[channelName] = handler;
 
           final String wrapperSource =
@@ -455,17 +483,20 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     await _resetUserScripts(removedJavaScriptChannels: javascriptChannelNames);
   }
 
-  Future<void> _setHasProgressTracking(bool hasProgressTracking) {
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
     if (hasProgressTracking) {
-      return webView.addObserver(
+      _progressObserverSet = true;
+      await webView.addObserver(
         webView,
         keyPath: 'estimatedProgress',
         options: <NSKeyValueObservingOptions>{
           NSKeyValueObservingOptions.newValue,
         },
       );
-    } else {
-      return webView.removeObserver(webView, keyPath: 'estimatedProgress');
+    } else if (_progressObserverSet) {
+      // Calls to removeObserver before addObserver causes a crash.
+      _progressObserverSet = false;
+      await webView.removeObserver(webView, keyPath: 'estimatedProgress');
     }
   }
 
@@ -568,6 +599,12 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
     );
   }
 
+  // The legacy implementation of webview_flutter_wkwebview would convert
+  // objects to strings before returning them to Dart. This method attempts
+  // to converts Dart objects to Strings the way it is done in Objective-C
+  // to avoid breaking users expecting the same String format.
+  // TODO(bparrishMines): Remove this method with the next breaking change.
+  // See https://github.com/flutter/flutter/issues/107491
   String _asObjectiveCString(Object? value, {bool inContainer = false}) {
     if (value == null) {
       // An NSNull inside an NSArray or NSDictionary is represented as a String
@@ -650,11 +687,7 @@ class WebViewWidgetProxy {
 
   /// Constructs a [WKNavigationDelegate].
   WKNavigationDelegate createNavigationDelegate({
-    void Function(
-      WKWebView webView,
-      String? url,
-    )?
-        didFinishNavigation,
+    void Function(WKWebView webView, String? url)? didFinishNavigation,
     void Function(WKWebView webView, String? url)?
         didStartProvisionalNavigation,
     Future<WKNavigationActionPolicy> Function(

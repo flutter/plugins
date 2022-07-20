@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -743,6 +745,23 @@ void main() {
         );
       });
 
+      testWidgets('runJavascriptReturningResult with bool return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(false),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies bool
+        // is represented the way it is in Objective-C.
+        // `NSNumber.description` converts bool values to a 1 or 0.
+        expect(
+          testController.runJavascriptReturningResult('runJavaScript'),
+          completion('0'),
+        );
+      });
+
       testWidgets('runJavascript', (WidgetTester tester) async {
         await buildWidget(tester);
 
@@ -1194,6 +1213,16 @@ void main() {
         );
 
         verify(mockCallbacksHandler.onProgress(32));
+      });
+
+      testWidgets('progress observer is not removed without being set first',
+          (WidgetTester tester) async {
+        await buildWidget(tester, hasProgressTracking: false);
+
+        verifyNever(mockWebView.removeObserver(
+          mockWebView,
+          keyPath: 'estimatedProgress',
+        ));
       });
     });
 

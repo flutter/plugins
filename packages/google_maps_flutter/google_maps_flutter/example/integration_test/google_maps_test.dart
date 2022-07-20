@@ -426,7 +426,8 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
+    await tester.binding.setSurfaceSize(const Size(800, 600));
+
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Key key = GlobalKey();
@@ -473,6 +474,7 @@ void main() {
               .round());
     }
     await tester.binding.setSurfaceSize(null);
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {

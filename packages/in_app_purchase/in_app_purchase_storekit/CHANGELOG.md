@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Adds ability to purchase more than one of a product.
+
 ## 0.3.0+10
 
 * Ignores deprecation warnings for upcoming styleFrom button API changes.
