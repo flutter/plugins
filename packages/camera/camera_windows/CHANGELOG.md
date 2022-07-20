@@ -1,3 +1,7 @@
+## 0.1.0+3
+
+* Updates the README to better explain how to use the unendorsed package.
+
 ## 0.1.0+2
 
 * Updates references to the obsolete master branch.
