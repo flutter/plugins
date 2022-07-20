@@ -177,7 +177,6 @@ public class InstanceManager {
     while ((reference = (WeakReference<Object>) referenceQueue.poll()) != null) {
       final Long identifier = weakReferencesToIdentifiers.remove(reference);
       if (identifier != null) {
-        System.out.println("I be running with " + identifier);
         weakInstances.remove(identifier);
         strongInstances.remove(identifier);
         finalizationListener.onFinalize(identifier);

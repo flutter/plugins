@@ -1,4 +1,4 @@
-## NEXT
+## 2.8.15
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 * Updates the Java InstanceManager to take a listener for when an object is garbage collected.
