@@ -627,7 +627,12 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
 
     // A string that is in all Dependabot PRs, but extremely unlikely to be in
     // any other PR, to identify Dependabot PRs.
-    const String dependabotMarker = 'Dependabot commands and options';
+    const String dependabotPRDescriptionMarker =
+        'Dependabot commands and options';
+    // The same thing, but for the Dependabot commit message, to work around
+    // https://github.com/cirruslabs/cirrus-ci-docs/issues/1029.
+    const String dependabotCommitMessageMarker =
+        'Signed-off-by: dependabot[bot]';
     // Expression to extract the name of the dependency being updated.
     final RegExp dependencyRegex =
         RegExp(r'Bumps? \[(.*?)\]\(.*?\) from [\d.]+ to [\d.]+');
@@ -641,7 +646,8 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       'mockito-' // mockito-core, mockito-inline, etc.
     };
 
-    if (changeDescription.contains(dependabotMarker)) {
+    if (changeDescription.contains(dependabotPRDescriptionMarker) ||
+        changeDescription.contains(dependabotCommitMessageMarker)) {
       final Match? match = dependencyRegex.firstMatch(changeDescription);
       if (match != null) {
         final String dependency = match.group(1)!;

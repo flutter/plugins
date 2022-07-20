@@ -89,6 +89,23 @@ You can trigger Dependabot actions by commenting on this PR:
 ''';
 }
 
+String _generateFakeDependabotCommitMessage(String package) {
+  return '''
+Bumps [$package](https://github.com/foo/$package) from 1.0.0 to 2.0.0.
+- [Release notes](https://github.com/foo/$package/releases)
+- [Commits](foo/$package@v4.3.1...v4.6.1)
+
+---
+updated-dependencies:
+- dependency-name: $package
+  dependency-type: direct:production
+  update-type: version-update:semver-minor
+...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+''';
+}
+
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
 void main() {
@@ -1287,6 +1304,47 @@ packages/plugin/android/build.gradle
               contains('No version change found'),
               contains('plugin:\n'
                   '    Missing version change'),
+            ]),
+          );
+        });
+
+        // Tests workaround for
+        // https://github.com/cirruslabs/cirrus-ci-docs/issues/1029.
+        test('allow list works for commit messages', () async {
+          final RepositoryPackage plugin =
+              createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+          const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+          plugin.changelogFile.writeAsStringSync(changelog);
+          processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+            MockProcess(stdout: 'version: 1.0.0'),
+          ];
+          processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+            MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          ];
+
+          final File changeDescriptionFile =
+              fileSystem.file('change_description.txt');
+          changeDescriptionFile.writeAsStringSync(
+              _generateFakeDependabotCommitMessage('mockito-core'));
+
+          final List<String> output =
+              await _runWithMissingChangeDetection(<String>[
+            '--change-description-file=${changeDescriptionFile.path}'
+          ]);
+
+          expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Ignoring lack of version change for Dependabot '
+                  'change to a known internal dependency.'),
+              contains('Ignoring lack of CHANGELOG update for Dependabot '
+                  'change to a known internal dependency.'),
             ]),
           );
         });
