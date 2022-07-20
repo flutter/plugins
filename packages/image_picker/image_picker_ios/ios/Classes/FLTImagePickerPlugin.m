@@ -351,38 +351,39 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)checkPhotoAuthorizationForAccessLevel API_AVAILABLE(ios(14)) {
-  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-  switch (status) {
-    case PHAuthorizationStatusNotDetermined: {
-      [PHPhotoLibrary
-          requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
-                                     handler:^(PHAuthorizationStatus status) {
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                         if (status == PHAuthorizationStatusAuthorized) {
-                                           [self
-                                               showPhotoLibraryWithPHPicker:self->
-                                                                            _pickerViewController];
-                                         } else if (status == PHAuthorizationStatusLimited) {
-                                           [self
-                                               showPhotoLibraryWithPHPicker:self->
-                                                                            _pickerViewController];
-                                         } else {
-                                           [self errorNoPhotoAccess:status];
-                                         }
-                                       });
-                                     }];
-      break;
-    }
-    case PHAuthorizationStatusAuthorized:
-    case PHAuthorizationStatusLimited:
-      [self showPhotoLibraryWithPHPicker:_pickerViewController];
-      break;
-    case PHAuthorizationStatusDenied:
-    case PHAuthorizationStatusRestricted:
-    default:
-      [self errorNoPhotoAccess:status];
-      break;
-  }
+	[self showPhotoLibraryWithPHPicker:_pickerViewController];
+//  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+//  switch (status) {
+//    case PHAuthorizationStatusNotDetermined: {
+//      [PHPhotoLibrary
+//          requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+//                                     handler:^(PHAuthorizationStatus status) {
+//                                       dispatch_async(dispatch_get_main_queue(), ^{
+//                                         if (status == PHAuthorizationStatusAuthorized) {
+//                                           [self
+//                                               showPhotoLibraryWithPHPicker:self->
+//                                                                            _pickerViewController];
+//                                         } else if (status == PHAuthorizationStatusLimited) {
+//                                           [self
+//                                               showPhotoLibraryWithPHPicker:self->
+//                                                                            _pickerViewController];
+//                                         } else {
+//                                           [self errorNoPhotoAccess:status];
+//                                         }
+//                                       });
+//                                     }];
+//      break;
+//    }
+//    case PHAuthorizationStatusAuthorized:
+//    case PHAuthorizationStatusLimited:
+//      [self showPhotoLibraryWithPHPicker:_pickerViewController];
+//      break;
+//    case PHAuthorizationStatusDenied:
+//    case PHAuthorizationStatusRestricted:
+//    default:
+//      [self errorNoPhotoAccess:status];
+//      break;
+//  }
 }
 
 - (void)errorNoCameraAccess:(AVAuthorizationStatus)status {
