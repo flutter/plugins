@@ -98,8 +98,6 @@ Here is a list of all permission error codes that can be thrown:
 
 - `AudioAccessRestricted`: iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
 
-- `cameraPermission`: Android and Web only. A legacy error code for all kinds of camera permission errors.
-
 ### Example
 
 Here is a small example flutter app displaying a full screen camera preview.

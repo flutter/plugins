@@ -1,3 +1,7 @@
+## 0.6.1 
+
+* Allows Android to trigger quick actions without restarting the app.
+
 ## 0.6.0+11
 
 * Updates references to the obsolete master branch.

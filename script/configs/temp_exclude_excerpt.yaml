@@ -18,7 +18,6 @@
 - plugin_platform_interface
 - quick_actions/quick_actions
 - shared_preferences/shared_preferences
-- url_launcher/url_launcher
 - video_player/video_player
 - webview_flutter/webview_flutter
 - webview_flutter_android
