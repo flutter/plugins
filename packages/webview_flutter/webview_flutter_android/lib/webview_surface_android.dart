@@ -14,14 +14,20 @@ import 'src/instance_manager.dart';
 import 'webview_android.dart';
 import 'webview_android_widget.dart';
 
-/// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
+/// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the
+/// [WebView] widget.
 ///
 /// To use this, set [WebView.platform] to an instance of this class.
 ///
-/// This implementation uses hybrid composition to render the [WebView] on
+/// This implementation uses [AndroidViewSurface] to render the [WebView] on
 /// Android. It solves multiple issues related to accessibility and interaction
 /// with the [WebView] at the cost of some performance on Android versions below
-/// 10. See https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
+/// 10.
+///
+/// To support transparent backgrounds on all Android devices, this
+/// implementation uses hybrid composition when the opacity of
+/// `CreationParams.backgroundColor` is less than 1.0. See
+/// https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
 /// information.
 class SurfaceAndroidWebView extends AndroidWebView {
   @override
@@ -53,16 +59,23 @@ class SurfaceAndroidWebView extends AndroidWebView {
             );
           },
           onCreatePlatformView: (PlatformViewCreationParams params) {
-            return PlatformViewsService.initSurfaceAndroidView(
+            final Color? backgroundColor = creationParams.backgroundColor;
+            return _createViewController(
+              // On some Android devices, transparent backgrounds can cause
+              // rendering issues on the non hybrid composition
+              // AndroidViewSurface. This switches the WebView to Hybrid
+              // Composition when the background color is not 100% opaque.
+              hybridComposition:
+                  backgroundColor != null && backgroundColor.opacity < 1.0,
               id: params.id,
               viewType: 'plugins.flutter.io/webview',
               // WebView content is not affected by the Android view's layout direction,
               // we explicitly set it here so that the widget doesn't require an ambient
               // directionality.
-              layoutDirection: TextDirection.rtl,
-              creationParams:
-                  InstanceManager.instance.getInstanceId(controller.webView),
-              creationParamsCodec: const StandardMessageCodec(),
+              layoutDirection:
+                  Directionality.maybeOf(context) ?? TextDirection.ltr,
+              webViewIdentifier:
+                  InstanceManager.instance.getInstanceId(controller.webView)!,
             )
               ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
               ..addOnPlatformViewCreatedListener((int id) {
@@ -74,6 +87,31 @@ class SurfaceAndroidWebView extends AndroidWebView {
           },
         );
       },
+    );
+  }
+
+  AndroidViewController _createViewController({
+    required bool hybridComposition,
+    required int id,
+    required String viewType,
+    required TextDirection layoutDirection,
+    required int webViewIdentifier,
+  }) {
+    if (hybridComposition) {
+      return PlatformViewsService.initExpensiveAndroidView(
+        id: id,
+        viewType: viewType,
+        layoutDirection: layoutDirection,
+        creationParams: webViewIdentifier,
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    }
+    return PlatformViewsService.initSurfaceAndroidView(
+      id: id,
+      viewType: viewType,
+      layoutDirection: layoutDirection,
+      creationParams: webViewIdentifier,
+      creationParamsCodec: const StandardMessageCodec(),
     );
   }
 }

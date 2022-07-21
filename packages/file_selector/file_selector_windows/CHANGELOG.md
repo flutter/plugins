@@ -1,5 +1,8 @@
-## NEXT
+## 0.9.0
 
+* **BREAKING CHANGE**: Methods that take `XTypeGroup`s now throw an
+  `ArgumentError` if any group is not a wildcard (all filter types null or
+  empty), but doesn't include any of the filter types supported by Windows.
 * Ignores deprecation warnings for upcoming styleFrom button API changes.
 
 ## 0.8.2+2

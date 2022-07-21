@@ -1,3 +1,7 @@
+## 2.0.7
+
+* Bumps gradle from 3.5.0 to 7.2.1.
+
 ## 2.0.6
 
 * Adds OS version support information to README.

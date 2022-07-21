@@ -1,6 +1,10 @@
-## 1.0.6
+## 1.0.7
 
 * Updates gradle version to 7.2.1 on Android.
+
+## 1.0.6
+
+* Updates androidx.core version to 1.8.0.
 
 ## 1.0.5
 
