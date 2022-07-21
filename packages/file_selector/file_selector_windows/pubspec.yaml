@@ -27,4 +27,4 @@ dependencies:
 dev_dependencies:
   build_runner: 2.1.11
   mockito: ^5.1.0
-  pigeon: ^3.2.4
+  pigeon: ^3.2.5

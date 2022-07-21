@@ -93,7 +93,7 @@ TEST(FileSelectorPlugin, TestOpenSimple) {
       nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 1);
   EXPECT_EQ(std::get<std::string>(paths[0]),
@@ -133,7 +133,7 @@ TEST(FileSelectorPlugin, TestOpenWithArguments) {
       &initial_directory, &confirm_button);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 1);
   EXPECT_EQ(std::get<std::string>(paths[0]),
@@ -177,7 +177,7 @@ TEST(FileSelectorPlugin, TestOpenMultiple) {
       nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 2);
   EXPECT_EQ(std::get<std::string>(paths[0]),
@@ -242,7 +242,7 @@ TEST(FileSelectorPlugin, TestOpenWithFilter) {
       nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 1);
   EXPECT_EQ(std::get<std::string>(paths[0]),
@@ -269,7 +269,7 @@ TEST(FileSelectorPlugin, TestOpenCancel) {
       nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 0);
 }
@@ -303,7 +303,7 @@ TEST(FileSelectorPlugin, TestSaveSimple) {
       nullptr, nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 1);
   EXPECT_EQ(std::get<std::string>(paths[0]),
@@ -342,7 +342,7 @@ TEST(FileSelectorPlugin, TestSaveWithArguments) {
       &initial_directory, &suggested_name, &confirm_button);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 1);
   EXPECT_EQ(std::get<std::string>(paths[0]),
@@ -369,7 +369,7 @@ TEST(FileSelectorPlugin, TestSaveCancel) {
       nullptr, nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 0);
 }
@@ -409,7 +409,7 @@ TEST(FileSelectorPlugin, TestGetDirectorySimple) {
       nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 1);
   EXPECT_EQ(std::get<std::string>(paths[0]), "C:\\Program Files");
@@ -435,7 +435,7 @@ TEST(FileSelectorPlugin, TestGetDirectoryCancel) {
       nullptr, nullptr);
 
   EXPECT_TRUE(shown);
-  ASSERT_FALSE(result.hasError());
+  ASSERT_FALSE(result.has_error());
   const EncodableList& paths = result.value();
   EXPECT_EQ(paths.size(), 0);
 }
