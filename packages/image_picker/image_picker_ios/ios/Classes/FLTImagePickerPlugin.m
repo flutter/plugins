@@ -325,33 +325,34 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)checkPhotoAuthorizationWithImagePicker:(UIImagePickerController *)imagePickerController {
-  if (@available(iOS 14, *)) {
-    // none
-  } else {
-    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-  switch (status) {
-    case PHAuthorizationStatusNotDetermined: {
-      [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          if (status == PHAuthorizationStatusAuthorized) {
-            [self showPhotoLibraryWithImagePicker:imagePickerController];
-          } else {
-            [self errorNoPhotoAccess:status];
-          }
-        });
-      }];
-      break;
-    }
-    case PHAuthorizationStatusAuthorized:
-      [self showPhotoLibraryWithImagePicker:imagePickerController];
-      break;
-    case PHAuthorizationStatusDenied:
-    case PHAuthorizationStatusRestricted:
-    default:
-      [self errorNoPhotoAccess:status];
-      break;
-  }
-  }
+	if (@available(iOS 14, *)) {
+		// none
+		[self showPhotoLibraryWithImagePicker:imagePickerController];
+	} else {
+		PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+		switch (status) {
+			case PHAuthorizationStatusNotDetermined: {
+				[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						if (status == PHAuthorizationStatusAuthorized) {
+							[self showPhotoLibraryWithImagePicker:imagePickerController];
+						} else {
+							[self errorNoPhotoAccess:status];
+						}
+					});
+				}];
+				break;
+			}
+			case PHAuthorizationStatusAuthorized:
+				[self showPhotoLibraryWithImagePicker:imagePickerController];
+				break;
+			case PHAuthorizationStatusDenied:
+			case PHAuthorizationStatusRestricted:
+			default:
+				[self errorNoPhotoAccess:status];
+				break;
+		}
+	}
 }
 
 - (void)checkPhotoAuthorizationForAccessLevel API_AVAILABLE(ios(14)) {
