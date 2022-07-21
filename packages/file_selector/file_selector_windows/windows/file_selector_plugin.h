@@ -33,12 +33,10 @@ class FileSelectorPlugin : public flutter::Plugin, public FileSelectorApi {
 
   // FileSelectorApi
   ErrorOr<flutter::EncodableList> ShowOpenDialog(
-      const SelectionOptions& options,
-      const std::string* initial_directory,
+      const SelectionOptions& options, const std::string* initial_directory,
       const std::string* confirm_button_text) override;
   ErrorOr<flutter::EncodableList> ShowSaveDialog(
-      const SelectionOptions& options,
-      const std::string* initialDirectory,
+      const SelectionOptions& options, const std::string* initialDirectory,
       const std::string* suggestedName,
       const std::string* confirmButtonText) override;
 
