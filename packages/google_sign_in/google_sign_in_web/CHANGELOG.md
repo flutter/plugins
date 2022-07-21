@@ -1,3 +1,7 @@
+## 0.10.3
+
+* Adds override for `GoogleSignInPlatform.initWithParams`.
+
 ## 0.10.2
 
 * Migrates to new platform-interface `initWithParams` method.

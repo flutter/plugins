@@ -82,6 +82,16 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     delegate.setUpRegistrar(registrar);
   }
 
+  @VisibleForTesting
+  public void setOptionsBuilderFactory(OptionsBuilderFactory factory) {
+    delegate.setOptionsBuilderFactory(factory);
+  }
+
+  @VisibleForTesting
+  public void setClientIdIdentifierOverride(int clientIdIdentifier) {
+    delegate.setClientIdIdentifierOverride(clientIdIdentifier);
+  }
+
   private void dispose() {
     delegate = null;
     channel.setMethodCallHandler(null);
@@ -140,8 +150,15 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String hostedDomain = call.argument("hostedDomain");
         String clientId = call.argument("clientId");
         String serverClientId = call.argument("serverClientId");
+        boolean forceCodeForRefreshToken = call.argument("forceCodeForRefreshToken");
         delegate.init(
-            result, signInOption, requestedScopes, hostedDomain, clientId, serverClientId);
+            result,
+            signInOption,
+            requestedScopes,
+            hostedDomain,
+            clientId,
+            serverClientId,
+            forceCodeForRefreshToken);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -198,7 +215,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         List<String> requestedScopes,
         String hostedDomain,
         String clientId,
-        String serverClientId);
+        String serverClientId,
+        boolean forceCodeForRefreshToken);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -244,6 +262,29 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   }
 
   /**
+   * Factory class that generates the GoogleSignInOptions.Builder. This is exposed so that tests can
+   * inject a mock instance of the GoogleSignInOptions.Builder.
+   */
+  public static class OptionsBuilderFactory {
+    public static final String DEFAULT_SIGN_IN = "SignInOption.standard";
+    public static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
+
+    /** Returns an instance of GoogleSignInOptions.Builder with the passed signInOption. */
+    public GoogleSignInOptions.Builder get(String signInOption) {
+      switch (signInOption) {
+        case DEFAULT_GAMES_SIGN_IN:
+          return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+
+        case DEFAULT_SIGN_IN:
+          return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+              .requestEmail();
+        default:
+          throw new IllegalStateException("Unknown signInOption");
+      }
+    }
+  }
+
+  /**
    * Delegate class that does the work for the Google sign-in plugin. This is exposed as a dedicated
    * class for use in other plugins that wrap basic sign-in functionality.
    *
@@ -267,9 +308,6 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     private static final String ERROR_FAILURE_TO_RECOVER_AUTH = "failed_to_recover_auth";
     private static final String ERROR_USER_RECOVERABLE_AUTH = "user_recoverable_auth";
 
-    private static final String DEFAULT_SIGN_IN = "SignInOption.standard";
-    private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
-
     private final Context context;
     // Only set registrar for v1 embedder.
     @SuppressWarnings("deprecation")
@@ -282,6 +320,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     private GoogleSignInClient signInClient;
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
+    private OptionsBuilderFactory optionsBuilderFactory = new OptionsBuilderFactory();
+    private int clientIdIdentifierOverride = -1;
 
     public Delegate(Context context, GoogleSignInWrapper googleSignInWrapper) {
       this.context = context;
@@ -292,6 +332,14 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     public void setUpRegistrar(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       registrar.addActivityResultListener(this);
+    }
+
+    public void setOptionsBuilderFactory(OptionsBuilderFactory factory) {
+      this.optionsBuilderFactory = factory;
+    }
+
+    public void setClientIdIdentifierOverride(int clientIdIdentifier) {
+      this.clientIdIdentifierOverride = clientIdIdentifier;
     }
 
     public void setActivity(Activity activity) {
@@ -315,6 +363,15 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       pendingOperation = new PendingOperation(method, result, data);
     }
 
+    private int getClientIdIdentifier() {
+      if (clientIdIdentifierOverride != -1) {
+        return clientIdIdentifierOverride;
+      }
+      return context
+          .getResources()
+          .getIdentifier("default_web_client_id", "string", context.getPackageName());
+    }
+
     /**
      * Initializes this delegate so that it is ready to perform other operations. The Dart code
      * guarantees that this will be called and completed before any other methods are invoked.
@@ -326,22 +383,10 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         List<String> requestedScopes,
         String hostedDomain,
         String clientId,
-        String serverClientId) {
+        String serverClientId,
+        boolean forceCodeForRefreshToken) {
       try {
-        GoogleSignInOptions.Builder optionsBuilder;
-
-        switch (signInOption) {
-          case DEFAULT_GAMES_SIGN_IN:
-            optionsBuilder =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
-            break;
-          case DEFAULT_SIGN_IN:
-            optionsBuilder =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
-            break;
-          default:
-            throw new IllegalStateException("Unknown signInOption");
-        }
+        GoogleSignInOptions.Builder optionsBuilder = optionsBuilderFactory.get(signInOption);
 
         // The clientId parameter is not supported on Android.
         // Android apps are identified by their package name and the SHA-1 of their signing key.
@@ -374,7 +419,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         }
         if (!Strings.isNullOrEmpty(serverClientId)) {
           optionsBuilder.requestIdToken(serverClientId);
-          optionsBuilder.requestServerAuthCode(serverClientId);
+          optionsBuilder.requestServerAuthCode(serverClientId, forceCodeForRefreshToken);
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
