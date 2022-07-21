@@ -4,6 +4,8 @@
   entries to make legacy version analysis possible in more cases.
 - Adds a `--lib-only` option to `analyze` to allow only analyzing the client
   parts of a library for legacy verison compatibility.
+- Bypasses version and CHANGELOG checks for Dependabot PRs for packages
+  that are known not to be client-affecting.
 
 ## 0.8.8
 
