@@ -37,8 +37,33 @@ void main() {
     runner.addCommand(command);
   });
 
-  test('fails when README is missing', () async {
-    createFakePackage('a_package', packagesDir);
+  test('prints paths of checked READMEs', () async {
+    final RepositoryPackage package = createFakePackage(
+        'a_package', packagesDir,
+        examples: <String>['example1', 'example2']);
+    for (final RepositoryPackage example in package.getExamples()) {
+      example.readmeFile.writeAsStringSync('A readme');
+    }
+    getExampleDir(package).childFile('README.md').writeAsStringSync('A readme');
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(
+      output,
+      containsAll(<Matcher>[
+        contains('  Checking README.md...'),
+        contains('  Checking example/README.md...'),
+        contains('  Checking example/example1/README.md...'),
+        contains('  Checking example/example2/README.md...'),
+      ]),
+    );
+  });
+
+  test('fails when package README is missing', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.readmeFile.deleteSync();
 
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -55,6 +80,143 @@ void main() {
     );
   });
 
+  test('passes when example README is missing', () async {
+    createFakePackage('a_package', packagesDir);
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('No README for example'),
+      ]),
+    );
+  });
+
+  test('does not inculde non-example subpackages', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    const String subpackageName = 'special_test';
+    final RepositoryPackage miscSubpackage =
+        createFakePackage(subpackageName, package.directory);
+    miscSubpackage.readmeFile.delete();
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['readme-check']);
+
+    expect(output, isNot(contains(subpackageName)));
+  });
+
+  test('fails when README still has plugin template boilerplate', () async {
+    final RepositoryPackage package = createFakePlugin('a_plugin', packagesDir);
+    package.readmeFile.writeAsStringSync('''
+## Getting Started
+
+This project is a starting point for a Flutter
+[plug-in package](https://flutter.dev/developing-packages/),
+a specialized package that includes platform-specific implementation code for
+Android and/or iOS.
+
+For help getting started with Flutter development, view the
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The boilerplate section about getting started with Flutter '
+            'should not be left in.'),
+        contains('Contains template boilerplate'),
+      ]),
+    );
+  });
+
+  test('fails when example README still has application template boilerplate',
+      () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.getExamples().first.readmeFile.writeAsStringSync('''
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The boilerplate section about getting started with Flutter '
+            'should not be left in.'),
+        contains('Contains template boilerplate'),
+      ]),
+    );
+  });
+
+  test(
+      'fails when multi-example top-level example directory README still has '
+      'application template boilerplate', () async {
+    final RepositoryPackage package = createFakePackage(
+        'a_package', packagesDir,
+        examples: <String>['example1', 'example2']);
+    package.directory
+        .childDirectory('example')
+        .childFile('README.md')
+        .writeAsStringSync('''
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+''');
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['readme-check'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The boilerplate section about getting started with Flutter '
+            'should not be left in.'),
+        contains('Contains template boilerplate'),
+      ]),
+    );
+  });
+
   group('plugin OS support', () {
     test(
         'does not check support table for anything other than app-facing plugin packages',
@@ -62,20 +224,12 @@ void main() {
       const String federatedPluginName = 'a_federated_plugin';
       final Directory federatedDir =
           packagesDir.childDirectory(federatedPluginName);
-      final List<RepositoryPackage> packages = <RepositoryPackage>[
-        // A non-plugin package.
-        createFakePackage('a_package', packagesDir),
-        // Non-app-facing parts of a federated plugin.
-        createFakePlugin(
-            '${federatedPluginName}_platform_interface', federatedDir),
-        createFakePlugin('${federatedPluginName}_android', federatedDir),
-      ];
-
-      for (final RepositoryPackage package in packages) {
-        package.readmeFile.writeAsStringSync('''
-A very useful package.
-''');
-      }
+      // A non-plugin package.
+      createFakePackage('a_package', packagesDir);
+      // Non-app-facing parts of a federated plugin.
+      createFakePlugin(
+          '${federatedPluginName}_platform_interface', federatedDir);
+      createFakePlugin('${federatedPluginName}_android', federatedDir);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'readme-check',
@@ -94,12 +248,7 @@ A very useful package.
 
     test('fails when non-federated plugin is missing an OS support table',
         () async {
-      final RepositoryPackage plugin =
-          createFakePlugin('a_plugin', packagesDir);
-
-      plugin.readmeFile.writeAsStringSync('''
-A very useful plugin.
-''');
+      createFakePlugin('a_plugin', packagesDir);
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -119,12 +268,7 @@ A very useful plugin.
     test(
         'fails when app-facing part of a federated plugin is missing an OS support table',
         () async {
-      final RepositoryPackage plugin =
-          createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
-
-      plugin.readmeFile.writeAsStringSync('''
-A very useful plugin.
-''');
+      createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(

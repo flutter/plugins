@@ -1,3 +1,19 @@
+## 0.3.1
+
+* Adds ability to purchase more than one of a product.
+
+## 0.3.0+10
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.3.0+9
+
+* Updates references to the obsolete master branch.
+
+## 0.3.0+8
+
+* Fixes a memory leak on iOS.
+
 ## 0.3.0+7
 
 * Minor fixes for new analysis options.

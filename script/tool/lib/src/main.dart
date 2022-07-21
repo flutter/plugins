@@ -7,6 +7,7 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:flutter_plugin_tools/src/dependabot_check_command.dart';
 
 import 'analyze_command.dart';
 import 'build_examples_command.dart';
@@ -29,6 +30,7 @@ import 'pubspec_check_command.dart';
 import 'readme_check_command.dart';
 import 'test_command.dart';
 import 'update_excerpts_command.dart';
+import 'update_release_info_command.dart';
 import 'version_check_command.dart';
 import 'xcode_analyze_command.dart';
 
@@ -54,6 +56,7 @@ void main(List<String> args) {
     ..addCommand(BuildExamplesCommand(packagesDir))
     ..addCommand(CreateAllPluginsAppCommand(packagesDir))
     ..addCommand(CustomTestCommand(packagesDir))
+    ..addCommand(DependabotCheckCommand(packagesDir))
     ..addCommand(DriveExamplesCommand(packagesDir))
     ..addCommand(FederationSafetyCheckCommand(packagesDir))
     ..addCommand(FirebaseTestLabCommand(packagesDir))
@@ -70,6 +73,7 @@ void main(List<String> args) {
     ..addCommand(ReadmeCheckCommand(packagesDir))
     ..addCommand(TestCommand(packagesDir))
     ..addCommand(UpdateExcerptsCommand(packagesDir))
+    ..addCommand(UpdateReleaseInfoCommand(packagesDir))
     ..addCommand(VersionCheckCommand(packagesDir))
     ..addCommand(XcodeAnalyzeCommand(packagesDir));
 

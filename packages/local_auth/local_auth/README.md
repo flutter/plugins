@@ -8,9 +8,9 @@ the user.
 On supported devices, this includes authentication with biometrics such as
 fingerprint or facial recognition.
 
-|             | Android   | iOS  |
-|-------------|-----------|------|
-| **Support** | SDK 16+\* | 9.0+ |
+|             | Android   | iOS  | Windows     |
+|-------------|-----------|------|-------------|
+| **Support** | SDK 16+\* | 9.0+ | Windows 10+ |
 
 ## Usage
 
@@ -89,6 +89,8 @@ final bool didAuthenticate = await auth.authenticate(
     localizedReason: 'Please authenticate to show account balance',
     options: const AuthenticationOptions(biometricOnly: true));
 ```
+
+*Note*: `biometricOnly` is not supported on Windows since the Windows implementation's underlying API (Windows Hello) doesn't support selecting the authentication method.
 
 #### Dialogs
 

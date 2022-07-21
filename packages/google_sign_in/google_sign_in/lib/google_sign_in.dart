@@ -12,6 +12,7 @@ import 'src/common.dart';
 
 export 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
     show SignInOption;
+
 export 'src/common.dart';
 export 'widgets.dart';
 
@@ -129,7 +130,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
@@ -186,6 +187,7 @@ class GoogleSignIn {
     this.scopes = const <String>[],
     this.hostedDomain,
     this.clientId,
+    this.serverClientId,
     this.forceCodeForRefreshToken = false,
   });
 
@@ -232,8 +234,28 @@ class GoogleSignIn {
   /// Domain to restrict sign-in to.
   final String? hostedDomain;
 
-  /// Client ID being used to connect to google sign-in. Only supported on web.
+  /// Client ID being used to connect to google sign-in.
+  ///
+  /// This option is not supported on all platforms (e.g. Android). It is
+  /// optional if file-based configuration is used.
+  ///
+  /// The value specified here has precedence over a value from a configuration
+  /// file.
   final String? clientId;
+
+  /// Client ID of the backend server to which the app needs to authenticate
+  /// itself.
+  ///
+  /// Optional and not supported on all platforms (e.g. web). By default, it
+  /// is initialized from a configuration file if available.
+  ///
+  /// The value specified here has precedence over a value from a configuration
+  /// file.
+  ///
+  /// [GoogleSignInAuthentication.idToken] and
+  /// [GoogleSignInAccount.serverAuthCode] will be specific to the backend
+  /// server.
+  final String? serverClientId;
 
   /// Force the authorization code to be valid for a refresh token every time. Only needed on Android.
   final bool forceCodeForRefreshToken;
@@ -267,17 +289,19 @@ class GoogleSignIn {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.initWithParams(
-        SignInInitParameters(
-            signInOption: signInOption,
-            scopes: scopes,
-            hostedDomain: hostedDomain,
-            clientId: clientId,
-            forceCodeForRefreshToken: forceCodeForRefreshToken))
-      ..catchError((dynamic _) {
-        // Invalidate initialization if it errors out.
-        _initialization = null;
-      });
+    return _initialization ??=
+        GoogleSignInPlatform.instance.initWithParams(SignInInitParameters(
+      signInOption: signInOption,
+      scopes: scopes,
+      hostedDomain: hostedDomain,
+      clientId: clientId,
+      serverClientId: serverClientId,
+      forceCodeForRefreshToken: forceCodeForRefreshToken,
+    ))
+          ..catchError((dynamic _) {
+            // Invalidate initialization if it errors out.
+            _initialization = null;
+          });
   }
 
   /// The most recently scheduled method call.

@@ -1,3 +1,9 @@
+## 0.9.0
+
+* **BREAKING CHANGE**: Methods that take `XTypeGroup`s now throw an
+  `ArgumentError` if any group is not a wildcard (all filter types null or
+  empty), but doesn't include any of the filter types supported by web.
+
 ## 0.8.1+5
 
 * Minor fixes for new analysis options.

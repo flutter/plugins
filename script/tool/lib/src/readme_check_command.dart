@@ -54,34 +54,72 @@ class ReadmeCheckCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    final File readme = package.readmeFile;
-
-    if (!readme.existsSync()) {
-      return PackageResult.fail(<String>['Missing README.md']);
+    final List<String> errors = _validateReadme(package.readmeFile,
+        mainPackage: package, isExample: false);
+    for (final RepositoryPackage packageToCheck in package.getExamples()) {
+      errors.addAll(_validateReadme(packageToCheck.readmeFile,
+          mainPackage: package, isExample: true));
     }
 
+    // If there's an example/README.md for a multi-example package, validate
+    // that as well, as it will be shown on pub.dev.
+    final Directory exampleDir = package.directory.childDirectory('example');
+    final File exampleDirReadme = exampleDir.childFile('README.md');
+    if (exampleDir.existsSync() && !isPackage(exampleDir)) {
+      errors.addAll(_validateReadme(exampleDirReadme,
+          mainPackage: package, isExample: true));
+    }
+
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
+  }
+
+  List<String> _validateReadme(File readme,
+      {required RepositoryPackage mainPackage, required bool isExample}) {
+    if (!readme.existsSync()) {
+      if (isExample) {
+        print('${indentation}No README for '
+            '${getRelativePosixPath(readme.parent, from: mainPackage.directory)}');
+        return <String>[];
+      } else {
+        printError('${indentation}No README found at '
+            '${getRelativePosixPath(readme, from: mainPackage.directory)}');
+        return <String>['Missing README.md'];
+      }
+    }
+
+    print('${indentation}Checking '
+        '${getRelativePosixPath(readme, from: mainPackage.directory)}...');
+
+    final List<String> readmeLines = readme.readAsLinesSync();
     final List<String> errors = <String>[];
-
-    final Pubspec pubspec = package.parsePubspec();
-    final bool isPlugin = pubspec.flutter?['plugin'] != null;
-
-    final List<String> readmeLines = package.readmeFile.readAsLinesSync();
 
     final String? blockValidationError = _validateCodeBlocks(readmeLines);
     if (blockValidationError != null) {
       errors.add(blockValidationError);
     }
 
-    if (isPlugin && (!package.isFederated || package.isAppFacing)) {
-      final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
-      if (error != null) {
-        errors.add(error);
+    if (_containsTemplateBoilerplate(readmeLines)) {
+      printError('${indentation}The boilerplate section about getting started '
+          'with Flutter should not be left in.');
+      errors.add('Contains template boilerplate');
+    }
+
+    // Check if this is the main readme for a plugin, and if so enforce extra
+    // checks.
+    if (!isExample) {
+      final Pubspec pubspec = mainPackage.parsePubspec();
+      final bool isPlugin = pubspec.flutter?['plugin'] != null;
+      if (isPlugin && (!mainPackage.isFederated || mainPackage.isAppFacing)) {
+        final String? error = _validateSupportedPlatforms(readmeLines, pubspec);
+        if (error != null) {
+          errors.add(error);
+        }
       }
     }
 
-    return errors.isEmpty
-        ? PackageResult.success()
-        : PackageResult.fail(errors);
+    return errors;
   }
 
   /// Validates that code blocks (``` ... ```) follow repository standards.
@@ -222,5 +260,12 @@ ${indentation * 2}Please use standard capitalizations: ${sortedListString(expect
     // consistent with what the current implementations require. See
     // https://github.com/flutter/flutter/issues/84200
     return null;
+  }
+
+  /// Returns true if the README still has the boilerplate from the
+  /// `flutter create` templates.
+  bool _containsTemplateBoilerplate(List<String> readmeLines) {
+    return readmeLines.any((String line) =>
+        line.contains('For help getting started with Flutter'));
   }
 }

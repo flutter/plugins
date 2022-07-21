@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 
 import '../common/instance_manager.dart';
 import 'foundation_api_impls.dart';
@@ -233,19 +236,56 @@ class NSHttpCookie {
 }
 
 /// The root class of most Objective-C class hierarchies.
-class NSObject {
-  /// Constructs an [NSObject].
-  NSObject({BinaryMessenger? binaryMessenger, InstanceManager? instanceManager})
-      : _api = NSObjectHostApiImpl(
+@immutable
+class NSObject with Copyable {
+  /// Constructs a [NSObject] without creating the associated
+  /// Objective-C object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  NSObject.detached({
+    this.observeValue,
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : _api = NSObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ) {
-    // Ensures FlutterApis for the Foundation library and FunctionFlutterApi are
-    // set up.
+    // Ensures FlutterApis for the Foundation library are set up.
     FoundationFlutterApis.instance.ensureSetUp();
   }
 
+  /// Release the reference to the Objective-C object.
+  static void dispose(NSObject instance) {
+    instance._api.instanceManager.removeWeakReference(instance);
+  }
+
+  /// Global instance of [InstanceManager].
+  static final InstanceManager globalInstanceManager =
+      InstanceManager(onWeakReferenceRemoved: (int instanceId) {
+    NSObjectHostApiImpl().dispose(instanceId);
+  });
+
   final NSObjectHostApiImpl _api;
+
+  /// Informs the observing object when the value at the specified key path has
+  /// changed.
+  ///
+  /// {@template webview_flutter_wkwebview.foundation.callbacks}
+  /// For the associated Objective-C object to be automatically garbage
+  /// collected, it is required that this Function doesn't contain a strong
+  /// reference to the encapsulating class instance. Consider using
+  /// `WeakReference` when referencing an object not received as a parameter.
+  /// Otherwise, use [NSObject.dispose] to release the associated Objective-C
+  /// object manually.
+  ///
+  /// See [withWeakRefenceTo].
+  /// {@endtemplate}
+  final void Function(
+    String keyPath,
+    NSObject object,
+    Map<NSKeyValueChangeKey, Object?> change,
+  )? observeValue;
 
   /// Registers the observer object to receive KVO notifications.
   Future<void> addObserver(
@@ -267,20 +307,12 @@ class NSObject {
     return _api.removeObserverForInstances(this, observer, keyPath);
   }
 
-  /// Release the reference to the Objective-C object.
-  Future<void> dispose() {
-    return _api.disposeForInstances(this);
-  }
-
-  /// Informs the observing object when the value at the specified key path has changed.
-  Future<void> setObserveValue(
-    void Function(
-      String keyPath,
-      NSObject object,
-      Map<NSKeyValueChangeKey, Object?> change,
-    )?
-        observeValue,
-  ) {
-    throw UnimplementedError();
+  @override
+  NSObject copy() {
+    return NSObject.detached(
+      observeValue: observeValue,
+      binaryMessenger: _api.binaryMessenger,
+      instanceManager: _api.instanceManager,
+    );
   }
 }

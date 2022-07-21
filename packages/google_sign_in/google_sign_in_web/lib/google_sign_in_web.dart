@@ -41,13 +41,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   late Future<void> _isAuthInitialized;
   bool _isInitCalled = false;
 
-  // This method throws if init hasn't been called at some point in the past.
-  // It is used by the [initialized] getter to ensure that users can't await
-  // on a Future that will never resolve.
+  // This method throws if init or initWithParams hasn't been called at some
+  // point in the past. It is used by the [initialized] getter to ensure that
+  // users can't await on a Future that will never resolve.
   void _assertIsInitCalled() {
     if (!_isInitCalled) {
       throw StateError(
-          'GoogleSignInPlugin::init() must be called before any other method in this plugin.');
+        'GoogleSignInPlugin::init() or GoogleSignInPlugin::initWithParams() '
+        'must be called before any other method in this plugin.',
+      );
     }
   }
 
@@ -73,8 +75,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     String? clientId,
   }) {
     return initWithParams(SignInInitParameters(
-      signInOption: signInOption,
       scopes: scopes,
+      signInOption: signInOption,
       hostedDomain: hostedDomain,
       clientId: clientId,
     ));
@@ -87,7 +89,10 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         appClientId != null,
         'ClientID not set. Either set it on a '
         '<meta name="google-signin-client_id" content="CLIENT_ID" /> tag,'
-        ' or pass clientId when calling init()');
+        ' or pass clientId when initializing GoogleSignIn');
+
+    assert(params.serverClientId == null,
+        'serverClientId is not supported on Web.');
 
     assert(
         !params.scopes.any((String scope) => scope.contains(' ')),

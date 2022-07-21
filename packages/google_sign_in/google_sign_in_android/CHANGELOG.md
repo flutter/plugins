@@ -1,6 +1,23 @@
-## 5.2.8
+## 6.0.2
 
 * Adds override for `GoogleSignIn.initWithParams` to handle new `forceCodeForRefreshToken` parameter.
+
+## 6.0.1
+
+* Updates gradle version to 7.2.1 on Android.
+
+## 6.0.0
+
+* Deprecates `clientId` and adds support for `serverClientId` instead.
+  Historically `clientId` was interpreted as `serverClientId`, but only on Android. On
+  other platforms it was interpreted as the OAuth `clientId` of the app. For backwards-compatibility
+  `clientId` will still be used as a server client ID if `serverClientId` is not provided.
+* **BREAKING CHANGES**:
+  * Adds `serverClientId` parameter to `IDelegate.init` (Java).
+
+## 5.2.8
+
+* Suppresses `deprecation` warnings (for using Android V1 embedding).
 
 ## 5.2.7
 
@@ -13,4 +30,4 @@
 
 ## 5.2.5
 
-* Splits from `video_player` as a federated implementation.
+* Splits from `google_sign_in` as a federated implementation.

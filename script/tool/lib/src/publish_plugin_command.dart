@@ -121,6 +121,8 @@ class PublishPluginCommand extends PackageLoopingCommand {
   List<String> _existingGitTags = <String>[];
   // The remote to push tags to.
   late _RemoteInfo _remote;
+  // Flags to pass to `pub publish`.
+  late List<String> _publishFlags;
 
   @override
   String get successSummaryMessage => 'published';
@@ -148,6 +150,11 @@ class PublishPluginCommand extends PackageLoopingCommand {
         await repository.runCommand(<String>['tag', '--sort=-committerdate']);
     _existingGitTags = (existingTagsResult.stdout as String).split('\n')
       ..removeWhere((String element) => element.isEmpty);
+
+    _publishFlags = <String>[
+      ...getStringListArg(_pubFlagsOption),
+      if (getBoolArg(_skipConfirmationFlag)) '--force',
+    ];
 
     if (getBoolArg(_dryRunFlag)) {
       print('=============== DRY RUN ===============');
@@ -333,22 +340,18 @@ Safe to ignore if the package is deleted in this commit.
 
   Future<bool> _publish(RepositoryPackage package) async {
     print('Publishing...');
-    final List<String> publishFlags = getStringListArg(_pubFlagsOption);
-    print('Running `pub publish ${publishFlags.join(' ')}` in '
+    print('Running `pub publish ${_publishFlags.join(' ')}` in '
         '${package.directory.absolute.path}...\n');
     if (getBoolArg(_dryRunFlag)) {
       return true;
     }
 
-    if (getBoolArg(_skipConfirmationFlag)) {
-      publishFlags.add('--force');
-    }
-    if (publishFlags.contains('--force')) {
+    if (_publishFlags.contains('--force')) {
       _ensureValidPubCredential();
     }
 
     final io.Process publish = await processRunner.start(
-        flutterCommand, <String>['pub', 'publish'] + publishFlags,
+        flutterCommand, <String>['pub', 'publish', ..._publishFlags],
         workingDirectory: package.directory);
     publish.stdout.transform(utf8.decoder).listen((String data) => print(data));
     publish.stderr.transform(utf8.decoder).listen((String data) => print(data));

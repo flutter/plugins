@@ -62,6 +62,7 @@ void main() {
         ],
       );
     });
+
     test('passes initialDirectory correctly', () async {
       await plugin.openFile(initialDirectory: '/example/directory');
 
@@ -77,6 +78,7 @@ void main() {
         ],
       );
     });
+
     test('passes confirmButtonText correctly', () async {
       await plugin.openFile(confirmButtonText: 'Open File');
 
@@ -92,7 +94,28 @@ void main() {
         ],
       );
     });
+
+    test('throws for a type group that does not support macOS', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'images',
+        webWildCards: <String>['images/*'],
+      );
+
+      await expectLater(
+          plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group]), completes);
+    });
   });
+
   group('openFiles', () {
     test('passes the accepted type groups correctly', () async {
       final XTypeGroup group = XTypeGroup(
@@ -127,6 +150,7 @@ void main() {
         ],
       );
     });
+
     test('passes initialDirectory correctly', () async {
       await plugin.openFiles(initialDirectory: '/example/directory');
 
@@ -142,6 +166,7 @@ void main() {
         ],
       );
     });
+
     test('passes confirmButtonText correctly', () async {
       await plugin.openFiles(confirmButtonText: 'Open File');
 
@@ -156,6 +181,26 @@ void main() {
           }),
         ],
       );
+    });
+
+    test('throws for a type group that does not support macOS', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'images',
+        webWildCards: <String>['images/*'],
+      );
+
+      await expectLater(
+          plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group]), completes);
     });
   });
 
@@ -194,6 +239,7 @@ void main() {
         ],
       );
     });
+
     test('passes initialDirectory correctly', () async {
       await plugin.getSavePath(initialDirectory: '/example/directory');
 
@@ -209,6 +255,7 @@ void main() {
         ],
       );
     });
+
     test('passes confirmButtonText correctly', () async {
       await plugin.getSavePath(confirmButtonText: 'Open File');
 
@@ -224,33 +271,56 @@ void main() {
         ],
       );
     });
-    group('getDirectoryPath', () {
-      test('passes initialDirectory correctly', () async {
-        await plugin.getDirectoryPath(initialDirectory: '/example/directory');
 
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
-              'initialDirectory': '/example/directory',
-              'confirmButtonText': null,
-            }),
-          ],
-        );
-      });
-      test('passes confirmButtonText correctly', () async {
-        await plugin.getDirectoryPath(confirmButtonText: 'Open File');
+    test('throws for a type group that does not support macOS', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'images',
+        webWildCards: <String>['images/*'],
+      );
 
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
-              'initialDirectory': null,
-              'confirmButtonText': 'Open File',
-            }),
-          ],
-        );
-      });
+      await expectLater(
+          plugin.getSavePath(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.getSavePath(acceptedTypeGroups: <XTypeGroup>[group]),
+          completes);
+    });
+  });
+
+  group('getDirectoryPath', () {
+    test('passes initialDirectory correctly', () async {
+      await plugin.getDirectoryPath(initialDirectory: '/example/directory');
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
+            'initialDirectory': '/example/directory',
+            'confirmButtonText': null,
+          }),
+        ],
+      );
+    });
+
+    test('passes confirmButtonText correctly', () async {
+      await plugin.getDirectoryPath(confirmButtonText: 'Open File');
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
+            'initialDirectory': null,
+            'confirmButtonText': 'Open File',
+          }),
+        ],
+      );
     });
   });
 

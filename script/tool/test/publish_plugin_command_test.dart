@@ -224,6 +224,35 @@ void main() {
               plugin.path)));
     });
 
+    test('--force is only added once, regardless of plugin count', () async {
+      _createMockCredentialFile();
+      final RepositoryPackage plugin1 =
+          createFakePlugin('plugin_a', packagesDir, examples: <String>[]);
+      final RepositoryPackage plugin2 =
+          createFakePlugin('plugin_b', packagesDir, examples: <String>[]);
+
+      await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=plugin_a,plugin_b',
+        '--skip-confirmation',
+        '--pub-publish-flags',
+        '--server=bar'
+      ]);
+
+      expect(
+          processRunner.recordedCalls,
+          containsAllInOrder(<ProcessCall>[
+            ProcessCall(
+                flutterCommand,
+                const <String>['pub', 'publish', '--server=bar', '--force'],
+                plugin1.path),
+            ProcessCall(
+                flutterCommand,
+                const <String>['pub', 'publish', '--server=bar', '--force'],
+                plugin2.path),
+          ]));
+    });
+
     test('throws if pub publish fails', () async {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
 

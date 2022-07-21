@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
+import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 
 /// A void function that handles a [gmaps.LatLng] as a parameter.
 ///

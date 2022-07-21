@@ -40,6 +40,72 @@ void testAllowedVersion(
   }
 }
 
+String _generateFakeDependabotPRDescription(String package) {
+  return '''
+Bumps [$package](https://github.com/foo/$package) from 1.0.0 to 2.0.0.
+<details>
+<summary>Release notes</summary>
+<p><em>Sourced from <a href="https://github.com/foo/$package">$package's releases</a>.</em></p>
+<blockquote>
+...
+</blockquote>
+</details>
+<details>
+<summary>Commits</summary>
+<ul>
+<li>...</li>
+</ul>
+</details>
+<br />
+
+
+[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=$package&package-manager=gradle&previous-version=1.0.0&new-version=2.0.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.
+
+[//]: # (dependabot-automerge-start)
+[//]: # (dependabot-automerge-end)
+
+---
+
+<details>
+<summary>Dependabot commands and options</summary>
+<br />
+
+You can trigger Dependabot actions by commenting on this PR:
+- `@dependabot rebase` will rebase this PR
+- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it
+- `@dependabot merge` will merge this PR after your CI passes on it
+- `@dependabot squash and merge` will squash and merge this PR after your CI passes on it
+- `@dependabot cancel merge` will cancel a previously requested merge and block automerging
+- `@dependabot reopen` will reopen this PR if it is closed
+- `@dependabot close` will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+- `@dependabot ignore this major version` will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+- `@dependabot ignore this minor version` will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+- `@dependabot ignore this dependency` will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+
+
+</details>
+''';
+}
+
+String _generateFakeDependabotCommitMessage(String package) {
+  return '''
+Bumps [$package](https://github.com/foo/$package) from 1.0.0 to 2.0.0.
+- [Release notes](https://github.com/foo/$package/releases)
+- [Commits](foo/$package@v4.3.1...v4.6.1)
+
+---
+updated-dependencies:
+- dependency-name: $package
+  dependency-type: direct:production
+  update-type: version-update:semver-minor
+...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+''';
+}
+
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
 void main() {
@@ -421,7 +487,7 @@ This is necessary because of X, Y, and Z
 ## $version
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
       expect(
@@ -439,7 +505,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.2
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -465,7 +531,7 @@ This is necessary because of X, Y, and Z
 ## $version
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
       expect(
@@ -488,7 +554,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -518,7 +584,7 @@ This is necessary because of X, Y, and Z
 ## $version
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
@@ -547,7 +613,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -580,7 +646,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
@@ -612,7 +678,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
@@ -642,8 +708,8 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.1'),
       ];
@@ -671,7 +737,7 @@ This is necessary because of X, Y, and Z
 # 1.0.0
 * Some other changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
@@ -704,7 +770,7 @@ This is necessary because of X, Y, and Z
 ## Alpha
 * Some changes.
 ''';
-      createFakeCHANGELOG(plugin, changelog);
+      plugin.changelogFile.writeAsStringSync(changelog);
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
         MockProcess(stdout: 'version: 1.0.0'),
       ];
@@ -749,7 +815,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -778,7 +844,7 @@ This is necessary because of X, Y, and Z
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -813,7 +879,7 @@ packages/plugin/lib/plugin.dart
 ## 1.0.1
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -844,7 +910,7 @@ packages/plugin/pubspec.yaml
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -874,7 +940,7 @@ tool/plugin/lib/plugin.dart
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -907,7 +973,7 @@ packages/plugin/CHANGELOG.md
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -948,7 +1014,7 @@ No version change: Code change is only to implementation comments.
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -983,7 +1049,7 @@ packages/plugin/example/lib/foo.dart
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -1014,7 +1080,7 @@ packages/plugin/CHANGELOG.md
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -1048,7 +1114,7 @@ packages/another_plugin/CHANGELOG.md
 ## 1.0.0
 * Some changes.
 ''';
-        createFakeCHANGELOG(plugin, changelog);
+        plugin.changelogFile.writeAsStringSync(changelog);
         processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
           MockProcess(stdout: 'version: 1.0.0'),
         ];
@@ -1077,6 +1143,211 @@ No CHANGELOG change: Code change is only to implementation comments.
                 '"No CHANGELOG change:" in the change description.'),
           ]),
         );
+      });
+
+      group('dependabot', () {
+        test('allows missing version and CHANGELOG change for mockito',
+            () async {
+          final RepositoryPackage plugin =
+              createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+          const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+          plugin.changelogFile.writeAsStringSync(changelog);
+          processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+            MockProcess(stdout: 'version: 1.0.0'),
+          ];
+          processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+            MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          ];
+
+          final File changeDescriptionFile =
+              fileSystem.file('change_description.txt');
+          changeDescriptionFile.writeAsStringSync(
+              _generateFakeDependabotPRDescription('mockito-core'));
+
+          final List<String> output =
+              await _runWithMissingChangeDetection(<String>[
+            '--change-description-file=${changeDescriptionFile.path}'
+          ]);
+
+          expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Ignoring lack of version change for Dependabot '
+                  'change to a known internal dependency.'),
+              contains('Ignoring lack of CHANGELOG update for Dependabot '
+                  'change to a known internal dependency.'),
+            ]),
+          );
+        });
+
+        test('allows missing version and CHANGELOG change for robolectric',
+            () async {
+          final RepositoryPackage plugin =
+              createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+          const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+          plugin.changelogFile.writeAsStringSync(changelog);
+          processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+            MockProcess(stdout: 'version: 1.0.0'),
+          ];
+          processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+            MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          ];
+
+          final File changeDescriptionFile =
+              fileSystem.file('change_description.txt');
+          changeDescriptionFile.writeAsStringSync(
+              _generateFakeDependabotPRDescription('robolectric'));
+
+          final List<String> output =
+              await _runWithMissingChangeDetection(<String>[
+            '--change-description-file=${changeDescriptionFile.path}'
+          ]);
+
+          expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Ignoring lack of version change for Dependabot '
+                  'change to a known internal dependency.'),
+              contains('Ignoring lack of CHANGELOG update for Dependabot '
+                  'change to a known internal dependency.'),
+            ]),
+          );
+        });
+
+        test('allows missing version and CHANGELOG change for junit', () async {
+          final RepositoryPackage plugin =
+              createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+          const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+          plugin.changelogFile.writeAsStringSync(changelog);
+          processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+            MockProcess(stdout: 'version: 1.0.0'),
+          ];
+          processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+            MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          ];
+
+          final File changeDescriptionFile =
+              fileSystem.file('change_description.txt');
+          changeDescriptionFile
+              .writeAsStringSync(_generateFakeDependabotPRDescription('junit'));
+
+          final List<String> output =
+              await _runWithMissingChangeDetection(<String>[
+            '--change-description-file=${changeDescriptionFile.path}'
+          ]);
+
+          expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Ignoring lack of version change for Dependabot '
+                  'change to a known internal dependency.'),
+              contains('Ignoring lack of CHANGELOG update for Dependabot '
+                  'change to a known internal dependency.'),
+            ]),
+          );
+        });
+
+        test('fails for dependencies that are not explicitly allowed',
+            () async {
+          final RepositoryPackage plugin =
+              createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+          const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+          plugin.changelogFile.writeAsStringSync(changelog);
+          processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+            MockProcess(stdout: 'version: 1.0.0'),
+          ];
+          processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+            MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          ];
+
+          final File changeDescriptionFile =
+              fileSystem.file('change_description.txt');
+          changeDescriptionFile.writeAsStringSync(
+              _generateFakeDependabotPRDescription('somethingelse'));
+
+          Error? commandError;
+          final List<String> output =
+              await _runWithMissingChangeDetection(<String>[
+            '--change-description-file=${changeDescriptionFile.path}'
+          ], errorHandler: (Error e) {
+            commandError = e;
+          });
+
+          expect(commandError, isA<ToolExit>());
+          expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('No version change found'),
+              contains('plugin:\n'
+                  '    Missing version change'),
+            ]),
+          );
+        });
+
+        // Tests workaround for
+        // https://github.com/cirruslabs/cirrus-ci-docs/issues/1029.
+        test('allow list works for commit messages', () async {
+          final RepositoryPackage plugin =
+              createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+          const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+          plugin.changelogFile.writeAsStringSync(changelog);
+          processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+            MockProcess(stdout: 'version: 1.0.0'),
+          ];
+          processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+            MockProcess(stdout: '''
+packages/plugin/android/build.gradle
+'''),
+          ];
+
+          final File changeDescriptionFile =
+              fileSystem.file('change_description.txt');
+          changeDescriptionFile.writeAsStringSync(
+              _generateFakeDependabotCommitMessage('mockito-core'));
+
+          final List<String> output =
+              await _runWithMissingChangeDetection(<String>[
+            '--change-description-file=${changeDescriptionFile.path}'
+          ]);
+
+          expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Ignoring lack of version change for Dependabot '
+                  'change to a known internal dependency.'),
+              contains('Ignoring lack of CHANGELOG update for Dependabot '
+                  'change to a known internal dependency.'),
+            ]),
+          );
+        });
       });
     });
 
@@ -1177,6 +1448,186 @@ ${indentation}HTTP response: null
           contains('Unable to find previous version on pub server.'),
         ]),
       );
+    });
+
+    group('prelease versions', () {
+      test(
+          'allow an otherwise-valid transition that also adds a pre-release component',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '2.0.0-dev');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.0.0'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.0.0 -> 2.0.0-dev'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('allow releasing a pre-release', () async {
+        createFakePlugin('plugin', packagesDir, version: '1.2.0');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.2.0-dev'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.2.0-dev -> 1.2.0'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      // Allow abandoning a pre-release version in favor of a different version
+      // change type.
+      test(
+          'allow an otherwise-valid transition that also removes a pre-release component',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '2.0.0');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.2.0-dev'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.2.0-dev -> 2.0.0'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('allow changing only the pre-release version', () async {
+        createFakePlugin('plugin', packagesDir, version: '1.2.0-dev.2');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.2.0-dev.1'),
+        ];
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+            contains('1.2.0-dev.1 -> 1.2.0-dev.2'),
+          ]),
+        );
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('denies invalid version change that also adds a pre-release',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '0.2.0-dev');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 0.0.1'),
+        ];
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Incorrectly updated version.'),
+            ]));
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('denies invalid version change that also removes a pre-release',
+          () async {
+        createFakePlugin('plugin', packagesDir, version: '0.2.0');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 0.0.1-dev'),
+        ];
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Incorrectly updated version.'),
+            ]));
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
+
+      test('denies invalid version change between pre-releases', () async {
+        createFakePlugin('plugin', packagesDir, version: '0.2.0-dev');
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 0.0.1-dev'),
+        ];
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['version-check', '--base-sha=main'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Incorrectly updated version.'),
+            ]));
+        expect(
+            processRunner.recordedCalls,
+            containsAllInOrder(const <ProcessCall>[
+              ProcessCall('git-show',
+                  <String>['main:packages/plugin/pubspec.yaml'], null)
+            ]));
+      });
     });
   });
 
