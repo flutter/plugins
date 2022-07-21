@@ -1,7 +1,12 @@
-## 2.9.1
+## 2.9.2
 
 * Updates the Java InstanceManager to take a listener for when an object is garbage collected.
   See https://github.com/flutter/flutter/issues/107199.
+
+## 2.9.1
+
+* Updates Android WebView classes as Copyable. This is a part of moving the api to handle garbage
+  collection automatically. See https://github.com/flutter/flutter/issues/107199.
 
 ## 2.9.0
 

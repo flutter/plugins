@@ -1,3 +1,8 @@
+## NEXT
+
+- Bypasses version and CHANGELOG checks for Dependabot PRs for packages
+  that are known not to be client-affecting.
+
 ## 0.8.8
 
 - Allows pre-release versions in `version-check`.
