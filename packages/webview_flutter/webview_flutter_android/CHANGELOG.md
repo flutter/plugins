@@ -1,3 +1,8 @@
+## 2.9.3
+
+* Updates the Dart InstanceManager to take a listener for when an object is garbage collected.
+  See https://github.com/flutter/flutter/issues/107199.
+
 ## 2.9.1
 
 * Updates Android WebView classes as Copyable. This is a part of moving the api to handle garbage
