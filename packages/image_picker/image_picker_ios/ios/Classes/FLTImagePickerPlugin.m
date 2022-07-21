@@ -325,7 +325,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 - (void)checkPhotoAuthorizationWithImagePicker:(UIImagePickerController *)imagePickerController {
-  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+  if (@available(iOS 14, *)) {
+    // none
+  } else {
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
@@ -347,6 +350,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     default:
       [self errorNoPhotoAccess:status];
       break;
+  }
   }
 }
 
