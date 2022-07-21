@@ -74,8 +74,8 @@ class SurfaceAndroidWebView extends AndroidWebView {
               // directionality.
               layoutDirection:
                   Directionality.maybeOf(context) ?? TextDirection.ltr,
-              webViewIdentifier:
-                  InstanceManager.instance.getInstanceId(controller.webView)!,
+              webViewIdentifier: JavaObject.globalInstanceManager
+                  .getIdentifier(controller.webView)!,
             )
               ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
               ..addOnPlatformViewCreatedListener((int id) {
