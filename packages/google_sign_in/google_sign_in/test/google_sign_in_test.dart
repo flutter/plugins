@@ -81,24 +81,13 @@ void main() {
     });
 
     test('forceCodeForRefreshToken sent with init method call', () async {
-      const String fakeClientId = 'fakeClientId';
-      googleSignIn =
-          GoogleSignIn(clientId: fakeClientId, forceCodeForRefreshToken: true);
+      final GoogleSignIn googleSignIn =
+          GoogleSignIn(forceCodeForRefreshToken: true);
+
       await googleSignIn.signIn();
-      expect(googleSignIn.currentUser, isNotNull);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-            'clientId': fakeClientId,
-            'forceCodeForRefreshToken': true,
-          }),
-          isMethodCall('signIn', arguments: null),
-        ],
-      );
+
+      _verifyInit(mockPlatform, forceCodeForRefreshToken: true);
+      verify(mockPlatform.signIn());
     });
 
     test('signOut', () async {
