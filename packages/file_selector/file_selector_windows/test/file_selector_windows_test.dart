@@ -84,6 +84,26 @@ void main() {
 
       verify(mockApi.showOpenDialog(any, null, 'Open File'));
     });
+
+    test('throws for a type group that does not support Windows', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+        mimeTypes: <String>['text/plain'],
+      );
+
+      await expectLater(
+          plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group]), completes);
+    });
   });
 
   group('#openFiles', () {
@@ -141,6 +161,26 @@ void main() {
       await plugin.openFiles(confirmButtonText: 'Open Files');
 
       verify(mockApi.showOpenDialog(any, null, 'Open Files'));
+    });
+
+    test('throws for a type group that does not support Windows', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+        mimeTypes: <String>['text/plain'],
+      );
+
+      await expectLater(
+          plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group]), completes);
     });
   });
 
@@ -234,6 +274,27 @@ void main() {
       await plugin.getSavePath(confirmButtonText: 'Save File');
 
       verify(mockApi.showSaveDialog(any, null, null, 'Save File'));
+    });
+
+    test('throws for a type group that does not support Windows', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+        mimeTypes: <String>['text/plain'],
+      );
+
+      await expectLater(
+          plugin.getSavePath(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.getSavePath(acceptedTypeGroups: <XTypeGroup>[group]),
+          completes);
     });
   });
 }

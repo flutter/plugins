@@ -14,6 +14,7 @@ import 'package:pigeon/pigeon.dart';
   copyrightHeader: 'pigeons/copyright.txt',
 ))
 enum StorageDirectory {
+  root,
   music,
   podcasts,
   ringtones,

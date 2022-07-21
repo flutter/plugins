@@ -1,3 +1,7 @@
+## 2.0.11
+
+* Improves handling of videos with `Infinity` duration.
+
 ## 2.0.10
 
 * Minor fixes for new analysis options.

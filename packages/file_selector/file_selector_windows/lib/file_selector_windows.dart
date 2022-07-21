@@ -85,9 +85,15 @@ class FileSelectorWindows extends FileSelectorPlatform {
   }
 }
 
-List<TypeGroup> _typeGroupsFromXTypeGroups(List<XTypeGroup>? xtypes) =>
-    (xtypes ?? <XTypeGroup>[])
-        .map((XTypeGroup xtype) => TypeGroup(
-            label: xtype.label ?? '',
-            extensions: xtype.extensions ?? <String>[]))
-        .toList();
+List<TypeGroup> _typeGroupsFromXTypeGroups(List<XTypeGroup>? xtypes) {
+  return (xtypes ?? <XTypeGroup>[]).map((XTypeGroup xtype) {
+    if (!xtype.allowsAny && (xtype.extensions?.isEmpty ?? true)) {
+      throw ArgumentError('Provided type group $xtype does not allow '
+          'all files, but does not set any of the Windows-supported filter '
+          'categories. "extensions" must be non-empty for Windows if '
+          'anything is non-empty.');
+    }
+    return TypeGroup(
+        label: xtype.label ?? '', extensions: xtype.extensions ?? <String>[]);
+  }).toList();
+}
