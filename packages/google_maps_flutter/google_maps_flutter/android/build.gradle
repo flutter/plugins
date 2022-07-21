@@ -34,7 +34,7 @@ android {
     }
 
     dependencies {
-        implementation "androidx.annotation:annotation:1.1.0"
+        implementation "androidx.annotation:annotation:1.4.0"
         implementation 'com.google.android.gms:play-services-maps:18.0.2'
         androidTestImplementation 'androidx.test:runner:1.2.0'
         androidTestImplementation 'androidx.test:rules:1.2.0'
