@@ -1,6 +1,10 @@
-## 1.0.6
+## 1.0.7
 
 * Removes usages of `FingerprintManager` and other `BiometricManager` deprecated method usages.
+
+## 1.0.6
+
+* Updates androidx.core version to 1.8.0.
 
 ## 1.0.5
 

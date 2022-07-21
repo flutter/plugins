@@ -745,6 +745,23 @@ void main() {
         );
       });
 
+      testWidgets('runJavascriptReturningResult with bool return value',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
+          (_) => Future<Object?>.value(false),
+        );
+        // The legacy implementation of webview_flutter_wkwebview would convert
+        // objects to strings before returning them to Dart. This verifies bool
+        // is represented the way it is in Objective-C.
+        // `NSNumber.description` converts bool values to a 1 or 0.
+        expect(
+          testController.runJavascriptReturningResult('runJavaScript'),
+          completion('0'),
+        );
+      });
+
       testWidgets('runJavascript', (WidgetTester tester) async {
         await buildWidget(tester);
 

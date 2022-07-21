@@ -12,6 +12,7 @@ import 'src/common.dart';
 
 export 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
     show SignInOption;
+
 export 'src/common.dart';
 export 'widgets.dart';
 
@@ -183,6 +184,7 @@ class GoogleSignIn {
     this.scopes = const <String>[],
     this.hostedDomain,
     this.clientId,
+    this.serverClientId,
   });
 
   /// Factory for creating default sign in user experience.
@@ -228,8 +230,28 @@ class GoogleSignIn {
   /// Domain to restrict sign-in to.
   final String? hostedDomain;
 
-  /// Client ID being used to connect to google sign-in. Only supported on web.
+  /// Client ID being used to connect to google sign-in.
+  ///
+  /// This option is not supported on all platforms (e.g. Android). It is
+  /// optional if file-based configuration is used.
+  ///
+  /// The value specified here has precedence over a value from a configuration
+  /// file.
   final String? clientId;
+
+  /// Client ID of the backend server to which the app needs to authenticate
+  /// itself.
+  ///
+  /// Optional and not supported on all platforms (e.g. web). By default, it
+  /// is initialized from a configuration file if available.
+  ///
+  /// The value specified here has precedence over a value from a configuration
+  /// file.
+  ///
+  /// [GoogleSignInAuthentication.idToken] and
+  /// [GoogleSignInAccount.serverAuthCode] will be specific to the backend
+  /// server.
+  final String? serverClientId;
 
   final StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
@@ -260,15 +282,18 @@ class GoogleSignIn {
   }
 
   Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.init(
+    return _initialization ??=
+        GoogleSignInPlatform.instance.initWithParams(SignInInitParameters(
       signInOption: signInOption,
       scopes: scopes,
       hostedDomain: hostedDomain,
       clientId: clientId,
-    )..catchError((dynamic _) {
-        // Invalidate initialization if it errors out.
-        _initialization = null;
-      });
+      serverClientId: serverClientId,
+    ))
+          ..catchError((dynamic _) {
+            // Invalidate initialization if it errors out.
+            _initialization = null;
+          });
   }
 
   /// The most recently scheduled method call.
