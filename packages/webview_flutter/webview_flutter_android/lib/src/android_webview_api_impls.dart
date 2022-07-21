@@ -462,11 +462,14 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
   final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(JavaScriptChannel instance) {
-    return create(
-      instanceManager.addDartCreatedInstance(instance),
-      instance.channelName,
-    );
+  Future<void> createFromInstance(JavaScriptChannel instance) async {
+    if (instanceManager.getIdentifier(instance) == null) {
+      final int identifier = instanceManager.addDartCreatedInstance(instance);
+      await create(
+        identifier,
+        instance.channelName,
+      );
+    }
   }
 }
 
@@ -509,9 +512,11 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
   final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(WebViewClient instance) {
-    return create(instanceManager.addDartCreatedInstance(instance),
-        instance.shouldOverrideUrlLoading);
+  Future<void> createFromInstance(WebViewClient instance) async {
+    if (instanceManager.getIdentifier(instance) == null) {
+      final int identifier = instanceManager.addDartCreatedInstance(instance);
+      return create(identifier, instance.shouldOverrideUrlLoading);
+    }
   }
 }
 
@@ -674,8 +679,11 @@ class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
   final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(DownloadListener instance) {
-    return create(instanceManager.addDartCreatedInstance(instance));
+  Future<void> createFromInstance(DownloadListener instance) async {
+    if (instanceManager.getIdentifier(instance) == null) {
+      final int identifier = instanceManager.addDartCreatedInstance(instance);
+      return create(identifier);
+    }
   }
 }
 
@@ -734,11 +742,14 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
   Future<void> createFromInstance(
     WebChromeClient instance,
     WebViewClient webViewClient,
-  ) {
-    return create(
-      instanceManager.addDartCreatedInstance(instance),
-      instanceManager.getIdentifier(webViewClient)!,
-    );
+  ) async {
+    if (instanceManager.getIdentifier(instance) == null) {
+      final int identifier = instanceManager.addDartCreatedInstance(instance);
+      return create(
+        identifier,
+        instanceManager.getIdentifier(webViewClient)!,
+      );
+    }
   }
 }
 
@@ -787,8 +798,11 @@ class WebStorageHostApiImpl extends WebStorageHostApi {
   final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(WebStorage instance) {
-    return create(instanceManager.addDartCreatedInstance(instance));
+  Future<void> createFromInstance(WebStorage instance) async {
+    if (instanceManager.getIdentifier(instance) == null) {
+      final int identifier = instanceManager.addDartCreatedInstance(instance);
+      return create(identifier);
+    }
   }
 
   /// Helper method to convert instances ids to objects.

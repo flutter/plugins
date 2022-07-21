@@ -299,6 +299,7 @@ void main() {
         );
 
         final WebChromeClient mockWebChromeClient = MockWebChromeClient();
+        when(mockWebChromeClient.copy()).thenReturn(MockWebChromeClient());
         webView.setWebChromeClient(mockWebChromeClient);
 
         final int webChromeClientInstanceId =
@@ -519,6 +520,7 @@ void main() {
             instanceManager.addDartCreatedInstance(mockWebViewClient);
 
         mockWebView = MockWebView();
+        when(mockWebView.copy()).thenReturn(MockWebView());
         mockWebViewInstanceId =
             instanceManager.addDartCreatedInstance(mockWebView);
       });
@@ -688,6 +690,7 @@ void main() {
             instanceManager.addDartCreatedInstance(mockWebChromeClient);
 
         mockWebView = MockWebView();
+        when(mockWebView.copy()).thenReturn(MockWebView());
         mockWebViewInstanceId =
             instanceManager.addDartCreatedInstance(mockWebView);
       });
