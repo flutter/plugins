@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(bparrishMines): Replace unused callback methods in constructors with
+// variables once automatic garbage collection is fully implemented. See
+// https://github.com/flutter/flutter/issues/107199.
+// ignore_for_file: avoid_unused_constructor_parameters
+
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
 // ignore: unnecessary_import
 import 'dart:typed_data';
@@ -12,6 +17,18 @@ import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
 import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
+import 'instance_manager.dart';
+
+/// Root of the Java class hierarchy.
+///
+/// See https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html.
+abstract class JavaObject with Copyable {
+  /// Constructs a [JavaObject] without creating the associated Java object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  JavaObject.detached();
+}
 
 /// An Android View that displays web pages.
 ///
@@ -32,11 +49,17 @@ import 'android_webview_api_impls.dart';
 /// [Web-based content](https://developer.android.com/guide/webapps).
 ///
 /// When a [WebView] is no longer needed [release] must be called.
-class WebView {
+class WebView extends JavaObject {
   /// Constructs a new WebView.
-  WebView({this.useHybridComposition = false}) {
+  WebView({this.useHybridComposition = false}) : super.detached() {
     api.createFromInstance(this);
   }
+
+  /// Constructs a [WebView] without creating the associated Java object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  WebView.detached({this.useHybridComposition = false}) : super.detached();
 
   /// Pigeon Host Api implementation for [WebView].
   @visibleForTesting
@@ -363,6 +386,11 @@ class WebView {
     WebSettings.api.disposeFromInstance(settings);
     return api.disposeFromInstance(this);
   }
+
+  @override
+  WebView copy() {
+    return WebView.detached(useHybridComposition: useHybridComposition);
+  }
 }
 
 /// Manages cookies globally for all webviews.
@@ -415,15 +443,21 @@ class CookieManager {
 /// obtained from [WebView.settings] is tied to the life of the WebView. If a
 /// WebView has been destroyed, any method call on [WebSettings] will throw an
 /// Exception.
-class WebSettings {
+class WebSettings extends JavaObject {
   /// Constructs a [WebSettings].
   ///
   /// This constructor is only used for testing. An instance should be obtained
   /// with [WebView.settings].
   @visibleForTesting
-  WebSettings(WebView webView) {
+  WebSettings(WebView webView) : super.detached() {
     api.createFromInstance(this, webView);
   }
+
+  /// Constructs a [WebSettings] without creating the associated Java object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  WebSettings.detached() : super.detached();
 
   /// Pigeon Host Api implementation for [WebSettings].
   @visibleForTesting
@@ -546,16 +580,34 @@ class WebSettings {
   Future<void> setAllowFileAccess(bool enabled) {
     return api.setAllowFileAccessFromInstance(this, enabled);
   }
+
+  @override
+  WebSettings copy() {
+    return WebSettings.detached();
+  }
 }
 
 /// Exposes a channel to receive calls from javaScript.
 ///
 /// See [WebView.addJavaScriptChannel].
-abstract class JavaScriptChannel {
+class JavaScriptChannel extends JavaObject {
   /// Constructs a [JavaScriptChannel].
-  JavaScriptChannel(this.channelName) {
+  JavaScriptChannel(
+    this.channelName, {
+    void Function(String message)? postMessage,
+  }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
+
+  /// Constructs a [JavaScriptChannel] without creating the associated Java
+  /// object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  JavaScriptChannel.detached(
+    this.channelName, {
+    void Function(String message)? postMessage,
+  }) : super.detached();
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
   @visibleForTesting
@@ -565,15 +617,64 @@ abstract class JavaScriptChannel {
   final String channelName;
 
   /// Callback method when javaScript calls `postMessage` on the object instance passed.
-  void postMessage(String message);
+  void postMessage(String message) {}
+
+  @override
+  JavaScriptChannel copy() {
+    return JavaScriptChannel.detached(channelName, postMessage: postMessage);
+  }
 }
 
 /// Receive various notifications and requests for [WebView].
-abstract class WebViewClient {
+class WebViewClient extends JavaObject {
   /// Constructs a [WebViewClient].
-  WebViewClient({this.shouldOverrideUrlLoading = true}) {
+  WebViewClient({
+    this.shouldOverrideUrlLoading = true,
+    void Function(WebView webView, String url)? onPageStarted,
+    void Function(WebView webView, String url)? onPageFinished,
+    void Function(
+      WebView webView,
+      WebResourceRequest request,
+      WebResourceError error,
+    )?
+        onReceivedRequestError,
+    void Function(
+      WebView webView,
+      int errorCode,
+      String description,
+      String failingUrl,
+    )?
+        onReceivedError,
+    void Function(WebView webView, WebResourceRequest request)? requestLoading,
+    void Function(WebView webView, String url)? urlLoading,
+  }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
+
+  /// Constructs a [WebViewClient] without creating the associated Java object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  WebViewClient.detached({
+    this.shouldOverrideUrlLoading = true,
+    void Function(WebView webView, String url)? onPageStarted,
+    void Function(WebView webView, String url)? onPageFinished,
+    void Function(
+      WebView webView,
+      WebResourceRequest request,
+      WebResourceError error,
+    )?
+        onReceivedRequestError,
+    void Function(
+      WebView webView,
+      int errorCode,
+      String description,
+      String failingUrl,
+    )?
+        onReceivedError,
+    void Function(WebView webView, WebResourceRequest request)? requestLoading,
+    void Function(WebView webView, String url)? urlLoading,
+  }) : super.detached();
 
   /// User authentication failed on server.
   ///
@@ -735,14 +836,53 @@ abstract class WebViewClient {
   /// causes the current [WebView] to abort loading the URL, while returning
   /// false causes the [WebView] to continue loading the URL as usual.
   void urlLoading(WebView webView, String url) {}
+
+  @override
+  WebViewClient copy() {
+    return WebViewClient.detached(
+      shouldOverrideUrlLoading: shouldOverrideUrlLoading,
+      onPageStarted: onPageStarted,
+      onPageFinished: onPageFinished,
+      onReceivedRequestError: onReceivedRequestError,
+      onReceivedError: onReceivedError,
+      requestLoading: requestLoading,
+      urlLoading: urlLoading,
+    );
+  }
 }
 
-/// The interface to be used when content can not be handled by the rendering engine for [WebView], and should be downloaded instead.
-abstract class DownloadListener {
+/// The interface to be used when content can not be handled by the rendering
+/// engine for [WebView], and should be downloaded instead.
+class DownloadListener extends JavaObject {
   /// Constructs a [DownloadListener].
-  DownloadListener() {
+  DownloadListener({
+    void Function(
+      String url,
+      String userAgent,
+      String contentDisposition,
+      String mimetype,
+      int contentLength,
+    )?
+        onDownloadStart,
+  }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
+
+  /// Constructs a [DownloadListener] without creating the associated Java
+  /// object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  DownloadListener.detached({
+    void Function(
+      String url,
+      String userAgent,
+      String contentDisposition,
+      String mimetype,
+      int contentLength,
+    )?
+        onDownloadStart,
+  }) : super.detached();
 
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
@@ -755,15 +895,31 @@ abstract class DownloadListener {
     String contentDisposition,
     String mimetype,
     int contentLength,
-  );
+  ) {}
+
+  @override
+  DownloadListener copy() {
+    return DownloadListener(onDownloadStart: onDownloadStart);
+  }
 }
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
-abstract class WebChromeClient {
+class WebChromeClient extends JavaObject {
   /// Constructs a [WebChromeClient].
-  WebChromeClient() {
+  WebChromeClient({
+    void Function(WebView webView, int progress)? onProgressChanged,
+  }) : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
+
+  /// Constructs a [WebChromeClient] without creating the associated Java
+  /// object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  WebChromeClient.detached({
+    void Function(WebView webView, int progress)? onProgressChanged,
+  }) : super.detached();
 
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
@@ -771,6 +927,11 @@ abstract class WebChromeClient {
 
   /// Notify the host application that a file should be downloaded.
   void onProgressChanged(WebView webView, int progress) {}
+
+  @override
+  WebChromeClient copy() {
+    return WebChromeClient.detached(onProgressChanged: onProgressChanged);
+  }
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.
@@ -846,16 +1007,22 @@ class FlutterAssetManager {
 /// Manages the JavaScript storage APIs provided by the [WebView].
 ///
 /// Wraps [WebStorage](https://developer.android.com/reference/android/webkit/WebStorage).
-class WebStorage {
+class WebStorage extends JavaObject {
   /// Constructs a [WebStorage].
   ///
   /// This constructor is only used for testing. An instance should be obtained
   /// with [WebStorage.instance].
   @visibleForTesting
-  WebStorage() {
+  WebStorage() : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
     api.createFromInstance(this);
   }
+
+  /// Constructs a [WebStorage] without creating the associated Java object.
+  ///
+  /// This should only be used by subclasses created by this library or to
+  /// create copies.
+  WebStorage.detached() : super.detached();
 
   /// Pigeon Host Api implementation for [WebStorage].
   @visibleForTesting
@@ -867,5 +1034,10 @@ class WebStorage {
   /// Clears all storage currently being used by the JavaScript storage APIs.
   Future<void> deleteAllData() {
     return api.deleteAllDataFromInstance(this);
+  }
+
+  @override
+  WebStorage copy() {
+    return WebStorage.detached();
   }
 }
