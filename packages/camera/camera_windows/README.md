@@ -10,8 +10,10 @@ See [missing implementations and limitations](#missing-features-on-the-windows-p
 ### Depend on the package
 
 This package is not an [endorsed][endorsed-federated-plugin]
-implementation of the [`camera`][camera] plugin, so you'll need to
-[add it explicitly][install].
+implementation of the [`camera`][camera] plugin, so in addition to depending
+on [`camera`][camera] you'll need to
+[add `camera_windows` to your pubspec.yaml explicitly][install].
+Once you do, you can use the [`camera`][camera] APIs as you normally would.
 
 ## Missing features on the Windows platform
 
