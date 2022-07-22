@@ -49,7 +49,7 @@
 
   [instanceManager addDartCreatedInstance:[[NSObject alloc] init] withIdentifier:0];
 
-  // Shouldn't cause a EXC_BAD_ACCESS crash.
+  // Tests that this doesn't cause a EXC_BAD_ACCESS crash.
   [instanceManager removeInstanceWithIdentifier:0];
 }
 @end
