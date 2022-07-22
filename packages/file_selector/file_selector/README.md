@@ -76,5 +76,21 @@ final XFile textFile =
 await textFile.saveTo(path);
 ```
 
+### Filtering by file types
+
+Different platforms support different type group filter options. To avoid
+`ArgumentError`s on some platforms, ensure that any `XTypeGroup`s you pass set
+filters that cover all platforms you are targeting, or that you conditionally
+pass different `XTypeGroup`s based on `Platform`.
+
+|                | macOS  | Web | Windows     |
+|----------------|--------|-----|-------------|
+| `extensions`   | ✔️      | ✔️   | ✔️           |
+| `mimeTypes`    | ✔️†     | ✔️   |             |
+| `macUTIs`      | ✔️      |     |             |
+| `webWildCards` |        | ✔️   |             |
+
+† `mimeTypes` are not supported on version of macOS earlier than 11 (Big Sur).
+
 [example]:./example
 [entitlement]: https://docs.flutter.dev/desktop#entitlements-and-the-app-sandbox

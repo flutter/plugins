@@ -17,6 +17,8 @@ export 'package:file_selector_platform_interface/file_selector_platform_interfac
 ///   options.
 /// - On macOS, the union of all types allowed by all of the groups will be
 ///   allowed.
+/// Throws an [ArgumentError] if any type groups do not include filters
+/// supported by the current platform.
 ///
 /// [initialDirectory] is the full path to the directory that will be displayed
 /// when the dialog is opened. When not provided, the platform will pick an
@@ -47,6 +49,8 @@ Future<XFile?> openFile({
 ///   options.
 /// - On macOS, the union of all types allowed by all of the groups will be
 ///   allowed.
+/// Throws an [ArgumentError] if any type groups do not include filters
+/// supported by the current platform.
 ///
 /// [initialDirectory] is the full path to the directory that will be displayed
 /// when the dialog is opened. When not provided, the platform will pick an
@@ -75,6 +79,8 @@ Future<List<XFile>> openFiles({
 ///   options.
 /// - On macOS, the union of all types allowed by all of the groups will be
 ///   allowed.
+/// Throws an [ArgumentError] if any type groups do not include filters
+/// supported by the current platform.
 ///
 /// [initialDirectory] is the full path to the directory that will be displayed
 /// when the dialog is opened. When not provided, the platform will pick an
