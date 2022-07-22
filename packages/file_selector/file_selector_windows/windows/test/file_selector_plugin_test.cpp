@@ -343,7 +343,8 @@ TEST(FileSelectorPlugin, TestSaveWithArguments) {
 
         // Validate arguments.
         EXPECT_EQ(dialog.GetDialogFolderPath(), L"C:\\Program Files");
-        // Make sure that the folder was called via SetFolder, not SetDefaultFolder.
+        // Make sure that the folder was called via SetFolder, not
+        // SetDefaultFolder.
         EXPECT_EQ(dialog.GetSetFolderPath(), L"C:\\Program Files");
         EXPECT_EQ(dialog.GetOkButtonLabel(), L"Save it!");
 
