@@ -148,7 +148,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         break;
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
-        if (promptInfo.isDeviceCredentialAllowed()) return;
         if (call.argument("useErrorDialogs")) {
           showGoToSettingsDialog(
               (String) call.argument("biometricRequired"),
