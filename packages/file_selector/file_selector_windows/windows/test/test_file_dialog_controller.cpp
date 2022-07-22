@@ -22,10 +22,12 @@ TestFileDialogController::~TestFileDialogController() {}
 
 HRESULT TestFileDialogController::SetFolder(IShellItem* folder) {
   wchar_t* path_chars = nullptr;
-  if (!SUCCEEDED(folder->GetDisplayName(SIGDN_FILESYSPATH, &path_chars))) {
-    return S_FALSE;
+  if (SUCCEEDED(folder->GetDisplayName(SIGDN_FILESYSPATH, &path_chars))) {
+    set_folder_path_ = path_chars;
+  } else {
+    set_folder_path_ = L"";
   }
-  set_folder_path_ = path_chars;
+
   return FileDialogController::SetFolder(folder);
 }
 

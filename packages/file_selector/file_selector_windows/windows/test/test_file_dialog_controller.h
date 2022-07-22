@@ -59,9 +59,13 @@ class TestFileDialogController : public FileDialogController {
   HRESULT GetResults(IShellItemArray** out_items) const override;
 
   // Accessors for validating IFileDialogController setter calls.
-  // Get the folder path set by FileDialogController::SetFolder
+  // Gets the folder path set by FileDialogController::SetFolder.
+  //
+  // This exists because there are multiple ways that the value returned by
+  // GetDialogFolderPath can be changed, so this allows specifically validating
+  // calls to SetFolder.
   std::wstring GetSetFolderPath() const;
-  // Get dialog folder path by calling IFileDialog::GetFolder
+  // Gets dialog folder path by calling IFileDialog::GetFolder.
   std::wstring GetDialogFolderPath() const;
   std::wstring GetFileName() const;
   const std::vector<DialogFilter>& GetFileTypes() const;
