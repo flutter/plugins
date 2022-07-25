@@ -1,7 +1,11 @@
-## NEXT
+## 0.9.0
 
 - Bypasses version and CHANGELOG checks for Dependabot PRs for packages
   that are known not to be client-affecting.
+- Replaces PR-description-based version/changelog/breaking change check
+  overrides in `version-check` with label-based overrides using a new
+  `pr-labels` flag, since we don't actually have reliable access to the
+  PR description in checks.
 
 ## 0.8.8
 
