@@ -9,8 +9,6 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
     show XFile, XTypeGroup;
 
-// DO NOT LAND: dummy change to test override handling.
-
 /// Opens a file selection dialog and returns the path chosen by the user.
 ///
 /// [acceptedTypeGroups] is a list of file type groups that can be selected in
