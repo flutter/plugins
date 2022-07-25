@@ -375,14 +375,14 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
         '--base-sha=main',
-        '--pr-labels=some label,allow breaking change,another-label'
+        '--pr-labels=some label,override: allow breaking change,another-label'
       ]);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
           contains('Allowing breaking change to plugin_platform_interface '
-              'due to the "allow breaking change" label.'),
+              'due to the "override: allow breaking change" label.'),
           contains('Ran for 1 package(s) (1 with warnings)'),
         ]),
       );
@@ -941,14 +941,14 @@ packages/plugin/pubspec.yaml
 
         final List<String> output =
             await _runWithMissingChangeDetection(<String>[
-          '--pr-labels=some label,no versioning needed,another-label'
+          '--pr-labels=some label,override: no versioning needed,another-label'
         ]);
 
         expect(
           output,
           containsAllInOrder(<Matcher>[
             contains('Ignoring lack of version change due to the '
-                '"no versioning needed" label.'),
+                '"override: no versioning needed" label.'),
           ]),
         );
       });
@@ -1073,14 +1073,14 @@ packages/plugin/example/lib/foo.dart
 
         final List<String> output =
             await _runWithMissingChangeDetection(<String>[
-          '--pr-labels=some label,no changelog needed,another-label'
+          '--pr-labels=some label,override: no changelog needed,another-label'
         ]);
 
         expect(
           output,
           containsAllInOrder(<Matcher>[
             contains('Ignoring lack of CHANGELOG update due to the '
-                '"no changelog needed" label.'),
+                '"override: no changelog needed" label.'),
           ]),
         );
       });

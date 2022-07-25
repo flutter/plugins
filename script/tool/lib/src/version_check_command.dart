@@ -154,17 +154,18 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   /// The label that must be on a PR to allow a breaking
   /// change to a platform interface.
-  static const String _breakingChangeOverrideLabel = 'allow breaking change';
+  static const String _breakingChangeOverrideLabel =
+      'override: allow breaking change';
 
   /// The label that must be on a PR to allow skipping a version change for a PR
   /// that would normally require one.
   static const String _missingVersionChangeOverrideLabel =
-      'no versioning needed';
+      'override: no versioning needed';
 
   /// The label that must be on a PR to allow skipping a CHANGELOG change for a
   /// PR that would normally require one.
   static const String _missingChangelogChangeOverrideLabel =
-      'no changelog needed';
+      'override: no changelog needed';
 
   final PubVersionFinder _pubVersionFinder;
 
