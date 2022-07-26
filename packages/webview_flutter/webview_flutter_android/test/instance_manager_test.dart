@@ -140,14 +140,4 @@ class CopyableObject with Copyable {
   Copyable copy() {
     return CopyableObject();
   }
-
-  @override
-  int get hashCode {
-    return 0;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is CopyableObject;
-  }
 }
