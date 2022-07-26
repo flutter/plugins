@@ -9,7 +9,7 @@ import 'package:yaml_edit/yaml_edit.dart';
 import 'common/package_looping_command.dart';
 import 'common/repository_package.dart';
 
-/// A command to remove dev_dependencies, wich are not used by package clients.
+/// A command to remove dev_dependencies, which are not used by package clients.
 ///
 /// This is intended for use with legacy Flutter version testing, to allow
 /// running analysis (with --lib-only) with versions that are supported for
