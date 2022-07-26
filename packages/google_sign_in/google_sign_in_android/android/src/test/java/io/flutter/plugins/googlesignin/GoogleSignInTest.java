@@ -42,8 +42,6 @@ public class GoogleSignInTest {
   @Spy MethodChannel.Result result;
   @Mock GoogleSignInWrapper mockGoogleSignIn;
   @Mock GoogleSignInAccount account;
-  @Mock GoogleSignInPlugin.OptionsBuilderFactory optionsBuilderFactory;
-  @Mock GoogleSignInOptions.Builder optionsBuilder;
   @Mock GoogleSignInClient mockClient;
   private GoogleSignInPlugin plugin;
 
@@ -53,82 +51,10 @@ public class GoogleSignInTest {
     when(mockRegistrar.messenger()).thenReturn(mockMessenger);
     when(mockRegistrar.context()).thenReturn(mockContext);
     when(mockRegistrar.activity()).thenReturn(mockActivity);
-    when(optionsBuilderFactory.get(GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN))
-        .thenReturn(optionsBuilder);
-    when(optionsBuilderFactory.get(GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_GAMES_SIGN_IN))
-        .thenReturn(optionsBuilder);
     when(mockContext.getResources()).thenReturn(mockResources);
     plugin = new GoogleSignInPlugin();
     plugin.initInstance(mockRegistrar.messenger(), mockRegistrar.context(), mockGoogleSignIn);
     plugin.setUpRegistrar(mockRegistrar);
-    plugin.setOptionsBuilderFactory(optionsBuilderFactory);
-    plugin.setClientIdIdentifierOverride(0);
-  }
-
-  @Test
-  public void init_PassesForceCodeForRefreshTokenFalseWithClientIdParameter() {
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("signInOption", GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN);
-    arguments.put("requestedScopes", Collections.singletonList("requestedScope"));
-    arguments.put("hostedDomain", null);
-    arguments.put("clientId", "mockClientId");
-    arguments.put("forceCodeForRefreshToken", false);
-
-    MethodCall methodCall = new MethodCall("init", arguments);
-
-    plugin.onMethodCall(methodCall, result);
-
-    verify(optionsBuilder, times(1)).requestServerAuthCode("mockClientId", false);
-  }
-
-  @Test
-  public void init_PassesForceCodeForRefreshTokenTrueWithClientIdParameter() {
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("signInOption", GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN);
-    arguments.put("requestedScopes", Collections.singletonList("requestedScope"));
-    arguments.put("hostedDomain", null);
-    arguments.put("clientId", "mockClientId");
-    arguments.put("forceCodeForRefreshToken", true);
-
-    MethodCall methodCall = new MethodCall("init", arguments);
-
-    plugin.onMethodCall(methodCall, result);
-
-    verify(optionsBuilder, times(1)).requestServerAuthCode("mockClientId", true);
-  }
-
-  @Test
-  public void init_PassesForceCodeForRefreshTokenFalseWithClientIdFromResources() {
-    plugin.setClientIdIdentifierOverride(1);
-    when(mockContext.getString(1)).thenReturn("mockClientId");
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("signInOption", GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN);
-    arguments.put("requestedScopes", Collections.singletonList("requestedScope"));
-    arguments.put("hostedDomain", null);
-    arguments.put("forceCodeForRefreshToken", false);
-
-    MethodCall methodCall = new MethodCall("init", arguments);
-
-    plugin.onMethodCall(methodCall, result);
-
-    verify(optionsBuilder, times(1)).requestServerAuthCode("mockClientId", false);
-  }
-
-  @Test
-  public void init_PassesForceCodeForRefreshTokenTrueWithClientIdFromResources() {
-    plugin.setClientIdIdentifierOverride(1);
-    when(mockContext.getString(1)).thenReturn("mockClientId");
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("signInOption", GoogleSignInPlugin.OptionsBuilderFactory.DEFAULT_SIGN_IN);
-    arguments.put("requestedScopes", Collections.singletonList("requestedScope"));
-    arguments.put("hostedDomain", null);
-    arguments.put("forceCodeForRefreshToken", true);
-
-    MethodCall methodCall = new MethodCall("init", arguments);
-
-    plugin.onMethodCall(methodCall, result);
-
-    verify(optionsBuilder, times(1)).requestServerAuthCode("mockClientId", true);
   }
 
   @Test
@@ -188,10 +114,8 @@ public class GoogleSignInTest {
     when(mockGoogleSignIn.hasPermissions(account, requestedScope)).thenReturn(false);
 
     plugin.onMethodCall(methodCall, result);
-    listener.onActivityResult(
-        GoogleSignInPlugin.Delegate.REQUEST_CODE_REQUEST_SCOPE,
-        Activity.RESULT_CANCELED,
-        new Intent());
+    listener.onActivityResult(GoogleSignInPlugin.Delegate.REQUEST_CODE_REQUEST_SCOPE,
+        Activity.RESULT_CANCELED, new Intent());
 
     verify(result).success(false);
   }
@@ -313,6 +237,48 @@ public class GoogleSignInTest {
     initAndAssertServerClientId(methodCall, serverClientId);
   }
 
+  @Test
+  public void init_PassesForceCodeForRefreshTokenFalseWithServerClientIdParameter() {
+    MethodCall methodCall = buildInitMethodCall("fakeClientId", "fakeServerClientId", false);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, false);
+  }
+
+  @Test
+  public void init_PassesForceCodeForRefreshTokenTrueWithServerClientIdParameter() {
+    MethodCall methodCall = buildInitMethodCall("fakeClientId", "fakeServerClientId", true);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, true);
+  }
+
+  @Test
+  public void init_PassesForceCodeForRefreshTokenFalseWithServerClientIdFromResources() {
+    final String packageName = "fakePackageName";
+    final String serverClientId = "fakeServerClientId";
+    final int resourceId = 1;
+    MethodCall methodCall = buildInitMethodCall(null, null, false);
+    when(mockContext.getPackageName()).thenReturn(packageName);
+    when(mockResources.getIdentifier("default_web_client_id", "string", packageName))
+        .thenReturn(resourceId);
+    when(mockContext.getString(resourceId)).thenReturn(serverClientId);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, false);
+  }
+
+  @Test
+  public void init_PassesForceCodeForRefreshTokenTrueWithServerClientIdFromResources() {
+    final String packageName = "fakePackageName";
+    final String serverClientId = "fakeServerClientId";
+    final int resourceId = 1;
+    MethodCall methodCall = buildInitMethodCall(null, null, true);
+    when(mockContext.getPackageName()).thenReturn(packageName);
+    when(mockResources.getIdentifier("default_web_client_id", "string", packageName))
+        .thenReturn(resourceId);
+    when(mockContext.getString(resourceId)).thenReturn(serverClientId);
+
+    initAndAssertForceCodeForRefreshToken(methodCall, true);
+  }
+
   public void initAndAssertServerClientId(MethodCall methodCall, String serverClientId) {
     ArgumentCaptor<GoogleSignInOptions> optionsCaptor =
         ArgumentCaptor.forClass(GoogleSignInOptions.class);
@@ -323,13 +289,31 @@ public class GoogleSignInTest {
     Assert.assertEquals(serverClientId, optionsCaptor.getValue().getServerClientId());
   }
 
+  public void initAndAssertForceCodeForRefreshToken(
+      MethodCall methodCall, boolean forceCodeForRefreshToken) {
+    ArgumentCaptor<GoogleSignInOptions> optionsCaptor =
+        ArgumentCaptor.forClass(GoogleSignInOptions.class);
+    when(mockGoogleSignIn.getClient(any(Context.class), optionsCaptor.capture()))
+        .thenReturn(mockClient);
+    plugin.onMethodCall(methodCall, result);
+    verify(result).success(null);
+    Assert.assertEquals(
+        forceCodeForRefreshToken, optionsCaptor.getValue().isForceCodeForRefreshToken());
+  }
+
   private static MethodCall buildInitMethodCall(String clientId, String serverClientId) {
     return buildInitMethodCall(
-        "SignInOption.standard", Collections.<String>emptyList(), clientId, serverClientId);
+        "SignInOption.standard", Collections.<String>emptyList(), clientId, serverClientId, false);
   }
 
   private static MethodCall buildInitMethodCall(
-      String signInOption, List<String> scopes, String clientId, String serverClientId) {
+      String clientId, String serverClientId, boolean forceCodeForRefreshToken) {
+    return buildInitMethodCall("SignInOption.standard", Collections.<String>emptyList(), clientId,
+        serverClientId, forceCodeForRefreshToken);
+  }
+
+  private static MethodCall buildInitMethodCall(String signInOption, List<String> scopes,
+      String clientId, String serverClientId, boolean forceCodeForRefreshToken) {
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("signInOption", signInOption);
     arguments.put("scopes", scopes);
@@ -339,6 +323,7 @@ public class GoogleSignInTest {
     if (serverClientId != null) {
       arguments.put("serverClientId", serverClientId);
     }
+    arguments.put("forceCodeForRefreshToken", forceCodeForRefreshToken);
     return new MethodCall("init", arguments);
   }
 }
