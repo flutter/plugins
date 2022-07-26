@@ -16,6 +16,8 @@ namespace camera_windows {
 using Microsoft::WRL::ComPtr;
 
 enum class RecordingType {
+  // Camera is not recording.
+  kNone,
   // Recording continues until it is stopped with a separate stop command.
   kContinuous,
   // Recording stops automatically after requested record time is passed.
@@ -109,7 +111,7 @@ class RecordHandler {
   uint64_t recording_duration_us_ = 0;
   std::string file_path_;
   RecordState recording_state_ = RecordState::kNotStarted;
-  RecordingType type_;
+  RecordingType type_ = RecordingType::kNone;
   ComPtr<IMFCaptureRecordSink> record_sink_;
 };
 

@@ -139,9 +139,9 @@ class CameraImpl : public Camera {
   // error ID and description. Pending results are cleared in the process.
   //
   // error_code: A string error code describing the error.
-  // error_message: A user-readable error message (optional).
+  // description: A user-readable error message (optional).
   void SendErrorForPendingResults(const std::string& error_code,
-                                  const std::string& descripion);
+                                  const std::string& description);
 
   // Called when camera is disposed.
   // Sends camera closing message to the cameras method channel.
