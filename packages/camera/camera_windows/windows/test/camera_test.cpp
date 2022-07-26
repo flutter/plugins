@@ -144,7 +144,24 @@ TEST(Camera, CreateCaptureEngineReportsError) {
 
   camera->AddPendingResult(PendingResultType::kCreateCamera, std::move(result));
 
-  camera->OnCreateCaptureEngineFailed(error_text);
+  camera->OnCreateCaptureEngineFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, CreateCaptureEngineReportsAccessDenied) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kCreateCamera, std::move(result));
+
+  camera->OnCreateCaptureEngineFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnStartPreviewSucceededReturnsFrameSize) {
@@ -182,7 +199,24 @@ TEST(Camera, StartPreviewReportsError) {
 
   camera->AddPendingResult(PendingResultType::kInitialize, std::move(result));
 
-  camera->OnStartPreviewFailed(error_text);
+  camera->OnStartPreviewFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, StartPreviewReportsAccessDenied) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kInitialize, std::move(result));
+
+  camera->OnStartPreviewFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnPausePreviewSucceededReturnsSuccess) {
@@ -212,7 +246,24 @@ TEST(Camera, PausePreviewReportsError) {
 
   camera->AddPendingResult(PendingResultType::kPausePreview, std::move(result));
 
-  camera->OnPausePreviewFailed(error_text);
+  camera->OnPausePreviewFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, PausePreviewReportsAccessDenied) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kPausePreview, std::move(result));
+
+  camera->OnPausePreviewFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnResumePreviewSucceededReturnsSuccess) {
@@ -244,7 +295,25 @@ TEST(Camera, ResumePreviewReportsError) {
   camera->AddPendingResult(PendingResultType::kResumePreview,
                            std::move(result));
 
-  camera->OnResumePreviewFailed(error_text);
+  camera->OnResumePreviewFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, OnResumePreviewPermissionFailureReturnsError) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kResumePreview,
+                           std::move(result));
+
+  camera->OnResumePreviewFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnStartRecordSucceededReturnsSuccess) {
@@ -274,7 +343,24 @@ TEST(Camera, StartRecordReportsError) {
 
   camera->AddPendingResult(PendingResultType::kStartRecord, std::move(result));
 
-  camera->OnStartRecordFailed(error_text);
+  camera->OnStartRecordFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, StartRecordReportsAccessDenied) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kStartRecord, std::move(result));
+
+  camera->OnStartRecordFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnStopRecordSucceededReturnsSuccess) {
@@ -306,7 +392,24 @@ TEST(Camera, StopRecordReportsError) {
 
   camera->AddPendingResult(PendingResultType::kStopRecord, std::move(result));
 
-  camera->OnStopRecordFailed(error_text);
+  camera->OnStopRecordFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, StopRecordReportsAccessDenied) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kStopRecord, std::move(result));
+
+  camera->OnStopRecordFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnTakePictureSucceededReturnsSuccess) {
@@ -338,7 +441,24 @@ TEST(Camera, TakePictureReportsError) {
 
   camera->AddPendingResult(PendingResultType::kTakePicture, std::move(result));
 
-  camera->OnTakePictureFailed(error_text);
+  camera->OnTakePictureFailed(CameraResult::kError, error_text);
+}
+
+TEST(Camera, TakePictureReportsAccessDenied) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockMethodResult> result =
+      std::make_unique<MockMethodResult>();
+
+  std::string error_text = "error_text";
+
+  EXPECT_CALL(*result, SuccessInternal).Times(0);
+  EXPECT_CALL(*result,
+              ErrorInternal(Eq("CameraAccessDenied"), Eq(error_text), _));
+
+  camera->AddPendingResult(PendingResultType::kTakePicture, std::move(result));
+
+  camera->OnTakePictureFailed(CameraResult::kAccessDenied, error_text);
 }
 
 TEST(Camera, OnVideoRecordSucceededInvokesCameraChannelEvent) {
