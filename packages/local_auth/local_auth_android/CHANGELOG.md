@@ -1,6 +1,10 @@
-## 1.0.7
+## 1.0.8
 
 * Removes usages of `FingerprintManager` and other `BiometricManager` deprecated method usages.
+
+## 1.0.7
+
+* Updates gradle version to 7.2.1.
 
 ## 1.0.6
 
