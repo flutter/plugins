@@ -75,6 +75,9 @@ class CaptureController {
 
   // Initializes the capture controller with the specified device id.
   //
+  // Returns false if the capture controller could not be initialized
+  // or is already initialized.
+  //
   // texture_registrar: Pointer to Flutter TextureRegistrar instance. Used to
   //                    register texture for capture preview.
   // device_id:         A string that holds information of camera device id to
@@ -82,7 +85,7 @@ class CaptureController {
   // record_audio:      A boolean value telling if audio should be captured on
   //                    video recording.
   // resolution_preset: Maximum capture resolution height.
-  virtual void InitCaptureDevice(TextureRegistrar* texture_registrar,
+  virtual bool InitCaptureDevice(TextureRegistrar* texture_registrar,
                                  const std::string& device_id,
                                  bool record_audio,
                                  ResolutionPreset resolution_preset) = 0;
@@ -132,7 +135,7 @@ class CaptureControllerImpl : public CaptureController,
   CaptureControllerImpl& operator=(const CaptureControllerImpl&) = delete;
 
   // CaptureController
-  void InitCaptureDevice(TextureRegistrar* texture_registrar,
+  bool InitCaptureDevice(TextureRegistrar* texture_registrar,
                          const std::string& device_id, bool record_audio,
                          ResolutionPreset resolution_preset) override;
   uint32_t GetPreviewWidth() const override { return preview_frame_width_; }
