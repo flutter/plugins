@@ -11,7 +11,6 @@ import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart';
-import 'src/instance_manager.dart';
 import 'webview_android_widget.dart';
 
 /// Builds an Android webview.
