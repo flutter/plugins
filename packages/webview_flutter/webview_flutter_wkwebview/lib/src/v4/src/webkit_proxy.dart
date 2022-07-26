@@ -7,12 +7,19 @@ import '../../web_kit/web_kit.dart';
 
 /// Handles constructing objects and calling static methods for the WebKit
 /// native library.
+///
+/// This class provides dependency injection for the implementations of the
+/// platform interface classes. Improving the ease of unit testing and/or
+/// overriding the underlying WebKit classes.
+///
+/// By default each function calls the default constructor of the WebKit class
+/// it intends to return.
 class WebKitProxy {
   /// Constructs a [WebKitProxy].
   const WebKitProxy({
-    this.onCreateWebView = WKWebView.new,
-    this.onCreateWebViewConfiguration = WKWebViewConfiguration.new,
-    this.onCreateScriptMessageHandler = WKScriptMessageHandler.new,
+    this.createWebView = WKWebView.new,
+    this.createWebViewConfiguration = WKWebViewConfiguration.new,
+    this.createScriptMessageHandler = WKScriptMessageHandler.new,
   });
 
   /// Constructs a [WKWebView].
@@ -24,10 +31,10 @@ class WebKitProxy {
       Map<NSKeyValueChangeKey, Object?> change,
     )
         observeValue,
-  }) onCreateWebView;
+  }) createWebView;
 
   /// Constructs a [WKWebViewConfiguration].
-  final WKWebViewConfiguration Function() onCreateWebViewConfiguration;
+  final WKWebViewConfiguration Function() createWebViewConfiguration;
 
   /// Constructs a [WKScriptMessageHandler].
   final WKScriptMessageHandler Function({
@@ -36,5 +43,5 @@ class WebKitProxy {
       WKScriptMessage message,
     )
         didReceiveScriptMessage,
-  }) onCreateScriptMessageHandler;
+  }) createScriptMessageHandler;
 }

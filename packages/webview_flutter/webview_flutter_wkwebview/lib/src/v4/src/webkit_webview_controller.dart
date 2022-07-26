@@ -22,7 +22,7 @@ class WebKitWebViewControllerCreationParams
   /// Constructs a [WebKitWebViewControllerCreationParams].
   WebKitWebViewControllerCreationParams({
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
-  }) : _configuration = webKitProxy.onCreateWebViewConfiguration();
+  }) : _configuration = webKitProxy.createWebViewConfiguration();
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
   /// [PlatformWebViewControllerCreationParams].
@@ -46,7 +46,7 @@ class WebKitWebViewController extends PlatformWebViewController {
             ? params
             : WebKitWebViewControllerCreationParams
                 .fromPlatformWebViewControllerCreationParams(params)) {
-    _webView = webKitProxy.onCreateWebView(
+    _webView = webKitProxy.createWebView(
         (params as WebKitWebViewControllerCreationParams)._configuration);
   }
 
@@ -235,9 +235,9 @@ class WebKitWebViewController extends PlatformWebViewController {
   @override
   Future<void> setBackgroundColor(Color color) {
     return Future.wait(<Future<void>>[
+      _webView.scrollView.setBackgroundColor(color),
       _webView.setOpaque(false),
       _webView.setBackgroundColor(Colors.transparent),
-      _webView.scrollView.setBackgroundColor(color),
     ]);
   }
 
@@ -321,7 +321,7 @@ class WebKitJavaScriptChannelParams extends JavaScriptChannelParams {
     required super.onMessageReceived,
     @visibleForTesting WebKitProxy webKitProxy = const WebKitProxy(),
   })  : assert(name.isNotEmpty),
-        _messageHandler = webKitProxy.onCreateScriptMessageHandler(
+        _messageHandler = webKitProxy.createScriptMessageHandler(
           didReceiveScriptMessage: withWeakRefenceTo(
             onMessageReceived,
             (WeakReference<void Function(JavaScriptMessage)> weakReference) {

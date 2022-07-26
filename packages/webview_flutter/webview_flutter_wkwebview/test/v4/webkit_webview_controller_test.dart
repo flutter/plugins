@@ -60,14 +60,14 @@ void main() {
       final PlatformWebViewControllerCreationParams controllerCreationParams =
           WebKitWebViewControllerCreationParams(
         webKitProxy: WebKitProxy(
-          onCreateWebViewConfiguration: () => nonNullMockWebViewConfiguration,
+          createWebViewConfiguration: () => nonNullMockWebViewConfiguration,
         ),
       );
 
       return WebKitWebViewController(
         controllerCreationParams,
         webKitProxy: WebKitProxy(
-          onCreateWebView: (
+          createWebView: (
             _, {
             void Function(
               String keyPath,
@@ -555,7 +555,7 @@ void main() {
 
     test('addJavaScriptChannel', () async {
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateScriptMessageHandler: ({
+        createScriptMessageHandler: ({
           required void Function(
             WKUserContentController userContentController,
             WKScriptMessage message,
@@ -601,7 +601,7 @@ void main() {
 
     test('removeJavaScriptChannel', () async {
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateScriptMessageHandler: ({
+        createScriptMessageHandler: ({
           required void Function(
             WKUserContentController userContentController,
             WKScriptMessage message,
@@ -641,7 +641,7 @@ void main() {
 
     test('removeJavaScriptChannel with zoom disabled', () async {
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateScriptMessageHandler: ({
+        createScriptMessageHandler: ({
           required void Function(
             WKUserContentController userContentController,
             WKScriptMessage message,
@@ -695,7 +695,7 @@ void main() {
       late final WKScriptMessageHandler messageHandler;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateScriptMessageHandler: ({
+        createScriptMessageHandler: ({
           required void Function(
             WKUserContentController userContentController,
             WKScriptMessage message,
