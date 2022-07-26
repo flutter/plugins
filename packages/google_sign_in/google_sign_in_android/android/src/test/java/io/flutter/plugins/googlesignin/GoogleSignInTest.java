@@ -114,8 +114,10 @@ public class GoogleSignInTest {
     when(mockGoogleSignIn.hasPermissions(account, requestedScope)).thenReturn(false);
 
     plugin.onMethodCall(methodCall, result);
-    listener.onActivityResult(GoogleSignInPlugin.Delegate.REQUEST_CODE_REQUEST_SCOPE,
-        Activity.RESULT_CANCELED, new Intent());
+    listener.onActivityResult(
+        GoogleSignInPlugin.Delegate.REQUEST_CODE_REQUEST_SCOPE,
+        Activity.RESULT_CANCELED,
+        new Intent());
 
     verify(result).success(false);
   }
@@ -308,12 +310,20 @@ public class GoogleSignInTest {
 
   private static MethodCall buildInitMethodCall(
       String clientId, String serverClientId, boolean forceCodeForRefreshToken) {
-    return buildInitMethodCall("SignInOption.standard", Collections.<String>emptyList(), clientId,
-        serverClientId, forceCodeForRefreshToken);
+    return buildInitMethodCall(
+        "SignInOption.standard",
+        Collections.<String>emptyList(),
+        clientId,
+        serverClientId,
+        forceCodeForRefreshToken);
   }
 
-  private static MethodCall buildInitMethodCall(String signInOption, List<String> scopes,
-      String clientId, String serverClientId, boolean forceCodeForRefreshToken) {
+  private static MethodCall buildInitMethodCall(
+      String signInOption,
+      List<String> scopes,
+      String clientId,
+      String serverClientId,
+      boolean forceCodeForRefreshToken) {
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("signInOption", signInOption);
     arguments.put("scopes", scopes);
