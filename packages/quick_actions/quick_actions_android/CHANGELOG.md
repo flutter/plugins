@@ -1,6 +1,10 @@
-## 0.6.0+12
+## 0.6.2
 
 * Update gradle version to 7.2.1 on Android.
+
+## 0.6.1 
+
+* Allows Android to trigger quick actions without restarting the app.
 
 ## 0.6.0+11
 

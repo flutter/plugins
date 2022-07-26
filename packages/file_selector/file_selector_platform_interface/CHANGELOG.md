@@ -1,6 +1,7 @@
-## NEXT
+## 2.1.0
 
-* Removes unnecessary imports.
+* Adds `allowsAny` to `XTypeGroup` as a simple and future-proof way of identifying
+  wildcard groups.
 
 ## 2.0.4
 
