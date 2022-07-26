@@ -318,6 +318,10 @@ void main() {
         verify(mockWebSettingsPlatformHostApi.dispose(webSettingsInstanceId));
         verify(mockPlatformHostApi.dispose(webViewInstanceId));
       });
+
+      test('copy', () {
+        expect(webView.copy(), isA<WebView>());
+      });
     });
 
     group('WebSettings', () {
@@ -444,6 +448,10 @@ void main() {
           true,
         ));
       });
+
+      test('copy', () {
+        expect(webSettings.copy(), isA<WebSettings>());
+      });
     });
 
     group('JavaScriptChannel', () {
@@ -471,6 +479,13 @@ void main() {
           'Hello, World!',
         );
         verify(mockJavaScriptChannel.postMessage('Hello, World!'));
+      });
+
+      test('copy', () {
+        expect(
+          JavaScriptChannel.detached('channel').copy(),
+          isA<JavaScriptChannel>(),
+        );
       });
     });
 
@@ -591,6 +606,10 @@ void main() {
           'https://www.google.com',
         ));
       });
+
+      test('copy', () {
+        expect(WebViewClient.detached().copy(), isA<WebViewClient>());
+      });
     });
 
     group('DownloadListener', () {
@@ -629,6 +648,10 @@ void main() {
           45,
         ));
       });
+
+      test('copy', () {
+        expect(DownloadListener.detached().copy(), isA<DownloadListener>());
+      });
     });
 
     group('WebChromeClient', () {
@@ -663,6 +686,10 @@ void main() {
           76,
         );
         verify(mockWebChromeClient.onProgressChanged(mockWebView, 76));
+      });
+
+      test('copy', () {
+        expect(WebChromeClient.detached().copy(), isA<WebChromeClient>());
       });
     });
   });
@@ -705,6 +732,10 @@ void main() {
     test('deleteAllData', () {
       webStorage.deleteAllData();
       verify(mockPlatformHostApi.deleteAllData(webStorageInstanceId));
+    });
+
+    test('copy', () {
+      expect(WebStorage.detached().copy(), isA<WebStorage>());
     });
   });
 }

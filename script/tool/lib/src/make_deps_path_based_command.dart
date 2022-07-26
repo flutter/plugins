@@ -154,8 +154,14 @@ class MakeDepsPathBasedCommand extends PluginCommand {
       throw ToolExit(_exitCannotUpdatePubspec);
     }
 
-    final Iterable<String> packagesToOverride = pubspec.dependencies.keys.where(
-        (String packageName) => localDependencies.containsKey(packageName));
+    final Iterable<String> combinedDependencies = <String>[
+      ...pubspec.dependencies.keys,
+      ...pubspec.devDependencies.keys,
+    ];
+    final Iterable<String> packagesToOverride = combinedDependencies
+        .where(
+            (String packageName) => localDependencies.containsKey(packageName))
+        .toList();
     if (packagesToOverride.isNotEmpty) {
       final String commonBasePath = packagesDir.path;
       // Find the relative path to the common base.
