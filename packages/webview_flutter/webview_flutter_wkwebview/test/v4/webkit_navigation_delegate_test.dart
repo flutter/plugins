@@ -16,7 +16,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   group('WebKitNavigationDelegate', () {
-    test('setOnPageFinished', () async {
+    test('setOnPageFinished', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
         webKitProxy: const WebKitProxy(
@@ -25,8 +25,7 @@ void main() {
       );
 
       late final String callbackUrl;
-      void onPageFinished(String url) => callbackUrl = url;
-      webKitDelgate.setOnPageFinished(onPageFinished);
+      webKitDelgate.setOnPageFinished((String url) => callbackUrl = url);
 
       CapturingNavigationDelegate.lastCreatedDelegate.didFinishNavigation!(
         WKWebView.detached(),
@@ -36,7 +35,7 @@ void main() {
       expect(callbackUrl, 'https://www.google.com');
     });
 
-    test('setOnPageStarted', () async {
+    test('setOnPageStarted', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
         webKitProxy: const WebKitProxy(
@@ -45,8 +44,7 @@ void main() {
       );
 
       late final String callbackUrl;
-      void onPageStarted(String url) => callbackUrl = url;
-      webKitDelgate.setOnPageStarted(onPageStarted);
+      webKitDelgate.setOnPageStarted((String url) => callbackUrl = url);
 
       CapturingNavigationDelegate
           .lastCreatedDelegate.didStartProvisionalNavigation!(
@@ -57,7 +55,7 @@ void main() {
       expect(callbackUrl, 'https://www.google.com');
     });
 
-    test('onWebResourceError from didFailNavigation', () async {
+    test('onWebResourceError from didFailNavigation', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
         webKitProxy: const WebKitProxy(
@@ -87,7 +85,7 @@ void main() {
       expect(callbackError.errorType, WebResourceErrorType.webViewInvalidated);
     });
 
-    test('onWebResourceError from didFailProvisionalNavigation', () async {
+    test('onWebResourceError from didFailProvisionalNavigation', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
         webKitProxy: const WebKitProxy(
@@ -118,8 +116,7 @@ void main() {
       expect(callbackError.errorType, WebResourceErrorType.webViewInvalidated);
     });
 
-    test('onWebResourceError from webViewWebContentProcessDidTerminate',
-        () async {
+    test('onWebResourceError from webViewWebContentProcessDidTerminate', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
         webKitProxy: const WebKitProxy(
@@ -148,7 +145,7 @@ void main() {
       );
     });
 
-    test('onNavigationRequest from decidePolicyForNavigationAction', () async {
+    test('onNavigationRequest from decidePolicyForNavigationAction', () {
       final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
         webKitProxy: const WebKitProxy(
