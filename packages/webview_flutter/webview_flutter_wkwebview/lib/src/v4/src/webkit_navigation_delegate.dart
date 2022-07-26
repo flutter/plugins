@@ -112,7 +112,6 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
 
   /// WebKit class that handles navigation changes and tracking navigation
   /// requests.
-  @protected
   late final WKNavigationDelegate navigationDelegate;
 
   void Function(String url)? _onPageFinished;
@@ -123,7 +122,6 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
       _onNavigationRequest;
 
   /// Callback method that receives progress of a loading page.
-  @protected
   void Function(int progress)? get onProgress => _onProgress;
 
   @override
@@ -140,7 +138,7 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
 
   @override
   Future<void> setOnProgress(void Function(int progress) onProgress) async {
-    onProgress = onProgress;
+    _onProgress = onProgress;
   }
 
   @override
