@@ -688,6 +688,30 @@ void main() {
         "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
       );
     });
+
+    test('setPlatformNavigationDelegate', () {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
+      );
+
+      final WebKitNavigationDelegate navigationDelegate =
+          WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
+        ),
+      );
+
+      controller.setPlatformNavigationDelegate(navigationDelegate);
+
+      verify(
+        mockWebView.setNavigationDelegate(
+          CapturingNavigationDelegate.lastCreatedDelegate,
+        ),
+      );
+    });
   });
 
   group('WebKitJavaScriptChannelParams', () {
@@ -726,4 +750,19 @@ void main() {
       expect(callbackMessage, 'myMessage');
     });
   });
+}
+
+class CapturingNavigationDelegate extends WKNavigationDelegate {
+  CapturingNavigationDelegate({
+    super.didFinishNavigation,
+    super.didStartProvisionalNavigation,
+    super.didFailNavigation,
+    super.didFailProvisionalNavigation,
+    super.decidePolicyForNavigationAction,
+    super.webViewWebContentProcessDidTerminate,
+  }) : super.detached() {
+    lastCreatedDelegate = this;
+  }
+  static CapturingNavigationDelegate lastCreatedDelegate =
+      CapturingNavigationDelegate();
 }

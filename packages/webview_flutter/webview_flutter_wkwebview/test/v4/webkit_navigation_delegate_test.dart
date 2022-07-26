@@ -16,68 +16,19 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   group('WebKitNavigationDelegate', () {
-    WKNavigationDelegate Function({
-      void Function(WKWebView webView, String? url)? didFinishNavigation,
-      void Function(WKWebView webView, String? url)?
-          didStartProvisionalNavigation,
-      Future<WKNavigationActionPolicy> Function(
-        WKWebView webView,
-        WKNavigationAction navigationAction,
-      )?
-          decidePolicyForNavigationAction,
-      void Function(WKWebView webView, NSError error)? didFailNavigation,
-      void Function(WKWebView webView, NSError error)?
-          didFailProvisionalNavigation,
-      void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
-    }) createDetachedDelegate(
-      void Function(WKNavigationDelegate delegate) onCreateDelegate,
-    ) {
-      return ({
-        void Function(WKWebView webView, String? url)? didFinishNavigation,
-        void Function(WKWebView webView, String? url)?
-            didStartProvisionalNavigation,
-        Future<WKNavigationActionPolicy> Function(
-          WKWebView webView,
-          WKNavigationAction navigationAction,
-        )?
-            decidePolicyForNavigationAction,
-        void Function(WKWebView webView, NSError error)? didFailNavigation,
-        void Function(WKWebView webView, NSError error)?
-            didFailProvisionalNavigation,
-        void Function(WKWebView webView)? webViewWebContentProcessDidTerminate,
-      }) {
-        final WKNavigationDelegate delegate = WKNavigationDelegate.detached(
-          didFinishNavigation: didFinishNavigation,
-          didStartProvisionalNavigation: didStartProvisionalNavigation,
-          decidePolicyForNavigationAction: decidePolicyForNavigationAction,
-          didFailNavigation: didFailNavigation,
-          didFailProvisionalNavigation: didFailProvisionalNavigation,
-          webViewWebContentProcessDidTerminate:
-              webViewWebContentProcessDidTerminate,
-        );
-        onCreateDelegate(delegate);
-        return delegate;
-      };
-    }
-
     test('setOnPageFinished', () async {
-      late final WKNavigationDelegate navigationDelegate;
-
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createNavigationDelegate: createDetachedDelegate(
-          (WKNavigationDelegate delegate) => navigationDelegate = delegate,
+      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
         ),
       );
 
       late final String callbackUrl;
       void onPageFinished(String url) => callbackUrl = url;
-
-      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       webKitDelgate.setOnPageFinished(onPageFinished);
-      navigationDelegate.didFinishNavigation!(
+
+      CapturingNavigationDelegate.lastCreatedDelegate.didFinishNavigation!(
         WKWebView.detached(),
         'https://www.google.com',
       );
@@ -86,23 +37,19 @@ void main() {
     });
 
     test('setOnPageStarted', () async {
-      late final WKNavigationDelegate navigationDelegate;
-
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createNavigationDelegate: createDetachedDelegate(
-          (WKNavigationDelegate delegate) => navigationDelegate = delegate,
+      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
         ),
       );
 
       late final String callbackUrl;
       void onPageStarted(String url) => callbackUrl = url;
-
-      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       webKitDelgate.setOnPageStarted(onPageStarted);
-      navigationDelegate.didStartProvisionalNavigation!(
+
+      CapturingNavigationDelegate
+          .lastCreatedDelegate.didStartProvisionalNavigation!(
         WKWebView.detached(),
         'https://www.google.com',
       );
@@ -111,11 +58,10 @@ void main() {
     });
 
     test('onWebResourceError from didFailNavigation', () async {
-      late final WKNavigationDelegate navigationDelegate;
-
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createNavigationDelegate: createDetachedDelegate(
-          (WKNavigationDelegate delegate) => navigationDelegate = delegate,
+      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
         ),
       );
 
@@ -124,12 +70,9 @@ void main() {
         callbackError = error as WebKitWebResourceError;
       }
 
-      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       webKitDelgate.setOnWebResourceError(onWebResourceError);
-      navigationDelegate.didFailNavigation!(
+
+      CapturingNavigationDelegate.lastCreatedDelegate.didFailNavigation!(
         WKWebView.detached(),
         const NSError(
           code: WKErrorCode.webViewInvalidated,
@@ -145,11 +88,10 @@ void main() {
     });
 
     test('onWebResourceError from didFailProvisionalNavigation', () async {
-      late final WKNavigationDelegate navigationDelegate;
-
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createNavigationDelegate: createDetachedDelegate(
-          (WKNavigationDelegate delegate) => navigationDelegate = delegate,
+      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
         ),
       );
 
@@ -158,12 +100,10 @@ void main() {
         callbackError = error as WebKitWebResourceError;
       }
 
-      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       webKitDelgate.setOnWebResourceError(onWebResourceError);
-      navigationDelegate.didFailProvisionalNavigation!(
+
+      CapturingNavigationDelegate
+          .lastCreatedDelegate.didFailProvisionalNavigation!(
         WKWebView.detached(),
         const NSError(
           code: WKErrorCode.webViewInvalidated,
@@ -180,11 +120,10 @@ void main() {
 
     test('onWebResourceError from webViewWebContentProcessDidTerminate',
         () async {
-      late final WKNavigationDelegate navigationDelegate;
-
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createNavigationDelegate: createDetachedDelegate(
-          (WKNavigationDelegate delegate) => navigationDelegate = delegate,
+      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
         ),
       );
 
@@ -193,12 +132,10 @@ void main() {
         callbackError = error as WebKitWebResourceError;
       }
 
-      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       webKitDelgate.setOnWebResourceError(onWebResourceError);
-      navigationDelegate.webViewWebContentProcessDidTerminate!(
+
+      CapturingNavigationDelegate
+          .lastCreatedDelegate.webViewWebContentProcessDidTerminate!(
         WKWebView.detached(),
       );
 
@@ -212,11 +149,10 @@ void main() {
     });
 
     test('onNavigationRequest from decidePolicyForNavigationAction', () async {
-      late final WKNavigationDelegate navigationDelegate;
-
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createNavigationDelegate: createDetachedDelegate(
-          (WKNavigationDelegate delegate) => navigationDelegate = delegate,
+      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
         ),
       );
 
@@ -231,14 +167,11 @@ void main() {
         return true;
       }
 
-      final WebKitNavigationDelegate webKitDelgate = WebKitNavigationDelegate(
-        const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       webKitDelgate.setOnNavigationRequest(onNavigationRequest);
 
       expect(
-        navigationDelegate.decidePolicyForNavigationAction!(
+        CapturingNavigationDelegate
+            .lastCreatedDelegate.decidePolicyForNavigationAction!(
           WKWebView.detached(),
           const WKNavigationAction(
             request: NSUrlRequest(url: 'https://www.google.com'),
@@ -252,4 +185,19 @@ void main() {
       expect(callbackIsMainFrame, isFalse);
     });
   });
+}
+
+class CapturingNavigationDelegate extends WKNavigationDelegate {
+  CapturingNavigationDelegate({
+    super.didFinishNavigation,
+    super.didStartProvisionalNavigation,
+    super.didFailNavigation,
+    super.didFailProvisionalNavigation,
+    super.decidePolicyForNavigationAction,
+    super.webViewWebContentProcessDidTerminate,
+  }) : super.detached() {
+    lastCreatedDelegate = this;
+  }
+  static CapturingNavigationDelegate lastCreatedDelegate =
+      CapturingNavigationDelegate();
 }
