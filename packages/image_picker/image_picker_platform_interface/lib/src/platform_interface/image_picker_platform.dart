@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:cross_file/cross_file.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
+import 'package:image_picker_platform_interface/src/types/multi_image_picker_options.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -186,6 +187,8 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getImage() has not been implemented.');
   }
 
+  /// This method is deprecated in favor of [getMultiImageWithOptions] and will be removed in a future update.
+  ///
   /// Returns a [List<XFile>] with the images that were picked.
   ///
   /// The images come from the [ImageSource.gallery].
@@ -282,5 +285,24 @@ abstract class ImagePickerPlatform extends PlatformInterface {
       imageQuality: options.imageQuality,
       preferredCameraDevice: options.preferredCameraDevice,
     );
+  }
+
+  /// Returns a [List<XFile>] with the images that were picked.
+  ///
+  /// The images come from the [ImageSource.gallery].
+  ///
+  /// The `options` argument controls additional settings that can be used when
+  /// picking an image. See [MultiImagePickerOptions] for more details.
+  ///
+  /// If no images were picked, returns an empty list.
+  Future<List<XFile>> getMultiImageWithOptions({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
+  }) async {
+    final List<XFile>? pickedImages = await getMultiImage(
+      maxWidth: options.imageOptions.maxWidth,
+      maxHeight: options.imageOptions.maxHeight,
+      imageQuality: options.imageOptions.imageQuality,
+    );
+    return pickedImages ?? <XFile>[];
   }
 }

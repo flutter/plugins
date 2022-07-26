@@ -1,3 +1,10 @@
+## 2.6.0
+
+* Deprecates `getMultiImage` in favor of a new method `getMultiImageWithOptions`.
+    * Adds `requestFullMetadata` option that allows disabling extra permission requests
+      on certain platforms.
+    * Moves optional image picking parameters to `MultiImagePickerOptions` class.
+
 ## 2.5.0
 
 * Deprecates `getImage` in favor of a new method `getImageFromSource`.
