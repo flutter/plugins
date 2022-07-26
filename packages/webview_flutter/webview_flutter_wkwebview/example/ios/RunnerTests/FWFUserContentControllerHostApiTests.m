@@ -14,13 +14,13 @@
 @implementation FWFUserContentControllerHostApiTests
 - (void)testCreateFromWebViewConfigurationWithIdentifier {
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  FWFUserContentControllerHostApiImpl *hostApi =
+  FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
-  [instanceManager addInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
+  [instanceManager addDartCreatedInstance:[[WKWebViewConfiguration alloc] init] withIdentifier:0];
 
   FlutterError *error;
-  [hostApi createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
+  [hostAPI createFromWebViewConfigurationWithIdentifier:@1 configurationIdentifier:@0 error:&error];
   WKUserContentController *userContentController =
       (WKUserContentController *)[instanceManager instanceForIdentifier:1];
   XCTAssertTrue([userContentController isKindOfClass:[WKUserContentController class]]);
@@ -32,17 +32,17 @@
       OCMClassMock([WKUserContentController class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUserContentController withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUserContentController withIdentifier:0];
 
-  FWFUserContentControllerHostApiImpl *hostApi =
+  FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   id<WKScriptMessageHandler> mockMessageHandler =
       OCMProtocolMock(@protocol(WKScriptMessageHandler));
-  [instanceManager addInstance:mockMessageHandler withIdentifier:1];
+  [instanceManager addDartCreatedInstance:mockMessageHandler withIdentifier:1];
 
   FlutterError *error;
-  [hostApi addScriptMessageHandlerForControllerWithIdentifier:@0
+  [hostAPI addScriptMessageHandlerForControllerWithIdentifier:@0
                                             handlerIdentifier:@1
                                                        ofName:@"apple"
                                                         error:&error];
@@ -55,13 +55,13 @@
       OCMClassMock([WKUserContentController class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUserContentController withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUserContentController withIdentifier:0];
 
-  FWFUserContentControllerHostApiImpl *hostApi =
+  FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeScriptMessageHandlerForControllerWithIdentifier:@0 name:@"apple" error:&error];
+  [hostAPI removeScriptMessageHandlerForControllerWithIdentifier:@0 name:@"apple" error:&error];
   OCMVerify([mockUserContentController removeScriptMessageHandlerForName:@"apple"]);
   XCTAssertNil(error);
 }
@@ -71,13 +71,13 @@
       OCMClassMock([WKUserContentController class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUserContentController withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUserContentController withIdentifier:0];
 
-  FWFUserContentControllerHostApiImpl *hostApi =
+  FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeAllScriptMessageHandlersForControllerWithIdentifier:@0 error:&error];
+  [hostAPI removeAllScriptMessageHandlersForControllerWithIdentifier:@0 error:&error];
   OCMVerify([mockUserContentController removeAllScriptMessageHandlers]);
   XCTAssertNil(error);
 }
@@ -87,13 +87,13 @@
       OCMClassMock([WKUserContentController class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUserContentController withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUserContentController withIdentifier:0];
 
-  FWFUserContentControllerHostApiImpl *hostApi =
+  FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi
+  [hostAPI
       addUserScriptForControllerWithIdentifier:@0
                                     userScript:
                                         [FWFWKUserScriptData
@@ -114,13 +114,13 @@
       OCMClassMock([WKUserContentController class]);
 
   FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
-  [instanceManager addInstance:mockUserContentController withIdentifier:0];
+  [instanceManager addDartCreatedInstance:mockUserContentController withIdentifier:0];
 
-  FWFUserContentControllerHostApiImpl *hostApi =
+  FWFUserContentControllerHostApiImpl *hostAPI =
       [[FWFUserContentControllerHostApiImpl alloc] initWithInstanceManager:instanceManager];
 
   FlutterError *error;
-  [hostApi removeAllUserScriptsForControllerWithIdentifier:@0 error:&error];
+  [hostAPI removeAllUserScriptsForControllerWithIdentifier:@0 error:&error];
   OCMVerify([mockUserContentController removeAllUserScripts]);
   XCTAssertNil(error);
 }
