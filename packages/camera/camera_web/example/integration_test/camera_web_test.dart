@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:html';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:async/async.dart';

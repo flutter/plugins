@@ -23,6 +23,9 @@ import 'mocks.dart';
 
 export 'package:flutter_plugin_tools/src/common/repository_package.dart';
 
+const String _defaultDartConstraint = '>=2.14.0 <3.0.0';
+const String _defaultFlutterConstraint = '>=2.5.0';
+
 /// Returns the exe name that command will use when running Flutter on
 /// [platform].
 String getFlutterCommand(Platform platform) =>
@@ -97,14 +100,19 @@ RepositoryPackage createFakePlugin(
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
   String? version = '0.0.1',
-  String flutterConstraint = '>=2.5.0',
+  String flutterConstraint = _defaultFlutterConstraint,
+  String dartConstraint = _defaultDartConstraint,
 }) {
-  final RepositoryPackage package = createFakePackage(name, parentDirectory,
-      isFlutter: true,
-      examples: examples,
-      extraFiles: extraFiles,
-      version: version,
-      flutterConstraint: flutterConstraint);
+  final RepositoryPackage package = createFakePackage(
+    name,
+    parentDirectory,
+    isFlutter: true,
+    examples: examples,
+    extraFiles: extraFiles,
+    version: version,
+    flutterConstraint: flutterConstraint,
+    dartConstraint: dartConstraint,
+  );
 
   createFakePubspec(
     package,
@@ -114,6 +122,7 @@ RepositoryPackage createFakePlugin(
     platformSupport: platformSupport,
     version: version,
     flutterConstraint: flutterConstraint,
+    dartConstraint: dartConstraint,
   );
 
   return package;
@@ -136,7 +145,8 @@ RepositoryPackage createFakePackage(
   List<String> extraFiles = const <String>[],
   bool isFlutter = false,
   String? version = '0.0.1',
-  String flutterConstraint = '>=2.5.0',
+  String flutterConstraint = _defaultFlutterConstraint,
+  String dartConstraint = _defaultDartConstraint,
   bool includeCommonFiles = true,
   String? directoryName,
   String? publishTo,
@@ -150,7 +160,8 @@ RepositoryPackage createFakePackage(
       name: name,
       isFlutter: isFlutter,
       version: version,
-      flutterConstraint: flutterConstraint);
+      flutterConstraint: flutterConstraint,
+      dartConstraint: dartConstraint);
   if (includeCommonFiles) {
     package.changelogFile.writeAsStringSync('''
 ## $version
@@ -167,7 +178,8 @@ RepositoryPackage createFakePackage(
         includeCommonFiles: false,
         isFlutter: isFlutter,
         publishTo: 'none',
-        flutterConstraint: flutterConstraint);
+        flutterConstraint: flutterConstraint,
+        dartConstraint: dartConstraint);
   } else if (examples.isNotEmpty) {
     final Directory examplesDirectory = getExampleDir(package)..createSync();
     for (final String exampleName in examples) {
@@ -176,7 +188,8 @@ RepositoryPackage createFakePackage(
           includeCommonFiles: false,
           isFlutter: isFlutter,
           publishTo: 'none',
-          flutterConstraint: flutterConstraint);
+          flutterConstraint: flutterConstraint,
+          dartConstraint: dartConstraint);
     }
   }
 
@@ -189,7 +202,7 @@ RepositoryPackage createFakePackage(
   return package;
 }
 
-/// Creates a `pubspec.yaml` file with a flutter dependency.
+/// Creates a `pubspec.yaml` file for [package].
 ///
 /// [platformSupport] is a map of platform string to the support details for
 /// that platform. If empty, no `plugin` entry will be created unless `isPlugin`
@@ -203,8 +216,8 @@ void createFakePubspec(
       const <String, PlatformDetails>{},
   String? publishTo,
   String? version,
-  String dartConstraint = '>=2.0.0 <3.0.0',
-  String flutterConstraint = '>=2.5.0',
+  String dartConstraint = _defaultDartConstraint,
+  String flutterConstraint = _defaultFlutterConstraint,
 }) {
   isPlugin |= platformSupport.isNotEmpty;
 

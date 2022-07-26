@@ -299,7 +299,7 @@ void main() {
               'purchasesList': <dynamic>[
                 <dynamic, dynamic>{
                   'orderId': 'orderID1',
-                  'sku': skuDetails.sku,
+                  'skus': <String>[skuDetails.sku],
                   'isAutoRenewing': false,
                   'packageName': 'package',
                   'purchaseTime': 1231231231,
@@ -401,7 +401,7 @@ void main() {
               'purchasesList': <dynamic>[
                 <dynamic, dynamic>{
                   'orderId': 'orderID1',
-                  'sku': skuDetails.sku,
+                  'skus': <String>[skuDetails.sku],
                   'isAutoRenewing': false,
                   'packageName': 'package',
                   'purchaseTime': 1231231231,
@@ -515,7 +515,7 @@ void main() {
               'purchasesList': <dynamic>[
                 <dynamic, dynamic>{
                   'orderId': 'orderID1',
-                  'sku': skuDetails.sku,
+                  'skus': <String>[skuDetails.sku],
                   'isAutoRenewing': false,
                   'packageName': 'package',
                   'purchaseTime': 1231231231,
@@ -592,7 +592,7 @@ void main() {
               'purchasesList': <dynamic>[
                 <dynamic, dynamic>{
                   'orderId': 'orderID1',
-                  'sku': skuDetails.sku,
+                  'skus': <String>[skuDetails.sku],
                   'isAutoRenewing': false,
                   'packageName': 'package',
                   'purchaseTime': 1231231231,

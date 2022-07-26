@@ -163,6 +163,6 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
         (WebViewClient) instanceManager.getInstance(webViewClientInstanceId);
     final WebChromeClient webChromeClient =
         webChromeClientCreator.createWebChromeClient(flutterApi, webViewClient);
-    instanceManager.addInstance(webChromeClient, instanceId);
+    instanceManager.addDartCreatedInstance(webChromeClient, instanceId);
   }
 }

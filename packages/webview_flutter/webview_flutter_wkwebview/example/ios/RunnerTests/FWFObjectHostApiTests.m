@@ -12,6 +12,37 @@
 @end
 
 @implementation FWFObjectHostApiTests
+/**
+ * Creates a partially mocked FWFObject and adds it to instanceManager.
+ *
+ * @param instanceManager Instance manager to add the delegate to.
+ * @param identifier Identifier for the delegate added to the instanceManager.
+ *
+ * @return A mock FWFObject.
+ */
+- (id)mockObjectWithManager:(FWFInstanceManager *)instanceManager identifier:(long)identifier {
+  FWFObject *object =
+      [[FWFObject alloc] initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+                                 instanceManager:instanceManager];
+
+  [instanceManager addDartCreatedInstance:object withIdentifier:0];
+  return OCMPartialMock(object);
+}
+
+/**
+ * Creates a  mock FWFObjectFlutterApiImpl with instanceManager.
+ *
+ * @param instanceManager Instance manager passed to the Flutter API.
+ *
+ * @return A mock FWFObjectFlutterApiImpl.
+ */
+- (id)mockFlutterApiWithManager:(FWFInstanceManager *)instanceManager {
+  FWFObjectFlutterApiImpl *flutterAPI = [[FWFObjectFlutterApiImpl alloc]
+      initWithBinaryMessenger:OCMProtocolMock(@protocol(FlutterBinaryMessenger))
+              instanceManager:instanceManager];
+  return OCMPartialMock(flutterAPI);
+}
+
 - (void)testAddObserver {
   NSObject *mockObject = OCMClassMock([NSObject class]);
 
@@ -81,5 +112,35 @@
   object = nil;
   XCTAssertFalse([instanceManager containsInstance:object]);
   XCTAssertNil(error);
+}
+
+- (void)testObserveValueForKeyPath {
+  FWFInstanceManager *instanceManager = [[FWFInstanceManager alloc] init];
+
+  FWFObject *mockObject = [self mockObjectWithManager:instanceManager identifier:0];
+  FWFObjectFlutterApiImpl *mockFlutterAPI = [self mockFlutterApiWithManager:instanceManager];
+
+  OCMStub([mockObject objectApi]).andReturn(mockFlutterAPI);
+
+  NSObject *object = [[NSObject alloc] init];
+  [instanceManager addDartCreatedInstance:object withIdentifier:1];
+
+  [mockObject observeValueForKeyPath:@"keyPath"
+                            ofObject:object
+                              change:@{NSKeyValueChangeOldKey : @"key"}
+                             context:nil];
+  OCMVerify([mockFlutterAPI
+      observeValueForObjectWithIdentifier:@0
+                                  keyPath:@"keyPath"
+                         objectIdentifier:@1
+                               changeKeys:[OCMArg checkWithBlock:^BOOL(
+                                                      NSArray<FWFNSKeyValueChangeKeyEnumData *>
+                                                          *value) {
+                                 return value[0].value == FWFNSKeyValueChangeKeyEnumOldValue;
+                               }]
+                             changeValues:[OCMArg checkWithBlock:^BOOL(id value) {
+                               return [@"key" isEqual:value[0]];
+                             }]
+                               completion:OCMOCK_ANY]);
 }
 @end

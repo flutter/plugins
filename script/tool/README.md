@@ -178,4 +178,4 @@ For changes that are relevant to flutter/packages, you will also need to:
 - Update the tool's pubspec.yaml and CHANGELOG
 - Publish the tool
 - Update the pinned version in
-  [flutter/packages](https://github.com/flutter/packages/blob/master/.cirrus.yml)
+  [flutter/packages](https://github.com/flutter/packages/blob/main/.cirrus.yml)

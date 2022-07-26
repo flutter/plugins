@@ -31,8 +31,8 @@ enum NextVersionType {
   /// A bugfix change.
   PATCH,
 
-  /// The release of an existing prerelease version.
-  RELEASE,
+  /// The release of an existing pre-1.0 version.
+  V1_RELEASE,
 }
 
 /// The state of a package's version relative to the comparison base.
@@ -53,8 +53,8 @@ enum _CurrentVersionState {
   unknown,
 }
 
-/// Returns the set of allowed next versions, with their change type, for
-/// [version].
+/// Returns the set of allowed next non-prerelease versions, with their change
+/// type, for [version].
 ///
 /// [newVersion] is used to check whether this is a pre-1.0 version bump, as
 /// those have different semver rules.
@@ -78,17 +78,17 @@ Map<Version, NextVersionType> getAllowedNextVersions(
       final int currentBuildNumber = version.build.first as int;
       nextBuildNumber = currentBuildNumber + 1;
     }
-    final Version preReleaseVersion = Version(
+    final Version nextBuildVersion = Version(
       version.major,
       version.minor,
       version.patch,
       build: nextBuildNumber.toString(),
     );
     allowedNextVersions.clear();
-    allowedNextVersions[version.nextMajor] = NextVersionType.RELEASE;
+    allowedNextVersions[version.nextMajor] = NextVersionType.V1_RELEASE;
     allowedNextVersions[version.nextMinor] = NextVersionType.BREAKING_MAJOR;
     allowedNextVersions[version.nextPatch] = NextVersionType.MINOR;
-    allowedNextVersions[preReleaseVersion] = NextVersionType.PATCH;
+    allowedNextVersions[nextBuildVersion] = NextVersionType.PATCH;
   }
   return allowedNextVersions;
 }
@@ -337,12 +337,11 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
     // Check for reverts when doing local validation.
     if (!getBoolArg(_againstPubFlag) && currentVersion < previousVersion) {
-      final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
-          getAllowedNextVersions(currentVersion, newVersion: previousVersion);
       // Since this skips validation, try to ensure that it really is likely
       // to be a revert rather than a typo by checking that the transition
       // from the lower version to the new version would have been valid.
-      if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
+      if (_shouldAllowVersionChange(
+          oldVersion: currentVersion, newVersion: previousVersion)) {
         logWarning('${indentation}New version is lower than previous version. '
             'This is assumed to be a revert.');
         return _CurrentVersionState.validRevert;
@@ -352,7 +351,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final Map<Version, NextVersionType> allowedNextVersions =
         getAllowedNextVersions(previousVersion, newVersion: currentVersion);
 
-    if (allowedNextVersions.containsKey(currentVersion)) {
+    if (_shouldAllowVersionChange(
+        oldVersion: previousVersion, newVersion: currentVersion)) {
       print('$indentation$previousVersion -> $currentVersion');
     } else {
       printError('${indentation}Incorrectly updated version.\n'
@@ -361,7 +361,13 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       return _CurrentVersionState.invalidChange;
     }
 
-    if (allowedNextVersions[currentVersion] == NextVersionType.BREAKING_MAJOR &&
+    // Check whether the version (or for a pre-release, the version that
+    // pre-release would eventually be released as) is a breaking change, and
+    // if so, validate it.
+    final Version targetReleaseVersion =
+        currentVersion.isPreRelease ? currentVersion.nextPatch : currentVersion;
+    if (allowedNextVersions[targetReleaseVersion] ==
+            NextVersionType.BREAKING_MAJOR &&
         !_validateBreakingChange(package)) {
       printError('${indentation}Breaking change detected.\n'
           '${indentation}Breaking changes to platform interfaces are not '
@@ -520,6 +526,27 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     return file.readAsStringSync();
   }
 
+  /// Returns true if the given version transition should be allowed.
+  bool _shouldAllowVersionChange(
+      {required Version oldVersion, required Version newVersion}) {
+    // Get the non-pre-release next version mapping.
+    final Map<Version, NextVersionType> allowedNextVersions =
+        getAllowedNextVersions(oldVersion, newVersion: newVersion);
+
+    if (allowedNextVersions.containsKey(newVersion)) {
+      return true;
+    }
+    // Allow a pre-release version of a version that would be a valid
+    // transition.
+    if (newVersion.isPreRelease) {
+      final Version targetReleaseVersion = newVersion.nextPatch;
+      if (allowedNextVersions.containsKey(targetReleaseVersion)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /// Returns an error string if the changes to this package should have
   /// resulted in a version change, or shoud have resulted in a CHANGELOG change
   /// but didn't.
@@ -542,11 +569,15 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     }
 
     if (state.needsVersionChange) {
-      if (_getChangeDescription().split('\n').any((String line) =>
+      final String changeDescription = _getChangeDescription();
+      if (changeDescription.split('\n').any((String line) =>
           line.startsWith(_missingVersionChangeJustificationMarker))) {
         logWarning('Ignoring lack of version change due to '
             '"$_missingVersionChangeJustificationMarker" in the '
             'change description.');
+      } else if (_isAllowedDependabotChange(package, changeDescription)) {
+        logWarning('Ignoring lack of version change for Dependabot change to '
+            'a known internal dependency.');
       } else {
         printError(
             'No version change found, but the change to this package could '
@@ -560,11 +591,15 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     }
 
     if (!state.hasChangelogChange) {
-      if (_getChangeDescription().split('\n').any((String line) =>
+      final String changeDescription = _getChangeDescription();
+      if (changeDescription.split('\n').any((String line) =>
           line.startsWith(_missingChangelogChangeJustificationMarker))) {
         logWarning('Ignoring lack of CHANGELOG update due to '
             '"$_missingChangelogChangeJustificationMarker" in the '
             'change description.');
+      } else if (_isAllowedDependabotChange(package, changeDescription)) {
+        logWarning('Ignoring lack of CHANGELOG update for Dependabot change to '
+            'a known internal dependency.');
       } else {
         printError(
             'No CHANGELOG change found. If this PR needs an exemption from '
@@ -577,5 +612,53 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     }
 
     return null;
+  }
+
+  /// Returns true if [changeDescription] matches a Dependabot change for a
+  /// dependency roll that should bypass the normal version and CHANGELOG change
+  /// checks (for dependencies that are known not to have client impact).
+  bool _isAllowedDependabotChange(
+      RepositoryPackage package, String changeDescription) {
+    // Espresso exports some dependencies that are normally just internal test
+    // utils, so always require reviewers to check that.
+    if (package.directory.basename == 'espresso') {
+      return false;
+    }
+
+    // A string that is in all Dependabot PRs, but extremely unlikely to be in
+    // any other PR, to identify Dependabot PRs.
+    const String dependabotPRDescriptionMarker =
+        'Dependabot commands and options';
+    // The same thing, but for the Dependabot commit message, to work around
+    // https://github.com/cirruslabs/cirrus-ci-docs/issues/1029.
+    const String dependabotCommitMessageMarker =
+        'Signed-off-by: dependabot[bot]';
+    // Expression to extract the name of the dependency being updated.
+    final RegExp dependencyRegex =
+        RegExp(r'Bumps? \[(.*?)\]\(.*?\) from [\d.]+ to [\d.]+');
+
+    // Allowed exact dependency names.
+    const Set<String> allowedDependencies = <String>{
+      'junit',
+      'robolectric',
+    };
+    const Set<String> allowedDependencyPrefixes = <String>{
+      'mockito-' // mockito-core, mockito-inline, etc.
+    };
+
+    if (changeDescription.contains(dependabotPRDescriptionMarker) ||
+        changeDescription.contains(dependabotCommitMessageMarker)) {
+      final Match? match = dependencyRegex.firstMatch(changeDescription);
+      if (match != null) {
+        final String dependency = match.group(1)!;
+        if (allowedDependencies.contains(dependency) ||
+            allowedDependencyPrefixes
+                .any((String prefix) => dependency.startsWith(prefix))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

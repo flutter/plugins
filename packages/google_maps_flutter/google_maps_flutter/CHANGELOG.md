@@ -1,3 +1,15 @@
+## 2.1.9
+
+* Updates integration tests to use the new inspector interface.
+* Removes obsolete test-only method for accessing a map controller's method channel.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 2.1.8
+
+* Switches to new platform interface versions of `buildView` and
+  `updateOptions`.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
 ## 2.1.7
 
 * Objective-C code cleanup.

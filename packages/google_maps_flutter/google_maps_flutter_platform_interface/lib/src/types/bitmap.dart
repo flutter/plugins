@@ -18,10 +18,8 @@ class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
   /// The inverse of .toJson.
-  // This is needed in Web to re-hydrate BitmapDescriptors that have been
-  // transformed to JSON for transport.
-  // TODO(stuartmorgan): Clean this up. See
-  // https://github.com/flutter/flutter/issues/70330
+  // TODO(stuartmorgan): Remove this in the next breaking change.
+  @Deprecated('No longer supported')
   BitmapDescriptor.fromJson(Object json) : _json = json {
     assert(_json is List<dynamic>);
     final List<dynamic> jsonList = json as List<dynamic>;
