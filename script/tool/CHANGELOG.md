@@ -1,3 +1,10 @@
+## 0.8.9
+
+- Includes `dev_dependencies` when overridding dependencies using
+  `make-deps-path-based`.
+- Bypasses version and CHANGELOG checks for Dependabot PRs for packages
+  that are known not to be client-affecting.
+
 ## 0.8.8
 
 - Allows pre-release versions in `version-check`.

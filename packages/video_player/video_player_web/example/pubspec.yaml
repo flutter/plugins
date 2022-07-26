@@ -8,6 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  js: ^0.6.0
   video_player_web:
     path: ../
 

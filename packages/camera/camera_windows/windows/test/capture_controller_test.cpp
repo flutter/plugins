@@ -59,8 +59,10 @@ void MockInitCaptureController(CaptureControllerImpl* capture_controller,
       .Times(1);
   EXPECT_CALL(*engine, Initialize).Times(1);
 
-  capture_controller->InitCaptureDevice(texture_registrar, MOCK_DEVICE_ID, true,
-                                        ResolutionPreset::kAuto);
+  bool result = capture_controller->InitCaptureDevice(
+      texture_registrar, MOCK_DEVICE_ID, true, ResolutionPreset::kAuto);
+
+  EXPECT_TRUE(result);
 
   // MockCaptureEngine::Initialize is called
   EXPECT_TRUE(engine->initialized_);
@@ -207,6 +209,78 @@ TEST(CaptureController,
   // Init capture controller with mocks and tests
   MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
                             engine.Get(), camera.get(), mock_texture_id);
+
+  capture_controller = nullptr;
+  camera = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+}
+
+TEST(CaptureController, InitCaptureEngineCanOnlyBeCalledOnce) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  uint64_t mock_texture_id = 1234;
+
+  // Init capture controller once with mocks and tests
+  MockInitCaptureController(capture_controller.get(), texture_registrar.get(),
+                            engine.Get(), camera.get(), mock_texture_id);
+
+  // Init capture controller a second time.
+  EXPECT_CALL(*camera, OnCreateCaptureEngineFailed).Times(1);
+
+  bool result = capture_controller->InitCaptureDevice(
+      texture_registrar.get(), MOCK_DEVICE_ID, true, ResolutionPreset::kAuto);
+
+  EXPECT_FALSE(result);
+
+  capture_controller = nullptr;
+  camera = nullptr;
+  texture_registrar = nullptr;
+  engine = nullptr;
+}
+
+TEST(CaptureController, InitCaptureEngineReportsFailure) {
+  ComPtr<MockCaptureEngine> engine = new MockCaptureEngine();
+  std::unique_ptr<MockCamera> camera =
+      std::make_unique<MockCamera>(MOCK_DEVICE_ID);
+  std::unique_ptr<CaptureControllerImpl> capture_controller =
+      std::make_unique<CaptureControllerImpl>(camera.get());
+  std::unique_ptr<MockTextureRegistrar> texture_registrar =
+      std::make_unique<MockTextureRegistrar>();
+
+  ComPtr<MockMediaSource> video_source = new MockMediaSource();
+  ComPtr<MockMediaSource> audio_source = new MockMediaSource();
+
+  capture_controller->SetCaptureEngine(
+      reinterpret_cast<IMFCaptureEngine*>(engine.Get()));
+  capture_controller->SetVideoSource(
+      reinterpret_cast<IMFMediaSource*>(video_source.Get()));
+  capture_controller->SetAudioSource(
+      reinterpret_cast<IMFMediaSource*>(audio_source.Get()));
+
+  EXPECT_CALL(*texture_registrar, RegisterTexture).Times(0);
+  EXPECT_CALL(*texture_registrar, UnregisterTexture).Times(0);
+  EXPECT_CALL(*camera, OnCreateCaptureEngineSucceeded).Times(0);
+
+  EXPECT_CALL(*engine.Get(), Initialize)
+      .Times(1)
+      .WillOnce(Return(E_ACCESSDENIED));
+
+  EXPECT_CALL(*camera,
+              OnCreateCaptureEngineFailed(Eq("Failed to create camera")))
+      .Times(1);
+
+  bool result = capture_controller->InitCaptureDevice(
+      texture_registrar.get(), MOCK_DEVICE_ID, true, ResolutionPreset::kAuto);
+
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(engine->initialized_);
 
   capture_controller = nullptr;
   camera = nullptr;

@@ -64,7 +64,7 @@ void main() {
       late final WKNavigationDelegate navigationDelegate;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateNavigationDelegate: createDetachedDelegate(
+        createNavigationDelegate: createDetachedDelegate(
           (WKNavigationDelegate delegate) => navigationDelegate = delegate,
         ),
       );
@@ -89,7 +89,7 @@ void main() {
       late final WKNavigationDelegate navigationDelegate;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateNavigationDelegate: createDetachedDelegate(
+        createNavigationDelegate: createDetachedDelegate(
           (WKNavigationDelegate delegate) => navigationDelegate = delegate,
         ),
       );
@@ -114,7 +114,7 @@ void main() {
       late final WKNavigationDelegate navigationDelegate;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateNavigationDelegate: createDetachedDelegate(
+        createNavigationDelegate: createDetachedDelegate(
           (WKNavigationDelegate delegate) => navigationDelegate = delegate,
         ),
       );
@@ -148,7 +148,7 @@ void main() {
       late final WKNavigationDelegate navigationDelegate;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateNavigationDelegate: createDetachedDelegate(
+        createNavigationDelegate: createDetachedDelegate(
           (WKNavigationDelegate delegate) => navigationDelegate = delegate,
         ),
       );
@@ -183,7 +183,7 @@ void main() {
       late final WKNavigationDelegate navigationDelegate;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateNavigationDelegate: createDetachedDelegate(
+        createNavigationDelegate: createDetachedDelegate(
           (WKNavigationDelegate delegate) => navigationDelegate = delegate,
         ),
       );
@@ -215,7 +215,7 @@ void main() {
       late final WKNavigationDelegate navigationDelegate;
 
       final WebKitProxy webKitProxy = WebKitProxy(
-        onCreateNavigationDelegate: createDetachedDelegate(
+        createNavigationDelegate: createDetachedDelegate(
           (WKNavigationDelegate delegate) => navigationDelegate = delegate,
         ),
       );
