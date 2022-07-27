@@ -1,3 +1,10 @@
+## 0.9.0
+
+* Replaces PR-description-based version/changelog/breaking change check
+  overrides in `version-check` with label-based overrides using a new
+  `pr-labels` flag, since we don't actually have reliable access to the
+  PR description in checks.
+  
 ## 0.8.10
 
 - Adds a new `remove-dev-dependencies` command to remove `dev_dependencies`
