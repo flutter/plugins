@@ -1,3 +1,7 @@
+## 2.1.10
+
+* Avoids map shift when scrolling on iOS.
+
 ## 2.1.9
 
 * Updates integration tests to use the new inspector interface.

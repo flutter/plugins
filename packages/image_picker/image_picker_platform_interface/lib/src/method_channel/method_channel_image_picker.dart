@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:image_picker_platform_interface/src/types/multi_image_picker_options.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
 
@@ -57,6 +58,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
+    bool requestFullMetadata = true,
   }) {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
@@ -77,6 +79,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
+        'requestFullMetadata': requestFullMetadata,
       },
     );
   }
@@ -228,6 +231,23 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     );
     if (paths == null) {
       return null;
+    }
+
+    return paths.map((dynamic path) => XFile(path as String)).toList();
+  }
+
+  @override
+  Future<List<XFile>> getMultiImageWithOptions({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
+  }) async {
+    final List<dynamic>? paths = await _getMultiImagePath(
+      maxWidth: options.imageOptions.maxWidth,
+      maxHeight: options.imageOptions.maxHeight,
+      imageQuality: options.imageOptions.imageQuality,
+      requestFullMetadata: options.imageOptions.requestFullMetadata,
+    );
+    if (paths == null) {
+      return <XFile>[];
     }
 
     return paths.map((dynamic path) => XFile(path as String)).toList();

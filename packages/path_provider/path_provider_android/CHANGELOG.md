@@ -1,3 +1,7 @@
+## 2.0.17
+
+* Lower minimim version back to 2.8.1.
+
 ## 2.0.16
 
 * Fixes bug with `getExternalStoragePaths(null)`.
