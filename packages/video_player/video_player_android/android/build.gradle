@@ -53,7 +53,6 @@ android {
         testImplementation 'org.robolectric:robolectric:4.8.1'
     }
 
-
     testOptions {
         unitTests.includeAndroidResources = true
         unitTests.returnDefaultValues = true
