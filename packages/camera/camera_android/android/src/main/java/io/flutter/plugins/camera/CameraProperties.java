@@ -155,8 +155,7 @@ public interface CameraProperties {
   Float getScalerAvailableMaxDigitalZoom();
 
   /**
-   * Returns the minimum ratio between both active area width and crop region width, and active area
-   * height and crop region height, for @see android.scaler.cropRegion.
+   * Returns the minimum ratio between the default camera zoom setting and all of the available zoom
    *
    * <p>By default maps to the @see
    * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's lower value.
@@ -167,13 +166,12 @@ public interface CameraProperties {
   Float getScalerMinZoomRatio();
 
   /**
-   * Returns the minimum ratio between both active area width and crop region width, and active area
-   * height and crop region height, for @see android.scaler.cropRegion.
+   * Returns the maximum ratio between the default camera zoom setting and all of the available zoom
    *
    * <p>By default maps to the @see
-   * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's lower value.
+   * android.hardware.camera2.CameraCharacteristics#CONTROL_ZOOM_RATIO_RANGE key's upper value.
    *
-   * @return Float Minimum ratio between the default zoom ratio and the maximum possible zoom
+   * @return Float Maximum ratio between the default zoom ratio and the maximum possible zoom
    */
   @RequiresApi(api = VERSION_CODES.R)
   Float getScalerMaxZoomRatio();
