@@ -10,7 +10,7 @@ public class MyClass {
     this.classField = classField;
   }
 
-  public void myStaticMethod() {
+  public static void myStaticMethod() {
 
   }
 

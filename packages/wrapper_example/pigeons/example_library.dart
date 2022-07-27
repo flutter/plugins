@@ -45,6 +45,7 @@ import 'package:pigeon/pigeon.dart';
 /// See https://developer.apple.com/documentation/objectivec/nsobject.
 @HostApi(dartHostTestHandler: 'TestBaseObjectHostApi')
 abstract class BaseObjectHostApi {
+  /// Removes object from native InstanceManager.
   void dispose(int identifier);
 }
 
@@ -57,6 +58,7 @@ abstract class BaseObjectHostApi {
 /// See https://developer.apple.com/documentation/objectivec/nsobject.
 @FlutterApi()
 abstract class BaseObjectFlutterApi {
+  /// Removes object from Dart InstanceManager.
   void dispose(int identifier);
 }
 
@@ -65,15 +67,18 @@ abstract class BaseObjectFlutterApi {
 /// See <link-to-docs>.
 @HostApi(dartHostTestHandler: 'TestMyClassHostApi')
 abstract class MyClassHostApi {
+  /// Create the Java instance.
   void create(int identifier, String primitiveField, int classFieldIdentifier);
 
   void myStaticMethod();
 
   void myMethod(
     int identifier,
-    String primitiveParm,
+    String primitiveParam,
     int classParamIdentifier,
   );
+
+  void attachClassField(int identifier, int classFieldIdentifier);
 }
 
 /// Handles callbacks methods for the native MyClass class.
@@ -81,7 +86,10 @@ abstract class MyClassHostApi {
 /// See <link-to-docs>.
 @FlutterApi()
 abstract class MyClassFlutterApi {
+  /// Create the Dart instance.
   void create(int identifier, String primitiveField, int classFieldIdentifier);
+
+  void myCallbackMethod(int identifier);
 }
 
 /// Handles methods calls to the native MyOtherClass class.
