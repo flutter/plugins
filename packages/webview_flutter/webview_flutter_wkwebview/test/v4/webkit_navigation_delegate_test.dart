@@ -184,6 +184,7 @@ void main() {
   });
 }
 
+// Records the last created instance of itself.
 class CapturingNavigationDelegate extends WKNavigationDelegate {
   CapturingNavigationDelegate({
     super.didFinishNavigation,
