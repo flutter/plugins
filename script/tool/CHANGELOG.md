@@ -1,3 +1,10 @@
+## 0.8.10
+
+- Adds a new `remove-dev-dependencies` command to remove `dev_dependencies`
+  entries to make legacy version analysis possible in more cases.
+- Adds a `--lib-only` option to `analyze` to allow only analyzing the client
+  parts of a library for legacy verison compatibility.
+
 ## 0.8.9
 
 - Includes `dev_dependencies` when overridding dependencies using

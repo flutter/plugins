@@ -163,8 +163,14 @@ task:
         matrix:
           CHANNEL: "2.10.5"
           CHANNEL: "2.8.1"
+      package_prep_script:
+        # Allow analyzing plugins that use a Pigeon version with a higher
+        # minimum Flutter/Dart version than the plugin itself.
+        - ./script/tool_runner.sh remove-dev-dependencies
       analyze_script:
-        - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+        # Only analyze lib/; non-client code doesn't need to work on
+        # all supported legacy version.
+        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
     - name: readme_excerpts
       env:
         CIRRUS_CLONE_SUBMODULES: true
