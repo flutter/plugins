@@ -110,6 +110,7 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
     );
   }
 
+  // Used to set `WKWebView.setNavigationDelegate` in `WebKitWebViewController`.
   /// WebKit class that handles navigation changes and tracking navigation
   /// requests.
   late final WKNavigationDelegate navigationDelegate;
@@ -121,6 +122,8 @@ class WebKitNavigationDelegate extends PlatformNavigationDelegate {
   FutureOr<bool> Function({required String url, required bool isForMainFrame})?
       _onNavigationRequest;
 
+  // `WKWebView` in `WebKitWebViewController` uses this to track loading
+  // progress. This can't be done with `WKNavigationDelegate`.
   /// Callback method that receives progress of a loading page.
   void Function(int progress)? get onProgress => _onProgress;
 
