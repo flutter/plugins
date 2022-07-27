@@ -89,7 +89,7 @@ task:
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
         # For pre-submit, pass the PR label, as well as the PR description or
-        # incremenal commit message (for Dependabot checks), to the script to
+        # incremental commit message (for Dependabot checks), to the script to
         # allow for version check overrides.
         # For post-submit, ignore platform version breaking version changes and
         # missing version/CHANGELOG detection since the overrides aren't
