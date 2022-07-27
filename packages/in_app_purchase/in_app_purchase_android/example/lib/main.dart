@@ -266,6 +266,8 @@ class _MyAppState extends State<_MyApp> {
                 : TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.green[800],
+                      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                      // ignore: deprecated_member_use
                       primary: Colors.white,
                     ),
                     onPressed: () {

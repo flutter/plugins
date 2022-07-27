@@ -335,7 +335,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
             : webViewProxy.createInputAwareWebView(context, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
-    instanceManager.addInstance(webView, instanceId);
+    instanceManager.addDartCreatedInstance(webView, instanceId);
   }
 
   @Override
@@ -343,7 +343,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     final WebView instance = (WebView) instanceManager.getInstance(instanceId);
     if (instance != null) {
       ((Releasable) instance).release();
-      instanceManager.removeInstance(instance);
+      instanceManager.remove(instanceId);
     }
   }
 

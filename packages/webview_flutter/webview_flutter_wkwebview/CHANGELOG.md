@@ -1,3 +1,25 @@
+## 2.9.2
+
+* Fixes crash when an Objective-C object in `FWFInstanceManager` is released, but the dealloc
+  callback is no longer available.
+
+## 2.9.1
+
+* Fixes regression where the behavior for the `UIScrollView` insets were removed.
+
+## 2.9.0
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Replaces platform implementation with WebKit API built with pigeon.
+
+## 2.8.1
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.8.0
+
+* Raises minimum Dart version to 2.17 and Flutter version to 3.0.0.
+
 ## 2.7.5
 
 * Minor fixes for new analysis options.

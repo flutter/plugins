@@ -1,3 +1,7 @@
+## 0.1.0+4
+
+* Fixes incorrect escaping of some characters when setting the HTML to the iframe element.
+
 ## 0.1.0+3
 
 * Minor fixes for new analysis options.

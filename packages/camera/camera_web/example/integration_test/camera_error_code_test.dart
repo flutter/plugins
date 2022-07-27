@@ -46,7 +46,7 @@ void main() {
       testWidgets('permissionDenied', (WidgetTester tester) async {
         expect(
           CameraErrorCode.permissionDenied.toString(),
-          equals('cameraPermission'),
+          equals('CameraAccessDenied'),
         );
       });
 

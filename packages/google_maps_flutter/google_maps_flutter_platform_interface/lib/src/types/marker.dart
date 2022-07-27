@@ -14,6 +14,7 @@ Object _offsetToJson(Offset offset) {
 }
 
 /// Text labels for a [Marker] info window.
+@immutable
 class InfoWindow {
   /// Creates an immutable representation of a label on for [Marker].
   const InfoWindow({
@@ -81,12 +82,16 @@ class InfoWindow {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final InfoWindow typedOther = other as InfoWindow;
-    return title == typedOther.title &&
-        snippet == typedOther.snippet &&
-        anchor == typedOther.anchor;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is InfoWindow &&
+        title == other.title &&
+        snippet == other.snippet &&
+        anchor == other.anchor;
   }
 
   @override
@@ -113,7 +118,7 @@ class MarkerId extends MapsObjectId<Marker> {
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
 @immutable
-class Marker implements MapsObject {
+class Marker implements MapsObject<Marker> {
   /// Creates a set of marker configuration options.
   ///
   /// Default marker options.
@@ -258,9 +263,11 @@ class Marker implements MapsObject {
   }
 
   /// Creates a new [Marker] object whose values are the same as this instance.
+  @override
   Marker clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 
@@ -287,21 +294,25 @@ class Marker implements MapsObject {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final Marker typedOther = other as Marker;
-    return markerId == typedOther.markerId &&
-        alpha == typedOther.alpha &&
-        anchor == typedOther.anchor &&
-        consumeTapEvents == typedOther.consumeTapEvents &&
-        draggable == typedOther.draggable &&
-        flat == typedOther.flat &&
-        icon == typedOther.icon &&
-        infoWindow == typedOther.infoWindow &&
-        position == typedOther.position &&
-        rotation == typedOther.rotation &&
-        visible == typedOther.visible &&
-        zIndex == typedOther.zIndex;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is Marker &&
+        markerId == other.markerId &&
+        alpha == other.alpha &&
+        anchor == other.anchor &&
+        consumeTapEvents == other.consumeTapEvents &&
+        draggable == other.draggable &&
+        flat == other.flat &&
+        icon == other.icon &&
+        infoWindow == other.infoWindow &&
+        position == other.position &&
+        rotation == other.rotation &&
+        visible == other.visible &&
+        zIndex == other.zIndex;
   }
 
   @override
