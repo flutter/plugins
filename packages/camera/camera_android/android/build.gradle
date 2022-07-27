@@ -59,6 +59,7 @@ android {
 }
 
 dependencies {
+    testImplementation project(path: ':camera_android')
     compileOnly 'androidx.annotation:annotation:1.1.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:4.6.1'

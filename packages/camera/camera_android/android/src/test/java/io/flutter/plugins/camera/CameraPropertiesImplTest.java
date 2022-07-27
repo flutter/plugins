@@ -202,6 +202,30 @@ public class CameraPropertiesImplTest {
   }
 
   @Test
+  public void getScalerGetScalerMinZoomRatioTest() {
+    Range zoomRange = mock(Range.class);
+    when(mockCharacteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE))
+        .thenReturn(zoomRange);
+
+    Float minZoom = cameraProperties.getScalerMinZoomRatio();
+
+    verify(mockCharacteristics, times(1)).get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE);
+    assertEquals(zoomRange.getLower(), minZoom);
+  }
+
+  @Test
+  public void getScalerGetScalerMaxZoomRatioTest() {
+    Range zoomRange = mock(Range.class);
+    when(mockCharacteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE))
+        .thenReturn(zoomRange);
+
+    Float maxZoom = cameraProperties.getScalerMaxZoomRatio();
+
+    verify(mockCharacteristics, times(1)).get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE);
+    assertEquals(zoomRange.getUpper(), maxZoom);
+  }
+
+  @Test
   public void getSensorInfoActiveArraySizeTest() {
     Rect expectedArraySize = mock(Rect.class);
     when(mockCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE))

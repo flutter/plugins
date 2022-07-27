@@ -26,7 +26,7 @@ final class ZoomUtils {
    * @param maximumZoomLevel The maximim supported zoom level.
    * @return An image sensor area based on the supplied zoom settings
    */
-  static Rect computeZoom(
+  static Rect computeZoomRect(
       float zoom, @NonNull Rect sensorArraySize, float minimumZoomLevel, float maximumZoomLevel) {
     final float newZoom = MathUtils.clamp(zoom, minimumZoomLevel, maximumZoomLevel);
 
@@ -36,5 +36,9 @@ final class ZoomUtils {
     final int deltaY = (int) ((0.5f * sensorArraySize.height()) / newZoom);
 
     return new Rect(centerX - deltaX, centerY - deltaY, centerX + deltaX, centerY + deltaY);
+  }
+
+  static Float computeZoomRatio(float zoom, float minimumZoomLevel, float maximumZoomLevel) {
+    return MathUtils.clamp(zoom, minimumZoomLevel, maximumZoomLevel);
   }
 }

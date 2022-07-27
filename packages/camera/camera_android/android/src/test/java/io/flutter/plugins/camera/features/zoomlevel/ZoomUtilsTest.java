@@ -15,9 +15,9 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class ZoomUtilsTest {
   @Test
-  public void setZoom_whenSensorSizeEqualsZeroShouldReturnCropRegionOfZero() {
+  public void setZoomRect_whenSensorSizeEqualsZeroShouldReturnCropRegionOfZero() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
-    final Rect computedZoom = ZoomUtils.computeZoom(18f, sensorSize, 1f, 20f);
+    final Rect computedZoom = ZoomUtils.computeZoomRect(18f, sensorSize, 1f, 20f);
 
     assertNotNull(computedZoom);
     assertEquals(computedZoom.left, 0);
@@ -27,9 +27,9 @@ public class ZoomUtilsTest {
   }
 
   @Test
-  public void setZoom_whenSensorSizeIsValidShouldReturnCropRegion() {
+  public void setZoomRect_whenSensorSizeIsValidShouldReturnCropRegion() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
-    final Rect computedZoom = ZoomUtils.computeZoom(18f, sensorSize, 1f, 20f);
+    final Rect computedZoom = ZoomUtils.computeZoomRect(18f, sensorSize, 1f, 20f);
 
     assertNotNull(computedZoom);
     assertEquals(computedZoom.left, 48);
@@ -39,9 +39,9 @@ public class ZoomUtilsTest {
   }
 
   @Test
-  public void setZoom_whenZoomIsGreaterThenMaxZoomClampToMaxZoom() {
+  public void setZoomRect_whenZoomIsGreaterThenMaxZoomClampToMaxZoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
-    final Rect computedZoom = ZoomUtils.computeZoom(25f, sensorSize, 1f, 10f);
+    final Rect computedZoom = ZoomUtils.computeZoomRect(25f, sensorSize, 1f, 10f);
 
     assertNotNull(computedZoom);
     assertEquals(computedZoom.left, 45);
@@ -51,14 +51,35 @@ public class ZoomUtilsTest {
   }
 
   @Test
-  public void setZoom_whenZoomIsSmallerThenMinZoomClampToMinZoom() {
+  public void setZoomRect_whenZoomIsSmallerThenMinZoomClampToMinZoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
-    final Rect computedZoom = ZoomUtils.computeZoom(0.5f, sensorSize, 1f, 10f);
+    final Rect computedZoom = ZoomUtils.computeZoomRect(0.5f, sensorSize, 1f, 10f);
 
     assertNotNull(computedZoom);
     assertEquals(computedZoom.left, 0);
     assertEquals(computedZoom.top, 0);
     assertEquals(computedZoom.right, 100);
     assertEquals(computedZoom.bottom, 100);
+  }
+
+  @Test
+  public void setZoomRatio_whenNewZoomGreaterThanMaxZoomClampToMaxZoom() {
+    final Float computedZoom = ZoomUtils.computeZoomRatio(21f, 1f, 20f);
+    assertNotNull(computedZoom);
+    assertEquals(computedZoom, 20f, 0.0f);
+  }
+
+  @Test
+  public void setZoomRatio_whenNewZoomLesserThanMinZoomClampToMinZoom() {
+    final Float computedZoom = ZoomUtils.computeZoomRatio(0.7f, 1f, 20f);
+    assertNotNull(computedZoom);
+    assertEquals(computedZoom, 1f, 0.0f);
+  }
+
+  @Test
+  public void setZoomRatio_whenNewZoomValidReturnNewZoom() {
+    final Float computedZoom = ZoomUtils.computeZoomRatio(2.0f, 1f, 20f);
+    assertNotNull(computedZoom);
+    assertEquals(computedZoom, 2.0f, 0.0f);
   }
 }
