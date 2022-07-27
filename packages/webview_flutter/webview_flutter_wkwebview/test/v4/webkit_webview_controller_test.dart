@@ -714,28 +714,18 @@ void main() {
     });
 
     test('setPlatformNavigationDelegate onProgress', () {
-      late final WKWebView webView;
+      final MockWKWebView mockWebView = MockWKWebView();
 
-      final WebKitProxy webKitProxy = WebKitProxy(
-        createWebView: (
-          _, {
-          void Function(
-            String keyPath,
-            NSObject object,
-            Map<NSKeyValueChangeKey, Object?> change,
-          )?
-              observeValue,
-        }) {
-          webView = WKWebView.detached(observeValue: observeValue);
-          return webView;
-        },
-        createNavigationDelegate: CapturingNavigationDelegate.new,
+      final WebKitWebViewController controller = createControllerWithMocks(
+        mockWebView: mockWebView,
       );
 
       final WebKitNavigationDelegate navigationDelegate =
           WebKitNavigationDelegate(
         const PlatformNavigationDelegateCreationParams(),
-        webKitProxy: webKitProxy,
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
+        ),
       );
 
       late final int callbackProgress;
@@ -743,10 +733,6 @@ void main() {
         (int progress) => callbackProgress = progress,
       );
 
-      final WebKitWebViewController controller = WebKitWebViewController(
-        const PlatformWebViewControllerCreationParams(),
-        webKitProxy: webKitProxy,
-      );
       controller.setPlatformNavigationDelegate(navigationDelegate);
 
       navigationDelegate.onProgress!(0);

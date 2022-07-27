@@ -63,6 +63,13 @@ class WebKitWebViewController extends PlatformWebViewController {
         }
       },
     );
+    _webView.addObserver(
+      _webView,
+      keyPath: 'estimatedProgress',
+      options: <NSKeyValueObservingOptions>{
+        NSKeyValueObservingOptions.newValue,
+      },
+    );
   }
 
   late final WKWebView _webView;
