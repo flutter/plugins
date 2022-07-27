@@ -1,8 +1,12 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'example_library.pigeon.dart';
-
 import 'base_object.dart';
+import 'example_library.pigeon.dart';
 import 'instance_manager.dart';
 
 class MyOtherClassHostApiImpl extends MyOtherClassHostApi {
@@ -17,10 +21,19 @@ class MyOtherClassHostApiImpl extends MyOtherClassHostApi {
   final InstanceManager instanceManager;
 
   Future<void> createFromInstances(MyOtherClass instance) {
-    return create(instanceManager.addDartCreatedInstance(instance));
+    return create(
+      instanceManager.addDartCreatedInstance(
+        instance,
+        onCopy: (MyOtherClass original) => MyOtherClass.detached(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+      ),
+    );
   }
 }
 
+@immutable
 class MyOtherClass extends BaseObject {
   MyOtherClass({
     super.binaryMessenger,
@@ -33,8 +46,6 @@ class MyOtherClass extends BaseObject {
     _api.createFromInstances(this);
   }
 
-  final MyOtherClassHostApiImpl _api;
-
   MyOtherClass.detached({
     super.binaryMessenger,
     super.instanceManager,
@@ -44,8 +55,5 @@ class MyOtherClass extends BaseObject {
         ),
         super.detached();
 
-  @override
-  MyOtherClass copy() {
-    return MyOtherClass(binaryMessenger: _api.binaryMessenger, instanceManager: _api.instanceManager);
-  }
+  final MyOtherClassHostApiImpl _api;
 }

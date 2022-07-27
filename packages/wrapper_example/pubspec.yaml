@@ -1,7 +1,7 @@
 name: wrapper_example
 description: A new Flutter plugin project.
 version: 0.0.1
-homepage:
+publish_to: none
 
 environment:
   sdk: '>=2.19.0-34.0.dev <3.0.0'
@@ -16,7 +16,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  pedantic: ^1.10.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,3 +1,8 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:wrapper_example/src/instance_manager.dart';
 
@@ -15,7 +20,8 @@ class BaseObjectHostApiImpl extends BaseObjectHostApi {
   final InstanceManager instanceManager;
 }
 
-class BaseObject implements Copyable {
+@immutable
+class BaseObject {
   BaseObject.detached({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -31,12 +37,4 @@ class BaseObject implements Copyable {
   });
 
   final BaseObjectHostApiImpl _api;
-
-  @override
-  Copyable copy() {
-    return BaseObject.detached(
-      binaryMessenger: _api.binaryMessenger,
-      instanceManager: _api.instanceManager,
-    );
-  }
 }

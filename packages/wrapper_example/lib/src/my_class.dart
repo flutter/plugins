@@ -1,8 +1,12 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-import 'example_library.pigeon.dart';
-
 import 'base_object.dart';
+import 'example_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'my_other_class.dart';
 
@@ -23,7 +27,15 @@ class MyClassHostApiImpl extends MyClassHostApi {
     MyOtherClass classField,
   ) {
     return create(
-      instanceManager.addDartCreatedInstance(instance),
+      instanceManager.addDartCreatedInstance(
+        instance,
+        onCopy: (MyClass original) => MyClass.detached(
+          original.primitiveField,
+          myCallbackMethod: original.myCallbackMethod,
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+      ),
       primitiveField,
       instanceManager.getIdentifier(classField)!,
     );
@@ -35,7 +47,13 @@ class MyClassHostApiImpl extends MyClassHostApi {
   ) {
     attachClassField(
       instanceManager.getIdentifier(instance)!,
-      instanceManager.addDartCreatedInstance(classField),
+      instanceManager.addDartCreatedInstance(
+        classField,
+        onCopy: (MyOtherClass original) => MyOtherClass.detached(
+          binaryMessenger: binaryMessenger,
+          instanceManager: instanceManager,
+        ),
+      ),
     );
     return classField;
   }
@@ -53,6 +71,7 @@ class MyClassHostApiImpl extends MyClassHostApi {
   }
 }
 
+@immutable
 class MyClass extends BaseObject {
   MyClass(
     this.primitiveField,
@@ -68,23 +87,8 @@ class MyClass extends BaseObject {
     _api.createFromInstances(this, primitiveField, classField);
   }
 
-  final MyClassHostApiImpl _api;
-
-  final String primitiveField;
-
-  late final MyOtherClass classField = _api.attachClassFieldFromInstances(
-    this,
-    MyOtherClass.detached(
-      binaryMessenger: _api.binaryMessenger,
-      instanceManager: _api.instanceManager,
-    ),
-  );
-
-  final void Function()? myCallbackMethod;
-
   MyClass.detached(
-    this.primitiveField,
-    MyOtherClass classField, {
+    this.primitiveField, {
     this.myCallbackMethod,
     super.binaryMessenger,
     super.instanceManager,
@@ -104,18 +108,21 @@ class MyClass extends BaseObject {
     ).myStaticMethod();
   }
 
-  Future<void> myMethod(String primitiveParam, MyOtherClass classParam) {
-    return _api.myMethodFromInstances(this, primitiveParam, classParam);
-  }
+  final MyClassHostApiImpl _api;
 
-  @override
-  MyClass copy() {
-    return MyClass(
-      primitiveField,
-      classField,
-      myCallbackMethod: myCallbackMethod,
+  final String primitiveField;
+
+  late final MyOtherClass classField = _api.attachClassFieldFromInstances(
+    this,
+    MyOtherClass.detached(
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
-    );
+    ),
+  );
+
+  final void Function()? myCallbackMethod;
+
+  Future<void> myMethod(String primitiveParam, MyOtherClass classParam) {
+    return _api.myMethodFromInstances(this, primitiveParam, classParam);
   }
 }
