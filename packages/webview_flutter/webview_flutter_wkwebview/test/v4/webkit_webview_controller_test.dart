@@ -730,11 +730,38 @@ void main() {
       );
     });
 
-    test('setPlatformNavigationDelegate onProgress', () {
+    test('setPlatformNavigationDelegate onProgress', () async {
       final MockWKWebView mockWebView = MockWKWebView();
 
+      late final void Function(
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) webViewObserveValue;
+
       final WebKitWebViewController controller = createControllerWithMocks(
-        createMockWebView: (_, {dynamic observeValue}) => mockWebView,
+        createMockWebView: (
+          _, {
+          void Function(
+            String keyPath,
+            NSObject object,
+            Map<NSKeyValueChangeKey, Object?> change,
+          )?
+              observeValue,
+        }) {
+          webViewObserveValue = observeValue!;
+          return mockWebView;
+        },
+      );
+
+      verify(
+        mockWebView.addObserver(
+          mockWebView,
+          keyPath: 'estimatedProgress',
+          options: <NSKeyValueObservingOptions>{
+            NSKeyValueObservingOptions.newValue,
+          },
+        ),
       );
 
       final WebKitNavigationDelegate navigationDelegate =
@@ -750,9 +777,14 @@ void main() {
         (int progress) => callbackProgress = progress,
       );
 
-      controller.setPlatformNavigationDelegate(navigationDelegate);
+      await controller.setPlatformNavigationDelegate(navigationDelegate);
 
-      navigationDelegate.onProgress!(0);
+      webViewObserveValue(
+        'estimatedProgress',
+        mockWebView,
+        <NSKeyValueChangeKey, Object?>{NSKeyValueChangeKey.newValue: 0.0},
+      );
+
       expect(callbackProgress, 0);
     });
   });
