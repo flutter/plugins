@@ -11,6 +11,7 @@ public class MyClass {
   public MyClass(String primitiveField, MyOtherClass classField) {
     this.primitiveField = primitiveField;
     this.classField = classField;
+    Log.d(TAG, String.format("Called constructor with `%s` and `%s`", primitiveField, classField.toString()));
   }
 
   public static void myStaticMethod() {
