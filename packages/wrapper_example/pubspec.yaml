@@ -38,7 +38,7 @@ flutter:
       android:
         package: com.example.wrapper_example
         pluginClass: WrapperExamplePlugin
-        dartPluginClass: ExampleLibrary
+        dartPluginClass: WrapperExample
       ios:
         pluginClass: WrapperExamplePlugin
 

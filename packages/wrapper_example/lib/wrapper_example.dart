@@ -12,7 +12,7 @@ export 'src/base_object.dart' show BaseObject;
 export 'src/my_class.dart' show MyClass;
 export 'src/my_other_class.dart' show MyOtherClass;
 
-class ExampleLibrary {
+class WrapperExample {
   static void registerWith() {
     BaseObjectFlutterApi.setup(BaseObjectFlutterApiImpl());
     MyClassFlutterApi.setup(MyClassFlutterApiImpl());
