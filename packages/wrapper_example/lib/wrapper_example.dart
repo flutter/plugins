@@ -4,6 +4,7 @@
 
 library wrapper_example;
 
+import 'src/base_object.dart';
 import 'src/example_library.pigeon.dart';
 import 'src/my_class.dart';
 
@@ -13,6 +14,7 @@ export 'src/my_other_class.dart' show MyOtherClass;
 
 class ExampleLibrary {
   static void registerWith() {
+    BaseObjectFlutterApi.setup(BaseObjectFlutterApiImpl());
     MyClassFlutterApi.setup(MyClassFlutterApiImpl());
   }
 }

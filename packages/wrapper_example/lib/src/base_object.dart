@@ -21,6 +21,29 @@ class BaseObjectHostApiImpl extends BaseObjectHostApi {
   final InstanceManager instanceManager;
 }
 
+@visibleForTesting
+class BaseObjectFlutterApiImpl implements BaseObjectFlutterApi {
+  /// Constructs a [BaseObjectFlutterApiImpl].
+  BaseObjectFlutterApiImpl({
+    this.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? BaseObject.globalInstanceManager;
+
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void dispose(int identifier) {
+    instanceManager.remove(identifier);
+  }
+}
+
 @immutable
 class BaseObject {
   BaseObject.detached({

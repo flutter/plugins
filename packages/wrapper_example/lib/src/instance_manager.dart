@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
+
 /// Maintains instances used to communicate with the native objects they
 /// represent.
 ///
@@ -104,6 +106,7 @@ class InstanceManager {
   /// This does not remove the the weak referenced instance associtated with
   /// [identifier]. This can be done with [removeWeakReference].
   T? remove<T extends Object>(int identifier) {
+    debugPrint('Releasing object with identifier: $identifier');
     _copyCallbacks.remove(identifier);
     return _strongInstances.remove(identifier) as T?;
   }

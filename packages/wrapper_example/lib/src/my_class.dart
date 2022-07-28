@@ -98,7 +98,11 @@ class MyClassFlutterApiImpl implements MyClassFlutterApi {
     instanceManager.addHostCreatedInstance(
       MyClass.detached(primitiveField),
       identifier,
-      onCopy: (MyClass original) => MyClass.detached(original.primitiveField),
+      onCopy: (MyClass original) => MyClass.detached(
+        original.primitiveField,
+        binaryMessenger: binaryMessenger,
+        instanceManager: instanceManager,
+      ),
     );
   }
 
