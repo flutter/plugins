@@ -25,6 +25,6 @@
     <string>arm64</string>
   </array>
   <key>MinimumOSVersion</key>
-  <string>9.0</string>
+  <string>11.0</string>
 </dict>
 </plist>

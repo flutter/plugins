@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #import "FLTQuickActionsPlugin.h"
+#import "FLTQuickActionsPlugin_Tests.h"
+#import "FLTShortcutStateManager.h"
 
 static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 @interface FLTQuickActionsPlugin ()
-@property(nonatomic, retain) FlutterMethodChannel *channel;
-@property(nonatomic, retain) NSString *shortcutType;
+@property(nonatomic, strong) FlutterMethodChannel *channel;
+/// Manages the shortcut related states.
+@property(nonatomic, strong) FLTShortcutStateManager *shortcutStateManager;
 @end
 
 @implementation FLTQuickActionsPlugin
@@ -17,18 +20,28 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kChannelName
                                   binaryMessenger:[registrar messenger]];
-  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
-  instance.channel = channel;
+  FLTQuickActionsPlugin *instance =
+      [[FLTQuickActionsPlugin alloc] initWithChannel:channel
+                                shortcutStateManager:[[FLTShortcutStateManager alloc] init]];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
 }
 
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel
+           shortcutStateManager:(FLTShortcutStateManager *)shortcutStateManager {
+  if ((self = [super init])) {
+    _channel = channel;
+    _shortcutStateManager = shortcutStateManager;
+  }
+  return self;
+}
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"setShortcutItems"]) {
-    _setShortcutItems(call.arguments);
+    [self.shortcutStateManager setShortcutItems:call.arguments];
     result(nil);
   } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
-    [UIApplication sharedApplication].shortcutItems = @[];
+    [self.shortcutStateManager setShortcutItems:@[]];
     result(nil);
   } else if ([call.method isEqualToString:@"getLaunchAction"]) {
     result(nil);
@@ -37,15 +50,9 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
   }
 }
 
-- (void)dealloc {
-  [_channel setMethodCallHandler:nil];
-  _channel = nil;
-}
-
 - (BOOL)application:(UIApplication *)application
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-               completionHandler:(void (^)(BOOL succeeded))completionHandler
-    API_AVAILABLE(ios(9.0)) {
+               completionHandler:(void (^)(BOOL succeeded))completionHandler {
   [self handleShortcut:shortcutItem.type];
   return YES;
 }
@@ -58,7 +65,7 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
     // Keep hold of the shortcut type and handle it in the
     // `applicationDidBecomeActure:` method once the Dart MethodChannel
     // is initialized.
-    self.shortcutType = shortcutItem.type;
+    self.shortcutStateManager.launchingShortcutType = shortcutItem.type;
 
     // Return NO to indicate we handled the quick action to ensure
     // the `application:performActionFor:` method is not called (as
@@ -70,9 +77,10 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (self.shortcutType) {
-    [self handleShortcut:self.shortcutType];
-    self.shortcutType = nil;
+  NSString *shortcut = self.shortcutStateManager.launchingShortcutType;
+  if (shortcut) {
+    [self handleShortcut:shortcut];
+    self.shortcutStateManager.launchingShortcutType = nil;
   }
 }
 
@@ -80,31 +88,6 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 - (void)handleShortcut:(NSString *)shortcut {
   [self.channel invokeMethod:@"launch" arguments:shortcut];
-}
-
-NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
-  NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
-
-  for (id item in items) {
-    UIApplicationShortcutItem *shortcut = _deserializeShortcutItem(item);
-    [newShortcuts addObject:shortcut];
-  }
-
-  [UIApplication sharedApplication].shortcutItems = newShortcuts;
-}
-
-NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *serialized)
-    API_AVAILABLE(ios(9.0)) {
-  UIApplicationShortcutIcon *icon =
-      [serialized[@"icon"] isKindOfClass:[NSNull class]]
-          ? nil
-          : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
-
-  return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
-                                          localizedTitle:serialized[@"localizedTitle"]
-                                       localizedSubtitle:nil
-                                                    icon:icon
-                                                userInfo:nil];
 }
 
 @end
