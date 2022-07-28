@@ -33,3 +33,7 @@ android {
         minSdkVersion 16
     }
 }
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.4.0'
+}

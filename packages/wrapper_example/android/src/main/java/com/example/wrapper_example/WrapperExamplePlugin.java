@@ -3,36 +3,30 @@ package com.example.wrapper_example;
 import androidx.annotation.NonNull;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.BinaryMessenger;
+import com.example.wrapper_example.GeneratedExampleLibraryApis.BaseObjectHostApi;
+import com.example.wrapper_example.GeneratedExampleLibraryApis.MyOtherClassHostApi;
+import com.example.wrapper_example.GeneratedExampleLibraryApis.MyClassHostApi;
 
 /** WrapperExamplePlugin */
-public class WrapperExamplePlugin implements FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private MethodChannel channel;
+public class WrapperExamplePlugin implements FlutterPlugin {
+  private InstanceManager instanceManager;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "wrapper_example");
-    channel.setMethodCallHandler(this);
-  }
+    final BinaryMessenger binaryMessenger = flutterPluginBinding.getBinaryMessenger();
 
-  @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
-    }
+    instanceManager = InstanceManager.open(identifier -> {
+      new GeneratedExampleLibraryApis.BaseObjectFlutterApi(binaryMessenger).dispose(identifier, reply -> {});
+    });
+
+    BaseObjectHostApi.setup(binaryMessenger, new BaseObjectHostApiImpl(instanceManager));
+    MyOtherClassHostApi.setup(binaryMessenger, new MyOtherClassHostApiImpl(instanceManager));
+    MyClassHostApi.setup(binaryMessenger, new MyClassHostApiImpl(binaryMessenger, instanceManager));
   }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
+    instanceManager.close();
   }
 }
