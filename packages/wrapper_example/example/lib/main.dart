@@ -24,7 +24,13 @@ class _MyAppState extends State<MyApp> {
           child: ElevatedButton(
             onPressed: () {
               MyClass.myStaticMethod();
-              final MyClass myClass = MyClass('apple', MyOtherClass());
+              final MyClass myClass = MyClass(
+                'apple',
+                MyOtherClass(),
+                myCallbackMethod: (MyClass self) {
+                  debugPrint('Called `myCallbackMethod` with `$self`.');
+                },
+              );
               myClass.myMethod('banana', MyOtherClass());
             },
             child: const Text('Click'),

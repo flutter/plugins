@@ -44,7 +44,7 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
 
   @Override
   public void myMethod(@NonNull Long identifier, @NonNull String primitiveParam, @NonNull Long classParamIdentifier) {
-    getMyClass(identifier).myMethod(primitiveParam, instanceManager.getInstance(classParamIdentifier));
+    getMyClass(identifier).myMethod(primitiveParam, Objects.requireNonNull(instanceManager.getInstance(classParamIdentifier)));
   }
 
   @Override
