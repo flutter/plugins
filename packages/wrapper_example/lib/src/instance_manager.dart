@@ -47,8 +47,7 @@ class InstanceManager {
   final Map<int, WeakReference<Object>> _weakInstances =
       <int, WeakReference<Object>>{};
   final Map<int, Object> _strongInstances = <int, Object>{};
-  final Map<int, Object Function(Object original)> _copyCallbacks =
-      <int, Object Function(Object original)>{};
+  final Map<int, Function> _copyCallbacks = <int, Function>{};
   late final Finalizer<int> _finalizer;
   int _nextIdentifier = 0;
 
@@ -129,7 +128,8 @@ class InstanceManager {
     if (weakInstance == null) {
       final Object? strongInstance = _strongInstances[identifier];
       if (strongInstance != null) {
-        final Object copy = _copyCallbacks[identifier]!(strongInstance);
+        final Object copy =
+            _copyCallbacks[identifier]!(strongInstance)! as Object;
         _identifiers[copy] = identifier;
         _weakInstances[identifier] = WeakReference<Object>(copy);
         _finalizer.attach(copy, identifier, detach: copy);
@@ -178,7 +178,7 @@ class InstanceManager {
     final Object copy = onCopy(instance);
     _identifiers[copy] = identifier;
     _strongInstances[identifier] = copy;
-    _copyCallbacks[identifier] = onCopy as Object Function(Object);
+    _copyCallbacks[identifier] = onCopy;
   }
 
   /// Whether this manager contains the given [identifier].
