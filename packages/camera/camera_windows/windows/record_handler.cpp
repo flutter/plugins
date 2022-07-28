@@ -238,6 +238,7 @@ void RecordHandler::OnRecordStopped() {
     recording_duration_us_ = 0;
     max_video_duration_ms_ = -1;
     recording_state_ = RecordState::kNotStarted;
+    type_ = RecordingType::kNone;
   }
 }
 

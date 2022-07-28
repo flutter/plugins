@@ -75,7 +75,7 @@ class PreviewHandler {
 
   // Returns true if preview state is running or paused.
   bool IsInitialized() const {
-    return preview_state_ == PreviewState::kRunning &&
+    return preview_state_ == PreviewState::kRunning ||
            preview_state_ == PreviewState::kPaused;
   }
 
