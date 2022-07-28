@@ -11,7 +11,10 @@ public class MyClass {
   public MyClass(String primitiveField, MyOtherClass classField) {
     this.primitiveField = primitiveField;
     this.classField = classField;
-    Log.d(TAG, String.format("Called constructor with `%s` and `%s`.", primitiveField, classField.toString()));
+    Log.d(
+        TAG,
+        String.format(
+            "Called constructor with `%s` and `%s`.", primitiveField, classField.toString()));
   }
 
   public static void myStaticMethod() {
@@ -19,12 +22,13 @@ public class MyClass {
   }
 
   public void myMethod(String primitiveParam, MyOtherClass classParam) {
-    Log.d(TAG, String.format("Called `myMethod` with `%s` and `%s`.", primitiveParam, classParam.toString()));
+    Log.d(
+        TAG,
+        String.format(
+            "Called `myMethod` with `%s` and `%s`.", primitiveParam, classParam.toString()));
     myCallbackMethod();
   }
 
   // visible for overriding
-  public void myCallbackMethod() {
-
-  }
+  public void myCallbackMethod() {}
 }

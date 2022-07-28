@@ -1,13 +1,10 @@
 package com.example.wrapper_example;
 
 import androidx.annotation.NonNull;
-
 import com.example.wrapper_example.example_library.MyClass;
 import com.example.wrapper_example.example_library.MyOtherClass;
-
-import java.util.Objects;
-
 import io.flutter.plugin.common.BinaryMessenger;
+import java.util.Objects;
 
 public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHostApi {
   private final BinaryMessenger binaryMessenger;
@@ -16,7 +13,11 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
   public static class MyClassImpl extends MyClass {
     private final MyClassFlutterApiImpl api;
 
-    public MyClassImpl(String primitiveField, MyOtherClass classField, BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    public MyClassImpl(
+        String primitiveField,
+        MyOtherClass classField,
+        BinaryMessenger binaryMessenger,
+        InstanceManager instanceManager) {
       super(primitiveField, classField);
       api = new MyClassFlutterApiImpl(binaryMessenger, instanceManager);
     }
@@ -33,8 +34,17 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
   }
 
   @Override
-  public void create(@NonNull Long identifier, @NonNull String primitiveField, @NonNull Long classFieldIdentifier) {
-    instanceManager.addDartCreatedInstance(new MyClassImpl(primitiveField, instanceManager.getInstance(classFieldIdentifier), binaryMessenger, instanceManager), identifier);
+  public void create(
+      @NonNull Long identifier,
+      @NonNull String primitiveField,
+      @NonNull Long classFieldIdentifier) {
+    instanceManager.addDartCreatedInstance(
+        new MyClassImpl(
+            primitiveField,
+            instanceManager.getInstance(classFieldIdentifier),
+            binaryMessenger,
+            instanceManager),
+        identifier);
   }
 
   @Override
@@ -43,8 +53,14 @@ public class MyClassHostApiImpl implements GeneratedExampleLibraryApis.MyClassHo
   }
 
   @Override
-  public void myMethod(@NonNull Long identifier, @NonNull String primitiveParam, @NonNull Long classParamIdentifier) {
-    getMyClass(identifier).myMethod(primitiveParam, Objects.requireNonNull(instanceManager.getInstance(classParamIdentifier)));
+  public void myMethod(
+      @NonNull Long identifier,
+      @NonNull String primitiveParam,
+      @NonNull Long classParamIdentifier) {
+    getMyClass(identifier)
+        .myMethod(
+            primitiveParam,
+            Objects.requireNonNull(instanceManager.getInstance(classParamIdentifier)));
   }
 
   @Override

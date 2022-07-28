@@ -1,10 +1,8 @@
 package com.example.wrapper_example;
 
 import com.example.wrapper_example.example_library.MyClass;
-
-import java.util.Objects;
-
 import io.flutter.plugin.common.BinaryMessenger;
+import java.util.Objects;
 
 public class MyClassFlutterApiImpl extends GeneratedExampleLibraryApis.MyClassFlutterApi {
   private final InstanceManager instanceManager;
@@ -15,6 +13,8 @@ public class MyClassFlutterApiImpl extends GeneratedExampleLibraryApis.MyClassFl
   }
 
   public void myCallbackMethod(MyClass instance, Reply<Void> callback) {
-    myCallbackMethod(Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(instance)), callback);
+    myCallbackMethod(
+        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(instance)),
+        callback);
   }
 }

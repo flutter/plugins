@@ -133,8 +133,6 @@ class MyClass extends BaseObject {
           instanceManager: instanceManager,
         ),
         super.detached() {
-    BaseObjectFlutterApi.setup(BaseObjectFlutterApiImpl());
-    MyClassFlutterApi.setup(MyClassFlutterApiImpl());
     _api.createFromInstances(this, primitiveField, classField);
   }
 

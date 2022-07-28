@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface WrapperExamplePlugin : NSObject<FlutterPlugin>
+@interface WrapperExamplePlugin : NSObject <FlutterPlugin>
 @end
