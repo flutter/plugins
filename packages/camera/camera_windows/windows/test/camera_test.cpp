@@ -23,6 +23,7 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::Pointee;
+using ::testing::Return;
 
 namespace test {
 
@@ -34,17 +35,57 @@ TEST(Camera, InitCameraCreatesCaptureController) {
 
   EXPECT_CALL(*capture_controller_factory, CreateCaptureController)
       .Times(1)
-      .WillOnce(
-          []() { return std::make_unique<NiceMock<MockCaptureController>>(); });
+      .WillOnce([]() {
+        std::unique_ptr<NiceMock<MockCaptureController>> capture_controller =
+            std::make_unique<NiceMock<MockCaptureController>>();
+
+        EXPECT_CALL(*capture_controller, InitCaptureDevice)
+            .Times(1)
+            .WillOnce(Return(true));
+
+        return capture_controller;
+      });
 
   EXPECT_TRUE(camera->GetCaptureController() == nullptr);
 
   // Init camera with mock capture controller factory
-  camera->InitCamera(std::move(capture_controller_factory),
-                     std::make_unique<MockTextureRegistrar>().get(),
-                     std::make_unique<MockBinaryMessenger>().get(), false,
-                     ResolutionPreset::kAuto);
+  bool result =
+      camera->InitCamera(std::move(capture_controller_factory),
+                         std::make_unique<MockTextureRegistrar>().get(),
+                         std::make_unique<MockBinaryMessenger>().get(), false,
+                         ResolutionPreset::kAuto);
+  EXPECT_TRUE(result);
+  EXPECT_TRUE(camera->GetCaptureController() != nullptr);
+}
 
+TEST(Camera, InitCameraReportsFailure) {
+  std::unique_ptr<CameraImpl> camera =
+      std::make_unique<CameraImpl>(MOCK_DEVICE_ID);
+  std::unique_ptr<MockCaptureControllerFactory> capture_controller_factory =
+      std::make_unique<MockCaptureControllerFactory>();
+
+  EXPECT_CALL(*capture_controller_factory, CreateCaptureController)
+      .Times(1)
+      .WillOnce([]() {
+        std::unique_ptr<NiceMock<MockCaptureController>> capture_controller =
+            std::make_unique<NiceMock<MockCaptureController>>();
+
+        EXPECT_CALL(*capture_controller, InitCaptureDevice)
+            .Times(1)
+            .WillOnce(Return(false));
+
+        return capture_controller;
+      });
+
+  EXPECT_TRUE(camera->GetCaptureController() == nullptr);
+
+  // Init camera with mock capture controller factory
+  bool result =
+      camera->InitCamera(std::move(capture_controller_factory),
+                         std::make_unique<MockTextureRegistrar>().get(),
+                         std::make_unique<MockBinaryMessenger>().get(), false,
+                         ResolutionPreset::kAuto);
+  EXPECT_FALSE(result);
   EXPECT_TRUE(camera->GetCaptureController() != nullptr);
 }
 

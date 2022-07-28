@@ -88,17 +88,17 @@ task:
       env:
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
-        # For pre-submit, pass the PR description to the script to allow for
-        # version check overrides.
+        # For pre-submit, pass the PR label, as well as the PR description or
+        # incremental commit message (for Dependabot checks), to the script to
+        # allow for version check overrides.
         # For post-submit, ignore platform version breaking version changes and
-        # missing version/CHANGELOG detection; the PR description isn't reliably
-        # part of the commit message, so using the same flags as for presubmit
-        # would likely result in false-positive post-submit failures.
+        # missing version/CHANGELOG detection since the overrides aren't
+        # available outside of the context of the PR.
         - if [[ $CIRRUS_PR == "" ]]; then
         -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
         - else
         -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
-        -   ./script/tool_runner.sh version-check --check-for-missing-changes --change-description-file="$CHANGE_DESC"
+        -   ./script/tool_runner.sh version-check --check-for-missing-changes --change-description-file="$CHANGE_DESC" --pr-labels="$CIRRUS_PR_LABELS"
         - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
@@ -163,8 +163,14 @@ task:
         matrix:
           CHANNEL: "2.10.5"
           CHANNEL: "2.8.1"
+      package_prep_script:
+        # Allow analyzing plugins that use a Pigeon version with a higher
+        # minimum Flutter/Dart version than the plugin itself.
+        - ./script/tool_runner.sh remove-dev-dependencies
       analyze_script:
-        - ./script/tool_runner.sh analyze --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+        # Only analyze lib/; non-client code doesn't need to work on
+        # all supported legacy version.
+        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
     - name: readme_excerpts
       env:
         CIRRUS_CLONE_SUBMODULES: true

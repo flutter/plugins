@@ -63,7 +63,9 @@ class Camera : public CaptureControllerListener {
   virtual camera_windows::CaptureController* GetCaptureController() = 0;
 
   // Initializes this camera and its associated capture controller.
-  virtual void InitCamera(flutter::TextureRegistrar* texture_registrar,
+  //
+  // Returns false if initialization fails.
+  virtual bool InitCamera(flutter::TextureRegistrar* texture_registrar,
                           flutter::BinaryMessenger* messenger,
                           bool record_audio,
                           ResolutionPreset resolution_preset) = 0;
@@ -116,7 +118,7 @@ class CameraImpl : public Camera {
   camera_windows::CaptureController* GetCaptureController() override {
     return capture_controller_.get();
   }
-  void InitCamera(flutter::TextureRegistrar* texture_registrar,
+  bool InitCamera(flutter::TextureRegistrar* texture_registrar,
                   flutter::BinaryMessenger* messenger, bool record_audio,
                   ResolutionPreset resolution_preset) override;
 
@@ -124,7 +126,9 @@ class CameraImpl : public Camera {
   //
   // This is a convenience method called by |InitCamera| but also used in
   // tests.
-  void InitCamera(
+  //
+  // Returns false if initialization fails.
+  bool InitCamera(
       std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
       flutter::TextureRegistrar* texture_registrar,
       flutter::BinaryMessenger* messenger, bool record_audio,

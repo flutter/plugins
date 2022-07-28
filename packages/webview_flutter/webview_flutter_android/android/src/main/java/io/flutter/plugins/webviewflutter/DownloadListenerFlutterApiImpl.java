@@ -38,7 +38,7 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
       long contentLength,
       Reply<Void> callback) {
     onDownloadStart(
-        instanceManager.getInstanceId(downloadListener),
+        getIdentifierForListener(downloadListener),
         url,
         userAgent,
         contentDisposition,
@@ -54,11 +54,18 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
    * @param callback reply callback with return value from Dart
    */
   public void dispose(DownloadListener downloadListener, Reply<Void> callback) {
-    final Long instanceId = instanceManager.removeInstance(downloadListener);
-    if (instanceId != null) {
-      dispose(instanceId, callback);
+    if (instanceManager.containsInstance(downloadListener)) {
+      dispose(getIdentifierForListener(downloadListener), callback);
     } else {
       callback.reply(null);
     }
+  }
+
+  private long getIdentifierForListener(DownloadListener listener) {
+    final Long identifier = instanceManager.getIdentifierForStrongReference(listener);
+    if (identifier == null) {
+      throw new IllegalStateException("Could not find identifier for DownloadListener.");
+    }
+    return identifier;
   }
 }
