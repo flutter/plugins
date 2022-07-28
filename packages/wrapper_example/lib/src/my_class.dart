@@ -10,6 +10,7 @@ import 'example_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'my_other_class.dart';
 
+@visibleForTesting
 class MyClassHostApiImpl extends MyClassHostApi {
   MyClassHostApiImpl({
     this.binaryMessenger,
@@ -71,8 +72,52 @@ class MyClassHostApiImpl extends MyClassHostApi {
   }
 }
 
+@visibleForTesting
+class MyClassFlutterApiImpl implements MyClassFlutterApi {
+  /// Constructs a [MyClassFlutterApiImpl].
+  MyClassFlutterApiImpl({
+    this.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? BaseObject.globalInstanceManager;
+
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void create(
+    int identifier,
+    String primitiveField,
+    int classFieldIdentifier,
+  ) {
+    instanceManager.addHostCreatedInstance(
+      MyClass.detached(primitiveField),
+      identifier,
+      onCopy: (MyClass original) => MyClass.detached(original.primitiveField),
+    );
+  }
+
+  @override
+  void myCallbackMethod(int identifier) {
+    final MyClass instance =
+        instanceManager.getInstanceWithWeakReference(identifier)!;
+    if (instance.myCallbackMethod != null) {
+      instance.myCallbackMethod!(instance);
+    }
+  }
+}
+
+/// Example class.
+///
+/// See <link-to-docs>.
 @immutable
 class MyClass extends BaseObject {
+  /// Construct a [MyClass].
   MyClass(
     this.primitiveField,
     MyOtherClass classField, {
@@ -87,6 +132,10 @@ class MyClass extends BaseObject {
     _api.createFromInstances(this, primitiveField, classField);
   }
 
+  /// Instantiate an instance not attached to a native instance.
+  ///
+  /// This should only be used outside of tests by subclasses created by this
+  /// library or to create a copy for an [InstanceManager].
   MyClass.detached(
     this.primitiveField, {
     this.myCallbackMethod,
@@ -98,6 +147,7 @@ class MyClass extends BaseObject {
         ),
         super.detached();
 
+  /// Call a static method.
   static Future<void> myStaticMethod({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
@@ -110,8 +160,10 @@ class MyClass extends BaseObject {
 
   final MyClassHostApiImpl _api;
 
+  /// Access a primitive field.
   final String primitiveField;
 
+  /// Synchronously and lazily access a class field.
   late final MyOtherClass classField = _api.attachClassFieldFromInstances(
     this,
     MyOtherClass.detached(
@@ -120,8 +172,10 @@ class MyClass extends BaseObject {
     ),
   );
 
-  final void Function()? myCallbackMethod;
+  /// Handle a callback from native.
+  final void Function(MyClass)? myCallbackMethod;
 
+  /// Call an instance method.
   Future<void> myMethod(String primitiveParam, MyOtherClass classParam) {
     return _api.myMethodFromInstances(this, primitiveParam, classParam);
   }

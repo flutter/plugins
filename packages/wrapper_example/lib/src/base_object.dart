@@ -8,6 +8,7 @@ import 'package:wrapper_example/src/instance_manager.dart';
 
 import 'example_library.pigeon.dart';
 
+@visibleForTesting
 class BaseObjectHostApiImpl extends BaseObjectHostApi {
   BaseObjectHostApiImpl({
     this.binaryMessenger,

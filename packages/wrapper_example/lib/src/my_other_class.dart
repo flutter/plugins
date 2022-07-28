@@ -9,6 +9,7 @@ import 'base_object.dart';
 import 'example_library.pigeon.dart';
 import 'instance_manager.dart';
 
+@visibleForTesting
 class MyOtherClassHostApiImpl extends MyOtherClassHostApi {
   MyOtherClassHostApiImpl({
     this.binaryMessenger,
