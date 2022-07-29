@@ -35,7 +35,7 @@ class CaptureControllerListener {
   // Called by CaptureController if initializing the capture engine fails.
   //
   // result: The kind of result.
-  // error: The error message.
+  // error: A string describing the error.
   virtual void OnCreateCaptureEngineFailed(CameraResult result,
                                            const std::string& error) = 0;
 
