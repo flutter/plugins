@@ -28,8 +28,9 @@ std::string GetErrorCode(CameraResult result) {
     case CameraResult::kAccessDenied:
       return kCameraAccessDenied;
 
-    default:
+    case CameraResult::kSuccess:
     case CameraResult::kError:
+    default:
       return kCameraError;
   }
 }
