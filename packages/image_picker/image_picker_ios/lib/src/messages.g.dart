@@ -65,8 +65,7 @@ class SourceSpecification {
   static SourceSpecification decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return SourceSpecification(
-      type: SourceType.values[pigeonMap['type']! as int]
-,
+      type: SourceType.values[pigeonMap['type']! as int],
       camera: pigeonMap['camera'] != null
           ? SourceCamera.values[pigeonMap['camera']! as int]
           : null,
@@ -81,27 +80,25 @@ class _ImagePickerApiCodec extends StandardMessageCodec {
     if (value is MaxSize) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is SourceSpecification) {
+    } else if (value is SourceSpecification) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return MaxSize.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return SourceSpecification.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -110,24 +107,32 @@ class ImagePickerApi {
   /// Constructor for [ImagePickerApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  ImagePickerApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  ImagePickerApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _ImagePickerApiCodec();
 
-  Future<String?> pickImage(SourceSpecification arg_source, MaxSize arg_maxSize, int? arg_imageQuality, bool arg_requestFullMetadata) async {
+  Future<String?> pickImage(SourceSpecification arg_source, MaxSize arg_maxSize,
+      int? arg_imageQuality, bool arg_requestFullMetadata) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.ImagePickerApi.pickImage', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_source, arg_maxSize, arg_imageQuality, arg_requestFullMetadata]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.ImagePickerApi.pickImage', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(<Object?>[
+      arg_source,
+      arg_maxSize,
+      arg_imageQuality,
+      arg_requestFullMetadata
+    ]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -138,18 +143,22 @@ class ImagePickerApi {
     }
   }
 
-  Future<List<String?>?> pickMultiImage(MaxSize arg_maxSize, int? arg_imageQuality, bool arg_requestFullMetadata) async {
+  Future<List<String?>?> pickMultiImage(MaxSize arg_maxSize,
+      int? arg_imageQuality, bool arg_requestFullMetadata) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.ImagePickerApi.pickMultiImage', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_maxSize, arg_imageQuality, arg_requestFullMetadata]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.ImagePickerApi.pickMultiImage', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel.send(
+            <Object?>[arg_maxSize, arg_imageQuality, arg_requestFullMetadata])
+        as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -160,18 +169,22 @@ class ImagePickerApi {
     }
   }
 
-  Future<String?> pickVideo(SourceSpecification arg_source, int? arg_maxDurationSeconds) async {
+  Future<String?> pickVideo(
+      SourceSpecification arg_source, int? arg_maxDurationSeconds) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.ImagePickerApi.pickVideo', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.ImagePickerApi.pickVideo', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_source, arg_maxDurationSeconds]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_source, arg_maxDurationSeconds])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,

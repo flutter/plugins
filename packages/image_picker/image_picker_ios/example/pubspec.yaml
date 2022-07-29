@@ -16,7 +16,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  image_picker_platform_interface: ^2.5.0
+  image_picker_platform_interface: ^2.6.0
   video_player: ^2.1.4
 
 dev_dependencies:
@@ -27,3 +27,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+dependency_overrides:
+  image_picker_platform_interface:
+    path: ../../image_picker_platform_interface

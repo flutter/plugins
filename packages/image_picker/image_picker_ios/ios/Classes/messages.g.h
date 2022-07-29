@@ -25,17 +25,15 @@ typedef NS_ENUM(NSUInteger, FLTSourceType) {
 @class FLTSourceSpecification;
 
 @interface FLTMaxSize : NSObject
-+ (instancetype)makeWithWidth:(nullable NSNumber *)width
-    height:(nullable NSNumber *)height;
-@property(nonatomic, strong, nullable) NSNumber * width;
-@property(nonatomic, strong, nullable) NSNumber * height;
++ (instancetype)makeWithWidth:(nullable NSNumber *)width height:(nullable NSNumber *)height;
+@property(nonatomic, strong, nullable) NSNumber *width;
+@property(nonatomic, strong, nullable) NSNumber *height;
 @end
 
 @interface FLTSourceSpecification : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithType:(FLTSourceType)type
-    camera:(FLTSourceCamera)camera;
++ (instancetype)makeWithType:(FLTSourceType)type camera:(FLTSourceCamera)camera;
 @property(nonatomic, assign) FLTSourceType type;
 @property(nonatomic, assign) FLTSourceCamera camera;
 @end
@@ -44,11 +42,22 @@ typedef NS_ENUM(NSUInteger, FLTSourceType) {
 NSObject<FlutterMessageCodec> *FLTImagePickerApiGetCodec(void);
 
 @protocol FLTImagePickerApi
-- (void)pickImageWithSource:(FLTSourceSpecification *)source maxSize:(FLTMaxSize *)maxSize quality:(nullable NSNumber *)imageQuality fullMetadata:(NSNumber *)requestFullMetadata completion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
-- (void)pickMultiImageWithMaxSize:(FLTMaxSize *)maxSize quality:(nullable NSNumber *)imageQuality fullMetadata:(NSNumber *)requestFullMetadata completion:(void(^)(NSArray<NSString *> *_Nullable, FlutterError *_Nullable))completion;
-- (void)pickVideoWithSource:(FLTSourceSpecification *)source maxDuration:(nullable NSNumber *)maxDurationSeconds completion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
+- (void)pickImageWithSource:(FLTSourceSpecification *)source
+                    maxSize:(FLTMaxSize *)maxSize
+                    quality:(nullable NSNumber *)imageQuality
+               fullMetadata:(NSNumber *)requestFullMetadata
+                 completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion;
+- (void)pickMultiImageWithMaxSize:(FLTMaxSize *)maxSize
+                          quality:(nullable NSNumber *)imageQuality
+                     fullMetadata:(NSNumber *)requestFullMetadata
+                       completion:(void (^)(NSArray<NSString *> *_Nullable,
+                                            FlutterError *_Nullable))completion;
+- (void)pickVideoWithSource:(FLTSourceSpecification *)source
+                maxDuration:(nullable NSNumber *)maxDurationSeconds
+                 completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 @end
 
-extern void FLTImagePickerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTImagePickerApi> *_Nullable api);
+extern void FLTImagePickerApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
+                                   NSObject<FLTImagePickerApi> *_Nullable api);
 
 NS_ASSUME_NONNULL_END

@@ -172,6 +172,7 @@
 
   [plugin pickMultiImageWithMaxSize:[FLTMaxSize makeWithWidth:@(100) height:@(200)]
                             quality:@(50)
+                       fullMetadata:@(YES)
                          completion:^(NSArray<NSString *> *_Nullable result,
                                       FlutterError *_Nullable error){
                          }];
@@ -193,6 +194,23 @@
                  fullMetadata:@(NO)
                    completion:^(NSString *_Nullable result, FlutterError *_Nullable error){
                    }];
+
+  OCMVerify(times(0), [photoLibrary authorizationStatus]);
+}
+
+- (void)testPickMultiImageWithoutFullMetadata API_AVAILABLE(ios(11)) {
+  id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
+
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
+
+  [plugin pickMultiImageWithMaxSize:[[FLTMaxSize alloc] init]
+                            quality:nil
+                       fullMetadata:@(NO)
+                         completion:^(NSArray<NSString *> *_Nullable result,
+                                      FlutterError *_Nullable error){
+                         }];
 
   OCMVerify(times(0), [photoLibrary authorizationStatus]);
 }
