@@ -1,6 +1,7 @@
 name: camera_android_camerax
 description: Android implementation of the camera plugin with CameraX.
 repository: https://github.com/flutter/plugins/tree/main/packages/camera/camera_android
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+camera%22
 version: 0.0.1
 
 environment:
@@ -15,6 +16,7 @@ flutter:
         pluginClass: CameraAndroidCameraxPlugin
 
 dependencies:
+  camera_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
 
