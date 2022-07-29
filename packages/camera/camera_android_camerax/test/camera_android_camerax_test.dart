@@ -7,13 +7,13 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockCameraAndroidCameraxPlatform
     with MockPlatformInterfaceMixin
     implements CameraAndroidCameraxPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
 
 void main() {
-  final CameraAndroidCameraxPlatform initialPlatform = CameraAndroidCameraxPlatform.instance;
+  final CameraAndroidCameraxPlatform initialPlatform =
+      CameraAndroidCameraxPlatform.instance;
 
   test('$MethodChannelCameraAndroidCamerax is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelCameraAndroidCamerax>());
@@ -21,7 +21,8 @@ void main() {
 
   test('getPlatformVersion', () async {
     CameraAndroidCamerax cameraAndroidCameraxPlugin = CameraAndroidCamerax();
-    MockCameraAndroidCameraxPlatform fakePlatform = MockCameraAndroidCameraxPlatform();
+    MockCameraAndroidCameraxPlatform fakePlatform =
+        MockCameraAndroidCameraxPlatform();
     CameraAndroidCameraxPlatform.instance = fakePlatform;
 
     expect(await cameraAndroidCameraxPlugin.getPlatformVersion(), '42');
