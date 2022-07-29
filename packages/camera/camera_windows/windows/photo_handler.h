@@ -51,7 +51,7 @@ class PhotoHandler {
   bool TakePhoto(const std::string& file_path, IMFCaptureEngine* capture_engine,
                  IMFMediaType* base_media_type);
 
-  // Set the photo handler recording state to: kIdel.
+  // Set the photo handler recording state to: kIdle.
   void OnPhotoTaken();
 
   // Returns true if photo state is kIdle.

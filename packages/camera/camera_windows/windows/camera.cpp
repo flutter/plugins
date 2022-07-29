@@ -85,9 +85,9 @@ bool CameraImpl::HasPendingResultByType(PendingResultType type) const {
 }
 
 void CameraImpl::SendErrorForPendingResults(const std::string& error_code,
-                                            const std::string& descripion) {
+                                            const std::string& description) {
   for (const auto& pending_result : pending_results_) {
-    pending_result.second->Error(error_code, descripion);
+    pending_result.second->Error(error_code, description);
   }
   pending_results_.clear();
 }

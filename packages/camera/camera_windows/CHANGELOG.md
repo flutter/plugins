@@ -1,3 +1,7 @@
+## 0.1.0+5
+
+* Fixes bugs in in error handling.
+
 ## 0.1.0+4
 
 * Allows retrying camera initialization after error.
