@@ -1,3 +1,7 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 2.1.10
 
 * Avoids map shift when scrolling on iOS.
