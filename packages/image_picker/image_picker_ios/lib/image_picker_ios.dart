@@ -80,9 +80,13 @@ class ImagePickerIOS extends ImagePickerPlatform {
     int? imageQuality,
   }) async {
     final List<dynamic>? paths = await _pickMultiImageAsPath(
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
+      options: MultiImagePickerOptions(
+        imageOptions: ImageOptions(
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        ),
+      ),
     );
     if (paths == null) {
       return null;
@@ -91,20 +95,33 @@ class ImagePickerIOS extends ImagePickerPlatform {
     return paths.map((dynamic path) => PickedFile(path as String)).toList();
   }
 
-  Future<List<String>?> _pickMultiImageAsPath({
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
+  @override
+  Future<List<XFile>> getMultiImageWithOptions({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
   }) async {
+    final List<String>? paths = await _pickMultiImageAsPath(options: options);
+    if (paths == null) {
+      return <XFile>[];
+    }
+
+    return paths.map((String path) => XFile(path)).toList();
+  }
+
+  Future<List<String>?> _pickMultiImageAsPath({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
+  }) async {
+    final int? imageQuality = options.imageOptions.imageQuality;
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
+    final double? maxWidth = options.imageOptions.maxWidth;
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
     }
 
+    final double? maxHeight = options.imageOptions.maxHeight;
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
@@ -112,7 +129,9 @@ class ImagePickerIOS extends ImagePickerPlatform {
     // TODO(stuartmorgan): Remove the cast once Pigeon supports non-nullable
     //  generics, https://github.com/flutter/flutter/issues/97848
     return (await _hostApi.pickMultiImage(
-            MaxSize(width: maxWidth, height: maxHeight), imageQuality))
+            MaxSize(width: maxWidth, height: maxHeight),
+            imageQuality,
+            options.imageOptions.requestFullMetadata))
         ?.cast<String>();
   }
 
@@ -200,9 +219,13 @@ class ImagePickerIOS extends ImagePickerPlatform {
     int? imageQuality,
   }) async {
     final List<String>? paths = await _pickMultiImageAsPath(
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
+      options: MultiImagePickerOptions(
+        imageOptions: ImageOptions(
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        ),
+      ),
     );
     if (paths == null) {
       return null;

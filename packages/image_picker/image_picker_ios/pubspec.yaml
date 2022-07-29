@@ -26,3 +26,7 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.0.0
   pigeon: ^3.0.2
+
+dependency_overrides:
+    image_picker_platform_interface:
+        path: ../image_picker_platform_interface
