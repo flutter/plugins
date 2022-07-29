@@ -1,6 +1,6 @@
 ## 2.1.1
 
-* Replaces `USE_FINGERPRINT` permission to `USE_BIOMETRIC` in README and example project.
+* Replaces `USE_FINGERPRINT` permission with `USE_BIOMETRIC` in README and example project.
 
 ## 2.1.0
 
