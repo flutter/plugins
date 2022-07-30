@@ -28,17 +28,17 @@ CameraImpl::~CameraImpl() {
                              "Plugin disposed before request was handled");
 }
 
-void CameraImpl::InitCamera(flutter::TextureRegistrar* texture_registrar,
+bool CameraImpl::InitCamera(flutter::TextureRegistrar* texture_registrar,
                             flutter::BinaryMessenger* messenger,
                             bool record_audio,
                             ResolutionPreset resolution_preset) {
   auto capture_controller_factory =
       std::make_unique<CaptureControllerFactoryImpl>();
-  InitCamera(std::move(capture_controller_factory), texture_registrar,
-             messenger, record_audio, resolution_preset);
+  return InitCamera(std::move(capture_controller_factory), texture_registrar,
+                    messenger, record_audio, resolution_preset);
 }
 
-void CameraImpl::InitCamera(
+bool CameraImpl::InitCamera(
     std::unique_ptr<CaptureControllerFactory> capture_controller_factory,
     flutter::TextureRegistrar* texture_registrar,
     flutter::BinaryMessenger* messenger, bool record_audio,
@@ -47,8 +47,8 @@ void CameraImpl::InitCamera(
   messenger_ = messenger;
   capture_controller_ =
       capture_controller_factory->CreateCaptureController(this);
-  capture_controller_->InitCaptureDevice(texture_registrar, device_id_,
-                                         record_audio, resolution_preset);
+  return capture_controller_->InitCaptureDevice(
+      texture_registrar, device_id_, record_audio, resolution_preset);
 }
 
 bool CameraImpl::AddPendingResult(
@@ -85,9 +85,9 @@ bool CameraImpl::HasPendingResultByType(PendingResultType type) const {
 }
 
 void CameraImpl::SendErrorForPendingResults(const std::string& error_code,
-                                            const std::string& descripion) {
+                                            const std::string& description) {
   for (const auto& pending_result : pending_results_) {
-    pending_result.second->Error(error_code, descripion);
+    pending_result.second->Error(error_code, description);
   }
   pending_results_.clear();
 }

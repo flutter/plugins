@@ -1,5 +1,21 @@
-## NEXT
+## 0.9.0
 
+* Replaces PR-description-based version/changelog/breaking change check
+  overrides in `version-check` with label-based overrides using a new
+  `pr-labels` flag, since we don't actually have reliable access to the
+  PR description in checks.
+  
+## 0.8.10
+
+- Adds a new `remove-dev-dependencies` command to remove `dev_dependencies`
+  entries to make legacy version analysis possible in more cases.
+- Adds a `--lib-only` option to `analyze` to allow only analyzing the client
+  parts of a library for legacy verison compatibility.
+
+## 0.8.9
+
+- Includes `dev_dependencies` when overridding dependencies using
+  `make-deps-path-based`.
 - Bypasses version and CHANGELOG checks for Dependabot PRs for packages
   that are known not to be client-affecting.
 
