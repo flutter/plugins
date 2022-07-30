@@ -1,3 +1,7 @@
+## 0.2.3+2
+
+* Adds IMMEDIATE_AND_CHARGE_FULL_PRICE to the ProrationMode.
+
 ## 0.2.3+1
 
 * Updates `json_serializable` to fix warnings in generated code.
