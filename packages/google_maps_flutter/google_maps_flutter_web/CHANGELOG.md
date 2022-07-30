@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.4.0+1
 
 * Updates `README.md` to describe a hit-testing issue when Flutter widgets are overlaid on top of the Map widget.

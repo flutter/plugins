@@ -1,3 +1,7 @@
+## 2.9.3
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.9.2
 
 * Fixes crash when an Objective-C object in `FWFInstanceManager` is released, but the dealloc

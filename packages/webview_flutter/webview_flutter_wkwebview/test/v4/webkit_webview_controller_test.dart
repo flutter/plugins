@@ -346,7 +346,7 @@ void main() {
       );
 
       when(mockWebView.evaluateJavaScript('runJavaScript')).thenAnswer(
-        (_) => Future<String?>.value(null),
+        (_) => Future<String?>.value(),
       );
       expect(
         () => controller.runJavaScriptReturningResult('runJavaScript'),

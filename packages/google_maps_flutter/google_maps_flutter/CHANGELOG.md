@@ -1,3 +1,7 @@
+## 2.1.10+1
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.1.10
 
 * Avoids map shift when scrolling on iOS.

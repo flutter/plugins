@@ -1,3 +1,7 @@
+## 6.1.6
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 6.1.5
 
 * Migrates `README.md` examples to the [`code-excerpt` system](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#readme-code).

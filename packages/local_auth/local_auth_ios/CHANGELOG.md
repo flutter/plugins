@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 1.0.7
 
 * Updates references to the obsolete master branch.

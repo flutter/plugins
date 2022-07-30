@@ -1,3 +1,7 @@
+## 0.1.0+6
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.1.0+5
 
 * Fixes bugs in in error handling.

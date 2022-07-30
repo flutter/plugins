@@ -102,7 +102,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -124,7 +123,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -146,7 +144,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -168,7 +165,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -190,7 +186,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -212,7 +207,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -234,7 +228,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -256,7 +249,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -278,7 +270,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -300,7 +291,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -322,7 +312,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -344,7 +333,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()
@@ -365,7 +353,6 @@ void main() {
           expect(
             () => cameraService.getMediaStreamForOptions(
               const CameraOptions(),
-              cameraId: cameraId,
             ),
             throwsA(
               isA<CameraWebException>()

@@ -1,3 +1,8 @@
+## 0.2.3+2
+
+* Removes unnecessary imports.
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.2.3+1
 
 * Updates `json_serializable` to fix warnings in generated code.

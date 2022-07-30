@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
@@ -282,7 +281,6 @@ class _MyAppState extends State<_MyApp> {
                       final GooglePlayPurchaseParam purchaseParam =
                           GooglePlayPurchaseParam(
                               productDetails: productDetails,
-                              applicationUserName: null,
                               changeSubscriptionParam: oldSubscription != null
                                   ? ChangeSubscriptionParam(
                                       oldPurchaseDetails: oldSubscription,
@@ -291,8 +289,7 @@ class _MyAppState extends State<_MyApp> {
                                   : null);
                       if (productDetails.id == _kConsumableId) {
                         _inAppPurchasePlatform.buyConsumable(
-                            purchaseParam: purchaseParam,
-                            autoConsume: _kAutoConsume || Platform.isIOS);
+                            purchaseParam: purchaseParam);
                       } else {
                         _inAppPurchasePlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);

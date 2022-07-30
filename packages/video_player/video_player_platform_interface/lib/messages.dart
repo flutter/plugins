@@ -156,7 +156,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -181,7 +180,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -206,7 +204,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -231,7 +228,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -256,7 +252,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -282,7 +277,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -307,7 +301,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -332,7 +325,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -357,7 +349,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -382,7 +373,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =
@@ -408,7 +398,6 @@ class VideoPlayerApi {
       throw PlatformException(
         code: 'channel-error',
         message: 'Unable to establish connection on channel.',
-        details: null,
       );
     } else if (replyMap['error'] != null) {
       final Map<Object?, Object?> error =

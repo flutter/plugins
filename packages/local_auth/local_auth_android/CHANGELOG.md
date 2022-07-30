@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 1.0.8
 
 * Removes usages of `FingerprintManager` and other `BiometricManager` deprecated method usages.

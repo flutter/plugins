@@ -1,3 +1,7 @@
+## 2.0.12
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.0.11
 
 * Updates references to the obsolete master branch.

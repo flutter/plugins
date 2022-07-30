@@ -90,7 +90,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          compassEnabled: true,
         ),
       ),
     );
@@ -119,7 +118,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          mapToolbarEnabled: true,
         ),
       ),
     );
@@ -233,7 +231,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          minMaxZoomPreference: MinMaxZoomPreference.unbounded,
         ),
       ),
     );
@@ -263,7 +260,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          rotateGesturesEnabled: true,
         ),
       ),
     );
@@ -292,7 +288,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          scrollGesturesEnabled: true,
         ),
       ),
     );
@@ -321,7 +316,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          tiltGesturesEnabled: true,
         ),
       ),
     );
@@ -379,7 +373,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          zoomGesturesEnabled: true,
         ),
       ),
     );
@@ -408,7 +401,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          zoomControlsEnabled: true,
         ),
       ),
     );
@@ -422,7 +414,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          myLocationEnabled: false,
         ),
       ),
     );
@@ -452,7 +443,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          myLocationEnabled: false,
         ),
       ),
     );
@@ -537,7 +527,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          trafficEnabled: false,
         ),
       ),
     );
@@ -581,7 +570,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          buildingsEnabled: true,
         ),
       ),
     );

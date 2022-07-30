@@ -1,3 +1,7 @@
+## 2.6.1
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.6.0
 
 * Deprecates `getMultiImage` in favor of a new method `getMultiImageWithOptions`.

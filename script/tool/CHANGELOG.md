@@ -1,3 +1,7 @@
+## 0.9.0+1
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.9.0
 
 * Replaces PR-description-based version/changelog/breaking change check

@@ -1,3 +1,7 @@
+## 2.4.5+1
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.4.5
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).

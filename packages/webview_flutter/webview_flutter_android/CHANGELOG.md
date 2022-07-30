@@ -1,3 +1,7 @@
+## 2.9.3
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.9.2
 
 * Updates the Java InstanceManager to take a listener for when an object is garbage collected.

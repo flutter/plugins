@@ -1,3 +1,7 @@
+## 0.9.0+1
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.9.0
 
 * **BREAKING CHANGE**: Methods that take `XTypeGroup`s now throw an

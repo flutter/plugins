@@ -83,8 +83,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrlString(urlString, mode: LaunchMode.platformDefault),
-          isTrue);
+      expect(await launchUrlString(urlString), isTrue);
     });
 
     test('explicit default launch mode with non-web URL', () async {
@@ -100,8 +99,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrlString(urlString, mode: LaunchMode.platformDefault),
-          isTrue);
+      expect(await launchUrlString(urlString), isTrue);
     });
 
     test('in-app webview', () async {

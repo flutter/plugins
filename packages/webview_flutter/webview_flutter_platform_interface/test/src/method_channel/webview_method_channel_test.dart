@@ -40,13 +40,11 @@ void main() {
           if (methodCall.arguments == 'invalid file') {
             throw PlatformException(
                 code: 'loadFile_failed',
-                message: 'Failed loading file.',
-                details: null);
+                message: 'Failed loading file.');
           } else if (methodCall.arguments == 'some error') {
             throw PlatformException(
               code: 'some_error',
               message: 'Some error occurred.',
-              details: null,
             );
           }
           return null;
@@ -55,13 +53,11 @@ void main() {
             throw PlatformException(
               code: 'loadFlutterAsset_invalidKey',
               message: 'Failed loading asset.',
-              details: null,
             );
           } else if (methodCall.arguments == 'some error') {
             throw PlatformException(
               code: 'some_error',
               message: 'Some error occurred.',
-              details: null,
             );
           }
           return null;

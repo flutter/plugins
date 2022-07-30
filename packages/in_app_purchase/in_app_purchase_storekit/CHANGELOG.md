@@ -1,3 +1,8 @@
+## 0.3.1+1
+
+* Removes unnecessary imports.
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.3.1
 
 * Adds ability to purchase more than one of a product.

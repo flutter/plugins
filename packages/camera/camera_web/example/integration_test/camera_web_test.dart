@@ -593,7 +593,7 @@ void main() {
               (Camera camera) => camera.options,
               'options',
               CameraOptions(
-                audio: const AudioConstraints(enabled: false),
+                audio: const AudioConstraints(),
                 video: VideoConstraints(
                   facingMode: FacingModeConstraint(CameraType.user),
                   width: VideoSizeConstraint(
@@ -2330,7 +2330,6 @@ void main() {
         when(
           () => cameraService.getMediaStreamForOptions(
             any(),
-            cameraId: cameraId,
           ),
         ).thenAnswer((Invocation _) async => videoElement.captureStream());
 

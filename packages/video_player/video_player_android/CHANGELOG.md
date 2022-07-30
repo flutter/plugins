@@ -1,3 +1,7 @@
+## 2.3.9
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.3.8
 
 * Updates ExoPlayer to 2.18.0.

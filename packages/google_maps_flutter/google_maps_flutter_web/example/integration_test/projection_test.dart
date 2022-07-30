@@ -51,7 +51,6 @@ void main() {
         await pumpCenteredMap(
           tester,
           initialCamera: initialCamera,
-          size: size,
           onMapCreated: onMapCreated,
         );
 
@@ -75,7 +74,6 @@ void main() {
         await pumpCenteredMap(
           tester,
           initialCamera: initialCamera,
-          size: size,
           onMapCreated: onMapCreated,
         );
         final GoogleMapController controller = await controllerCompleter.future;
@@ -99,7 +97,6 @@ void main() {
         await pumpCenteredMap(
           tester,
           initialCamera: initialCamera,
-          size: size,
           onMapCreated: onMapCreated,
         );
         final GoogleMapController controller = await controllerCompleter.future;
@@ -124,7 +121,6 @@ void main() {
         await pumpCenteredMap(
           tester,
           initialCamera: initialCamera,
-          size: size,
           onMapCreated: onMapCreated,
         );
 
@@ -149,7 +145,6 @@ void main() {
         await pumpCenteredMap(
           tester,
           initialCamera: initialCamera,
-          size: size,
           onMapCreated: onMapCreated,
         );
         final GoogleMapController controller = await controllerCompleter.future;
@@ -179,7 +174,6 @@ void main() {
         await pumpCenteredMap(
           tester,
           initialCamera: initialCamera,
-          size: size,
           onMapCreated: onMapCreated,
         );
         final GoogleMapController controller = await controllerCompleter.future;

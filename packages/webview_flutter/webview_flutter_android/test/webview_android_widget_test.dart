@@ -165,8 +165,6 @@ void main() {
         await buildWidget(
           tester,
           creationParams: CreationParams(
-            autoMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
               userAgent: const WebSetting<String?>.absent(),
               hasNavigationDelegate: false,

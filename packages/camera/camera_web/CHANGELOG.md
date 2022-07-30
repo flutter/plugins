@@ -1,4 +1,9 @@
-## NEXT
+## 0.3.1+1
+
+* Fixes previous version in this CHANGELOG.md from NEXT to 0.3.1
+* Fixes avoid_redundant_argument_values lint warnings.
+
+## 0.3.1
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 

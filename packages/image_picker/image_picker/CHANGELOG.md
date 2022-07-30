@@ -1,3 +1,7 @@
+## 0.8.5+4
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 0.8.5+3
 
 * Adds argument error assertions to the app-facing package, to ensure

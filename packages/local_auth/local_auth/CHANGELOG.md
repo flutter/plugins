@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Fixes avoid_redundant_argument_values lint warnings.
+
 ## 2.1.0
 
 * Adds Windows support.

@@ -406,8 +406,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -465,8 +463,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -616,8 +612,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );
@@ -685,8 +679,6 @@ Future<void> main() async {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
-            initialMediaPlaybackPolicy:
-                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
         ),
       );

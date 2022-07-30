@@ -277,7 +277,6 @@ class _MyAppState extends State<_MyApp> {
 
                       purchaseParam = GooglePlayPurchaseParam(
                           productDetails: productDetails,
-                          applicationUserName: null,
                           changeSubscriptionParam: (oldSubscription != null)
                               ? ChangeSubscriptionParam(
                                   oldPurchaseDetails: oldSubscription,
@@ -288,14 +287,12 @@ class _MyAppState extends State<_MyApp> {
                     } else {
                       purchaseParam = PurchaseParam(
                         productDetails: productDetails,
-                        applicationUserName: null,
                       );
                     }
 
                     if (productDetails.id == _kConsumableId) {
                       _inAppPurchase.buyConsumable(
-                          purchaseParam: purchaseParam,
-                          autoConsume: _kAutoConsume || Platform.isIOS);
+                          purchaseParam: purchaseParam);
                     } else {
                       _inAppPurchase.buyNonConsumable(
                           purchaseParam: purchaseParam);
@@ -358,7 +355,6 @@ class _MyAppState extends State<_MyApp> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(
