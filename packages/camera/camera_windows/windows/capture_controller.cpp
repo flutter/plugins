@@ -237,6 +237,8 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
     return hr;
   }
 
+  // Check MF_CAPTURE_ENGINE_INITIALIZED event handling
+  // for response process.
   hr = capture_engine_->Initialize(capture_engine_callback_handler_.Get(),
                                    attributes.Get(), audio_source_.Get(),
                                    video_source_.Get());
@@ -244,7 +246,7 @@ HRESULT CaptureControllerImpl::CreateCaptureEngine() {
 }
 
 void CaptureControllerImpl::ResetCaptureController() {
-  if (record_handler_) {
+  if (record_handler_ && record_handler_->CanStop()) {
     if (record_handler_->IsContinuousRecording()) {
       StopRecord();
     } else if (record_handler_->IsTimedRecording()) {
@@ -391,7 +393,7 @@ uint32_t CaptureControllerImpl::GetMaxPreviewHeight() const {
   }
 }
 
-// Finds best mediat type for given source stream index and max height;
+// Finds best media type for given source stream index and max height;
 bool FindBestMediaType(DWORD source_stream_index, IMFCaptureSource* source,
                        IMFMediaType** target_media_type, uint32_t max_height,
                        uint32_t* target_frame_width,
@@ -533,8 +535,6 @@ void CaptureControllerImpl::StopRecord() {
   // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response
   // process.
   if (!record_handler_->StopRecord(capture_engine_.Get())) {
-    // Destroy record handler on error cases to make sure state is resetted.
-    record_handler_ = nullptr;
     return OnRecordStopped(false, "Failed to stop video recording");
   }
 }
@@ -578,6 +578,8 @@ void CaptureControllerImpl::StartPreview() {
   texture_handler_->UpdateTextureSize(preview_frame_width_,
                                       preview_frame_height_);
 
+  // TODO(loic-sharma): This does not handle duplicate calls properly.
+  // See: https://github.com/flutter/flutter/issues/108404
   if (!preview_handler_) {
     preview_handler_ = std::make_unique<PreviewHandler>();
   } else if (preview_handler_->IsInitialized()) {
@@ -605,7 +607,7 @@ void CaptureControllerImpl::StartPreview() {
 void CaptureControllerImpl::StopPreview() {
   assert(capture_engine_);
 
-  if (!IsInitialized() && !preview_handler_) {
+  if (!IsInitialized() || !preview_handler_) {
     return;
   }
 
@@ -619,7 +621,7 @@ void CaptureControllerImpl::StopPreview() {
 void CaptureControllerImpl::PausePreview() {
   assert(capture_controller_listener_);
 
-  if (!preview_handler_ && !preview_handler_->IsInitialized()) {
+  if (!preview_handler_ || !preview_handler_->IsInitialized()) {
     return capture_controller_listener_->OnPausePreviewFailed(
         "Preview not started");
   }
@@ -638,7 +640,7 @@ void CaptureControllerImpl::PausePreview() {
 void CaptureControllerImpl::ResumePreview() {
   assert(capture_controller_listener_);
 
-  if (!preview_handler_ && !preview_handler_->IsInitialized()) {
+  if (!preview_handler_ || !preview_handler_->IsInitialized()) {
     return capture_controller_listener_->OnResumePreviewFailed(
         "Preview not started");
   }
@@ -722,6 +724,13 @@ void CaptureControllerImpl::OnPicture(bool success, const std::string& error) {
 void CaptureControllerImpl::OnCaptureEngineInitialized(
     bool success, const std::string& error) {
   if (capture_controller_listener_) {
+    if (!success) {
+      capture_controller_listener_->OnCreateCaptureEngineFailed(
+          "Failed to initialize capture engine");
+      ResetCaptureController();
+      return;
+    }
+
     // Create texture handler and register new texture.
     texture_handler_ = std::make_unique<TextureHandler>(texture_registrar_);
 
@@ -848,7 +857,7 @@ void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
   }
 
   if (preview_handler_ && preview_handler_->IsStarting()) {
-    // Informs that first frame is captured succeffully and preview has
+    // Informs that first frame is captured successfully and preview has
     // started.
     OnPreviewStarted(true, "");
   }

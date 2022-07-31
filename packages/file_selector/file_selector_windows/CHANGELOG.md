@@ -1,6 +1,10 @@
-## 0.9.0+1
+## 0.9.1+1
 
 * Fixes the problem that the initial directory does not work after completing a file selection on windows.
+
+## 0.9.1
+
+* Converts the method channel to Pigeon.
 
 ## 0.9.0
 
