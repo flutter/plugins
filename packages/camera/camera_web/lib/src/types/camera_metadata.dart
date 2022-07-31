@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart';
 
 /// Metadata used along the camera description
@@ -38,5 +36,5 @@ class CameraMetadata {
   }
 
   @override
-  int get hashCode => hashValues(deviceId.hashCode, facingMode.hashCode);
+  int get hashCode => Object.hash(deviceId.hashCode, facingMode.hashCode);
 }

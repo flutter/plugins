@@ -39,7 +39,7 @@ class GooglePlayProductDetails extends ProductDetails {
       title: skuDetails.title,
       description: skuDetails.description,
       price: skuDetails.price,
-      rawPrice: ((skuDetails.priceAmountMicros) / 1000000.0).toDouble(),
+      rawPrice: skuDetails.priceAmountMicros / 1000000.0,
       currencyCode: skuDetails.priceCurrencyCode,
       currencySymbol: skuDetails.priceCurrencySymbol,
       skuDetails: skuDetails,

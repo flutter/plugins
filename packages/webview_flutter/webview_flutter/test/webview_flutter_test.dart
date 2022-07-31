@@ -588,7 +588,7 @@ void main() {
   });
 
   test('Only valid JavaScript channel names are allowed', () {
-    final JavascriptMessageHandler noOp = (JavascriptMessage msg) {};
+    void noOp(JavascriptMessage msg) {}
     JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
     JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
     JavascriptChannel(name: 'foo_bar_', onMessageReceived: noOp);

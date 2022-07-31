@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui' show hashValues;
-
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -35,7 +33,8 @@ class PurchaseWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
-    required this.sku,
+    @Deprecated('Use skus instead') String? sku,
+    required this.skus,
     required this.isAutoRenewing,
     required this.originalJson,
     this.developerPayload,
@@ -43,7 +42,7 @@ class PurchaseWrapper {
     required this.purchaseState,
     this.obfuscatedAccountId,
     this.obfuscatedProfileId,
-  });
+  }) : _sku = sku;
 
   /// Factory for creating a [PurchaseWrapper] from a [Map] with the purchase details.
   factory PurchaseWrapper.fromJson(Map<String, dynamic> map) =>
@@ -71,7 +70,7 @@ class PurchaseWrapper {
   }
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
       orderId,
       packageName,
       purchaseTime,
@@ -106,8 +105,14 @@ class PurchaseWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  @JsonKey(defaultValue: '')
-  final String sku;
+  @Deprecated('Use skus instead')
+  @JsonKey(ignore: true)
+  String get sku => _sku ?? (skus.isNotEmpty ? skus.first : '');
+  final String? _sku;
+
+  /// The product IDs of this purchase.
+  @JsonKey(defaultValue: <String>[])
+  final List<String> skus;
 
   /// True for subscriptions that renew automatically. Does not apply to
   /// [SkuType.inapp] products.
@@ -180,10 +185,11 @@ class PurchaseHistoryRecordWrapper {
     required this.purchaseTime,
     required this.purchaseToken,
     required this.signature,
-    required this.sku,
+    @Deprecated('Use skus instead') String? sku,
+    required this.skus,
     required this.originalJson,
     required this.developerPayload,
-  });
+  }) : _sku = sku;
 
   /// Factory for creating a [PurchaseHistoryRecordWrapper] from a [Map] with the record details.
   factory PurchaseHistoryRecordWrapper.fromJson(Map<String, dynamic> map) =>
@@ -203,8 +209,15 @@ class PurchaseHistoryRecordWrapper {
   final String signature;
 
   /// The product ID of this purchase.
-  @JsonKey(defaultValue: '')
-  final String sku;
+  @Deprecated('Use skus instead')
+  @JsonKey(ignore: true)
+  String get sku => _sku ?? (skus.isNotEmpty ? skus.first : '');
+
+  final String? _sku;
+
+  /// The product ID of this purchase.
+  @JsonKey(defaultValue: <String>[])
+  final List<String> skus;
 
   /// Details about this purchase, in JSON.
   ///
@@ -238,7 +251,7 @@ class PurchaseHistoryRecordWrapper {
   }
 
   @override
-  int get hashCode => hashValues(purchaseTime, purchaseToken, signature, sku,
+  int get hashCode => Object.hash(purchaseTime, purchaseToken, signature, sku,
       originalJson, developerPayload);
 }
 
@@ -278,7 +291,7 @@ class PurchasesResultWrapper {
   }
 
   @override
-  int get hashCode => hashValues(billingResult, responseCode, purchasesList);
+  int get hashCode => Object.hash(billingResult, responseCode, purchasesList);
 
   /// The detailed description of the status of the operation.
   final BillingResultWrapper billingResult;
@@ -326,7 +339,7 @@ class PurchasesHistoryResult {
   }
 
   @override
-  int get hashCode => hashValues(billingResult, purchaseHistoryRecordList);
+  int get hashCode => Object.hash(billingResult, purchaseHistoryRecordList);
 
   /// The detailed description of the status of the [BillingClient.queryPurchaseHistory].
   final BillingResultWrapper billingResult;

@@ -8,6 +8,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'core.dart';
 
+export 'package:pubspec_parse/pubspec_parse.dart' show Pubspec;
+export 'core.dart' show FlutterPlatform;
+
 /// A package in the repository.
 //
 // TODO(stuartmorgan): Add more package-related info here, such as an on-demand
@@ -48,6 +51,47 @@ class RepositoryPackage {
   /// The package's top-level pubspec.yaml.
   File get pubspecFile => directory.childFile('pubspec.yaml');
 
+  /// The package's top-level README.
+  File get readmeFile => directory.childFile('README.md');
+
+  /// The package's top-level README.
+  File get changelogFile => directory.childFile('CHANGELOG.md');
+
+  /// The package's top-level README.
+  File get authorsFile => directory.childFile('AUTHORS');
+
+  /// The lib directory containing the package's code.
+  Directory get libDirectory => directory.childDirectory('lib');
+
+  /// The test directory containing the package's Dart tests.
+  Directory get testDirectory => directory.childDirectory('test');
+
+  /// Returns the directory containing support for [platform].
+  Directory platformDirectory(FlutterPlatform platform) {
+    late final String directoryName;
+    switch (platform) {
+      case FlutterPlatform.android:
+        directoryName = 'android';
+        break;
+      case FlutterPlatform.ios:
+        directoryName = 'ios';
+        break;
+      case FlutterPlatform.linux:
+        directoryName = 'linux';
+        break;
+      case FlutterPlatform.macos:
+        directoryName = 'macos';
+        break;
+      case FlutterPlatform.web:
+        directoryName = 'web';
+        break;
+      case FlutterPlatform.windows:
+        directoryName = 'windows';
+        break;
+    }
+    return directory.childDirectory(directoryName);
+  }
+
   late final Pubspec _parsedPubspec =
       Pubspec.parse(pubspecFile.readAsStringSync());
 
@@ -56,11 +100,23 @@ class RepositoryPackage {
   /// Caches for future use.
   Pubspec parsePubspec() => _parsedPubspec;
 
+  /// Returns true if the package depends on Flutter.
+  bool requiresFlutter() {
+    final Pubspec pubspec = parsePubspec();
+    return pubspec.dependencies.containsKey('flutter');
+  }
+
   /// True if this appears to be a federated plugin package, according to
   /// repository conventions.
   bool get isFederated =>
       directory.parent.basename != 'packages' &&
       directory.basename.startsWith(directory.parent.basename);
+
+  /// True if this appears to be the app-facing package of a federated plugin,
+  /// according to repository conventions.
+  bool get isAppFacing =>
+      directory.parent.basename != 'packages' &&
+      directory.basename == directory.parent.basename;
 
   /// True if this appears to be a platform interface package, according to
   /// repository conventions.
@@ -82,7 +138,7 @@ class RepositoryPackage {
     if (!exampleDirectory.existsSync()) {
       return <RepositoryPackage>[];
     }
-    if (isFlutterPackage(exampleDirectory)) {
+    if (isPackage(exampleDirectory)) {
       return <RepositoryPackage>[RepositoryPackage(exampleDirectory)];
     }
     // Only look at the subdirectories of the example directory if the example
@@ -90,18 +146,9 @@ class RepositoryPackage {
     // example directory for other Dart packages.
     return exampleDirectory
         .listSync()
-        .where((FileSystemEntity entity) => isFlutterPackage(entity))
-        // isFlutterPackage guarantees that the cast to Directory is safe.
+        .where((FileSystemEntity entity) => isPackage(entity))
+        // isPackage guarantees that the cast to Directory is safe.
         .map((FileSystemEntity entity) =>
             RepositoryPackage(entity as Directory));
   }
-
-  /// Returns the example directory, assuming there is only one.
-  ///
-  /// DO NOT USE THIS METHOD. It exists only to easily find code that was
-  /// written to use a single example and needs to be restructured to handle
-  /// multiple examples. New code should always use [getExamples].
-  // TODO(stuartmorgan): Eliminate all uses of this.
-  RepositoryPackage getSingleExampleDeprecated() =>
-      RepositoryPackage(directory.childDirectory('example'));
 }

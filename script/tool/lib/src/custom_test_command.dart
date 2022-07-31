@@ -30,7 +30,7 @@ class CustomTestCommand extends PackageLoopingCommand {
 
   @override
   final String description = 'Runs package-specific custom tests defined in '
-      'a package\'s tool/$_scriptName file.\n\n'
+      "a package's tool/$_scriptName file.\n\n"
       'This command requires "dart" to be in your path.';
 
   @override
@@ -43,10 +43,19 @@ class CustomTestCommand extends PackageLoopingCommand {
 
     // Run the custom Dart script if presest.
     if (script.existsSync()) {
-      final int exitCode = await processRunner.runAndStream(
+      // Ensure that dependencies are available.
+      final int pubGetExitCode = await processRunner.runAndStream(
+          'dart', <String>['pub', 'get'],
+          workingDir: package.directory);
+      if (pubGetExitCode != 0) {
+        return PackageResult.fail(
+            <String>['Unable to get script dependencies']);
+      }
+
+      final int testExitCode = await processRunner.runAndStream(
           'dart', <String>['run', 'tool/$_scriptName'],
           workingDir: package.directory);
-      if (exitCode != 0) {
+      if (testExitCode != 0) {
         return PackageResult.fail();
       }
       ranTests = true;

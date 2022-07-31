@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -44,6 +45,7 @@ class WebWebViewPlatform implements WebViewPlatform {
         final IFrameElement element =
             document.getElementById('webview-$viewId')! as IFrameElement;
         if (creationParams.initialUrl != null) {
+          // ignore: unsafe_html
           element.src = creationParams.initialUrl;
         }
         onWebViewPlatformCreated(WebWebViewPlatformController(
@@ -70,6 +72,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
 
   /// Setter for setting the HttpRequestFactory, for testing purposes.
   @visibleForTesting
+  // ignore: avoid_setters_without_getters
   set httpRequestFactory(HttpRequestFactory factory) {
     _httpRequestFactory = factory;
   }
@@ -131,6 +134,7 @@ class WebWebViewPlatformController implements WebViewPlatformController {
 
   @override
   Future<void> loadUrl(String url, Map<String, String>? headers) async {
+    // ignore: unsafe_html
     _element.src = url;
   }
 
@@ -179,7 +183,12 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     String html, {
     String? baseUrl,
   }) async {
-    _element.src = 'data:text/html,' + Uri.encodeFull(html);
+    // ignore: unsafe_html
+    _element.src = Uri.dataFromString(
+      html,
+      mimeType: 'text/html',
+      encoding: utf8,
+    ).toString();
   }
 
   @override
@@ -194,8 +203,12 @@ class WebWebViewPlatformController implements WebViewPlatformController {
         sendData: request.body);
     final String contentType =
         httpReq.getResponseHeader('content-type') ?? 'text/html';
-    _element.src =
-        'data:$contentType,' + Uri.encodeFull(httpReq.responseText ?? '');
+    // ignore: unsafe_html
+    _element.src = Uri.dataFromString(
+      httpReq.responseText ?? '',
+      mimeType: contentType,
+      encoding: utf8,
+    ).toString();
   }
 
   @override
@@ -265,7 +278,7 @@ class HttpRequestFactory {
       String? mimeType,
       Map<String, String>? requestHeaders,
       dynamic sendData,
-      void onProgress(ProgressEvent e)?}) {
+      void Function(ProgressEvent e)? onProgress}) {
     return HttpRequest.request(url,
         method: method,
         withCredentials: withCredentials,

@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_android/src/channel.dart';
-import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
 
 import 'billing_client_wrappers/purchase_wrapper_test.dart';
 import 'stub_in_app_purchase_platform.dart';

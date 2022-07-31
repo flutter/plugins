@@ -34,9 +34,12 @@ void main() {
     expect(() {
       plugin.initialized;
     }, throwsStateError,
-        reason:
-            'The plugin should throw if checking for `initialized` before calling .init');
-    await plugin.init(hostedDomain: '', clientId: '');
+        reason: 'The plugin should throw if checking for `initialized` before '
+            'calling .initWithParams');
+    await plugin.initWithParams(const SignInInitParameters(
+      hostedDomain: '',
+      clientId: '',
+    ));
     await plugin.initialized;
     expect(
       plugin.initialized,

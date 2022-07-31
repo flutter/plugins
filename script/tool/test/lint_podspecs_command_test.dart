@@ -65,7 +65,7 @@ void main() {
     });
 
     test('runs pod lib lint on a podspec', () async {
-      final Directory plugin1Dir = createFakePlugin(
+      final RepositoryPackage plugin = createFakePlugin(
         'plugin1',
         packagesDir,
         extraFiles: <String>[
@@ -91,8 +91,8 @@ void main() {
               <String>[
                 'lib',
                 'lint',
-                plugin1Dir
-                    .childDirectory('ios')
+                plugin
+                    .platformDirectory(FlutterPlatform.ios)
                     .childFile('plugin1.podspec')
                     .path,
                 '--configuration=Debug',
@@ -106,8 +106,8 @@ void main() {
               <String>[
                 'lib',
                 'lint',
-                plugin1Dir
-                    .childDirectory('ios')
+                plugin
+                    .platformDirectory(FlutterPlatform.ios)
                     .childFile('plugin1.podspec')
                     .path,
                 '--configuration=Debug',

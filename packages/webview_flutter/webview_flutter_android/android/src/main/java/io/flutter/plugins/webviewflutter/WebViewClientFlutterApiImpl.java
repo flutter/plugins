@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
+import java.util.HashMap;
 
 /**
  * Flutter Api implementation for {@link WebViewClient}.
@@ -26,40 +27,39 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   @RequiresApi(api = Build.VERSION_CODES.M)
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
       WebResourceError error) {
-    final GeneratedAndroidWebView.WebResourceErrorData errorData =
-        new GeneratedAndroidWebView.WebResourceErrorData();
-    errorData.setErrorCode((long) error.getErrorCode());
-    errorData.setDescription(error.getDescription().toString());
-
-    return errorData;
+    return new GeneratedAndroidWebView.WebResourceErrorData.Builder()
+        .setErrorCode((long) error.getErrorCode())
+        .setDescription(error.getDescription().toString())
+        .build();
   }
 
   @SuppressLint("RequiresFeature")
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
       WebResourceErrorCompat error) {
-    final GeneratedAndroidWebView.WebResourceErrorData errorData =
-        new GeneratedAndroidWebView.WebResourceErrorData();
-    errorData.setErrorCode((long) error.getErrorCode());
-    errorData.setDescription(error.getDescription().toString());
-
-    return errorData;
+    return new GeneratedAndroidWebView.WebResourceErrorData.Builder()
+        .setErrorCode((long) error.getErrorCode())
+        .setDescription(error.getDescription().toString())
+        .build();
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   static GeneratedAndroidWebView.WebResourceRequestData createWebResourceRequestData(
       WebResourceRequest request) {
-    final GeneratedAndroidWebView.WebResourceRequestData requestData =
-        new GeneratedAndroidWebView.WebResourceRequestData();
-    requestData.setUrl(request.getUrl().toString());
-    requestData.setIsForMainFrame(request.isForMainFrame());
+    final GeneratedAndroidWebView.WebResourceRequestData.Builder requestData =
+        new GeneratedAndroidWebView.WebResourceRequestData.Builder()
+            .setUrl(request.getUrl().toString())
+            .setIsForMainFrame(request.isForMainFrame())
+            .setHasGesture(request.hasGesture())
+            .setMethod(request.getMethod())
+            .setRequestHeaders(
+                request.getRequestHeaders() != null
+                    ? request.getRequestHeaders()
+                    : new HashMap<>());
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       requestData.setIsRedirect(request.isRedirect());
     }
-    requestData.setHasGesture(request.hasGesture());
-    requestData.setMethod(request.getMethod());
-    requestData.setRequestHeaders(request.getRequestHeaders());
 
-    return requestData;
+    return requestData.build();
   }
 
   /**
@@ -77,21 +77,21 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   /** Passes arguments from {@link WebViewClient#onPageStarted} to Dart. */
   public void onPageStarted(
       WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
-    onPageStarted(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
-        urlArg,
-        callback);
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
+    onPageStarted(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
   /** Passes arguments from {@link WebViewClient#onPageFinished} to Dart. */
   public void onPageFinished(
       WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
-    onPageFinished(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
-        urlArg,
-        callback);
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
+    onPageFinished(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
   /**
@@ -105,9 +105,13 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       WebResourceRequest request,
       WebResourceError error,
       Reply<Void> callback) {
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
     onReceivedRequestError(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
+        getIdentifierForClient(webViewClient),
+        webViewIdentifier,
         createWebResourceRequestData(request),
         createWebResourceErrorData(error),
         callback);
@@ -124,9 +128,13 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       WebResourceRequest request,
       WebResourceErrorCompat error,
       Reply<Void> callback) {
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
     onReceivedRequestError(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
+        getIdentifierForClient(webViewClient),
+        webViewIdentifier,
         createWebResourceRequestData(request),
         createWebResourceErrorData(error),
         callback);
@@ -143,9 +151,13 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       String descriptionArg,
       String failingUrlArg,
       Reply<Void> callback) {
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
     onReceivedError(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
+        getIdentifierForClient(webViewClient),
+        webViewIdentifier,
         errorCodeArg,
         descriptionArg,
         failingUrlArg,
@@ -162,9 +174,13 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
       WebView webView,
       WebResourceRequest request,
       Reply<Void> callback) {
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
     requestLoading(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
+        getIdentifierForClient(webViewClient),
+        webViewIdentifier,
         createWebResourceRequestData(request),
         callback);
   }
@@ -174,11 +190,11 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
    */
   public void urlLoading(
       WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
-    urlLoading(
-        instanceManager.getInstanceId(webViewClient),
-        instanceManager.getInstanceId(webView),
-        urlArg,
-        callback);
+    final Long webViewIdentifier = instanceManager.getIdentifierForStrongReference(webView);
+    if (webViewIdentifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebView.");
+    }
+    urlLoading(getIdentifierForClient(webViewClient), webViewIdentifier, urlArg, callback);
   }
 
   /**
@@ -188,11 +204,18 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
    * @param callback reply callback with return value from Dart
    */
   public void dispose(WebViewClient webViewClient, Reply<Void> callback) {
-    final Long instanceId = instanceManager.removeInstance(webViewClient);
-    if (instanceId != null) {
-      dispose(instanceId, callback);
+    if (instanceManager.containsInstance(webViewClient)) {
+      dispose(getIdentifierForClient(webViewClient), callback);
     } else {
       callback.reply(null);
     }
+  }
+
+  private long getIdentifierForClient(WebViewClient webViewClient) {
+    final Long identifier = instanceManager.getIdentifierForStrongReference(webViewClient);
+    if (identifier == null) {
+      throw new IllegalStateException("Could not find identifier for WebViewClient.");
+    }
+    return identifier;
   }
 }

@@ -26,25 +26,38 @@ namespace test {
 
 namespace {
 
+using flutter::CustomEncodableValue;
 using flutter::EncodableList;
 using flutter::EncodableMap;
 using flutter::EncodableValue;
-using flutter::MethodCall;
-using ::testing::DoAll;
-using ::testing::Pointee;
-using ::testing::Return;
-using ::testing::SetArgPointee;
 
-class MockMethodResult : public flutter::MethodResult<> {
- public:
-  MOCK_METHOD(void, SuccessInternal, (const EncodableValue* result),
-              (override));
-  MOCK_METHOD(void, ErrorInternal,
-              (const std::string& error_code, const std::string& error_message,
-               const EncodableValue* details),
-              (override));
-  MOCK_METHOD(void, NotImplementedInternal, (), (override));
+// These structs and classes are a workaround for
+// https://github.com/flutter/flutter/issues/104286 and
+// https://github.com/flutter/flutter/issues/104653.
+struct AllowMultipleArg {
+  bool value = false;
+  AllowMultipleArg(bool val) : value(val) {}
 };
+struct SelectFoldersArg {
+  bool value = false;
+  SelectFoldersArg(bool val) : value(val) {}
+};
+SelectionOptions CreateOptions(AllowMultipleArg allow_multiple,
+                               SelectFoldersArg select_folders,
+                               const EncodableList& allowed_types) {
+  SelectionOptions options;
+  options.set_allow_multiple(allow_multiple.value);
+  options.set_select_folders(select_folders.value);
+  options.set_allowed_types(allowed_types);
+  return options;
+}
+TypeGroup CreateTypeGroup(std::string_view label,
+                          const EncodableList& extensions) {
+  TypeGroup group;
+  group.set_label(label);
+  group.set_extensions(extensions);
+  return group;
+}
 
 }  // namespace
 
@@ -54,9 +67,6 @@ TEST(FileSelectorPlugin, TestOpenSimple) {
   IShellItemArrayPtr fake_result_array;
   ::SHCreateShellItemArrayFromShellItem(fake_selected_file.file(),
                                         IID_PPV_ARGS(&fake_result_array));
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_result_array, fake_window](
@@ -73,20 +83,21 @@ TEST(FileSelectorPlugin, TestOpenSimple) {
 
     return MockShowResult(fake_result_array);
   };
-  EncodableValue expected_paths(EncodableList({
-      EncodableValue(Utf8FromUtf16(fake_selected_file.path())),
-  }));
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_paths)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("openFile", std::make_unique<EncodableValue>(EncodableMap())),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList()),
+      nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 1);
+  EXPECT_EQ(std::get<std::string>(paths[0]),
+            Utf8FromUtf16(fake_selected_file.path()));
 }
 
 TEST(FileSelectorPlugin, TestOpenWithArguments) {
@@ -95,9 +106,6 @@ TEST(FileSelectorPlugin, TestOpenWithArguments) {
   IShellItemArrayPtr fake_result_array;
   ::SHCreateShellItemArrayFromShellItem(fake_selected_file.file(),
                                         IID_PPV_ARGS(&fake_result_array));
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_result_array, fake_window](
@@ -108,33 +116,28 @@ TEST(FileSelectorPlugin, TestOpenWithArguments) {
 
     // Validate arguments.
     EXPECT_EQ(dialog.GetDefaultFolderPath(), L"C:\\Program Files");
-    EXPECT_EQ(dialog.GetFileName(), L"a name");
     EXPECT_EQ(dialog.GetOkButtonLabel(), L"Open it!");
 
     return MockShowResult(fake_result_array);
   };
-  EncodableValue expected_paths(EncodableList({
-      EncodableValue(Utf8FromUtf16(fake_selected_file.path())),
-  }));
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_paths)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall(
-          "openFile",
-          std::make_unique<EncodableValue>(EncodableMap({
-              // This directory must exist.
-              {EncodableValue("initialDirectory"),
-               EncodableValue("C:\\Program Files")},
-              {EncodableValue("suggestedName"), EncodableValue("a name")},
-              {EncodableValue("confirmButtonText"), EncodableValue("Open it!")},
-          }))),
-      std::move(result));
+  // This directory must exist.
+  std::string initial_directory("C:\\Program Files");
+  std::string confirm_button("Open it!");
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList()),
+      &initial_directory, &confirm_button);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 1);
+  EXPECT_EQ(std::get<std::string>(paths[0]),
+            Utf8FromUtf16(fake_selected_file.path()));
 }
 
 TEST(FileSelectorPlugin, TestOpenMultiple) {
@@ -148,9 +151,6 @@ TEST(FileSelectorPlugin, TestOpenMultiple) {
   IShellItemArrayPtr fake_result_array;
   ::SHCreateShellItemArrayFromIDLists(2, fake_selected_files,
                                       &fake_result_array);
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_result_array, fake_window](
@@ -167,24 +167,23 @@ TEST(FileSelectorPlugin, TestOpenMultiple) {
 
     return MockShowResult(fake_result_array);
   };
-  EncodableValue expected_paths(EncodableList({
-      EncodableValue(Utf8FromUtf16(fake_selected_file_1.path())),
-      EncodableValue(Utf8FromUtf16(fake_selected_file_2.path())),
-  }));
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_paths)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("openFile",
-                 std::make_unique<EncodableValue>(EncodableMap({
-                     {EncodableValue("multiple"), EncodableValue(true)},
-                 }))),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(true), SelectFoldersArg(false),
+                    EncodableList()),
+      nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 2);
+  EXPECT_EQ(std::get<std::string>(paths[0]),
+            Utf8FromUtf16(fake_selected_file_1.path()));
+  EXPECT_EQ(std::get<std::string>(paths[1]),
+            Utf8FromUtf16(fake_selected_file_2.path()));
 }
 
 TEST(FileSelectorPlugin, TestOpenWithFilter) {
@@ -194,27 +193,19 @@ TEST(FileSelectorPlugin, TestOpenWithFilter) {
   ::SHCreateShellItemArrayFromShellItem(fake_selected_file.file(),
                                         IID_PPV_ARGS(&fake_result_array));
 
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
-
-  const EncodableValue text_group = EncodableValue(EncodableMap({
-      {EncodableValue("label"), EncodableValue("Text")},
-      {EncodableValue("extensions"), EncodableValue(EncodableList({
-                                         EncodableValue("txt"),
-                                         EncodableValue("json"),
-                                     }))},
-  }));
-  const EncodableValue image_group = EncodableValue(EncodableMap({
-      {EncodableValue("label"), EncodableValue("Images")},
-      {EncodableValue("extensions"), EncodableValue(EncodableList({
-                                         EncodableValue("png"),
-                                         EncodableValue("gif"),
-                                         EncodableValue("jpeg"),
-                                     }))},
-  }));
-  const EncodableValue any_group = EncodableValue(EncodableMap({
-      {EncodableValue("label"), EncodableValue("Any")},
-  }));
+  const EncodableValue text_group =
+      CustomEncodableValue(CreateTypeGroup("Text", EncodableList({
+                                                       EncodableValue("txt"),
+                                                       EncodableValue("json"),
+                                                   })));
+  const EncodableValue image_group =
+      CustomEncodableValue(CreateTypeGroup("Images", EncodableList({
+                                                         EncodableValue("png"),
+                                                         EncodableValue("gif"),
+                                                         EncodableValue("jpeg"),
+                                                     })));
+  const EncodableValue any_group =
+      CustomEncodableValue(CreateTypeGroup("Any", EncodableList()));
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_result_array, fake_window](
@@ -237,34 +228,29 @@ TEST(FileSelectorPlugin, TestOpenWithFilter) {
 
     return MockShowResult(fake_result_array);
   };
-  EncodableValue expected_paths(EncodableList({
-      EncodableValue(Utf8FromUtf16(fake_selected_file.path())),
-  }));
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_paths)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("openFile", std::make_unique<EncodableValue>(EncodableMap({
-                                 {EncodableValue("acceptedTypeGroups"),
-                                  EncodableValue(EncodableList({
-                                      text_group,
-                                      image_group,
-                                      any_group,
-                                  }))},
-                             }))),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList({
+                        text_group,
+                        image_group,
+                        any_group,
+                    })),
+      nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 1);
+  EXPECT_EQ(std::get<std::string>(paths[0]),
+            Utf8FromUtf16(fake_selected_file.path()));
 }
 
 TEST(FileSelectorPlugin, TestOpenCancel) {
   const HWND fake_window = reinterpret_cast<HWND>(1337);
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_window](
@@ -273,27 +259,24 @@ TEST(FileSelectorPlugin, TestOpenCancel) {
     shown = true;
     return MockShowResult();
   };
-  // Cancel should return a null for the paths.
-  EncodableValue expected_paths;
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_paths)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("openFile", std::make_unique<EncodableValue>(EncodableMap())),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList()),
+      nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 0);
 }
 
 TEST(FileSelectorPlugin, TestSaveSimple) {
   const HWND fake_window = reinterpret_cast<HWND>(1337);
   ScopedTestShellItem fake_selected_file;
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator =
@@ -310,27 +293,26 @@ TEST(FileSelectorPlugin, TestSaveSimple) {
 
         return MockShowResult(fake_result);
       };
-  EncodableValue expected_path(Utf8FromUtf16(fake_selected_file.path()));
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_path)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("getSavePath",
-                 std::make_unique<EncodableValue>(EncodableMap())),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowSaveDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList()),
+      nullptr, nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 1);
+  EXPECT_EQ(std::get<std::string>(paths[0]),
+            Utf8FromUtf16(fake_selected_file.path()));
 }
 
 TEST(FileSelectorPlugin, TestSaveWithArguments) {
   const HWND fake_window = reinterpret_cast<HWND>(1337);
   ScopedTestShellItem fake_selected_file;
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator =
@@ -341,36 +323,34 @@ TEST(FileSelectorPlugin, TestSaveWithArguments) {
 
         // Validate arguments.
         EXPECT_EQ(dialog.GetDefaultFolderPath(), L"C:\\Program Files");
+        EXPECT_EQ(dialog.GetFileName(), L"a name");
         EXPECT_EQ(dialog.GetOkButtonLabel(), L"Save it!");
 
         return MockShowResult(fake_result);
       };
-  EncodableValue expected_path(Utf8FromUtf16(fake_selected_file.path()));
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_path)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall(
-          "getSavePath",
-          std::make_unique<EncodableValue>(EncodableMap({
-              // This directory must exist.
-              {EncodableValue("initialDirectory"),
-               EncodableValue("C:\\Program Files")},
-              {EncodableValue("confirmButtonText"), EncodableValue("Save it!")},
-          }))),
-      std::move(result));
+  // This directory must exist.
+  std::string initial_directory("C:\\Program Files");
+  std::string suggested_name("a name");
+  std::string confirm_button("Save it!");
+  ErrorOr<EncodableList> result = plugin.ShowSaveDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList()),
+      &initial_directory, &suggested_name, &confirm_button);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 1);
+  EXPECT_EQ(std::get<std::string>(paths[0]),
+            Utf8FromUtf16(fake_selected_file.path()));
 }
 
 TEST(FileSelectorPlugin, TestSaveCancel) {
   const HWND fake_window = reinterpret_cast<HWND>(1337);
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_window](
@@ -379,20 +359,19 @@ TEST(FileSelectorPlugin, TestSaveCancel) {
     shown = true;
     return MockShowResult();
   };
-  // Cancel should return a null for the path.
-  EncodableValue expected_path;
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_path)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("getSavePath",
-                 std::make_unique<EncodableValue>(EncodableMap())),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowSaveDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(false),
+                    EncodableList()),
+      nullptr, nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 0);
 }
 
 TEST(FileSelectorPlugin, TestGetDirectorySimple) {
@@ -404,9 +383,6 @@ TEST(FileSelectorPlugin, TestGetDirectorySimple) {
   IShellItemArrayPtr fake_result_array;
   ::SHCreateShellItemArrayFromShellItem(fake_selected_directory,
                                         IID_PPV_ARGS(&fake_result_array));
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_result_array, fake_window](
@@ -423,26 +399,24 @@ TEST(FileSelectorPlugin, TestGetDirectorySimple) {
 
     return MockShowResult(fake_result_array);
   };
-  EncodableValue expected_path("C:\\Program Files");
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_path)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("getDirectoryPath",
-                 std::make_unique<EncodableValue>(EncodableMap())),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(true),
+                    EncodableList()),
+      nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 1);
+  EXPECT_EQ(std::get<std::string>(paths[0]), "C:\\Program Files");
 }
 
 TEST(FileSelectorPlugin, TestGetDirectoryCancel) {
   const HWND fake_window = reinterpret_cast<HWND>(1337);
-
-  std::unique_ptr<MockMethodResult> result =
-      std::make_unique<MockMethodResult>();
 
   bool shown = false;
   MockShow show_validator = [&shown, fake_window](
@@ -451,20 +425,19 @@ TEST(FileSelectorPlugin, TestGetDirectoryCancel) {
     shown = true;
     return MockShowResult();
   };
-  // Cancel should return a null for the path.
-  EncodableValue expected_path;
-  // Expect the mock path.
-  EXPECT_CALL(*result, SuccessInternal(Pointee(expected_path)));
 
   FileSelectorPlugin plugin(
       [fake_window] { return fake_window; },
       std::make_unique<TestFileDialogControllerFactory>(show_validator));
-  plugin.HandleMethodCall(
-      MethodCall("getDirectoryPath",
-                 std::make_unique<EncodableValue>(EncodableMap())),
-      std::move(result));
+  ErrorOr<EncodableList> result = plugin.ShowOpenDialog(
+      CreateOptions(AllowMultipleArg(false), SelectFoldersArg(true),
+                    EncodableList()),
+      nullptr, nullptr);
 
   EXPECT_TRUE(shown);
+  ASSERT_FALSE(result.has_error());
+  const EncodableList& paths = result.value();
+  EXPECT_EQ(paths.size(), 0);
 }
 
 }  // namespace test

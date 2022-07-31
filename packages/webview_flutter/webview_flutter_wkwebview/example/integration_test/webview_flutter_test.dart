@@ -9,15 +9,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
+import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
 import 'package:webview_flutter_wkwebview_example/navigation_decision.dart';
 import 'package:webview_flutter_wkwebview_example/navigation_request.dart';
 import 'package:webview_flutter_wkwebview_example/web_view.dart';
@@ -64,6 +67,27 @@ Future<void> main() async {
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
   });
+
+  testWidgets(
+      'withWeakRefenceTo allows encapsulating class to be garbage collected',
+      (WidgetTester tester) async {
+    final Completer<int> gcCompleter = Completer<int>();
+    final InstanceManager instanceManager = InstanceManager(
+      onWeakReferenceRemoved: gcCompleter.complete,
+    );
+
+    ClassWithCallbackClass? instance = ClassWithCallbackClass();
+    instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
+    instance = null;
+
+    // Force garbage collection.
+    await IntegrationTestWidgetsFlutterBinding.instance
+        .watchPerformance(() async {
+      await tester.pumpAndSettle();
+    });
+
+    expect(gcCompleter.future, completion(0));
+  }, timeout: const Timeout(Duration(seconds: 10)));
 
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -862,8 +886,8 @@ Future<void> main() async {
 
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
-    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
-        base64Encode(const Utf8Encoder().convert(blankPage));
+    final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,'
+        '${base64Encode(const Utf8Encoder().convert(blankPage))}';
 
     testWidgets('can allow requests', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
@@ -1208,7 +1232,8 @@ Future<String> _getUserAgent(WebViewController controller) async {
 
 class ResizableWebView extends StatefulWidget {
   const ResizableWebView(
-      {required this.onResize, required this.onPageFinished});
+      {Key? key, required this.onResize, required this.onPageFinished})
+      : super(key: key);
 
   final JavascriptMessageHandler onResize;
   final VoidCallback onPageFinished;
@@ -1276,4 +1301,34 @@ class ResizableWebViewState extends State<ResizableWebView> {
       ),
     );
   }
+}
+
+class CopyableObjectWithCallback with Copyable {
+  CopyableObjectWithCallback(this.callback);
+
+  final VoidCallback callback;
+
+  @override
+  CopyableObjectWithCallback copy() {
+    return CopyableObjectWithCallback(callback);
+  }
+}
+
+class ClassWithCallbackClass {
+  ClassWithCallbackClass() {
+    callbackClass = CopyableObjectWithCallback(
+      withWeakRefenceTo(
+        this,
+        (WeakReference<ClassWithCallbackClass> weakReference) {
+          return () {
+            // Weak reference to `this` in callback.
+            // ignore: unnecessary_statements
+            weakReference;
+          };
+        },
+      ),
+    );
+  }
+
+  late final CopyableObjectWithCallback callbackClass;
 }

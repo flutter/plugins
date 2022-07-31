@@ -1,6 +1,71 @@
-## NEXT
+## 2.9.2
+
+* Updates the Java InstanceManager to take a listener for when an object is garbage collected.
+  See https://github.com/flutter/flutter/issues/107199.
+
+## 2.9.1
+
+* Updates Android WebView classes as Copyable. This is a part of moving the api to handle garbage
+  collection automatically. See https://github.com/flutter/flutter/issues/107199.
+
+## 2.9.0
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+* Fixes bug where `Directionality` from context didn't affect `SurfaceAndroidWebView`.
+* Fixes bug where default text direction was different for `SurfaceAndroidWebView` and `AndroidWebView`.
+  Default is now `TextDirection.ltr` for both.
+* Fixes bug where setting WebView to a transparent background could cause visual errors when using
+  `SurfaceAndroidWebView`. Hybrid composition is now used when the background color is not 100%
+  opaque.
+* Raises minimum Flutter version to 3.0.0.
+
+## 2.8.14
+
+* Bumps androidx.annotation from 1.0.0 to 1.4.0.
+
+## 2.8.13
+
+* Fixes a bug which causes an exception when the `onNavigationRequestCallback` return `false`.
+
+## 2.8.12
+
+* Bumps mockito-inline from 3.11.1 to 4.6.1.
+
+## 2.8.11
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 2.8.10
+
+* Updates references to the obsolete master branch.
+
+## 2.8.9
+
+* Updates Gradle to 7.2.1.
+
+## 2.8.8
+
+* Minor fixes for new analysis options.
+
+## 2.8.7
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.8.6
+
+* Updates pigeon developer dependency to the latest version which adds support for null safety.
+
+## 2.8.5
+
+* Migrates deprecated `Scaffold.showSnackBar` to `ScaffoldMessenger` in example app.
+
+## 2.8.4
 
 * Fixes bug preventing `mockito` code generation for tests.
+* Fixes regression where local storage wasn't cleared when `WebViewController.clearCache` was
+  called.
 
 ## 2.8.3
 

@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:video_player/video_player.dart';
 
+/// Camera example home widget.
 class CameraExampleHome extends StatefulWidget {
+  /// Default Constructor
+  const CameraExampleHome({Key? key}) : super(key: key);
+
   @override
-  _CameraExampleHomeState createState() {
+  State<CameraExampleHome> createState() {
     return _CameraExampleHomeState();
   }
 }
@@ -33,7 +36,7 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
   }
 }
 
-void logError(String code, String? message) {
+void _logError(String code, String? message) {
   if (message != null) {
     print('Error: $code\nError Message: $message');
   } else {
@@ -105,6 +108,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     super.dispose();
   }
 
+  // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -120,13 +124,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       onNewCameraSelected(cameraController.description);
     }
   }
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  // #enddocregion AppLifecycle
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Camera example'),
       ),
@@ -134,12 +136,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         children: <Widget>[
           Expanded(
             child: Container(
-              child: Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
-              ),
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(
@@ -148,6 +144,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                           ? Colors.redAccent
                           : Colors.grey,
                   width: 3.0,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: Center(
+                  child: _cameraPreviewWidget(),
                 ),
               ),
             ),
@@ -233,6 +235,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               Container()
             else
               SizedBox(
+                width: 64.0,
+                height: 64.0,
                 child: (localVideoController == null)
                     ? (
                         // The captured image on the web contains a network-accessible URL
@@ -243,6 +247,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                             ? Image.network(imageFile!.path)
                             : Image.file(File(imageFile!.path)))
                     : Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.pink)),
                         child: Center(
                           child: AspectRatio(
                               aspectRatio:
@@ -251,11 +257,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                                       : 1.0,
                               child: VideoPlayer(localVideoController)),
                         ),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.pink)),
                       ),
-                width: 64.0,
-                height: 64.0,
               ),
           ],
         ),
@@ -369,11 +371,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Widget _exposureModeControlRowWidget() {
     final ButtonStyle styleAuto = TextButton.styleFrom(
+      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+      // ignore: deprecated_member_use
       primary: controller?.value.exposureMode == ExposureMode.auto
           ? Colors.orange
           : Colors.blue,
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
+      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+      // ignore: deprecated_member_use
       primary: controller?.value.exposureMode == ExposureMode.locked
           ? Colors.orange
           : Colors.blue,
@@ -394,7 +400,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   TextButton(
-                    child: const Text('AUTO'),
                     style: styleAuto,
                     onPressed: controller != null
                         ? () =>
@@ -406,21 +411,22 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                         showInSnackBar('Resetting exposure point');
                       }
                     },
+                    child: const Text('AUTO'),
                   ),
                   TextButton(
-                    child: const Text('LOCKED'),
                     style: styleLocked,
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.locked)
                         : null,
+                    child: const Text('LOCKED'),
                   ),
                   TextButton(
-                    child: const Text('RESET OFFSET'),
                     style: styleLocked,
                     onPressed: controller != null
                         ? () => controller!.setExposureOffset(0.0)
                         : null,
+                    child: const Text('RESET OFFSET'),
                   ),
                 ],
               ),
@@ -454,11 +460,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Widget _focusModeControlRowWidget() {
     final ButtonStyle styleAuto = TextButton.styleFrom(
+      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+      // ignore: deprecated_member_use
       primary: controller?.value.focusMode == FocusMode.auto
           ? Colors.orange
           : Colors.blue,
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
+      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+      // ignore: deprecated_member_use
       primary: controller?.value.focusMode == FocusMode.locked
           ? Colors.orange
           : Colors.blue,
@@ -479,7 +489,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   TextButton(
-                    child: const Text('AUTO'),
                     style: styleAuto,
                     onPressed: controller != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.auto)
@@ -490,13 +499,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                       }
                       showInSnackBar('Resetting focus point');
                     },
+                    child: const Text('AUTO'),
                   ),
                   TextButton(
-                    child: const Text('LOCKED'),
                     style: styleLocked,
                     onPressed: controller != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.locked)
                         : null,
+                    child: const Text('LOCKED'),
                   ),
                 ],
               ),
@@ -573,19 +583,21 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Widget _cameraTogglesRowWidget() {
     final List<Widget> toggles = <Widget>[];
 
-    final Null Function(CameraDescription? description) onChanged =
-        (CameraDescription? description) {
+    void onChanged(CameraDescription? description) {
       if (description == null) {
         return;
       }
 
       onNewCameraSelected(description);
-    };
+    }
 
-    if (cameras.isEmpty) {
-      return const Text('No camera found');
+    if (_cameras.isEmpty) {
+      _ambiguate(SchedulerBinding.instance)?.addPostFrameCallback((_) async {
+        showInSnackBar('No camera found.');
+      });
+      return const Text('None');
     } else {
-      for (final CameraDescription cameraDescription in cameras) {
+      for (final CameraDescription cameraDescription in _cameras) {
         toggles.add(
           SizedBox(
             width: 90.0,
@@ -609,8 +621,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
-    // ignore: deprecated_member_use
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
@@ -629,8 +641,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
-    if (controller != null) {
-      await controller!.dispose();
+    final CameraController? oldController = controller;
+    if (oldController != null) {
+      // `controller` needs to be set to null before getting disposed,
+      // to avoid a race condition when we use the controller that is being
+      // disposed. This happens when camera permission dialog shows up,
+      // which triggers `didChangeAppLifecycleState`, which disposes and
+      // re-creates the controller.
+      controller = null;
+      await oldController.dispose();
     }
 
     final CameraController cameraController = CameraController(
@@ -674,7 +693,33 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .then((double value) => _minAvailableZoom = value),
       ]);
     } on CameraException catch (e) {
-      _showCameraException(e);
+      switch (e.code) {
+        case 'CameraAccessDenied':
+          showInSnackBar('You have denied camera access.');
+          break;
+        case 'CameraAccessDeniedWithoutPrompt':
+          // iOS only
+          showInSnackBar('Please go to Settings app to enable camera access.');
+          break;
+        case 'CameraAccessRestricted':
+          // iOS only
+          showInSnackBar('Camera access is restricted.');
+          break;
+        case 'AudioAccessDenied':
+          showInSnackBar('You have denied audio access.');
+          break;
+        case 'AudioAccessDeniedWithoutPrompt':
+          // iOS only
+          showInSnackBar('Please go to Settings app to enable audio access.');
+          break;
+        case 'AudioAccessRestricted':
+          // iOS only
+          showInSnackBar('Audio access is restricted.');
+          break;
+        default:
+          _showCameraException(e);
+          break;
+      }
     }
 
     if (mounted) {
@@ -1011,31 +1056,35 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void _showCameraException(CameraException e) {
-    logError(e.code, e.description);
+    _logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 }
 
+/// CameraApp is the Main Application.
 class CameraApp extends StatelessWidget {
+  /// Default Constructor
+  const CameraApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: CameraExampleHome(),
     );
   }
 }
 
-List<CameraDescription> cameras = <CameraDescription>[];
+List<CameraDescription> _cameras = <CameraDescription>[];
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras();
+    _cameras = await availableCameras();
   } on CameraException catch (e) {
-    logError(e.code, e.description);
+    _logError(e.code, e.description);
   }
-  runApp(CameraApp());
+  runApp(const CameraApp());
 }
 
 /// This allows a value of type T or T? to be treated as a value of type T?.

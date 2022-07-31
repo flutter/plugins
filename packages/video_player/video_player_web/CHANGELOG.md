@@ -1,3 +1,32 @@
+## 2.0.12
+
+* Updates the `README` with:
+  * Information about a common known issue: "Some videos restart when using the
+  seek bar/progress bar/scrubber" (Issue [#49630](https://github.com/flutter/flutter/issues/49360))
+  * Links to the Autoplay information of all major browsers (Chrome/Edge, Firefox, Safari).
+
+## 2.0.11
+
+* Improves handling of videos with `Infinity` duration.
+
+## 2.0.10
+
+* Minor fixes for new analysis options.
+
+## 2.0.9
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.0.8
+
+* Ensures `buffering` state is only removed when the browser reports enough data
+  has been buffered so that the video can likely play through without stopping
+  (`onCanPlayThrough`). Issue [#94630](https://github.com/flutter/flutter/issues/94630).
+* Improves testability of the `_VideoPlayer` private class.
+* Ensures that tests that listen to a Stream fail "fast" (1 second max timeout).
+
 ## 2.0.7
 
 * Internal code cleanup for stricter analysis options.

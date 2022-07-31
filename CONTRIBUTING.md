@@ -1,6 +1,6 @@
 # Contributing to Flutter Plugins
 
-[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
+[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/main)
 
 _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
 
@@ -35,7 +35,7 @@ use, and use auto-formatters:
 - [C++](https://google.github.io/styleguide/cppguide.html) formatted with `clang-format`
   - **Note**: The Linux plugins generally follow idiomatic GObject-based C
     style. See [the engine style
-    notes](https://github.com/flutter/engine/blob/master/CONTRIBUTING.md#style)
+    notes](https://github.com/flutter/engine/blob/main/CONTRIBUTING.md#style)
     for more details, and exceptions.
 - [Java](https://google.github.io/styleguide/javaguide.html) formatted with
   `google-java-format`

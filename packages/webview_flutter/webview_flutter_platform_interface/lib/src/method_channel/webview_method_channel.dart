@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import '../platform_interface/javascript_channel_registry.dart';
 import '../platform_interface/platform_interface.dart';
 import '../types/types.dart';
 
