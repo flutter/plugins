@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// APIs exposed for unit tests.
 @interface FLTQuickActionsPlugin (Test)
 
-/// initialize a FLTQuickActionsPlugin with given method channel.
+/// Initializes a FLTQuickActionsPlugin with the given method channel.
 /// API exposed for unit tests.
 /// @param channel a method channel
 /// @return the initialized FLTQuickActionsPlugin
