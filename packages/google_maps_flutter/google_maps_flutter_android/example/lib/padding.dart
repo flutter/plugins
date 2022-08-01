@@ -5,7 +5,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+
+import 'example_google_map.dart';
 import 'page.dart';
 
 class PaddingPage extends GoogleMapExampleAppPage {
@@ -28,13 +30,13 @@ class MarkerIconsBody extends StatefulWidget {
 const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
-  GoogleMapController? controller;
+  ExampleGoogleMapController? controller;
 
   EdgeInsets _padding = const EdgeInsets.all(0);
 
   @override
   Widget build(BuildContext context) {
-    final GoogleMap googleMap = GoogleMap(
+    final ExampleGoogleMap googleMap = ExampleGoogleMap(
       onMapCreated: _onMapCreated,
       initialCameraPosition: const CameraPosition(
         target: _kMapCenter,
@@ -74,7 +76,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     );
   }
 
-  void _onMapCreated(GoogleMapController controllerParam) {
+  void _onMapCreated(ExampleGoogleMapController controllerParam) {
     setState(() {
       controller = controllerParam;
     });

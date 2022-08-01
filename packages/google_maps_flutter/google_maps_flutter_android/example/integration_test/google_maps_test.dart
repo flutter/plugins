@@ -9,7 +9,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_example/example_google_map.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -38,11 +38,11 @@ void main() {
     final Completer<int> mapIdCompleter = Completer<int>();
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         compassEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -56,11 +56,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         compassEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -76,11 +76,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         mapToolbarEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -94,11 +94,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         mapToolbarEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -120,25 +120,26 @@ void main() {
     //
     // Thus we test iOS and Android a little differently here.
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(4, 8);
     const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(6, 10);
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: initialZoomLevel,
-        onMapCreated: (GoogleMapController c) async {
+        onMapCreated: (ExampleGoogleMapController c) async {
           controllerCompleter.complete(c);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
     final GoogleMapsInspectorPlatform inspector =
         GoogleMapsInspectorPlatform.instance!;
 
@@ -160,11 +161,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: finalZoomLevel,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -193,11 +194,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         zoomGesturesEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -212,11 +213,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         zoomGesturesEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -232,10 +233,10 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -252,11 +253,11 @@ void main() {
     if (Platform.isAndroid) {
       await tester.pumpWidget(Directionality(
         textDirection: TextDirection.ltr,
-        child: GoogleMap(
+        child: ExampleGoogleMap(
           key: key,
           initialCameraPosition: _kInitialCameraPosition,
           zoomControlsEnabled: false,
-          onMapCreated: (GoogleMapController controller) {
+          onMapCreated: (ExampleGoogleMapController controller) {
             fail('OnMapCreated should get called only once.');
           },
         ),
@@ -274,11 +275,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         liteModeEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -292,11 +293,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         liteModeEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -312,11 +313,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         rotateGesturesEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -331,11 +332,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         rotateGesturesEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -352,11 +353,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         tiltGesturesEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -371,11 +372,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         tiltGesturesEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -391,11 +392,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         scrollGesturesEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -410,11 +411,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         scrollGesturesEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -428,22 +429,22 @@ void main() {
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 600));
 
-    final Completer<GoogleMapController> mapControllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> mapControllerCompleter =
+        Completer<ExampleGoogleMapController>();
     final Key key = GlobalKey();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: GoogleMap(
+        child: ExampleGoogleMap(
           key: key,
           initialCameraPosition: _kInitialCameraPosition,
-          onMapCreated: (GoogleMapController controller) {
+          onMapCreated: (ExampleGoogleMapController controller) {
             mapControllerCompleter.complete(controller);
           },
         ),
       ),
     );
-    final GoogleMapController mapController =
+    final ExampleGoogleMapController mapController =
         await mapControllerCompleter.future;
 
     await tester.pumpAndSettle();
@@ -474,7 +475,9 @@ void main() {
               .round());
     }
     await tester.binding.setSurfaceSize(null);
-    AndroidGoogleMapsFlutter.useAndroidViewSurface = false;
+
+    (GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter)
+        .useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
@@ -482,22 +485,22 @@ void main() {
     final LatLngBounds zeroLatLngBounds = LatLngBounds(
         southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
 
-    final Completer<GoogleMapController> mapControllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> mapControllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapControllerCompleter.complete(controller);
         },
       ),
     ));
     await tester.pumpAndSettle();
 
-    final GoogleMapController mapController =
+    final ExampleGoogleMapController mapController =
         await mapControllerCompleter.future;
 
     final LatLngBounds firstVisibleRegion =
@@ -551,11 +554,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         trafficEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -569,11 +572,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         trafficEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -589,11 +592,11 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         buildingsEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -614,12 +617,12 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: true,
         myLocationEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -634,12 +637,12 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: false,
         myLocationEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
       ),
@@ -657,12 +660,12 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: false,
         myLocationEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -683,12 +686,12 @@ void main() {
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: true,
         myLocationEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
       ),
@@ -704,21 +707,22 @@ void main() {
 
   testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           controllerCompleter.complete(controller);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
     const String mapStyle =
         '[{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}]';
     await controller.setMapStyle(mapStyle);
@@ -727,21 +731,22 @@ void main() {
   testWidgets('testSetMapStyle invalid Json String',
       (WidgetTester tester) async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           controllerCompleter.complete(controller);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
 
     try {
       await controller.setMapStyle('invalid_value');
@@ -753,41 +758,43 @@ void main() {
 
   testWidgets('testSetMapStyle null string', (WidgetTester tester) async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           controllerCompleter.complete(controller);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
     await controller.setMapStyle(null);
   });
 
   testWidgets('testGetLatLng', (WidgetTester tester) async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           controllerCompleter.complete(controller);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
 
     await tester.pumpAndSettle();
     // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
@@ -808,21 +815,22 @@ void main() {
 
   testWidgets('testGetZoomLevel', (WidgetTester tester) async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           controllerCompleter.complete(controller);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
 
     await tester.pumpAndSettle();
     // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
@@ -841,20 +849,21 @@ void main() {
 
   testWidgets('testScreenCoordinate', (WidgetTester tester) async {
     final Key key = GlobalKey();
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (ExampleGoogleMapController controller) {
           controllerCompleter.complete(controller);
         },
       ),
     ));
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
 
     await tester.pumpAndSettle();
     // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
@@ -873,11 +882,11 @@ void main() {
   });
 
   testWidgets('testResizeWidget', (WidgetTester tester) async {
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
-    final GoogleMap map = GoogleMap(
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
+    final ExampleGoogleMap map = ExampleGoogleMap(
       initialCameraPosition: _kInitialCameraPosition,
-      onMapCreated: (GoogleMapController controller) async {
+      onMapCreated: (ExampleGoogleMapController controller) async {
         controllerCompleter.complete(controller);
       },
     );
@@ -886,7 +895,8 @@ void main() {
         child: MaterialApp(
             home: Scaffold(
                 body: SizedBox(height: 100, width: 100, child: map)))));
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
 
     await tester.pumpWidget(Directionality(
         textDirection: TextDirection.ltr,
@@ -912,21 +922,22 @@ void main() {
         infoWindow: InfoWindow(title: 'InfoWindow'));
     final Set<Marker> markers = <Marker>{marker};
 
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
-      child: GoogleMap(
+      child: ExampleGoogleMap(
         initialCameraPosition: const CameraPosition(target: LatLng(10.0, 15.0)),
         markers: markers,
-        onMapCreated: (GoogleMapController googleMapController) {
+        onMapCreated: (ExampleGoogleMapController googleMapController) {
           controllerCompleter.complete(googleMapController);
         },
       ),
     ));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
 
     bool iwVisibleStatus =
         await controller.isMarkerInfoWindowShown(marker.markerId);
@@ -955,15 +966,15 @@ void main() {
   });
 
   testWidgets('testTakeSnapshot', (WidgetTester tester) async {
-    final Completer<GoogleMapController> controllerCompleter =
-        Completer<GoogleMapController>();
+    final Completer<ExampleGoogleMapController> controllerCompleter =
+        Completer<ExampleGoogleMapController>();
 
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: GoogleMap(
+        child: ExampleGoogleMap(
           initialCameraPosition: _kInitialCameraPosition,
-          onMapCreated: (GoogleMapController controller) {
+          onMapCreated: (ExampleGoogleMapController controller) {
             controllerCompleter.complete(controller);
           },
         ),
@@ -972,7 +983,8 @@ void main() {
 
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
-    final GoogleMapController controller = await controllerCompleter.future;
+    final ExampleGoogleMapController controller =
+        await controllerCompleter.future;
     final Uint8List? bytes = await controller.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
   },
@@ -1004,10 +1016,10 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: GoogleMap(
+          child: ExampleGoogleMap(
             initialCameraPosition: _kInitialCameraPosition,
             tileOverlays: <TileOverlay>{tileOverlay1, tileOverlay2},
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (ExampleGoogleMapController controller) {
               mapIdCompleter.complete(controller.mapId);
             },
           ),
@@ -1063,11 +1075,11 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: GoogleMap(
+          child: ExampleGoogleMap(
             key: key,
             initialCameraPosition: _kInitialCameraPosition,
             tileOverlays: <TileOverlay>{tileOverlay1, tileOverlay2},
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (ExampleGoogleMapController controller) {
               mapIdCompleter.complete(controller.mapId);
             },
           ),
@@ -1090,11 +1102,11 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: GoogleMap(
+          child: ExampleGoogleMap(
             key: key,
             initialCameraPosition: _kInitialCameraPosition,
             tileOverlays: <TileOverlay>{tileOverlay1New},
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (ExampleGoogleMapController controller) {
               fail('update: OnMapCreated should get called only once.');
             },
           ),
@@ -1135,11 +1147,11 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: GoogleMap(
+          child: ExampleGoogleMap(
             key: key,
             initialCameraPosition: _kInitialCameraPosition,
             tileOverlays: <TileOverlay>{tileOverlay1},
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (ExampleGoogleMapController controller) {
               mapIdCompleter.complete(controller.mapId);
             },
           ),
@@ -1153,10 +1165,10 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: GoogleMap(
+          child: ExampleGoogleMap(
             key: key,
             initialCameraPosition: _kInitialCameraPosition,
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (ExampleGoogleMapController controller) {
               fail('OnMapCreated should get called only once.');
             },
           ),

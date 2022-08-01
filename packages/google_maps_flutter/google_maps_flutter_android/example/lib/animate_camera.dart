@@ -5,8 +5,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 class AnimateCameraPage extends GoogleMapExampleAppPage {
@@ -26,10 +27,10 @@ class AnimateCamera extends StatefulWidget {
 }
 
 class AnimateCameraState extends State<AnimateCamera> {
-  GoogleMapController? mapController;
+  ExampleGoogleMapController? mapController;
 
   // ignore: use_setters_to_change_properties
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(ExampleGoogleMapController controller) {
     mapController = controller;
   }
 
@@ -43,7 +44,7 @@ class AnimateCameraState extends State<AnimateCamera> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition:
                   const CameraPosition(target: LatLng(0.0, 0.0)),

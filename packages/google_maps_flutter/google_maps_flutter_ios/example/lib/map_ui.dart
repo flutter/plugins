@@ -6,8 +6,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 final LatLngBounds sydneyBounds = LatLngBounds(
@@ -57,7 +58,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _myLocationEnabled = true;
   bool _myTrafficEnabled = false;
   bool _myLocationButtonEnabled = true;
-  late GoogleMapController _controller;
+  late ExampleGoogleMapController _controller;
   bool _nightMode = false;
 
   @override
@@ -270,7 +271,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
   @override
   Widget build(BuildContext context) {
-    final GoogleMap googleMap = GoogleMap(
+    final ExampleGoogleMap googleMap = ExampleGoogleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
@@ -348,7 +349,7 @@ class MapUiBodyState extends State<MapUiBody> {
     });
   }
 
-  void onMapCreated(GoogleMapController controller) {
+  void onMapCreated(ExampleGoogleMapController controller) {
     setState(() {
       _controller = controller;
       _isMapCreated = true;

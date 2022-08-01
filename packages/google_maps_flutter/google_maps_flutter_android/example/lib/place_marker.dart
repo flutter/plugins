@@ -10,8 +10,9 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 class PlaceMarkerPage extends GoogleMapExampleAppPage {
@@ -37,14 +38,14 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
   static const LatLng center = LatLng(-33.86711, 151.1947171);
 
-  GoogleMapController? controller;
+  ExampleGoogleMapController? controller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MarkerId? selectedMarker;
   int _markerIdCounter = 1;
   LatLng? markerPosition;
 
   // ignore: use_setters_to_change_properties
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(ExampleGoogleMapController controller) {
     this.controller = controller;
   }
 
@@ -297,7 +298,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: const CameraPosition(
                 target: LatLng(-33.852, 151.211),

@@ -8,8 +8,9 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 class TileOverlayPage extends GoogleMapExampleAppPage {
@@ -32,11 +33,11 @@ class TileOverlayBody extends StatefulWidget {
 class TileOverlayBodyState extends State<TileOverlayBody> {
   TileOverlayBodyState();
 
-  GoogleMapController? controller;
+  ExampleGoogleMapController? controller;
   TileOverlay? _tileOverlay;
 
   // ignore: use_setters_to_change_properties
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(ExampleGoogleMapController controller) {
     this.controller = controller;
   }
 
@@ -81,7 +82,7 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
           child: SizedBox(
             width: 350.0,
             height: 300.0,
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               initialCameraPosition: const CameraPosition(
                 target: LatLng(59.935460, 30.325177),
                 zoom: 7.0,

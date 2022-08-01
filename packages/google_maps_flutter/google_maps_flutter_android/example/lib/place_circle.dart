@@ -5,8 +5,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 class PlaceCirclePage extends GoogleMapExampleAppPage {
@@ -29,7 +30,7 @@ class PlaceCircleBody extends StatefulWidget {
 class PlaceCircleBodyState extends State<PlaceCircleBody> {
   PlaceCircleBodyState();
 
-  GoogleMapController? controller;
+  ExampleGoogleMapController? controller;
   Map<CircleId, Circle> circles = <CircleId, Circle>{};
   int _circleIdCounter = 1;
   CircleId? selectedCircle;
@@ -49,7 +50,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   List<int> widths = <int>[10, 20, 5];
 
   // ignore: use_setters_to_change_properties
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(ExampleGoogleMapController controller) {
     this.controller = controller;
   }
 
@@ -151,7 +152,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
           child: SizedBox(
             width: 350.0,
             height: 300.0,
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               initialCameraPosition: const CameraPosition(
                 target: LatLng(52.4478, -3.5402),
                 zoom: 7.0,

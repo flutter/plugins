@@ -5,7 +5,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+
+import 'example_google_map.dart';
 import 'page.dart';
 
 const CameraPosition _kInitialPosition =
@@ -31,7 +33,7 @@ class _MapCoordinatesBody extends StatefulWidget {
 class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
   _MapCoordinatesBodyState();
 
-  GoogleMapController? mapController;
+  ExampleGoogleMapController? mapController;
   LatLngBounds _visibleRegion = LatLngBounds(
     southwest: const LatLng(0, 0),
     northeast: const LatLng(0, 0),
@@ -39,7 +41,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
 
   @override
   Widget build(BuildContext context) {
-    final GoogleMap googleMap = GoogleMap(
+    final ExampleGoogleMap googleMap = ExampleGoogleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       onCameraIdle:
@@ -81,7 +83,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     );
   }
 
-  Future<void> onMapCreated(GoogleMapController controller) async {
+  Future<void> onMapCreated(ExampleGoogleMapController controller) async {
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     setState(() {
       mapController = controller;

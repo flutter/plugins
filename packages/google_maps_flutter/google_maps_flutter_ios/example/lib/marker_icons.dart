@@ -6,8 +6,9 @@
 // ignore_for_file: unawaited_futures
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 class MarkerIconsPage extends GoogleMapExampleAppPage {
@@ -30,7 +31,7 @@ class MarkerIconsBody extends StatefulWidget {
 const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
-  GoogleMapController? controller;
+  ExampleGoogleMapController? controller;
   BitmapDescriptor? _markerIcon;
 
   @override
@@ -44,7 +45,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
           child: SizedBox(
             width: 350.0,
             height: 300.0,
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               initialCameraPosition: const CameraPosition(
                 target: _kMapCenter,
                 zoom: 7.0,
@@ -89,7 +90,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     });
   }
 
-  void _onMapCreated(GoogleMapController controllerParam) {
+  void _onMapCreated(ExampleGoogleMapController controllerParam) {
     setState(() {
       controller = controllerParam;
     });

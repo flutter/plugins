@@ -7,8 +7,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 const CameraPosition _kInitialPosition =
@@ -31,7 +32,7 @@ class _SnapshotBody extends StatefulWidget {
 }
 
 class _SnapshotBodyState extends State<_SnapshotBody> {
-  GoogleMapController? _mapController;
+  ExampleGoogleMapController? _mapController;
   Uint8List? _imageBytes;
 
   @override
@@ -43,7 +44,7 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
         children: <Widget>[
           SizedBox(
             height: 180,
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               onMapCreated: onMapCreated,
               initialCameraPosition: _kInitialPosition,
             ),
@@ -69,7 +70,7 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
   }
 
   // ignore: use_setters_to_change_properties
-  void onMapCreated(GoogleMapController controller) {
+  void onMapCreated(ExampleGoogleMapController controller) {
     _mapController = controller;
   }
 }

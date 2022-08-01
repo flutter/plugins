@@ -5,8 +5,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 class PlacePolygonPage extends GoogleMapExampleAppPage {
@@ -29,7 +30,7 @@ class PlacePolygonBody extends StatefulWidget {
 class PlacePolygonBodyState extends State<PlacePolygonBody> {
   PlacePolygonBodyState();
 
-  GoogleMapController? controller;
+  ExampleGoogleMapController? controller;
   Map<PolygonId, Polygon> polygons = <PolygonId, Polygon>{};
   Map<PolygonId, double> polygonOffsets = <PolygonId, double>{};
   int _polygonIdCounter = 0;
@@ -50,7 +51,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   List<int> widths = <int>[10, 20, 5];
 
   // ignore: use_setters_to_change_properties
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(ExampleGoogleMapController controller) {
     this.controller = controller;
   }
 
@@ -177,7 +178,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
           child: SizedBox(
             width: 350.0,
             height: 300.0,
-            child: GoogleMap(
+            child: ExampleGoogleMap(
               initialCameraPosition: const CameraPosition(
                 target: LatLng(52.4478, -3.5402),
                 zoom: 7.0,

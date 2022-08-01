@@ -7,8 +7,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+import 'example_google_map.dart';
 import 'page.dart';
 
 const LatLng _center = LatLng(32.080664, 34.9563837);
@@ -43,7 +44,7 @@ class ScrollingMapBody extends StatelessWidget {
                   child: SizedBox(
                     width: 300.0,
                     height: 300.0,
-                    child: GoogleMap(
+                    child: ExampleGoogleMap(
                       initialCameraPosition: const CameraPosition(
                         target: _center,
                         zoom: 11.0,
@@ -76,7 +77,7 @@ class ScrollingMapBody extends StatelessWidget {
                   child: SizedBox(
                     width: 300.0,
                     height: 300.0,
-                    child: GoogleMap(
+                    child: ExampleGoogleMap(
                       initialCameraPosition: const CameraPosition(
                         target: _center,
                         zoom: 11.0,
