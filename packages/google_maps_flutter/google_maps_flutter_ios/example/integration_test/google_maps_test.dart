@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -70,7 +69,7 @@ void main() {
     expect(compassEnabled, true);
   });
 
-  testWidgets('testMapToolbarToggle', (WidgetTester tester) async {
+  testWidgets('testMapToolbar returns false', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<int> mapIdCompleter = Completer<int>();
 
@@ -79,7 +78,7 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        mapToolbarEnabled: false,
+        mapToolbarEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -89,36 +88,13 @@ void main() {
     final int mapId = await mapIdCompleter.future;
     final GoogleMapsInspectorPlatform inspector =
         GoogleMapsInspectorPlatform.instance!;
-    bool mapToolbarEnabled = await inspector.isMapToolbarEnabled(mapId: mapId);
+    final bool mapToolbarEnabled =
+        await inspector.isMapToolbarEnabled(mapId: mapId);
+    // This is only supported on Android, so should always return false.
     expect(mapToolbarEnabled, false);
-
-    await tester.pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: ExampleGoogleMap(
-        key: key,
-        initialCameraPosition: _kInitialCameraPosition,
-        mapToolbarEnabled: true,
-        onMapCreated: (ExampleGoogleMapController controller) {
-          fail('OnMapCreated should get called only once.');
-        },
-      ),
-    ));
-
-    mapToolbarEnabled = await inspector.isMapToolbarEnabled(mapId: mapId);
-    expect(mapToolbarEnabled, Platform.isAndroid);
   });
 
   testWidgets('updateMinMaxZoomLevels', (WidgetTester tester) async {
-    // The behaviors of setting min max zoom level on iOS and Android are different.
-    // On iOS, when we get the min or max zoom level after setting the preference, the
-    // min and max will be exactly the same as the value we set; on Android however,
-    // the values we get do not equal to the value we set.
-    //
-    // Also, when we call zoomTo to set the zoom, on Android, it usually
-    // honors the preferences that we set and the zoom cannot pass beyond the boundary.
-    // On iOS, on the other hand, zoomTo seems to override the preferences.
-    //
-    // Thus we test iOS and Android a little differently here.
     final Key key = GlobalKey();
     final Completer<ExampleGoogleMapController> controllerCompleter =
         Completer<ExampleGoogleMapController>();
@@ -143,21 +119,9 @@ void main() {
     final GoogleMapsInspectorPlatform inspector =
         GoogleMapsInspectorPlatform.instance!;
 
-    if (Platform.isIOS) {
-      final MinMaxZoomPreference zoomLevel =
-          await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
-      expect(zoomLevel, equals(initialZoomLevel));
-    } else if (Platform.isAndroid) {
-      await controller.moveCamera(CameraUpdate.zoomTo(15));
-      await tester.pumpAndSettle();
-      double? zoomLevel = await controller.getZoomLevel();
-      expect(zoomLevel, equals(initialZoomLevel.maxZoom));
-
-      await controller.moveCamera(CameraUpdate.zoomTo(1));
-      await tester.pumpAndSettle();
-      zoomLevel = await controller.getZoomLevel();
-      expect(zoomLevel, equals(initialZoomLevel.minZoom));
-    }
+    MinMaxZoomPreference zoomLevel =
+        await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
+    expect(zoomLevel, equals(initialZoomLevel));
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -171,21 +135,8 @@ void main() {
       ),
     ));
 
-    if (Platform.isIOS) {
-      final MinMaxZoomPreference zoomLevel =
-          await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
-      expect(zoomLevel, equals(finalZoomLevel));
-    } else {
-      await controller.moveCamera(CameraUpdate.zoomTo(15));
-      await tester.pumpAndSettle();
-      double? zoomLevel = await controller.getZoomLevel();
-      expect(zoomLevel, equals(finalZoomLevel.maxZoom));
-
-      await controller.moveCamera(CameraUpdate.zoomTo(1));
-      await tester.pumpAndSettle();
-      zoomLevel = await controller.getZoomLevel();
-      expect(zoomLevel, equals(finalZoomLevel.minZoom));
-    }
+    zoomLevel = await inspector.getMinMaxZoomLevels(mapId: controller.mapId);
+    expect(zoomLevel, equals(finalZoomLevel));
   });
 
   testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
@@ -245,67 +196,12 @@ void main() {
     final int mapId = await mapIdCompleter.future;
     final GoogleMapsInspectorPlatform inspector =
         GoogleMapsInspectorPlatform.instance!;
-    bool zoomControlsEnabled =
+    final bool zoomControlsEnabled =
         await inspector.areZoomControlsEnabled(mapId: mapId);
-    expect(zoomControlsEnabled, !Platform.isIOS);
 
     /// Zoom Controls functionality is not available on iOS at the moment.
-    if (Platform.isAndroid) {
-      await tester.pumpWidget(Directionality(
-        textDirection: TextDirection.ltr,
-        child: ExampleGoogleMap(
-          key: key,
-          initialCameraPosition: _kInitialCameraPosition,
-          zoomControlsEnabled: false,
-          onMapCreated: (ExampleGoogleMapController controller) {
-            fail('OnMapCreated should get called only once.');
-          },
-        ),
-      ));
-
-      zoomControlsEnabled =
-          await inspector.areZoomControlsEnabled(mapId: mapId);
-      expect(zoomControlsEnabled, false);
-    }
+    expect(zoomControlsEnabled, false);
   });
-
-  testWidgets('testLiteModeEnabled', (WidgetTester tester) async {
-    final Key key = GlobalKey();
-    final Completer<int> mapIdCompleter = Completer<int>();
-
-    await tester.pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: ExampleGoogleMap(
-        key: key,
-        initialCameraPosition: _kInitialCameraPosition,
-        liteModeEnabled: false,
-        onMapCreated: (ExampleGoogleMapController controller) {
-          mapIdCompleter.complete(controller.mapId);
-        },
-      ),
-    ));
-
-    final int mapId = await mapIdCompleter.future;
-    final GoogleMapsInspectorPlatform inspector =
-        GoogleMapsInspectorPlatform.instance!;
-    bool liteModeEnabled = await inspector.isLiteModeEnabled(mapId: mapId);
-    expect(liteModeEnabled, false);
-
-    await tester.pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: ExampleGoogleMap(
-        key: key,
-        initialCameraPosition: _kInitialCameraPosition,
-        liteModeEnabled: true,
-        onMapCreated: (ExampleGoogleMapController controller) {
-          fail('OnMapCreated should get called only once.');
-        },
-      ),
-    ));
-
-    liteModeEnabled = await inspector.isLiteModeEnabled(mapId: mapId);
-    expect(liteModeEnabled, true);
-  }, skip: !Platform.isAndroid);
 
   testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
@@ -457,23 +353,9 @@ void main() {
     final ScreenCoordinate coordinate =
         await mapController.getScreenCoordinate(_kInitialCameraPosition.target);
     final Rect rect = tester.getRect(find.byKey(key));
-    if (Platform.isIOS) {
-      // On iOS, the coordinate value from the GoogleMapSdk doesn't include the devicePixelRatio`.
-      // So we don't need to do the conversion like we did below for other platforms.
-      expect(coordinate.x, (rect.center.dx - rect.topLeft.dx).round());
-      expect(coordinate.y, (rect.center.dy - rect.topLeft.dy).round());
-    } else {
-      expect(
-          coordinate.x,
-          ((rect.center.dx - rect.topLeft.dx) *
-                  tester.binding.window.devicePixelRatio)
-              .round());
-      expect(
-          coordinate.y,
-          ((rect.center.dy - rect.topLeft.dy) *
-                  tester.binding.window.devicePixelRatio)
-              .round());
-    }
+    expect(coordinate.x, (rect.center.dx - rect.topLeft.dx).round());
+    expect(coordinate.y, (rect.center.dy - rect.topLeft.dy).round());
+
     await tester.binding.setSurfaceSize(null);
   });
 
@@ -607,7 +489,6 @@ void main() {
     expect(isBuildingsEnabled, true);
   });
 
-  // Location button tests are skipped in Android because we don't have location permission to test.
   testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<int> mapIdCompleter = Completer<int>();
@@ -648,7 +529,7 @@ void main() {
     myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled(mapId: mapId);
     expect(myLocationButtonEnabled, false);
-  }, skip: Platform.isAndroid);
+  });
 
   testWidgets('testMyLocationButton initial value false',
       (WidgetTester tester) async {
@@ -674,7 +555,7 @@ void main() {
     final bool myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled(mapId: mapId);
     expect(myLocationButtonEnabled, false);
-  }, skip: Platform.isAndroid);
+  });
 
   testWidgets('testMyLocationButton initial value true',
       (WidgetTester tester) async {
@@ -700,7 +581,7 @@ void main() {
     final bool myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled(mapId: mapId);
     expect(myLocationButtonEnabled, true);
-  }, skip: Platform.isAndroid);
+  });
 
   testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
     final Key key = GlobalKey();
@@ -984,10 +865,7 @@ void main() {
         await controllerCompleter.future;
     final Uint8List? bytes = await controller.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
-  },
-      // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
-      // https://github.com/flutter/flutter/issues/57057
-      skip: Platform.isAndroid);
+  });
 
   testWidgets(
     'set tileOverlay correctly',
