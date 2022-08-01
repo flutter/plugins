@@ -1,3 +1,9 @@
+## 0.2.0
+
+**BREAKING CHANGES**:
+  * `CameraException.code` now has value `"CameraAccessDenied"` if camera access permission was denied.
+  * `CameraException.code` now has value `"camera_error"` if error occurs during capture.
+
 ## 0.1.0+5
 
 * Fixes bugs in in error handling.

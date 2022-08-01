@@ -207,28 +207,29 @@ class CaptureControllerImpl : public CaptureController,
   void StopTimedRecord();
 
   // Stops preview. Called internally on camera reset and dispose.
-  void StopPreview();
+  HRESULT StopPreview();
 
   // Handles capture engine initalization event.
-  void OnCaptureEngineInitialized(bool success, const std::string& error);
+  void OnCaptureEngineInitialized(CameraResult result,
+                                  const std::string& error);
 
   // Handles capture engine errors.
-  void OnCaptureEngineError(HRESULT hr, const std::string& error);
+  void OnCaptureEngineError(CameraResult result, const std::string& error);
 
   // Handles picture events.
-  void OnPicture(bool success, const std::string& error);
+  void OnPicture(CameraResult result, const std::string& error);
 
   // Handles preview started events.
-  void OnPreviewStarted(bool success, const std::string& error);
+  void OnPreviewStarted(CameraResult result, const std::string& error);
 
   // Handles preview stopped events.
-  void OnPreviewStopped(bool success, const std::string& error);
+  void OnPreviewStopped(CameraResult result, const std::string& error);
 
   // Handles record started events.
-  void OnRecordStarted(bool success, const std::string& error);
+  void OnRecordStarted(CameraResult result, const std::string& error);
 
   // Handles record stopped events.
-  void OnRecordStopped(bool success, const std::string& error);
+  void OnRecordStopped(CameraResult result, const std::string& error);
 
   bool media_foundation_started_ = false;
   bool record_audio_ = false;
