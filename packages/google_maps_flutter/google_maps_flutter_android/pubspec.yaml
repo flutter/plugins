@@ -15,6 +15,7 @@ flutter:
       android:
         package: io.flutter.plugins.googlemaps
         pluginClass: GoogleMapsPlugin
+        dartPluginClass: GoogleMapsFlutterAndroid
 
 dependencies:
   flutter:

@@ -41,6 +41,11 @@ class UnknownMapIDError extends Error {
 
 /// An implementation of [GoogleMapsFlutterPlatform] for Android.
 class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
+  /// Registers the Android implementation of GoogleMapsFlutterPlatform.
+  static void registerWith() {
+    GoogleMapsFlutterPlatform.instance = GoogleMapsFlutterAndroid();
+  }
+
   // Keep a collection of id -> channel
   // Every method call passes the int mapId
   final Map<int, MethodChannel> _channels = <int, MethodChannel>{};

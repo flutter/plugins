@@ -14,6 +14,7 @@ flutter:
     platforms:
       ios:
         pluginClass: FLTGoogleMapsPlugin
+        dartPluginClass: GoogleMapsFlutterIOS
 
 dependencies:
   flutter:

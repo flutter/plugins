@@ -41,6 +41,11 @@ void main() {
             byteData, (ByteData? data) {});
   }
 
+  test('registers instance', () async {
+    GoogleMapsFlutterAndroid.registerWith();
+    expect(GoogleMapsFlutterPlatform.instance, isA<GoogleMapsFlutterAndroid>());
+  });
+
   // Calls each method that uses invokeMethod with a return type other than
   // void to ensure that the casting/nullability handling succeeds.
   //
@@ -75,6 +80,7 @@ void main() {
       'map#takeSnapshot',
     ]);
   });
+
   test('markers send drag event to correct streams', () async {
     const int mapId = 1;
     final Map<dynamic, dynamic> jsonMarkerDragStartEvent = <dynamic, dynamic>{

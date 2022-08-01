@@ -20,7 +20,7 @@ void main() {
   /// Initializes a map with the given ID and canned responses, logging all
   /// calls to [log].
   void configureMockMap(
-    GoogleMapsFlutterAndroid maps, {
+    GoogleMapsFlutterIOS maps, {
     required int mapId,
     required Future<dynamic>? Function(MethodCall call) handler,
   }) {
@@ -41,6 +41,11 @@ void main() {
             byteData, (ByteData? data) {});
   }
 
+  test('registers instance', () async {
+    GoogleMapsFlutterIOS.registerWith();
+    expect(GoogleMapsFlutterPlatform.instance, isA<GoogleMapsFlutterIOS>());
+  });
+
   // Calls each method that uses invokeMethod with a return type other than
   // void to ensure that the casting/nullability handling succeeds.
   //
@@ -48,7 +53,7 @@ void main() {
   // each method, since that would cover this issue.
   test('non-void invokeMethods handle types correctly', () async {
     const int mapId = 0;
-    final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
+    final GoogleMapsFlutterIOS maps = GoogleMapsFlutterIOS();
     configureMockMap(maps, mapId: mapId,
         handler: (MethodCall methodCall) async {
       switch (methodCall.method) {
@@ -75,6 +80,7 @@ void main() {
       'map#takeSnapshot',
     ]);
   });
+
   test('markers send drag event to correct streams', () async {
     const int mapId = 1;
     final Map<dynamic, dynamic> jsonMarkerDragStartEvent = <dynamic, dynamic>{
@@ -93,7 +99,7 @@ void main() {
       'position': <double>[1.0, 1.0]
     };
 
-    final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
+    final GoogleMapsFlutterIOS maps = GoogleMapsFlutterIOS();
     maps.ensureChannelInitialized(mapId);
 
     final StreamQueue<MarkerDragStartEvent> markerDragStartStream =
