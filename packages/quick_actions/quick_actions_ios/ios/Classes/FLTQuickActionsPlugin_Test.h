@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Initializes a FLTQuickActionsPlugin with the given method channel.
 /// API exposed for unit tests.
-/// @param channel a method channel
-/// @return the initialized FLTQuickActionsPlugin
+/// @param channel A method channel.
+/// @return The initialized FLTQuickActionsPlugin.
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel;
 
 @end
