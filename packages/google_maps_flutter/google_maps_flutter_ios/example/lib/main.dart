@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_example/lite_mode.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 import 'animate_camera.dart';
 import 'map_click.dart';
