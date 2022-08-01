@@ -28,7 +28,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
 
   @Nullable private Lifecycle lifecycle;
 
-  private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
+  private static final String VIEW_TYPE = "plugins.flutter.dev/google_maps_android";
 
   @SuppressWarnings("deprecation")
   public static void registerWith(

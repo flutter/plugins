@@ -37,7 +37,7 @@ void main() {
     final ByteData byteData =
         const StandardMethodCodec().encodeMethodCall(MethodCall(method, data));
     await TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-        .handlePlatformMessage('plugins.flutter.io/google_maps_$mapId',
+        .handlePlatformMessage('plugins.flutter.dev/google_maps_android_$mapId',
             byteData, (ByteData? data) {});
   }
 

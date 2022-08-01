@@ -76,7 +76,7 @@
     // https://github.com/flutter/flutter/issues/104121
     [self interpretMapOptions:args[@"options"]];
     NSString *channelName =
-        [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
+        [NSString stringWithFormat:@"plugins.flutter.dev/google_maps_ios_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
                                            binaryMessenger:registrar.messenger];
     __weak __typeof__(self) weakSelf = self;

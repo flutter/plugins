@@ -96,7 +96,8 @@ final class GoogleMapController
     this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
-    methodChannel = new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
+    methodChannel =
+        new MethodChannel(binaryMessenger, "plugins.flutter.dev/google_maps_android_" + id);
     methodChannel.setMethodCallHandler(this);
     this.lifecycleProvider = lifecycleProvider;
     this.markersController = new MarkersController(methodChannel);

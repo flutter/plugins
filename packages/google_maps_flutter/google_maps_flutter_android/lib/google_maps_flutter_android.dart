@@ -68,7 +68,7 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
   MethodChannel ensureChannelInitialized(int mapId) {
     MethodChannel? channel = _channels[mapId];
     if (channel == null) {
-      channel = MethodChannel('plugins.flutter.io/google_maps_$mapId');
+      channel = MethodChannel('plugins.flutter.dev/google_maps_android_$mapId');
       channel.setMethodCallHandler(
           (MethodCall call) => _handleMethodCall(call, mapId));
       _channels[mapId] = channel;
@@ -499,62 +499,50 @@ class GoogleMapsFlutterAndroid extends GoogleMapsFlutterPlatform {
       'tileOverlaysToAdd': serializeTileOverlaySet(mapObjects.tileOverlays),
     };
 
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      if (useAndroidViewSurface) {
-        return PlatformViewLink(
-          viewType: 'plugins.flutter.io/google_maps',
-          surfaceFactory: (
-            BuildContext context,
-            PlatformViewController controller,
-          ) {
-            return AndroidViewSurface(
-              controller: controller as AndroidViewController,
-              gestureRecognizers: widgetConfiguration.gestureRecognizers,
-              hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-            );
-          },
-          onCreatePlatformView: (PlatformViewCreationParams params) {
-            final SurfaceAndroidViewController controller =
-                PlatformViewsService.initSurfaceAndroidView(
-              id: params.id,
-              viewType: 'plugins.flutter.io/google_maps',
-              layoutDirection: widgetConfiguration.textDirection,
-              creationParams: creationParams,
-              creationParamsCodec: const StandardMessageCodec(),
-              onFocus: () => params.onFocusChanged(true),
-            );
-            controller.addOnPlatformViewCreatedListener(
-              params.onPlatformViewCreated,
-            );
-            controller.addOnPlatformViewCreatedListener(
-              onPlatformViewCreated,
-            );
+    const String viewType = 'plugins.flutter.dev/google_maps_android';
+    if (useAndroidViewSurface) {
+      return PlatformViewLink(
+        viewType: viewType,
+        surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+        ) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: widgetConfiguration.gestureRecognizers,
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          );
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          final SurfaceAndroidViewController controller =
+              PlatformViewsService.initSurfaceAndroidView(
+            id: params.id,
+            viewType: viewType,
+            layoutDirection: widgetConfiguration.textDirection,
+            creationParams: creationParams,
+            creationParamsCodec: const StandardMessageCodec(),
+            onFocus: () => params.onFocusChanged(true),
+          );
+          controller.addOnPlatformViewCreatedListener(
+            params.onPlatformViewCreated,
+          );
+          controller.addOnPlatformViewCreatedListener(
+            onPlatformViewCreated,
+          );
 
-            controller.create();
-            return controller;
-          },
-        );
-      } else {
-        return AndroidView(
-          viewType: 'plugins.flutter.io/google_maps',
-          onPlatformViewCreated: onPlatformViewCreated,
-          gestureRecognizers: widgetConfiguration.gestureRecognizers,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
-        );
-      }
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return UiKitView(
-        viewType: 'plugins.flutter.io/google_maps',
+          controller.create();
+          return controller;
+        },
+      );
+    } else {
+      return AndroidView(
+        viewType: viewType,
         onPlatformViewCreated: onPlatformViewCreated,
         gestureRecognizers: widgetConfiguration.gestureRecognizers,
         creationParams: creationParams,
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
-
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the maps plugin');
   }
 
   @override
