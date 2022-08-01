@@ -70,8 +70,5 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  final GoogleMapsFlutterPlatform platform = GoogleMapsFlutterPlatform.instance;
-  // Default to Hybrid Composition for the example.
-  (platform as MethodChannelGoogleMapsFlutter).useAndroidViewSurface = true;
   runApp(const MaterialApp(home: MapsDemo()));
 }

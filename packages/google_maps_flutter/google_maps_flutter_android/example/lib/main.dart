@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_example/lite_mode.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
@@ -72,6 +73,6 @@ class MapsDemo extends StatelessWidget {
 void main() {
   final GoogleMapsFlutterPlatform platform = GoogleMapsFlutterPlatform.instance;
   // Default to Hybrid Composition for the example.
-  (platform as MethodChannelGoogleMapsFlutter).useAndroidViewSurface = true;
+  (platform as GoogleMapsFlutterAndroid).useAndroidViewSurface = true;
   runApp(const MaterialApp(home: MapsDemo()));
 }
