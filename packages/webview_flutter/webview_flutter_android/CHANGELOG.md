@@ -1,3 +1,7 @@
+## 2.9.4
+
+* Adds dispose methods for HostApi and FlutterApi of JavaObject.
+
 ## 2.9.3
 
 * Updates the Dart InstanceManager to take a listener for when an object is garbage collected.

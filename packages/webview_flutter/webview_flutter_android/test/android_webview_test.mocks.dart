@@ -114,6 +114,21 @@ class MockTestDownloadListenerHostApi extends _i1.Mock
           returnValueForMissingStub: null);
 }
 
+/// A class which mocks [TestJavaObjectHostApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTestJavaObjectHostApi extends _i1.Mock
+    implements _i5.TestJavaObjectHostApi {
+  MockTestJavaObjectHostApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void dispose(int? identifier) =>
+      super.noSuchMethod(Invocation.method(#dispose, [identifier]),
+          returnValueForMissingStub: null);
+}
+
 /// A class which mocks [TestJavaScriptChannelHostApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
