@@ -463,7 +463,6 @@ void main() {
               .round());
     }
     await tester.binding.setSurfaceSize(null);
-    AndroidGoogleMapsFlutter.useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {

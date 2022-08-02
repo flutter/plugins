@@ -431,9 +431,6 @@ void main() {
                 tester.binding.window.devicePixelRatio)
             .round());
     await tester.binding.setSurfaceSize(null);
-
-    (GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter)
-        .useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
