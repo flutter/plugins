@@ -5,4 +5,10 @@
 @import Flutter;
 
 @interface FLTQuickActionsPlugin : NSObject <FlutterPlugin>
+
+/// Unavailable. Please use `initWithChannel:` instead.
+- (instancetype)init NS_UNAVAILABLE;
+
+/// Unavailable. Please use `initWithChannel:` instead.
++ (instancetype)new NS_UNAVAILABLE;
 @end
