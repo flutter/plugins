@@ -20,9 +20,10 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter_platform_interface: ^2.2.1
+  stream_transform: ^2.0.0
 
 dev_dependencies:
+  async: ^2.5.0
   flutter_test:
     sdk: flutter
   plugin_platform_interface: ^2.0.0
-  stream_transform: ^2.0.0
