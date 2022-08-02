@@ -9,9 +9,9 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.Test;
 
 public class CameraAndroidCameraXPluginTest {
-    
-    @Test
-    public void fakeTest() {
-        assertEquals(true, true);
-    }
+
+  @Test
+  public void fakeTest() {
+    assertEquals(true, true);
+  }
 }

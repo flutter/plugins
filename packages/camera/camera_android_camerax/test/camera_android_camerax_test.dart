@@ -21,11 +21,13 @@ class MockCameraAndroidCameraxPlatform
         CameraAndroidCameraxPlatform.instance;
 
     test('$MethodChannelCameraAndroidCamerax is the default instance', () {
-      expect(initialPlatform, isInstanceOf<MethodChannelCameraAndroidCamerax>());
+      expect(
+          initialPlatform, isInstanceOf<MethodChannelCameraAndroidCamerax>());
     });
 
     test('getPlatformVersion', () async {
-      final CameraAndroidCamerax cameraAndroidCameraxPlugin = CameraAndroidCamerax();
+      final CameraAndroidCamerax cameraAndroidCameraxPlugin =
+          CameraAndroidCamerax();
       final MockCameraAndroidCameraxPlatform fakePlatform =
           MockCameraAndroidCameraxPlatform();
       CameraAndroidCameraxPlatform.instance = fakePlatform;
