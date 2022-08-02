@@ -588,38 +588,4 @@ void main() {
 
     expect(platformGoogleMap.buildingsEnabled, true);
   });
-
-  testWidgets(
-    'Default Android widget is AndroidView',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const Directionality(
-          textDirection: TextDirection.ltr,
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          ),
-        ),
-      );
-
-      expect(find.byType(AndroidView), findsOneWidget);
-    },
-  );
-
-  testWidgets('Use PlatformViewLink on Android', (WidgetTester tester) async {
-    final MethodChannelGoogleMapsFlutter platform =
-        GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter;
-    platform.useAndroidViewSurface = true;
-
-    await tester.pumpWidget(
-      const Directionality(
-        textDirection: TextDirection.ltr,
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-        ),
-      ),
-    );
-
-    expect(find.byType(PlatformViewLink), findsOneWidget);
-    platform.useAndroidViewSurface = false;
-  });
 }

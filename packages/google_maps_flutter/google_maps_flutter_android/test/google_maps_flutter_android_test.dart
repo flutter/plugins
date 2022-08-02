@@ -4,6 +4,7 @@
 
 import 'package:async/async.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -120,5 +121,33 @@ void main() {
     expect((await markerDragStream.next).value.value, equals('drag-marker'));
     expect((await markerDragEndStream.next).value.value,
         equals('drag-end-marker'));
+  });
+
+  test(
+    'Default widget is AndroidView',
+    () async {
+      final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
+      final Widget widget = maps.buildViewWithConfiguration(1, (int _) {},
+          widgetConfiguration: const MapWidgetConfiguration(
+              initialCameraPosition:
+                  CameraPosition(target: LatLng(0, 0), zoom: 1),
+              textDirection: TextDirection.ltr));
+
+      expect(widget, isA<AndroidView>());
+    },
+  );
+
+  testWidgets('Use PlatformViewLink when using surface view',
+      (WidgetTester tester) async {
+    final GoogleMapsFlutterAndroid maps = GoogleMapsFlutterAndroid();
+    maps.useAndroidViewSurface = true;
+
+    final Widget widget = maps.buildViewWithConfiguration(1, (int _) {},
+        widgetConfiguration: const MapWidgetConfiguration(
+            initialCameraPosition:
+                CameraPosition(target: LatLng(0, 0), zoom: 1),
+            textDirection: TextDirection.ltr));
+
+    expect(widget, isA<PlatformViewLink>());
   });
 }
