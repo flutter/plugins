@@ -16,20 +16,21 @@ class MockCameraAndroidCameraxPlatform
     return Future.value('42');
   }
 
-void main() {
-  final CameraAndroidCameraxPlatform initialPlatform =
-      CameraAndroidCameraxPlatform.instance;
+  void main() {
+    final CameraAndroidCameraxPlatform initialPlatform =
+        CameraAndroidCameraxPlatform.instance;
 
-  test('$MethodChannelCameraAndroidCamerax is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelCameraAndroidCamerax>());
-  });
+    test('$MethodChannelCameraAndroidCamerax is the default instance', () {
+      expect(initialPlatform, isInstanceOf<MethodChannelCameraAndroidCamerax>());
+    });
 
-  test('getPlatformVersion', () async {
-    final CameraAndroidCamerax cameraAndroidCameraxPlugin = CameraAndroidCamerax();
-    final MockCameraAndroidCameraxPlatform fakePlatform =
-        MockCameraAndroidCameraxPlatform();
-    CameraAndroidCameraxPlatform.instance = fakePlatform;
+    test('getPlatformVersion', () async {
+      final CameraAndroidCamerax cameraAndroidCameraxPlugin = CameraAndroidCamerax();
+      final MockCameraAndroidCameraxPlatform fakePlatform =
+          MockCameraAndroidCameraxPlatform();
+      CameraAndroidCameraxPlatform.instance = fakePlatform;
 
-    expect(await cameraAndroidCameraxPlugin.getPlatformVersion(), '42');
-  });
+      expect(await cameraAndroidCameraxPlugin.getPlatformVersion(), '42');
+    });
+  }
 }
