@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTFileSelectorPlugin : NSObject <FlutterPlugin>
+@interface FFSFileSelectorPlugin : NSObject <FlutterPlugin>
 @end

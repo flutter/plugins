@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#import <file_selector_ios/FLTFileSelectorPlugin.h>
+#import <file_selector_ios/FFSFileSelectorPlugin.h>

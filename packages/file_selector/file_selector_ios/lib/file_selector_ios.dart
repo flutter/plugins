@@ -3,20 +3,11 @@
 // found in the LICENSE file.
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart';
 
 import 'src/messages.g.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/file_selector_ios');
-
 /// An implementation of [FileSelectorPlatform] for iOS.
 class FileSelectorIOS extends FileSelectorPlatform {
-  /// The MethodChannel that is being used by this implementation of the plugin.
-  @visibleForTesting
-  MethodChannel get channel => _channel;
-
   final FileSelectorApi _hostApi = FileSelectorApi();
 
   /// Registers the iOS implementation.
@@ -59,8 +50,12 @@ class FileSelectorIOS extends FileSelectorPlatform {
     final List<String> allowedUTIs = <String>[];
     for (final XTypeGroup typeGroup in typeGroups) {
       // If any group allows everything, no filtering should be done.
-      if (typeGroup.macUTIs?.isEmpty ?? true) {
+      if (typeGroup.allowsAny) {
         return null;
+      }
+      if (typeGroup.macUTIs?.isEmpty ?? true) {
+        throw ArgumentError('The provided type group $typeGroup should either '
+            'allow all files, or have a non-empty "macUTIs"');
       }
       allowedUTIs.addAll(typeGroup.macUTIs!);
     }

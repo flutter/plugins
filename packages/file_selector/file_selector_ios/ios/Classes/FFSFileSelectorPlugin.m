@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTFileSelectorPlugin.h"
-#import "FLTFileSelectorPlugin_Test.h"
+#import "FFSFileSelectorPlugin.h"
+#import "FFSFileSelectorPlugin_Test.h"
 #import "messages.g.h"
 
-@implementation FLTFileSelectorPlugin
+@implementation FFSFileSelectorPlugin
 
-#pragma mark - FLTFileSelectorApi
+#pragma mark - FFSFileSelectorApi
 
-- (void)openFileSelectorWithConfig:(FLTFileSelectorConfig *)config
+- (void)openFileSelectorWithConfig:(FFSFileSelectorConfig *)config
                         completion:(void (^)(NSArray<NSString *> * _Nullable,
                                              FlutterError * _Nullable))completion {
   if (self.pendingCompletion) {
@@ -43,8 +43,8 @@
 #pragma mark - FlutterPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FLTFileSelectorPlugin *plugin = [[FLTFileSelectorPlugin alloc] init];
-  FLTFileSelectorApiSetup(registrar.messenger, plugin);
+  FFSFileSelectorPlugin *plugin = [[FFSFileSelectorPlugin alloc] init];
+  FFSFileSelectorApiSetup(registrar.messenger, plugin);
 }
 
 #pragma mark - UIDocumentPickerDelegate

@@ -5,6 +5,6 @@ framework module file_selector_ios {
   module * { export * }
 
   explicit module Test {
-    header "FLTFileSelectorPlugin_Test.h"
+    header "FFSFileSelectorPlugin_Test.h"
   }
 }

@@ -1,12 +1,12 @@
-#import "FLTFileSelectorPlugin.h"
+#import "FFSFileSelectorPlugin.h"
 
 #import "messages.g.h"
 
 // This header is available in the Test module. Import via "@import file_selector_ios.Test;".
-@interface FLTFileSelectorPlugin() <FLTFileSelectorApi, UIDocumentPickerDelegate>
+@interface FFSFileSelectorPlugin() <FFSFileSelectorApi, UIDocumentPickerDelegate>
 
 /**
- * The completion block of a FLTFileSelectorApi request.
+ * The completion block of a FFSFileSelectorApi request.
  * It is saved and invoked later in a UIDocumentPickerDelegate method.
  */
 @property(nonatomic) void (^_Nullable pendingCompletion)

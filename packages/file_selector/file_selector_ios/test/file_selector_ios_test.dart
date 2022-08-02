@@ -3,24 +3,26 @@
 // found in the LICENSE file.
 
 import 'package:file_selector_ios/file_selector_ios.dart';
+import 'package:file_selector_ios/src/messages.g.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'file_selector_ios_test.mocks.dart';
+import 'test_api.dart';
+
+@GenerateMocks(<Type>[TestFileSelectorApi])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final FileSelectorIOS plugin = FileSelectorIOS();
-
-  final List<MethodCall> log = <MethodCall>[];
+  late MockTestFileSelectorApi mockApi;
 
   setUp(() {
-    plugin.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-      return null;
-    });
-
-    log.clear();
+    mockApi = MockTestFileSelectorApi();
+    TestFileSelectorApi.setup(mockApi);
   });
 
   test('registered instance', () {
@@ -29,6 +31,10 @@ void main() {
   });
 
   group('openFile', () {
+    setUp(() {
+      when(mockApi.openFile(any)).thenAnswer((_) async => <String>['foo']);
+    });
+
     test('passes the accepted type groups correctly', () async {
       final XTypeGroup group = XTypeGroup(
         label: 'text',
@@ -46,54 +52,41 @@ void main() {
 
       await plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group, groupTwo]);
 
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypes': <String, dynamic>{
-              'extensions': <String>['txt', 'jpg'],
-              'mimeTypes': <String>['text/plain', 'image/jpg'],
-              'UTIs': <String>['public.text', 'public.image'],
-            },
-            'initialDirectory': null,
-            'confirmButtonText': null,
-            'multiple': false,
-          }),
-        ],
-      );
-    });
-    test('passes initialDirectory correctly', () async {
-      await plugin.openFile(initialDirectory: '/example/directory');
+      final VerificationResult result = verify(mockApi.openFile(captureAny));
+      final FileSelectorConfig config =
+          result.captured[0] as FileSelectorConfig;
 
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypes': null,
-            'initialDirectory': '/example/directory',
-            'confirmButtonText': null,
-            'multiple': false,
-          }),
-        ],
-      );
+      // iOS only accepts macUTIs.
+      expect(listEquals(config.utis, <String>['public.text', 'public.image']),
+          isTrue);
+      expect(config.allowMultiSelection, isFalse);
     });
-    test('passes confirmButtonText correctly', () async {
-      await plugin.openFile(confirmButtonText: 'Open File');
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypes': null,
-            'initialDirectory': null,
-            'confirmButtonText': 'Open File',
-            'multiple': false,
-          }),
-        ],
+    test('throws for a type group that does not support iOS', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'images',
+        webWildCards: <String>['images/*'],
       );
+
+      await expectLater(
+          plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'text',
+      );
+
+      await expectLater(
+          plugin.openFile(acceptedTypeGroups: <XTypeGroup>[group]), completes);
     });
   });
+
   group('openFiles', () {
+    setUp(() {
+      when(mockApi.openFile(any)).thenAnswer((_) async => <String>['foo']);
+    });
+
     test('passes the accepted type groups correctly', () async {
       final XTypeGroup group = XTypeGroup(
         label: 'text',
@@ -111,178 +104,33 @@ void main() {
 
       await plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group, groupTwo]);
 
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypes': <String, List<dynamic>>{
-              'extensions': <String>['txt', 'jpg'],
-              'mimeTypes': <String>['text/plain', 'image/jpg'],
-              'UTIs': <String>['public.text', 'public.image'],
-            },
-            'initialDirectory': null,
-            'confirmButtonText': null,
-            'multiple': true,
-          }),
-        ],
-      );
-    });
-    test('passes initialDirectory correctly', () async {
-      await plugin.openFiles(initialDirectory: '/example/directory');
+      final VerificationResult result = verify(mockApi.openFile(captureAny));
+      final FileSelectorConfig config =
+          result.captured[0] as FileSelectorConfig;
 
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypes': null,
-            'initialDirectory': '/example/directory',
-            'confirmButtonText': null,
-            'multiple': true,
-          }),
-        ],
-      );
+      // iOS only accepts macUTIs.
+      expect(listEquals(config.utis, <String>['public.text', 'public.image']),
+          isTrue);
+      expect(config.allowMultiSelection, isTrue);
     });
-    test('passes confirmButtonText correctly', () async {
-      await plugin.openFiles(confirmButtonText: 'Open File');
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('openFile', arguments: <String, dynamic>{
-            'acceptedTypes': null,
-            'initialDirectory': null,
-            'confirmButtonText': 'Open File',
-            'multiple': true,
-          }),
-        ],
+    test('throws for a type group that does not support iOS', () async {
+      final XTypeGroup group = XTypeGroup(
+        label: 'images',
+        webWildCards: <String>['images/*'],
       );
-    });
-  });
 
-  group('getSavePath', () {
-    test('passes the accepted type groups correctly', () async {
+      await expectLater(
+          plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group]),
+          throwsArgumentError);
+    });
+
+    test('allows a wildcard group', () async {
       final XTypeGroup group = XTypeGroup(
         label: 'text',
-        extensions: <String>['txt'],
-        mimeTypes: <String>['text/plain'],
-        macUTIs: <String>['public.text'],
       );
 
-      final XTypeGroup groupTwo = XTypeGroup(
-          label: 'image',
-          extensions: <String>['jpg'],
-          mimeTypes: <String>['image/jpg'],
-          macUTIs: <String>['public.image'],
-          webWildCards: <String>['image/*']);
-
-      await plugin
-          .getSavePath(acceptedTypeGroups: <XTypeGroup>[group, groupTwo]);
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getSavePath', arguments: <String, dynamic>{
-            'acceptedTypes': <String, List<dynamic>>{
-              'extensions': <String>['txt', 'jpg'],
-              'mimeTypes': <String>['text/plain', 'image/jpg'],
-              'UTIs': <String>['public.text', 'public.image'],
-            },
-            'initialDirectory': null,
-            'suggestedName': null,
-            'confirmButtonText': null,
-          }),
-        ],
-      );
+      await expectLater(
+          plugin.openFiles(acceptedTypeGroups: <XTypeGroup>[group]), completes);
     });
-    test('passes initialDirectory correctly', () async {
-      await plugin.getSavePath(initialDirectory: '/example/directory');
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getSavePath', arguments: <String, dynamic>{
-            'acceptedTypes': null,
-            'initialDirectory': '/example/directory',
-            'suggestedName': null,
-            'confirmButtonText': null,
-          }),
-        ],
-      );
-    });
-    test('passes confirmButtonText correctly', () async {
-      await plugin.getSavePath(confirmButtonText: 'Open File');
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getSavePath', arguments: <String, dynamic>{
-            'acceptedTypes': null,
-            'initialDirectory': null,
-            'suggestedName': null,
-            'confirmButtonText': 'Open File',
-          }),
-        ],
-      );
-    });
-    group('getDirectoryPath', () {
-      test('passes initialDirectory correctly', () async {
-        await plugin.getDirectoryPath(initialDirectory: '/example/directory');
-
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
-              'initialDirectory': '/example/directory',
-              'confirmButtonText': null,
-            }),
-          ],
-        );
-      });
-      test('passes confirmButtonText correctly', () async {
-        await plugin.getDirectoryPath(confirmButtonText: 'Open File');
-
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('getDirectoryPath', arguments: <String, dynamic>{
-              'initialDirectory': null,
-              'confirmButtonText': 'Open File',
-            }),
-          ],
-        );
-      });
-    });
-  });
-
-  test('ignores all type groups if any of them is a wildcard', () async {
-    await plugin.getSavePath(acceptedTypeGroups: <XTypeGroup>[
-      XTypeGroup(
-        label: 'text',
-        extensions: <String>['txt'],
-        mimeTypes: <String>['text/plain'],
-        macUTIs: <String>['public.text'],
-      ),
-      XTypeGroup(
-        label: 'image',
-        extensions: <String>['jpg'],
-        mimeTypes: <String>['image/jpg'],
-        macUTIs: <String>['public.image'],
-      ),
-      XTypeGroup(
-        label: 'any',
-      ),
-    ]);
-
-    expect(
-      log,
-      <Matcher>[
-        isMethodCall('getSavePath', arguments: <String, dynamic>{
-          'acceptedTypes': null,
-          'initialDirectory': null,
-          'suggestedName': null,
-          'confirmButtonText': null,
-        }),
-      ],
-    );
   });
 }
