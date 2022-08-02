@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is a pared down version of the Dart code from the app-facing package,
-// to allow running the same examples for package-local testing.
-// TODO(stuartmorgan): Consider extracting this to a shared package. See also
-// https://github.com/flutter/flutter/issues/46716.
-
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+
+// This is a pared down version of the Dart code from the app-facing package,
+// to allow running the same examples for package-local testing.
+// TODO(stuartmorgan): Consider extracting this to a shared package. See also
+// https://github.com/flutter/flutter/issues/46716.
 
 /// Controller for a single ExampleGoogleMap instance running on the host platform.
 class ExampleGoogleMapController {
