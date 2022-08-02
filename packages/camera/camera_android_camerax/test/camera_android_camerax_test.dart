@@ -24,8 +24,8 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    CameraAndroidCamerax cameraAndroidCameraxPlugin = CameraAndroidCamerax();
-    MockCameraAndroidCameraxPlatform fakePlatform =
+    final CameraAndroidCamerax cameraAndroidCameraxPlugin = CameraAndroidCamerax();
+    final MockCameraAndroidCameraxPlatform fakePlatform =
         MockCameraAndroidCameraxPlatform();
     CameraAndroidCameraxPlatform.instance = fakePlatform;
 

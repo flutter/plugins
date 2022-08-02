@@ -11,11 +11,11 @@ import 'camera_android_camerax_platform_interface.dart';
 class MethodChannelCameraAndroidCamerax extends CameraAndroidCameraxPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('camera_android_camerax');
+  final MethodChannel methodChannel = const MethodChannel('camera_android_camerax');
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version =
+    final String version =
         await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }

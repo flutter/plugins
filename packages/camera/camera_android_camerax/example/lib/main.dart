@@ -21,7 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _cameraAndroidCameraxPlugin = CameraAndroidCamerax();
+  final CameraAndroidCamerax _cameraAndroidCameraxPlugin = CameraAndroidCamerax();
 
   @override
   void initState() {
@@ -45,7 +45,8 @@ class _MyAppState extends State<MyApp> {
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
-    if (!mounted) return;
+    if (!mounted)
+      return;
 
     setState(() {
       _platformVersion = platformVersion;

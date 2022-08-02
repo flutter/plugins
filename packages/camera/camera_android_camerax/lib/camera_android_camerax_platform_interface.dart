@@ -6,6 +6,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'camera_android_camerax_method_channel.dart';
 
+/// The interface used to construct CameraAndroidCameraxPlatform.
 abstract class CameraAndroidCameraxPlatform extends PlatformInterface {
   /// Constructs a CameraAndroidCameraxPlatform.
   CameraAndroidCameraxPlatform() : super(token: _token);
@@ -28,6 +29,7 @@ abstract class CameraAndroidCameraxPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Returns platform version.
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
