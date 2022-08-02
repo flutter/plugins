@@ -13,7 +13,7 @@ class MockCameraAndroidCameraxPlatform
     implements CameraAndroidCameraxPlatform {
   @override
   Future<String?> getPlatformVersion() {
-    return Future.value('42');
+    return Future<String?>.value('42');
   }
 
   void main() {
