@@ -21,11 +21,11 @@ class FileSelectorIOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String>? path = (await _hostApi.openFile(FileSelectorConfig(
+    final List<String> path = (await _hostApi.openFile(FileSelectorConfig(
             utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
             allowMultiSelection: false)))
-        ?.cast<String>();
-    return path == null ? null : XFile(path.first);
+        .cast<String>();
+    return path.isEmpty ? null : XFile(path.first);
   }
 
   @override
@@ -34,24 +34,24 @@ class FileSelectorIOS extends FileSelectorPlatform {
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final List<String>? pathList = (await _hostApi.openFile(FileSelectorConfig(
+    final List<String> pathList = (await _hostApi.openFile(FileSelectorConfig(
             utis: _allowedUtiListFromTypeGroups(acceptedTypeGroups),
             allowMultiSelection: true)))
-        ?.cast<String>();
-    return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
+        .cast<String>();
+    return pathList.map((String path) => XFile(path)).toList();
   }
 
   // Converts the type group list into a list of all allowed UTIs, since
   // iOS doesn't support filter groups.
-  List<String>? _allowedUtiListFromTypeGroups(List<XTypeGroup>? typeGroups) {
+  List<String> _allowedUtiListFromTypeGroups(List<XTypeGroup>? typeGroups) {
     if (typeGroups == null || typeGroups.isEmpty) {
-      return null;
+      return [];
     }
     final List<String> allowedUTIs = <String>[];
     for (final XTypeGroup typeGroup in typeGroups) {
       // If any group allows everything, no filtering should be done.
       if (typeGroup.allowsAny) {
-        return null;
+        return [];
       }
       if (typeGroup.macUTIs?.isEmpty ?? true) {
         throw ArgumentError('The provided type group $typeGroup should either '

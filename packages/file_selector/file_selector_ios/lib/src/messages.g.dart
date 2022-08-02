@@ -12,12 +12,12 @@ import 'package:flutter/services.dart';
 
 class FileSelectorConfig {
   FileSelectorConfig({
-    this.utis,
-    this.allowMultiSelection,
+    required this.utis,
+    required this.allowMultiSelection,
   });
 
-  List<String?>? utis;
-  bool? allowMultiSelection;
+  List<String?> utis;
+  bool allowMultiSelection;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -29,8 +29,8 @@ class FileSelectorConfig {
   static FileSelectorConfig decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return FileSelectorConfig(
-      utis: (pigeonMap['utis'] as List<Object?>?)?.cast<String?>(),
-      allowMultiSelection: pigeonMap['allowMultiSelection'] as bool?,
+      utis: (pigeonMap['utis'] as List<Object?>?)!.cast<String?>(),
+      allowMultiSelection: pigeonMap['allowMultiSelection']! as bool,
     );
   }
 }
@@ -70,7 +70,7 @@ class FileSelectorApi {
 
   static const MessageCodec<Object?> codec = _FileSelectorApiCodec();
 
-  Future<List<String?>?> openFile(FileSelectorConfig arg_config) async {
+  Future<List<String?>> openFile(FileSelectorConfig arg_config) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.FileSelectorApi.openFile', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -87,8 +87,13 @@ class FileSelectorApi {
         message: error['message'] as String?,
         details: error['details'],
       );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
     } else {
-      return (replyMap['result'] as List<Object?>?)?.cast<String?>();
+      return (replyMap['result'] as List<Object?>?)!.cast<String?>();
     }
   }
 }

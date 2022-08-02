@@ -41,8 +41,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @end
 
 @implementation FFSFileSelectorConfig
-+ (instancetype)makeWithUtis:(nullable NSArray<NSString *> *)utis
-    allowMultiSelection:(nullable NSNumber *)allowMultiSelection {
++ (instancetype)makeWithUtis:(NSArray<NSString *> *)utis
+    allowMultiSelection:(NSNumber *)allowMultiSelection {
   FFSFileSelectorConfig* pigeonResult = [[FFSFileSelectorConfig alloc] init];
   pigeonResult.utis = utis;
   pigeonResult.allowMultiSelection = allowMultiSelection;
@@ -51,7 +51,9 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (FFSFileSelectorConfig *)fromMap:(NSDictionary *)dict {
   FFSFileSelectorConfig *pigeonResult = [[FFSFileSelectorConfig alloc] init];
   pigeonResult.utis = GetNullableObject(dict, @"utis");
+  NSAssert(pigeonResult.utis != nil, @"");
   pigeonResult.allowMultiSelection = GetNullableObject(dict, @"allowMultiSelection");
+  NSAssert(pigeonResult.allowMultiSelection != nil, @"");
   return pigeonResult;
 }
 + (nullable FFSFileSelectorConfig *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FFSFileSelectorConfig fromMap:dict] : nil; }

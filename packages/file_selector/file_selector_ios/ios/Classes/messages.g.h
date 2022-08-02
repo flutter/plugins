@@ -14,10 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 @class FFSFileSelectorConfig;
 
 @interface FFSFileSelectorConfig : NSObject
-+ (instancetype)makeWithUtis:(nullable NSArray<NSString *> *)utis
-    allowMultiSelection:(nullable NSNumber *)allowMultiSelection;
-@property(nonatomic, strong, nullable) NSArray<NSString *> * utis;
-@property(nonatomic, strong, nullable) NSNumber * allowMultiSelection;
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithUtis:(NSArray<NSString *> *)utis
+    allowMultiSelection:(NSNumber *)allowMultiSelection;
+@property(nonatomic, strong) NSArray<NSString *> * utis;
+@property(nonatomic, strong) NSNumber * allowMultiSelection;
 @end
 
 /// The codec used by FFSFileSelectorApi.

@@ -17,13 +17,13 @@ import 'package:pigeon/pigeon.dart';
 class FileSelectorConfig {
   FileSelectorConfig(
       {this.utis = const <String?>[], this.allowMultiSelection = false});
-  List<String?>? utis;
-  bool? allowMultiSelection;
+  List<String?> utis;
+  bool allowMultiSelection;
 }
 
 @HostApi(dartHostTestHandler: 'TestFileSelectorApi')
 abstract class FileSelectorApi {
   @async
   @ObjCSelector('openFileSelectorWithConfig:')
-  List<String>? openFile(FileSelectorConfig config);
+  List<String> openFile(FileSelectorConfig config);
 }

@@ -23,7 +23,7 @@
   plugin.documentPickerViewControllerOverride = picker;
   plugin.presentingViewControllerOverride = mockPresentingVC;
 
-  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:nil
+  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:@[]
                                                      allowMultiSelection:@NO]
                           completion:^(NSArray<NSString *> *paths, FlutterError *error){
                           }];
@@ -40,7 +40,8 @@
   UIDocumentPickerViewController *picker =
       [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
                                                              inMode:UIDocumentPickerModeImport];
-  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:nil
+  plugin.documentPickerViewControllerOverride = picker;
+  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:@[]
                                                      allowMultiSelection:@YES]
                           completion:^(NSArray<NSString *> *paths, FlutterError *error) {
                             NSArray *expectedPaths = @[ @"/file1.txt", @"/file2.txt" ];
@@ -52,7 +53,6 @@
         [NSURL URLWithString:@"file:///file1.txt"], [NSURL URLWithString:@"file:///file2.txt"]
       ]];
   [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
-  XCTAssertNil(plugin.pendingCompletion);
 }
 
 - (void)testReturnsPickedFileLegacy {
@@ -63,7 +63,7 @@
       [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[]
                                                              inMode:UIDocumentPickerModeImport];
   plugin.documentPickerViewControllerOverride = picker;
-  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:nil
+  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:@[]
                                                      allowMultiSelection:@NO]
                           completion:^(NSArray<NSString *> *paths, FlutterError *error) {
                             NSArray *expectedPaths = @[ @"/file1.txt" ];
@@ -75,7 +75,6 @@
   [plugin documentPicker:picker didPickDocumentAtURL:[NSURL URLWithString:@"file:///file1.txt"]];
 #pragma GCC diagnostic pop
   [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
-  XCTAssertNil(plugin.pendingCompletion);
 }
 
 - (void)testCancellingPickerReturnsNil {
@@ -86,31 +85,13 @@
   plugin.documentPickerViewControllerOverride = picker;
 
   XCTestExpectation *completionWasCalled = [[XCTestExpectation alloc] init];
-  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:nil
+  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:@[]
                                                      allowMultiSelection:@NO]
                           completion:^(NSArray<NSString *> *paths, FlutterError *error) {
                             XCTAssertEqual(paths.count, 0);
                             [completionWasCalled fulfill];
                           }];
   [plugin documentPickerWasCancelled:picker];
-  [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
-  XCTAssertNil(plugin.pendingCompletion);
-}
-
-- (void)testOpenFileSelectorWithPendingCompletionReturnsError {
-  FFSFileSelectorPlugin *plugin = [[FFSFileSelectorPlugin alloc] init];
-  plugin.pendingCompletion = ^(NSArray<NSString *> *paths, FlutterError *error) {
-  };
-
-  XCTestExpectation *completionWasCalled =
-      [[XCTestExpectation alloc] initWithDescription:@"Completion was called"];
-  [plugin openFileSelectorWithConfig:[FFSFileSelectorConfig makeWithUtis:nil
-                                                     allowMultiSelection:@NO]
-                          completion:^(NSArray<NSString *> *paths, FlutterError *error) {
-                            XCTAssertNotNil(error);
-                            [completionWasCalled fulfill];
-                          }];
-
   [self waitForExpectations:@[ completionWasCalled ] timeout:1.0];
 }
 

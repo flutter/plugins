@@ -6,12 +6,6 @@
 @interface FFSFileSelectorPlugin() <FFSFileSelectorApi, UIDocumentPickerDelegate>
 
 /**
- * The completion block of a FFSFileSelectorApi request.
- * It is saved and invoked later in a UIDocumentPickerDelegate method.
- */
-@property(nonatomic) void (^_Nullable pendingCompletion)
-    (NSArray<NSString *> *_Nullable, FlutterError *_Nullable);
-/**
  * Overrides the view controller used for presenting the document picker.
  */
 @property(nonatomic) UIViewController * _Nullable presentingViewControllerOverride;

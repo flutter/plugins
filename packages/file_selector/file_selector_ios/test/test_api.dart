@@ -43,7 +43,7 @@ class _TestFileSelectorApiCodec extends StandardMessageCodec {
 abstract class TestFileSelectorApi {
   static const MessageCodec<Object?> codec = _TestFileSelectorApiCodec();
 
-  Future<List<String?>?> openFile(FileSelectorConfig config);
+  Future<List<String?>> openFile(FileSelectorConfig config);
   static void setup(TestFileSelectorApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -61,7 +61,7 @@ abstract class TestFileSelectorApi {
               (args[0] as FileSelectorConfig?);
           assert(arg_config != null,
               'Argument for dev.flutter.pigeon.FileSelectorApi.openFile was null, expected non-null FileSelectorConfig.');
-          final List<String?>? output = await api.openFile(arg_config!);
+          final List<String?> output = await api.openFile(arg_config!);
           return <Object?, Object?>{'result': output};
         });
       }
