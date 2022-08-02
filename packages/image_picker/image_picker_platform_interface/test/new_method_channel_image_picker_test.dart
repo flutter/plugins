@@ -4,11 +4,8 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
-import 'package:image_picker_platform_interface/src/types/image_options.dart';
-import 'package:image_picker_platform_interface/src/types/multi_image_picker_options.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
