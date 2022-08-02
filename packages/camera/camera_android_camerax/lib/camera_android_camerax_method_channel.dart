@@ -15,7 +15,7 @@ class MethodChannelCameraAndroidCamerax extends CameraAndroidCameraxPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final String version =
+    final String? version =
         await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
