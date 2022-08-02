@@ -59,7 +59,6 @@ class MockCookieManagerHostApi extends _i1.Mock
 /// A class which mocks [DownloadListener].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockDownloadListener extends _i1.Mock implements _i2.DownloadListener {
   MockDownloadListener() {
     _i1.throwOnMissingStub(this);
@@ -81,7 +80,6 @@ class MockDownloadListener extends _i1.Mock implements _i2.DownloadListener {
 /// A class which mocks [JavaScriptChannel].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockJavaScriptChannel extends _i1.Mock implements _i2.JavaScriptChannel {
   MockJavaScriptChannel() {
     _i1.throwOnMissingStub(this);
@@ -417,7 +415,6 @@ class MockTestAssetManagerHostApi extends _i1.Mock
 /// A class which mocks [WebChromeClient].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
   MockWebChromeClient() {
     _i1.throwOnMissingStub(this);
@@ -436,7 +433,6 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
 /// A class which mocks [WebView].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockWebView extends _i1.Mock implements _i2.WebView {
   MockWebView() {
     _i1.throwOnMissingStub(this);
@@ -590,7 +586,6 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
 /// A class which mocks [WebViewClient].
 ///
 /// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
 class MockWebViewClient extends _i1.Mock implements _i2.WebViewClient {
   MockWebViewClient() {
     _i1.throwOnMissingStub(this);
