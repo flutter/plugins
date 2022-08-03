@@ -44,4 +44,9 @@ class WebKitProxy {
     )
         didReceiveScriptMessage,
   }) createScriptMessageHandler;
+
+  /// The default [WKWebsiteDataStore].
+  WKWebsiteDataStore defaultWebsiteDataStore() {
+    return WKWebsiteDataStore.defaultDataStore;
+  }
 }
