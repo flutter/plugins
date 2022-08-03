@@ -11,7 +11,6 @@ import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart';
-import 'src/instance_manager.dart';
 import 'webview_android_widget.dart';
 
 /// Builds an Android webview.
@@ -55,8 +54,8 @@ class AndroidWebView implements WebViewPlatform {
             gestureRecognizers: gestureRecognizers,
             layoutDirection:
                 Directionality.maybeOf(context) ?? TextDirection.rtl,
-            creationParams:
-                InstanceManager.instance.getInstanceId(controller.webView),
+            creationParams: JavaObject.globalInstanceManager
+                .getIdentifier(controller.webView),
             creationParamsCodec: const StandardMessageCodec(),
           ),
         );

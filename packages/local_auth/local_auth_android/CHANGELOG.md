@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Updates  androidx.fragment version to 1.5.1.
+
 ## 1.0.8
 
 * Removes usages of `FingerprintManager` and other `BiometricManager` deprecated method usages.
