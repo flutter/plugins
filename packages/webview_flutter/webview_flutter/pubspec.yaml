@@ -30,4 +30,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.0.16
-  pedantic: ^1.10.0
