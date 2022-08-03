@@ -828,7 +828,7 @@ void main() {
       // of WebView itstelf.
       mockPlatformHostApi = MockTestWebViewHostApi();
       TestWebViewHostApi.setup(mockPlatformHostApi);
-      instanceManager = InstanceManager();
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
       android_webview.WebView.api =
           WebViewHostApiImpl(instanceManager: instanceManager);
     });

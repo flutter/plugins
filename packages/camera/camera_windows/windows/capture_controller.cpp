@@ -22,6 +22,15 @@ namespace camera_windows {
 
 using Microsoft::WRL::ComPtr;
 
+CameraResult GetCameraResult(HRESULT hr) {
+  if (SUCCEEDED(hr)) {
+    return CameraResult::kSuccess;
+  }
+
+  return hr == E_ACCESSDENIED ? CameraResult::kAccessDenied
+                              : CameraResult::kError;
+}
+
 CaptureControllerImpl::CaptureControllerImpl(
     CaptureControllerListener* listener)
     : capture_controller_listener_(listener), CaptureController(){};
@@ -297,11 +306,11 @@ bool CaptureControllerImpl::InitCaptureDevice(
 
   if (IsInitialized()) {
     capture_controller_listener_->OnCreateCaptureEngineFailed(
-        "Capture device already initialized");
+        CameraResult::kError, "Capture device already initialized");
     return false;
   } else if (capture_engine_state_ == CaptureEngineState::kInitializing) {
     capture_controller_listener_->OnCreateCaptureEngineFailed(
-        "Capture device already initializing");
+        CameraResult::kError, "Capture device already initializing");
     return false;
   }
 
@@ -317,7 +326,7 @@ bool CaptureControllerImpl::InitCaptureDevice(
 
     if (FAILED(hr)) {
       capture_controller_listener_->OnCreateCaptureEngineFailed(
-          "Failed to create camera");
+          GetCameraResult(hr), "Failed to create camera");
       ResetCaptureController();
       return false;
     }
@@ -328,7 +337,7 @@ bool CaptureControllerImpl::InitCaptureDevice(
   HRESULT hr = CreateCaptureEngine();
   if (FAILED(hr)) {
     capture_controller_listener_->OnCreateCaptureEngineFailed(
-        "Failed to create camera");
+        GetCameraResult(hr), "Failed to create camera");
     ResetCaptureController();
     return false;
   }
@@ -341,29 +350,34 @@ void CaptureControllerImpl::TakePicture(const std::string& file_path) {
   assert(capture_engine_);
 
   if (!IsInitialized()) {
-    return OnPicture(false, "Not initialized");
+    return OnPicture(CameraResult::kError, "Not initialized");
   }
+
+  HRESULT hr = S_OK;
 
   if (!base_capture_media_type_) {
     // Enumerates mediatypes and finds media type for video capture.
-    if (FAILED(FindBaseMediaTypes())) {
-      return OnPicture(false, "Failed to initialize photo capture");
+    hr = FindBaseMediaTypes();
+    if (FAILED(hr)) {
+      return OnPicture(GetCameraResult(hr),
+                       "Failed to initialize photo capture");
     }
   }
 
   if (!photo_handler_) {
     photo_handler_ = std::make_unique<PhotoHandler>();
   } else if (photo_handler_->IsTakingPhoto()) {
-    return OnPicture(false, "Photo already requested");
+    return OnPicture(CameraResult::kError, "Photo already requested");
   }
 
   // Check MF_CAPTURE_ENGINE_PHOTO_TAKEN event handling
   // for response process.
-  if (!photo_handler_->TakePhoto(file_path, capture_engine_.Get(),
-                                 base_capture_media_type_.Get())) {
+  hr = photo_handler_->TakePhoto(file_path, capture_engine_.Get(),
+                                 base_capture_media_type_.Get());
+  if (FAILED(hr)) {
     // Destroy photo handler on error cases to make sure state is resetted.
     photo_handler_ = nullptr;
-    return OnPicture(false, "Failed to take photo");
+    return OnPicture(GetCameraResult(hr), "Failed to take photo");
   }
 }
 
@@ -487,15 +501,19 @@ void CaptureControllerImpl::StartRecord(const std::string& file_path,
   assert(capture_engine_);
 
   if (!IsInitialized()) {
-    return OnRecordStarted(false,
+    return OnRecordStarted(CameraResult::kError,
                            "Camera not initialized. Camera should be "
                            "disposed and reinitialized.");
   }
 
+  HRESULT hr = S_OK;
+
   if (!base_capture_media_type_) {
     // Enumerates mediatypes and finds media type for video capture.
-    if (FAILED(FindBaseMediaTypes())) {
-      return OnRecordStarted(false, "Failed to initialize video recording");
+    hr = FindBaseMediaTypes();
+    if (FAILED(hr)) {
+      return OnRecordStarted(GetCameraResult(hr),
+                             "Failed to initialize video recording");
     }
   }
 
@@ -503,19 +521,21 @@ void CaptureControllerImpl::StartRecord(const std::string& file_path,
     record_handler_ = std::make_unique<RecordHandler>(record_audio_);
   } else if (!record_handler_->CanStart()) {
     return OnRecordStarted(
-        false,
+        CameraResult::kError,
         "Recording cannot be started. Previous recording must be stopped "
         "first.");
   }
 
   // Check MF_CAPTURE_ENGINE_RECORD_STARTED event handling for response
   // process.
-  if (!record_handler_->StartRecord(file_path, max_video_duration_ms,
+  hr = record_handler_->StartRecord(file_path, max_video_duration_ms,
                                     capture_engine_.Get(),
-                                    base_capture_media_type_.Get())) {
+                                    base_capture_media_type_.Get());
+  if (FAILED(hr)) {
     // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
-    return OnRecordStarted(false, "Failed to start video recording");
+    return OnRecordStarted(GetCameraResult(hr),
+                           "Failed to start video recording");
   }
 }
 
@@ -523,19 +543,22 @@ void CaptureControllerImpl::StopRecord() {
   assert(capture_controller_listener_);
 
   if (!IsInitialized()) {
-    return OnRecordStopped(false,
+    return OnRecordStopped(CameraResult::kError,
                            "Camera not initialized. Camera should be "
                            "disposed and reinitialized.");
   }
 
   if (!record_handler_ && !record_handler_->CanStop()) {
-    return OnRecordStopped(false, "Recording cannot be stopped.");
+    return OnRecordStopped(CameraResult::kError,
+                           "Recording cannot be stopped.");
   }
 
   // Check MF_CAPTURE_ENGINE_RECORD_STOPPED event handling for response
   // process.
-  if (!record_handler_->StopRecord(capture_engine_.Get())) {
-    return OnRecordStopped(false, "Failed to stop video recording");
+  HRESULT hr = record_handler_->StopRecord(capture_engine_.Get());
+  if (FAILED(hr)) {
+    return OnRecordStopped(GetCameraResult(hr),
+                           "Failed to stop video recording");
   }
 }
 
@@ -547,11 +570,12 @@ void CaptureControllerImpl::StopTimedRecord() {
     return;
   }
 
-  if (!record_handler_->StopRecord(capture_engine_.Get())) {
+  HRESULT hr = record_handler_->StopRecord(capture_engine_.Get());
+  if (FAILED(hr)) {
     // Destroy record handler on error cases to make sure state is resetted.
     record_handler_ = nullptr;
     return capture_controller_listener_->OnVideoRecordFailed(
-        "Failed to record video");
+        GetCameraResult(hr), "Failed to record video");
   }
 }
 
@@ -563,15 +587,19 @@ void CaptureControllerImpl::StartPreview() {
   assert(texture_handler_);
 
   if (!IsInitialized() || !texture_handler_) {
-    return OnPreviewStarted(false,
+    return OnPreviewStarted(CameraResult::kError,
                             "Camera not initialized. Camera should be "
                             "disposed and reinitialized.");
   }
 
+  HRESULT hr = S_OK;
+
   if (!base_preview_media_type_) {
     // Enumerates mediatypes and finds media type for video capture.
-    if (FAILED(FindBaseMediaTypes())) {
-      return OnPreviewStarted(false, "Failed to initialize video preview");
+    hr = FindBaseMediaTypes();
+    if (FAILED(hr)) {
+      return OnPreviewStarted(GetCameraResult(hr),
+                              "Failed to initialize video preview");
     }
   }
 
@@ -583,19 +611,22 @@ void CaptureControllerImpl::StartPreview() {
   if (!preview_handler_) {
     preview_handler_ = std::make_unique<PreviewHandler>();
   } else if (preview_handler_->IsInitialized()) {
-    return OnPreviewStarted(true, "");
+    return OnPreviewStarted(CameraResult::kSuccess, "");
   } else {
-    return OnPreviewStarted(false, "Preview already exists");
+    return OnPreviewStarted(CameraResult::kError, "Preview already exists");
   }
 
   // Check MF_CAPTURE_ENGINE_PREVIEW_STARTED event handling for response
   // process.
-  if (!preview_handler_->StartPreview(capture_engine_.Get(),
+  hr = preview_handler_->StartPreview(capture_engine_.Get(),
                                       base_preview_media_type_.Get(),
-                                      capture_engine_callback_handler_.Get())) {
+                                      capture_engine_callback_handler_.Get());
+
+  if (FAILED(hr)) {
     // Destroy preview handler on error cases to make sure state is resetted.
     preview_handler_ = nullptr;
-    return OnPreviewStarted(false, "Failed to start video preview");
+    return OnPreviewStarted(GetCameraResult(hr),
+                            "Failed to start video preview");
   }
 }
 
@@ -604,15 +635,15 @@ void CaptureControllerImpl::StartPreview() {
 // pausing and resuming the preview.
 // Check MF_CAPTURE_ENGINE_PREVIEW_STOPPED event handling for response
 // process.
-void CaptureControllerImpl::StopPreview() {
+HRESULT CaptureControllerImpl::StopPreview() {
   assert(capture_engine_);
 
   if (!IsInitialized() || !preview_handler_) {
-    return;
+    return S_OK;
   }
 
   // Requests to stop preview.
-  preview_handler_->StopPreview(capture_engine_.Get());
+  return preview_handler_->StopPreview(capture_engine_.Get());
 }
 
 // Marks preview as paused.
@@ -623,14 +654,14 @@ void CaptureControllerImpl::PausePreview() {
 
   if (!preview_handler_ || !preview_handler_->IsInitialized()) {
     return capture_controller_listener_->OnPausePreviewFailed(
-        "Preview not started");
+        CameraResult::kError, "Preview not started");
   }
 
   if (preview_handler_->PausePreview()) {
     capture_controller_listener_->OnPausePreviewSucceeded();
   } else {
     capture_controller_listener_->OnPausePreviewFailed(
-        "Failed to pause preview");
+        CameraResult::kError, "Failed to pause preview");
   }
 }
 
@@ -642,14 +673,14 @@ void CaptureControllerImpl::ResumePreview() {
 
   if (!preview_handler_ || !preview_handler_->IsInitialized()) {
     return capture_controller_listener_->OnResumePreviewFailed(
-        "Preview not started");
+        CameraResult::kError, "Preview not started");
   }
 
   if (preview_handler_->ResumePreview()) {
     capture_controller_listener_->OnResumePreviewSucceeded();
   } else {
     capture_controller_listener_->OnResumePreviewFailed(
-        "Failed to pause preview");
+        CameraResult::kError, "Failed to pause preview");
   }
 }
 
@@ -677,22 +708,23 @@ void CaptureControllerImpl::OnEvent(IMFMediaEvent* event) {
       error = Utf8FromUtf16(err.ErrorMessage());
     }
 
+    CameraResult event_result = GetCameraResult(event_hr);
     if (extended_type_guid == MF_CAPTURE_ENGINE_ERROR) {
-      OnCaptureEngineError(event_hr, error);
+      OnCaptureEngineError(event_result, error);
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
-      OnCaptureEngineInitialized(SUCCEEDED(event_hr), error);
+      OnCaptureEngineInitialized(event_result, error);
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_PREVIEW_STARTED) {
       // Preview is marked as started after first frame is captured.
       // This is because, CaptureEngine might inform that preview is started
       // even if error is thrown right after.
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_PREVIEW_STOPPED) {
-      OnPreviewStopped(SUCCEEDED(event_hr), error);
+      OnPreviewStopped(event_result, error);
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_RECORD_STARTED) {
-      OnRecordStarted(SUCCEEDED(event_hr), error);
+      OnRecordStarted(event_result, error);
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_RECORD_STOPPED) {
-      OnRecordStopped(SUCCEEDED(event_hr), error);
+      OnRecordStopped(event_result, error);
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_PHOTO_TAKEN) {
-      OnPicture(SUCCEEDED(event_hr), error);
+      OnPicture(event_result, error);
     } else if (extended_type_guid == MF_CAPTURE_ENGINE_CAMERA_STREAM_BLOCKED) {
       // TODO: Inform capture state to flutter.
     } else if (extended_type_guid ==
@@ -703,8 +735,9 @@ void CaptureControllerImpl::OnEvent(IMFMediaEvent* event) {
 }
 
 // Handles Picture event and informs CaptureControllerListener.
-void CaptureControllerImpl::OnPicture(bool success, const std::string& error) {
-  if (success && photo_handler_) {
+void CaptureControllerImpl::OnPicture(CameraResult result,
+                                      const std::string& error) {
+  if (result == CameraResult::kSuccess && photo_handler_) {
     if (capture_controller_listener_) {
       std::string path = photo_handler_->GetPhotoPath();
       capture_controller_listener_->OnTakePictureSucceeded(path);
@@ -712,7 +745,7 @@ void CaptureControllerImpl::OnPicture(bool success, const std::string& error) {
     photo_handler_->OnPhotoTaken();
   } else {
     if (capture_controller_listener_) {
-      capture_controller_listener_->OnTakePictureFailed(error);
+      capture_controller_listener_->OnTakePictureFailed(result, error);
     }
     // Destroy photo handler on error cases to make sure state is resetted.
     photo_handler_ = nullptr;
@@ -722,11 +755,11 @@ void CaptureControllerImpl::OnPicture(bool success, const std::string& error) {
 // Handles CaptureEngineInitialized event and informs
 // CaptureControllerListener.
 void CaptureControllerImpl::OnCaptureEngineInitialized(
-    bool success, const std::string& error) {
+    CameraResult result, const std::string& error) {
   if (capture_controller_listener_) {
-    if (!success) {
+    if (result != CameraResult::kSuccess) {
       capture_controller_listener_->OnCreateCaptureEngineFailed(
-          "Failed to initialize capture engine");
+          result, "Failed to initialize capture engine");
       ResetCaptureController();
       return;
     }
@@ -740,7 +773,7 @@ void CaptureControllerImpl::OnCaptureEngineInitialized(
       capture_engine_state_ = CaptureEngineState::kInitialized;
     } else {
       capture_controller_listener_->OnCreateCaptureEngineFailed(
-          "Failed to create texture_id");
+          CameraResult::kError, "Failed to create texture_id");
       // Reset state
       ResetCaptureController();
     }
@@ -748,10 +781,10 @@ void CaptureControllerImpl::OnCaptureEngineInitialized(
 }
 
 // Handles CaptureEngineError event and informs CaptureControllerListener.
-void CaptureControllerImpl::OnCaptureEngineError(HRESULT hr,
+void CaptureControllerImpl::OnCaptureEngineError(CameraResult result,
                                                  const std::string& error) {
   if (capture_controller_listener_) {
-    capture_controller_listener_->OnCaptureError(error);
+    capture_controller_listener_->OnCaptureError(result, error);
   }
 
   // TODO: If MF_CAPTURE_ENGINE_ERROR is returned,
@@ -761,9 +794,9 @@ void CaptureControllerImpl::OnCaptureEngineError(HRESULT hr,
 // Handles PreviewStarted event and informs CaptureControllerListener.
 // This should be called only after first frame has been received or
 // in error cases.
-void CaptureControllerImpl::OnPreviewStarted(bool success,
+void CaptureControllerImpl::OnPreviewStarted(CameraResult result,
                                              const std::string& error) {
-  if (preview_handler_ && success) {
+  if (preview_handler_ && result == CameraResult::kSuccess) {
     preview_handler_->OnPreviewStarted();
   } else {
     // Destroy preview handler on error cases to make sure state is resetted.
@@ -771,17 +804,18 @@ void CaptureControllerImpl::OnPreviewStarted(bool success,
   }
 
   if (capture_controller_listener_) {
-    if (success && preview_frame_width_ > 0 && preview_frame_height_ > 0) {
+    if (result == CameraResult::kSuccess && preview_frame_width_ > 0 &&
+        preview_frame_height_ > 0) {
       capture_controller_listener_->OnStartPreviewSucceeded(
           preview_frame_width_, preview_frame_height_);
     } else {
-      capture_controller_listener_->OnStartPreviewFailed(error);
+      capture_controller_listener_->OnStartPreviewFailed(result, error);
     }
   }
 };
 
 // Handles PreviewStopped event.
-void CaptureControllerImpl::OnPreviewStopped(bool success,
+void CaptureControllerImpl::OnPreviewStopped(CameraResult result,
                                              const std::string& error) {
   // Preview handler is destroyed if preview is stopped as it
   // does not have any use anymore.
@@ -789,16 +823,16 @@ void CaptureControllerImpl::OnPreviewStopped(bool success,
 };
 
 // Handles RecordStarted event and informs CaptureControllerListener.
-void CaptureControllerImpl::OnRecordStarted(bool success,
+void CaptureControllerImpl::OnRecordStarted(CameraResult result,
                                             const std::string& error) {
-  if (success && record_handler_) {
+  if (result == CameraResult::kSuccess && record_handler_) {
     record_handler_->OnRecordStarted();
     if (capture_controller_listener_) {
       capture_controller_listener_->OnStartRecordSucceeded();
     }
   } else {
     if (capture_controller_listener_) {
-      capture_controller_listener_->OnStartRecordFailed(error);
+      capture_controller_listener_->OnStartRecordFailed(result, error);
     }
 
     // Destroy record handler on error cases to make sure state is resetted.
@@ -807,13 +841,13 @@ void CaptureControllerImpl::OnRecordStarted(bool success,
 };
 
 // Handles RecordStopped event and informs CaptureControllerListener.
-void CaptureControllerImpl::OnRecordStopped(bool success,
+void CaptureControllerImpl::OnRecordStopped(CameraResult result,
                                             const std::string& error) {
   if (capture_controller_listener_ && record_handler_) {
     // Always calls OnStopRecord listener methods
     // to handle separate stop record request for timed records.
 
-    if (success) {
+    if (result == CameraResult::kSuccess) {
       std::string path = record_handler_->GetRecordPath();
       capture_controller_listener_->OnStopRecordSucceeded(path);
       if (record_handler_->IsTimedRecording()) {
@@ -821,14 +855,14 @@ void CaptureControllerImpl::OnRecordStopped(bool success,
             path, (record_handler_->GetRecordedDuration() / 1000));
       }
     } else {
-      capture_controller_listener_->OnStopRecordFailed(error);
+      capture_controller_listener_->OnStopRecordFailed(result, error);
       if (record_handler_->IsTimedRecording()) {
-        capture_controller_listener_->OnVideoRecordFailed(error);
+        capture_controller_listener_->OnVideoRecordFailed(result, error);
       }
     }
   }
 
-  if (success && record_handler_) {
+  if (result == CameraResult::kSuccess && record_handler_) {
     record_handler_->OnRecordStopped();
   } else {
     // Destroy record handler on error cases to make sure state is resetted.
@@ -859,7 +893,7 @@ void CaptureControllerImpl::UpdateCaptureTime(uint64_t capture_time_us) {
   if (preview_handler_ && preview_handler_->IsStarting()) {
     // Informs that first frame is captured successfully and preview has
     // started.
-    OnPreviewStarted(true, "");
+    OnPreviewStarted(CameraResult::kSuccess, "");
   }
 
   // Checks if max_video_duration_ms is passed.

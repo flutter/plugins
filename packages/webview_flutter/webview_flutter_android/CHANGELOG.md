@@ -1,3 +1,8 @@
+## 2.9.3
+
+* Updates the Dart InstanceManager to take a listener for when an object is garbage collected.
+  See https://github.com/flutter/flutter/issues/107199.
+
 ## 2.9.2
 
 * Updates the Java InstanceManager to take a listener for when an object is garbage collected.
