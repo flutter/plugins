@@ -93,6 +93,59 @@ void main() {
         ]));
   });
 
+  test('passes lib/ directory with --lib-only', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+
+    await runCapturingPrint(runner, <String>['analyze', '--lib-only']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall('flutter', const <String>['pub', 'get'], package.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos', 'lib'],
+              package.path),
+        ]));
+  });
+
+  test('skips when missing lib/ directory with --lib-only', () async {
+    final RepositoryPackage package =
+        createFakePackage('a_package', packagesDir);
+    package.libDirectory.deleteSync();
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['analyze', '--lib-only']);
+
+    expect(processRunner.recordedCalls, isEmpty);
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('SKIPPING: No lib/ directory'),
+      ]),
+    );
+  });
+
+  test(
+      'does not run flutter pub get for non-example subpackages with --lib-only',
+      () async {
+    final RepositoryPackage mainPackage = createFakePackage('a', packagesDir);
+    final Directory otherPackagesDir =
+        mainPackage.directory.childDirectory('other_packages');
+    createFakePackage('subpackage1', otherPackagesDir);
+    createFakePackage('subpackage2', otherPackagesDir);
+
+    await runCapturingPrint(runner, <String>['analyze', '--lib-only']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              'flutter', const <String>['pub', 'get'], mainPackage.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos', 'lib'],
+              mainPackage.path),
+        ]));
+  });
+
   test("don't elide a non-contained example package", () async {
     final RepositoryPackage plugin1 = createFakePlugin('a', packagesDir);
     final RepositoryPackage plugin2 = createFakePlugin('example', packagesDir);

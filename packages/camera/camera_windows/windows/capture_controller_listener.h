@@ -9,6 +9,18 @@
 
 namespace camera_windows {
 
+// Results that can occur when interacting with the camera.
+enum class CameraResult {
+  // Camera operation succeeded.
+  kSuccess,
+
+  // Camera operation failed.
+  kError,
+
+  // Camera access permission is denied.
+  kAccessDenied,
+};
+
 // Interface for classes that receives callbacks on events from the associated
 // |CaptureController|.
 class CaptureControllerListener {
@@ -22,8 +34,10 @@ class CaptureControllerListener {
 
   // Called by CaptureController if initializing the capture engine fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnCreateCaptureEngineFailed(const std::string& error) = 0;
+  virtual void OnCreateCaptureEngineFailed(CameraResult result,
+                                           const std::string& error) = 0;
 
   // Called by CaptureController on successfully started preview.
   //
@@ -33,32 +47,40 @@ class CaptureControllerListener {
 
   // Called by CaptureController if starting the preview fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnStartPreviewFailed(const std::string& error) = 0;
+  virtual void OnStartPreviewFailed(CameraResult result,
+                                    const std::string& error) = 0;
 
   // Called by CaptureController on successfully paused preview.
   virtual void OnPausePreviewSucceeded() = 0;
 
   // Called by CaptureController if pausing the preview fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnPausePreviewFailed(const std::string& error) = 0;
+  virtual void OnPausePreviewFailed(CameraResult result,
+                                    const std::string& error) = 0;
 
   // Called by CaptureController on successfully resumed preview.
   virtual void OnResumePreviewSucceeded() = 0;
 
   // Called by CaptureController if resuming the preview fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnResumePreviewFailed(const std::string& error) = 0;
+  virtual void OnResumePreviewFailed(CameraResult result,
+                                     const std::string& error) = 0;
 
   // Called by CaptureController on successfully started recording.
   virtual void OnStartRecordSucceeded() = 0;
 
   // Called by CaptureController if starting the recording fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnStartRecordFailed(const std::string& error) = 0;
+  virtual void OnStartRecordFailed(CameraResult result,
+                                   const std::string& error) = 0;
 
   // Called by CaptureController on successfully stopped recording.
   //
@@ -67,8 +89,10 @@ class CaptureControllerListener {
 
   // Called by CaptureController if stopping the recording fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnStopRecordFailed(const std::string& error) = 0;
+  virtual void OnStopRecordFailed(CameraResult result,
+                                  const std::string& error) = 0;
 
   // Called by CaptureController on successfully captured picture.
   //
@@ -77,8 +101,10 @@ class CaptureControllerListener {
 
   // Called by CaptureController if taking picture fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnTakePictureFailed(const std::string& error) = 0;
+  virtual void OnTakePictureFailed(CameraResult result,
+                                   const std::string& error) = 0;
 
   // Called by CaptureController when timed recording is successfully recorded.
   //
@@ -89,14 +115,18 @@ class CaptureControllerListener {
 
   // Called by CaptureController if timed recording fails.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnVideoRecordFailed(const std::string& error) = 0;
+  virtual void OnVideoRecordFailed(CameraResult result,
+                                   const std::string& error) = 0;
 
   // Called by CaptureController if capture engine returns error.
   // For example when camera is disconnected while on use.
   //
+  // result: The kind of result.
   // error: A string describing the error.
-  virtual void OnCaptureError(const std::string& error) = 0;
+  virtual void OnCaptureError(CameraResult result,
+                              const std::string& error) = 0;
 };
 
 }  // namespace camera_windows

@@ -10,7 +10,6 @@ import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart';
-import 'src/instance_manager.dart';
 import 'webview_android.dart';
 import 'webview_android_widget.dart';
 
@@ -74,8 +73,8 @@ class SurfaceAndroidWebView extends AndroidWebView {
               // directionality.
               layoutDirection:
                   Directionality.maybeOf(context) ?? TextDirection.ltr,
-              webViewIdentifier:
-                  InstanceManager.instance.getInstanceId(controller.webView)!,
+              webViewIdentifier: JavaObject.globalInstanceManager
+                  .getIdentifier(controller.webView)!,
             )
               ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
               ..addOnPlatformViewCreatedListener((int id) {

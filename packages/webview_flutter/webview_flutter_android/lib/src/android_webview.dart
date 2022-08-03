@@ -28,6 +28,11 @@ abstract class JavaObject with Copyable {
   /// This should only be used by subclasses created by this library or to
   /// create copies.
   JavaObject.detached();
+
+  /// Global instance of [InstanceManager].
+  static final InstanceManager globalInstanceManager = InstanceManager(
+    onWeakReferenceRemoved: (_) {},
+  );
 }
 
 /// An Android View that displays web pages.
