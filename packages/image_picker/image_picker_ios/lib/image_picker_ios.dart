@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
+import 'package:image_picker_ios/src/messages.g.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-
-import 'src/messages.g.dart';
 
 // Converts an [ImageSource] to the corresponding Pigeon API enum value.
 SourceType _convertSource(ImageSource source) {
