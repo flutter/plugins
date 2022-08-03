@@ -13,8 +13,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
-import 'google_map_inspector.dart';
-
 const LatLng _kInitialMapCenter = LatLng(0, 0);
 const double _kInitialZoomLevel = 5;
 const CameraPosition _kInitialCameraPosition =
@@ -22,16 +20,7 @@ const CameraPosition _kInitialCameraPosition =
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
-  // TODO(stuartmorgan): Remove this once mobile implementations are federated
-  // and registering their own inpector implementations, and just call
-  // enableDebugInspection.
-  if (GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter) {
-    GoogleMapsInspectorPlatform.instance = MethodChannelGoogleMapsInspector(
-        GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter);
-  } else {
-    GoogleMapsFlutterPlatform.instance.enableDebugInspection();
-  }
+  GoogleMapsFlutterPlatform.instance.enableDebugInspection();
 
   testWidgets('testCompassToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
@@ -474,7 +463,6 @@ void main() {
               .round());
     }
     await tester.binding.setSurfaceSize(null);
-    AndroidGoogleMapsFlutter.useAndroidViewSurface = false;
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
