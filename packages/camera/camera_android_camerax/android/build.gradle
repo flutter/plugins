@@ -1,4 +1,4 @@
-group 'io.flutter.plugins.camera_android_camerax'
+group 'io.flutter.plugins.camera'
 version '1.0'
 
 buildscript {
