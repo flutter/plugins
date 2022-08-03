@@ -8,7 +8,8 @@ abstract class CameraAndroidCameraxPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static CameraAndroidCameraxPlatform _instance = MethodChannelCameraAndroidCamerax();
+  static CameraAndroidCameraxPlatform _instance =
+      MethodChannelCameraAndroidCamerax();
 
   /// The default instance of [CameraAndroidCameraxPlatform] to use.
   ///

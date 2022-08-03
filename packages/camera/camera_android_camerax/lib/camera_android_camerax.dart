@@ -1,4 +1,3 @@
-
 import 'camera_android_camerax_platform_interface.dart';
 
 class CameraAndroidCamerax {

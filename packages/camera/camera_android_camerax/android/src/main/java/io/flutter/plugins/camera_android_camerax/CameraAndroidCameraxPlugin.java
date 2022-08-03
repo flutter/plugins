@@ -1,7 +1,6 @@
 package io.flutter.plugins.camera_android_camerax;
 
 import androidx.annotation.NonNull;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -18,7 +17,8 @@ public class CameraAndroidCameraxPlugin implements FlutterPlugin, MethodCallHand
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "camera_android_camerax");
+    channel =
+        new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "camera_android_camerax");
     channel.setMethodCallHandler(this);
   }
 
