@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:cross_file/cross_file.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
-import 'package:image_picker_platform_interface/src/types/multi_image_picker_options.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
