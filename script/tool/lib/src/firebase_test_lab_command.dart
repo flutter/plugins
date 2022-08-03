@@ -59,7 +59,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         help:
             'Device model(s) to test. See https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run for more info');
     argParser.addOption('results-bucket',
-        defaultsTo: 'gs://flutter_firebase_testlab');
+        defaultsTo: 'gs://flutter_firebase_testlab_staging');
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
