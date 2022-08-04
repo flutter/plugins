@@ -22,7 +22,9 @@ void main() {
   runApp(_MyApp());
 }
 
-const bool _kAutoConsume = true;
+// Auto-consume must be true on iOS.
+// To try without auto-consume on another platform, change `true` to `false` here.
+final bool _kAutoConsume = Platform.isIOS || true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
@@ -291,7 +293,7 @@ class _MyAppState extends State<_MyApp> {
                       if (productDetails.id == _kConsumableId) {
                         _inAppPurchasePlatform.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: _kAutoConsume || Platform.isIOS);
+                            autoConsume: _kAutoConsume);
                       } else {
                         _inAppPurchasePlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);
