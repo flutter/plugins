@@ -192,6 +192,7 @@ class WebView extends JavaObject {
   ///
   /// Also see compatibility note on [evaluateJavascript].
   Future<void> loadUrl(String url, Map<String, String> headers) {
+    // print('Calling load URL');
     return api.loadUrlFromInstance(this, url, headers);
   }
 
@@ -210,6 +211,7 @@ class WebView extends JavaObject {
   ///
   /// Returns null if no page has been loaded.
   Future<String?> getUrl() {
+    // print('Calling `getURL`');
     return api.getUrlFromInstance(this);
   }
 

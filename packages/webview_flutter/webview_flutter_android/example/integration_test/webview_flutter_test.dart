@@ -28,8 +28,6 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  const bool _skipDueToIssue86757 = true;
-
   final HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 0);
   server.forEach((HttpRequest request) {
     if (request.uri.path == '/hello.txt') {
@@ -50,12 +48,38 @@ Future<void> main() async {
   final String secondaryUrl = '$prefixUrl/secondary.txt';
   final String headersUrl = '$prefixUrl/headers';
 
-  testWidgets('initialUrl', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Directionality(
+  testWidgets(
+    'initialUrl',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: GlobalKey(),
+              initialUrl: primaryUrl,
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+            ),
+          ),
+        ),
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      final String? currentUrl = await controller.currentUrl();
+      expect(currentUrl, primaryUrl);
+    },
+  );
+
+  testWidgets(
+    'loadUrl',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      await tester.pumpWidget(
+        Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
             key: GlobalKey(),
@@ -65,34 +89,13 @@ Future<void> main() async {
             },
           ),
         ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, primaryUrl);
-  }, skip: _skipDueToIssue86757);
-
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-  testWidgets('loadUrl', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          initialUrl: primaryUrl,
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-        ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller.loadUrl(secondaryUrl);
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, secondaryUrl);
-  }, skip: _skipDueToIssue86757);
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await controller.loadUrl(secondaryUrl);
+      final String? currentUrl = await controller.currentUrl();
+      expect(currentUrl, secondaryUrl);
+    },
+  );
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -115,91 +118,96 @@ Future<void> main() async {
     expect(result, equals('2'));
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-  testWidgets('loadUrl with headers', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final StreamController<String> pageStarts = StreamController<String>();
-    final StreamController<String> pageLoads = StreamController<String>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          initialUrl: primaryUrl,
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          onPageStarted: (String url) {
-            pageStarts.add(url);
-          },
-          onPageFinished: (String url) {
-            pageLoads.add(url);
-          },
+  testWidgets(
+    'loadUrl with headers',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final StreamController<String> pageStarts = StreamController<String>();
+      final StreamController<String> pageLoads = StreamController<String>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageStarted: (String url) {
+              pageStarts.add(url);
+            },
+            onPageFinished: (String url) {
+              pageLoads.add(url);
+            },
+          ),
         ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    final Map<String, String> headers = <String, String>{
-      'test_header': 'flutter_test_header'
-    };
-    await controller.loadUrl(headersUrl, headers: headers);
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, headersUrl);
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      final Map<String, String> headers = <String, String>{
+        'test_header': 'flutter_test_header'
+      };
+      await controller.loadUrl(headersUrl, headers: headers);
+      final String? currentUrl = await controller.currentUrl();
+      expect(currentUrl, headersUrl);
 
-    await pageStarts.stream.firstWhere((String url) => url == currentUrl);
-    await pageLoads.stream.firstWhere((String url) => url == currentUrl);
+      await pageStarts.stream.firstWhere((String url) => url == currentUrl);
+      await pageLoads.stream.firstWhere((String url) => url == currentUrl);
 
-    final String content = await controller
-        .runJavascriptReturningResult('document.documentElement.innerText');
-    expect(content.contains('flutter_test_header'), isTrue);
-  }, skip: _skipDueToIssue86757);
+      final String content = await controller
+          .runJavascriptReturningResult('document.documentElement.innerText');
+      expect(content.contains('flutter_test_header'), isTrue);
+    },
+  );
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-  testWidgets('JavascriptChannel', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final Completer<void> pageStarted = Completer<void>();
-    final Completer<void> pageLoaded = Completer<void>();
-    final List<String> messagesReceived = <String>[];
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          // This is the data URL for: '<!DOCTYPE html>'
-          initialUrl:
-              'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          javascriptChannels: <JavascriptChannel>{
-            JavascriptChannel(
-              name: 'Echo',
-              onMessageReceived: (JavascriptMessage message) {
-                messagesReceived.add(message.message);
-              },
-            ),
-          },
-          onPageStarted: (String url) {
-            pageStarted.complete(null);
-          },
-          onPageFinished: (String url) {
-            pageLoaded.complete(null);
-          },
+  testWidgets(
+    'JavascriptChannel',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageStarted = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final List<String> messagesReceived = <String>[];
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            // This is the data URL for: '<!DOCTYPE html>'
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            javascriptChannels: <JavascriptChannel>{
+              JavascriptChannel(
+                name: 'Echo',
+                onMessageReceived: (JavascriptMessage message) {
+                  print('Message received later');
+                  messagesReceived.add(message.message);
+                },
+              ),
+            },
+            onPageStarted: (String url) {
+              pageStarted.complete(null);
+            },
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+          ),
         ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await pageStarted.future;
-    await pageLoaded.future;
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await pageStarted.future;
+      await pageLoaded.future;
 
-    expect(messagesReceived, isEmpty);
-    await controller.runJavascript('Echo.postMessage("hello");');
-    expect(messagesReceived, equals(<String>['hello']));
-  }, skip: _skipDueToIssue86757);
+      expect(messagesReceived, isEmpty);
+      await controller.runJavascript('Echo.postMessage("hello");');
+      expect(messagesReceived, equals(<String>['hello']));
+    },
+  );
 
   testWidgets('resize webview', (WidgetTester tester) async {
     final Completer<void> initialResizeCompleter = Completer<void>();
@@ -268,57 +276,58 @@ Future<void> main() async {
     expect(customUserAgent2, 'Custom_User_Agent2');
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-  testWidgets('use default platform userAgent after webView is rebuilt',
-      (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final GlobalKey _globalKey = GlobalKey();
-    // Build the webView with no user agent to get the default platform user agent.
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: _globalKey,
-          initialUrl: primaryUrl,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
+  testWidgets(
+    'use default platform userAgent after webView is rebuilt',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final GlobalKey _globalKey = GlobalKey();
+      // Build the webView with no user agent to get the default platform user agent.
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: _globalKey,
+            initialUrl: primaryUrl,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
         ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    final String defaultPlatformUserAgent = await _getUserAgent(controller);
-    // rebuild the WebView with a custom user agent.
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: _globalKey,
-          initialUrl: 'about:blank',
-          javascriptMode: JavascriptMode.unrestricted,
-          userAgent: 'Custom_User_Agent',
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      final String defaultPlatformUserAgent = await _getUserAgent(controller);
+      // rebuild the WebView with a custom user agent.
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: _globalKey,
+            initialUrl: 'about:blank',
+            javascriptMode: JavascriptMode.unrestricted,
+            userAgent: 'Custom_User_Agent',
+          ),
         ),
-      ),
-    );
-    final String customUserAgent = await _getUserAgent(controller);
-    expect(customUserAgent, 'Custom_User_Agent');
-    // rebuilds the WebView with no user agent.
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: _globalKey,
-          initialUrl: 'about:blank',
-          javascriptMode: JavascriptMode.unrestricted,
+      );
+      final String customUserAgent = await _getUserAgent(controller);
+      expect(customUserAgent, 'Custom_User_Agent');
+      // rebuilds the WebView with no user agent.
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: _globalKey,
+            initialUrl: 'about:blank',
+            javascriptMode: JavascriptMode.unrestricted,
+          ),
         ),
-      ),
-    );
+      );
 
-    final String customUserAgent2 = await _getUserAgent(controller);
-    expect(customUserAgent2, defaultPlatformUserAgent);
-  }, skip: _skipDueToIssue86757);
+      final String customUserAgent2 = await _getUserAgent(controller);
+      expect(customUserAgent2, defaultPlatformUserAgent);
+    },
+  );
 
   group('Video playback policy', () {
     late String videoTestBase64;
@@ -744,9 +753,10 @@ Future<void> main() async {
   });
 
   group('Programmatic Scroll', () {
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-    testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      const String scrollTestPage = '''
+    testWidgets(
+      'setAndGetScrollPosition',
+      (WidgetTester tester) async {
+        const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -767,59 +777,60 @@ Future<void> main() async {
         </html>
       ''';
 
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
+        final String scrollTestPageBase64 =
+            base64Encode(const Utf8Encoder().convert(scrollTestPage));
 
-      final Completer<void> pageLoaded = Completer<void>();
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
+        final Completer<void> pageLoaded = Completer<void>();
+        final Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
 
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            initialUrl:
-                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
+        final WebViewController controller = await controllerCompleter.future;
+        await pageLoaded.future;
 
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+        await tester.pumpAndSettle(const Duration(seconds: 3));
 
-      int scrollPosX = await controller.getScrollX();
-      int scrollPosY = await controller.getScrollY();
+        int scrollPosX = await controller.getScrollX();
+        int scrollPosY = await controller.getScrollY();
 
-      // Check scrollTo()
-      const int X_SCROLL = 123;
-      const int Y_SCROLL = 321;
-      // Get the initial position; this ensures that scrollTo is actually
-      // changing something, but also gives the native view's scroll position
-      // time to settle.
-      expect(scrollPosX, isNot(X_SCROLL));
-      expect(scrollPosX, isNot(Y_SCROLL));
+        // Check scrollTo()
+        const int X_SCROLL = 123;
+        const int Y_SCROLL = 321;
+        // Get the initial position; this ensures that scrollTo is actually
+        // changing something, but also gives the native view's scroll position
+        // time to settle.
+        expect(scrollPosX, isNot(X_SCROLL));
+        expect(scrollPosX, isNot(Y_SCROLL));
 
-      await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      scrollPosX = await controller.getScrollX();
-      scrollPosY = await controller.getScrollY();
-      expect(scrollPosX, X_SCROLL);
-      expect(scrollPosY, Y_SCROLL);
+        await controller.scrollTo(X_SCROLL, Y_SCROLL);
+        scrollPosX = await controller.getScrollX();
+        scrollPosY = await controller.getScrollY();
+        expect(scrollPosX, X_SCROLL);
+        expect(scrollPosY, Y_SCROLL);
 
-      // Check scrollBy() (on top of scrollTo())
-      await controller.scrollBy(X_SCROLL, Y_SCROLL);
-      scrollPosX = await controller.getScrollX();
-      scrollPosY = await controller.getScrollY();
-      expect(scrollPosX, X_SCROLL * 2);
-      expect(scrollPosY, Y_SCROLL * 2);
-    }, skip: _skipDueToIssue86757);
+        // Check scrollBy() (on top of scrollTo())
+        await controller.scrollBy(X_SCROLL, Y_SCROLL);
+        scrollPosX = await controller.getScrollX();
+        scrollPosY = await controller.getScrollY();
+        expect(scrollPosX, X_SCROLL * 2);
+        expect(scrollPosY, Y_SCROLL * 2);
+      },
+    );
   });
 
   group('SurfaceAndroidWebView', () {
@@ -831,9 +842,10 @@ Future<void> main() async {
       WebView.platform = AndroidWebView();
     });
 
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-    testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
-      const String scrollTestPage = '''
+    testWidgets(
+      'setAndGetScrollPosition',
+      (WidgetTester tester) async {
+        const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -854,56 +866,57 @@ Future<void> main() async {
         </html>
       ''';
 
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
+        final String scrollTestPageBase64 =
+            base64Encode(const Utf8Encoder().convert(scrollTestPage));
 
-      final Completer<void> pageLoaded = Completer<void>();
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
+        final Completer<void> pageLoaded = Completer<void>();
+        final Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
 
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            initialUrl:
-                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
+        final WebViewController controller = await controllerCompleter.future;
+        await pageLoaded.future;
 
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+        await tester.pumpAndSettle(const Duration(seconds: 3));
 
-      // Check scrollTo()
-      const int X_SCROLL = 123;
-      const int Y_SCROLL = 321;
+        // Check scrollTo()
+        const int X_SCROLL = 123;
+        const int Y_SCROLL = 321;
 
-      await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      int scrollPosX = await controller.getScrollX();
-      int scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL, scrollPosX);
-      expect(Y_SCROLL, scrollPosY);
+        await controller.scrollTo(X_SCROLL, Y_SCROLL);
+        int scrollPosX = await controller.getScrollX();
+        int scrollPosY = await controller.getScrollY();
+        expect(X_SCROLL, scrollPosX);
+        expect(Y_SCROLL, scrollPosY);
 
-      // Check scrollBy() (on top of scrollTo())
-      await controller.scrollBy(X_SCROLL, Y_SCROLL);
-      scrollPosX = await controller.getScrollX();
-      scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL * 2, scrollPosX);
-      expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: _skipDueToIssue86757);
+        // Check scrollBy() (on top of scrollTo())
+        await controller.scrollBy(X_SCROLL, Y_SCROLL);
+        scrollPosX = await controller.getScrollX();
+        scrollPosY = await controller.getScrollY();
+        expect(X_SCROLL * 2, scrollPosX);
+        expect(Y_SCROLL * 2, scrollPosY);
+      },
+    );
 
-    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
-    testWidgets('inputs are scrolled into view when focused',
-        (WidgetTester tester) async {
-      const String scrollTestPage = '''
+    testWidgets(
+      'inputs are scrolled into view when focused',
+      (WidgetTester tester) async {
+        const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -927,86 +940,87 @@ Future<void> main() async {
         </html>
       ''';
 
-      final String scrollTestPageBase64 =
-          base64Encode(const Utf8Encoder().convert(scrollTestPage));
+        final String scrollTestPageBase64 =
+            base64Encode(const Utf8Encoder().convert(scrollTestPage));
 
-      final Completer<void> pageLoaded = Completer<void>();
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
+        final Completer<void> pageLoaded = Completer<void>();
+        final Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
 
-      await tester.runAsync(() async {
-        await tester.pumpWidget(
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: WebView(
-                initialUrl:
-                    'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
-                onWebViewCreated: (WebViewController controller) {
-                  controllerCompleter.complete(controller);
-                },
-                onPageFinished: (String url) {
-                  pageLoaded.complete(null);
-                },
-                javascriptMode: JavascriptMode.unrestricted,
+        await tester.runAsync(() async {
+          await tester.pumpWidget(
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: SizedBox(
+                width: 200,
+                height: 200,
+                child: WebView(
+                  initialUrl:
+                      'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+                  onWebViewCreated: (WebViewController controller) {
+                    controllerCompleter.complete(controller);
+                  },
+                  onPageFinished: (String url) {
+                    pageLoaded.complete(null);
+                  },
+                  javascriptMode: JavascriptMode.unrestricted,
+                ),
               ),
             ),
-          ),
-        );
-        await Future<void>.delayed(const Duration(milliseconds: 20));
-        await tester.pump();
-      });
+          );
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+          await tester.pump();
+        });
 
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-      final String viewportRectJSON = await _runJavaScriptReturningResult(
-          controller, 'JSON.stringify(viewport.getBoundingClientRect())');
-      final Map<String, dynamic> viewportRectRelativeToViewport =
-          jsonDecode(viewportRectJSON) as Map<String, dynamic>;
+        final WebViewController controller = await controllerCompleter.future;
+        await pageLoaded.future;
+        final String viewportRectJSON = await _runJavaScriptReturningResult(
+            controller, 'JSON.stringify(viewport.getBoundingClientRect())');
+        final Map<String, dynamic> viewportRectRelativeToViewport =
+            jsonDecode(viewportRectJSON) as Map<String, dynamic>;
 
-      // Check that the input is originally outside of the viewport.
+        // Check that the input is originally outside of the viewport.
 
-      final String initialInputClientRectJSON =
-          await _runJavaScriptReturningResult(
-              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-      final Map<String, dynamic> initialInputClientRectRelativeToViewport =
-          jsonDecode(initialInputClientRectJSON) as Map<String, dynamic>;
+        final String initialInputClientRectJSON =
+            await _runJavaScriptReturningResult(
+                controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+        final Map<String, dynamic> initialInputClientRectRelativeToViewport =
+            jsonDecode(initialInputClientRectJSON) as Map<String, dynamic>;
 
-      expect(
-          initialInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
-          isFalse);
+        expect(
+            initialInputClientRectRelativeToViewport['bottom'] <=
+                viewportRectRelativeToViewport['bottom'],
+            isFalse);
 
-      await controller.runJavascript('inputEl.focus()');
+        await controller.runJavascript('inputEl.focus()');
 
-      // Check that focusing the input brought it into view.
+        // Check that focusing the input brought it into view.
 
-      final String lastInputClientRectJSON =
-          await _runJavaScriptReturningResult(
-              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-      final Map<String, dynamic> lastInputClientRectRelativeToViewport =
-          jsonDecode(lastInputClientRectJSON) as Map<String, dynamic>;
+        final String lastInputClientRectJSON =
+            await _runJavaScriptReturningResult(
+                controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+        final Map<String, dynamic> lastInputClientRectRelativeToViewport =
+            jsonDecode(lastInputClientRectJSON) as Map<String, dynamic>;
 
-      expect(
-          lastInputClientRectRelativeToViewport['top'] >=
-              viewportRectRelativeToViewport['top'],
-          isTrue);
-      expect(
-          lastInputClientRectRelativeToViewport['bottom'] <=
-              viewportRectRelativeToViewport['bottom'],
-          isTrue);
+        expect(
+            lastInputClientRectRelativeToViewport['top'] >=
+                viewportRectRelativeToViewport['top'],
+            isTrue);
+        expect(
+            lastInputClientRectRelativeToViewport['bottom'] <=
+                viewportRectRelativeToViewport['bottom'],
+            isTrue);
 
-      expect(
-          lastInputClientRectRelativeToViewport['left'] >=
-              viewportRectRelativeToViewport['left'],
-          isTrue);
-      expect(
-          lastInputClientRectRelativeToViewport['right'] <=
-              viewportRectRelativeToViewport['right'],
-          isTrue);
-    }, skip: _skipDueToIssue86757);
+        expect(
+            lastInputClientRectRelativeToViewport['left'] >=
+                viewportRectRelativeToViewport['left'],
+            isTrue);
+        expect(
+            lastInputClientRectRelativeToViewport['right'] <=
+                viewportRectRelativeToViewport['right'],
+            isTrue);
+      },
+    );
   });
 
   group('NavigationDelegate', () {
@@ -1241,36 +1255,35 @@ Future<void> main() async {
     expect(currentUrl, primaryUrl);
   });
 
-  testWidgets('target _blank opens in same window',
-      (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final Completer<void> pageLoaded = Completer<void>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          onPageFinished: (String url) {
-            pageLoaded.complete(null);
-          },
+  testWidgets(
+    'target _blank opens in same window',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageLoaded = Completer<void>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+          ),
         ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller.runJavascript('window.open("$primaryUrl", "_blank")');
-    await pageLoaded.future;
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, primaryUrl);
-  },
-      // Flaky on Android: https://github.com/flutter/flutter/issues/86757
-      skip: _skipDueToIssue86757);
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await controller.runJavascript('window.open("$primaryUrl", "_blank")');
+      await pageLoaded.future;
+      final String? currentUrl = await controller.currentUrl();
+      expect(currentUrl, primaryUrl);
+    },
+  );
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
@@ -1308,7 +1321,6 @@ Future<void> main() async {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion(primaryUrl));
     },
-    skip: _skipDueToIssue86757,
   );
 
   testWidgets(
@@ -1369,13 +1381,14 @@ Future<void> main() async {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoadCompleter.future;
 
-      expect(controller.runJavascriptReturningResult('iframeLoaded'),
-          completion('true'));
-      expect(
-        controller.runJavascriptReturningResult(
-            'document.querySelector("p") && document.querySelector("p").textContent'),
-        completion('null'),
+      final String iframeLoaded =
+          await controller.runJavascriptReturningResult('iframeLoaded');
+      expect(iframeLoaded, 'true');
+
+      final String elementText = await controller.runJavascriptReturningResult(
+        'document.querySelector("p") && document.querySelector("p").textContent',
       );
+      expect(elementText, 'null');
     },
   );
 
@@ -1405,21 +1418,16 @@ Future<void> main() async {
 
       await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
 
-      expect(
-        controller.runJavascriptReturningResult(
-          'localStorage.getItem("myCat");',
-        ),
-        completion('"Tom"'),
+      final String myCatItem = await controller.runJavascriptReturningResult(
+        'localStorage.getItem("myCat");',
       );
+      expect(myCatItem, '"Tom"');
 
       await controller.clearCache();
-
-      expect(
-        controller.runJavascriptReturningResult(
-          'localStorage.getItem("myCat");',
-        ),
-        completion('null'),
+      final String nullItem = await controller.runJavascriptReturningResult(
+        'localStorage.getItem("myCat");',
       );
+      expect(nullItem, 'null');
     },
   );
 }
