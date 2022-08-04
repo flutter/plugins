@@ -58,3 +58,8 @@ android {
 flutter {
     source '../..'
 }
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    api 'androidx.test:core:1.2.0'
+}

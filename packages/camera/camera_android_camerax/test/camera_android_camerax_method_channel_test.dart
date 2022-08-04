@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_android_camerax/camera_android_camerax_method_channel.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:camera_android_camerax/camera_android_camerax_method_channel.dart';
 
 void main() {
-  MethodChannelCameraAndroidCamerax platform =
+  final MethodChannelCameraAndroidCamerax platform =
       MethodChannelCameraAndroidCamerax();
   const MethodChannel channel = MethodChannel('camera_android_camerax');
 

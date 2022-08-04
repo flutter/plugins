@@ -4,7 +4,9 @@
 
 import 'camera_android_camerax_platform_interface.dart';
 
+/// Android Camera implented with the CameraX library.
 class CameraAndroidCamerax {
+  /// Returns platform version of this instance.
   Future<String?> getPlatformVersion() {
     return CameraAndroidCameraxPlatform.instance.getPlatformVersion();
   }
