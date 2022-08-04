@@ -1,4 +1,4 @@
-## NEXT
+## 2.1.11
 
 * Moves Android and iOS implementations to federated packages.
 
