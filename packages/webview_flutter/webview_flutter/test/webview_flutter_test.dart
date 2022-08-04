@@ -1038,7 +1038,7 @@ void main() {
   group('zoomEnabled', () {
     testWidgets('Enable zoom', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        zoomEnabled: true,
+
       ));
 
       final CreationParams params = captureBuildArgs(

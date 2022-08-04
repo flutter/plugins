@@ -193,7 +193,6 @@ class GoogleSignIn {
     String? hostedDomain,
   }) {
     return GoogleSignIn(
-        signInOption: SignInOption.standard,
         scopes: scopes,
         hostedDomain: hostedDomain);
   }

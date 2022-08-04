@@ -77,33 +77,23 @@ void main() {
 
           verifyInOrder(<Object>[
             mockPlatform.getImage(
+                source: ImageSource.camera),
+            mockPlatform.getImage(
                 source: ImageSource.camera,
-                maxWidth: null,
-                maxHeight: null,
-                imageQuality: null),
+                maxWidth: 10.0),
+            mockPlatform.getImage(
+                source: ImageSource.camera,
+                maxHeight: 10.0),
             mockPlatform.getImage(
                 source: ImageSource.camera,
                 maxWidth: 10.0,
-                maxHeight: null,
-                imageQuality: null),
-            mockPlatform.getImage(
-                source: ImageSource.camera,
-                maxWidth: null,
-                maxHeight: 10.0,
-                imageQuality: null),
+                maxHeight: 20.0),
             mockPlatform.getImage(
                 source: ImageSource.camera,
                 maxWidth: 10.0,
-                maxHeight: 20.0,
-                imageQuality: null),
-            mockPlatform.getImage(
-                source: ImageSource.camera,
-                maxWidth: 10.0,
-                maxHeight: null,
                 imageQuality: 70),
             mockPlatform.getImage(
                 source: ImageSource.camera,
-                maxWidth: null,
                 maxHeight: 10.0,
                 imageQuality: 70),
             mockPlatform.getImage(
@@ -182,9 +172,7 @@ void main() {
 
           verifyInOrder(<Object>[
             mockPlatform.getVideo(
-                source: ImageSource.camera,
-                preferredCameraDevice: CameraDevice.rear,
-                maxDuration: null),
+                source: ImageSource.camera),
             mockPlatform.getVideo(
                 source: ImageSource.camera,
                 maxDuration: const Duration(seconds: 10)),
@@ -314,7 +302,7 @@ void main() {
             mockPlatform.getMultiImage(maxWidth: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(maxHeight: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(
-                maxWidth: null, maxHeight: 10.0, imageQuality: 70),
+                maxHeight: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(
                 maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70),
           ]);
