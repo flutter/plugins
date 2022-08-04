@@ -1,3 +1,7 @@
+## 1.0.10
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 1.0.9
 
 * Updates  androidx.fragment version to 1.5.1.

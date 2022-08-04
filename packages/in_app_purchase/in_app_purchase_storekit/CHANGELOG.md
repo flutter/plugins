@@ -1,3 +1,7 @@
+## 0.3.1+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.3.1
 
 * Adds ability to purchase more than one of a product.

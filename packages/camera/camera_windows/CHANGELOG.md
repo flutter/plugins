@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.2.0
 
 **BREAKING CHANGES**:
