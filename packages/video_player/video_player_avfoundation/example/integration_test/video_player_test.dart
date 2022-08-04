@@ -57,7 +57,7 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(await _controller.position, const Duration(seconds: 0));
+      expect(await _controller.position, const Duration());
       expect(_controller.value.duration,
           const Duration(seconds: 7, milliseconds: 540));
     });

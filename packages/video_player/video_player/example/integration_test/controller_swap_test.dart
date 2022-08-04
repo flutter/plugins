@@ -65,7 +65,7 @@ void main() {
 
       // Expect that `another` played.
       expect(another.value.position,
-          (Duration position) => position > const Duration(seconds: 0));
+          (Duration position) => position > const Duration());
 
       await expectLater(started.future, completes);
       await expectLater(ended.future, completes);
@@ -76,7 +76,6 @@ void main() {
 
 Widget renderVideoWidget(VideoPlayerController controller) {
   return Material(
-    elevation: 0,
     child: Directionality(
       textDirection: TextDirection.ltr,
       child: Center(

@@ -268,7 +268,6 @@ class _MyAppState extends State<_MyApp> {
                     onPressed: () {
                       final PurchaseParam purchaseParam = PurchaseParam(
                         productDetails: productDetails,
-                        applicationUserName: null,
                       );
                       if (productDetails.id == _kConsumableId) {
                         _iapStoreKitPlatform.buyConsumable(
@@ -335,7 +334,6 @@ class _MyAppState extends State<_MyApp> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(

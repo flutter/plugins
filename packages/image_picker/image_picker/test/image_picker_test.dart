@@ -138,9 +138,7 @@ void main() {
           final ImagePicker picker = ImagePicker();
           await picker.pickImage(source: ImageSource.camera);
 
-          verify(mockPlatform.getImage(
-              source: ImageSource.camera,
-              preferredCameraDevice: CameraDevice.rear));
+          verify(mockPlatform.getImage(source: ImageSource.camera));
         });
 
         test('camera position can set to front', () async {
@@ -189,7 +187,6 @@ void main() {
                 maxDuration: null),
             mockPlatform.getVideo(
                 source: ImageSource.camera,
-                preferredCameraDevice: CameraDevice.rear,
                 maxDuration: const Duration(seconds: 10)),
           ]);
         });
@@ -205,9 +202,7 @@ void main() {
           final ImagePicker picker = ImagePicker();
           await picker.pickVideo(source: ImageSource.camera);
 
-          verify(mockPlatform.getVideo(
-              source: ImageSource.camera,
-              preferredCameraDevice: CameraDevice.rear));
+          verify(mockPlatform.getVideo(source: ImageSource.camera));
         });
 
         test('camera position can set to front', () async {
@@ -312,16 +307,12 @@ void main() {
               maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70);
 
           verifyInOrder(<Object>[
-            mockPlatform.getMultiImage(
-                maxWidth: null, maxHeight: null, imageQuality: null),
-            mockPlatform.getMultiImage(
-                maxWidth: 10.0, maxHeight: null, imageQuality: null),
-            mockPlatform.getMultiImage(
-                maxWidth: null, maxHeight: 10.0, imageQuality: null),
-            mockPlatform.getMultiImage(
-                maxWidth: 10.0, maxHeight: 20.0, imageQuality: null),
-            mockPlatform.getMultiImage(
-                maxWidth: 10.0, maxHeight: null, imageQuality: 70),
+            mockPlatform.getMultiImage(),
+            mockPlatform.getMultiImage(maxWidth: 10.0),
+            mockPlatform.getMultiImage(maxHeight: 10.0),
+            mockPlatform.getMultiImage(maxWidth: 10.0, maxHeight: 20.0),
+            mockPlatform.getMultiImage(maxWidth: 10.0, imageQuality: 70),
+            mockPlatform.getMultiImage(maxHeight: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(
                 maxWidth: null, maxHeight: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(

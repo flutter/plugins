@@ -79,11 +79,9 @@ void main() {
               imageQuality: 70);
 
           verifyInOrder(<Object>[
-            mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxWidth: null,
-                maxHeight: null,
-                imageQuality: null),
+            mockPlatform.pickImage(source: ImageSource.camera),
+            mockPlatform.pickImage(source: ImageSource.camera, maxWidth: 10.0),
+            mockPlatform.pickImage(source: ImageSource.camera, maxHeight: 10.0),
             mockPlatform.pickImage(
                 source: ImageSource.camera,
                 maxWidth: 10.0,
@@ -173,13 +171,9 @@ void main() {
               maxDuration: const Duration(seconds: 10));
 
           verifyInOrder(<Object>[
+            mockPlatform.pickVideo(source: ImageSource.camera),
             mockPlatform.pickVideo(
                 source: ImageSource.camera,
-                preferredCameraDevice: CameraDevice.rear,
-                maxDuration: null),
-            mockPlatform.pickVideo(
-                source: ImageSource.camera,
-                preferredCameraDevice: CameraDevice.rear,
                 maxDuration: const Duration(seconds: 10)),
           ]);
         });
@@ -195,9 +189,7 @@ void main() {
           final ImagePicker picker = ImagePicker();
           await picker.getVideo(source: ImageSource.camera);
 
-          verify(mockPlatform.pickVideo(
-              source: ImageSource.camera,
-              preferredCameraDevice: CameraDevice.rear));
+          verify(mockPlatform.pickVideo(source: ImageSource.camera));
         });
 
         test('camera position can set to front', () async {
@@ -277,18 +269,12 @@ void main() {
               maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70);
 
           verifyInOrder(<Object>[
-            mockPlatform.pickMultiImage(
-                maxWidth: null, maxHeight: null, imageQuality: null),
-            mockPlatform.pickMultiImage(
-                maxWidth: 10.0, maxHeight: null, imageQuality: null),
-            mockPlatform.pickMultiImage(
-                maxWidth: null, maxHeight: 10.0, imageQuality: null),
-            mockPlatform.pickMultiImage(
-                maxWidth: 10.0, maxHeight: 20.0, imageQuality: null),
-            mockPlatform.pickMultiImage(
-                maxWidth: 10.0, maxHeight: null, imageQuality: 70),
-            mockPlatform.pickMultiImage(
-                maxWidth: null, maxHeight: 10.0, imageQuality: 70),
+            mockPlatform.pickMultiImage(),
+            mockPlatform.pickMultiImage(maxWidth: 10.0),
+            mockPlatform.pickMultiImage(maxHeight: 10.0),
+            mockPlatform.pickMultiImage(maxWidth: 10.0, maxHeight: 20.0),
+            mockPlatform.pickMultiImage(maxWidth: 10.0, imageQuality: 70),
+            mockPlatform.pickMultiImage(maxHeight: 10.0, imageQuality: 70),
             mockPlatform.pickMultiImage(
                 maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70),
           ]);

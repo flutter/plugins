@@ -46,7 +46,6 @@ void main() {
             throw PlatformException(
               code: 'some_error',
               message: 'Some error occurred.',
-              details: null,
             );
           }
           return null;
@@ -55,13 +54,11 @@ void main() {
             throw PlatformException(
               code: 'loadFlutterAsset_invalidKey',
               message: 'Failed loading asset.',
-              details: null,
             );
           } else if (methodCall.arguments == 'some error') {
             throw PlatformException(
               code: 'some_error',
               message: 'Some error occurred.',
-              details: null,
             );
           }
           return null;

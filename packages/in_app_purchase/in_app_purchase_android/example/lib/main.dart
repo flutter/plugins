@@ -282,7 +282,6 @@ class _MyAppState extends State<_MyApp> {
                       final GooglePlayPurchaseParam purchaseParam =
                           GooglePlayPurchaseParam(
                               productDetails: productDetails,
-                              applicationUserName: null,
                               changeSubscriptionParam: oldSubscription != null
                                   ? ChangeSubscriptionParam(
                                       oldPurchaseDetails: oldSubscription,
