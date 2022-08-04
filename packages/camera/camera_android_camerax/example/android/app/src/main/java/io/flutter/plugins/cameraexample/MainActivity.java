@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera_android_camerax_example;
+package io.flutter.plugins.cameraexample;
 
 import io.flutter.embedding.android.FlutterActivity;
 
