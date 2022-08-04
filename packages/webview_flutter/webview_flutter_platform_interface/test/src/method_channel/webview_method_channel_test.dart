@@ -39,8 +39,7 @@ void main() {
         case 'loadFile':
           if (methodCall.arguments == 'invalid file') {
             throw PlatformException(
-                code: 'loadFile_failed',
-                message: 'Failed loading file.');
+                code: 'loadFile_failed', message: 'Failed loading file.');
           } else if (methodCall.arguments == 'some error') {
             throw PlatformException(
               code: 'some_error',

@@ -82,24 +82,14 @@ void main() {
             mockPlatform.pickImage(source: ImageSource.camera),
             mockPlatform.pickImage(source: ImageSource.camera, maxWidth: 10.0),
             mockPlatform.pickImage(source: ImageSource.camera, maxHeight: 10.0),
+            mockPlatform.pickImage(source: ImageSource.camera, maxWidth: 10.0),
+            mockPlatform.pickImage(source: ImageSource.camera, maxHeight: 10.0),
             mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxWidth: 10.0),
+                source: ImageSource.camera, maxWidth: 10.0, maxHeight: 20.0),
             mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxHeight: 10.0),
+                source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70),
             mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxWidth: 10.0,
-                maxHeight: 20.0),
-            mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxWidth: 10.0,
-                imageQuality: 70),
-            mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxHeight: 10.0,
-                imageQuality: 70),
+                source: ImageSource.camera, maxHeight: 10.0, imageQuality: 70),
             mockPlatform.pickImage(
                 source: ImageSource.camera,
                 maxWidth: 10.0,
@@ -119,8 +109,7 @@ void main() {
           final ImagePicker picker = ImagePicker();
           await picker.getImage(source: ImageSource.camera);
 
-          verify(mockPlatform.pickImage(
-              source: ImageSource.camera));
+          verify(mockPlatform.pickImage(source: ImageSource.camera));
         });
 
         test('camera position can set to front', () async {
