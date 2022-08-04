@@ -1,3 +1,1 @@
-public class CameraxPluginTest {
-    
-}
+public class CameraxPluginTest {}
