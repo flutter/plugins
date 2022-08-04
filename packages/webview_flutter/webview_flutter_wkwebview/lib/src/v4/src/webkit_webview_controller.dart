@@ -46,11 +46,11 @@ class WebKitWebViewController extends PlatformWebViewController {
             ? params
             : WebKitWebViewControllerCreationParams
                 .fromPlatformWebViewControllerCreationParams(params)) {
-    _webView = webKitProxy.createWebView(
+    webView = webKitProxy.createWebView(
         (params as WebKitWebViewControllerCreationParams)._configuration);
   }
 
-  late final WKWebView _webView;
+  late final WKWebView webView;
 
   final Map<String, WebKitJavaScriptChannelParams> _javaScriptChannelParams =
       <String, WebKitJavaScriptChannelParams>{};
@@ -59,7 +59,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<void> loadFile(String absoluteFilePath) {
-    return _webView.loadFileUrl(
+    return webView.loadFileUrl(
       absoluteFilePath,
       readAccessUrl: path.dirname(absoluteFilePath),
     );
@@ -68,12 +68,12 @@ class WebKitWebViewController extends PlatformWebViewController {
   @override
   Future<void> loadFlutterAsset(String key) {
     assert(key.isNotEmpty);
-    return _webView.loadFlutterAsset(key);
+    return webView.loadFlutterAsset(key);
   }
 
   @override
   Future<void> loadHtmlString(String html, {String? baseUrl}) {
-    return _webView.loadHtmlString(html, baseUrl: baseUrl);
+    return webView.loadHtmlString(html, baseUrl: baseUrl);
   }
 
   @override
@@ -84,7 +84,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       );
     }
 
-    return _webView.loadRequest(NSUrlRequest(
+    return webView.loadRequest(NSUrlRequest(
       url: params.uri.toString(),
       allHttpHeaderFields: params.headers,
       httpMethod: describeEnum(params.method),
@@ -111,8 +111,8 @@ class WebKitWebViewController extends PlatformWebViewController {
       WKUserScriptInjectionTime.atDocumentStart,
       isMainFrameOnly: false,
     );
-    _webView.configuration.userContentController.addUserScript(wrapperScript);
-    return _webView.configuration.userContentController.addScriptMessageHandler(
+    webView.configuration.userContentController.addUserScript(wrapperScript);
+    return webView.configuration.userContentController.addScriptMessageHandler(
       webKitParams._messageHandler,
       webKitParams.name,
     );
@@ -128,26 +128,26 @@ class WebKitWebViewController extends PlatformWebViewController {
   }
 
   @override
-  Future<String?> currentUrl() => _webView.getUrl();
+  Future<String?> currentUrl() => webView.getUrl();
 
   @override
-  Future<bool> canGoBack() => _webView.canGoBack();
+  Future<bool> canGoBack() => webView.canGoBack();
 
   @override
-  Future<bool> canGoForward() => _webView.canGoForward();
+  Future<bool> canGoForward() => webView.canGoForward();
 
   @override
-  Future<void> goBack() => _webView.goBack();
+  Future<void> goBack() => webView.goBack();
 
   @override
-  Future<void> goForward() => _webView.goForward();
+  Future<void> goForward() => webView.goForward();
 
   @override
-  Future<void> reload() => _webView.reload();
+  Future<void> reload() => webView.reload();
 
   @override
   Future<void> clearCache() {
-    return _webView.configuration.websiteDataStore.removeDataOfTypes(
+    return webView.configuration.websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataType>{
         WKWebsiteDataType.memoryCache,
         WKWebsiteDataType.diskCache,
@@ -159,7 +159,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<void> clearLocalStorage() {
-    return _webView.configuration.websiteDataStore.removeDataOfTypes(
+    return webView.configuration.websiteDataStore.removeDataOfTypes(
       <WKWebsiteDataType>{WKWebsiteDataType.localStorage},
       DateTime.fromMillisecondsSinceEpoch(0),
     );
@@ -168,7 +168,7 @@ class WebKitWebViewController extends PlatformWebViewController {
   @override
   Future<void> runJavaScript(String javaScript) async {
     try {
-      await _webView.evaluateJavaScript(javaScript);
+      await webView.evaluateJavaScript(javaScript);
     } on PlatformException catch (exception) {
       // WebKit will throw an error when the type of the evaluated value is
       // unsupported. This also goes for `null` and `undefined` on iOS 14+. For
@@ -184,7 +184,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<String> runJavaScriptReturningResult(String javaScript) async {
-    final Object? result = await _webView.evaluateJavaScript(javaScript);
+    final Object? result = await webView.evaluateJavaScript(javaScript);
     if (result == null) {
       throw ArgumentError(
         'Result of JavaScript execution returned a `null` value. '
@@ -196,15 +196,15 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   /// Controls whether inline playback of HTML5 videos is allowed.
   Future<void> setAllowsInlineMediaPlayback(bool allow) {
-    return _webView.configuration.setAllowsInlineMediaPlayback(allow);
+    return webView.configuration.setAllowsInlineMediaPlayback(allow);
   }
 
   @override
-  Future<String?> getTitle() => _webView.getTitle();
+  Future<String?> getTitle() => webView.getTitle();
 
   @override
   Future<void> scrollTo(int x, int y) {
-    return _webView.scrollView.setContentOffset(Point<double>(
+    return webView.scrollView.setContentOffset(Point<double>(
       x.toDouble(),
       y.toDouble(),
     ));
@@ -212,7 +212,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<void> scrollBy(int x, int y) {
-    return _webView.scrollView.scrollBy(Point<double>(
+    return webView.scrollView.scrollBy(Point<double>(
       x.toDouble(),
       y.toDouble(),
     ));
@@ -220,7 +220,7 @@ class WebKitWebViewController extends PlatformWebViewController {
 
   @override
   Future<Point<int>> getScrollPosition() async {
-    final Point<double> offset = await _webView.scrollView.getContentOffset();
+    final Point<double> offset = await webView.scrollView.getContentOffset();
     return Point<int>(offset.x.round(), offset.y.round());
   }
 
@@ -229,15 +229,15 @@ class WebKitWebViewController extends PlatformWebViewController {
   // 4.0.0.
   @override
   Future<void> enableGestureNavigation(bool enabled) {
-    return _webView.setAllowsBackForwardNavigationGestures(enabled);
+    return webView.setAllowsBackForwardNavigationGestures(enabled);
   }
 
   @override
   Future<void> setBackgroundColor(Color color) {
     return Future.wait(<Future<void>>[
-      _webView.scrollView.setBackgroundColor(color),
-      _webView.setOpaque(false),
-      _webView.setBackgroundColor(Colors.transparent),
+      webView.scrollView.setBackgroundColor(color),
+      webView.setOpaque(false),
+      webView.setBackgroundColor(Colors.transparent),
     ]);
   }
 
@@ -245,15 +245,15 @@ class WebKitWebViewController extends PlatformWebViewController {
   Future<void> setJavaScriptMode(JavaScriptMode javaScriptMode) {
     switch (javaScriptMode) {
       case JavaScriptMode.disabled:
-        return _webView.configuration.preferences.setJavaScriptEnabled(false);
+        return webView.configuration.preferences.setJavaScriptEnabled(false);
       case JavaScriptMode.unrestricted:
-        return _webView.configuration.preferences.setJavaScriptEnabled(true);
+        return webView.configuration.preferences.setJavaScriptEnabled(true);
     }
   }
 
   @override
   Future<void> setUserAgent(String? userAgent) {
-    return _webView.setCustomUserAgent(userAgent);
+    return webView.setCustomUserAgent(userAgent);
   }
 
   @override
@@ -280,7 +280,7 @@ class WebKitWebViewController extends PlatformWebViewController {
       WKUserScriptInjectionTime.atDocumentEnd,
       isMainFrameOnly: true,
     );
-    return _webView.configuration.userContentController
+    return webView.configuration.userContentController
         .addUserScript(userScript);
   }
 
@@ -290,12 +290,12 @@ class WebKitWebViewController extends PlatformWebViewController {
   // workaround could interfere with exposing support for custom scripts from
   // applications.
   Future<void> _resetUserScripts({String? removedJavaScriptChannel}) async {
-    _webView.configuration.userContentController.removeAllUserScripts();
+    webView.configuration.userContentController.removeAllUserScripts();
     // TODO(bparrishMines): This can be replaced with
     // `removeAllScriptMessageHandlers` once Dart supports runtime version
     // checking. (e.g. The equivalent to @availability in Objective-C.)
     _javaScriptChannelParams.keys.forEach(
-      _webView.configuration.userContentController.removeScriptMessageHandler,
+      webView.configuration.userContentController.removeScriptMessageHandler,
     );
 
     _javaScriptChannelParams.remove(removedJavaScriptChannel);
