@@ -1,3 +1,7 @@
+## 0.8.5+2
+
+* Upgrades `package:image_picker_platform_interface` dependency to 2.5.0.
+
 ## 0.8.5+1
 
 * Switches to an internal method channel implementation.
