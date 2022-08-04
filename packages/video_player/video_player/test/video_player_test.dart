@@ -720,7 +720,7 @@ void main() {
         expect(controller.value.caption.text, 'one');
       });
 
-      test('setClosedCapitonFile loads caption file', () async {
+      test('setClosedCaptionFile loads caption file', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
           'https://127.0.0.1',
         );
@@ -735,7 +735,7 @@ void main() {
         );
       });
 
-      test('setClosedCapitonFile removes/changes caption file', () async {
+      test('setClosedCaptionFile removes/changes caption file', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
           'https://127.0.0.1',
           closedCaptionFile: _loadClosedCaption(),

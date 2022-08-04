@@ -178,7 +178,7 @@ void main() {
           containsAllInOrder(
             <Matcher>[
               contains(
-                  'SKIPPING: Plugin does not have an Android implemenatation.')
+                  'SKIPPING: Plugin does not have an Android implementation.')
             ],
           ));
     });
@@ -197,7 +197,7 @@ void main() {
           containsAllInOrder(
             <Matcher>[
               contains(
-                  'SKIPPING: Plugin does not have an Android implemenatation.')
+                  'SKIPPING: Plugin does not have an Android implementation.')
             ],
           ));
     });

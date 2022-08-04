@@ -287,7 +287,7 @@ void main() {
       expect(_controller.value.isInitialized, true);
       expect(_controller.value.position, const Duration(seconds: 0));
       expect(_controller.value.isPlaying, false);
-      // Due to the duration calculation accurancy between platforms,
+      // Due to the duration calculation accuracy between platforms,
       // the milliseconds on Web will be a slightly different from natives.
       // The audio was made with 44100 Hz, 192 Kbps CBR, and 32 bits.
       expect(

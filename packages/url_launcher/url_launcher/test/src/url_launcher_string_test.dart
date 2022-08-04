@@ -246,7 +246,7 @@ void main() {
       expect(await launchUrlString(emailLaunchUrlString), isTrue);
     });
 
-    test('allows non-parseable url', () async {
+    test('allows non-parsable url', () async {
       // Not a valid Dart [Uri], but a valid URL on at least some platforms.
       const String urlString =
           'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1';

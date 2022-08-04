@@ -677,7 +677,7 @@ Future<void> main() async {
       expect(isPaused, _webviewBool(true));
     });
 
-    testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
+    testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
         (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
@@ -876,7 +876,7 @@ Future<void> main() async {
     }, skip: Platform.isAndroid && _skipDueToIssue86757);
   });
 
-  // Minimial end-to-end testing of the legacy Android implementation.
+  // Minimal end-to-end testing of the legacy Android implementation.
   group('AndroidWebView (virtual display)', () {
     setUpAll(() {
       WebView.platform = AndroidWebView();
