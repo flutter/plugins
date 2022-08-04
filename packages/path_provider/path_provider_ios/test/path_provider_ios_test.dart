@@ -4,17 +4,35 @@
 
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider_ios/path_provider_ios.dart';
+import 'messages_test.g.dart';
+
+class _Api implements TestPathProviderApi {
+  String? applicationDocumentsPath;
+  String? applicationSupportPath;
+  String? libraryPath;
+  String? temporaryPath;
+
+  @override
+  String? getApplicationDocumentsPath() => applicationDocumentsPath;
+
+  @override
+  String? getApplicationSupportPath() => applicationSupportPath;
+
+  @override
+  String? getLibraryPath() => libraryPath;
+
+  @override
+  String? getTemporaryPath() => temporaryPath;
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('PathProviderIOS', () {
     late PathProviderIOS pathProvider;
-    late List<MethodCall> log;
     // These unit tests use the actual filesystem, since an injectable
     // filesystem would add a runtime dependency to the package, so everything
     // is contained to a temporary directory.
@@ -24,6 +42,7 @@ void main() {
     late String applicationSupportPath;
     late String libraryPath;
     late String applicationDocumentsPath;
+    late _Api api;
 
     setUp(() async {
       pathProvider = PathProviderIOS();
@@ -37,24 +56,12 @@ void main() {
       applicationDocumentsPath =
           p.join(basePath, 'application', 'documents', 'path');
 
-      log = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
-          .setMockMethodCallHandler(pathProvider.methodChannel,
-              (MethodCall methodCall) async {
-        log.add(methodCall);
-        switch (methodCall.method) {
-          case 'getTemporaryDirectory':
-            return temporaryPath;
-          case 'getApplicationSupportDirectory':
-            return applicationSupportPath;
-          case 'getLibraryDirectory':
-            return libraryPath;
-          case 'getApplicationDocumentsDirectory':
-            return applicationDocumentsPath;
-          default:
-            return null;
-        }
-      });
+      api = _Api();
+      api.applicationDocumentsPath = applicationDocumentsPath;
+      api.applicationSupportPath = applicationSupportPath;
+      api.libraryPath = libraryPath;
+      api.temporaryPath = temporaryPath;
+      TestPathProviderApi.setup(api);
     });
 
     tearDown(() {
@@ -63,21 +70,11 @@ void main() {
 
     test('getTemporaryPath', () async {
       final String? path = await pathProvider.getTemporaryPath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getTemporaryDirectory', arguments: null)],
-      );
       expect(path, temporaryPath);
     });
 
     test('getApplicationSupportPath', () async {
       final String? path = await pathProvider.getApplicationSupportPath();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getApplicationSupportDirectory', arguments: null)
-        ],
-      );
       expect(path, applicationSupportPath);
     });
 
@@ -89,21 +86,11 @@ void main() {
 
     test('getLibraryPath', () async {
       final String? path = await pathProvider.getLibraryPath();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getLibraryDirectory', arguments: null)],
-      );
       expect(path, libraryPath);
     });
 
     test('getApplicationDocumentsPath', () async {
       final String? path = await pathProvider.getApplicationDocumentsPath();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getApplicationDocumentsDirectory', arguments: null)
-        ],
-      );
       expect(path, applicationDocumentsPath);
     });
 

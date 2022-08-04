@@ -1,6 +1,6 @@
 # Flutter plugins
 
-[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
+[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/main)
 [![Release Status](https://github.com/flutter/plugins/actions/workflows/release.yml/badge.svg)](https://github.com/flutter/plugins/actions/workflows/release.yml)
 
 This repo is a companion repo to the main [flutter
@@ -34,7 +34,7 @@ is ready, you can [publish](https://flutter.dev/developing-packages/#publish) it
 to the [pub repository](https://pub.dev/).
 
 If you wish to contribute a change to any of the existing plugins in this repo,
-please review our [contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md),
+please review our [contribution guide](https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md),
 and send a [pull request](https://github.com/flutter/plugins/pulls).
 
 ## Plugins

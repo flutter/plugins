@@ -7,6 +7,7 @@ package io.flutter.plugins.quickactions;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutManager;
 import android.os.Build;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -21,6 +22,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
 
   private MethodChannel channel;
   private MethodCallHandlerImpl handler;
+  private Activity activity;
 
   /**
    * Plugin registration.
@@ -45,9 +47,10 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
-    handler.setActivity(binding.getActivity());
+    activity = binding.getActivity();
+    handler.setActivity(activity);
     binding.addOnNewIntentListener(this);
-    onNewIntent(binding.getActivity().getIntent());
+    onNewIntent(activity.getIntent());
   }
 
   @Override
@@ -74,7 +77,12 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
     }
     // Notify the Dart side if the launch intent has the intent extra relevant to quick actions.
     if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
-      channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
+      Context context = activity.getApplicationContext();
+      ShortcutManager shortcutManager =
+          (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
+      String shortcutId = intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION);
+      channel.invokeMethod("launch", shortcutId);
+      shortcutManager.reportShortcutUsed(shortcutId);
     }
     return false;
   }

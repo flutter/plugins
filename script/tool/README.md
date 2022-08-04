@@ -105,6 +105,8 @@ cd <repository root>
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages plugin_name
 # Run all tests for macOS:
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages plugin_name
+# Run all tests for Windows:
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --windows --packages plugin_name
 ```
 
 ### Update README.md from Example Sources
@@ -178,4 +180,4 @@ For changes that are relevant to flutter/packages, you will also need to:
 - Update the tool's pubspec.yaml and CHANGELOG
 - Publish the tool
 - Update the pinned version in
-  [flutter/packages](https://github.com/flutter/packages/blob/master/.cirrus.yml)
+  [flutter/packages](https://github.com/flutter/packages/blob/main/.cirrus.yml)

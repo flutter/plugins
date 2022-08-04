@@ -11,6 +11,9 @@ export 'circle.dart';
 export 'circle_updates.dart';
 export 'joint_type.dart';
 export 'location.dart';
+export 'map_configuration.dart';
+export 'map_objects.dart';
+export 'map_widget_configuration.dart';
 export 'maps_object.dart';
 export 'maps_object_updates.dart';
 export 'marker.dart';
@@ -25,7 +28,7 @@ export 'tile.dart';
 export 'tile_overlay.dart';
 export 'tile_provider.dart';
 export 'ui.dart';
-// Export the utils, they're used by the Widget
+// Export the utils used by the Widget
 export 'utils/circle.dart';
 export 'utils/marker.dart';
 export 'utils/polygon.dart';

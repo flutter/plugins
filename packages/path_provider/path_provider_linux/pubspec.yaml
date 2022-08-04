@@ -2,7 +2,7 @@ name: path_provider_linux
 description: Linux implementation of the path_provider plugin
 repository: https://github.com/flutter/plugins/tree/main/packages/path_provider/path_provider_linux
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+path_provider%22
-version: 2.1.6
+version: 2.1.7
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -16,7 +16,7 @@ flutter:
         dartPluginClass: PathProviderLinux
 
 dependencies:
-  ffi: ^1.1.2
+  ffi: ">=1.1.2 <3.0.0"
   flutter:
     sdk: flutter
   path: ^1.8.0

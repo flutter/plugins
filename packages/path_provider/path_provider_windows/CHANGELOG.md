@@ -1,5 +1,11 @@
-## NEXT
+## 2.1.1
 
+* Updates dependency version of `package:win32` to 2.1.0.
+
+## 2.1.0
+
+* Upgrades `package:ffi` dependency to 2.0.0.
+* Added support for unicode encoded VERSIONINFO.
 * Minor fixes for new analysis options.
 
 ## 2.0.6
