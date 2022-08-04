@@ -1,6 +1,5 @@
-## 0.6.0+12
+## NEXT
 
-* Adds a custom module map with a Test submodule for unit tests on iOS platform.
 * Minor fixes for new analysis options.
 
 ## 0.6.0+11
