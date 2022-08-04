@@ -1,3 +1,3 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.camera_android_camerax">
+  package="io.flutter.plugins.camera">
 </manifest>
