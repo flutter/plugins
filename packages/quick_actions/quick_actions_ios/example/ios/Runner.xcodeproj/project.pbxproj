@@ -18,6 +18,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		E0C09C29289C729D00E6977E /* FLTQuickActionsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D27FE1F0F21D4D47DDA16DE /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C35AD3650AB6BF850E016715 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLTQuickActionsPluginTests.m; sourceTree = "<group>"; };
 		F0609304FBCAEC2289164BD5 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -111,6 +113,7 @@
 			children = (
 				33E20B3426EFCDFC00A4A191 /* RunnerTests.m */,
 				33E20B3626EFCDFC00A4A191 /* Info.plist */,
+				E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				33E20B3526EFCDFC00A4A191 /* RunnerTests.m in Sources */,
+				E0C09C29289C729D00E6977E /* FLTQuickActionsPluginTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

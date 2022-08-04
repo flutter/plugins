@@ -1,3 +1,7 @@
+## 0.6.0+13
+
+* Adds some unit tests for `FLTQuickActionsPlugin` class. 
+
 ## 0.6.0+12
 
 * Adds a custom module map with a Test submodule for unit tests on iOS platform.

@@ -9,7 +9,6 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
-@property(nonatomic, retain) NSString *shortcutType;
 @end
 
 @implementation FLTQuickActionsPlugin
@@ -65,7 +64,7 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
     // Keep hold of the shortcut type and handle it in the
     // `applicationDidBecomeActure:` method once the Dart MethodChannel
     // is initialized.
-    self.shortcutType = shortcutItem.type;
+    self.launchingShortcutType = shortcutItem.type;
 
     // Return NO to indicate we handled the quick action to ensure
     // the `application:performActionFor:` method is not called (as
@@ -77,9 +76,9 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (self.shortcutType) {
-    [self handleShortcut:self.shortcutType];
-    self.shortcutType = nil;
+  if (self.launchingShortcutType) {
+    [self handleShortcut:self.launchingShortcutType];
+    self.launchingShortcutType = nil;
   }
 }
 
