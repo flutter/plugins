@@ -4,11 +4,13 @@
 
 #import "FLTQuickActionsPlugin.h"
 #import "FLTQuickActionsPlugin_Test.h"
+#import "FLTShortcutStateManager.h"
 
 static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 @interface FLTQuickActionsPlugin ()
-@property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, strong) FlutterMethodChannel *channel;
+@property(nonatomic, strong) FLTShortcutStateManager *shortcutStateManager;
 @end
 
 @implementation FLTQuickActionsPlugin
@@ -17,24 +19,27 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kChannelName
                                   binaryMessenger:[registrar messenger]];
-  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] initWithChannel:channel];
+  FLTQuickActionsPlugin *instance =
+      [[FLTQuickActionsPlugin alloc] initWithChannel:channel
+                                shortcutStateManager:[[FLTShortcutStateManager alloc] init]];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
 }
 
-- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel shortcutStateManager:(FLTShortcutStateManager *)shortcutStateManager {
   if ((self = [super init])) {
     _channel = channel;
+    _shortcutStateManager = shortcutStateManager;
   }
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"setShortcutItems"]) {
-    _setShortcutItems(call.arguments);
+    [self.shortcutStateManager setShortcutItems:call.arguments];
     result(nil);
   } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
-    [UIApplication sharedApplication].shortcutItems = @[];
+    [self.shortcutStateManager setShortcutItems:@[]];
     result(nil);
   } else if ([call.method isEqualToString:@"getLaunchAction"]) {
     result(nil);
@@ -64,7 +69,7 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
     // Keep hold of the shortcut type and handle it in the
     // `applicationDidBecomeActure:` method once the Dart MethodChannel
     // is initialized.
-    self.launchingShortcutType = shortcutItem.type;
+    self.shortcutStateManager.launchingShortcutType = shortcutItem.type;
 
     // Return NO to indicate we handled the quick action to ensure
     // the `application:performActionFor:` method is not called (as
@@ -76,9 +81,10 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (self.launchingShortcutType) {
-    [self handleShortcut:self.launchingShortcutType];
-    self.launchingShortcutType = nil;
+  NSString *shortcut = self.shortcutStateManager.launchingShortcutType;
+  if (shortcut) {
+    [self handleShortcut:shortcut];
+    self.shortcutStateManager.launchingShortcutType = nil;
   }
 }
 
@@ -86,31 +92,6 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 - (void)handleShortcut:(NSString *)shortcut {
   [self.channel invokeMethod:@"launch" arguments:shortcut];
-}
-
-NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
-  NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
-
-  for (id item in items) {
-    UIApplicationShortcutItem *shortcut = _deserializeShortcutItem(item);
-    [newShortcuts addObject:shortcut];
-  }
-
-  [UIApplication sharedApplication].shortcutItems = newShortcuts;
-}
-
-NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *serialized)
-    API_AVAILABLE(ios(9.0)) {
-  UIApplicationShortcutIcon *icon =
-      [serialized[@"icon"] isKindOfClass:[NSNull class]]
-          ? nil
-          : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
-
-  return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
-                                          localizedTitle:serialized[@"localizedTitle"]
-                                       localizedSubtitle:nil
-                                                    icon:icon
-                                                userInfo:nil];
 }
 
 @end
