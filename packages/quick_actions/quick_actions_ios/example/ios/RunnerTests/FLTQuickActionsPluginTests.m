@@ -20,7 +20,7 @@
       [FlutterMethodCall methodCallWithMethodName:@"setShortcutItems"
                                         arguments:@[ [Fixtures searchTheThingRawItem] ]];
 
-  id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
+  FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
 
   FLTQuickActionsPlugin *plugin =
       [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
@@ -39,7 +39,7 @@
 - (void)testHandleMethodCall_clearShortcutItems {
   FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"clearShortcutItems"
                                                               arguments:nil];
-  id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
+  FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   FLTQuickActionsPlugin *plugin =
       [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:mockShortcutStateManager];
