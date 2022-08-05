@@ -33,7 +33,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
         help: 'An optional path to a Dart SDK; this is used to override the '
             'SDK used to provide analysis.');
     argParser.addFlag(_downgradeFlag,
-        help: 'Runs "flutter pub downgrade" before analysis, to verify that '
+        help: 'Runs "flutter pub downgrade" before analysis to verify that '
             'the minimum constraints are sufficiently new for APIs used.');
     argParser.addFlag(_libOnlyFlag,
         help: 'Only analyze the lib/ directory of the main package, not the '
