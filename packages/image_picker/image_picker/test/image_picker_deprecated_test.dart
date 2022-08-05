@@ -55,10 +55,19 @@ void main() {
         test('passes the width and height arguments correctly', () async {
           final ImagePicker picker = ImagePicker();
           await picker.getImage(source: ImageSource.camera);
-          await picker.getImage(source: ImageSource.camera, maxWidth: 10.0);
-          await picker.getImage(source: ImageSource.camera, maxHeight: 10.0);
           await picker.getImage(
-              source: ImageSource.camera, maxWidth: 10.0, maxHeight: 20.0);
+            source: ImageSource.camera,
+            maxWidth: 10.0,
+          );
+          await picker.getImage(
+            source: ImageSource.camera,
+            maxHeight: 10.0,
+          );
+          await picker.getImage(
+            source: ImageSource.camera,
+            maxWidth: 10.0,
+            maxHeight: 20.0,
+          );
           await picker.getImage(
               source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70);
           await picker.getImage(
@@ -73,19 +82,27 @@ void main() {
             mockPlatform.pickImage(source: ImageSource.camera),
             mockPlatform.pickImage(source: ImageSource.camera, maxWidth: 10.0),
             mockPlatform.pickImage(source: ImageSource.camera, maxHeight: 10.0),
-            mockPlatform.pickImage(source: ImageSource.camera, maxWidth: 10.0),
-            mockPlatform.pickImage(source: ImageSource.camera, maxHeight: 10.0),
             mockPlatform.pickImage(
-                source: ImageSource.camera, maxWidth: 10.0, maxHeight: 20.0),
+              source: ImageSource.camera,
+              maxWidth: 10.0,
+              maxHeight: 20.0,
+            ),
             mockPlatform.pickImage(
-                source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70),
+              source: ImageSource.camera,
+              maxWidth: 10.0,
+              imageQuality: 70,
+            ),
             mockPlatform.pickImage(
-                source: ImageSource.camera, maxHeight: 10.0, imageQuality: 70),
+              source: ImageSource.camera,
+              maxHeight: 10.0,
+              imageQuality: 70,
+            ),
             mockPlatform.pickImage(
-                source: ImageSource.camera,
-                maxWidth: 10.0,
-                maxHeight: 20.0,
-                imageQuality: 70),
+              source: ImageSource.camera,
+              maxWidth: 10.0,
+              maxHeight: 20.0,
+              imageQuality: 70,
+            ),
           ]);
         });
 
@@ -145,8 +162,9 @@ void main() {
           verifyInOrder(<Object>[
             mockPlatform.pickVideo(source: ImageSource.camera),
             mockPlatform.pickVideo(
-                source: ImageSource.camera,
-                maxDuration: const Duration(seconds: 10)),
+              source: ImageSource.camera,
+              maxDuration: const Duration(seconds: 10),
+            ),
           ]);
         });
 
@@ -219,11 +237,24 @@ void main() {
         test('passes the width and height arguments correctly', () async {
           final ImagePicker picker = ImagePicker();
           await picker.getMultiImage();
-          await picker.getMultiImage(maxWidth: 10.0);
-          await picker.getMultiImage(maxHeight: 10.0);
-          await picker.getMultiImage(maxWidth: 10.0, maxHeight: 20.0);
-          await picker.getMultiImage(maxWidth: 10.0, imageQuality: 70);
-          await picker.getMultiImage(maxHeight: 10.0, imageQuality: 70);
+          await picker.getMultiImage(
+            maxWidth: 10.0,
+          );
+          await picker.getMultiImage(
+            maxHeight: 10.0,
+          );
+          await picker.getMultiImage(
+            maxWidth: 10.0,
+            maxHeight: 20.0,
+          );
+          await picker.getMultiImage(
+            maxWidth: 10.0,
+            imageQuality: 70,
+          );
+          await picker.getMultiImage(
+            maxHeight: 10.0,
+            imageQuality: 70,
+          );
           await picker.getMultiImage(
               maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70);
 
@@ -235,7 +266,10 @@ void main() {
             mockPlatform.pickMultiImage(maxWidth: 10.0, imageQuality: 70),
             mockPlatform.pickMultiImage(maxHeight: 10.0, imageQuality: 70),
             mockPlatform.pickMultiImage(
-                maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70),
+              maxWidth: 10.0,
+              maxHeight: 20.0,
+              imageQuality: 70,
+            ),
           ]);
         });
 
