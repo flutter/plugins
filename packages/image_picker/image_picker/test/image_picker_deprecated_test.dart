@@ -55,19 +55,10 @@ void main() {
         test('passes the width and height arguments correctly', () async {
           final ImagePicker picker = ImagePicker();
           await picker.getImage(source: ImageSource.camera);
+          await picker.getImage(source: ImageSource.camera, maxWidth: 10.0);
+          await picker.getImage(source: ImageSource.camera, maxHeight: 10.0);
           await picker.getImage(
-            source: ImageSource.camera,
-            maxWidth: 10.0,
-          );
-          await picker.getImage(
-            source: ImageSource.camera,
-            maxHeight: 10.0,
-          );
-          await picker.getImage(
-            source: ImageSource.camera,
-            maxWidth: 10.0,
-            maxHeight: 20.0,
-          );
+              source: ImageSource.camera, maxWidth: 10.0, maxHeight: 20.0);
           await picker.getImage(
               source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70);
           await picker.getImage(
@@ -228,24 +219,11 @@ void main() {
         test('passes the width and height arguments correctly', () async {
           final ImagePicker picker = ImagePicker();
           await picker.getMultiImage();
-          await picker.getMultiImage(
-            maxWidth: 10.0,
-          );
-          await picker.getMultiImage(
-            maxHeight: 10.0,
-          );
-          await picker.getMultiImage(
-            maxWidth: 10.0,
-            maxHeight: 20.0,
-          );
-          await picker.getMultiImage(
-            maxWidth: 10.0,
-            imageQuality: 70,
-          );
-          await picker.getMultiImage(
-            maxHeight: 10.0,
-            imageQuality: 70,
-          );
+          await picker.getMultiImage(maxWidth: 10.0);
+          await picker.getMultiImage(maxHeight: 10.0);
+          await picker.getMultiImage(maxWidth: 10.0, maxHeight: 20.0);
+          await picker.getMultiImage(maxWidth: 10.0, imageQuality: 70);
+          await picker.getMultiImage(maxHeight: 10.0, imageQuality: 70);
           await picker.getMultiImage(
               maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70);
 
