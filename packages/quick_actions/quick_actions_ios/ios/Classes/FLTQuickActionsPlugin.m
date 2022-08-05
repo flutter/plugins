@@ -26,7 +26,8 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
   [registrar addApplicationDelegate:instance];
 }
 
-- (instancetype)initWithChannel:(FlutterMethodChannel *)channel shortcutStateManager:(FLTShortcutStateManager *)shortcutStateManager {
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel
+           shortcutStateManager:(FLTShortcutStateManager *)shortcutStateManager {
   if ((self = [super init])) {
     _channel = channel;
     _shortcutStateManager = shortcutStateManager;

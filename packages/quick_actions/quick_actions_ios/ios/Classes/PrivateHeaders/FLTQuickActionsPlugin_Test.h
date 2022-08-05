@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param channel A method channel.
 /// @param shortcutStateManager An FLTShortcutStateManager that manages shortcut related states.
 /// @return The initialized FLTQuickActionsPlugin.
-- (instancetype)initWithChannel:(FlutterMethodChannel *)channel shortcutStateManager:(FLTShortcutStateManager *)shortcutStateManager;
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel
+           shortcutStateManager:(FLTShortcutStateManager *)shortcutStateManager;
 
 @end
 

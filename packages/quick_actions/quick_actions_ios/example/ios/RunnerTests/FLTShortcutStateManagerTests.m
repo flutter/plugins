@@ -18,21 +18,20 @@
   OCMStub([mockApplication sharedApplication]).andReturn(mockApplication);
 
   FLTShortcutStateManager *shortcutStateManager = [[FLTShortcutStateManager alloc] init];
-  [shortcutStateManager setShortcutItems:@[ Fixtures.searchTheThingRawItem ]];
+  [shortcutStateManager setShortcutItems:@[ [Fixtures searchTheThingRawItem] ]];
 
-  OCMVerify([mockApplication setShortcutItems:@[ Fixtures.searchTheThingShortcutItem ]]);
+  OCMVerify([mockApplication setShortcutItems:@[ [Fixtures searchTheThingShortcutItem] ]]);
 }
 
 - (void)testSetShortcutItems_shouldSetItemWithoutIcon {
   id mockApplication = OCMPartialMock([UIApplication sharedApplication]);
   OCMStub([mockApplication sharedApplication]).andReturn(mockApplication);
 
-  NSDictionary *rawItem = Fixtures.searchTheThingRawItem_noIcon;
-  UIApplicationShortcutItem *expectedItem = Fixtures.searchTheThingShortcutItem_noIcon;
+  NSDictionary *rawItem = [Fixtures searchTheThingRawItem_noIcon];
   FLTShortcutStateManager *shortcutStateManager = [[FLTShortcutStateManager alloc] init];
   [shortcutStateManager setShortcutItems:@[ rawItem ]];
 
-  OCMVerify([mockApplication setShortcutItems:@[ expectedItem ]]);
+  OCMVerify([mockApplication setShortcutItems:@[ [Fixtures searchTheThingShortcutItem_noIcon] ]]);
 }
 
 @end

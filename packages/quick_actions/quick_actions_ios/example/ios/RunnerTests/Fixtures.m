@@ -17,12 +17,11 @@
 }
 
 + (UIApplicationShortcutItem *)searchTheThingShortcutItem_noIcon {
-  return [[UIApplicationShortcutItem alloc]
-           initWithType:@"SearchTheThing"
-         localizedTitle:@"Search the thing"
-      localizedSubtitle:nil
-                   icon:nil
-               userInfo:nil];
+  return [[UIApplicationShortcutItem alloc] initWithType:@"SearchTheThing"
+                                          localizedTitle:@"Search the thing"
+                                       localizedSubtitle:nil
+                                                    icon:nil
+                                                userInfo:nil];
 }
 
 + (NSDictionary<NSString *, NSObject *> *)searchTheThingRawItem {
@@ -37,7 +36,8 @@
   return @{
     @"type" : @"SearchTheThing",
     @"localizedTitle" : @"Search the thing",
-    // Dart's null value is passed to iOS as `NSNull`. The key value pair is still present in the dictionary.
+    // Dart's null value is passed to iOS as `NSNull`.
+    // The key value pair is still present in the dictionary.
     @"icon" : [NSNull null],
   };
 }
