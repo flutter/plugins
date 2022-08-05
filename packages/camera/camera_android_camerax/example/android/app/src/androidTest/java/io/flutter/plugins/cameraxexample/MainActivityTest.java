@@ -4,25 +4,16 @@
 
 package io.flutter.plugins.cameraxexample;
 
-import static org.junit.Assert.assertTrue;
-
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.rule.ActivityTestRule;
 import dev.flutter.plugins.integration_test.FlutterTestRunner;
+import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugins.DartIntegrationTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 @DartIntegrationTest
 @RunWith(FlutterTestRunner.class)
 public class MainActivityTest {
-  @Before
-  public void setUp() throws Exception {
-    ActivityScenario.launch(MainActivity.class);
-  }
-
-  @Test
-  public void fakeTest() {
-    assertTrue(true);
-  }
+  @Rule
+  public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
 }
