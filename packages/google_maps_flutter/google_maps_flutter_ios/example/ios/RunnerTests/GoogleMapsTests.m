@@ -5,9 +5,14 @@
 @import google_maps_flutter_ios;
 @import google_maps_flutter_ios.Test;
 @import XCTest;
+@import GoogleMaps;
 
 #import <OCMock/OCMock.h>
 #import "PartiallyMockedMapView.h"
+
+@interface FLTGoogleMapFactory (Test)
+@property(strong, nonatomic, readonly) id<NSObject> sharedMapServices;
+@end
 
 @interface GoogleMapsTests : XCTestCase
 @end
@@ -37,6 +42,17 @@
 
   mapView.frame = frame;
   XCTAssertEqual(mapView.frameObserverCount, 0);
+}
+
+- (void)testMapsServiceSync {
+  id registrar = OCMProtocolMock(@protocol(FlutterPluginRegistrar));
+  FLTGoogleMapFactory *factory1 = [[FLTGoogleMapFactory alloc] initWithRegistrar:registrar];
+  XCTAssertNotNil(factory1.sharedMapServices);
+  FLTGoogleMapFactory *factory2 = [[FLTGoogleMapFactory alloc] initWithRegistrar:registrar];
+  // Test pointer equality, should be same retained singleton +[GMSServices sharedServices] object.
+  // Retaining the opaque object should be enough to avoid multiple internal initializations,
+  // but don't test the internals of the GoogleMaps API. Assume that it does what is documented.
+  XCTAssertEqual(factory1.sharedMapServices, factory2.sharedMapServices);
 }
 
 @end

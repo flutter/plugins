@@ -11,6 +11,7 @@
 @interface FLTGoogleMapFactory ()
 
 @property(weak, nonatomic) NSObject<FlutterPluginRegistrar> *registrar;
+@property(strong, nonatomic, readonly) id<NSObject> sharedMapServices;
 
 @end
 
@@ -20,6 +21,10 @@
   self = [super init];
   if (self) {
     _registrar = registrar;
+    // Calling this prepares GMSServices on a background thread controlled
+    // by the GoogleMaps framework.
+    // Retain the singleton to cache the initialization work across all map views.
+    _sharedMapServices = [GMSServices sharedServices];
   }
   return self;
 }
