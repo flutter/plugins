@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 @implementation FLTImagePickerPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FLTImagePickerPlugin *instance = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *instance = [[FLTImagePickerPlugin alloc] init];
   FLTImagePickerApiSetup(registrar.messenger, instance);
 }
 

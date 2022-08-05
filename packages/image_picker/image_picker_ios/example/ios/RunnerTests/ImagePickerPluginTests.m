@@ -46,7 +46,7 @@
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   UIImagePickerController *controller = [[UIImagePickerController alloc] init];
   [plugin setImagePickerControllerOverrides:@[ controller ]];
 
@@ -79,7 +79,7 @@
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   UIImagePickerController *controller = [[UIImagePickerController alloc] init];
   [plugin setImagePickerControllerOverrides:@[ controller ]];
 
@@ -112,7 +112,7 @@
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   UIImagePickerController *controller = [[UIImagePickerController alloc] init];
   [plugin setImagePickerControllerOverrides:@[ controller ]];
 
@@ -144,7 +144,7 @@
       .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   UIImagePickerController *controller = [[UIImagePickerController alloc] init];
   [plugin setImagePickerControllerOverrides:@[ controller ]];
 
@@ -167,7 +167,7 @@
   OCMStub(ClassMethod([photoLibrary authorizationStatus]))
       .andReturn(PHAuthorizationStatusAuthorized);
 
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
 
   [plugin pickMultiImageWithMaxSize:[FLTMaxSize makeWithWidth:@(100) height:@(200)]
@@ -184,7 +184,7 @@
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
   id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
 
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
 
   [plugin pickImageWithSource:[FLTSourceSpecification makeWithType:FLTSourceTypeGallery
@@ -202,7 +202,7 @@
   id mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
   id photoLibrary = OCMClassMock([PHPhotoLibrary class]);
 
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   [plugin setImagePickerControllerOverrides:@[ mockUIImagePicker ]];
 
   [plugin pickMultiImageWithMaxSize:[[FLTMaxSize alloc] init]
@@ -221,7 +221,7 @@
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   UIImagePickerController *controller = [[UIImagePickerController alloc] init];
   plugin.imagePickerControllerOverrides = @[ controller ];
 
@@ -241,7 +241,7 @@
 #pragma mark - Test video duration
 
 - (void)testPickingVideoWithDuration {
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   UIImagePickerController *controller = [[UIImagePickerController alloc] init];
   [plugin setImagePickerControllerOverrides:@[ controller ]];
 
@@ -262,12 +262,12 @@
   UIViewController *vc2 = [UIViewController new];
   vc1.mockPresented = vc2;
 
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
 }
 
 - (void)testPluginMultiImagePathHasNullItem {
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
 
   dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
   __block FlutterError *pickImageResult = nil;
@@ -284,7 +284,7 @@
 }
 
 - (void)testPluginMultiImagePathHasItem {
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] init];
   NSArray *pathList = @[ @"test" ];
 
   dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
