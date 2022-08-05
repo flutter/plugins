@@ -147,7 +147,7 @@ public interface CameraProperties {
    * height and crop region height, for @see android.scaler.cropRegion.
    *
    * <p>By default maps to the @see
-   * android.hardware.camera2.CameraCharacteristics#SCALER_AVAILABLE_MAX_DIGITAL_ZOOM key
+   * android.hardware.camera2.CameraCharacteristics#SCALER_AVAILABLE_MAX_DIGITAL_ZOOM key.
    *
    * @return Float Maximum ratio between both active area width and crop region width, and active
    *     area height and crop region height.

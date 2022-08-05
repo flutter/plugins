@@ -18,7 +18,8 @@ final class ZoomUtils {
    * Computes an image sensor area based on the supplied zoom settings.
    *
    * <p>The returned image sensor area can be applied to the {@link android.hardware.camera2} API in
-   * order to control zoom levels.
+   * order to control zoom levels. This method of zoom should only be used for android versions less
+   * than than 11 as past that the newer computeZoomRatio functional can be used.
    *
    * @param zoom The desired zoom level.
    * @param sensorArraySize The current area of the image sensor.
@@ -28,7 +29,7 @@ final class ZoomUtils {
    */
   static Rect computeZoomRect(
       float zoom, @NonNull Rect sensorArraySize, float minimumZoomLevel, float maximumZoomLevel) {
-    final float newZoom = MathUtils.clamp(zoom, minimumZoomLevel, maximumZoomLevel);
+    final float newZoom = computeZoomRatio(zoom, minimumZoomLevel, maximumZoomLevel);
 
     final int centerX = sensorArraySize.width() / 2;
     final int centerY = sensorArraySize.height() / 2;
