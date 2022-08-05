@@ -28,7 +28,7 @@ flutter:
     implements: camera
     platforms:
       android:
-        package: io.flutter.plugins.camera
+        package: io.flutter.plugins.camerax
         pluginClass: CameraAndroidCameraxPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
