@@ -289,7 +289,6 @@ void main() {
             mockPlatform.getMultiImage(maxWidth: 10.0, maxHeight: 20.0),
             mockPlatform.getMultiImage(maxWidth: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(maxHeight: 10.0, imageQuality: 70),
-            mockPlatform.getMultiImage(maxHeight: 10.0, imageQuality: 70),
             mockPlatform.getMultiImage(
                 maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70),
           ]);
