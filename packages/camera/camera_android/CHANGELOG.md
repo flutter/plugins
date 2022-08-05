@@ -1,6 +1,6 @@
 ## 0.10.0+1
 
-* Fixes issues with Virtual cameras hiding physical cameras in android 11+.
+* Fixes zoom computation for virtual cameras hiding physical cameras in Android 11+.
 
 ## 0.10.0
 
