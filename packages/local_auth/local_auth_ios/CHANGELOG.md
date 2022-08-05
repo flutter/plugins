@@ -1,3 +1,8 @@
+## 1.0.8
+
+* Updates `local_auth_platform_interface` constraint to the correct minimum
+  version.
+
 ## 1.0.7
 
 * Updates references to the obsolete master branch.
