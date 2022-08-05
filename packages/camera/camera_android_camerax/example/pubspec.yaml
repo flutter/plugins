@@ -36,6 +36,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
 
+  integration_test:
+    sdk: flutter
+
   flutter_test:
     sdk: flutter
 
