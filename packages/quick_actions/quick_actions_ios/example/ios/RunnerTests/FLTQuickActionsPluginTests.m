@@ -15,39 +15,29 @@
 @implementation FLTQuickActionsPluginTests
 
 // A dummy `UIApplicationShortcutItem`.
-+ (UIApplicationShortcutItem *)searchTheThingShortcutItem {
-  static UIApplicationShortcutItem *item = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    item = [[UIApplicationShortcutItem alloc]
-             initWithType:@"SearchTheThing"
-           localizedTitle:@"Search the thing"
-        localizedSubtitle:nil
-                     icon:[UIApplicationShortcutIcon
-                              iconWithTemplateImageName:@"search_the_thing.png"]
-                 userInfo:nil];
-  });
-  return item;
+- (UIApplicationShortcutItem *)searchTheThingShortcutItem {
+  return [[UIApplicationShortcutItem alloc]
+           initWithType:@"SearchTheThing"
+         localizedTitle:@"Search the thing"
+      localizedSubtitle:nil
+                   icon:[UIApplicationShortcutIcon
+                            iconWithTemplateImageName:@"search_the_thing.png"]
+               userInfo:nil];
 }
 
 // A dummy raw shortcut item.
-+ (NSDictionary<NSString *, NSString *> *)searchTheThingRawItem {
-  static NSDictionary<NSString *, NSString *> *item = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    item = @{
-      @"type" : @"SearchTheThing",
-      @"localizedTitle" : @"Search the thing",
-      @"icon" : @"search_the_thing.png",
-    };
-  });
-  return item;
+- (NSDictionary<NSString *, NSString *> *)searchTheThingRawItem {
+  return @{
+    @"type" : @"SearchTheThing",
+    @"localizedTitle" : @"Search the thing",
+    @"icon" : @"search_the_thing.png",
+  };
 }
 
 - (void)testHandleMethodCall_setShortcutItems {
-  FlutterMethodCall *call = [FlutterMethodCall
-      methodCallWithMethodName:@"setShortcutItems"
-                     arguments:@[ [FLTQuickActionsPluginTests searchTheThingRawItem] ]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"setShortcutItems"
+                                        arguments:@[ [self searchTheThingRawItem] ]];
 
   FLTQuickActionsPlugin *plugin =
       [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])];
@@ -56,10 +46,9 @@
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertNil(result, @"result block must be called with nil.");
-                      XCTAssertEqualObjects(
-                          UIApplication.sharedApplication.shortcutItems,
-                          @[ [FLTQuickActionsPluginTests searchTheThingShortcutItem] ],
-                          @"shortcut items should be set correctly.");
+                      XCTAssertEqualObjects(UIApplication.sharedApplication.shortcutItems,
+                                            @[ [self searchTheThingShortcutItem] ],
+                                            @"shortcut items should be set correctly.");
                       [resultExpectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:1 handler:nil];
@@ -121,7 +110,7 @@
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   FLTQuickActionsPlugin *plugin = [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel];
 
-  UIApplicationShortcutItem *item = [FLTQuickActionsPluginTests searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [self searchTheThingShortcutItem];
 
   BOOL actionResult = [plugin application:[UIApplication sharedApplication]
              performActionForShortcutItem:item
@@ -134,7 +123,7 @@
   FLTQuickActionsPlugin *plugin =
       [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])];
 
-  UIApplicationShortcutItem *item = [FLTQuickActionsPluginTests searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [self searchTheThingShortcutItem];
 
   BOOL launchResult = [plugin application:[UIApplication sharedApplication]
             didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
@@ -153,7 +142,7 @@
 }
 
 - (void)testApplicationDidBecomeActive {
-  UIApplicationShortcutItem *item = [FLTQuickActionsPluginTests searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [self searchTheThingShortcutItem];
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   FLTQuickActionsPlugin *plugin = [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel];
   plugin.launchingShortcutType = item.type;
