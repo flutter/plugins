@@ -52,6 +52,7 @@
   // Test pointer equality, should be same retained singleton +[GMSServices sharedServices] object.
   // Retaining the opaque object should be enough to avoid multiple internal initializations,
   // but don't test the internals of the GoogleMaps API. Assume that it does what is documented.
+  // https://developers.google.com/maps/documentation/ios-sdk/reference/interface_g_m_s_services#a436e03c32b1c0be74e072310a7158831
   XCTAssertEqual(factory1.sharedMapServices, factory2.sharedMapServices);
 }
 
