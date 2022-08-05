@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTQuickActionsPlugin.h"
+#import "FLTQuickActionsPlugin_Test.h"
 
 static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
@@ -17,10 +18,16 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kChannelName
                                   binaryMessenger:[registrar messenger]];
-  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
-  instance.channel = channel;
+  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] initWithChannel:channel];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
+}
+
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
+  if ((self = [super init])) {
+    _channel = channel;
+  }
+  return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

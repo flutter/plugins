@@ -1,3 +1,7 @@
+## 0.6.0+12
+
+* Adds a custom module map with a Test submodule for unit tests on iOS platform.
+
 ## 0.6.0+11
 
 * Updates references to the obsolete master branch.
