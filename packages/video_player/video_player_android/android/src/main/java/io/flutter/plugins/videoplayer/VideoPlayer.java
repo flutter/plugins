@@ -83,20 +83,12 @@ final class VideoPlayer {
         new DefaultHttpDataSource.Factory()
             .setUserAgent("ExoPlayer")
             .setAllowCrossProtocolRedirects(true);
-
-    if (httpHeaders != null && !httpHeaders.isEmpty()) {
-      httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
-      Log.i(TAG, "http headers in player java ");
-      Log.i(TAG,httpHeaders.toString());
-    }else{
-      Log.i(TAG, "http headers in player are null ");
-    }
-    dataSourceFactory = httpDataSourceFactory;
  } else {
       dataSourceFactory = new DefaultDataSource.Factory(context);
     }
+    
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
-      httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
+      dataSourceFactory.setDefaultRequestProperties(httpHeaders);
       Log.i(TAG, "http headers in player java ");
       Log.i(TAG,httpHeaders.toString());
     }
