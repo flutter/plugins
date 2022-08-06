@@ -55,7 +55,8 @@ final class VideoPlayer {
   private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
-
+  private static final String TAG = "MyActivity";
+  
   @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
@@ -84,6 +85,7 @@ final class VideoPlayer {
 
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
+      Log.i(TAG, "http headers in player java " + httpHeaders);
     }
     dataSourceFactory = httpDataSourceFactory;
 
