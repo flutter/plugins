@@ -56,7 +56,7 @@ final class VideoPlayer {
   private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
-  private const val USER_AGENT = "User-Agent";
+  private final USER_AGENT = "User-Agent";
 
   @VisibleForTesting boolean isInitialized = false;
 
