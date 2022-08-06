@@ -75,7 +75,7 @@ final class VideoPlayer {
 
     Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
-    if (isHTTP(uri)) {
+    //if (isHTTP(uri)) {
       DefaultHttpDataSource.Factory httpDataSourceFactory =
           new DefaultHttpDataSource.Factory()
               .setUserAgent("ExoPlayer")
@@ -85,9 +85,9 @@ final class VideoPlayer {
         httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       }
       dataSourceFactory = httpDataSourceFactory;
-    } else {
-      dataSourceFactory = new DefaultDataSource.Factory(context);
-    }
+    //} else {
+    //  dataSourceFactory = new DefaultDataSource.Factory(context);
+    //}
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.setMediaSource(mediaSource);
