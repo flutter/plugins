@@ -96,7 +96,10 @@ final class VideoPlayer {
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
     } else {
-      dataSourceFactory = new DefaultDataSource.Factory(context);
+      httpDataSourceFactory = new DefaultHttpDataSource.Factory()
+            .setUserAgent("ExoPlayer")
+            .setAllowCrossProtocolRedirects(true);
+      dataSourceFactory = new DefaultDataSource.Factory(context,httpDataSourceFactory);
     }
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
