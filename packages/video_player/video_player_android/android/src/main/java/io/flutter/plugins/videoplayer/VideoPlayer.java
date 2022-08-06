@@ -75,6 +75,8 @@ final class VideoPlayer {
     this.options = options;
 
     exoPlayer = new ExoPlayer.Builder(context).build();
+    
+    Uri uri = Uri.parse(dataSource);
 
     DataSource.Factory dataSourceFactory;
     
@@ -82,13 +84,13 @@ final class VideoPlayer {
         new DefaultHttpDataSource.Factory()
             .setUserAgent("ExoPlayer")
             .setAllowCrossProtocolRedirects(true);
+
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
     }
 
     dataSourceFactory =new DefaultDataSource.Factory(context,httpDataSourceFactory);
     
-
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
     exoPlayer.setMediaSource(mediaSource);
