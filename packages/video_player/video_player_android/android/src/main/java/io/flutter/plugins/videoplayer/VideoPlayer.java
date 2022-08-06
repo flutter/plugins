@@ -86,6 +86,8 @@ final class VideoPlayer {
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       Log.i(TAG, "http headers in player java " + httpHeaders);
+    }else{
+      Log.i(TAG, "http headers in player are null ");
     }
     dataSourceFactory = httpDataSourceFactory;
 
