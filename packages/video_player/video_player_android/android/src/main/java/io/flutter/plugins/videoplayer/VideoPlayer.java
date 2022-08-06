@@ -56,8 +56,8 @@ final class VideoPlayer {
   private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
-  private static final String TAG = "MyActivity";
-  
+  private const val USER_AGENT = "User-Agent";
+
   @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
@@ -75,21 +75,31 @@ final class VideoPlayer {
     this.options = options;
 
     exoPlayer = new ExoPlayer.Builder(context).build();
-    
+
     Uri uri = Uri.parse(dataSource);
 
     DataSource.Factory dataSourceFactory;
-    
-    DefaultHttpDataSource.Factory httpDataSourceFactory =
+    DefaultHttpDataSource.Factory httpDataSourceFactory;
+    if (httpHeaders != null && !httpHeaders.isEmpty()) {
+      if(httpHeaders.containsKey(USER_AGENT)){
+        httpDataSourceFactory =
+        new DefaultHttpDataSource.Factory()
+            .setUserAgent(httpHeaders[USER_AGENT])
+            .setAllowCrossProtocolRedirects(true);
+      }else{
+    httpDataSourceFactory =
         new DefaultHttpDataSource.Factory()
             .setUserAgent("ExoPlayer")
             .setAllowCrossProtocolRedirects(true);
+          }
 
-    if (httpHeaders != null && !httpHeaders.isEmpty()) {
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
+      dataSourceFactory =new DefaultDataSource.Factory(context,httpDataSourceFactory);
+    }else{
+      dataSourceFactory =new DefaultDataSource.Factory(context);
     }
 
-    dataSourceFactory =new DefaultDataSource.Factory(context,httpDataSourceFactory);
+    
     
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
