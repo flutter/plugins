@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_web/webview_flutter_web.dart';
@@ -47,7 +46,7 @@ class WebView extends StatefulWidget {
   final String? initialUrl;
 
   @override
-  _WebViewState createState() => _WebViewState();
+  State<WebView> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {

@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:platform/platform.dart';
 
-import 'enums.dart';
-
 /// An implementation of [PathProviderPlatform] that uses method channels.
 class MethodChannelPathProvider extends PathProviderPlatform {
   /// The method channel used to interact with the native platform.
@@ -24,6 +22,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// This API is only exposed for the unit tests. It should not be used by
   /// any code outside of the plugin itself.
   @visibleForTesting
+  // ignore: use_setters_to_change_properties
   void setMockPathProviderPlatform(Platform platform) {
     _platform = platform;
   }

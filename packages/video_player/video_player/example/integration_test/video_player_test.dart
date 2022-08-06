@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -21,10 +23,13 @@ const String _videoAssetKey =
     kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
 
 // Returns the URL to load an asset from this example app as a network source.
+//
+// TODO(stuartmorgan): Convert this to a local `HttpServer` that vends the
+// assets directly, https://github.com/flutter/flutter/issues/95420
 String getUrlForAssetAsNetworkSource(String assetKey) {
   return 'https://github.com/flutter/plugins/blob/'
       // This hash can be rolled forward to pick up newly-added assets.
-      'cba393233e559c925a4daf71b06b4bb01c606762'
+      'cb381ced070d356799dddf24aca38ce0579d3d7b'
       '/packages/video_player/video_player/example/'
       '$assetKey'
       '?raw=true';
@@ -56,7 +61,7 @@ void main() {
       (WidgetTester tester) async {
         final VideoPlayerController networkController =
             VideoPlayerController.network(
-          'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8',
         );
         await networkController.initialize();
 
@@ -179,7 +184,7 @@ void main() {
             child: FutureBuilder<bool>(
               future: started(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.data == true) {
+                if (snapshot.data ?? false) {
                   return AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),
@@ -229,13 +234,8 @@ void main() {
 
   group('network videos', () {
     setUp(() {
-      // TODO(stuartmorgan): Remove this conditional and update the hash in
-      // getUrlForAssetAsNetworkSource as a follow-up, once the webm asset is
-      // checked in.
-      final String videoUrl = kIsWeb
-          ? 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
-          : getUrlForAssetAsNetworkSource(_videoAssetKey);
-      _controller = VideoPlayerController.network(videoUrl);
+      _controller = VideoPlayerController.network(
+          getUrlForAssetAsNetworkSource(_videoAssetKey));
     });
 
     testWidgets(

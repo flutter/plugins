@@ -11,6 +11,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.view.Surface;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
@@ -51,11 +52,11 @@ final class VideoPlayer {
 
   private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
-  private QueuingEventSink eventSink = new QueuingEventSink();
+  private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
 
-  private boolean isInitialized = false;
+  @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -90,10 +91,26 @@ final class VideoPlayer {
     //}
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
+
     exoPlayer.setMediaSource(mediaSource);
     exoPlayer.prepare();
 
-    setupVideoPlayer(eventChannel, textureEntry);
+    setUpVideoPlayer(exoPlayer, new QueuingEventSink());
+  }
+
+  // Constructor used to directly test members of this class.
+  @VisibleForTesting
+  VideoPlayer(
+      ExoPlayer exoPlayer,
+      EventChannel eventChannel,
+      TextureRegistry.SurfaceTextureEntry textureEntry,
+      VideoPlayerOptions options,
+      QueuingEventSink eventSink) {
+    this.eventChannel = eventChannel;
+    this.textureEntry = textureEntry;
+    this.options = options;
+
+    setUpVideoPlayer(exoPlayer, eventSink);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -109,20 +126,20 @@ final class VideoPlayer {
 
     int type;
     if (formatHint == null) {
-      type = Util.inferContentType(uri.getLastPathSegment());
+      type = Util.inferContentType(uri);
     } else {
       switch (formatHint) {
         case FORMAT_SS:
-          type = C.TYPE_SS;
+          type = C.CONTENT_TYPE_SS;
           break;
         case FORMAT_DASH:
-          type = C.TYPE_DASH;
+          type = C.CONTENT_TYPE_DASH;
           break;
         case FORMAT_HLS:
-          type = C.TYPE_HLS;
+          type = C.CONTENT_TYPE_HLS;
           break;
         case FORMAT_OTHER:
-          type = C.TYPE_OTHER;
+          type = C.CONTENT_TYPE_OTHER;
           break;
         default:
           type = -1;
@@ -130,20 +147,20 @@ final class VideoPlayer {
       }
     }
     switch (type) {
-      case C.TYPE_SS:
+      case C.CONTENT_TYPE_SS:
         return new SsMediaSource.Factory(
                 new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSource.Factory(context, mediaDataSourceFactory))
             .createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_DASH:
+      case C.CONTENT_TYPE_DASH:
         return new DashMediaSource.Factory(
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSource.Factory(context, mediaDataSourceFactory))
             .createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_HLS:
+      case C.CONTENT_TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_OTHER:
+      case C.CONTENT_TYPE_OTHER:
         return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       default:
@@ -153,8 +170,10 @@ final class VideoPlayer {
     }
   }
 
-  private void setupVideoPlayer(
-      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
+  private void setUpVideoPlayer(ExoPlayer exoPlayer, QueuingEventSink eventSink) {
+    this.exoPlayer = exoPlayer;
+    this.eventSink = eventSink;
+
     eventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
           @Override
@@ -227,7 +246,8 @@ final class VideoPlayer {
 
   private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
     exoPlayer.setAudioAttributes(
-        new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
+        new AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
+        !isMixMode);
   }
 
   void play() {
@@ -264,7 +284,8 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
-  private void sendInitialized() {
+  @VisibleForTesting
+  void sendInitialized() {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
@@ -282,7 +303,16 @@ final class VideoPlayer {
         }
         event.put("width", width);
         event.put("height", height);
+
+        // Rotating the video with ExoPlayer does not seem to be possible with a Surface,
+        // so inform the Flutter code that the widget needs to be rotated to prevent
+        // upside-down playback for videos with rotationDegrees of 180 (other orientations work
+        // correctly without correction).
+        if (rotationDegrees == 180) {
+          event.put("rotationCorrection", rotationDegrees);
+        }
       }
+
       eventSink.success(event);
     }
   }

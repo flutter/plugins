@@ -9,7 +9,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -105,27 +104,23 @@ class _WebViewExampleState extends State<_WebViewExample> {
           _SampleMenu(_controller.future),
         ],
       ),
-      // We're using a Builder here so we have a context that is below the Scaffold
-      // to allow calling Scaffold.of(context) so we can show a snackbar.
-      body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl: 'https://flutter.dev/',
-          onWebViewCreated: (WebViewController controller) {
-            _controller.complete(controller);
-          },
-          javascriptChannels: _createJavascriptChannels(context),
-          javascriptMode: JavascriptMode.unrestricted,
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          backgroundColor: const Color(0x80000000),
-        );
-      }),
+      body: WebView(
+        initialUrl: 'https://flutter.dev/',
+        onWebViewCreated: (WebViewController controller) {
+          _controller.complete(controller);
+        },
+        javascriptChannels: _createJavascriptChannels(context),
+        javascriptMode: JavascriptMode.unrestricted,
+        navigationDelegate: (NavigationRequest request) {
+          if (request.url.startsWith('https://www.youtube.com/')) {
+            print('blocking navigation to $request}');
+            return NavigationDecision.prevent;
+          }
+          print('allowing navigation to $request');
+          return NavigationDecision.navigate;
+        },
+        backgroundColor: const Color(0x80000000),
+      ),
       floatingActionButton: favoriteButton(),
     );
   }
@@ -139,8 +134,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
             return FloatingActionButton(
               onPressed: () async {
                 final String url = (await controller.data!.currentUrl())!;
-                // ignore: deprecated_member_use
-                Scaffold.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Favorited $url')),
                 );
               },
@@ -238,8 +232,8 @@ class _SampleMenu extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
             PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.showUserAgent,
-              child: const Text('Show user agent'),
               enabled: controller.hasData,
+              child: const Text('Show user agent'),
             ),
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.listCookies,
@@ -332,6 +326,7 @@ class _SampleMenu extends StatelessWidget {
   Future<void> _onListCache(
       WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
+        // ignore: missing_whitespace_between_adjacent_strings
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Snackbar.postMessage(caches))');
   }
@@ -456,8 +451,7 @@ class _NavigationControls extends StatelessWidget {
                       if (await controller!.canGoBack()) {
                         await controller.goBack();
                       } else {
-                        // ignore: deprecated_member_use
-                        Scaffold.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('No back history item')),
                         );
                         return;
@@ -472,8 +466,7 @@ class _NavigationControls extends StatelessWidget {
                       if (await controller!.canGoForward()) {
                         await controller.goForward();
                       } else {
-                        // ignore: deprecated_member_use
-                        Scaffold.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text('No forward history item')),
                         );

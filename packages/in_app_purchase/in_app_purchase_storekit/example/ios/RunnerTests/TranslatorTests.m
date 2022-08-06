@@ -158,6 +158,56 @@
   XCTAssertEqualObjects(map, self.errorMap);
 }
 
+- (void)testErrorWithNSNumberAsUserInfo {
+  NSError *error = [NSError errorWithDomain:SKErrorDomain code:3 userInfo:@{@"key" : @42}];
+  NSDictionary *expectedMap =
+      @{@"domain" : SKErrorDomain, @"code" : @3, @"userInfo" : @{@"key" : @42}};
+  NSDictionary *map = [FIAObjectTranslator getMapFromNSError:error];
+  XCTAssertEqualObjects(expectedMap, map);
+}
+
+- (void)testErrorWithMultipleUnderlyingErrors {
+  NSError *underlyingErrorOne = [NSError errorWithDomain:SKErrorDomain code:2 userInfo:nil];
+  NSError *underlyingErrorTwo = [NSError errorWithDomain:SKErrorDomain code:1 userInfo:nil];
+  NSError *mainError = [NSError
+      errorWithDomain:SKErrorDomain
+                 code:3
+             userInfo:@{@"underlyingErrors" : @[ underlyingErrorOne, underlyingErrorTwo ]}];
+  NSDictionary *expectedMap = @{
+    @"domain" : SKErrorDomain,
+    @"code" : @3,
+    @"userInfo" : @{
+      @"underlyingErrors" : @[
+        @{@"domain" : SKErrorDomain, @"code" : @2, @"userInfo" : @{}},
+        @{@"domain" : SKErrorDomain, @"code" : @1, @"userInfo" : @{}}
+      ]
+    }
+  };
+  NSDictionary *map = [FIAObjectTranslator getMapFromNSError:mainError];
+  XCTAssertEqualObjects(expectedMap, map);
+}
+
+- (void)testErrorWithUnsupportedUserInfo {
+  NSError *error = [NSError errorWithDomain:SKErrorDomain
+                                       code:3
+                                   userInfo:@{@"user_info" : [[NSObject alloc] init]}];
+  NSDictionary *expectedMap = @{
+    @"domain" : SKErrorDomain,
+    @"code" : @3,
+    @"userInfo" : @{
+      @"user_info" : [NSString
+          stringWithFormat:
+              @"Unable to encode native userInfo object of type %@ to map. Please submit an "
+              @"issue at https://github.com/flutter/flutter/issues/new with the title "
+              @"\"[in_app_purchase_storekit] Unable to encode userInfo of type %@\" and add "
+              @"reproduction steps and the error details in the description field.",
+              [NSObject class], [NSObject class]]
+    }
+  };
+  NSDictionary *map = [FIAObjectTranslator getMapFromNSError:error];
+  XCTAssertEqualObjects(expectedMap, map);
+}
+
 - (void)testLocaleToMap {
   if (@available(iOS 10.0, *)) {
     NSLocale *system = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];

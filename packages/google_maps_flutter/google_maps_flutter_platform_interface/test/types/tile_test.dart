@@ -12,7 +12,7 @@ void main() {
 
   group('tile tests', () {
     test('toJson returns correct format', () async {
-      final Uint8List data = Uint8List.fromList([0, 1]);
+      final Uint8List data = Uint8List.fromList(<int>[0, 1]);
       final Tile tile = Tile(100, 200, data);
       final Object json = tile.toJson();
       expect(json, <String, Object>{

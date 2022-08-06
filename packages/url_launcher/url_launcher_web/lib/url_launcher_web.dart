@@ -64,6 +64,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     // See https://github.com/flutter/flutter/issues/51461 for reference.
     final String target = webOnlyWindowName ??
         ((_isSafari && _isSafariTargetTopScheme(url)) ? '_top' : '');
+    // ignore: unsafe_html
     return _window.open(url, target);
   }
 

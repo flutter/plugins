@@ -5,11 +5,15 @@ A storefront-independent API for purchases in Flutter apps.
 This plugin supports in-app purchases (_IAP_) through an _underlying store_,
 which can be the App Store (on iOS) or Google Play (on Android).
 
+|             | Android | iOS  |
+|-------------|---------|------|
+| **Support** | SDK 16+ | 9.0+ |
+
 <p>
-  <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
+  <img src="https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
     alt="An animated image of the iOS in-app purchase UI" height="400"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true"
+  <img src="https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true"
    alt="An animated image of the Android in-app purchase UI" height="400"/>
 </p>
 
@@ -32,12 +36,12 @@ your app with each store. Both stores have extensive guides:
 * [App Store documentation](https://developer.apple.com/in-app-purchase/)
 * [Google Play documentation](https://developer.android.com/google/play/billing/billing_overview)
 
-> NOTE: Further in this document the App Store and Google Play will be referred 
+> NOTE: Further in this document the App Store and Google Play will be referred
 > to as "the store" or "the underlying store", except when a feature is specific
 > to a particular store.
 
 For a list of steps for configuring in-app purchases in both stores, see the
-[example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/example/README.md).
+[example app README](https://github.com/flutter/plugins/blob/main/packages/in_app_purchase/in_app_purchase/example/README.md).
 
 Once you've configured your in-app purchases in their respective stores, you
 can start using the plugin. Two basic options are available:
@@ -195,12 +199,12 @@ if (_isConsumable(productDetails)) {
 ### Completing a purchase
 
 The `InAppPurchase.purchaseStream` will send purchase updates after initiating
-the purchase flow using `InAppPurchase.buyConsumable` or 
-`InAppPurchase.buyNonConsumable`. After verifying the purchase receipt and the 
-delivering the content to the user it is important to call 
+the purchase flow using `InAppPurchase.buyConsumable` or
+`InAppPurchase.buyNonConsumable`. After verifying the purchase receipt and the
+delivering the content to the user it is important to call
 `InAppPurchase.completePurchase` to tell the underlying store that the
-purchase has been completed. Calling `InAppPurchase.completePurchase` will 
-inform the underlying store that the app verified and processed the 
+purchase has been completed. Calling `InAppPurchase.completePurchase` will
+inform the underlying store that the app verified and processed the
 purchase and the store can proceed to finalize the transaction and bill
 the end user's payment account.
 
@@ -422,4 +426,4 @@ iosPlatformAddition.presentCodeRedemptionSheet();
 ## Contributing to this plugin
 
 If you would like to contribute to the plugin, check out our
-[contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
+[contribution guide](https://github.com/flutter/plugins/blob/main/CONTRIBUTING.md).

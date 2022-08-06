@@ -17,12 +17,12 @@ APIs directly.
 ### Entitlements
 
 You will need to [add an entitlement][4] for either read-only access:
-```
+```xml
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
 ```
 or read/write access:
-```
+```xml
 	<key>com.apple.security.files.user-selected.read-write</key>
 	<true/>
 ```

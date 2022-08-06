@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui' show hashValues;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +12,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../channel.dart';
 import '../in_app_purchase_storekit_platform.dart';
-import 'sk_payment_queue_delegate_wrapper.dart';
-import 'sk_payment_transaction_wrappers.dart';
-import 'sk_product_wrapper.dart';
 
 part 'sk_payment_queue_wrapper.g.dart';
 
@@ -365,7 +361,7 @@ class SKError {
   }
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
         code,
         domain,
         userInfo,
@@ -482,7 +478,7 @@ class SKPaymentWrapper {
   }
 
   @override
-  int get hashCode => hashValues(productIdentifier, applicationUsername,
+  int get hashCode => Object.hash(productIdentifier, applicationUsername,
       quantity, simulatesAskToBuyInSandbox, requestData);
 
   @override
@@ -585,5 +581,5 @@ class SKPaymentDiscountWrapper {
 
   @override
   int get hashCode =>
-      hashValues(identifier, keyIdentifier, nonce, signature, timestamp);
+      Object.hash(identifier, keyIdentifier, nonce, signature, timestamp);
 }

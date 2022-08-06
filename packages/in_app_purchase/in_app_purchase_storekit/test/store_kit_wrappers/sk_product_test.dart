@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_storekit/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase_storekit/src/types/app_store_product_details.dart';
 import 'package:in_app_purchase_storekit/src/types/app_store_purchase_details.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
@@ -17,7 +16,7 @@ void main() {
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
           SKProductSubscriptionPeriodWrapper.fromJson(
-              buildSubscriptionPeriodMap(dummySubscription)!);
+              buildSubscriptionPeriodMap(dummySubscription));
       expect(wrapper, equals(dummySubscription));
     });
 
@@ -96,8 +95,7 @@ void main() {
       expect(product.title, wrapper.localizedTitle);
       expect(product.description, wrapper.localizedDescription);
       expect(product.id, wrapper.productIdentifier);
-      expect(product.price,
-          wrapper.priceLocale.currencySymbol + wrapper.price.toString());
+      expect(product.price, wrapper.priceLocale.currencySymbol + wrapper.price);
       expect(product.skProduct, wrapper);
     });
 

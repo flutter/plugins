@@ -5,9 +5,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/src/types/types.dart';
 
-import 'auto_media_playback_policy.dart';
-import 'web_settings.dart';
-
 /// Configuration to use when creating a new [WebViewPlatformController].
 ///
 /// The `autoMediaPlaybackPolicy` parameter must not be null.

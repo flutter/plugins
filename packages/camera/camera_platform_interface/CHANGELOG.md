@@ -1,3 +1,18 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+* Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
+
+## 2.2.0
+
+* Adds image streaming to the platform interface.
+* Removes unnecessary imports.
+
+## 2.1.6
+
+* Adopts `Object.hash`.
+* Removes obsolete dependency on `pedantic`.
+
 ## 2.1.5
 
 * Fixes asynchronous exceptions handling of the `initializeCamera` method.

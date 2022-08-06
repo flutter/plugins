@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/git_version_finder.dart';
 import 'common/plugin_command.dart';
+import 'common/repository_package.dart';
 
 const int _exitPackageNotFound = 3;
 const int _exitCannotUpdatePubspec = 4;
+
+enum _RewriteOutcome { changed, noChangesNeeded, alreadyChanged }
 
 /// Converts all dependencies on target packages to path-based dependencies.
 ///
@@ -48,6 +49,10 @@ class MakeDepsPathBasedCommand extends PluginCommand {
   static const String _targetDependenciesWithNonBreakingUpdatesArg =
       'target-dependencies-with-non-breaking-updates';
 
+  // The comment to add to temporary dependency overrides.
+  static const String _dependencyOverrideWarningComment =
+      '# FOR TESTING ONLY. DO NOT MERGE.';
+
   @override
   final String name = 'make-deps-path-based';
 
@@ -73,12 +78,19 @@ class MakeDepsPathBasedCommand extends PluginCommand {
 
     final String repoRootPath = (await gitDir).path;
     for (final File pubspec in await _getAllPubspecs()) {
-      if (await _addDependencyOverridesIfNecessary(
-          pubspec, localDependencyPackages)) {
-        // Print the relative path of the changed pubspec.
-        final String displayPath = p.posix.joinAll(path
-            .split(path.relative(pubspec.absolute.path, from: repoRootPath)));
-        print('  Modified $displayPath');
+      final String displayPath = p.posix.joinAll(
+          path.split(path.relative(pubspec.absolute.path, from: repoRootPath)));
+      final _RewriteOutcome outcome = await _addDependencyOverridesIfNecessary(
+          pubspec, localDependencyPackages);
+      switch (outcome) {
+        case _RewriteOutcome.changed:
+          print('  Modified $displayPath');
+          break;
+        case _RewriteOutcome.alreadyChanged:
+          print('  Skipped $displayPath - Already rewritten');
+          break;
+        case _RewriteOutcome.noChangesNeeded:
+          break;
       }
     }
   }
@@ -125,23 +137,31 @@ class MakeDepsPathBasedCommand extends PluginCommand {
   /// If [pubspecFile] has any dependencies on packages in [localDependencies],
   /// adds dependency_overrides entries to redirect them to the local version
   /// using path-based dependencies.
-  ///
-  /// Returns true if any changes were made.
-  Future<bool> _addDependencyOverridesIfNecessary(File pubspecFile,
+  Future<_RewriteOutcome> _addDependencyOverridesIfNecessary(File pubspecFile,
       Map<String, RepositoryPackage> localDependencies) async {
     final String pubspecContents = pubspecFile.readAsStringSync();
     final Pubspec pubspec = Pubspec.parse(pubspecContents);
-    // Fail if there are any dependency overrides already. If support for that
-    // is needed at some point, it can be added, but currently it's not and
-    // relying on that makes the logic here much simpler.
+    // Fail if there are any dependency overrides already, other than ones
+    // created by this script. If support for that is needed at some point, it
+    // can be added, but currently it's not and relying on that makes the logic
+    // here much simpler.
     if (pubspec.dependencyOverrides.isNotEmpty) {
+      if (pubspecContents.contains(_dependencyOverrideWarningComment)) {
+        return _RewriteOutcome.alreadyChanged;
+      }
       printError(
           'Plugins with dependency overrides are not currently supported.');
       throw ToolExit(_exitCannotUpdatePubspec);
     }
 
-    final Iterable<String> packagesToOverride = pubspec.dependencies.keys.where(
-        (String packageName) => localDependencies.containsKey(packageName));
+    final Iterable<String> combinedDependencies = <String>[
+      ...pubspec.dependencies.keys,
+      ...pubspec.devDependencies.keys,
+    ];
+    final Iterable<String> packagesToOverride = combinedDependencies
+        .where(
+            (String packageName) => localDependencies.containsKey(packageName))
+        .toList();
     if (packagesToOverride.isNotEmpty) {
       final String commonBasePath = packagesDir.path;
       // Find the relative path to the common base.
@@ -155,16 +175,16 @@ class MakeDepsPathBasedCommand extends PluginCommand {
       // then re-serialiazing so that it's a localized change, rather than
       // rewriting the whole file (e.g., destroying comments), which could be
       // more disruptive for local use.
-      String newPubspecContents = pubspecContents +
-          '''
+      String newPubspecContents = '''
+$pubspecContents
 
-# FOR TESTING ONLY. DO NOT MERGE.
+$_dependencyOverrideWarningComment
 dependency_overrides:
 ''';
       for (final String packageName in packagesToOverride) {
         // Find the relative path from the common base to the local package.
         final List<String> repoRelativePathComponents = path.split(
-            path.relative(localDependencies[packageName]!.directory.path,
+            path.relative(localDependencies[packageName]!.path,
                 from: commonBasePath));
         newPubspecContents += '''
   $packageName:
@@ -175,9 +195,9 @@ dependency_overrides:
 ''';
       }
       pubspecFile.writeAsStringSync(newPubspecContents);
-      return true;
+      return _RewriteOutcome.changed;
     }
-    return false;
+    return _RewriteOutcome.noChangesNeeded;
   }
 
   /// Returns all pubspecs anywhere under the packages directory.
