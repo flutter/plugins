@@ -1,3 +1,7 @@
+## 2.4.6
+
+* VideoPlayerController.file added http headers,to fix m3u8 access
+  
 ## 2.4.5
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).

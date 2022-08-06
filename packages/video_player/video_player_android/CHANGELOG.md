@@ -1,3 +1,7 @@
+## 2.3.9
+
+* made DefaultHttpDataSource the default
+  
 ## 2.3.8
 
 * Updates ExoPlayer to 2.18.0.

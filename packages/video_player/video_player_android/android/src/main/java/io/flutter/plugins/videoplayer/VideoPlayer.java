@@ -76,19 +76,17 @@ final class VideoPlayer {
 
     Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
-    //if (isHTTP(uri)) {
-      DefaultHttpDataSource.Factory httpDataSourceFactory =
-          new DefaultHttpDataSource.Factory()
-              .setUserAgent("ExoPlayer")
-              .setAllowCrossProtocolRedirects(true);
+    
+    DefaultHttpDataSource.Factory httpDataSourceFactory =
+        new DefaultHttpDataSource.Factory()
+            .setUserAgent("ExoPlayer")
+            .setAllowCrossProtocolRedirects(true);
 
-      if (httpHeaders != null && !httpHeaders.isEmpty()) {
-        httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
-      }
-      dataSourceFactory = httpDataSourceFactory;
-    //} else {
-    //  dataSourceFactory = new DefaultDataSource.Factory(context);
-    //}
+    if (httpHeaders != null && !httpHeaders.isEmpty()) {
+      httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
+    }
+    dataSourceFactory = httpDataSourceFactory;
+
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
