@@ -84,7 +84,7 @@ final class VideoPlayer {
       if(httpHeaders.containsKey(USER_AGENT)){
         httpDataSourceFactory =
         new DefaultHttpDataSource.Factory()
-            .setUserAgent(httpHeaders[USER_AGENT])
+            .setUserAgent(httpHeaders.get(USER_AGENT))
             .setAllowCrossProtocolRedirects(true);
       }else{
     httpDataSourceFactory =
