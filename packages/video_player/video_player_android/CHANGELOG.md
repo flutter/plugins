@@ -1,7 +1,8 @@
 ## 2.3.9
 
-* made DefaultHttpDataSource the default
-  
+* Made DefaultHttpDataSource the default
+* Made passing the user-agent in http headers changes the default exo player agent
+
 ## 2.3.8
 
 * Updates ExoPlayer to 2.18.0.

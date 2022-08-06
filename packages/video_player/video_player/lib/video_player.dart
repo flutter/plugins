@@ -230,7 +230,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
-  /// [httpHeaders] option allows to specify HTTP headers
+  /// [httpHeaders] option allows to specify HTTP headers (User-Agent can be defined too in the headers)
   /// for the request to the [dataSource].
   VideoPlayerController.network(
     this.dataSource, {

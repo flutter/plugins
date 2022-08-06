@@ -56,9 +56,11 @@ final class VideoPlayer {
   private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
+
   private final String USER_AGENT = "User-Agent";
 
-  @VisibleForTesting boolean isInitialized = false;
+  @VisibleForTesting
+  boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -81,26 +83,22 @@ final class VideoPlayer {
     DataSource.Factory dataSourceFactory;
     DefaultHttpDataSource.Factory httpDataSourceFactory;
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
-      if(httpHeaders.containsKey(USER_AGENT)){
-        httpDataSourceFactory =
-        new DefaultHttpDataSource.Factory()
+      if (httpHeaders.containsKey(USER_AGENT)) {
+        httpDataSourceFactory = new DefaultHttpDataSource.Factory()
             .setUserAgent(httpHeaders.get(USER_AGENT))
             .setAllowCrossProtocolRedirects(true);
-      }else{
-    httpDataSourceFactory =
-        new DefaultHttpDataSource.Factory()
+      } else {
+        httpDataSourceFactory = new DefaultHttpDataSource.Factory()
             .setUserAgent("ExoPlayer")
             .setAllowCrossProtocolRedirects(true);
-          }
+      }
 
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
-      dataSourceFactory =new DefaultDataSource.Factory(context,httpDataSourceFactory);
-    }else{
-      dataSourceFactory =new DefaultDataSource.Factory(context);
+      dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
+    } else {
+      dataSourceFactory = new DefaultDataSource.Factory(context);
     }
 
-    
-    
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
     exoPlayer.setMediaSource(mediaSource);
@@ -160,13 +158,13 @@ final class VideoPlayer {
     switch (type) {
       case C.CONTENT_TYPE_SS:
         return new SsMediaSource.Factory(
-                new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                mediaDataSourceFactory)
+            new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+            mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_DASH:
         return new DashMediaSource.Factory(
-                new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                mediaDataSourceFactory)
+            new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+            mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
@@ -174,10 +172,9 @@ final class VideoPlayer {
       case C.CONTENT_TYPE_OTHER:
         return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
-      default:
-        {
-          throw new IllegalStateException("Unsupported type: " + type);
-        }
+      default: {
+        throw new IllegalStateException("Unsupported type: " + type);
+      }
     }
   }
 
@@ -250,7 +247,8 @@ final class VideoPlayer {
     Map<String, Object> event = new HashMap<>();
     event.put("event", "bufferingUpdate");
     List<? extends Number> range = Arrays.asList(0, exoPlayer.getBufferedPosition());
-    // iOS supports a list of buffered ranges, so here is a list with a single range.
+    // iOS supports a list of buffered ranges, so here is a list with a single
+    // range.
     event.put("values", Collections.singletonList(range));
     eventSink.success(event);
   }
@@ -279,7 +277,8 @@ final class VideoPlayer {
   }
 
   void setPlaybackSpeed(double value) {
-    // We do not need to consider pitch and skipSilence for now as we do not handle them and
+    // We do not need to consider pitch and skipSilence for now as we do not handle
+    // them and
     // therefore never diverge from the default values.
     final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
 
@@ -315,9 +314,11 @@ final class VideoPlayer {
         event.put("width", width);
         event.put("height", height);
 
-        // Rotating the video with ExoPlayer does not seem to be possible with a Surface,
+        // Rotating the video with ExoPlayer does not seem to be possible with a
+        // Surface,
         // so inform the Flutter code that the widget needs to be rotated to prevent
-        // upside-down playback for videos with rotationDegrees of 180 (other orientations work
+        // upside-down playback for videos with rotationDegrees of 180 (other
+        // orientations work
         // correctly without correction).
         if (rotationDegrees == 180) {
           event.put("rotationCorrection", rotationDegrees);
