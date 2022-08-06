@@ -78,7 +78,7 @@ final class VideoPlayer {
 
     Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
-    
+    if (isHTTP(uri)) {
     DefaultHttpDataSource.Factory httpDataSourceFactory =
         new DefaultHttpDataSource.Factory()
             .setUserAgent("ExoPlayer")
@@ -92,8 +92,14 @@ final class VideoPlayer {
       Log.i(TAG, "http headers in player are null ");
     }
     dataSourceFactory = httpDataSourceFactory;
-
-
+ } else {
+      dataSourceFactory = new DefaultDataSource.Factory(context);
+    }
+    if (httpHeaders != null && !httpHeaders.isEmpty()) {
+      httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
+      Log.i(TAG, "http headers in player java ");
+      Log.i(TAG,httpHeaders.toString());
+    }
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
 
     exoPlayer.setMediaSource(mediaSource);
