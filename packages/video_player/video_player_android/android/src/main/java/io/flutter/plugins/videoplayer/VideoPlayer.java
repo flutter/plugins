@@ -76,7 +76,6 @@ final class VideoPlayer {
 
     exoPlayer = new ExoPlayer.Builder(context).build();
 
-    Uri uri = Uri.parse(dataSource);
     DataSource.Factory dataSourceFactory;
     
     DefaultHttpDataSource.Factory httpDataSourceFactory =
@@ -85,11 +84,9 @@ final class VideoPlayer {
             .setAllowCrossProtocolRedirects(true);
     if (httpHeaders != null && !httpHeaders.isEmpty()) {
       httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
-      Log.i(TAG, "http headers in player java ");
-      Log.i(TAG,httpHeaders.toString());
     }
 
-      dataSourceFactory = DefaultDataSource.Factory(context,httpDataSourceFactory);
+    dataSourceFactory =new DefaultDataSource.Factory(context,httpDataSourceFactory);
     
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
@@ -152,12 +149,12 @@ final class VideoPlayer {
       case C.CONTENT_TYPE_SS:
         return new SsMediaSource.Factory(
                 new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                new DefaultDataSource.Factory(context, mediaDataSourceFactory))
+                mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_DASH:
         return new DashMediaSource.Factory(
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                new DefaultDataSource.Factory(context, mediaDataSourceFactory))
+                mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
