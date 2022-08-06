@@ -56,7 +56,7 @@ final class VideoPlayer {
   private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
-  private final USER_AGENT = "User-Agent";
+  private final String USER_AGENT = "User-Agent";
 
   @VisibleForTesting boolean isInitialized = false;
 
