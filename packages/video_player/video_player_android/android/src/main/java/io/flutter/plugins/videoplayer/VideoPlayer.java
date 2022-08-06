@@ -89,7 +89,7 @@ final class VideoPlayer {
       Log.i(TAG,httpHeaders.toString());
     }
 
-      dataSourceFactory = new DefaultDataSource.Factory(context,httpDataSourceFactory);
+      dataSourceFactory = DefaultDataSource.Factory(context,httpDataSourceFactory);
     
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
