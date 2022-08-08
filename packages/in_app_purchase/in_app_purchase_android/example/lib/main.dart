@@ -22,9 +22,8 @@ void main() {
   runApp(_MyApp());
 }
 
-// Auto-consume must be true on iOS.
-// To try without auto-consume on another platform, change `true` to `false` here.
-final bool _kAutoConsume = Platform.isIOS || true;
+// To try without auto-consume, change `true` to `false` here.
+const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
