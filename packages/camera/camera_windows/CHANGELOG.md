@@ -1,3 +1,7 @@
+## 0.2.1+1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.2.1
 
 * Adds a check for string size before Win32 MultiByte <-> WideChar conversions

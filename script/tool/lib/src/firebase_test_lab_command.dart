@@ -335,7 +335,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     }
 
     yield* integrationTestDir
-        .listSync(recursive: true, followLinks: true)
+        .listSync(recursive: true)
         .where((FileSystemEntity file) =>
             file is File && file.basename.endsWith('_test.dart'))
         .cast<File>();

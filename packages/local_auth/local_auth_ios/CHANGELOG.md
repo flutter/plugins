@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 1.0.8
 
 * Updates `local_auth_platform_interface` constraint to the correct minimum

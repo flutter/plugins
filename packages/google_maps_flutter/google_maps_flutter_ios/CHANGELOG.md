@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.1.11
 
 * Precaches Google Maps services initialization and syncing.

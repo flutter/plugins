@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.9.3
 
 * Updates the Dart InstanceManager to take a listener for when an object is garbage collected.

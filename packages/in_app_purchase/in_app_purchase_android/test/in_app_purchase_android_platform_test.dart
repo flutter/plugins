@@ -39,7 +39,7 @@ void main() {
     stubPlatform.addResponse(
         name: startConnectionCall,
         value: buildBillingResultMap(expectedBillingResult));
-    stubPlatform.addResponse(name: endConnectionCall, value: null);
+    stubPlatform.addResponse(name: endConnectionCall);
 
     InAppPurchaseAndroidPlatform.registerPlatform();
     iapAndroidPlatform =
