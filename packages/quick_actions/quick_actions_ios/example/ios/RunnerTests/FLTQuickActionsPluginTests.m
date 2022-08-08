@@ -118,7 +118,6 @@
 
   XCTAssertFalse(launchResult,
                  @"didFinishLaunchingWithOptions must return false if launched from shortcut.");
-  OCMVerify([mockShortcutStateManager setLaunchingShortcutType:item.type]);
 }
 
 - (void)testApplicationDidFinishLaunchingWithOptions_launchWithoutShortcut {
@@ -131,18 +130,48 @@
                 @"didFinishLaunchingWithOptions must return true if not launched from shortcut.");
 }
 
-- (void)testApplicationDidBecomeActive {
-  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+- (void)testApplicationDidBecomeActive_launchWithoutShortcut {
   id mockChannel = OCMClassMock([FlutterMethodChannel class]);
   id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
   FLTQuickActionsPlugin *plugin =
       [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:mockShortcutStateManager];
-  OCMStub([mockShortcutStateManager launchingShortcutType]).andReturn(item.type);
-  [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
 
+  [plugin application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{}];
+  [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
+  OCMVerify(never(), [mockChannel invokeMethod:OCMOCK_ANY arguments:OCMOCK_ANY]);
+}
+
+- (void)testApplicationDidBecomeActive_launchWithShortcut {
+  id mockChannel = OCMClassMock([FlutterMethodChannel class]);
+  id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
+  FLTQuickActionsPlugin *plugin =
+      [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
+                                shortcutStateManager:mockShortcutStateManager];
+
+  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+  [plugin application:[UIApplication sharedApplication]
+      didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
+
+  [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
   OCMVerify([mockChannel invokeMethod:@"launch" arguments:item.type]);
-  OCMVerify([mockShortcutStateManager setLaunchingShortcutType:nil]);
+}
+
+- (void)testApplicationDidBecomeActive_launchWithShortcut_becomeActiveTwice {
+  id mockChannel = OCMClassMock([FlutterMethodChannel class]);
+  id mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
+  FLTQuickActionsPlugin *plugin =
+      [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
+                                shortcutStateManager:mockShortcutStateManager];
+
+  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+  [plugin application:[UIApplication sharedApplication]
+      didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
+
+  [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
+  [plugin applicationDidBecomeActive:[UIApplication sharedApplication]];
+  // shortcut should only be handled once per launch.
+  OCMVerify(times(1), [mockChannel invokeMethod:@"launch" arguments:item.type]);
 }
 
 @end

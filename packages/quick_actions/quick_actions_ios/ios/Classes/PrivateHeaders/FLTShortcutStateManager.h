@@ -9,9 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Manages the shortcut related states.
 @interface FLTShortcutStateManager : NSObject
 
-/// The type of the shortcut item selected when launching the app.
-@property(nonatomic, strong, nullable) NSString *launchingShortcutType;
-
 /// Sets the list of shortcut items.
 ///
 /// @param items the list of shortcut items to be parsed and set.
