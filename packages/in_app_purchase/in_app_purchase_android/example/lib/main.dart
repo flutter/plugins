@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
@@ -23,7 +22,7 @@ void main() {
 }
 
 // To try without auto-consume, change `true` to `false` here.
-final bool _kAutoConsume = Platform.isIOS || true;
+const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
@@ -292,6 +291,7 @@ class _MyAppState extends State<_MyApp> {
                       if (productDetails.id == _kConsumableId) {
                         _inAppPurchasePlatform.buyConsumable(
                             purchaseParam: purchaseParam,
+                            // ignore: avoid_redundant_argument_values
                             autoConsume: _kAutoConsume);
                       } else {
                         _inAppPurchasePlatform.buyNonConsumable(
