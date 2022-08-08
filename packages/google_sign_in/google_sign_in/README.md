@@ -61,20 +61,6 @@ This plugin requires iOS 9.0 or higher.
 <!-- End of the Google Sign-in Section -->
 ```
 
-### iOS Authenticate with backend server
-
-If you use Google Sign-In with an app that communicates with a backend server,
-you might need to identify the currently signed-in user on the server.
-To check the integrity of the token on your server you need to add an extra
-`aud` field in the `idToken`.
-
-To do so you need to add a `SERVER_CLIENT_ID` key value pair in your `GoogleService-Info.plist`:
-
-```xml
-<key>SERVER_CLIENT_ID</key>
-<string>[YOUR SERVER CLIENT ID]</string>
-```
-
 #### iOS additional requirement
 
 Note that according to
