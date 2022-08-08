@@ -1,3 +1,21 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 1.9.1
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 1.9.0
+
+* Adds the first iteration of the v4 webview_flutter interface implementation.
+* Removes unnecessary imports.
+
+## 1.8.2
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+* Updates minimum Flutter version to 2.5.0.
+
 ## 1.8.1
 
 * Update to use the `verify` method introduced in platform_plugin_interface 2.1.0.

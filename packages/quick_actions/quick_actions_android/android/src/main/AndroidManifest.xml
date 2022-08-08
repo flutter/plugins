@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        package="io.flutter.plugins.quickactions">
+
+    <uses-sdk tools:overrideLibrary="android_libs.ub_uiautomator"/>
+</manifest>

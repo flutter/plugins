@@ -1,3 +1,31 @@
+## 0.10.2
+
+* Migrates to new platform-interface `initWithParams` method.
+* Throws when unsupported `serverClientId` option is provided.
+
+## 0.10.1+3
+
+* Updates references to the obsolete master branch.
+
+## 0.10.1+2
+
+* Minor fixes for new analysis options.
+
+## 0.10.1+1
+
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 0.10.1
+
+* Updates minimum Flutter version to 2.8.
+* Passes `plugin_name` to Google Sign-In's `init` method so new applications can
+  continue using this plugin after April 30th 2022. Issue [#88084](https://github.com/flutter/flutter/issues/88084).
+
+## 0.10.0+5
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.10.0+4
 
 * Removes dependency on `meta`.

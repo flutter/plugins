@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui' show hashValues;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +12,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../channel.dart';
 import '../in_app_purchase_storekit_platform.dart';
-import 'sk_payment_queue_delegate_wrapper.dart';
-import 'sk_payment_transaction_wrappers.dart';
-import 'sk_product_wrapper.dart';
 
 part 'sk_payment_queue_wrapper.g.dart';
 
@@ -73,7 +69,7 @@ class SKPaymentQueueWrapper {
   ///
   /// Call this method when the first listener is subscribed to the
   /// [InAppPurchaseStoreKitPlatform.purchaseStream].
-  Future startObservingTransactionQueue() => channel
+  Future<void> startObservingTransactionQueue() => channel
       .invokeMethod<void>('-[SKPaymentQueue startObservingTransactionQueue]');
 
   /// Instructs the iOS implementation to remove the transaction observer and
@@ -81,7 +77,7 @@ class SKPaymentQueueWrapper {
   ///
   /// Call this when there are no longer any listeners subscribed to the
   /// [InAppPurchaseStoreKitPlatform.purchaseStream].
-  Future stopObservingTransactionQueue() => channel
+  Future<void> stopObservingTransactionQueue() => channel
       .invokeMethod<void>('-[SKPaymentQueue stopObservingTransactionQueue]');
 
   /// Sets an implementation of the [SKPaymentQueueDelegateWrapper].
@@ -94,7 +90,7 @@ class SKPaymentQueueWrapper {
   ///
   /// When set to `null` the payment queue delegate will be removed and the
   /// default behaviour will apply (see [documentation](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc)).
-  Future setDelegate(SKPaymentQueueDelegateWrapper? delegate) async {
+  Future<void> setDelegate(SKPaymentQueueDelegateWrapper? delegate) async {
     if (delegate == null) {
       await channel.invokeMethod<void>('-[SKPaymentQueue removeDelegate]');
       paymentQueueDelegateChannel.setMethodCallHandler(null);
@@ -150,7 +146,7 @@ class SKPaymentQueueWrapper {
   /// finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
   Future<void> finishTransaction(
       SKPaymentTransactionWrapper transaction) async {
-    Map<String, String?> requestMap = transaction.toFinishMap();
+    final Map<String, String?> requestMap = transaction.toFinishMap();
     await channel.invokeMethod<void>(
       '-[InAppPurchasePlugin finishTransaction:result:]',
       requestMap,
@@ -220,7 +216,7 @@ class SKPaymentQueueWrapper {
       case 'updatedTransactions':
         {
           final List<SKPaymentTransactionWrapper> transactions =
-              _getTransactionList(call.arguments);
+              _getTransactionList(call.arguments as List<dynamic>);
           return Future<void>(() {
             observer.updatedTransactions(transactions: transactions);
           });
@@ -228,15 +224,15 @@ class SKPaymentQueueWrapper {
       case 'removedTransactions':
         {
           final List<SKPaymentTransactionWrapper> transactions =
-              _getTransactionList(call.arguments);
+              _getTransactionList(call.arguments as List<dynamic>);
           return Future<void>(() {
             observer.removedTransactions(transactions: transactions);
           });
         }
       case 'restoreCompletedTransactionsFailed':
         {
-          SKError error =
-              SKError.fromJson(Map<String, dynamic>.from(call.arguments));
+          final SKError error = SKError.fromJson(Map<String, dynamic>.from(
+              call.arguments as Map<dynamic, dynamic>));
           return Future<void>(() {
             observer.restoreCompletedTransactionsFailed(error: error);
           });
@@ -249,10 +245,12 @@ class SKPaymentQueueWrapper {
         }
       case 'shouldAddStorePayment':
         {
-          SKPaymentWrapper payment =
-              SKPaymentWrapper.fromJson(call.arguments['payment']);
-          SKProductWrapper product =
-              SKProductWrapper.fromJson(call.arguments['product']);
+          final SKPaymentWrapper payment = SKPaymentWrapper.fromJson(
+              (call.arguments['payment'] as Map<dynamic, dynamic>)
+                  .cast<String, dynamic>());
+          final SKProductWrapper product = SKProductWrapper.fromJson(
+              (call.arguments['product'] as Map<dynamic, dynamic>)
+                  .cast<String, dynamic>());
           return Future<void>(() {
             if (observer.shouldAddStorePayment(
                     payment: payment, product: product) ==
@@ -274,7 +272,8 @@ class SKPaymentQueueWrapper {
       List<dynamic> transactionsData) {
     return transactionsData.map<SKPaymentTransactionWrapper>((dynamic map) {
       return SKPaymentTransactionWrapper.fromJson(
-          Map.castFrom<dynamic, dynamic, String, dynamic>(map));
+          Map.castFrom<dynamic, dynamic, String, dynamic>(
+              map as Map<dynamic, dynamic>));
     }).toList();
   }
 
@@ -292,9 +291,12 @@ class SKPaymentQueueWrapper {
     switch (call.method) {
       case 'shouldContinueTransaction':
         final SKPaymentTransactionWrapper transaction =
-            SKPaymentTransactionWrapper.fromJson(call.arguments['transaction']);
-        final SKStorefrontWrapper storefront =
-            SKStorefrontWrapper.fromJson(call.arguments['storefront']);
+            SKPaymentTransactionWrapper.fromJson(
+                (call.arguments['transaction'] as Map<dynamic, dynamic>)
+                    .cast<String, dynamic>());
+        final SKStorefrontWrapper storefront = SKStorefrontWrapper.fromJson(
+            (call.arguments['storefront'] as Map<dynamic, dynamic>)
+                .cast<String, dynamic>());
         return delegate.shouldContinueTransaction(transaction, storefront);
       case 'shouldShowPriceConsent':
         return delegate.shouldShowPriceConsent();
@@ -351,15 +353,15 @@ class SKError {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final SKError typedOther = other as SKError;
-    return typedOther.code == code &&
-        typedOther.domain == domain &&
-        DeepCollectionEquality.unordered()
-            .equals(typedOther.userInfo, userInfo);
+    return other is SKError &&
+        other.code == code &&
+        other.domain == domain &&
+        const DeepCollectionEquality.unordered()
+            .equals(other.userInfo, userInfo);
   }
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
         code,
         domain,
         userInfo,
@@ -467,16 +469,16 @@ class SKPaymentWrapper {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final SKPaymentWrapper typedOther = other as SKPaymentWrapper;
-    return typedOther.productIdentifier == productIdentifier &&
-        typedOther.applicationUsername == applicationUsername &&
-        typedOther.quantity == quantity &&
-        typedOther.simulatesAskToBuyInSandbox == simulatesAskToBuyInSandbox &&
-        typedOther.requestData == requestData;
+    return other is SKPaymentWrapper &&
+        other.productIdentifier == productIdentifier &&
+        other.applicationUsername == applicationUsername &&
+        other.quantity == quantity &&
+        other.simulatesAskToBuyInSandbox == simulatesAskToBuyInSandbox &&
+        other.requestData == requestData;
   }
 
   @override
-  int get hashCode => hashValues(productIdentifier, applicationUsername,
+  int get hashCode => Object.hash(productIdentifier, applicationUsername,
       quantity, simulatesAskToBuyInSandbox, requestData);
 
   @override
@@ -569,16 +571,15 @@ class SKPaymentDiscountWrapper {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final SKPaymentDiscountWrapper typedOther =
-        other as SKPaymentDiscountWrapper;
-    return typedOther.identifier == identifier &&
-        typedOther.keyIdentifier == keyIdentifier &&
-        typedOther.nonce == nonce &&
-        typedOther.signature == signature &&
-        typedOther.timestamp == timestamp;
+    return other is SKPaymentDiscountWrapper &&
+        other.identifier == identifier &&
+        other.keyIdentifier == keyIdentifier &&
+        other.nonce == nonce &&
+        other.signature == signature &&
+        other.timestamp == timestamp;
   }
 
   @override
   int get hashCode =>
-      hashValues(identifier, keyIdentifier, nonce, signature, timestamp);
+      Object.hash(identifier, keyIdentifier, nonce, signature, timestamp);
 }

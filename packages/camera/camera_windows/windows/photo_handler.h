@@ -41,17 +41,17 @@ class PhotoHandler {
   // to take photo.
   //
   // Sets photo state to: kTakingPhoto.
-  // Returns false if photo cannot be taken.
   //
   // capture_engine:  A pointer to capture engine instance.
   //                  Called to take the photo.
   // base_media_type: A pointer to base media type used as a base
   //                  for the actual photo capture media type.
   // file_path:       A string that hold file path for photo capture.
-  bool TakePhoto(const std::string& file_path, IMFCaptureEngine* capture_engine,
-                 IMFMediaType* base_media_type);
+  HRESULT TakePhoto(const std::string& file_path,
+                    IMFCaptureEngine* capture_engine,
+                    IMFMediaType* base_media_type);
 
-  // Set the photo handler recording state to: kIdel.
+  // Set the photo handler recording state to: kIdle.
   void OnPhotoTaken();
 
   // Returns true if photo state is kIdle.

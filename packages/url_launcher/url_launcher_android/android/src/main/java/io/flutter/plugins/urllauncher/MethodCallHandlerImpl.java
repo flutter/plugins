@@ -61,7 +61,7 @@ final class MethodCallHandlerImpl implements MethodCallHandler {
       stopListening();
     }
 
-    channel = new MethodChannel(messenger, "plugins.flutter.io/url_launcher");
+    channel = new MethodChannel(messenger, "plugins.flutter.io/url_launcher_android");
     channel.setMethodCallHandler(this);
   }
 

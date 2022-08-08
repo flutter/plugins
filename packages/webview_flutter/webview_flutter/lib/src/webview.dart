@@ -7,14 +7,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-
-import '../platform_interface.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
@@ -715,8 +712,8 @@ class WebViewController {
   /// The Future completes with an error if a JavaScript error occurred.
   ///
   /// When running JavaScript in a [WebView], it is best practice to wait for
-  //  the [WebView.onPageFinished] callback. This guarantees all the JavaScript
-  //  embedded in the main frame HTML has been loaded.
+  /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
+  /// embedded in the main frame HTML has been loaded.
   Future<void> runJavascript(String javaScriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       return Future<void>.error(FlutterError(

@@ -1,3 +1,34 @@
+## NEXT
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.2.0+9
+
+* Ignores the warning for the upcoming deprecation of `DecoderCallback`.
+
+## 0.2.0+8
+
+* Ignores the warning for the upcoming deprecation of `ImageProvider.load` in the correct line.
+
+## 0.2.0+7
+
+* Ignores the warning for the upcoming deprecation of `ImageProvider.load`.
+
+## 0.2.0+6
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 0.2.0+5
+
+* Migrates from `ui.hash*` to `Object.hash*`.
+* Adds OS version support information to README.
+
+## 0.2.0+4
+
+* Internal code cleanup for stricter analysis options.
+
 ## 0.2.0+3
 
 * Internal fix for unused field formal parameter.

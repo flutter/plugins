@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-import 'messages.dart';
+import 'messages.g.dart';
 
 /// An Android implementation of [VideoPlayerPlatform] that uses the
 /// Pigeon-generated [VideoPlayerApi].
 class AndroidVideoPlayer extends VideoPlayerPlatform {
-  final VideoPlayerApi _api = VideoPlayerApi();
+  final AndroidVideoPlayerApi _api = AndroidVideoPlayerApi();
 
   /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith() {
@@ -28,30 +27,40 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) {
-    return _api.dispose(TextureMessage()..textureId = textureId);
+    return _api.dispose(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<int?> create(DataSource dataSource) async {
-    final CreateMessage message = CreateMessage();
-
+    String? asset;
+    String? packageName;
+    String? uri;
+    String? formatHint;
+    Map<String, String> httpHeaders = <String, String>{};
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
-        message.asset = dataSource.asset;
-        message.packageName = dataSource.package;
+        asset = dataSource.asset;
+        packageName = dataSource.package;
         break;
       case DataSourceType.network:
-        message.uri = dataSource.uri;
-        message.formatHint = _videoFormatStringMap[dataSource.formatHint];
-        message.httpHeaders = dataSource.httpHeaders;
+        uri = dataSource.uri;
+        formatHint = _videoFormatStringMap[dataSource.formatHint];
+        httpHeaders = dataSource.httpHeaders;
         break;
       case DataSourceType.file:
-        message.uri = dataSource.uri;
+        uri = dataSource.uri;
         break;
       case DataSourceType.contentUri:
-        message.uri = dataSource.uri;
+        uri = dataSource.uri;
         break;
     }
+    final CreateMessage message = CreateMessage(
+      asset: asset,
+      packageName: packageName,
+      uri: uri,
+      httpHeaders: httpHeaders,
+      formatHint: formatHint,
+    );
 
     final TextureMessage response = await _api.create(message);
     return response.textureId;
@@ -59,49 +68,53 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setLooping(int textureId, bool looping) {
-    return _api.setLooping(LoopingMessage()
-      ..textureId = textureId
-      ..isLooping = looping);
+    return _api.setLooping(LoopingMessage(
+      textureId: textureId,
+      isLooping: looping,
+    ));
   }
 
   @override
   Future<void> play(int textureId) {
-    return _api.play(TextureMessage()..textureId = textureId);
+    return _api.play(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<void> pause(int textureId) {
-    return _api.pause(TextureMessage()..textureId = textureId);
+    return _api.pause(TextureMessage(textureId: textureId));
   }
 
   @override
   Future<void> setVolume(int textureId, double volume) {
-    return _api.setVolume(VolumeMessage()
-      ..textureId = textureId
-      ..volume = volume);
+    return _api.setVolume(VolumeMessage(
+      textureId: textureId,
+      volume: volume,
+    ));
   }
 
   @override
   Future<void> setPlaybackSpeed(int textureId, double speed) {
     assert(speed > 0);
 
-    return _api.setPlaybackSpeed(PlaybackSpeedMessage()
-      ..textureId = textureId
-      ..speed = speed);
+    return _api.setPlaybackSpeed(PlaybackSpeedMessage(
+      textureId: textureId,
+      speed: speed,
+    ));
   }
 
   @override
   Future<void> seekTo(int textureId, Duration position) {
-    return _api.seekTo(PositionMessage()
-      ..textureId = textureId
-      ..position = position.inMilliseconds);
+    return _api.seekTo(PositionMessage(
+      textureId: textureId,
+      position: position.inMilliseconds,
+    ));
   }
 
   @override
   Future<Duration> getPosition(int textureId) async {
     final PositionMessage response =
-        await _api.position(TextureMessage()..textureId = textureId);
-    return Duration(milliseconds: response.position!);
+        await _api.position(TextureMessage(textureId: textureId));
+    return Duration(milliseconds: response.position);
   }
 
   @override
@@ -117,6 +130,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
             duration: Duration(milliseconds: map['duration'] as int),
             size: Size((map['width'] as num?)?.toDouble() ?? 0.0,
                 (map['height'] as num?)?.toDouble() ?? 0.0),
+            rotationCorrection: map['rotationCorrection'] as int? ?? 0,
           );
         case 'completed':
           return VideoEvent(
@@ -146,9 +160,8 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> setMixWithOthers(bool mixWithOthers) {
-    return _api.setMixWithOthers(
-      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
-    );
+    return _api
+        .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
   }
 
   EventChannel _eventChannelFor(int textureId) {

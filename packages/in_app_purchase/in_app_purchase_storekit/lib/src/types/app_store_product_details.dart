@@ -30,10 +30,6 @@ class AppStoreProductDetails extends ProductDetails {
           currencySymbol: currencySymbol,
         );
 
-  /// Points back to the [SKProductWrapper] object that was used to generate
-  /// this [AppStoreProductDetails] object.
-  final SKProductWrapper skProduct;
-
   /// Generate a [AppStoreProductDetails] object based on an iOS [SKProductWrapper] object.
   factory AppStoreProductDetails.fromSKProduct(SKProductWrapper product) {
     return AppStoreProductDetails(
@@ -49,4 +45,8 @@ class AppStoreProductDetails extends ProductDetails {
       skProduct: product,
     );
   }
+
+  /// Points back to the [SKProductWrapper] object that was used to generate
+  /// this [AppStoreProductDetails] object.
+  final SKProductWrapper skProduct;
 }

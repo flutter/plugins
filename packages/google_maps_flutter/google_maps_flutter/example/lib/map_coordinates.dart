@@ -5,7 +5,6 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
@@ -13,7 +12,8 @@ const CameraPosition _kInitialPosition =
     CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
 
 class MapCoordinatesPage extends GoogleMapExampleAppPage {
-  MapCoordinatesPage() : super(const Icon(Icons.map), 'Map coordinates');
+  const MapCoordinatesPage({Key? key})
+      : super(const Icon(Icons.map), 'Map coordinates', key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,37 +42,46 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     final GoogleMap googleMap = GoogleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
+      onCameraIdle:
+          _updateVisibleRegion, // https://github.com/flutter/flutter/issues/54758
     );
 
-    final List<Widget> columnChildren = <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: googleMap,
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollState) {
+        _updateVisibleRegion();
+        return true;
+      },
+      child: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(
+              child: SizedBox(
+                width: 300.0,
+                height: 200.0,
+                child: googleMap,
+              ),
+            ),
           ),
-        ),
+          if (mapController != null)
+            Center(
+              child: Text('VisibleRegion:'
+                  '\nnortheast: ${_visibleRegion.northeast},'
+                  '\nsouthwest: ${_visibleRegion.southwest}'),
+            ),
+          // Add a block at the bottom of this list to allow validation that the visible region of the map
+          // does not change when scrolled under the safe view on iOS.
+          // https://github.com/flutter/flutter/issues/107913
+          Container(
+            width: 300,
+            height: 1000,
+          ),
+        ],
       ),
-    ];
-
-    if (mapController != null) {
-      final String currentVisibleRegion = 'VisibleRegion:'
-          '\nnortheast: ${_visibleRegion.northeast},'
-          '\nsouthwest: ${_visibleRegion.southwest}';
-      columnChildren.add(Center(child: Text(currentVisibleRegion)));
-      columnChildren.add(_getVisibleRegionButton());
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: columnChildren,
     );
   }
 
-  void onMapCreated(GoogleMapController controller) async {
+  Future<void> onMapCreated(GoogleMapController controller) async {
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     setState(() {
       mapController = controller;
@@ -80,19 +89,10 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
     });
   }
 
-  Widget _getVisibleRegionButton() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        child: const Text('Get Visible Region Bounds'),
-        onPressed: () async {
-          final LatLngBounds visibleRegion =
-              await mapController!.getVisibleRegion();
-          setState(() {
-            _visibleRegion = visibleRegion;
-          });
-        },
-      ),
-    );
+  Future<void> _updateVisibleRegion() async {
+    final LatLngBounds visibleRegion = await mapController!.getVisibleRegion();
+    setState(() {
+      _visibleRegion = visibleRegion;
+    });
   }
 }

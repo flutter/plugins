@@ -47,11 +47,6 @@ void main() {
       store.log.clear();
     });
 
-    tearDown(() async {
-      await preferences.clear();
-      await store.clear();
-    });
-
     test('reading', () async {
       expect(preferences.get('String'), testString);
       expect(preferences.get('bool'), testBool);
@@ -177,7 +172,7 @@ void main() {
 
     group('mocking', () {
       const String _key = 'dummy';
-      const String _prefixedKey = 'flutter.' + _key;
+      const String _prefixedKey = 'flutter.$_key';
 
       test('test 1', () async {
         SharedPreferences.setMockInitialValues(

@@ -4,6 +4,8 @@
 
 import 'dart:async';
 import 'dart:io';
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -17,14 +19,17 @@ import 'package:video_player/video_player.dart';
 const Duration _playDuration = Duration(seconds: 1);
 
 // Use WebM for web to allow CI to use Chromium.
-final String _videoAssetKey =
+const String _videoAssetKey =
     kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
 
 // Returns the URL to load an asset from this example app as a network source.
+//
+// TODO(stuartmorgan): Convert this to a local `HttpServer` that vends the
+// assets directly, https://github.com/flutter/flutter/issues/95420
 String getUrlForAssetAsNetworkSource(String assetKey) {
   return 'https://github.com/flutter/plugins/blob/'
       // This hash can be rolled forward to pick up newly-added assets.
-      'cba393233e559c925a4daf71b06b4bb01c606762'
+      'cb381ced070d356799dddf24aca38ce0579d3d7b'
       '/packages/video_player/video_player/example/'
       '$assetKey'
       '?raw=true';
@@ -48,14 +53,15 @@ void main() {
       expect(_controller.value.isPlaying, false);
       // The WebM version has a slightly different duration than the MP4.
       expect(_controller.value.duration,
-          Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
+          const Duration(seconds: 7, milliseconds: kIsWeb ? 544 : 540));
     });
 
     testWidgets(
       'live stream duration != 0',
       (WidgetTester tester) async {
-        VideoPlayerController networkController = VideoPlayerController.network(
-          'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+        final VideoPlayerController networkController =
+            VideoPlayerController.network(
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8',
         );
         await networkController.initialize();
 
@@ -65,7 +71,7 @@ void main() {
         expect(networkController.value.duration,
             (Duration duration) => duration != Duration.zero);
       },
-      skip: (kIsWeb),
+      skip: kIsWeb,
     );
 
     testWidgets(
@@ -124,7 +130,7 @@ void main() {
         // Mute to allow playing without DOM interaction on Web.
         // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
         await _controller.setVolume(0);
-        Duration tenMillisBeforeEnd =
+        final Duration tenMillisBeforeEnd =
             _controller.value.duration - const Duration(milliseconds: 10);
         await _controller.seekTo(tenMillisBeforeEnd);
         await _controller.play();
@@ -178,7 +184,7 @@ void main() {
             child: FutureBuilder<bool>(
               future: started(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.data == true) {
+                if (snapshot.data ?? false) {
                   return AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),
@@ -203,12 +209,12 @@ void main() {
   group('file-based videos', () {
     setUp(() async {
       // Load the data from the asset.
-      String tempDir = (await getTemporaryDirectory()).path;
-      ByteData bytes = await rootBundle.load(_videoAssetKey);
+      final String tempDir = (await getTemporaryDirectory()).path;
+      final ByteData bytes = await rootBundle.load(_videoAssetKey);
 
       // Write it to a file to use as a source.
       final String filename = _videoAssetKey.split('/').last;
-      File file = File('$tempDir/$filename');
+      final File file = File('$tempDir/$filename');
       await file.writeAsBytes(bytes.buffer.asInt8List());
 
       _controller = VideoPlayerController.file(file);
@@ -228,13 +234,8 @@ void main() {
 
   group('network videos', () {
     setUp(() {
-      // TODO(stuartmorgan): Remove this conditional and update the hash in
-      // getUrlForAssetAsNetworkSource as a follow-up, once the webm asset is
-      // checked in.
-      final String videoUrl = kIsWeb
-          ? 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
-          : getUrlForAssetAsNetworkSource(_videoAssetKey);
-      _controller = VideoPlayerController.network(videoUrl);
+      _controller = VideoPlayerController.network(
+          getUrlForAssetAsNetworkSource(_videoAssetKey));
     });
 
     testWidgets(
@@ -244,8 +245,8 @@ void main() {
         // Mute to allow playing without DOM interaction on Web.
         // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
         await _controller.setVolume(0);
-        final Completer<void> started = Completer();
-        final Completer<void> ended = Completer();
+        final Completer<void> started = Completer<void>();
+        final Completer<void> ended = Completer<void>();
         _controller.addListener(() {
           if (!started.isCompleted && _controller.value.isBuffering) {
             started.complete();
@@ -291,7 +292,7 @@ void main() {
       // The audio was made with 44100 Hz, 192 Kbps CBR, and 32 bits.
       expect(
         _controller.value.duration,
-        Duration(seconds: 5, milliseconds: kIsWeb ? 42 : 41),
+        const Duration(seconds: 5, milliseconds: kIsWeb ? 42 : 41),
       );
     });
 

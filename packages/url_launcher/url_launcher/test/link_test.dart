@@ -9,7 +9,7 @@ import 'package:url_launcher/link.dart';
 import 'package:url_launcher/src/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-import 'mock_url_launcher_platform.dart';
+import 'mocks/mock_url_launcher_platform.dart';
 
 void main() {
   late MockUrlLauncher mock;
@@ -19,7 +19,7 @@ void main() {
     UrlLauncherPlatform.instance = mock;
   });
 
-  group('$Link', () {
+  group('Link', () {
     testWidgets('handles null uri correctly', (WidgetTester tester) async {
       bool isBuilt = false;
       FollowLink? followLink;
@@ -55,11 +55,10 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: 'http://example.com/foobar',
-          useSafariVC: false,
-          useWebView: false,
+          launchMode: PreferredLaunchMode.externalApplication,
           universalLinksOnly: false,
-          enableJavaScript: false,
-          enableDomStorage: false,
+          enableJavaScript: true,
+          enableDomStorage: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
         )
@@ -85,11 +84,10 @@ void main() {
       mock
         ..setLaunchExpectations(
           url: 'http://example.com/foobar',
-          useSafariVC: true,
-          useWebView: true,
+          launchMode: PreferredLaunchMode.inAppWebView,
           universalLinksOnly: false,
-          enableJavaScript: false,
-          enableDomStorage: false,
+          enableJavaScript: true,
+          enableDomStorage: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
         )

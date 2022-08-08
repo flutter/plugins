@@ -10,7 +10,7 @@
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/gapi
 
-// ignore_for_file: public_member_api_docs, unused_element
+// ignore_for_file: public_member_api_docs, unused_element, sort_constructors_first, prefer_generic_function_type_aliases
 
 @JS()
 library gapi;

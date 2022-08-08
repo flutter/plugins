@@ -1,11 +1,108 @@
+## 0.10.0
+
+* **Breaking Change** Bumps default camera_web package version, which updates permission exception code from `cameraPermission` to `CameraAccessDenied`.
+* **Breaking Change** Bumps default camera_android package version, which updates permission exception code from `cameraPermission` to 
+  `CameraAccessDenied` and `AudioAccessDenied`.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 0.9.8+1
+
+* Ignores deprecation warnings for upcoming styleFrom button API changes.
+
+## 0.9.8
+
+* Moves Android and iOS implementations to federated packages.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+
+## 0.9.7+1
+
+* Moves streaming implementation to the platform interface package.
+
+## 0.9.7
+
+* Returns all the available cameras on iOS.
+
+## 0.9.6
+
+* Adds audio access permission handling logic on iOS to fix an issue with `prepareForVideoRecording` not awaiting for the audio permission request result.
+
+## 0.9.5+1
+
+* Suppresses warnings for pre-iOS-11 codepaths.
+
+## 0.9.5
+
+* Adds camera access permission handling logic on iOS to fix a related crash when using the camera for the first time.
+
+## 0.9.4+24
+
+* Fixes preview orientation when pausing preview with locked orientation.
+
+## 0.9.4+23
+
+* Minor fixes for new analysis options.
+
+## 0.9.4+22
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 0.9.4+21
+
+* Fixes README code samples.
+
+## 0.9.4+20
+
+* Fixes an issue with the orientation of videos recorded in landscape on Android.
+
+## 0.9.4+19
+
+* Migrate deprecated Scaffold SnackBar methods to ScaffoldMessenger.
+
+## 0.9.4+18
+
+* Fixes a crash in iOS when streaming on low-performance devices.
+
+## 0.9.4+17
+
+* Removes obsolete information from README, and adds OS support table.
+
+## 0.9.4+16
+
+* Fixes a bug resulting in a `CameraAccessException` that prevents image
+  capture on some Android devices.
+
+## 0.9.4+15
+
+* Uses dispatch queue for pixel buffer synchronization on iOS.
+* Minor iOS internal code cleanup related to queue helper functions.
+
+## 0.9.4+14
+
+* Restores compatibility with Flutter 2.5 and 2.8.
+
+## 0.9.4+13
+
+* Updates iOS camera's photo capture delegate reference on a background queue to prevent potential race conditions, and some related internal code cleanup.
+
+## 0.9.4+12
+
+* Skips unnecessary AppDelegate setup for unit tests on iOS.
+* Internal code cleanup for stricter analysis options.
+
+## 0.9.4+11
+
+* Manages iOS camera's orientation-related states on a background queue to prevent potential race conditions.
+
 ## 0.9.4+10
 
-* iOS performance improvement by moving file writing from the main queue to a background IO queue. 
+* iOS performance improvement by moving file writing from the main queue to a background IO queue.
 
 ## 0.9.4+9
 
-* iOS performance improvement by moving sample buffer handling from the main queue to a background session queue. 
-* Minor iOS internal code cleanup related to camera class and its delegate. 
+* iOS performance improvement by moving sample buffer handling from the main queue to a background session queue.
+* Minor iOS internal code cleanup related to camera class and its delegate.
 * Minor iOS internal code cleanup related to resolution preset, video format, focus mode, exposure mode and device orientation.
 * Minor iOS internal code cleanup related to flash mode.
 
@@ -15,12 +112,12 @@
 
 ## 0.9.4+7
 
-* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.  
+* Fixes a crash in iOS when passing null queue pointer into AVFoundation API due to race condition.
 * Minor iOS internal code cleanup related to dispatch queue.
 
 ## 0.9.4+6
 
-* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread. 
+* Fixes a crash in iOS when using image stream due to calling Flutter engine API on non-main thread.
 
 ## 0.9.4+5
 

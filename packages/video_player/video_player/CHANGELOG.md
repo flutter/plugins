@@ -1,3 +1,41 @@
+## 2.4.5
+
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/104231).
+* Fixes an exception when a disposed VideoPlayerController is disposed again.
+
+## 2.4.4
+
+* Updates references to the obsolete master branch.
+
+## 2.4.3
+
+* Fixes Android to correctly display videos recorded in landscapeRight (https://github.com/flutter/flutter/issues/60327).
+* Fixes order-dependent unit tests.
+
+## 2.4.2
+
+* Minor fixes for new analysis options.
+
+## 2.4.1
+
+* Removes unnecessary imports.
+* Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
+  lint warnings.
+
+## 2.4.0
+
+* Updates minimum Flutter version to 2.10.
+* Adds OS version support information to README.
+* Adds `setClosedCaptionFile` method to `VideoPlayerController`.
+
+## 2.3.0
+
+* Adds `allowBackgroundPlayback` to `VideoPlayerOptions`.
+
+## 2.2.19
+
+* Internal code cleanup for stricter analysis options.
+
 ## 2.2.18
 
 * Moves Android and iOS implementations to federated packages.

@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+#import "FIATransactionCache.h"
 
 @class SKPaymentTransaction;
 
@@ -21,6 +22,27 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 @property(NS_NONATOMIC_IOSONLY, weak, nullable) id<SKPaymentQueueDelegate> delegate API_AVAILABLE(
     ios(13.0), macos(10.15), watchos(6.2));
 
+/// Creates a new FIAPaymentQueueHandler initialized with an empty
+/// FIATransactionCache.
+///
+/// @param queue The SKPaymentQueue instance connected to the App Store and
+///              responsible for processing transactions.
+/// @param transactionsUpdated Callback method that is called each time the App
+///                            Store indicates transactions are updated.
+/// @param transactionsRemoved Callback method that is called each time the App
+///                            Store indicates transactions are removed.
+/// @param restoreTransactionFailed Callback method that is called each time
+///                                 the App Store indicates transactions failed
+///                                 to restore.
+/// @param restoreCompletedTransactionsFinished Callback method that is called
+///                                             each time the App Store
+///                                             indicates restoring of
+///                                             transactions has finished.
+/// @param shouldAddStorePayment Callback method that is called each time an
+///                              in-app purchase has been initiated from the
+///                              App Store.
+/// @param updatedDownloads Callback method that is called each time the App
+///                         Store indicates downloads are updated.
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
                       transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
@@ -28,7 +50,57 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
     restoreCompletedTransactionsFinished:
         (nullable RestoreCompletedTransactionsFinished)restoreCompletedTransactionsFinished
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
-                        updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
+                        updatedDownloads:(nullable UpdatedDownloads)updatedDownloads
+    DEPRECATED_MSG_ATTRIBUTE(
+        "Use the "
+        "'initWithQueue:transactionsUpdated:transactionsRemoved:restoreTransactionsFinished:"
+        "shouldAddStorePayment:updatedDownloads:transactionCache:' message instead.");
+
+/// Creates a new FIAPaymentQueueHandler.
+///
+/// The "transactionsUpdated", "transactionsRemoved" and "updatedDownloads"
+/// callbacks are only called while actively observing transactions. To start
+/// observing transactions send the "startObservingPaymentQueue" message.
+/// Sending the "stopObservingPaymentQueue" message will stop actively
+/// observing transactions. When transactions are not observed they are cached
+/// to the "transactionCache" and will be delivered via the
+/// "transactionsUpdated", "transactionsRemoved" and "updatedDownloads"
+/// callbacks as soon as the "startObservingPaymentQueue" message arrives.
+///
+/// Note: cached transactions that are not processed when the application is
+/// killed will be delivered again by the App Store as soon as the application
+/// starts again.
+///
+/// @param queue The SKPaymentQueue instance connected to the App Store and
+///              responsible for processing transactions.
+/// @param transactionsUpdated Callback method that is called each time the App
+///                            Store indicates transactions are updated.
+/// @param transactionsRemoved Callback method that is called each time the App
+///                            Store indicates transactions are removed.
+/// @param restoreTransactionFailed Callback method that is called each time
+///                                 the App Store indicates transactions failed
+///                                 to restore.
+/// @param restoreCompletedTransactionsFinished Callback method that is called
+///                                             each time the App Store
+///                                             indicates restoring of
+///                                             transactions has finished.
+/// @param shouldAddStorePayment Callback method that is called each time an
+///                              in-app purchase has been initiated from the
+///                              App Store.
+/// @param updatedDownloads Callback method that is called each time the App
+///                         Store indicates downloads are updated.
+/// @param transactionCache An empty [FIATransactionCache] instance that is
+///                         responsible for keeping track of transactions that
+///                         arrive when not actively observing transactions.
+- (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
+                     transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
+                      transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
+                restoreTransactionFailed:(nullable RestoreTransactionFailed)restoreTransactionFailed
+    restoreCompletedTransactionsFinished:
+        (nullable RestoreCompletedTransactionsFinished)restoreCompletedTransactionsFinished
+                   shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
+                        updatedDownloads:(nullable UpdatedDownloads)updatedDownloads
+                        transactionCache:(nonnull FIATransactionCache *)transactionCache;
 // Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
 - (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
 - (void)restoreTransactions:(nullable NSString *)applicationName;

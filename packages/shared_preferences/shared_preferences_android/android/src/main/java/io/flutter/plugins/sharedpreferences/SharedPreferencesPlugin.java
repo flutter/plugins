@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel;
 
 /** SharedPreferencesPlugin */
 public class SharedPreferencesPlugin implements FlutterPlugin {
-  private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
+  private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences_android";
   private MethodChannel channel;
   private MethodCallHandlerImpl handler;
 

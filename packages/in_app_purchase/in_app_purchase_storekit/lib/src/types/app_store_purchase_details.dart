@@ -29,22 +29,6 @@ class AppStorePurchaseDetails extends PurchaseDetails {
     this.status = status;
   }
 
-  /// Points back to the [SKPaymentTransactionWrapper] which was used to
-  /// generate this [AppStorePurchaseDetails] object.
-  final SKPaymentTransactionWrapper skPaymentTransaction;
-
-  late PurchaseStatus _status;
-
-  /// The status that this [PurchaseDetails] is currently on.
-  PurchaseStatus get status => _status;
-  set status(PurchaseStatus status) {
-    _pendingCompletePurchase = status != PurchaseStatus.pending;
-    _status = status;
-  }
-
-  bool _pendingCompletePurchase = false;
-  bool get pendingCompletePurchase => _pendingCompletePurchase;
-
   /// Generate a [AppStorePurchaseDetails] object based on an iOS
   /// [SKPaymentTransactionWrapper] object.
   factory AppStorePurchaseDetails.fromSKTransaction(
@@ -55,7 +39,7 @@ class AppStorePurchaseDetails extends PurchaseDetails {
       productID: transaction.payment.productIdentifier,
       purchaseID: transaction.transactionIdentifier,
       skPaymentTransaction: transaction,
-      status: SKTransactionStatusConverter()
+      status: const SKTransactionStatusConverter()
           .toPurchaseStatus(transaction.transactionState, transaction.error),
       transactionDate: transaction.transactionTimeStamp != null
           ? (transaction.transactionTimeStamp! * 1000).toInt().toString()
@@ -78,4 +62,23 @@ class AppStorePurchaseDetails extends PurchaseDetails {
 
     return purchaseDetails;
   }
+
+  /// Points back to the [SKPaymentTransactionWrapper] which was used to
+  /// generate this [AppStorePurchaseDetails] object.
+  final SKPaymentTransactionWrapper skPaymentTransaction;
+
+  late PurchaseStatus _status;
+
+  /// The status that this [PurchaseDetails] is currently on.
+  @override
+  PurchaseStatus get status => _status;
+  @override
+  set status(PurchaseStatus status) {
+    _pendingCompletePurchase = status != PurchaseStatus.pending;
+    _status = status;
+  }
+
+  bool _pendingCompletePurchase = false;
+  @override
+  bool get pendingCompletePurchase => _pendingCompletePurchase;
 }

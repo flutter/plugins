@@ -14,19 +14,19 @@ void main() {
 
     final Caption firstCaption = parsedFile.captions.first;
     expect(firstCaption.number, 1);
-    expect(firstCaption.start, Duration(seconds: 6));
-    expect(firstCaption.end, Duration(seconds: 12, milliseconds: 74));
+    expect(firstCaption.start, const Duration(seconds: 6));
+    expect(firstCaption.end, const Duration(seconds: 12, milliseconds: 74));
     expect(firstCaption.text, 'This is a test file');
 
     final Caption secondCaption = parsedFile.captions[1];
     expect(secondCaption.number, 2);
     expect(
       secondCaption.start,
-      Duration(minutes: 1, seconds: 54, milliseconds: 724),
+      const Duration(minutes: 1, seconds: 54, milliseconds: 724),
     );
     expect(
       secondCaption.end,
-      Duration(minutes: 1, seconds: 56, milliseconds: 760),
+      const Duration(minutes: 1, seconds: 56, milliseconds: 760),
     );
     expect(secondCaption.text, '- Hello.\n- Yes?');
 
@@ -34,11 +34,11 @@ void main() {
     expect(thirdCaption.number, 3);
     expect(
       thirdCaption.start,
-      Duration(minutes: 1, seconds: 56, milliseconds: 884),
+      const Duration(minutes: 1, seconds: 56, milliseconds: 884),
     );
     expect(
       thirdCaption.end,
-      Duration(minutes: 1, seconds: 58, milliseconds: 954),
+      const Duration(minutes: 1, seconds: 58, milliseconds: 954),
     );
     expect(
       thirdCaption.text,
@@ -49,15 +49,15 @@ void main() {
     expect(fourthCaption.number, 4);
     expect(
       fourthCaption.start,
-      Duration(hours: 1, minutes: 1, seconds: 59, milliseconds: 84),
+      const Duration(hours: 1, minutes: 1, seconds: 59, milliseconds: 84),
     );
     expect(
       fourthCaption.end,
-      Duration(hours: 1, minutes: 2, seconds: 1, milliseconds: 552),
+      const Duration(hours: 1, minutes: 2, seconds: 1, milliseconds: 552),
     );
     expect(
       fourthCaption.text,
-      '- [ Machinery Beeping ]\n- I\'m not sure what that was,',
+      "- [ Machinery Beeping ]\n- I'm not sure what that was,",
     );
   });
 
@@ -68,8 +68,8 @@ void main() {
 
     final Caption firstCaption = parsedFile.captions.single;
     expect(firstCaption.number, 2);
-    expect(firstCaption.start, Duration(seconds: 15));
-    expect(firstCaption.end, Duration(seconds: 17, milliseconds: 74));
+    expect(firstCaption.start, const Duration(seconds: 15));
+    expect(firstCaption.end, const Duration(seconds: 17, milliseconds: 74));
     expect(firstCaption.text, 'This one is valid');
   });
 }

@@ -8,7 +8,6 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:flutter_plugin_tools/src/federation_safety_check_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -55,10 +54,10 @@ void main() {
   });
 
   test('skips non-plugin packages', () async {
-    final Directory package = createFakePackage('foo', packagesDir);
+    final RepositoryPackage package = createFakePackage('foo', packagesDir);
 
     final String changedFileOutput = <File>[
-      package.childDirectory('lib').childFile('foo.dart'),
+      package.libDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -78,10 +77,10 @@ void main() {
   });
 
   test('skips unfederated plugins', () async {
-    final Directory package = createFakePlugin('foo', packagesDir);
+    final RepositoryPackage package = createFakePlugin('foo', packagesDir);
 
     final String changedFileOutput = <File>[
-      package.childDirectory('lib').childFile('foo.dart'),
+      package.libDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -102,11 +101,11 @@ void main() {
 
   test('skips interface packages', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory platformInterface =
+    final RepositoryPackage platformInterface =
         createFakePlugin('foo_platform_interface', pluginGroupDir);
 
     final String changedFileOutput = <File>[
-      platformInterface.childDirectory('lib').childFile('foo.dart'),
+      platformInterface.libDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -127,15 +126,15 @@ void main() {
 
   test('allows changes to just an interface package', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory platformInterface =
+    final RepositoryPackage platformInterface =
         createFakePlugin('foo_platform_interface', pluginGroupDir);
     createFakePlugin('foo', pluginGroupDir);
     createFakePlugin('foo_ios', pluginGroupDir);
     createFakePlugin('foo_android', pluginGroupDir);
 
     final String changedFileOutput = <File>[
-      platformInterface.childDirectory('lib').childFile('foo.dart'),
-      platformInterface.childFile('pubspec.yaml'),
+      platformInterface.libDirectory.childFile('foo.dart'),
+      platformInterface.pubspecFile,
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -168,14 +167,14 @@ void main() {
 
   test('allows changes to multiple non-interface packages', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory appFacing = createFakePlugin('foo', pluginGroupDir);
-    final Directory implementation =
+    final RepositoryPackage appFacing = createFakePlugin('foo', pluginGroupDir);
+    final RepositoryPackage implementation =
         createFakePlugin('foo_bar', pluginGroupDir);
     createFakePlugin('foo_platform_interface', pluginGroupDir);
 
     final String changedFileOutput = <File>[
-      appFacing.childFile('foo.dart'),
-      implementation.childFile('foo.dart'),
+      appFacing.libDirectory.childFile('foo.dart'),
+      implementation.libDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -199,17 +198,17 @@ void main() {
       'fails on changes to interface and non-interface packages in the same plugin',
       () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory appFacing = createFakePlugin('foo', pluginGroupDir);
-    final Directory implementation =
+    final RepositoryPackage appFacing = createFakePlugin('foo', pluginGroupDir);
+    final RepositoryPackage implementation =
         createFakePlugin('foo_bar', pluginGroupDir);
-    final Directory platformInterface =
+    final RepositoryPackage platformInterface =
         createFakePlugin('foo_platform_interface', pluginGroupDir);
 
     final String changedFileOutput = <File>[
-      appFacing.childFile('foo.dart'),
-      implementation.childFile('foo.dart'),
-      platformInterface.childFile('pubspec.yaml'),
-      platformInterface.childDirectory('lib').childFile('foo.dart'),
+      appFacing.libDirectory.childFile('foo.dart'),
+      implementation.libDirectory.childFile('foo.dart'),
+      platformInterface.pubspecFile,
+      platformInterface.libDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -244,17 +243,17 @@ void main() {
 
   test('ignores test-only changes to interface packages', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory appFacing = createFakePlugin('foo', pluginGroupDir);
-    final Directory implementation =
+    final RepositoryPackage appFacing = createFakePlugin('foo', pluginGroupDir);
+    final RepositoryPackage implementation =
         createFakePlugin('foo_bar', pluginGroupDir);
-    final Directory platformInterface =
+    final RepositoryPackage platformInterface =
         createFakePlugin('foo_platform_interface', pluginGroupDir);
 
     final String changedFileOutput = <File>[
-      appFacing.childFile('foo.dart'),
-      implementation.childFile('foo.dart'),
-      platformInterface.childFile('pubspec.yaml'),
-      platformInterface.childDirectory('test').childFile('foo.dart'),
+      appFacing.libDirectory.childFile('foo.dart'),
+      implementation.libDirectory.childFile('foo.dart'),
+      platformInterface.pubspecFile,
+      platformInterface.testDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -276,27 +275,24 @@ void main() {
 
   test('ignores unpublished changes to interface packages', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory appFacing = createFakePlugin('foo', pluginGroupDir);
-    final Directory implementation =
+    final RepositoryPackage appFacing = createFakePlugin('foo', pluginGroupDir);
+    final RepositoryPackage implementation =
         createFakePlugin('foo_bar', pluginGroupDir);
-    final Directory platformInterface =
+    final RepositoryPackage platformInterface =
         createFakePlugin('foo_platform_interface', pluginGroupDir);
 
     final String changedFileOutput = <File>[
-      appFacing.childFile('foo.dart'),
-      implementation.childFile('foo.dart'),
-      platformInterface.childFile('pubspec.yaml'),
-      platformInterface.childDirectory('lib').childFile('foo.dart'),
+      appFacing.libDirectory.childFile('foo.dart'),
+      implementation.libDirectory.childFile('foo.dart'),
+      platformInterface.pubspecFile,
+      platformInterface.libDirectory.childFile('foo.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
     ];
     // Simulate no change to the version in the interface's pubspec.yaml.
     processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
-      MockProcess(
-          stdout: RepositoryPackage(platformInterface)
-              .pubspecFile
-              .readAsStringSync()),
+      MockProcess(stdout: platformInterface.pubspecFile.readAsStringSync()),
     ];
 
     final List<String> output =
@@ -315,22 +311,22 @@ void main() {
 
   test('allows things that look like mass changes, with warning', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
-    final Directory appFacing = createFakePlugin('foo', pluginGroupDir);
-    final Directory implementation =
+    final RepositoryPackage appFacing = createFakePlugin('foo', pluginGroupDir);
+    final RepositoryPackage implementation =
         createFakePlugin('foo_bar', pluginGroupDir);
-    final Directory platformInterface =
+    final RepositoryPackage platformInterface =
         createFakePlugin('foo_platform_interface', pluginGroupDir);
 
-    final Directory otherPlugin1 = createFakePlugin('bar', packagesDir);
-    final Directory otherPlugin2 = createFakePlugin('baz', packagesDir);
+    final RepositoryPackage otherPlugin1 = createFakePlugin('bar', packagesDir);
+    final RepositoryPackage otherPlugin2 = createFakePlugin('baz', packagesDir);
 
     final String changedFileOutput = <File>[
-      appFacing.childFile('foo.dart'),
-      implementation.childFile('foo.dart'),
-      platformInterface.childFile('pubspec.yaml'),
-      platformInterface.childDirectory('lib').childFile('foo.dart'),
-      otherPlugin1.childFile('bar.dart'),
-      otherPlugin2.childFile('baz.dart'),
+      appFacing.libDirectory.childFile('foo.dart'),
+      implementation.libDirectory.childFile('foo.dart'),
+      platformInterface.pubspecFile,
+      platformInterface.libDirectory.childFile('foo.dart'),
+      otherPlugin1.libDirectory.childFile('bar.dart'),
+      otherPlugin2.libDirectory.childFile('baz.dart'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),
@@ -355,11 +351,11 @@ void main() {
 
   test('handles top-level files that match federated package heuristics',
       () async {
-    final Directory plugin = createFakePlugin('foo', packagesDir);
+    final RepositoryPackage plugin = createFakePlugin('foo', packagesDir);
 
     final String changedFileOutput = <File>[
       // This should be picked up as a change to 'foo', and not crash.
-      plugin.childFile('foo_bar.baz'),
+      plugin.directory.childFile('foo_bar.baz'),
     ].map((File file) => file.path).join('\n');
     processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
       MockProcess(stdout: changedFileOutput),

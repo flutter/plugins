@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: library_private_types_in_public_api
+
 part of google_maps_flutter;
 
 /// Controller for a single GoogleMap instance running on the host platform.
 class GoogleMapController {
-  /// The mapId for this controller
-  final int mapId;
-
   GoogleMapController._(
-    CameraPosition initialCameraPosition,
     this._googleMapState, {
     required this.mapId,
   }) {
     _connectStreams(mapId);
   }
+
+  /// The mapId for this controller
+  final int mapId;
 
   /// Initialize control of a [GoogleMap] with [id].
   ///
@@ -29,24 +30,9 @@ class GoogleMapController {
     assert(id != null);
     await GoogleMapsFlutterPlatform.instance.init(id);
     return GoogleMapController._(
-      initialCameraPosition,
       googleMapState,
       mapId: id,
     );
-  }
-
-  /// Used to communicate with the native platform.
-  ///
-  /// Accessible only for testing.
-  // TODO(dit) https://github.com/flutter/flutter/issues/55504 Remove this getter.
-  @visibleForTesting
-  MethodChannel? get channel {
-    if (GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter) {
-      return (GoogleMapsFlutterPlatform.instance
-              as MethodChannelGoogleMapsFlutter)
-          .channel(mapId);
-    }
-    return null;
   }
 
   final _GoogleMapState _googleMapState;
@@ -102,10 +88,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
-    assert(optionsUpdate != null);
+  Future<void> _updateMapConfiguration(MapConfiguration update) {
     return GoogleMapsFlutterPlatform.instance
-        .updateMapOptions(optionsUpdate, mapId: mapId);
+        .updateMapConfiguration(update, mapId: mapId);
   }
 
   /// Updates marker configuration.

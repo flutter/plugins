@@ -11,15 +11,21 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
+import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
+import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/webview_android_widget.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'android_webview_test.mocks.dart' show MockTestWebViewHostApi;
+import 'test_android_webview.pigeon.dart';
 import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks(<Type>[
   android_webview.FlutterAssetManager,
   android_webview.WebSettings,
+  android_webview.WebStorage,
   android_webview.WebView,
+  android_webview.WebResourceRequest,
   WebViewAndroidDownloadListener,
   WebViewAndroidJavaScriptChannel,
   WebViewAndroidWebChromeClient,
@@ -31,10 +37,11 @@ import 'webview_android_widget_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$WebViewAndroidWidget', () {
+  group('WebViewAndroidWidget', () {
     late MockFlutterAssetManager mockFlutterAssetManager;
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
+    late MockWebStorage mockWebStorage;
     late MockWebViewProxy mockWebViewProxy;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
@@ -50,6 +57,7 @@ void main() {
       mockFlutterAssetManager = MockFlutterAssetManager();
       mockWebView = MockWebView();
       mockWebSettings = MockWebSettings();
+      mockWebStorage = MockWebStorage();
       when(mockWebView.settings).thenReturn(mockWebSettings);
 
       mockWebViewProxy = MockWebViewProxy();
@@ -82,6 +90,7 @@ void main() {
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
         flutterAssetManager: mockFlutterAssetManager,
+        webStorage: mockWebStorage,
         onBuildWidget: (WebViewAndroidPlatformController controller) {
           testController = controller;
           return Container();
@@ -93,7 +102,7 @@ void main() {
       webChromeClient = testController.webChromeClient;
     }
 
-    testWidgets('$WebViewAndroidWidget', (WidgetTester tester) async {
+    testWidgets('WebViewAndroidWidget', (WidgetTester tester) async {
       await buildWidget(tester);
 
       verify(mockWebSettings.setDomStorageEnabled(true));
@@ -119,7 +128,7 @@ void main() {
       },
     );
 
-    group('$CreationParams', () {
+    group('CreationParams', () {
       testWidgets('initialUrl', (WidgetTester tester) async {
         await buildWidget(
           tester,
@@ -201,7 +210,7 @@ void main() {
         expect(javaScriptChannels[1].channelName, 'b');
       });
 
-      group('$WebSettings', () {
+      group('WebSettings', () {
         testWidgets('javascriptMode', (WidgetTester tester) async {
           await buildWidget(
             tester,
@@ -232,7 +241,7 @@ void main() {
           expect(testController.webViewClient.shouldOverrideUrlLoading, isTrue);
         });
 
-        testWidgets('debuggingEnabled', (WidgetTester tester) async {
+        testWidgets('debuggingEnabled true', (WidgetTester tester) async {
           await buildWidget(
             tester,
             creationParams: CreationParams(
@@ -245,6 +254,21 @@ void main() {
           );
 
           verify(mockWebViewProxy.setWebContentsDebuggingEnabled(true));
+        });
+
+        testWidgets('debuggingEnabled false', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: const WebSetting<String?>.absent(),
+                debuggingEnabled: false,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockWebViewProxy.setWebContentsDebuggingEnabled(false));
         });
 
         testWidgets('userAgent', (WidgetTester tester) async {
@@ -278,7 +302,7 @@ void main() {
       });
     });
 
-    group('$WebViewPlatformController', () {
+    group('WebViewPlatformController', () {
       testWidgets('loadFile without "file://" prefix',
           (WidgetTester tester) async {
         await buildWidget(tester);
@@ -571,6 +595,7 @@ void main() {
 
         await testController.clearCache();
         verify(mockWebView.clearCache(true));
+        verify(mockWebStorage.deleteAllData());
       });
 
       testWidgets('evaluateJavascript', (WidgetTester tester) async {
@@ -667,7 +692,7 @@ void main() {
       });
     });
 
-    group('$WebViewPlatformCallbacksHandler', () {
+    group('WebViewPlatformCallbacksHandler', () {
       testWidgets('onPageStarted', (WidgetTester tester) async {
         await buildWidget(tester);
         webViewClient.onPageStarted(mockWebView, 'https://google.com');
@@ -773,7 +798,7 @@ void main() {
         verify(mockWebView.loadUrl('https://google.com', <String, String>{}));
       });
 
-      group('$JavascriptChannelRegistry', () {
+      group('JavascriptChannelRegistry', () {
         testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
           await buildWidget(tester);
 
@@ -790,6 +815,222 @@ void main() {
           ));
         });
       });
+    });
+  });
+
+  group('WebViewProxy', () {
+    late MockTestWebViewHostApi mockPlatformHostApi;
+    late InstanceManager instanceManager;
+
+    setUp(() {
+      // WebViewProxy calls static methods that can't be mocked, so the mocks
+      // have to be set up at the next layer down, by mocking the implementation
+      // of WebView itstelf.
+      mockPlatformHostApi = MockTestWebViewHostApi();
+      TestWebViewHostApi.setup(mockPlatformHostApi);
+      instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
+      android_webview.WebView.api =
+          WebViewHostApiImpl(instanceManager: instanceManager);
+    });
+
+    test('setWebContentsDebuggingEnabled true', () {
+      const WebViewProxy webViewProxy = WebViewProxy();
+      webViewProxy.setWebContentsDebuggingEnabled(true);
+      verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
+    });
+
+    test('setWebContentsDebuggingEnabled false', () {
+      const WebViewProxy webViewProxy = WebViewProxy();
+      webViewProxy.setWebContentsDebuggingEnabled(false);
+      verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(false));
+    });
+  });
+
+  group('WebViewAndroidWebViewClient', () {
+    test(
+        'urlLoading should call loadUrl when onNavigationRequestCallback returns true',
+        () {
+      final Completer<void> completer = Completer<void>();
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  true,
+              loadUrl: (String url, Map<String, String>? headers) async {
+                completer.complete();
+              });
+
+      webViewClient.urlLoading(MockWebView(), 'https://flutter.dev');
+      expect(completer.isCompleted, isTrue);
+    });
+
+    test(
+        'urlLoading should call loadUrl when onNavigationRequestCallback returns a Future true',
+        () async {
+      final Completer<void> completer = Completer<void>();
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  Future<bool>.value(true),
+              loadUrl: (String url, Map<String, String>? headers) async {
+                completer.complete();
+              });
+
+      webViewClient.urlLoading(MockWebView(), 'https://flutter.dev');
+      expect(completer.future, completes);
+    });
+
+    test(
+        'urlLoading should not call laodUrl when onNavigationRequestCallback returns false',
+        () async {
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  false,
+              loadUrl: (String url, Map<String, String>? headers) async {
+                fail(
+                    'loadUrl should not be called if onNavigationRequestCallback returns false.');
+              });
+
+      webViewClient.urlLoading(MockWebView(), 'https://flutter.dev');
+    });
+
+    test(
+        'urlLoading should not call loadUrl when onNavigationRequestCallback returns a Future false',
+        () {
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  Future<bool>.value(false),
+              loadUrl: (String url, Map<String, String>? headers) async {
+                fail(
+                    'loadUrl should not be called if onNavigationRequestCallback returns false.');
+              });
+
+      webViewClient.urlLoading(MockWebView(), 'https://flutter.dev');
+    });
+
+    test(
+        'requestLoading should call loadUrl when onNavigationRequestCallback returns true',
+        () {
+      final Completer<void> completer = Completer<void>();
+      final MockWebResourceRequest mockRequest = MockWebResourceRequest();
+      when(mockRequest.isForMainFrame).thenReturn(true);
+      when(mockRequest.url).thenReturn('https://flutter.dev');
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  true,
+              loadUrl: (String url, Map<String, String>? headers) async {
+                expect(url, 'https://flutter.dev');
+                completer.complete();
+              });
+
+      webViewClient.requestLoading(MockWebView(), mockRequest);
+      expect(completer.isCompleted, isTrue);
+    });
+
+    test(
+        'requestLoading should call loadUrl when onNavigationRequestCallback returns a Future true',
+        () async {
+      final Completer<void> completer = Completer<void>();
+      final MockWebResourceRequest mockRequest = MockWebResourceRequest();
+      when(mockRequest.isForMainFrame).thenReturn(true);
+      when(mockRequest.url).thenReturn('https://flutter.dev');
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  Future<bool>.value(true),
+              loadUrl: (String url, Map<String, String>? headers) async {
+                expect(url, 'https://flutter.dev');
+                completer.complete();
+              });
+
+      webViewClient.requestLoading(MockWebView(), mockRequest);
+      expect(completer.future, completes);
+    });
+
+    test(
+        'requestLoading should not call loadUrl when onNavigationRequestCallback returns false',
+        () {
+      final MockWebResourceRequest mockRequest = MockWebResourceRequest();
+      when(mockRequest.isForMainFrame).thenReturn(true);
+      when(mockRequest.url).thenReturn('https://flutter.dev');
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  false,
+              loadUrl: (String url, Map<String, String>? headers) {
+                fail(
+                    'loadUrl should not be called if onNavigationRequestCallback returns false.');
+              });
+
+      webViewClient.requestLoading(MockWebView(), mockRequest);
+    });
+
+    test(
+        'requestLoading should not call loadUrl when onNavigationRequestCallback returns a Future false',
+        () {
+      final MockWebResourceRequest mockRequest = MockWebResourceRequest();
+      when(mockRequest.isForMainFrame).thenReturn(true);
+      when(mockRequest.url).thenReturn('https://flutter.dev');
+      final WebViewAndroidWebViewClient webViewClient =
+          WebViewAndroidWebViewClient.handlesNavigation(
+              onPageStartedCallback: (_) {},
+              onPageFinishedCallback: (_) {},
+              onWebResourceErrorCallback: (_) {},
+              onNavigationRequestCallback: ({
+                required bool isForMainFrame,
+                required String url,
+              }) =>
+                  Future<bool>.value(false),
+              loadUrl: (String url, Map<String, String>? headers) {
+                fail(
+                    'loadUrl should not be called if onNavigationRequestCallback returns false.');
+              });
+
+      webViewClient.requestLoading(MockWebView(), mockRequest);
     });
   });
 }

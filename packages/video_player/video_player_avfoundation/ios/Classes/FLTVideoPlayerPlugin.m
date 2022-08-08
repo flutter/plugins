@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #import "FLTVideoPlayerPlugin.h"
+
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
-#import "messages.h"
+
+#import "AVAssetTrackUtils.h"
+#import "messages.g.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -43,7 +46,7 @@
 @property(nonatomic, readonly) BOOL isInitialized;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
-                httpHeaders:(NSDictionary<NSString *, NSString *> *)headers;
+                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
 @end
 
 static void *timeRangeContext = &timeRangeContext;
@@ -57,7 +60,7 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
   NSString *path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:nil];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:@{}];
 }
 
 - (void)addObservers:(AVPlayerItem *)item {
@@ -177,37 +180,14 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
-                httpHeaders:(NSDictionary<NSString *, NSString *> *)headers {
+                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers {
   NSDictionary<NSString *, id> *options = nil;
-  if (headers != nil && [headers count] != 0) {
+  if ([headers count] != 0) {
     options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
   }
   AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
   AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:urlAsset];
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
-}
-
-- (CGAffineTransform)fixTransform:(AVAssetTrack *)videoTrack {
-  CGAffineTransform transform = videoTrack.preferredTransform;
-  // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
-  // At least 2 user videos show a black screen when in portrait mode if we directly use the
-  // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
-  // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
-  if (transform.tx == 0 && transform.ty == 0) {
-    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
-          videoTrack.naturalSize.width, videoTrack.naturalSize.height);
-    if (rotationDegrees == 90) {
-      NSLog(@"Setting transform tx");
-      transform.tx = videoTrack.naturalSize.height;
-      transform.ty = 0;
-    } else if (rotationDegrees == 270) {
-      NSLog(@"Setting transform ty");
-      transform.tx = 0;
-      transform.ty = videoTrack.naturalSize.width;
-    }
-  }
-  return transform;
 }
 
 - (instancetype)initWithPlayerItem:(AVPlayerItem *)item
@@ -226,7 +206,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
             // Rotate the video by using a videoComposition and the preferredTransform
-            self->_preferredTransform = [self fixTransform:videoTrack];
+            self->_preferredTransform = FLTGetStandardizedTransformForTrack(videoTrack);
             // Note:
             // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
             // Video composition can only be used with file-based media and is not supported for
@@ -499,7 +479,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 @end
 
-@interface FLTVideoPlayerPlugin () <FLTVideoPlayerApi>
+@interface FLTVideoPlayerPlugin () <FLTAVFoundationVideoPlayerApi>
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry> *registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, strong, nonatomic)
@@ -511,7 +491,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FLTVideoPlayerPlugin *instance = [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar publish:instance];
-  FLTVideoPlayerApiSetup(registrar.messenger, instance);
+  FLTAVFoundationVideoPlayerApiSetup(registrar.messenger, instance);
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -530,7 +510,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   // TODO(57151): This should be commented out when 57151's fix lands on stable.
   // This is the correct behavior we never did it in the past and the engine
   // doesn't currently support it.
-  // FLTVideoPlayerApiSetup(registrar.messenger, nil);
+  // FLTAVFoundationVideoPlayerApiSetup(registrar.messenger, nil);
 }
 
 - (FLTTextureMessage *)onPlayerSetup:(FLTVideoPlayer *)player
@@ -544,8 +524,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
   self.playersByTextureId[@(textureId)] = player;
-  FLTTextureMessage *result = [[FLTTextureMessage alloc] init];
-  result.textureId = @(textureId);
+  FLTTextureMessage *result = [FLTTextureMessage makeWithTextureId:@(textureId)];
   return result;
 }
 
@@ -628,8 +607,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (FLTPositionMessage *)position:(FLTTextureMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  FLTPositionMessage *result = [[FLTPositionMessage alloc] init];
-  result.position = @([player position]);
+  FLTPositionMessage *result = [FLTPositionMessage makeWithTextureId:input.textureId
+                                                            position:@([player position])];
   return result;
 }
 

@@ -36,7 +36,7 @@ public class UrlLauncherPlugin: NSObject, FlutterPlugin {
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
-      name: "plugins.flutter.io/url_launcher",
+      name: "plugins.flutter.io/url_launcher_macos",
       binaryMessenger: registrar.messenger)
     let instance = UrlLauncherPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)

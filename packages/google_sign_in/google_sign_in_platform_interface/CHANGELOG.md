@@ -1,3 +1,17 @@
+## 2.2.0
+
+* Adds support for the `serverClientId` parameter.
+
+## 2.1.3
+
+* Enables mocking models by changing overridden operator == parameter type from `dynamic` to `Object`.
+* Removes unnecessary imports.
+* Adds `SignInInitParameters` class to hold all sign in params, including the new `forceCodeForRefreshToken`.
+
+## 2.1.2
+
+* Internal code cleanup for stricter analysis options.
+
 ## 2.1.1
 
 * Removes dependency on `meta`.

@@ -6,8 +6,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:video_player/video_player.dart';
 
 const Duration _playDuration = Duration(seconds: 1);
@@ -18,13 +18,13 @@ void main() {
     'can substitute one controller by another without crashing',
     (WidgetTester tester) async {
       // Use WebM for web to allow CI to use Chromium.
-      final String videoAssetKey =
+      const String videoAssetKey =
           kIsWeb ? 'assets/Butterfly-209.webm' : 'assets/Butterfly-209.mp4';
 
-      VideoPlayerController controller = VideoPlayerController.asset(
+      final VideoPlayerController controller = VideoPlayerController.asset(
         videoAssetKey,
       );
-      VideoPlayerController another = VideoPlayerController.asset(
+      final VideoPlayerController another = VideoPlayerController.asset(
         videoAssetKey,
       );
       await controller.initialize();
@@ -32,18 +32,16 @@ void main() {
       await controller.setVolume(0);
       await another.setVolume(0);
 
-      final Completer<void> started = Completer();
-      final Completer<void> ended = Completer();
-      bool startedBuffering = false;
-      bool endedBuffering = false;
+      final Completer<void> started = Completer<void>();
+      final Completer<void> ended = Completer<void>();
 
       another.addListener(() {
-        if (another.value.isBuffering && !startedBuffering) {
-          startedBuffering = true;
+        if (another.value.isBuffering && !started.isCompleted) {
           started.complete();
         }
-        if (startedBuffering && !another.value.isBuffering && !endedBuffering) {
-          endedBuffering = true;
+        if (started.isCompleted &&
+            !another.value.isBuffering &&
+            !ended.isCompleted) {
           ended.complete();
         }
       });
@@ -69,11 +67,8 @@ void main() {
       expect(another.value.position,
           (Duration position) => position > const Duration(seconds: 0));
 
-      await started;
-      expect(startedBuffering, true);
-
-      await ended;
-      expect(endedBuffering, true);
+      await expectLater(started.future, completes);
+      await expectLater(ended.future, completes);
     },
     skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
   );
@@ -86,7 +81,7 @@ Widget renderVideoWidget(VideoPlayerController controller) {
       textDirection: TextDirection.ltr,
       child: Center(
         child: AspectRatio(
-          key: Key('same'),
+          key: const Key('same'),
           aspectRatio: controller.value.aspectRatio,
           child: VideoPlayer(controller),
         ),

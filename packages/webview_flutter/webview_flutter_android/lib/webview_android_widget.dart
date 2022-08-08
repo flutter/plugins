@@ -15,6 +15,7 @@ import 'src/android_webview.dart' as android_webview;
 class WebViewAndroidWidget extends StatefulWidget {
   /// Constructs a [WebViewAndroidWidget].
   const WebViewAndroidWidget({
+    Key? key,
     required this.creationParams,
     required this.useHybridComposition,
     required this.callbacksHandler,
@@ -23,7 +24,8 @@ class WebViewAndroidWidget extends StatefulWidget {
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
     @visibleForTesting
         this.flutterAssetManager = const android_webview.FlutterAssetManager(),
-  });
+    @visibleForTesting this.webStorage,
+  }) : super(key: key);
 
   /// Initial parameters used to setup the WebView.
   final CreationParams creationParams;
@@ -59,6 +61,9 @@ class WebViewAndroidWidget extends StatefulWidget {
   final Widget Function(WebViewAndroidPlatformController controller)
       onBuildWidget;
 
+  /// Manages the JavaScript storage APIs.
+  final android_webview.WebStorage? webStorage;
+
   @override
   State<StatefulWidget> createState() => _WebViewAndroidWidgetState();
 }
@@ -76,6 +81,7 @@ class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
       javascriptChannelRegistry: widget.javascriptChannelRegistry,
       webViewProxy: widget.webViewProxy,
       flutterAssetManager: widget.flutterAssetManager,
+      webStorage: widget.webStorage,
     );
   }
 
@@ -102,7 +108,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
     @visibleForTesting
         this.flutterAssetManager = const android_webview.FlutterAssetManager(),
-  })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
+    @visibleForTesting android_webview.WebStorage? webStorage,
+  })  : webStorage = webStorage ?? android_webview.WebStorage.instance,
+        assert(creationParams.webSettings?.hasNavigationDelegate != null),
         super(callbacksHandler) {
     webView = webViewProxy.createWebView(
       useHybridComposition: useHybridComposition,
@@ -159,6 +167,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @visibleForTesting
   late final WebViewAndroidWebChromeClient webChromeClient =
       WebViewAndroidWebChromeClient();
+
+  /// Manages the JavaScript storage APIs.
+  final android_webview.WebStorage webStorage;
 
   /// Receive various notifications and requests for [android_webview.WebView].
   @visibleForTesting
@@ -254,7 +265,10 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<void> reload() => webView.reload();
 
   @override
-  Future<void> clearCache() => webView.clearCache(true);
+  Future<void> clearCache() {
+    webView.clearCache(true);
+    return webStorage.deleteAllData();
+  }
 
   @override
   Future<void> updateSettings(WebSettings setting) async {
@@ -638,8 +652,8 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
     if (returnValue is bool && returnValue) {
       loadUrl!(url, <String, String>{});
-    } else {
-      (returnValue as Future<bool>).then((bool shouldLoadUrl) {
+    } else if (returnValue is Future<bool>) {
+      returnValue.then((bool shouldLoadUrl) {
         if (shouldLoadUrl) {
           loadUrl!(url, <String, String>{});
         }
@@ -663,8 +677,8 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
     if (returnValue is bool && returnValue) {
       loadUrl!(request.url, <String, String>{});
-    } else {
-      (returnValue as Future<bool>).then((bool shouldLoadUrl) {
+    } else if (returnValue is Future<bool>) {
+      returnValue.then((bool shouldLoadUrl) {
         if (shouldLoadUrl) {
           loadUrl!(request.url, <String, String>{});
         }
@@ -708,6 +722,6 @@ class WebViewProxy {
   ///
   /// See [android_webview.WebView].setWebContentsDebuggingEnabled.
   Future<void> setWebContentsDebuggingEnabled(bool enabled) {
-    return android_webview.WebView.setWebContentsDebuggingEnabled(true);
+    return android_webview.WebView.setWebContentsDebuggingEnabled(enabled);
   }
 }

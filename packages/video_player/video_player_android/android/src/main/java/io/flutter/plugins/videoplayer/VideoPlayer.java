@@ -10,14 +10,16 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 import android.content.Context;
 import android.net.Uri;
 import android.view.Surface;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.Listener;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -27,7 +29,7 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
@@ -44,17 +46,17 @@ final class VideoPlayer {
   private static final String FORMAT_HLS = "hls";
   private static final String FORMAT_OTHER = "other";
 
-  private SimpleExoPlayer exoPlayer;
+  private ExoPlayer exoPlayer;
 
   private Surface surface;
 
   private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
-  private QueuingEventSink eventSink = new QueuingEventSink();
+  private QueuingEventSink eventSink;
 
   private final EventChannel eventChannel;
 
-  private boolean isInitialized = false;
+  @VisibleForTesting boolean isInitialized = false;
 
   private final VideoPlayerOptions options;
 
@@ -64,17 +66,17 @@ final class VideoPlayer {
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
       String formatHint,
-      Map<String, String> httpHeaders,
+      @NonNull Map<String, String> httpHeaders,
       VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
     this.options = options;
 
-    exoPlayer = new SimpleExoPlayer.Builder(context).build();
+    ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
 
     Uri uri = Uri.parse(dataSource);
-
     DataSource.Factory dataSourceFactory;
+
     if (isHTTP(uri)) {
       DefaultHttpDataSource.Factory httpDataSourceFactory =
           new DefaultHttpDataSource.Factory()
@@ -86,14 +88,30 @@ final class VideoPlayer {
       }
       dataSourceFactory = httpDataSourceFactory;
     } else {
-      dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
+      dataSourceFactory = new DefaultDataSource.Factory(context);
     }
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
+
     exoPlayer.setMediaSource(mediaSource);
     exoPlayer.prepare();
 
-    setupVideoPlayer(eventChannel, textureEntry);
+    setUpVideoPlayer(exoPlayer, new QueuingEventSink());
+  }
+
+  // Constructor used to directly test members of this class.
+  @VisibleForTesting
+  VideoPlayer(
+      ExoPlayer exoPlayer,
+      EventChannel eventChannel,
+      TextureRegistry.SurfaceTextureEntry textureEntry,
+      VideoPlayerOptions options,
+      QueuingEventSink eventSink) {
+    this.eventChannel = eventChannel;
+    this.textureEntry = textureEntry;
+    this.options = options;
+
+    setUpVideoPlayer(exoPlayer, eventSink);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -108,20 +126,20 @@ final class VideoPlayer {
       Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
     int type;
     if (formatHint == null) {
-      type = Util.inferContentType(uri.getLastPathSegment());
+      type = Util.inferContentType(uri);
     } else {
       switch (formatHint) {
         case FORMAT_SS:
-          type = C.TYPE_SS;
+          type = C.CONTENT_TYPE_SS;
           break;
         case FORMAT_DASH:
-          type = C.TYPE_DASH;
+          type = C.CONTENT_TYPE_DASH;
           break;
         case FORMAT_HLS:
-          type = C.TYPE_HLS;
+          type = C.CONTENT_TYPE_HLS;
           break;
         case FORMAT_OTHER:
-          type = C.TYPE_OTHER;
+          type = C.CONTENT_TYPE_OTHER;
           break;
         default:
           type = -1;
@@ -129,20 +147,20 @@ final class VideoPlayer {
       }
     }
     switch (type) {
-      case C.TYPE_SS:
+      case C.CONTENT_TYPE_SS:
         return new SsMediaSource.Factory(
                 new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+                new DefaultDataSource.Factory(context, mediaDataSourceFactory))
             .createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_DASH:
+      case C.CONTENT_TYPE_DASH:
         return new DashMediaSource.Factory(
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+                new DefaultDataSource.Factory(context, mediaDataSourceFactory))
             .createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_HLS:
+      case C.CONTENT_TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
-      case C.TYPE_OTHER:
+      case C.CONTENT_TYPE_OTHER:
         return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
       default:
@@ -152,8 +170,10 @@ final class VideoPlayer {
     }
   }
 
-  private void setupVideoPlayer(
-      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
+  private void setUpVideoPlayer(ExoPlayer exoPlayer, QueuingEventSink eventSink) {
+    this.exoPlayer = exoPlayer;
+    this.eventSink = eventSink;
+
     eventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
           @Override
@@ -206,7 +226,7 @@ final class VideoPlayer {
           }
 
           @Override
-          public void onPlayerError(final ExoPlaybackException error) {
+          public void onPlayerError(final PlaybackException error) {
             setBuffering(false);
             if (eventSink != null) {
               eventSink.error("VideoError", "Video player had error " + error, null);
@@ -224,10 +244,10 @@ final class VideoPlayer {
     eventSink.success(event);
   }
 
-  @SuppressWarnings("deprecation")
-  private static void setAudioAttributes(SimpleExoPlayer exoPlayer, boolean isMixMode) {
+  private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
     exoPlayer.setAudioAttributes(
-        new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
+        new AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
+        !isMixMode);
   }
 
   void play() {
@@ -264,7 +284,8 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
-  private void sendInitialized() {
+  @VisibleForTesting
+  void sendInitialized() {
     if (isInitialized) {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
@@ -282,7 +303,16 @@ final class VideoPlayer {
         }
         event.put("width", width);
         event.put("height", height);
+
+        // Rotating the video with ExoPlayer does not seem to be possible with a Surface,
+        // so inform the Flutter code that the widget needs to be rotated to prevent
+        // upside-down playback for videos with rotationDegrees of 180 (other orientations work
+        // correctly without correction).
+        if (rotationDegrees == 180) {
+          event.put("rotationCorrection", rotationDegrees);
+        }
       }
+
       eventSink.success(event);
     }
   }

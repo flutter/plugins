@@ -63,7 +63,7 @@ API_AVAILABLE(ios(9.0))
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher_ios"
                                   binaryMessenger:registrar.messenger];
   FLTURLLauncherPlugin *plugin = [[FLTURLLauncherPlugin alloc] init];
   [registrar addMethodCallDelegate:plugin channel:channel];
@@ -136,8 +136,13 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (UIViewController *)topViewController {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // TODO(stuartmorgan) Provide a non-deprecated codepath. See
+  // https://github.com/flutter/flutter/issues/104117
   return [self topViewControllerFromViewController:[UIApplication sharedApplication]
                                                        .keyWindow.rootViewController];
+#pragma clang diagnostic pop
 }
 
 /**
