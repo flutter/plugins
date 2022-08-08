@@ -350,12 +350,12 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         if (!Strings.isNullOrEmpty(clientId)) {
           if (Strings.isNullOrEmpty(serverClientId)) {
             Log.w(
-                "google_sing_in",
+                "google_sign_in",
                 "clientId is not supported on Android and is interpreted as serverClientId."
                     + "Use serverClientId instead to suppress this warning.");
             serverClientId = clientId;
           } else {
-            Log.w("google_sing_in", "clientId is not supported on Android and is ignored.");
+            Log.w("google_sign_in", "clientId is not supported on Android and is ignored.");
           }
         }
 

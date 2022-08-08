@@ -1,3 +1,7 @@
+## NEXT
+
+* Corrects typo in logs
+
 ## 6.0.1
 
 * Updates gradle version to 7.2.1 on Android.
