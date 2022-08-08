@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  local_auth_platform_interface: ^1.0.0
+  local_auth_platform_interface: ^1.0.1
 
 dev_dependencies:
   flutter_test:

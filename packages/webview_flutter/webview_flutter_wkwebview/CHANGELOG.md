@@ -2,6 +2,11 @@
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
+## 2.9.3
+
+* Updates `webview_flutter_platform_interface` constraint to the correct minimum
+  version.
+
 ## 2.9.2
 
 * Fixes crash when an Objective-C object in `FWFInstanceManager` is released, but the dealloc
