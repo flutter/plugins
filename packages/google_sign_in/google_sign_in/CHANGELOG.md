@@ -1,3 +1,7 @@
+## 5.4.1
+
+* Adds documentation for iOS auth with SERVER_CLIENT_ID
+
 ## 5.4.0
 
 * Adds support for configuring `serverClientId` through `GoogleSignIn` constructor.
