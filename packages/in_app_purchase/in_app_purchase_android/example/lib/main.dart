@@ -23,7 +23,7 @@ void main() {
 }
 
 // To try without auto-consume, change `true` to `false` here.
-const bool _kAutoConsume = true;
+final bool _kAutoConsume = Platform.isIOS || true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
