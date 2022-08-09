@@ -1,6 +1,6 @@
 ## NEXT
 
-* Corrects typo in logs
+* Corrects typos in plugin error logs.
 
 ## 6.0.1
 
