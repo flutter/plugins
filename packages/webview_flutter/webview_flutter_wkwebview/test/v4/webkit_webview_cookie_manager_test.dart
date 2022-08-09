@@ -20,15 +20,18 @@ void main() {
 
   group('WebKitWebViewCookieManager', () {
     test('clearCookies', () {
-      final TestWebKitProxy webKitProxy = TestWebKitProxy();
+      final MockWKWebsiteDataStore mockWKWebsiteDataStore =
+          MockWKWebsiteDataStore();
 
       final WebKitWebViewCookieManager manager = WebKitWebViewCookieManager(
         const PlatformWebViewCookieManagerCreationParams(),
-        webKitProxy: webKitProxy,
+        webKitProxy: WebKitProxy(
+          defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+        ),
       );
 
       when(
-        webKitProxy.mockWKWebsiteDataStore.removeDataOfTypes(
+        mockWKWebsiteDataStore.removeDataOfTypes(
           <WKWebsiteDataType>{WKWebsiteDataType.cookies},
           any,
         ),
@@ -36,7 +39,7 @@ void main() {
       expect(manager.clearCookies(), completion(true));
 
       when(
-        webKitProxy.mockWKWebsiteDataStore.removeDataOfTypes(
+        mockWKWebsiteDataStore.removeDataOfTypes(
           <WKWebsiteDataType>{WKWebsiteDataType.cookies},
           any,
         ),
@@ -45,15 +48,17 @@ void main() {
     });
 
     test('setCookie', () async {
-      final TestWebKitProxy webKitProxy = TestWebKitProxy();
+      final MockWKWebsiteDataStore mockWKWebsiteDataStore =
+          MockWKWebsiteDataStore();
 
       final MockWKHttpCookieStore mockCookieStore = MockWKHttpCookieStore();
-      when(webKitProxy.mockWKWebsiteDataStore.httpCookieStore)
-          .thenReturn(mockCookieStore);
+      when(mockWKWebsiteDataStore.httpCookieStore).thenReturn(mockCookieStore);
 
       final WebKitWebViewCookieManager manager = WebKitWebViewCookieManager(
         const PlatformWebViewCookieManagerCreationParams(),
-        webKitProxy: webKitProxy,
+        webKitProxy: WebKitProxy(
+          defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+        ),
       );
 
       await manager.setCookie(
@@ -75,11 +80,17 @@ void main() {
     });
 
     test('setCookie throws argument error with invalid path', () async {
-      final TestWebKitProxy webKitProxy = TestWebKitProxy();
+      final MockWKWebsiteDataStore mockWKWebsiteDataStore =
+          MockWKWebsiteDataStore();
+
+      final MockWKHttpCookieStore mockCookieStore = MockWKHttpCookieStore();
+      when(mockWKWebsiteDataStore.httpCookieStore).thenReturn(mockCookieStore);
 
       final WebKitWebViewCookieManager manager = WebKitWebViewCookieManager(
         const PlatformWebViewCookieManagerCreationParams(),
-        webKitProxy: webKitProxy,
+        webKitProxy: WebKitProxy(
+          defaultWebsiteDataStore: () => mockWKWebsiteDataStore,
+        ),
       );
 
       expect(
@@ -95,12 +106,4 @@ void main() {
       );
     });
   });
-}
-
-class TestWebKitProxy extends WebKitProxy {
-  final MockWKWebsiteDataStore mockWKWebsiteDataStore =
-      MockWKWebsiteDataStore();
-
-  @override
-  WKWebsiteDataStore defaultWebsiteDataStore() => mockWKWebsiteDataStore;
 }

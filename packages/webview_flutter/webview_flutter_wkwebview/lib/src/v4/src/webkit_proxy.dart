@@ -5,6 +5,11 @@
 import '../../foundation/foundation.dart';
 import '../../web_kit/web_kit.dart';
 
+// This convenience method was added because Dart doesn't support constant
+// function literals: https://github.com/dart-lang/language/issues/1048.
+WKWebsiteDataStore _defaultWebsiteDataStore() =>
+    WKWebsiteDataStore.defaultDataStore;
+
 /// Handles constructing objects and calling static methods for the WebKit
 /// native library.
 ///
@@ -20,6 +25,7 @@ class WebKitProxy {
     this.createWebView = WKWebView.new,
     this.createWebViewConfiguration = WKWebViewConfiguration.new,
     this.createScriptMessageHandler = WKScriptMessageHandler.new,
+    this.defaultWebsiteDataStore = _defaultWebsiteDataStore,
   });
 
   /// Constructs a [WKWebView].
@@ -46,7 +52,5 @@ class WebKitProxy {
   }) createScriptMessageHandler;
 
   /// The default [WKWebsiteDataStore].
-  WKWebsiteDataStore defaultWebsiteDataStore() {
-    return WKWebsiteDataStore.defaultDataStore;
-  }
+  final WKWebsiteDataStore Function() defaultWebsiteDataStore;
 }
