@@ -1,3 +1,7 @@
+## 2.9.4
+
+* Bumps gradle from 7.2.1 to 7.2.2.
+
 ## 2.9.3
 
 * Updates the Dart InstanceManager to take a listener for when an object is garbage collected.
