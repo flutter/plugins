@@ -7,7 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// APIs exposed for unit tests.
-@interface FLTQuickActionsPlugin (Test)
+@interface FLTQuickActionsPlugin ()
+
+/// The type of the shortcut item selected when launching the app.
+/// API exposed for unit tests.
+@property(nonatomic, strong, nullable) NSString *launchingShortcutType;
 
 /// Initializes a FLTQuickActionsPlugin with the given method channel.
 /// API exposed for unit tests.

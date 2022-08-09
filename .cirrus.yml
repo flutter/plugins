@@ -171,6 +171,14 @@ task:
         # Only analyze lib/; non-client code doesn't need to work on
         # all supported legacy version.
         - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+    # Does a sanity check that plugins pass analysis with the lowest possible
+    # versions of all dependencies. This is to catch cases where we add use of
+    # new APIs but forget to update minimum versions of dependencies to when
+    # those APIs are introduced.
+    - name: downgraded_analyze
+      depends_on: analyze
+      analyze_script:
+        - ./script/tool_runner.sh analyze --downgrade
     - name: readme_excerpts
       env:
         CIRRUS_CLONE_SUBMODULES: true
