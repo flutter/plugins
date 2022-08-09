@@ -66,6 +66,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
+  pigeon: ^3.2.6
   plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
