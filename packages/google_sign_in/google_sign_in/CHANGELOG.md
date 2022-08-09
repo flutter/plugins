@@ -1,3 +1,7 @@
+## 5.4.1
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 5.4.0
 
 * Adds support for configuring `serverClientId` through `GoogleSignIn` constructor.

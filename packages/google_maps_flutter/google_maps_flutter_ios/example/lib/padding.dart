@@ -70,7 +70,6 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     columnChildren.addAll(<Widget>[_paddingInput(), _buttons()]);
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: columnChildren,
     );

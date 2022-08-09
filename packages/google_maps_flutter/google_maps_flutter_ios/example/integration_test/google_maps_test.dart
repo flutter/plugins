@@ -47,7 +47,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        compassEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -67,7 +66,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        mapToolbarEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -156,7 +154,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        zoomGesturesEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -220,7 +217,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        rotateGesturesEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -260,7 +256,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        tiltGesturesEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -299,7 +294,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        scrollGesturesEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -443,7 +437,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        trafficEnabled: false,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -463,7 +456,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        buildingsEnabled: true,
         onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -487,8 +479,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        myLocationButtonEnabled: true,
-        myLocationEnabled: false,
         onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -508,7 +498,6 @@ void main() {
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: false,
-        myLocationEnabled: false,
         onMapCreated: (ExampleGoogleMapController controller) {
           fail('OnMapCreated should get called only once.');
         },
@@ -531,7 +520,6 @@ void main() {
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         myLocationButtonEnabled: false,
-        myLocationEnabled: false,
         onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -556,8 +544,6 @@ void main() {
       child: ExampleGoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        myLocationButtonEnabled: true,
-        myLocationEnabled: false,
         onMapCreated: (ExampleGoogleMapController controller) {
           mapIdCompleter.complete(controller.mapId);
         },
@@ -864,9 +850,7 @@ void main() {
         tileOverlayId: const TileOverlayId('tile_overlay_1'),
         tileProvider: _DebugTileProvider(),
         zIndex: 2,
-        visible: true,
         transparency: 0.2,
-        fadeIn: true,
       );
 
       final TileOverlay tileOverlay2 = TileOverlay(
@@ -923,18 +907,14 @@ void main() {
         tileOverlayId: const TileOverlayId('tile_overlay_1'),
         tileProvider: _DebugTileProvider(),
         zIndex: 2,
-        visible: true,
         transparency: 0.2,
-        fadeIn: true,
       );
 
       final TileOverlay tileOverlay2 = TileOverlay(
         tileOverlayId: const TileOverlayId('tile_overlay_2'),
         tileProvider: _DebugTileProvider(),
         zIndex: 3,
-        visible: true,
         transparency: 0.5,
-        fadeIn: true,
       );
       await tester.pumpWidget(
         Directionality(
@@ -1003,9 +983,7 @@ void main() {
         tileOverlayId: const TileOverlayId('tile_overlay_1'),
         tileProvider: _DebugTileProvider(),
         zIndex: 2,
-        visible: true,
         transparency: 0.2,
-        fadeIn: true,
       );
 
       await tester.pumpWidget(
@@ -1077,7 +1055,6 @@ class _DebugTileProvider implements TileProvider {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout(
-      minWidth: 0.0,
       maxWidth: width.toDouble(),
     );
     const Offset offset = Offset(0, 0);

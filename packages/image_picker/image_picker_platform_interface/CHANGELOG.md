@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.6.1
 
 * Exports new types added for `getMultiImageWithOptions` in 2.6.0.

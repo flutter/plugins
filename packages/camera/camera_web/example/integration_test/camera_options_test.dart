@@ -30,7 +30,7 @@ void main() {
     testWidgets('supports value equality', (WidgetTester tester) async {
       expect(
         CameraOptions(
-          audio: const AudioConstraints(enabled: false),
+          audio: const AudioConstraints(),
           video: VideoConstraints(
             facingMode: FacingModeConstraint(CameraType.environment),
             width:
@@ -42,7 +42,7 @@ void main() {
         ),
         equals(
           CameraOptions(
-            audio: const AudioConstraints(enabled: false),
+            audio: const AudioConstraints(),
             video: VideoConstraints(
               facingMode: FacingModeConstraint(CameraType.environment),
               width: const VideoSizeConstraint(
