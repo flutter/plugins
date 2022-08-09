@@ -1,4 +1,4 @@
-## NEXT
+## 6.0.2
 
 * Corrects typos in plugin error logs.
 
