@@ -46,6 +46,7 @@ Future<void> main() async {
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
+    final Completer<void> pageFinishedCompleter = Completer<void>();
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -55,10 +56,14 @@ Future<void> main() async {
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
+          onPageFinished: pageFinishedCompleter.complete,
         ),
       ),
     );
+
     final WebViewController controller = await controllerCompleter.future;
+    await pageFinishedCompleter.future;
+
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
   });
@@ -891,17 +896,15 @@ Future<void> main() async {
           Completer<WebViewController>();
       final Completer<void> pageFinishedCompleter = Completer<void>();
       await tester.pumpWidget(
-        MaterialApp(
-          home: Directionality(
-            textDirection: TextDirection.ltr,
-            child: WebView(
-              key: GlobalKey(),
-              initialUrl: primaryUrl,
-              onWebViewCreated: (WebViewController controller) {
-                controllerCompleter.complete(controller);
-              },
-              onPageFinished: pageFinishedCompleter.complete,
-            ),
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: primaryUrl,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageFinished: pageFinishedCompleter.complete,
           ),
         ),
       );
@@ -912,7 +915,7 @@ Future<void> main() async {
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, primaryUrl);
     });
-  });
+  }, skip: !Platform.isAndroid);
 
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';

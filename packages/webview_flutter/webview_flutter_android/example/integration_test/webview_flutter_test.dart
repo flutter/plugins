@@ -905,10 +905,9 @@ Future<void> main() async {
       expect(Y_SCROLL * 2, scrollPosY);
     });
 
-    testWidgets(
-      'inputs are scrolled into view when focused',
-      (WidgetTester tester) async {
-        const String scrollTestPage = '''
+    testWidgets('inputs are scrolled into view when focused',
+        (WidgetTester tester) async {
+      const String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
           <head>
@@ -932,87 +931,86 @@ Future<void> main() async {
         </html>
       ''';
 
-        final String scrollTestPageBase64 =
-            base64Encode(const Utf8Encoder().convert(scrollTestPage));
+      final String scrollTestPageBase64 =
+          base64Encode(const Utf8Encoder().convert(scrollTestPage));
 
-        final Completer<void> pageLoaded = Completer<void>();
-        final Completer<WebViewController> controllerCompleter =
-            Completer<WebViewController>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
 
-        await tester.runAsync(() async {
-          await tester.pumpWidget(
-            Directionality(
-              textDirection: TextDirection.ltr,
-              child: SizedBox(
-                width: 200,
-                height: 200,
-                child: WebView(
-                  initialUrl:
-                      'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
-                  onWebViewCreated: (WebViewController controller) {
-                    controllerCompleter.complete(controller);
-                  },
-                  onPageFinished: (String url) {
-                    pageLoaded.complete(null);
-                  },
-                  javascriptMode: JavascriptMode.unrestricted,
-                ),
+      await tester.runAsync(() async {
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: SizedBox(
+              width: 200,
+              height: 200,
+              child: WebView(
+                initialUrl:
+                    'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+                onWebViewCreated: (WebViewController controller) {
+                  controllerCompleter.complete(controller);
+                },
+                onPageFinished: (String url) {
+                  pageLoaded.complete(null);
+                },
+                javascriptMode: JavascriptMode.unrestricted,
               ),
             ),
-          );
-          await Future<void>.delayed(const Duration(milliseconds: 20));
-          await tester.pump();
-        });
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        await tester.pump();
+      });
 
-        final WebViewController controller = await controllerCompleter.future;
-        await pageLoaded.future;
-        final String viewportRectJSON = await _runJavaScriptReturningResult(
-            controller, 'JSON.stringify(viewport.getBoundingClientRect())');
-        final Map<String, dynamic> viewportRectRelativeToViewport =
-            jsonDecode(viewportRectJSON) as Map<String, dynamic>;
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoaded.future;
+      final String viewportRectJSON = await _runJavaScriptReturningResult(
+          controller, 'JSON.stringify(viewport.getBoundingClientRect())');
+      final Map<String, dynamic> viewportRectRelativeToViewport =
+          jsonDecode(viewportRectJSON) as Map<String, dynamic>;
 
-        // Check that the input is originally outside of the viewport.
+      // Check that the input is originally outside of the viewport.
 
-        final String initialInputClientRectJSON =
-            await _runJavaScriptReturningResult(
-                controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-        final Map<String, dynamic> initialInputClientRectRelativeToViewport =
-            jsonDecode(initialInputClientRectJSON) as Map<String, dynamic>;
+      final String initialInputClientRectJSON =
+          await _runJavaScriptReturningResult(
+              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+      final Map<String, dynamic> initialInputClientRectRelativeToViewport =
+          jsonDecode(initialInputClientRectJSON) as Map<String, dynamic>;
 
-        expect(
-            initialInputClientRectRelativeToViewport['bottom'] <=
-                viewportRectRelativeToViewport['bottom'],
-            isFalse);
+      expect(
+          initialInputClientRectRelativeToViewport['bottom'] <=
+              viewportRectRelativeToViewport['bottom'],
+          isFalse);
 
-        await controller.runJavascript('inputEl.focus()');
+      await controller.runJavascript('inputEl.focus()');
 
-        // Check that focusing the input brought it into view.
+      // Check that focusing the input brought it into view.
 
-        final String lastInputClientRectJSON =
-            await _runJavaScriptReturningResult(
-                controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
-        final Map<String, dynamic> lastInputClientRectRelativeToViewport =
-            jsonDecode(lastInputClientRectJSON) as Map<String, dynamic>;
+      final String lastInputClientRectJSON =
+          await _runJavaScriptReturningResult(
+              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+      final Map<String, dynamic> lastInputClientRectRelativeToViewport =
+          jsonDecode(lastInputClientRectJSON) as Map<String, dynamic>;
 
-        expect(
-            lastInputClientRectRelativeToViewport['top'] >=
-                viewportRectRelativeToViewport['top'],
-            isTrue);
-        expect(
-            lastInputClientRectRelativeToViewport['bottom'] <=
-                viewportRectRelativeToViewport['bottom'],
-            isTrue);
+      expect(
+          lastInputClientRectRelativeToViewport['top'] >=
+              viewportRectRelativeToViewport['top'],
+          isTrue);
+      expect(
+          lastInputClientRectRelativeToViewport['bottom'] <=
+              viewportRectRelativeToViewport['bottom'],
+          isTrue);
 
-        expect(
-            lastInputClientRectRelativeToViewport['left'] >=
-                viewportRectRelativeToViewport['left'],
-            isTrue);
-        expect(
-            lastInputClientRectRelativeToViewport['right'] <=
-                viewportRectRelativeToViewport['right'],
-            isTrue);
-      },
-    );
+      expect(
+          lastInputClientRectRelativeToViewport['left'] >=
+              viewportRectRelativeToViewport['left'],
+          isTrue);
+      expect(
+          lastInputClientRectRelativeToViewport['right'] <=
+              viewportRectRelativeToViewport['right'],
+          isTrue);
+    });
   });
 
   group('NavigationDelegate', () {
