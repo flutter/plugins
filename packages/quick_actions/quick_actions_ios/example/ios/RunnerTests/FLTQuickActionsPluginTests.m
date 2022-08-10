@@ -7,7 +7,6 @@
 @import quick_actions_ios.Test;
 @import XCTest;
 #import <OCMock/OCMock.h>
-#import "Fixtures.h"
 
 @interface FLTQuickActionsPluginTests : XCTestCase
 
@@ -16,9 +15,14 @@
 @implementation FLTQuickActionsPluginTests
 
 - (void)testHandleMethodCall_setShortcutItems {
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"setShortcutItems"
-                                        arguments:@[ [Fixtures searchTheThingRawItem] ]];
+  NSDictionary *rawItem = @{
+    @"type" : @"SearchTheThing",
+    @"localizedTitle" : @"Search the thing",
+    @"icon" : @"search_the_thing.png",
+  };
+
+  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"setShortcutItems"
+                                                              arguments:@[ rawItem ]];
 
   FLTShortcutStateManager *mockShortcutStateManager = OCMClassMock([FLTShortcutStateManager class]);
 
@@ -33,7 +37,8 @@
                       [resultExpectation fulfill];
                     }];
   [self waitForExpectationsWithTimeout:1 handler:nil];
-  OCMVerify([mockShortcutStateManager setShortcutItems:@[ [Fixtures searchTheThingRawItem] ]]);
+
+  OCMVerify([mockShortcutStateManager setShortcutItems:@[ rawItem ]]);
 }
 
 - (void)testHandleMethodCall_clearShortcutItems {
@@ -96,7 +101,13 @@
       [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:OCMClassMock([FLTShortcutStateManager class])];
 
-  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
+           initWithType:@"SearchTheThing"
+         localizedTitle:@"Search the thing"
+      localizedSubtitle:nil
+                   icon:[UIApplicationShortcutIcon
+                            iconWithTemplateImageName:@"search_the_thing.png"]
+               userInfo:nil];
 
   BOOL actionResult = [plugin application:[UIApplication sharedApplication]
              performActionForShortcutItem:item
@@ -111,7 +122,13 @@
       [[FLTQuickActionsPlugin alloc] initWithChannel:OCMClassMock([FlutterMethodChannel class])
                                 shortcutStateManager:mockShortcutStateManager];
 
-  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
+           initWithType:@"SearchTheThing"
+         localizedTitle:@"Search the thing"
+      localizedSubtitle:nil
+                   icon:[UIApplicationShortcutIcon
+                            iconWithTemplateImageName:@"search_the_thing.png"]
+               userInfo:nil];
 
   BOOL launchResult = [plugin application:[UIApplication sharedApplication]
             didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
@@ -149,7 +166,13 @@
       [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:mockShortcutStateManager];
 
-  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
+           initWithType:@"SearchTheThing"
+         localizedTitle:@"Search the thing"
+      localizedSubtitle:nil
+                   icon:[UIApplicationShortcutIcon
+                            iconWithTemplateImageName:@"search_the_thing.png"]
+               userInfo:nil];
   [plugin application:[UIApplication sharedApplication]
       didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
 
@@ -164,7 +187,13 @@
       [[FLTQuickActionsPlugin alloc] initWithChannel:mockChannel
                                 shortcutStateManager:mockShortcutStateManager];
 
-  UIApplicationShortcutItem *item = [Fixtures searchTheThingShortcutItem];
+  UIApplicationShortcutItem *item = [[UIApplicationShortcutItem alloc]
+           initWithType:@"SearchTheThing"
+         localizedTitle:@"Search the thing"
+      localizedSubtitle:nil
+                   icon:[UIApplicationShortcutIcon
+                            iconWithTemplateImageName:@"search_the_thing.png"]
+               userInfo:nil];
   [plugin application:[UIApplication sharedApplication]
       didFinishLaunchingWithOptions:@{UIApplicationLaunchOptionsShortcutItemKey : item}];
 

@@ -19,7 +19,6 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		E0C09C29289C729D00E6977E /* FLTQuickActionsPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */; };
 		E0C09C32289DBFCA00E6977E /* FLTShortcutStateManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C09C31289DBFCA00E6977E /* FLTShortcutStateManagerTests.m */; };
-		E0C09C35289DC23300E6977E /* Fixtures.m in Sources */ = {isa = PBXBuildFile; fileRef = E0C09C34289DC23300E6977E /* Fixtures.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,8 +78,6 @@
 		C35AD3650AB6BF850E016715 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLTQuickActionsPluginTests.m; sourceTree = "<group>"; };
 		E0C09C31289DBFCA00E6977E /* FLTShortcutStateManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLTShortcutStateManagerTests.m; sourceTree = "<group>"; };
-		E0C09C33289DC23300E6977E /* Fixtures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fixtures.h; sourceTree = "<group>"; };
-		E0C09C34289DC23300E6977E /* Fixtures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Fixtures.m; sourceTree = "<group>"; };
 		F0609304FBCAEC2289164BD5 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,8 +114,6 @@
 				33E20B3626EFCDFC00A4A191 /* Info.plist */,
 				E0C09C31289DBFCA00E6977E /* FLTShortcutStateManagerTests.m */,
 				E0C09C28289C729D00E6977E /* FLTQuickActionsPluginTests.m */,
-				E0C09C33289DC23300E6977E /* Fixtures.h */,
-				E0C09C34289DC23300E6977E /* Fixtures.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -422,7 +417,6 @@
 			files = (
 				E0C09C32289DBFCA00E6977E /* FLTShortcutStateManagerTests.m in Sources */,
 				E0C09C29289C729D00E6977E /* FLTQuickActionsPluginTests.m in Sources */,
-				E0C09C35289DC23300E6977E /* Fixtures.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
