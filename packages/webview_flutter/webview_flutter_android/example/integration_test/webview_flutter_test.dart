@@ -83,7 +83,7 @@ Future<void> main() async {
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      final Completer<void> pageFinishedCompleter = Completer<void>();
+      final StreamController<String> pageLoads = StreamController<String>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -93,16 +93,19 @@ Future<void> main() async {
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
-            onPageFinished: pageFinishedCompleter.complete,
+            onPageFinished: (String url) {
+              pageLoads.add(url);
+            },
           ),
         ),
       );
       final WebViewController controller = await controllerCompleter.future;
-      await controller.loadUrl(secondaryUrl);
-      await pageFinishedCompleter.future;
 
-      final String? currentUrl = await controller.currentUrl();
-      expect(currentUrl, secondaryUrl);
+      await controller.loadUrl(secondaryUrl);
+      await expectLater(
+        pageLoads.stream.firstWhere((String url) => url == secondaryUrl),
+        completion(secondaryUrl),
+      );
     },
   );
 
