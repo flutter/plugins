@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
@@ -21,8 +20,6 @@ void main() {
 
   runApp(_MyApp());
 }
-
-const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
@@ -261,17 +258,17 @@ class _MyAppState extends State<_MyApp> {
                 : TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.green[800],
+                      // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+                      // ignore: deprecated_member_use
                       primary: Colors.white,
                     ),
                     onPressed: () {
                       final PurchaseParam purchaseParam = PurchaseParam(
                         productDetails: productDetails,
-                        applicationUserName: null,
                       );
                       if (productDetails.id == _kConsumableId) {
                         _iapStoreKitPlatform.buyConsumable(
-                            purchaseParam: purchaseParam,
-                            autoConsume: _kAutoConsume || Platform.isIOS);
+                            purchaseParam: purchaseParam);
                       } else {
                         _iapStoreKitPlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);
@@ -333,12 +330,13 @@ class _MyAppState extends State<_MyApp> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
+              // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
+              // ignore: deprecated_member_use
               primary: Colors.white,
             ),
             onPressed: () => _iapStoreKitPlatform.restorePurchases(),

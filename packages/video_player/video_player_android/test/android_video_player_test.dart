@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
+// ignore: unnecessary_import
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -259,6 +261,20 @@ void main() {
                     'flutter.io/videoPlayer/videoEvents123',
                     const StandardMethodCodec()
                         .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'initialized',
+                      'duration': 98765,
+                      'width': 1920,
+                      'height': 1080,
+                      'rotationCorrection': 180,
+                    }),
+                    (ByteData? data) {});
+
+            await _ambiguate(ServicesBinding.instance)
+                ?.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    'flutter.io/videoPlayer/videoEvents123',
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
                       'event': 'completed',
                     }),
                     (ByteData? data) {});
@@ -312,13 +328,20 @@ void main() {
               eventType: VideoEventType.initialized,
               duration: const Duration(milliseconds: 98765),
               size: const Size(1920, 1080),
+              rotationCorrection: 0,
+            ),
+            VideoEvent(
+              eventType: VideoEventType.initialized,
+              duration: const Duration(milliseconds: 98765),
+              size: const Size(1920, 1080),
+              rotationCorrection: 180,
             ),
             VideoEvent(eventType: VideoEventType.completed),
             VideoEvent(
                 eventType: VideoEventType.bufferingUpdate,
                 buffered: <DurationRange>[
                   DurationRange(
-                    const Duration(milliseconds: 0),
+                    const Duration(),
                     const Duration(milliseconds: 1234),
                   ),
                   DurationRange(

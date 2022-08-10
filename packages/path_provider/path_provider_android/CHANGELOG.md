@@ -1,7 +1,19 @@
-## 2.0.15
+## 2.0.18
 
 * Bumps `androidx.annotation:annotation` version to 1.4.0.
 * Bumps gradle version to 7.2.2.
+
+## 2.0.17
+
+* Lower minimim version back to 2.8.1.
+
+## 2.0.16
+
+* Fixes bug with `getExternalStoragePaths(null)`.
+
+## 2.0.15
+
+* Switches the medium from MethodChannels to Pigeon.
 
 ## 2.0.14
 

@@ -1,5 +1,11 @@
-## NEXT
+## 5.1.4
 
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
+
+## 5.1.3
+
+* Updates references to the obsolete master branch.
 * Removes unnecessary imports.
 
 ## 5.1.2

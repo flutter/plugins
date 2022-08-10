@@ -1,3 +1,12 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.0.11
+
+* Updates references to the obsolete master branch.
+* Fixes integration test permission issue on recent versions of macOS.
+
 ## 2.0.10
 
 * Removes unnecessary imports.

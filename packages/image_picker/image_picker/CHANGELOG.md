@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 0.8.5+3
 
 * Adds argument error assertions to the app-facing package, to ensure

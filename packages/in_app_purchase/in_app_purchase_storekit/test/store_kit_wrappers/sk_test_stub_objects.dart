@@ -19,7 +19,6 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
     SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,
   payment: dummyPayment,
-  originalTransaction: null,
   transactionTimeStamp: 1231231231.00,
   transactionIdentifier: '123123',
   error: dummyError,

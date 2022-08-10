@@ -21,7 +21,7 @@ class PolylineId extends MapsObjectId<Polyline> {
 
 /// Draws a line through geographical locations on the map.
 @immutable
-class Polyline implements MapsObject {
+class Polyline implements MapsObject<Polyline> {
   /// Creates an immutable object representing a line drawn through geographical locations on the map.
   const Polyline({
     required this.polylineId,
@@ -150,6 +150,7 @@ class Polyline implements MapsObject {
 
   /// Creates a new [Polyline] object whose values are the same as this
   /// instance.
+  @override
   Polyline clone() {
     return copyWith(
       patternsParam: List<PatternItem>.of(patterns),
@@ -158,6 +159,7 @@ class Polyline implements MapsObject {
   }
 
   /// Converts this object to something serializable in JSON.
+  @override
   Object toJson() {
     final Map<String, Object> json = <String, Object>{};
 
@@ -191,21 +193,25 @@ class Polyline implements MapsObject {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final Polyline typedOther = other as Polyline;
-    return polylineId == typedOther.polylineId &&
-        consumeTapEvents == typedOther.consumeTapEvents &&
-        color == typedOther.color &&
-        geodesic == typedOther.geodesic &&
-        jointType == typedOther.jointType &&
-        listEquals(patterns, typedOther.patterns) &&
-        listEquals(points, typedOther.points) &&
-        startCap == typedOther.startCap &&
-        endCap == typedOther.endCap &&
-        visible == typedOther.visible &&
-        width == typedOther.width &&
-        zIndex == typedOther.zIndex;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is Polyline &&
+        polylineId == other.polylineId &&
+        consumeTapEvents == other.consumeTapEvents &&
+        color == other.color &&
+        geodesic == other.geodesic &&
+        jointType == other.jointType &&
+        listEquals(patterns, other.patterns) &&
+        listEquals(points, other.points) &&
+        startCap == other.startCap &&
+        endCap == other.endCap &&
+        visible == other.visible &&
+        width == other.width &&
+        zIndex == other.zIndex;
   }
 
   @override

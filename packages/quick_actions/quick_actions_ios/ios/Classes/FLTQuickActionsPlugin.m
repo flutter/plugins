@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "FLTQuickActionsPlugin.h"
+#import "FLTQuickActionsPlugin_Test.h"
 
 static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
-@property(nonatomic, retain) NSString *shortcutType;
 @end
 
 @implementation FLTQuickActionsPlugin
@@ -17,10 +17,16 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kChannelName
                                   binaryMessenger:[registrar messenger]];
-  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
-  instance.channel = channel;
+  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] initWithChannel:channel];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
+}
+
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
+  if ((self = [super init])) {
+    _channel = channel;
+  }
+  return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -58,7 +64,7 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
     // Keep hold of the shortcut type and handle it in the
     // `applicationDidBecomeActure:` method once the Dart MethodChannel
     // is initialized.
-    self.shortcutType = shortcutItem.type;
+    self.launchingShortcutType = shortcutItem.type;
 
     // Return NO to indicate we handled the quick action to ensure
     // the `application:performActionFor:` method is not called (as
@@ -70,9 +76,9 @@ static NSString *const kChannelName = @"plugins.flutter.io/quick_actions_ios";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (self.shortcutType) {
-    [self handleShortcut:self.shortcutType];
-    self.shortcutType = nil;
+  if (self.launchingShortcutType) {
+    [self handleShortcut:self.launchingShortcutType];
+    self.launchingShortcutType = nil;
   }
 }
 

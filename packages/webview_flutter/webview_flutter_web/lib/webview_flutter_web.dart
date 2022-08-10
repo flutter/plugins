@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -183,7 +184,11 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     String? baseUrl,
   }) async {
     // ignore: unsafe_html
-    _element.src = 'data:text/html,${Uri.encodeFull(html)}';
+    _element.src = Uri.dataFromString(
+      html,
+      mimeType: 'text/html',
+      encoding: utf8,
+    ).toString();
   }
 
   @override
@@ -199,8 +204,11 @@ class WebWebViewPlatformController implements WebViewPlatformController {
     final String contentType =
         httpReq.getResponseHeader('content-type') ?? 'text/html';
     // ignore: unsafe_html
-    _element.src =
-        'data:$contentType,${Uri.encodeFull(httpReq.responseText ?? '')}';
+    _element.src = Uri.dataFromString(
+      httpReq.responseText ?? '',
+      mimeType: contentType,
+      encoding: utf8,
+    ).toString();
   }
 
   @override

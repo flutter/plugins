@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:7.2.1'
     }
 }
 
@@ -34,8 +34,8 @@ android {
     }
 
     dependencies {
-        testImplementation 'junit:junit:4.12'
-        testImplementation 'org.mockito:mockito-core:3.2.4'
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.mockito:mockito-core:4.6.1'
     }
 
     compileOptions {

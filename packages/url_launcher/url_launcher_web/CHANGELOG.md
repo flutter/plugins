@@ -1,3 +1,14 @@
+## 2.0.13
+
+* Updates `url_launcher_platform_interface` constraint to the correct minimum
+  version.
+
+## 2.0.12
+
+* Fixes call to `setState` after dispose on the `Link` widget.
+[Issue](https://github.com/flutter/flutter/issues/102741).
+* Removes unused `BuildContext` from the `LinkViewController`.
+
 ## 2.0.11
 
 * Minor fixes for new analysis options.
