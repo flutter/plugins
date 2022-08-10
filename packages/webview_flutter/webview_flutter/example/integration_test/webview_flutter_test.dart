@@ -1256,9 +1256,19 @@ Future<void> main() async {
       await controller.clearCache();
       await pageLoadCompleter.future;
 
-      final String nullItem = await controller.runJavascriptReturningResult(
-        'localStorage.getItem("myCat");',
-      );
+      late final String? nullItem;
+      try {
+        nullItem = await controller.runJavascriptReturningResult(
+          'localStorage.getItem("myCat");',
+        );
+      } catch (exception) {
+        if (defaultTargetPlatform == TargetPlatform.iOS &&
+            exception is ArgumentError &&
+            (exception.message as String).contains(
+                'Result of JavaScript execution returned a `null` value.')) {
+          nullItem = '<null>';
+        }
+      }
       expect(nullItem, _webviewNull());
     },
   );
