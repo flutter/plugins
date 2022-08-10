@@ -1248,7 +1248,7 @@ Future<void> main() async {
       final String myCatItem = await controller.runJavascriptReturningResult(
         'localStorage.getItem("myCat");',
       );
-      expect(myCatItem, '"Tom"');
+      expect(myCatItem, _webviewString('Tom'));
 
       await controller.clearCache();
       await pageLoadCompleter.future;
