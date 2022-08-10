@@ -1216,7 +1216,7 @@ Future<void> main() async {
       expect(controller.canGoBack(), completion(true));
       await controller.goBack();
       await pageLoaded.future;
-      expect(controller.currentUrl(), completion(primaryUrl));
+      await expectLater(controller.currentUrl(), completion(primaryUrl));
     },
   );
 
