@@ -53,6 +53,7 @@ Future<void> main() async {
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
+      final Completer<void> pageFinishedCompleter = Completer<void>();
       await tester.pumpWidget(
         MaterialApp(
           home: Directionality(
@@ -63,11 +64,15 @@ Future<void> main() async {
               onWebViewCreated: (WebViewController controller) {
                 controllerCompleter.complete(controller);
               },
+              onPageFinished: pageFinishedCompleter.complete,
             ),
           ),
         ),
       );
+
       final WebViewController controller = await controllerCompleter.future;
+      await pageFinishedCompleter.future;
+
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, primaryUrl);
     },
@@ -78,6 +83,7 @@ Future<void> main() async {
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
+      final Completer<void> pageFinishedCompleter = Completer<void>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -87,11 +93,14 @@ Future<void> main() async {
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
+            onPageFinished: pageFinishedCompleter.complete,
           ),
         ),
       );
       final WebViewController controller = await controllerCompleter.future;
       await controller.loadUrl(secondaryUrl);
+      await pageFinishedCompleter.future;
+
       final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, secondaryUrl);
     },
@@ -168,7 +177,7 @@ Future<void> main() async {
           Completer<WebViewController>();
       final Completer<void> pageStarted = Completer<void>();
       final Completer<void> pageLoaded = Completer<void>();
-      final List<String> messagesReceived = <String>[];
+      final Completer<String> channelCompleter = Completer<String>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -185,8 +194,7 @@ Future<void> main() async {
               JavascriptChannel(
                 name: 'Echo',
                 onMessageReceived: (JavascriptMessage message) {
-                  print('Message received later');
-                  messagesReceived.add(message.message);
+                  channelCompleter.complete(message.message);
                 },
               ),
             },
@@ -203,9 +211,10 @@ Future<void> main() async {
       await pageStarted.future;
       await pageLoaded.future;
 
-      expect(messagesReceived, isEmpty);
+      expect(channelCompleter.isCompleted, isFalse);
       await controller.runJavascript('Echo.postMessage("hello");');
-      expect(messagesReceived, equals(<String>['hello']));
+
+      await expectLater(channelCompleter.future, completion('hello'));
     },
   );
 

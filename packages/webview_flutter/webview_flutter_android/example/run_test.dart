@@ -2,7 +2,7 @@ import 'dart:io';
 
 final Map<String, int> failedTests = <String, int>{};
 
-const int runCount = 2;
+const int runCount = 5;
 
 void main() async {
   for (int i = 0; i < runCount; i++) {
