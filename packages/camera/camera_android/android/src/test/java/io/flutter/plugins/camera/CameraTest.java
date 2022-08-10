@@ -856,7 +856,7 @@ public class CameraTest {
     camera.stopBackgroundThread();
 
     verify(mockHandlerThread).quitSafely();
-    verify(mockHandlerThread).join();
+    verify(mockHandlerThread, never()).join();
   }
 
   @Test
