@@ -44,9 +44,19 @@ abstract class PlatformInterface {
   /// derived classes.
   ///
   /// @param token The same, non-`const` `Object` that will be passed to `verify`.
-  PlatformInterface({required Object token}) : _instanceToken = token;
+  PlatformInterface({required Object token}) {
+    _instanceTokens[this] = token;
+  }
 
-  final Object? _instanceToken;
+  /// Expando mapping instances of PlatformInterface to their associated tokens.
+  /// The reason we don't simply use a private field of type `Object?` is
+  /// because as part of implementing
+  /// https://github.com/dart-lang/language/issues/2020, it will soon become a
+  /// runtime error to invoke a private member that is mocked in another
+  /// library.  By using an expando rather than an instance field, we ensure
+  /// that we will be able to reliably detect implementations using `implements`
+  /// rather than `extends`.
+  static final Expando<Object> _instanceTokens = Expando<Object>();
 
   /// Ensures that the platform instance was constructed with a non-`const` token
   /// that matches the provided token and throws [AssertionError] if not.
@@ -89,10 +99,10 @@ abstract class PlatformInterface {
       return;
     }
     if (preventConstObject &&
-        identical(instance._instanceToken, const Object())) {
+        identical(_instanceTokens[instance], const Object())) {
       throw AssertionError('`const Object()` cannot be used as the token.');
     }
-    if (!identical(token, instance._instanceToken)) {
+    if (!identical(token, _instanceTokens[instance])) {
       throw AssertionError(
           'Platform interfaces must not be implemented with `implements`');
     }
