@@ -1,3 +1,8 @@
+## 2.0.15
+
+* Bumps `androidx.annotation:annotation` version to 1.4.0.
+* Bumps gradle version to 7.2.2.
+
 ## 2.0.14
 
 * Fixes library_private_types_in_public_api, sort_child_properties_last and use_key_in_widget_constructors
