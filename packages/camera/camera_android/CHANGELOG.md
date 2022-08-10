@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Removes call to `join` on the camera's background `HandlerThread`.
+
 ## 0.10.0+1
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
