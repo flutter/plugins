@@ -1409,7 +1409,9 @@ Future<void> main() async {
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      final Completer<void> onPageFinished = Completer<void>();
+
+      Completer<void> pageLoadCompleter = Completer<void>();
+
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -1417,7 +1419,7 @@ Future<void> main() async {
             key: GlobalKey(),
             initialUrl: primaryUrl,
             javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (_) => onPageFinished.complete(),
+            onPageFinished: (_) => pageLoadCompleter.complete(),
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
@@ -1425,17 +1427,19 @@ Future<void> main() async {
         ),
       );
 
+      await pageLoadCompleter.future;
+      pageLoadCompleter = Completer<void>();
+
       final WebViewController controller = await controllerCompleter.future;
-      await onPageFinished.future;
-
       await controller.runJavascript('localStorage.setItem("myCat", "Tom");');
-
       final String myCatItem = await controller.runJavascriptReturningResult(
         'localStorage.getItem("myCat");',
       );
       expect(myCatItem, '"Tom"');
 
       await controller.clearCache();
+      await pageLoadCompleter.future;
+
       final String nullItem = await controller.runJavascriptReturningResult(
         'localStorage.getItem("myCat");',
       );
