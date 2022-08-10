@@ -677,11 +677,6 @@ class Camera
     if (backgroundHandlerThread != null) {
       stoppingBackgroundHandlerThread = true;
       backgroundHandlerThread.quitSafely();
-      try {
-        backgroundHandlerThread.join();
-      } catch (InterruptedException e) {
-        dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
-      }
     }
     backgroundHandlerThread = null;
     backgroundHandler = null;
