@@ -1,6 +1,6 @@
 ## 6.0.2
 
-* Corrects typos in plugin error logs.
+* Corrects typos in plugin error logs and removes not actionable warnings.
 
 ## 6.0.1
 
