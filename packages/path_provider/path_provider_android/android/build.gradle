@@ -2,6 +2,7 @@ group 'io.flutter.plugins.pathprovider'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext.kotlin_version = '1.7.10'
     repositories {
         google()
         mavenCentral()
