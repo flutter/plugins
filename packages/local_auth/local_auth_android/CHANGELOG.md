@@ -1,3 +1,16 @@
+## 1.0.11
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 1.0.10
+
+* Updates `local_auth_platform_interface` constraint to the correct minimum
+  version.
+
+## 1.0.9
+
+* Updates  androidx.fragment version to 1.5.1.
+
 ## 1.0.8
 
 * Removes usages of `FingerprintManager` and other `BiometricManager` deprecated method usages.

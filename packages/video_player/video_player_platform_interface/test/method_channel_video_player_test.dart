@@ -8,7 +8,7 @@ import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_platform_interface/messages.g.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
@@ -345,7 +345,7 @@ void main() {
                 eventType: VideoEventType.bufferingUpdate,
                 buffered: <DurationRange>[
                   DurationRange(
-                    const Duration(milliseconds: 0),
+                    const Duration(),
                     const Duration(milliseconds: 1234),
                   ),
                   DurationRange(
