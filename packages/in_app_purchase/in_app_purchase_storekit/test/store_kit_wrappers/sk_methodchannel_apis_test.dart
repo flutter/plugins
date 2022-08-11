@@ -222,7 +222,7 @@ class FakeStoreKitPlatform {
       case '-[InAppPurchasePlugin startProductRequest:result:]':
         startProductRequestParam = call.arguments as List<dynamic>;
         if (getProductRequestFailTest) {
-          return Future<dynamic>.value(null);
+          return Future<dynamic>.value();
         }
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(dummyProductResponseWrapper));
@@ -240,7 +240,7 @@ class FakeStoreKitPlatform {
       // payment queue
       case '-[SKPaymentQueue canMakePayments:]':
         if (testReturnNull) {
-          return Future<dynamic>.value(null);
+          return Future<dynamic>.value();
         }
         return Future<bool>.value(true);
       case '-[SKPaymentQueue transactions]':

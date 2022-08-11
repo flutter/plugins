@@ -1,3 +1,12 @@
+## 2.0.19
+
+* Bumps kotlin to 1.7.10
+
+## 2.0.18
+
+* Bumps `androidx.annotation:annotation` version to 1.4.0.
+* Bumps gradle version to 7.2.2.
+
 ## 2.0.17
 
 * Lower minimim version back to 2.8.1.

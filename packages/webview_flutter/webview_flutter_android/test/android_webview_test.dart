@@ -134,7 +134,7 @@ void main() {
       });
 
       test('loadData with null values', () {
-        webView.loadData(data: 'hello', mimeType: null, encoding: null);
+        webView.loadData(data: 'hello');
         verify(mockPlatformHostApi.loadData(
           webViewInstanceId,
           'hello',

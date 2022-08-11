@@ -1,6 +1,11 @@
-## 2.9.4
+## 2.9.5
 
 * Adds dispose methods for HostApi and FlutterApi of JavaObject.
+
+## 2.9.4
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Bumps gradle from 7.2.1 to 7.2.2.
 
 ## 2.9.3
 

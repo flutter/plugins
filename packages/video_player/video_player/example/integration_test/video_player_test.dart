@@ -49,7 +49,7 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(_controller.value.position, const Duration(seconds: 0));
+      expect(_controller.value.position, const Duration());
       expect(_controller.value.isPlaying, false);
       // The WebM version has a slightly different duration than the MP4.
       expect(_controller.value.duration,
@@ -87,7 +87,7 @@ void main() {
 
         expect(_controller.value.isPlaying, true);
         expect(_controller.value.position,
-            (Duration position) => position > const Duration(seconds: 0));
+            (Duration position) => position > const Duration());
       },
     );
 
@@ -177,7 +177,6 @@ void main() {
       }
 
       await tester.pumpWidget(Material(
-        elevation: 0,
         child: Directionality(
           textDirection: TextDirection.ltr,
           child: Center(
@@ -265,7 +264,7 @@ void main() {
 
         expect(_controller.value.isPlaying, false);
         expect(_controller.value.position,
-            (Duration position) => position > const Duration(seconds: 0));
+            (Duration position) => position > const Duration());
 
         await expectLater(started.future, completes);
         await expectLater(ended.future, completes);
@@ -285,9 +284,9 @@ void main() {
       await _controller.initialize();
 
       expect(_controller.value.isInitialized, true);
-      expect(_controller.value.position, const Duration(seconds: 0));
+      expect(_controller.value.position, const Duration());
       expect(_controller.value.isPlaying, false);
-      // Due to the duration calculation accurancy between platforms,
+      // Due to the duration calculation accuracy between platforms,
       // the milliseconds on Web will be a slightly different from natives.
       // The audio was made with 44100 Hz, 192 Kbps CBR, and 32 bits.
       expect(
@@ -308,7 +307,7 @@ void main() {
       expect(_controller.value.isPlaying, true);
       expect(
         _controller.value.position,
-        (Duration position) => position > const Duration(milliseconds: 0),
+        (Duration position) => position > const Duration(),
       );
     });
 

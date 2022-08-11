@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 2.2.1
 
 * Adds a new interface for inspecting the platform map state in tests.

@@ -29,7 +29,6 @@ import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldSetter;
 
 public class QuickActionsTest {
   private static class TestBinaryMessenger implements BinaryMessenger {
@@ -79,10 +78,9 @@ public class QuickActionsTest {
     final QuickActionsPlugin plugin = new QuickActionsPlugin();
     setUpMessengerAndFlutterPluginBinding(testBinaryMessenger, plugin);
     setBuildVersion(SUPPORTED_BUILD);
-    FieldSetter.setField(
-        plugin,
-        QuickActionsPlugin.class.getDeclaredField("handler"),
-        mock(MethodCallHandlerImpl.class));
+    Field handler = plugin.getClass().getDeclaredField("handler");
+    handler.setAccessible(true);
+    handler.set(plugin, mock(MethodCallHandlerImpl.class));
     final Intent mockIntent = createMockIntentWithQuickActionExtra();
     final Activity mockMainActivity = mock(Activity.class);
     when(mockMainActivity.getIntent()).thenReturn(mockIntent);
