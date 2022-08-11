@@ -56,7 +56,7 @@ class WebKitWebViewController extends PlatformWebViewController {
         NSObject object,
         Map<NSKeyValueChangeKey, Object?> change,
       ) {
-        if (weakThis.target != null && _onProgress != null) {
+        if (weakThis.target?._onProgress != null) {
           final double progress =
               change[NSKeyValueChangeKey.newValue]! as double;
           weakThis.target!._onProgress!((progress * 100).round());
