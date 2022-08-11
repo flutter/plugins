@@ -1,4 +1,4 @@
-## 5.4.1
+## 5.5.0
 
 * Adds override for `GoogleSignInPlatform.initWithParams`.
 

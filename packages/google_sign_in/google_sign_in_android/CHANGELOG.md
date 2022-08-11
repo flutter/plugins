@@ -1,4 +1,4 @@
-## 6.0.2
+## 6.1.0
 
 * Adds override for `GoogleSignIn.initWithParams` to handle new `forceCodeForRefreshToken` parameter.
 
