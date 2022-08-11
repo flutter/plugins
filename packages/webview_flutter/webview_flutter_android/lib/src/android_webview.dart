@@ -12,8 +12,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
 import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
