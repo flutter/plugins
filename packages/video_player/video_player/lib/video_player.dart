@@ -14,7 +14,12 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 import 'src/closed_caption_file.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
+    show
+        DurationRange,
+        DataSourceType,
+        Resolution,
+        VideoFormat,
+        VideoPlayerOptions;
 
 export 'src/closed_caption_file.dart';
 
@@ -118,7 +123,7 @@ class VideoPlayerValue {
   final int rotationCorrection;
 
   /// The [maxVideoResolution] of the currently loaded video.
-  final Size? maxVideoResolution;
+  final Resolution? maxVideoResolution;
 
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
@@ -161,7 +166,7 @@ class VideoPlayerValue {
     double? playbackSpeed,
     int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
-    Size? maxVideoResolution,
+    Resolution? maxVideoResolution,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -561,9 +566,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
 
+    // If we haven't set a max video resolution we won't do anything
+    if (value.maxVideoResolution == null) {
+      return;
+    }
+
     await _videoPlayerPlatform.setMaxVideoResolution(
       _textureId,
-      value.maxVideoResolution,
+      value.maxVideoResolution!,
     );
   }
 

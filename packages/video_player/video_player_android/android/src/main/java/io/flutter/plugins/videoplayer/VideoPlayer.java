@@ -283,9 +283,9 @@ final class VideoPlayer {
         exoPlayer.setPlaybackParameters(playbackParameters);
     }
 
-    void setMaxVideoResolution(int width, int height) {
+    void setMaxVideoResolution(long width, long height) {
         final DefaultTrackSelector.Parameters.Builder params = trackSelector.buildUponParameters()
-                .setMaxVideoSize(width, height);
+                .setMaxVideoSize((int)width, (int)height);
         trackSelector.setParameters(params);
     }
 

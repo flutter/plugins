@@ -4,8 +4,6 @@
 
 import 'package:pigeon/pigeon.dart';
 
-import '../lib/src/messages.g.dart';
-
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/src/messages.g.dart',
   dartTestOut: 'test/test_api.dart',
