@@ -4,7 +4,6 @@
 
 @import Flutter;
 @import quick_actions_ios;
-@import quick_actions_ios.Test;
 @import XCTest;
 #import <OCMock/OCMock.h>
 
