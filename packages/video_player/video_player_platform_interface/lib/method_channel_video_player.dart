@@ -88,6 +88,17 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setMaxVideoResolution(int textureId, Resolution resolution) {
+    assert(resolution.width > 0);
+    assert(resolution.height > 0);
+
+    return _api.setMaxVideoResolution(MaxVideoResolutionMessage()
+      ..textureId = textureId
+      ..width = resolution.width
+      ..height = resolution.height);
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage()
       ..textureId = textureId

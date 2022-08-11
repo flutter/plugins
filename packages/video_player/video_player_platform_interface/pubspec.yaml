@@ -5,6 +5,7 @@ issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 version: 5.1.4
+publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

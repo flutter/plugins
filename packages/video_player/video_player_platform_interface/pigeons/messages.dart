@@ -6,8 +6,6 @@
 
 import 'package:pigeon/pigeon_lib.dart';
 
-import 'messages.dart';
-
 class TextureMessage {
   int textureId;
 }

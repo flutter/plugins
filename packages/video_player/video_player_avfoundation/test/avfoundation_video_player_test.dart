@@ -233,7 +233,7 @@ void main() {
 
       await player.setMaxVideoResolution(1, const Resolution(width, height));
       expect(log.log.last, 'setMaxVideoResolution');
-      expect(log.playbackSpeedMessage?.textureId, textureId);
+      expect(log.maxVideoResolutionMessage?.textureId, textureId);
       expect(log.maxVideoResolutionMessage?.width, width);
       expect(log.maxVideoResolutionMessage?.height, height);
     });
