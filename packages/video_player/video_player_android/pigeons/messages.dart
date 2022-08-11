@@ -4,6 +4,8 @@
 
 import 'package:pigeon/pigeon.dart';
 
+import '../lib/src/messages.g.dart';
+
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/src/messages.g.dart',
   dartTestOut: 'test/test_api.dart',
@@ -36,6 +38,13 @@ class PlaybackSpeedMessage {
   double speed;
 }
 
+class MaxVideoResolutionMessage {
+  MaxVideoResolutionMessage(this.textureId, this.width, this.height);
+  int textureId;
+  int width;
+  int height;
+}
+
 class PositionMessage {
   PositionMessage(this.textureId, this.position);
   int textureId;
@@ -64,6 +73,7 @@ abstract class AndroidVideoPlayerApi {
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  void setMaxVideoResolution(MaxVideoResolutionMessage msg);
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);

@@ -6,6 +6,8 @@
 
 import 'package:pigeon/pigeon_lib.dart';
 
+import 'messages.dart';
+
 class TextureMessage {
   int textureId;
 }
@@ -23,6 +25,12 @@ class VolumeMessage {
 class PlaybackSpeedMessage {
   int textureId;
   double speed;
+}
+
+class MaxVideoResolutionMessage {
+  int textureId;
+  int width;
+  int height;
 }
 
 class PositionMessage {
@@ -50,6 +58,7 @@ abstract class VideoPlayerApi {
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  void setMaxVideoResolution(MaxVideoResolutionMessage msg);
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);

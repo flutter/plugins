@@ -12,6 +12,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player_platform_interface/messages.g.dart';
 
+import '../pigeons/messages.dart';
+
 abstract class TestHostVideoPlayerApi {
   void initialize();
   TextureMessage create(CreateMessage arg);
@@ -19,6 +21,7 @@ abstract class TestHostVideoPlayerApi {
   void setLooping(LoopingMessage arg);
   void setVolume(VolumeMessage arg);
   void setPlaybackSpeed(PlaybackSpeedMessage arg);
+  void setMaxVideoResolution(MaxVideoResolutionMessage arg);
   void play(TextureMessage arg);
   PositionMessage position(TextureMessage arg);
   void seekTo(PositionMessage arg);

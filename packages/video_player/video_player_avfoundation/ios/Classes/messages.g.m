@@ -49,6 +49,10 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 + (FLTPlaybackSpeedMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@interface FLTMaxVideoResolutionMessage ()
++ (FLTMaxVideoResolutionMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 @interface FLTPositionMessage ()
 + (FLTPositionMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
@@ -145,6 +149,32 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   return [NSDictionary
       dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId",
                                    (self.speed ? self.speed : [NSNull null]), @"speed", nil];
+}
+@end
+
+@implementation FLTMaxVideoResolutionMessage
++ (instancetype)makeWithTextureId:(NSNumber *)textureId width:(NSNumber *)width height:(NSNumber *)height {
+  FLTMaxVideoResolutionMessage *pigeonResult = [[FLTMaxVideoResolutionMessage alloc] init];
+  pigeonResult.textureId = textureId;
+  pigeonResult.width = width;
+  pigeonResult.height = height;
+  return pigeonResult;
+}
++ (FLTMaxVideoResolutionMessage *)fromMap:(NSDictionary *)dict {
+  FLTMaxVideoResolutionMessage *pigeonResult = [[FLTMaxVideoResolutionMessage alloc] init];
+  pigeonResult.textureId = GetNullableObject(dict, @"textureId");
+  NSAssert(pigeonResult.textureId != nil, @"");
+  pigeonResult.width = GetNullableObject(dict, @"width");
+  pigeonResult.height = GetNullableObject(dict, @"height");
+  NSAssert(pigeonResult.width != nil, @"");
+  NSAssert(pigeonResult.height != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary
+      dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId",
+                                   (self.width ? self.width : [NSNull null]), @"width",
+                                   (self.height ? self.height : [NSNull null]), @"height", nil];
 }
 @end
 
@@ -275,14 +305,17 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   } else if ([value isKindOfClass:[FLTPlaybackSpeedMessage class]]) {
     [self writeByte:131];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTPositionMessage class]]) {
+  } else if ([value isKindOfClass:[FLTMaxVideoResolutionMessage class]]) {
     [self writeByte:132];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTTextureMessage class]]) {
+  } else if ([value isKindOfClass:[FLTPositionMessage class]]) {
     [self writeByte:133];
     [self writeValue:[value toMap]];
-  } else if ([value isKindOfClass:[FLTVolumeMessage class]]) {
+  } else if ([value isKindOfClass:[FLTTextureMessage class]]) {
     [self writeByte:134];
+    [self writeValue:[value toMap]];
+  } else if ([value isKindOfClass:[FLTVolumeMessage class]]) {
+    [self writeByte:135];
     [self writeValue:[value toMap]];
   } else {
     [super writeValue:value];
@@ -437,6 +470,27 @@ void FLTAVFoundationVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMesseng
       [channel setMessageHandler:nil];
     }
   }
+  {
+      FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
+             initWithName:@"dev.flutter.pigeon.AVFoundationVideoPlayerApi.setMaxVideoResolution"
+          binaryMessenger:binaryMessenger
+                    codec:FLTAVFoundationVideoPlayerApiGetCodec()];
+      if (api) {
+        NSCAssert([api respondsToSelector:@selector(setMaxVideoResolution:error:)],
+                  @"FLTAVFoundationVideoPlayerApi api (%@) doesn't respond to "
+                  @"@selector(setMaxVideoResolution:error:)",
+                  api);
+        [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+          NSArray *args = message;
+          FLTMaxVideoResolutionMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
+          FlutterError *error;
+          [api setMaxVideoResolution:arg_msg error:&error];
+          callback(wrapResult(nil, error));
+        }];
+      } else {
+        [channel setMessageHandler:nil];
+      }
+    }
   {
     FlutterBasicMessageChannel *channel = [[FlutterBasicMessageChannel alloc]
            initWithName:@"dev.flutter.pigeon.AVFoundationVideoPlayerApi.play"

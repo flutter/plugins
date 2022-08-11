@@ -180,6 +180,11 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
     player.setPlaybackSpeed(arg.getSpeed());
   }
 
+  public void setMaxVideoResolution(MaxVideoResolutionMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    player.setMaxVideoResolution(arg.getWidth(), arg.getHeight());
+  }
+
   public void play(TextureMessage arg) {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
     player.play();

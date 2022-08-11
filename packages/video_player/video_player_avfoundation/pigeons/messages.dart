@@ -37,6 +37,13 @@ class PlaybackSpeedMessage {
   double speed;
 }
 
+class MaxVideoResolutionMessage {
+  MaxVideoResolutionMessage(this.textureId, this.width, this.height);
+  int textureId;
+  int width;
+  int height;
+}
+
 class PositionMessage {
   PositionMessage(this.textureId, this.position);
   int textureId;
@@ -71,6 +78,8 @@ abstract class AVFoundationVideoPlayerApi {
   void setVolume(VolumeMessage msg);
   @ObjCSelector('setPlaybackSpeed:')
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  @ObjCSelector('setMaxVideoResolution:')
+  void setMaxVideoResolution(MaxVideoResolutionMessage msg);
   @ObjCSelector('play:')
   void play(TextureMessage msg);
   @ObjCSelector('position:')

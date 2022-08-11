@@ -51,6 +51,7 @@ class VideoPlayerValue {
     this.playbackSpeed = 1.0,
     this.rotationCorrection = 0,
     this.errorDescription,
+    this.maxVideoResolution,
   });
 
   /// Returns an instance for a video that hasn't been loaded.
@@ -116,6 +117,9 @@ class VideoPlayerValue {
   /// Degrees to rotate the video (clockwise) so it is displayed correctly.
   final int rotationCorrection;
 
+  /// The [maxVideoResolution] of the currently loaded video.
+  final Size? maxVideoResolution;
+
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
@@ -157,6 +161,7 @@ class VideoPlayerValue {
     double? playbackSpeed,
     int? rotationCorrection,
     String? errorDescription = _defaultErrorDescription,
+    Size? maxVideoResolution,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -172,6 +177,7 @@ class VideoPlayerValue {
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
+      maxVideoResolution: maxVideoResolution ?? this.maxVideoResolution,
       errorDescription: errorDescription != _defaultErrorDescription
           ? errorDescription
           : this.errorDescription,
@@ -193,6 +199,7 @@ class VideoPlayerValue {
         'isBuffering: $isBuffering, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
+        'maxVideoResolution: $maxVideoResolution, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -506,6 +513,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       // playing back. This is necessary because we do not set playback speed
       // when paused.
       await _applyPlaybackSpeed();
+
+      // This ensures that the correct playback max video resolution is always applied when
+      // playing back. This is necessary because we do not set max video resolution
+      // when paused.
+      await _applyMaxVideoResolution();
     } else {
       _timer?.cancel();
       await _videoPlayerPlatform.pause(_textureId);
@@ -534,6 +546,24 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _videoPlayerPlatform.setPlaybackSpeed(
       _textureId,
       value.playbackSpeed,
+    );
+  }
+
+  Future<void> _applyMaxVideoResolution() async {
+    if (_isDisposedOrNotInitialized) {
+      return;
+    }
+
+    // Setting the playback speed on iOS will trigger the video to play. We
+    // prevent this from happening by not applying the playback speed until
+    // the video is manually played from Flutter.
+    if (!value.isPlaying) {
+      return;
+    }
+
+    await _videoPlayerPlatform.setMaxVideoResolution(
+      _textureId,
+      value.maxVideoResolution,
     );
   }
 
@@ -604,6 +634,27 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     value = value.copyWith(playbackSpeed: speed);
     await _applyPlaybackSpeed();
+  }
+
+  /// Sets the max video resolution of [this].
+  ///
+  /// The [resolution] will be used to set a maximum resolution value which will
+  /// allow the player to pick a different stream to play
+  Future<void> setMaxVideoResolution(Resolution resolution) async {
+    if (resolution.width <= 0) {
+      throw ArgumentError.value(
+        resolution.width,
+        'Non-positive resolution width is generally unsupported.',
+      );
+    } else if (resolution.height <= 0) {
+      throw ArgumentError.value(
+        resolution.height,
+        'Non-positive resolution height is generally unsupported.',
+      );
+    }
+
+    value = value.copyWith(maxVideoResolution: resolution);
+    await _applyMaxVideoResolution();
   }
 
   /// Sets the caption offset.

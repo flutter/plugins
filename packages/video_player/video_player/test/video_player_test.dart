@@ -52,6 +52,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setPlaybackSpeed(double speed) async {}
 
   @override
+  Future<void> setMaxVideoResolution(Resolution resolution) async {}
+
+  @override
   Future<void> initialize() async {}
 
   @override

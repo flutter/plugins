@@ -22,6 +22,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   LoopingMessage? loopingMessage;
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
+  MaxVideoResolutionMessage? maxVideoResolutionMessage;
   MixWithOthersMessage? mixWithOthersMessage;
 
   @override
@@ -89,6 +90,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setPlaybackSpeed(PlaybackSpeedMessage arg) {
     log.add('setPlaybackSpeed');
     playbackSpeedMessage = arg;
+  }
+
+  @override
+  void setMaxVideoResolution(MaxVideoResolutionMessage arg) {
+    log.add('setPlaybackSpeed');
+    maxVideoResolutionMessage = arg;
   }
 }
 

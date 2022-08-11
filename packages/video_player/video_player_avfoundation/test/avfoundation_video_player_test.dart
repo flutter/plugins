@@ -12,6 +12,7 @@ import 'package:video_player_avfoundation/src/messages.g.dart';
 import 'package:video_player_avfoundation/video_player_avfoundation.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
+import '../pigeons/messages.dart';
 import 'test_api.dart';
 
 class _ApiLogger implements TestHostVideoPlayerApi {
@@ -22,6 +23,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   LoopingMessage? loopingMessage;
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
+  MaxVideoResolutionMessage? maxVideoResolutionMessage;
   MixWithOthersMessage? mixWithOthersMessage;
 
   @override
@@ -89,6 +91,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setPlaybackSpeed(PlaybackSpeedMessage arg) {
     log.add('setPlaybackSpeed');
     playbackSpeedMessage = arg;
+  }
+
+  @override
+  void setMaxVideoResolution(MaxVideoResolutionMessage arg) {
+    log.add('setMaxVideoResolution');
+    maxVideoResolutionMessage = arg;
   }
 }
 

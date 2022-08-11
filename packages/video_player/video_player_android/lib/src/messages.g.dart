@@ -107,6 +107,35 @@ class PlaybackSpeedMessage {
   }
 }
 
+class MaxVideoResolutionMessage {
+  MaxVideoResolutionMessage({
+    required this.textureId,
+    required this.width,
+    required this.height,
+  });
+
+  int textureId;
+  double width;
+  double height;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['width'] = width;
+    pigeonMap['height'] = height;
+    return pigeonMap;
+  }
+
+  static MaxVideoResolutionMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return MaxVideoResolutionMessage(
+      textureId: pigeonMap['textureId']! as int,
+      speed: pigeonMap['width']! as int,
+      speed: pigeonMap['height']! as int,
+    );
+  }
+}
+
 class PositionMessage {
   PositionMessage({
     required this.textureId,
@@ -390,6 +419,30 @@ class AndroidVideoPlayerApi {
   Future<void> setPlaybackSpeed(PlaybackSpeedMessage arg_msg) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AndroidVideoPlayerApi.setPlaybackSpeed', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setMaxVideoResolution(MaxVideoResolutionMessage arg_msg) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AndroidVideoPlayerApi.setMaxVideoResolution', codec,
         binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_msg]) as Map<Object?, Object?>?;

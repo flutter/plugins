@@ -421,6 +421,10 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   _player.rate = speed;
 }
 
+- (void)setMaxVideoResolution:(int)width (int)height {
+  _player.currentItem.preferredMaximumResolution = CGSizeMake(width, height);
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -598,6 +602,11 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player setPlaybackSpeed:input.speed.doubleValue];
+}
+
+- (void)setMaxVideoResolution:(FLTMaxVideoResolutionMessage *)input error:(FlutterError **)error {
+  FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
+  [player setMaxVideoResolution:input.width.intValue, input.height.intValue];
 }
 
 - (void)play:(FLTTextureMessage *)input error:(FlutterError **)error {

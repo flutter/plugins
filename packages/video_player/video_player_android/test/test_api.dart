@@ -17,6 +17,8 @@ import 'package:flutter_test/flutter_test.dart';
 // TODO(gaaclarke): This had to be hand tweaked from a relative path.
 import 'package:video_player_android/src/messages.g.dart';
 
+import '../pigeons/messages.dart';
+
 class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
   const _TestHostVideoPlayerApiCodec();
   @override
@@ -86,6 +88,7 @@ abstract class TestHostVideoPlayerApi {
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  void setMaxVideoResolution(MaxVideoResolutionMessage msg);
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);

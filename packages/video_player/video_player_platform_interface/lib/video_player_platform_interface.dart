@@ -89,6 +89,13 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
   }
 
+  /// Sets the max video resolution to a [resolution] value allowing the player
+  /// to reproduce lwoer resolution streams.
+  Future<void> setMaxVideoResolution(int textureId, Resolution resolution) {
+    throw UnimplementedError(
+        'setMaxVideoResolution() has not been implemented.');
+  }
+
   /// Gets the video position as [Duration] from the start.
   Future<Duration> getPosition(int textureId) {
     throw UnimplementedError('getPosition() has not been implemented.');
@@ -103,6 +110,20 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+}
+
+/// The video resolution, the number of distinct pixels in each dimension that
+/// can be displayed
+@immutable
+class Resolution {
+  /// Creates a [Resolution] with the given [width] and [height].
+  const Resolution(this.width, this.height);
+
+  /// The horizontal extent of this size.
+  final int width;
+
+  /// The vertical extent of this size.
+  final int height;
 }
 
 /// Description of the data source used to create an instance of

@@ -111,6 +111,28 @@ class PlaybackSpeedMessage {
   }
 }
 
+class MaxVideoResolutionMessage {
+  int? textureId;
+  int? width;
+  int? height;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['width'] = width;
+    pigeonMap['height'] = height;
+    return pigeonMap;
+  }
+
+  static MaxVideoResolutionMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return MaxVideoResolutionMessage()
+      ..textureId = pigeonMap['textureId'] as int?
+      ..width = pigeonMap['width'] as int?
+      ..height = pigeonMap['height'] as int?;
+  }
+}
+
 class PositionMessage {
   int? textureId;
   int? position;
