@@ -1,3 +1,7 @@
+## 0.6.0+15
+
+* Removes custom modulemap file with "Test" submodule and private headers for Swift migration. 
+
 ## 0.6.0+14
 
 * Refactors `FLTQuickActionsPlugin` class into multiple components. 
