@@ -10,9 +10,8 @@ import 'example_library.pigeon.dart';
 import 'instance_manager.dart';
 import 'my_other_class.dart';
 
-@visibleForTesting
-class MyClassHostApiImpl extends MyClassHostApi {
-  MyClassHostApiImpl({
+class _MyClassHostApiImpl extends MyClassHostApi {
+  _MyClassHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? BaseObject.globalInstanceManager,
@@ -128,7 +127,7 @@ class MyClass extends BaseObject {
     this.myCallbackMethod,
     super.binaryMessenger,
     super.instanceManager,
-  })  : _api = MyClassHostApiImpl(
+  })  : _api = _MyClassHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ),
@@ -145,7 +144,7 @@ class MyClass extends BaseObject {
     this.myCallbackMethod,
     super.binaryMessenger,
     super.instanceManager,
-  })  : _api = MyClassHostApiImpl(
+  })  : _api = _MyClassHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ),
@@ -156,13 +155,13 @@ class MyClass extends BaseObject {
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
   }) {
-    return MyClassHostApiImpl(
+    return _MyClassHostApiImpl(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
     ).myStaticMethod();
   }
 
-  final MyClassHostApiImpl _api;
+  final _MyClassHostApiImpl _api;
 
   /// Access a primitive field.
   final String primitiveField;

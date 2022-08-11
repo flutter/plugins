@@ -9,9 +9,8 @@ import 'base_object.dart';
 import 'example_library.pigeon.dart';
 import 'instance_manager.dart';
 
-@visibleForTesting
-class MyOtherClassHostApiImpl extends MyOtherClassHostApi {
-  MyOtherClassHostApiImpl({
+class _MyOtherClassHostApiImpl extends MyOtherClassHostApi {
+  _MyOtherClassHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? BaseObject.globalInstanceManager,
@@ -39,7 +38,7 @@ class MyOtherClass extends BaseObject {
   MyOtherClass({
     super.binaryMessenger,
     super.instanceManager,
-  })  : _api = MyOtherClassHostApiImpl(
+  })  : _api = _MyOtherClassHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ),
@@ -50,11 +49,11 @@ class MyOtherClass extends BaseObject {
   MyOtherClass.detached({
     super.binaryMessenger,
     super.instanceManager,
-  })  : _api = MyOtherClassHostApiImpl(
+  })  : _api = _MyOtherClassHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ),
         super.detached();
 
-  final MyOtherClassHostApiImpl _api;
+  final _MyOtherClassHostApiImpl _api;
 }

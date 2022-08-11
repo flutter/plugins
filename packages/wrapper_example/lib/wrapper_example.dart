@@ -10,6 +10,7 @@ import 'src/my_class.dart';
 
 export 'src/base_object.dart' show BaseObject;
 export 'src/my_class.dart' show MyClass;
+export 'src/my_class_subclass.dart' show MyClassSubclass;
 export 'src/my_other_class.dart' show MyOtherClass;
 
 class WrapperExample {

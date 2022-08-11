@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import com.example.wrapper_example.GeneratedExampleLibraryApis.BaseObjectHostApi;
 import com.example.wrapper_example.GeneratedExampleLibraryApis.MyClassHostApi;
 import com.example.wrapper_example.GeneratedExampleLibraryApis.MyOtherClassHostApi;
+import com.example.wrapper_example.GeneratedExampleLibraryApis.MyClassSubclassHostApi;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 
@@ -25,6 +26,7 @@ public class WrapperExamplePlugin implements FlutterPlugin {
     BaseObjectHostApi.setup(binaryMessenger, new BaseObjectHostApiImpl(instanceManager));
     MyOtherClassHostApi.setup(binaryMessenger, new MyOtherClassHostApiImpl(instanceManager));
     MyClassHostApi.setup(binaryMessenger, new MyClassHostApiImpl(binaryMessenger, instanceManager));
+    MyClassSubclassHostApi.setup(binaryMessenger, new MyClassSubclassHostApiImpl(binaryMessenger, instanceManager));
   }
 
   @Override

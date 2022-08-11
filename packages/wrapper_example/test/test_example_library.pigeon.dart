@@ -16,27 +16,22 @@ import '../lib/src/example_library.pigeon.dart';
 class _TestBaseObjectHostApiCodec extends StandardMessageCodec {
   const _TestBaseObjectHostApiCodec();
 }
-
 abstract class TestBaseObjectHostApi {
   static const MessageCodec<Object?> codec = _TestBaseObjectHostApiCodec();
 
   void dispose(int identifier);
-  static void setup(TestBaseObjectHostApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestBaseObjectHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.BaseObjectHostApi.dispose', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.BaseObjectHostApi.dispose', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.BaseObjectHostApi.dispose was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.BaseObjectHostApi.dispose was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.BaseObjectHostApi.dispose was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.BaseObjectHostApi.dispose was null, expected non-null int.');
           api.dispose(arg_identifier!);
           return <Object?, Object?>{};
         });
@@ -48,47 +43,37 @@ abstract class TestBaseObjectHostApi {
 class _TestMyClassHostApiCodec extends StandardMessageCodec {
   const _TestMyClassHostApiCodec();
 }
-
 abstract class TestMyClassHostApi {
   static const MessageCodec<Object?> codec = _TestMyClassHostApiCodec();
 
   void create(int identifier, String primitiveField, int classFieldIdentifier);
   void myStaticMethod();
-  void myMethod(
-      int identifier, String primitiveParam, int classParamIdentifier);
+  void myMethod(int identifier, String primitiveParam, int classParamIdentifier);
   void attachClassField(int identifier, int classFieldIdentifier);
-  static void setup(TestMyClassHostApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestMyClassHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.MyClassHostApi.create', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.MyClassHostApi.create', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.create was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.create was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.create was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.create was null, expected non-null int.');
           final String? arg_primitiveField = (args[1] as String?);
-          assert(arg_primitiveField != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.create was null, expected non-null String.');
+          assert(arg_primitiveField != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.create was null, expected non-null String.');
           final int? arg_classFieldIdentifier = (args[2] as int?);
-          assert(arg_classFieldIdentifier != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.create was null, expected non-null int.');
-          api.create(
-              arg_identifier!, arg_primitiveField!, arg_classFieldIdentifier!);
+          assert(arg_classFieldIdentifier != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.create was null, expected non-null int.');
+          api.create(arg_identifier!, arg_primitiveField!, arg_classFieldIdentifier!);
           return <Object?, Object?>{};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.MyClassHostApi.myStaticMethod', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.MyClassHostApi.myStaticMethod', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
@@ -101,47 +86,37 @@ abstract class TestMyClassHostApi {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.MyClassHostApi.myMethod', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.MyClassHostApi.myMethod', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null, expected non-null int.');
           final String? arg_primitiveParam = (args[1] as String?);
-          assert(arg_primitiveParam != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null, expected non-null String.');
+          assert(arg_primitiveParam != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null, expected non-null String.');
           final int? arg_classParamIdentifier = (args[2] as int?);
-          assert(arg_classParamIdentifier != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null, expected non-null int.');
-          api.myMethod(
-              arg_identifier!, arg_primitiveParam!, arg_classParamIdentifier!);
+          assert(arg_classParamIdentifier != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.myMethod was null, expected non-null int.');
+          api.myMethod(arg_identifier!, arg_primitiveParam!, arg_classParamIdentifier!);
           return <Object?, Object?>{};
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.MyClassHostApi.attachClassField', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.MyClassHostApi.attachClassField', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.attachClassField was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.attachClassField was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.attachClassField was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.attachClassField was null, expected non-null int.');
           final int? arg_classFieldIdentifier = (args[1] as int?);
-          assert(arg_classFieldIdentifier != null,
-              'Argument for dev.flutter.pigeon.MyClassHostApi.attachClassField was null, expected non-null int.');
+          assert(arg_classFieldIdentifier != null, 'Argument for dev.flutter.pigeon.MyClassHostApi.attachClassField was null, expected non-null int.');
           api.attachClassField(arg_identifier!, arg_classFieldIdentifier!);
           return <Object?, Object?>{};
         });
@@ -153,28 +128,54 @@ abstract class TestMyClassHostApi {
 class _TestMyOtherClassHostApiCodec extends StandardMessageCodec {
   const _TestMyOtherClassHostApiCodec();
 }
-
 abstract class TestMyOtherClassHostApi {
   static const MessageCodec<Object?> codec = _TestMyOtherClassHostApiCodec();
 
   void create(int identifier);
-  static void setup(TestMyOtherClassHostApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(TestMyOtherClassHostApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.MyOtherClassHostApi.create', codec,
-          binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.MyOtherClassHostApi.create', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMockMessageHandler(null);
       } else {
         channel.setMockMessageHandler((Object? message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.MyOtherClassHostApi.create was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.MyOtherClassHostApi.create was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_identifier = (args[0] as int?);
-          assert(arg_identifier != null,
-              'Argument for dev.flutter.pigeon.MyOtherClassHostApi.create was null, expected non-null int.');
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.MyOtherClassHostApi.create was null, expected non-null int.');
           api.create(arg_identifier!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestMyClassSubclassHostApiCodec extends StandardMessageCodec {
+  const _TestMyClassSubclassHostApiCodec();
+}
+abstract class TestMyClassSubclassHostApi {
+  static const MessageCodec<Object?> codec = _TestMyClassSubclassHostApiCodec();
+
+  void create(int identifier, String primitiveField, int classFieldIdentifier);
+  static void setup(TestMyClassSubclassHostApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.MyClassSubclassHostApi.create', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.MyClassSubclassHostApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_identifier = (args[0] as int?);
+          assert(arg_identifier != null, 'Argument for dev.flutter.pigeon.MyClassSubclassHostApi.create was null, expected non-null int.');
+          final String? arg_primitiveField = (args[1] as String?);
+          assert(arg_primitiveField != null, 'Argument for dev.flutter.pigeon.MyClassSubclassHostApi.create was null, expected non-null String.');
+          final int? arg_classFieldIdentifier = (args[2] as int?);
+          assert(arg_classFieldIdentifier != null, 'Argument for dev.flutter.pigeon.MyClassSubclassHostApi.create was null, expected non-null int.');
+          api.create(arg_identifier!, arg_primitiveField!, arg_classFieldIdentifier!);
           return <Object?, Object?>{};
         });
       }

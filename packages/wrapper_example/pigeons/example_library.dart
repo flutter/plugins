@@ -107,3 +107,8 @@ abstract class MyOtherClassHostApi {
 abstract class MyOtherClassFlutterApi {
   void create(int identifier);
 }
+
+@HostApi(dartHostTestHandler: 'TestMyClassSubclassHostApi')
+abstract class MyClassSubclassHostApi {
+  void create(int identifier, String primitiveField, int classFieldIdentifier);
+}

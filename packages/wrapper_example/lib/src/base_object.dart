@@ -8,9 +8,8 @@ import 'package:wrapper_example/src/instance_manager.dart';
 
 import 'example_library.pigeon.dart';
 
-@visibleForTesting
-class BaseObjectHostApiImpl extends BaseObjectHostApi {
-  BaseObjectHostApiImpl({
+class _BaseObjectHostApiImpl extends BaseObjectHostApi {
+  _BaseObjectHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? BaseObject.globalInstanceManager,
@@ -49,7 +48,7 @@ class BaseObject {
   BaseObject.detached({
     BinaryMessenger? binaryMessenger,
     InstanceManager? instanceManager,
-  }) : _api = BaseObjectHostApiImpl(
+  }) : _api = _BaseObjectHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         );
@@ -57,8 +56,8 @@ class BaseObject {
   /// Global instance of [InstanceManager].
   static final InstanceManager globalInstanceManager =
       InstanceManager(onWeakReferenceRemoved: (int identifier) {
-    BaseObjectHostApiImpl().dispose(identifier);
+    _BaseObjectHostApiImpl().dispose(identifier);
   });
 
-  final BaseObjectHostApiImpl _api;
+  final _BaseObjectHostApiImpl _api;
 }
