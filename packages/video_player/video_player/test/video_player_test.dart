@@ -560,6 +560,33 @@ void main() {
       });
     });
 
+    group('setMaxVideoResolution', () {
+      test('works', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        expect(controller.value.maxVideoResolution, isNull);
+
+        const Resolution resolution = Resolution(1920, 1080);
+        await controller.setMaxVideoResolution(resolution);
+
+        expect(controller.value.maxVideoResolution, resolution);
+      });
+
+      test('rejects negative values', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        expect(controller.value.maxVideoResolution, isNull);
+
+        const Resolution resolution = Resolution(-1, -1);
+        expect(() => controller.setMaxVideoResolution(resolution),
+            throwsArgumentError);
+      });
+    });
+
     group('scrubbing', () {
       testWidgets('restarts on release if already playing',
           (WidgetTester tester) async {
@@ -894,6 +921,7 @@ void main() {
       const bool isBuffering = true;
       const double volume = 0.5;
       const double playbackSpeed = 1.5;
+      const Resolution resolution = Resolution(1920, 1080);
 
       final VideoPlayerValue value = VideoPlayerValue(
         duration: duration,
@@ -908,6 +936,7 @@ void main() {
         isBuffering: isBuffering,
         volume: volume,
         playbackSpeed: playbackSpeed,
+        maxVideoResolution: resolution,
       );
 
       expect(
@@ -924,6 +953,7 @@ void main() {
           'isBuffering: true, '
           'volume: 0.5, '
           'playbackSpeed: 1.5, '
+          'maxVideoResolution: Resolution(width: 1920, height: 1080), '
           'errorDescription: null)');
     });
 
@@ -1143,6 +1173,12 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   @override
   Future<void> setPlaybackSpeed(int textureId, double speed) async {
     calls.add('setPlaybackSpeed');
+  }
+
+  @override
+  Future<void> setMaxVideoResolution(
+      int textureId, Resolution resolution) async {
+    calls.add('setMaxVideoResolution');
   }
 
   @override

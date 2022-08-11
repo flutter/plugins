@@ -1,5 +1,6 @@
 ## NEXT
 
+* Added setMaxVideoResolution method to support different video resolutions while picking a video stream from a source with different tracks
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
 ## 2.3.8

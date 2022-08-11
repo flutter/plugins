@@ -226,6 +226,18 @@ void main() {
       expect(log.playbackSpeedMessage?.speed, 1.5);
     });
 
+    test('setMaxVideoResolution', () async {
+      const int width = 1920;
+      const int height = 1080;
+      const int textureId = 1;
+
+      await player.setMaxVideoResolution(1, const Resolution(width, height));
+      expect(log.log.last, 'setMaxVideoResolution');
+      expect(log.playbackSpeedMessage?.textureId, textureId);
+      expect(log.maxVideoResolutionMessage?.width, width);
+      expect(log.maxVideoResolutionMessage?.height, height);
+    });
+
     test('seekTo', () async {
       await player.seekTo(1, const Duration(milliseconds: 12345));
       expect(log.log.last, 'seekTo');

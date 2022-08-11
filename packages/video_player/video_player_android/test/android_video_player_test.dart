@@ -12,8 +12,6 @@ import 'package:video_player_android/src/messages.g.dart';
 import 'package:video_player_android/video_player_android.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-import '../pigeons/messages.dart';
-import '../pigeons/messages.dart';
 import 'test_api.dart';
 
 class _ApiLogger implements TestHostVideoPlayerApi {
@@ -226,6 +224,18 @@ void main() {
       expect(log.log.last, 'setPlaybackSpeed');
       expect(log.playbackSpeedMessage?.textureId, 1);
       expect(log.playbackSpeedMessage?.speed, 1.5);
+    });
+
+    test('setMaxVideoResolution', () async {
+      const int width = 1920;
+      const int height = 1080;
+      const int textureId = 1;
+
+      await player.setMaxVideoResolution(1, const Resolution(width, height));
+      expect(log.log.last, 'setMaxVideoResolution');
+      expect(log.playbackSpeedMessage?.textureId, textureId);
+      expect(log.maxVideoResolutionMessage?.width, width);
+      expect(log.maxVideoResolutionMessage?.height, height);
     });
 
     test('seekTo', () async {

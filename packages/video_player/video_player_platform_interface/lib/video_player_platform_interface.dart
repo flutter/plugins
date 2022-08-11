@@ -124,6 +124,13 @@ class Resolution {
 
   /// The vertical extent of this size.
   final int height;
+
+  @override
+  String toString() {
+    return 'Resolution(width: $width, height: $height)';
+  }
+
+
 }
 
 /// Description of the data source used to create an instance of
