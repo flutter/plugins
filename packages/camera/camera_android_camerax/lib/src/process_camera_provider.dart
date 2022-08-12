@@ -17,8 +17,11 @@ class ProcessCameraProvider extends JavaObject {
 
   static Future<ProcessCameraProvider> getInstance(
       {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
-    ProcessCameraProviderFlutterApi.setup(ProcessCameraProviderFlutterApiImpl(
-        binaryMessenger: binaryMessenger, instanceManager: instanceMananger));
+    ProcessCameraProviderFlutterApi.setup(
+      ProcessCameraProviderFlutterApiImpl(
+        binaryMessenger: binaryMessenger, instanceManager: instanceMananger
+      )
+    );
 
     return ProcessCameraProviderHostApiImpl(
       binaryMessenger: binaryMessenger,

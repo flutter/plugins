@@ -7,9 +7,14 @@ import 'instance_manager.dart';
 import 'java_object.dart';
 
 class CameraInfo extends JavaObject {
-  CameraInfo.detached() : super.detached();
+  CameraInfo.detached({super.binaryMessenger, super.instanceManager})
+    : _api = CameraInfoHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+      ), 
+      super.detached();
 
-  static CameraInfoHostApiImpl _api = CameraInfoHostApiImpl();
+  static final CameraInfoHostApiImpl _api;
 
   /// Gets selector used to retieve information about a camera.
   Future<int> getSensorOrientationDegrees() =>

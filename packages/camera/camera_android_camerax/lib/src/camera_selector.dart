@@ -6,6 +6,7 @@ import 'camera_filter.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
+//TODO(cs):match these to android constants
 enum CameraXLensDirection {
   facing_front,
   facing_back,
@@ -16,12 +17,16 @@ class CameraSelector extends JavaObject {
     super.binaryMessenger,
     super.instanceManager,
     int? lensFacing}) : super.detached() {
-    _api.create(this, lensFacing);
+    _api = CameraSelectorHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    ),
+    _api.create(this, lensFacing); // ???
   }
 
   CameraSelector.detached() : super.detached();
 
-  static CameraSelectorHostApiImpl _api = CameraSelectorHostApiImpl(); // here add messenger,manager to apiimpls and finish java
+  static CameraSelectorHostApiImpl _api;
 
   /// Selector for default front facing camera.
   static final CameraSelector defaultFrontCamera =
@@ -33,6 +38,12 @@ class CameraSelector extends JavaObject {
 
   /// Returns selector with the lens direction specified.
   CameraSelector requireLensFacing(int lensFacing) {
+    CameraSelectorFlutterApi.setup(
+      CameraSelectorFlutterApiImpl(
+        binaryMessenger: binaryMessenger,
+        instanceManager: instanceManager,
+      )
+    );
     return _api.requireLensFacingInInstance(
       instanceManager.getIdentifier(this)!,
       lensFacing,
