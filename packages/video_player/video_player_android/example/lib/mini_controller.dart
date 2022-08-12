@@ -521,7 +521,6 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       );
     } else {
       progressIndicator = const LinearProgressIndicator(
-        value: null,
         valueColor: AlwaysStoppedAnimation<Color>(playedColor),
         backgroundColor: backgroundColor,
       );

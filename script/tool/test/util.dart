@@ -117,7 +117,6 @@ RepositoryPackage createFakePlugin(
   createFakePubspec(
     package,
     name: name,
-    isFlutter: true,
     isPlugin: true,
     platformSupport: platformSupport,
     version: version,
@@ -399,10 +398,10 @@ class RecordingProcessRunner extends ProcessRunner {
     final io.Process? process = _getProcessToReturn(executable);
     final List<String>? processStdout =
         await process?.stdout.transform(stdoutEncoding.decoder).toList();
-    final String stdout = processStdout?.join('') ?? '';
+    final String stdout = processStdout?.join() ?? '';
     final List<String>? processStderr =
         await process?.stderr.transform(stderrEncoding.decoder).toList();
-    final String stderr = processStderr?.join('') ?? '';
+    final String stderr = processStderr?.join() ?? '';
 
     final io.ProcessResult result = process == null
         ? io.ProcessResult(1, 0, '', '')
