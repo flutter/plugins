@@ -1,3 +1,3 @@
-## 0.0.1
+## NEXT
 
 * Creates camera_android_camerax plugin for development.
