@@ -5,10 +5,15 @@
 package io.flutter.plugins.camerax;
 
 public class CameraInfoHostApiImpl extends CameraHostApi {
+  private final BinaryMessenger binaryMessenger;
+  private final InstanceManager instanceManager;
+
   final InstanceManager instanceManager;
 
   public CameraInfoHostApiImpl(
+    BinaryMessenger binaryMessenger,
     InstanceManager instanceManager) {
+    this.binaryMessenger = binaryMessenger;
     this.instanceManager = instanceManager;
   }
 
