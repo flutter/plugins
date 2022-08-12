@@ -12,13 +12,16 @@ enum CameraXLensDirection {
 }
 
 class CameraSelector extends JavaObject {
-  CameraSelector({int? lensFacing}) : super.detached() {
+  CameraSelector({
+    super.binaryMessenger,
+    super.instanceManager,
+    int? lensFacing}) : super.detached() {
     _api.create(this, lensFacing);
   }
 
   CameraSelector.detached() : super.detached();
 
-  static CameraSelectorHostApiImpl _api = CameraSelectorHostApiImpl();
+  static CameraSelectorHostApiImpl _api = CameraSelectorHostApiImpl(); // here add messenger,manager to apiimpls and finish java
 
   /// Selector for default front facing camera.
   static final CameraSelector defaultFrontCamera =
@@ -111,8 +114,9 @@ class CameraSelectorFlutterApiImpl
       identifier,
       onCopy: (CameraSelector original) =>
           CameraSelector.detached(
-        binaryMessenger: binaryMessenger, //here
-        instanceManager: instanceManager,
+            lensFacing: lensFacing,
+            binaryMessenger: binaryMessenger,
+            instanceManager: instanceManager,
       ),
     );
   }
