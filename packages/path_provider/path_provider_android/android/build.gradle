@@ -2,14 +2,13 @@ group 'io.flutter.plugins.pathprovider'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.7.10'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
 
@@ -53,7 +52,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.4.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.google.guava:guava:28.1-android'
     testImplementation 'junit:junit:4.13.2'
 }
