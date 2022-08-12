@@ -307,3 +307,30 @@ class CameraSelectorHostApi {
     }
   }
 }
+
+class _CameraSelectorFlutterApiCodec extends StandardMessageCodec {
+  const _CameraSelectorFlutterApiCodec();
+}
+abstract class CameraSelectorFlutterApi {
+  static const MessageCodec<Object?> codec = _CameraSelectorFlutterApiCodec();
+
+  void create(int instanceId);
+  static void setup(CameraSelectorFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.CameraSelectorFlutterApi.create', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.CameraSelectorFlutterApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.CameraSelectorFlutterApi.create was null, expected non-null int.');
+          api.create(arg_instanceId!);
+          return;
+        });
+      }
+    }
+  }
+}

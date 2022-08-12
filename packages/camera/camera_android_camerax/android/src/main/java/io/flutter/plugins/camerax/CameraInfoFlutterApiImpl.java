@@ -4,16 +4,17 @@
 
 package io.flutter.plugins.camerax;
 
-public class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi { //here
-  public ProcessCameraProviderFlutterApiImpl(
-      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+public class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
+  private final InstanceManager instanceManager;
+
+  public CameraInfoFlutterApiImpl(
+    BinaryMessenger binaryMessenger,
+    InstanceManager instanceManager) {
     super(binaryMessenger);
     this.instanceManager = instanceManager;
   }
 
-  private final InstanceManager instanceManager;
-
-  void create(ProcessCameraProvider processCameraProvider, Reply<Void> reply) {
-    create(instanceManager.getIdentifierForStrongReference(processCameraProvider), reply);
+  void create(CameraInfo cameraInfo, Reply<Void> reply) {
+    create(instanceManager.getIdentifierForStrongReference(cameraInfo), reply);
   }
 }

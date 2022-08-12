@@ -338,6 +338,32 @@ public class GeneratedCameraXLibrary {
       }
     }
   }
+  private static class CameraSelectorFlutterApiCodec extends StandardMessageCodec {
+    public static final CameraSelectorFlutterApiCodec INSTANCE = new CameraSelectorFlutterApiCodec();
+    private CameraSelectorFlutterApiCodec() {}
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java.*/
+  public static class CameraSelectorFlutterApi {
+    private final BinaryMessenger binaryMessenger;
+    public CameraSelectorFlutterApi(BinaryMessenger argBinaryMessenger){
+      this.binaryMessenger = argBinaryMessenger;
+    }
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    static MessageCodec<Object> getCodec() {
+      return CameraSelectorFlutterApiCodec.INSTANCE;
+    }
+
+    public void create(@NonNull Long instanceIdArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CameraSelectorFlutterApi.create", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+  }
   private static Map<String, Object> wrapError(Throwable exception) {
     Map<String, Object> errorMap = new HashMap<>();
     errorMap.put("message", exception.toString());

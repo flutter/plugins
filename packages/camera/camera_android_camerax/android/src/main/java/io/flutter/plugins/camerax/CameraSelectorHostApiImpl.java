@@ -4,17 +4,26 @@
 
 package io.flutter.plugins.camerax;
 
-public class CameraSelectorHostApiImpl {
-  public CameraSelectorHostApiImpl() {
-    cameraSelector = new CameraSelector.Builder().build();
+public class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
+  final InstanceManager instanceManager;
+
+  public CameraSelectorHostApiImpl(
+    InstanceManager instanceManager) {
+    this.instanceManager = instanceManager;
   }
 
-  CameraSelector cameraSelector;
-
-  // Filters available cameras based on the cameraInfos provided.
   @override
-  List<CameraInfo> filter(long instance, List<int> cameraInfos) {
-    List<CameraInfo> cameraInfos = cameraSelctor.filter(cameraInfos);
-    return cameraInfos;
+  Long requireLensFacing(@NonNull Long instanceId, @NonNull Long lensDirection) {
+    CameraSelector cameraSelector =
+      (CameraSelector) instanceManager.getInstance(instanceId);
+    CameraSelector cameraSelectorWithLensSpecified =
+      cameraSelector.requireLensFacing(lensDirection).build(); //TODO(cs): make sure values align with Dart
+    
+    // do create mess here
+  }
+
+  @override
+  List<Long> filter(@NonNull Long instanceId, @NonNull List<Long> cameraInfos) {
+
   }
 }

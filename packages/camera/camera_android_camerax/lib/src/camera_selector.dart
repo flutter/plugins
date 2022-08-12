@@ -86,3 +86,34 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
         instanceManager.getInstanceWithWeakReference(id) as CameraInfo);
   }
 }
+
+class CameraSelectorFlutterApiImpl
+    implements CameraSelectorFlutterApi {
+  /// Constructs a [CameraSelectorFlutterApiImpl].
+  CameraSelectorFlutterApiImpl({
+    this.binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : instanceManager = instanceManager ?? JavaObject.globalInstanceManager;
+
+  /// Receives binary data across the Flutter platform barrier.
+  ///
+  /// If it is null, the default BinaryMessenger will be used which routes to
+  /// the host platform.
+  final BinaryMessenger? binaryMessenger;
+
+  /// Maintains instances stored to communicate with native language objects.
+  final InstanceManager instanceManager;
+
+  @override
+  void create(int identifier, int? lensFacing) {
+    instanceManager.addHostCreatedInstance(
+      CameraSelector.detached(lensFacing),
+      identifier,
+      onCopy: (CameraSelector original) =>
+          CameraSelector.detached(
+        binaryMessenger: binaryMessenger, //here
+        instanceManager: instanceManager,
+      ),
+    );
+  }
+}

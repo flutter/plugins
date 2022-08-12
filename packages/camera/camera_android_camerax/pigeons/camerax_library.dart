@@ -65,3 +65,8 @@ abstract class CameraSelectorHostApi {
 
   List<int> filter(int instanceId, List<int> cameraInfos);
 }
+
+@FlutterApi()
+abstract class CameraSelectorFlutterApi {
+  void create(int instanceId, int? lensFacing);
+}
