@@ -15,16 +15,22 @@ class ProcessCameraProvider extends JavaObject {
         ),
         super.detached();
     
-    final ProcessCameraProviderHostApiImpl _api;
+    static final ProcessCameraProviderHostApiImpl _api;
 
     static Future<ProcessCameraProvider> getInstance({
-        BinaryMessenger? binaryMessenger,
-        InstanceManager? instanceManager}) {
-            ProcessCameraProviderFlutterApi.setup(ProcessCameraProviderFlutterApiImpl(binaryMessenger: binaryMessenger, instanceManager: instanceMananger))
+      BinaryMessenger? binaryMessenger,
+      InstanceManager? instanceManager}) {
+        ProcessCameraProviderFlutterApi
+          .setup(ProcessCameraProviderFlutterApiImpl(binaryMessenger: binaryMessenger, instanceManager: instanceMananger));
+
         return ProcessCameraProviderHostApiImpl(
         binaryMessenger: binaryMessenger,
         instanceManager: instanceManager,
-        ).getInstance();
+        ).getInstancefromInstances();
+    }
+
+    Future<List<CameraProvider>> getAvailableCameras() {
+      return _api.getAvailableCamerasFromIntances();
     }
 }
 
@@ -39,8 +45,18 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
 
   final InstanceManager instanceManager;
 
-  static Future<ProcessCameraProvider> getInstancefromInstances() {
+  // Retrieves an instance of a ProcessCameraProvider from the context of
+  // the FlutterActivity.
+  Future<ProcessCameraProvider> getInstancefromInstances() async {
     return instanceManager.getInstance(await getInstance());
+  }
+
+  // Retrives the list of CameraInfos corresponding to the available cameras.
+  List<CameraInfo> getAvailableCamerasFromIntances() async {
+    List<int> cameraInfos = await getAvailableCameras();
+
+    return cameraInfos
+      .map<CameraInfo>((int id) => instanceManager.getInsance(id));
   }
 }
 
@@ -61,9 +77,7 @@ class ProcessCameraProviderFlutterApiImpl implements ProcessCameraProviderFlutte
   final InstanceManager instanceManager;
 
   @override
-  void create(
-    int identifier
-  ) {
+  void create(int identifier) {
     instanceManager.addHostCreatedInstance(
       ProcessCameraProvider.detached(),
       identifier,

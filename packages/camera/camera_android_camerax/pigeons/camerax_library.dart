@@ -29,21 +29,40 @@ import 'package:pigeon/pigeon.dart';
 
 @HostApi()
 abstract class JavaObjectHostApi {
-    void dispose(int identifier);
+  void dispose(int instanceId);
 }
 
 @FlutterApi()
 abstract class JavaObjectFlutterApi {
-    void dispose(int identifier);
+  void dispose(int instanceId);
 }
 
 @HostApi()
 abstract class ProcessCameraProviderHostApi {
-    @async
-    int getInstance();
+  @async
+  int getInstance();
+
+  List<int> getAvailableCameraInfos();
 }
 
 @FlutterApi()
 abstract class ProcessCameraProviderFlutterApi {
-    void create(int identifier);
+  void create(int instanceId);
 }
+
+@HostApi()
+abstract class CameraInfo {
+  int getSensorOrientationDegrees(int instanceId);
+}
+
+@FlutterApi()
+abstract class CameraInfo {
+  void create(int instanceId);
+}
+
+@HostApi()
+abstract class CameraSelector {
+  List<int> filter(List<int> cameraInfos);
+}
+
+

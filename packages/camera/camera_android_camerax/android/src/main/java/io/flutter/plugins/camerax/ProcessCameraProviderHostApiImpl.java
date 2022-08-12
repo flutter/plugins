@@ -9,25 +9,28 @@ public class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostA
     private final InstanceManager instanceManager;
 
     private Activity activity;
+    private ProcessCameraProvider provider;
 
     public ProcessCameraProviderHostApiImpl(
-        BinaryMessenger binaryMessenger,
-        InstanceManager instanceManager,
-        Activity activity) {
+      BinaryMessenger binaryMessenger,
+      InstanceManager instanceManager,
+      Activity activity) {
       this.binaryMessenger = binaryMessenger;
       this.instanceManager = instanceManager;
       this.activity = activity;
-      }
+    }
 
+    // Returns the instance of the ProcessCameraProvider.
     @override
     void getInstance(Result<Long> result) {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
-            ProcessCameraProvider.getInstance(???); //TODO(cs): get Context from FlutterActivity
+            ProcessCameraProvider.getInstance(activity.getContext());
 
         cameraProviderFuture.addListener(() -> {
             try {
                 // Camera provider is now guaranteed to be available
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                provider = cameraProvider;
 
                 if (!instanceManager.containsInstance(cameraProvider)) {
                     // If cameraProvider is already defined, this method will have no effect.
@@ -39,5 +42,15 @@ public class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostA
                 result.error(e);
         }
         });
+    }
+
+    @override
+    List<CameraInfo> getAvailableCameras() {
+      if (provider != null) {
+        List<CameraInfo> availableCameras = provider.getAvailableCameras;
+        return availableCameras;
+      } else {
+        // Throw error because provider needs to be instantiated first.
+      }
     }
 }

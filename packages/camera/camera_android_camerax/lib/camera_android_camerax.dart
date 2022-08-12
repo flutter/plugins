@@ -7,8 +7,7 @@ library camera_android_camerax;
 import 'src/camerax.pigeon.dart';
 import 'src/process_camera_provider.dart';
 
-export 'src/java_object.dart' show JavaObject;
-export 'src/process_camera_provider.dart' show ProcessCameraProvider;
+export 'src/android_camerax_camera.dart';
 
 /// Android Camera implented with the CameraX library.
 class CameraAndroidCamerax {

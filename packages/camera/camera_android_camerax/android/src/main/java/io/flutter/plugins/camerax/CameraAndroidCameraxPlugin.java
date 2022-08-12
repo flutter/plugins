@@ -40,6 +40,8 @@ public class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware 
     //TODO(cs): Finish
   }
 
+  // Activity Lifecycle methods:
+  
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
   }
