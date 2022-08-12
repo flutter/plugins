@@ -6,36 +6,33 @@ import 'instance_manager.dart';
 import 'java_object.dart';
 
 class ProcessCameraProvider extends JavaObject {
-    ProcessCameraProvider.detached({
-        super.binaryMessenger,
-        super.instanceManager})
-        : _api = ProcessCameraProviderHostApiImpl(
+  ProcessCameraProvider.detached({super.binaryMessenger, super.instanceManager})
+      : _api = ProcessCameraProviderHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
         ),
         super.detached();
-    
-    static final ProcessCameraProviderHostApiImpl _api;
 
-    static Future<ProcessCameraProvider> getInstance({
-      BinaryMessenger? binaryMessenger,
-      InstanceManager? instanceManager}) {
-        ProcessCameraProviderFlutterApi
-          .setup(ProcessCameraProviderFlutterApiImpl(binaryMessenger: binaryMessenger, instanceManager: instanceMananger));
+  static final ProcessCameraProviderHostApiImpl _api;
 
-        return ProcessCameraProviderHostApiImpl(
-        binaryMessenger: binaryMessenger,
-        instanceManager: instanceManager,
-        ).getInstancefromInstances();
-    }
+  static Future<ProcessCameraProvider> getInstance(
+      {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
+    ProcessCameraProviderFlutterApi.setup(ProcessCameraProviderFlutterApiImpl(
+        binaryMessenger: binaryMessenger, instanceManager: instanceMananger));
 
-    Future<List<CameraProvider>> getAvailableCameras() {
-      return _api.getAvailableCamerasFromIntances();
-    }
+    return ProcessCameraProviderHostApiImpl(
+      binaryMessenger: binaryMessenger,
+      instanceManager: instanceManager,
+    ).getInstancefromInstances();
+  }
+
+  Future<List<CameraProvider>> getAvailableCameras() {
+    return _api.getAvailableCamerasFromIntances();
+  }
 }
 
 class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
-  ProcessCameraProvideHostApiImpl({
+  ProcessCameraProviderHostApiImpl({
     this.binaryMessenger,
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
@@ -55,12 +52,13 @@ class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
   List<CameraInfo> getAvailableCamerasFromIntances() async {
     List<int> cameraInfos = await getAvailableCameras();
 
-    return cameraInfos
-      .map<CameraInfo>((int id) => instanceManager.getInstanceWithWeakReference(id) as CameraInfo);
+    return cameraInfos.map<CameraInfo>((int id) =>
+        instanceManager.getInstanceWithWeakReference(id) as CameraInfo);
   }
 }
 
-class ProcessCameraProviderFlutterApiImpl implements ProcessCameraProviderFlutterApi {
+class ProcessCameraProviderFlutterApiImpl
+    implements ProcessCameraProviderFlutterApi {
   /// Constructs a [ProcessCameraProviderFlutterApiImpl].
   ProcessCameraProviderFlutterApiImpl({
     this.binaryMessenger,
@@ -81,7 +79,8 @@ class ProcessCameraProviderFlutterApiImpl implements ProcessCameraProviderFlutte
     instanceManager.addHostCreatedInstance(
       ProcessCameraProvider.detached(),
       identifier,
-      onCopy: (ProcessCameraProvider original) => ProcessCameraProvider.detached(
+      onCopy: (ProcessCameraProvider original) =>
+          ProcessCameraProvider.detached(
         binaryMessenger: binaryMessenger,
         instanceManager: instanceManager,
       ),

@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.camerax;
 
-public class ProcessCameraProviderFlutterApiImpl extends ProcessCameraProviderFlutterApi {
+public class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi { //here
   public ProcessCameraProviderFlutterApiImpl(
       BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);

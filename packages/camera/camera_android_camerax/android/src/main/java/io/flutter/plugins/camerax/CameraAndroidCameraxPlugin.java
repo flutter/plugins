@@ -7,10 +7,6 @@ package io.flutter.plugins.camerax;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 
 /** CameraAndroidCameraxPlugin */
 public class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware {
@@ -26,8 +22,8 @@ public class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware 
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     instanceManager = InstanceManager.open(identifier -> {});
-    processCameraProviderHostApi = new ProcessCameraProvider(
-      registrar.messenger, instanceManager, registrar.activity());
+    processCameraProviderHostApi =
+        new ProcessCameraProvider(registrar.messenger, instanceManager, registrar.activity());
   }
 
   @Override
@@ -41,21 +37,17 @@ public class CameraAndroidCameraxPlugin implements FlutterPlugin, ActivityAware 
   }
 
   // Activity Lifecycle methods:
-  
-  @Override
-  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-  }
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {
-  }
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {}
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {}
 
   @Override
   public void onReattachedToActivityForConfigChanges(
-      @NonNull ActivityPluginBinding activityPluginBinding) {
-  }
+      @NonNull ActivityPluginBinding activityPluginBinding) {}
 
   @Override
-  public void onDetachedFromActivity() {
-  }
+  public void onDetachedFromActivity() {}
 }

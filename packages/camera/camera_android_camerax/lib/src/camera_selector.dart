@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'camera_filter.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
 enum CameraXLensDirection {
-    facing_front,
-    facing_back,
+  facing_front,
+  facing_back,
 }
 
 class CameraSelector extends JavaObject {
@@ -15,32 +16,31 @@ class CameraSelector extends JavaObject {
     _api.create(this, lensFacing);
   }
 
-  CameraSelector.detached():
-      : super.detached();
-    
+  CameraSelector.detached() : super.detached();
+
   static CameraSelectorHostApiImpl _api = CameraSelectorHostApiImpl();
 
   /// Selector for default front facing camera.
-  final static CameraSelector defaultFrontCamera =
-    requireLensFacing(CameraXLensDirection.facing_front);
+  static final CameraSelector defaultFrontCamera =
+      requireLensFacing(CameraXLensDirection.facing_front);
 
   /// Selector for default back facing camera.
-  final static CameraSelector defaultBackCamera =
-    requireLensFacing(CameraXLensDirection.facing_back);
-
-  /// Filters available cameras based on provided [CameraInfo]s.
-  List<CameraInfo> filter(List<CameraInfo> cameraInfos) {
-     _api.filterFromInstance(
-       instanceManager.getIdentifier(this)!,
-       cameraInfos,
-    );
-  }
+  static final CameraSelector defaultBackCamera =
+      requireLensFacing(CameraXLensDirection.facing_back);
 
   /// Returns selector with the lens direction specified.
   CameraSelector requireLensFacing(int lensFacing) {
-    _api.requireLensFacingFromInstance(
+    return _api.requireLensFacingInInstance(
       instanceManager.getIdentifier(this)!,
       lensFacing,
+    );
+  }
+
+  /// Filters available cameras based on provided [CameraInfo]s.
+  List<CameraInfo> filter(List<CameraInfo> cameraInfos) {
+    return _api.filterFromInstance(
+      instanceManager.getIdentifier(this)!,
+      cameraInfos,
     );
   }
 }
@@ -62,18 +62,15 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   /// Maintains instances stored to communicate with native language objects.
   final InstanceManager instanceManager;
 
-  CameraSelector requireLensFacingFromInstance(
+  CameraSelector requireLensFacingInInstance(
     int instanceId,
     List<CameraInfo> cameraInfos,
   ) async {
-    List<int> cameraInfoIds =
-      cameraInfos
-        .map<CameraInfo>((CameraInfo info) => instanceManager.getIdentifier(info)!);
-        cameraInfos.map<CameraInfo>((int id) => instanceManager.getInstanceWithWeakReference(id));
+    List<int> cameraInfoIds = cameraInfos.map<CameraInfo>(
+        (CameraInfo info) => instanceManager.getIdentifier(info)!);
     int cameraSelectorId = await requireLensFacing(instanceId, cameraInfoIds);
-    
-    CameraSelector? cameraSelector =
-      instanceManager
+
+    CameraSelector? cameraSelector = instanceManager
         .getInstanceWithWeakReference(cameraSelectorId) as CameraSelector;
     return cameraSelector;
   }
@@ -82,10 +79,10 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     int instanceId,
     List<CameraInfo> cameraInfos,
   ) {
-    List<int> cameraInfoIds = cameraIn
+    List<int> cameraInfoIds = cameraInfos.map<CameraInfo>(
+        (CameraInfo info) => instanceManager.getIdentifier(info)!);
     List<int> filteredCameraInfoIds = await filter(instanceId, cameraInfoIds);
-    return 
-      filteredCameraInfoIds
-        .map<CameraInfo>((int id) => instanceManager.getInstanceWithWeakReference(id) as CameraInfo);
+    return filteredCameraInfoIds.map<CameraInfo>((int id) =>
+        instanceManager.getInstanceWithWeakReference(id) as CameraInfo);
   }
 }

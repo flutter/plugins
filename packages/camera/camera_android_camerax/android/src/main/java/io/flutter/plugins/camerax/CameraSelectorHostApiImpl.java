@@ -5,16 +5,16 @@
 package io.flutter.plugins.camerax;
 
 public class CameraSelectorHostApiImpl {
-    public CameraSelectorHostApiImpl() {
-        cameraSelector = new CameraSelector.Builder().build();
-    }
+  public CameraSelectorHostApiImpl() {
+    cameraSelector = new CameraSelector.Builder().build();
+  }
 
-    CameraSelector cameraSelector;
-    
-    // Filters available cameras based on the cameraInfos provided.
-    @override
-    List<CameraInfo> filter(long instance, List<int> cameraInfos) {
-        List<CameraInfo> cameraInfos = cameraSelctor.filter(cameraInfos);
-        return cameraInfos;
-    }
+  CameraSelector cameraSelector;
+
+  // Filters available cameras based on the cameraInfos provided.
+  @override
+  List<CameraInfo> filter(long instance, List<int> cameraInfos) {
+    List<CameraInfo> cameraInfos = cameraSelctor.filter(cameraInfos);
+    return cameraInfos;
+  }
 }

@@ -7,13 +7,13 @@ import 'instance_manager.dart';
 import 'java_object.dart';
 
 class CameraInfo extends JavaObject {
-  CameraInfo.detached():
-      : super.detached();
-    
+  CameraInfo.detached() : super.detached();
+
   static CameraInfoHostApiImpl _api = CameraInfoHostApiImpl();
 
   /// Gets selector used to retieve information about a camera.
-  Future<int> getSensorOrientationDegrees() => _api.getSensorOrientationDegreesFromInstance(this);
+  Future<int> getSensorOrientationDegrees() =>
+      _api.getSensorOrientationDegreesFromInstance(this);
 }
 
 class CameraInfoHostApiImpl extends CameraInfoHostApi {
@@ -23,7 +23,6 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
     InstanceManager? instanceManager,
   })  : instanceManager = instanceManager ?? JavaObject.globalInstanceManager,
         super(binaryMessenger: binaryMessenger);
-
 
   /// Sends binary data across the Flutter platform barrier.
   ///
@@ -36,7 +35,8 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
 
   /// Gets sensor orientation degrees of [CameraInfo].
   int getSensorOrientationDegreesFromInstance(CameraInfo instance) async {
-    return getSensorOrientationDegrees(instanceManager.getIdentifier(instance)!);
+    return getSensorOrientationDegrees(
+        instanceManager.getIdentifier(instance)!);
   }
 }
 

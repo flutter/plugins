@@ -5,7 +5,6 @@
 import 'process_camera_provider.dart';
 
 class AndroidCameraCameraX {
-
   /// Returns list of all available cameras and their descriptions.
   Future<List<CameraDescription>> availableCameras() {
     ProcessCameraProvider provider = provider.getInstance();
@@ -18,38 +17,38 @@ class AndroidCameraCameraX {
 
       // Check if it is a front camera.
       List<CameraInfo>? frontCameras =
-        CameraSelector
-          .DEFAULT_FRONT_CAMERA
-            .filter(<CameraInfo>[info]);
-    
-    if (frontCameras != null) {
-        description =
-          createCameraDescription(frontCameras.get(0), CameraLensDirection.front); // There should only be one?
-        cameraDescriptions.add(description); // Might need to avoid duplicates here?
-        continue;
-    }
+          CameraSelector.DEFAULT_FRONT_CAMERA.filter(<CameraInfo>[info]);
+
+      if (frontCameras != null) {
+        description = createCameraDescription(frontCameras.get(0),
+            CameraLensDirection.front); // There should only be one?
+        cameraDescriptions
+            .add(description); // Might need to avoid duplicates here?
+        return;
+      }
 
       //Check if it is a back camera.
       List<CameraInfo>? backCameras =
-        CameraSelector
-          .DEFAULT_BACK_CAMERA
-            .filter(<CameraInfo>[info]);
+          CameraSelector.DEFAULT_BACK_CAMERA.filter(<CameraInfo>[info]);
 
       if (backCameras != null) {
-        description =
-          createCameraDescription(backCameras.get(0), CameraLensDirection.back); // There should only be one?
-        cameraDescriptions.add(description); // Might need to avoid duplicates here
+        description = createCameraDescription(backCameras.get(0),
+            CameraLensDirection.back); // There should only be one?
+        cameraDescriptions
+            .add(description); // Might need to avoid duplicates here
       }
     });
-    
-    return cameraDescriptions;
-    }
 
-    /// Helper method that creates descriptions of cameras.
-    CameraDescription createCameraDescription(CameraInfo cameraInfo, CameraLensDirection lensDirection) {
-      String name = lensDirection.toString() + '-camera'; //TODO(cs): check actual format
-      int sensorOrientation = cameraInfo.getSensorRotationDegrees();
-    
-      return CameraDescription(name, lensDirection, sensorOrientation);
-    }
-} 
+    return cameraDescriptions;
+  }
+
+  /// Helper method that creates descriptions of cameras.
+  CameraDescription createCameraDescription(
+      CameraInfo cameraInfo, CameraLensDirection lensDirection) {
+    String name =
+        lensDirection.toString() + '-camera'; //TODO(cs): check actual format
+    int sensorOrientation = cameraInfo.getSensorRotationDegrees();
+
+    return CameraDescription(name, lensDirection, sensorOrientation);
+  }
+}
