@@ -705,6 +705,88 @@ void main() {
         "var head = document.getElementsByTagName('head')[0];head.appendChild(meta);",
       );
     });
+
+    test('setPlatformNavigationDelegate', () {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        createMockWebView: (_, {dynamic observeValue}) => mockWebView,
+      );
+
+      final WebKitNavigationDelegate navigationDelegate =
+          WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
+        ),
+      );
+
+      controller.setPlatformNavigationDelegate(navigationDelegate);
+
+      verify(
+        mockWebView.setNavigationDelegate(
+          CapturingNavigationDelegate.lastCreatedDelegate,
+        ),
+      );
+    });
+
+    test('setPlatformNavigationDelegate onProgress', () async {
+      final MockWKWebView mockWebView = MockWKWebView();
+
+      late final void Function(
+        String keyPath,
+        NSObject object,
+        Map<NSKeyValueChangeKey, Object?> change,
+      ) webViewObserveValue;
+
+      final WebKitWebViewController controller = createControllerWithMocks(
+        createMockWebView: (
+          _, {
+          void Function(
+            String keyPath,
+            NSObject object,
+            Map<NSKeyValueChangeKey, Object?> change,
+          )?
+              observeValue,
+        }) {
+          webViewObserveValue = observeValue!;
+          return mockWebView;
+        },
+      );
+
+      verify(
+        mockWebView.addObserver(
+          mockWebView,
+          keyPath: 'estimatedProgress',
+          options: <NSKeyValueObservingOptions>{
+            NSKeyValueObservingOptions.newValue,
+          },
+        ),
+      );
+
+      final WebKitNavigationDelegate navigationDelegate =
+          WebKitNavigationDelegate(
+        const PlatformNavigationDelegateCreationParams(),
+        webKitProxy: const WebKitProxy(
+          createNavigationDelegate: CapturingNavigationDelegate.new,
+        ),
+      );
+
+      late final int callbackProgress;
+      navigationDelegate.setOnProgress(
+        (int progress) => callbackProgress = progress,
+      );
+
+      await controller.setPlatformNavigationDelegate(navigationDelegate);
+
+      webViewObserveValue(
+        'estimatedProgress',
+        mockWebView,
+        <NSKeyValueChangeKey, Object?>{NSKeyValueChangeKey.newValue: 0.0},
+      );
+
+      expect(callbackProgress, 0);
+    });
   });
 
   group('WebKitJavaScriptChannelParams', () {
@@ -743,4 +825,20 @@ void main() {
       expect(callbackMessage, 'myMessage');
     });
   });
+}
+
+// Records the last created instance of itself.
+class CapturingNavigationDelegate extends WKNavigationDelegate {
+  CapturingNavigationDelegate({
+    super.didFinishNavigation,
+    super.didStartProvisionalNavigation,
+    super.didFailNavigation,
+    super.didFailProvisionalNavigation,
+    super.decidePolicyForNavigationAction,
+    super.webViewWebContentProcessDidTerminate,
+  }) : super.detached() {
+    lastCreatedDelegate = this;
+  }
+  static CapturingNavigationDelegate lastCreatedDelegate =
+      CapturingNavigationDelegate();
 }
