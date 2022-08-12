@@ -62,7 +62,9 @@ abstract class CameraInfo {
 
 @HostApi()
 abstract class CameraSelector {
-  List<int> filter(List<int> cameraInfos);
+  List<int> filter(int instanceId, List<int> cameraInfos);
+  
+  int requireLensFacing(int instanceId, int lensDirection);
 }
 
 
