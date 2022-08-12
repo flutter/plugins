@@ -422,11 +422,11 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setMaxVideoResolution:(long)width height:(long)height {
-    if (@available(iOS 11.0, *)) {
-        _player.currentItem.preferredMaximumResolution = CGSizeMake(width, height);
-    } else {
-        // Fallback on earlier versions
-    }
+  if (@available(iOS 11.0, *)) {
+    _player.currentItem.preferredMaximumResolution = CGSizeMake(width, height);
+  } else {
+    // Fallback on earlier versions
+  }
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -610,7 +610,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setMaxVideoResolution:(FLTMaxVideoResolutionMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
-  [player setMaxVideoResolution:input.width.intValue height: input.height.intValue];
+  [player setMaxVideoResolution:input.width.intValue height:input.height.intValue];
 }
 
 - (void)play:(FLTTextureMessage *)input error:(FlutterError **)error {
