@@ -22,8 +22,8 @@ import 'test_android_webview.pigeon.dart' as _i5;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeDownloadListener_0 extends _i1.Fake implements _i2.DownloadListener {
-}
+class _FakeDownloadListener_0 extends _i1.Fake
+    implements _i2.DownloadListener {}
 
 class _FakeJavaScriptChannel_1 extends _i1.Fake
     implements _i2.JavaScriptChannel {}
