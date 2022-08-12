@@ -1,6 +1,10 @@
+## 1.0.10
+
+* Updates gradle version to 7.2.2
+
 ## 1.0.9
 
-* Updates  androidx.fragment version to 1.5.1.
+* Updates androidx.fragment version to 1.5.1.
 
 ## 1.0.8
 
