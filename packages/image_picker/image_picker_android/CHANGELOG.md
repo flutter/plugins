@@ -1,3 +1,7 @@
+## 0.8.5+3
+
+* Replaces the dummy file name with the correct one on android
+
 ## 0.8.5+2
 
 * Updates `image_picker_platform_interface` constraint to the correct minimum

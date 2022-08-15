@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 
 class FileUtils {
 
@@ -42,8 +43,9 @@ class FileUtils {
     boolean success = false;
     try {
       String extension = getImageExtension(context, uri);
+      String filename = Paths.get(uri.getPath()).getFileName();
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", extension, context.getCacheDir());
+      file = File.createTempFile(filename, extension, context.getCacheDir());
       file.deleteOnExit();
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
