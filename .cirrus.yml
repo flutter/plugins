@@ -80,6 +80,27 @@ task:
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
+    - name: Linux plugin_tools_tests
+      script:
+        - cd script/tool
+        - dart pub run test
+    - name: publishable
+      env:
+        CHANGE_DESC: "$TMPDIR/change-description.txt"
+      version_check_script:
+        # For pre-submit, pass the PR label, as well as the PR description or
+        # incremental commit message (for Dependabot checks), to the script to
+        # allow for version check overrides.
+        # For post-submit, ignore platform version breaking version changes and
+        # missing version/CHANGELOG detection since the overrides aren't
+        # available outside of the context of the PR.
+        - if [[ $CIRRUS_PR == "" ]]; then
+        -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
+        - else
+        -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
+        -   ./script/tool_runner.sh version-check --check-for-missing-changes --change-description-file="$CHANGE_DESC" --pr-labels="$CIRRUS_PR_LABELS"
+        - fi
+      publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
       always:
         format_script: ./script/tool_runner.sh format --fail-on-change
@@ -93,3 +114,303 @@ task:
           - ./script/tool_runner.sh readme-check --require-excerpts --exclude=script/configs/temp_exclude_excerpt.yaml
         license_script: dart $PLUGIN_TOOL license-check
         dependabot_script: dart $PLUGIN_TOOL dependabot-check
+    - name: federated_safety
+      # This check is only meaningful for PRs, as it validates changes
+      # rather than state.
+      only_if: $CIRRUS_PR != ""
+      script: ./script/tool_runner.sh federation-safety-check
+    - name: dart_unit_tests
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      test_script:
+        - ./script/tool_runner.sh test
+    - name: analyze
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      analyze_tool_script:
+        - cd script/tool
+        - dart analyze --fatal-infos
+      analyze_script:
+        # DO NOT change the custom-analysis argument here without changing the Dart repo.
+        # See the comment in script/configs/custom_analysis.yaml for details.
+        - ./script/tool_runner.sh analyze --custom-analysis=script/configs/custom_analysis.yaml
+      pathified_analyze_script:
+        # Re-run analysis with path-based dependencies to ensure that publishing
+        # the changes won't break analysis of other packages in the respository
+        # that depend on it.
+        - ./script/tool_runner.sh make-deps-path-based --target-dependencies-with-non-breaking-updates
+        # This uses --run-on-dirty-packages rather than --packages-for-branch
+        # since only the packages changed by 'make-deps-path-based' need to be
+        # checked.
+        - dart $PLUGIN_TOOL analyze --run-on-dirty-packages --log-timing --custom-analysis=script/configs/custom_analysis.yaml
+        # Restore the tree to a clean state, to avoid accidental issues if
+        # other script steps are added to this task.
+        - git checkout .
+    # Does a sanity check that plugins at least pass analysis on the N-1 and N-2
+    # versions of Flutter stable if the plugin claims to support that version.
+    # This is to minimize accidentally making changes that break old versions
+    # (which we don't commit to supporting, but don't want to actively break)
+    # without updating the constraints.
+    # Note: The versions below should be manually updated after a new stable
+    # version comes out.
+    - name: legacy-version-analyze
+      depends_on: analyze
+      env:
+        matrix:
+          CHANNEL: "2.10.5"
+          CHANNEL: "2.8.1"
+      package_prep_script:
+        # Allow analyzing plugins that use a Pigeon version with a higher
+        # minimum Flutter/Dart version than the plugin itself.
+        - ./script/tool_runner.sh remove-dev-dependencies
+      analyze_script:
+        # Only analyze lib/; non-client code doesn't need to work on
+        # all supported legacy version.
+        - ./script/tool_runner.sh analyze --lib-only --skip-if-not-supporting-flutter-version="$CHANNEL" --custom-analysis=script/configs/custom_analysis.yaml
+    # Does a sanity check that plugins pass analysis with the lowest possible
+    # versions of all dependencies. This is to catch cases where we add use of
+    # new APIs but forget to update minimum versions of dependencies to when
+    # those APIs are introduced.
+    - name: downgraded_analyze
+      depends_on: analyze
+      analyze_script:
+        - ./script/tool_runner.sh analyze --downgrade
+    - name: readme_excerpts
+      env:
+        CIRRUS_CLONE_SUBMODULES: true
+      script: ./script/tool_runner.sh update-excerpts --fail-on-change
+    ### Web tasks ###
+    - name: web-build_all_plugins
+      env:
+        BUILD_ALL_ARGS: "web"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    ### Linux desktop tasks ###
+    - name: linux-build_all_plugins
+      env:
+        BUILD_ALL_ARGS: "linux"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      setup_script:
+        - flutter config --enable-linux-desktop
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    - name: linux-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      build_script:
+        - flutter config --enable-linux-desktop
+        - ./script/tool_runner.sh build-examples --linux
+      native_test_script:
+        - ./script/tool_runner.sh native-test --linux --no-integration
+      drive_script:
+        - xvfb-run ./script/tool_runner.sh drive-examples --linux
+
+# Heavy-workload Linux tasks.
+# These use machines with more CPUs and memory, so will reduce parallelization
+# for non-credit runs.
+task:
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  gke_container:
+    dockerfile: .ci/Dockerfile
+    builder_image_name: docker-builder-linux # gce vm image
+    builder_image_project: flutter-cirrus
+    cluster_name: test-cluster
+    zone: us-central1-a
+    namespace: default
+    cpu: 4
+    memory: 12G
+  matrix:
+    ### Android tasks ###
+    - name: android-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 5"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 5"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 5"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 5"
+          PLUGIN_SHARDING: "--shardIndex 4 --shardCount 5"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[c84a06b85f9c906705732aea6142ef6f63ff1a6f07372dc36880a9d0c2c4b9cb35b2e35cd19edc6285167c2a5cc075ec]
+      build_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        - ./script/tool_runner.sh build-examples --apk
+      lint_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        - ./script/tool_runner.sh lint-android # must come after build-examples
+      native_unit_test_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        # Native integration tests are handled by firebase-test-lab below, so
+        # only run unit tests.
+        # Must come after build-examples.
+        - ./script/tool_runner.sh native-test --android --no-integration --exclude script/configs/exclude_native_unit_android.yaml
+      firebase_test_lab_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
+        -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
+        -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
+        - else
+        -   echo "This user does not have permission to run Firebase Test Lab tests."
+        - fi
+      # Upload the full lint results to Cirrus to display in the results UI.
+      always:
+        android-lint_artifacts:
+          path: "**/reports/lint-results-debug.xml"
+          type: text/xml
+          format: android-lint
+    - name: android-build_all_plugins
+      env:
+        BUILD_ALL_ARGS: "apk"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    ### Web tasks ###
+    - name: web-platform_tests
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        CHROME_NO_SANDBOX: true
+        CHROME_DIR: /tmp/web_chromium/
+        CHROME_EXECUTABLE: $CHROME_DIR/chrome-linux/chrome
+      install_script:
+        # Install a pinned version of Chromium and its corresponding ChromeDriver.
+        # Setting CHROME_EXECUTABLE above causes this version to be used for tests.
+        - ./script/install_chromium.sh "$CHROME_DIR"
+      chromedriver_background_script:
+        - cd "$CHROME_DIR"
+        - ./chromedriver/chromedriver --port=4444
+      build_script:
+        - ./script/tool_runner.sh build-examples --web
+      drive_script:
+        - ./script/tool_runner.sh drive-examples --web --exclude=script/configs/exclude_integration_web.yaml
+
+# ARM macOS tasks.
+task:
+  << : *MACOS_ARM_TEMPLATE
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  matrix:
+    ### iOS tasks ###
+    - name: ios-build_all_plugins
+      env:
+        BUILD_ALL_ARGS: "ios --no-codesign"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    ### macOS desktop tasks ###
+    - name: macos-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        PATH: $PATH:/usr/local/bin
+      build_script:
+        - flutter config --enable-macos-desktop
+        - ./script/tool_runner.sh build-examples --macos
+      xcode_analyze_script:
+        - ./script/tool_runner.sh xcode-analyze --macos
+      xcode_analyze_deprecation_script:
+        # Ensure we don't accidentally introduce deprecated code.
+        - ./script/tool_runner.sh xcode-analyze --macos --macos-min-version=12.3
+      native_test_script:
+        - ./script/tool_runner.sh native-test --macos
+      drive_script:
+        - ./script/tool_runner.sh drive-examples --macos --exclude=script/configs/exclude_integration_macos.yaml
+
+# Intel macOS tasks.
+task:
+  << : *MACOS_INTEL_TEMPLATE
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  matrix:
+    ### iOS+macOS tasks ***
+    # TODO(stuartmorgan): Move this to ARM once google_maps_flutter has ARM
+    # support. `pod lint` makes a synthetic target that doesn't respect the
+    # pod's arch exclusions, so fails to build.
+    - name: darwin-lint_podspecs
+      script:
+        - ./script/tool_runner.sh podspecs
+    ### iOS tasks ###
+    # TODO(stuartmorgan): Swap this and ios-build_all_plugins once simulator
+    # tests are reliable on the ARM infrastructure. See discussion at
+    # https://github.com/flutter/plugins/pull/5693#issuecomment-1126011089
+    - name: ios-platform_tests
+      # Don't run full platform tests on both channels in pre-submit.
+      skip: $CIRRUS_PR != '' && $CHANNEL == 'stable'
+      env:
+        PATH: $PATH:/usr/local/bin
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+      create_simulator_script:
+        - xcrun simctl list
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-15-0 | xargs xcrun simctl boot
+      build_script:
+        - ./script/tool_runner.sh build-examples --ios
+      xcode_analyze_script:
+        - ./script/tool_runner.sh xcode-analyze --ios
+      xcode_analyze_deprecation_script:
+        # Ensure we don't accidentally introduce deprecated code.
+        - ./script/tool_runner.sh xcode-analyze --ios --ios-min-version=13.0
+      native_test_script:
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
+      drive_script:
+        # `drive-examples` contains integration tests, which changes the UI of the application.
+        # This UI change sometimes affects `xctest`.
+        # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
+        - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
+    ### macOS desktop tasks ###
+    # macos-platform_tests builds all the plugins on M1, so this build is run
+    # on Intel to give us build coverage of both host types.
+    - name: macos-build_all_plugins
+      env:
+        BUILD_ALL_ARGS: "macos"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      setup_script:
+        - flutter config --enable-macos-desktop
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE

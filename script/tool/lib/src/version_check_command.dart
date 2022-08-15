@@ -191,8 +191,6 @@ class VersionCheckCommand extends PackageLoopingCommand {
     _gitVersionFinder = await retrieveVersionFinder();
     _mergeBase = await _gitVersionFinder.getBaseSha();
     _changedFiles = await _gitVersionFinder.getChangedFiles();
-
-    print('Labels found: $_prLabels');
   }
 
   @override
