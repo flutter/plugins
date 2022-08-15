@@ -9,5 +9,7 @@
 // IDE auto-complete to the more error-prone APIs just by importing the
 // main API).
 
+// TEST
+
 export 'src/types.dart';
 export 'src/url_launcher_string.dart';
