@@ -514,9 +514,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
   /// Returns the labels associated with this PR, if any, or an empty set
   /// if that flag is not provided.
   Set<String> _getPRLabels() {
-    print('getting PR labels');
     final String labels = getStringArg(_prLabelsArg);
-    print('found string: "$labels" (${argResults!.wasParsed(_prLabelsArg)})');
     if (labels.isEmpty) {
       return <String>{};
     }
