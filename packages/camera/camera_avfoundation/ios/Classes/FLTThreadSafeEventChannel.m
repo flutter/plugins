@@ -21,8 +21,9 @@
 
 - (void)setStreamHandler:(NSObject<FlutterStreamHandler> *)handler
               completion:(void (^)(void))completion {
+  __weak typeof(self) weakSelf = self;
   FLTEnsureToRunOnMainQueue(^{
-    [self.channel setStreamHandler:handler];
+    [weakSelf.channel setStreamHandler:handler];
     completion();
   });
 }

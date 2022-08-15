@@ -1,3 +1,7 @@
+## 0.9.8+4
+
+* Fixes a crash due to sending orientation change events when the plugin has been deallocated. 
+
 ## 0.9.8+3
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
