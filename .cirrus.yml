@@ -83,8 +83,6 @@ task:
     - name: publishable
       env:
         CHANGE_DESC: "$TMPDIR/change-description.txt"
-      debug_script:
-        - echo "Labels: $CIRRUS_PR_LABELS"
       version_check_script:
         # For pre-submit, pass the PR label, as well as the PR description or
         # incremental commit message (for Dependabot checks), to the script to
