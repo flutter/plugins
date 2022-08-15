@@ -17,6 +17,22 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
+    directory: "/packages/camera/camera_android_camerax/android"
+    commit-message:
+      prefix: "[camera]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/camera/camera_android_camerax/example/android/app"
+    commit-message:
+      prefix: "[camera]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
     directory: "/packages/camera/camera/example/android/app"
     commit-message:
       prefix: "[camera]"
