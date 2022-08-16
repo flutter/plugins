@@ -260,10 +260,6 @@ NSString *const errorMethod = @"error";
           // cannot use the outter `strongSelf`
           typeof(self) strongSelf = weakSelf;
           if (!strongSelf) return;
-          // Dispatch back to capture session queue to delete reference.
-          // Retain cycle is broken after the dictionary entry is cleared.
-          // This is to keep the behavior with the previous `selfReference` approach in the
-          // FLTSavePhotoDelegate, where delegate is released only after capture completion.
           [strongSelf.inProgressSavePhotoDelegates removeObjectForKey:@(settings.uniqueID)];
         });
 

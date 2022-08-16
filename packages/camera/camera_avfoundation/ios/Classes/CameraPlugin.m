@@ -55,6 +55,10 @@
       [[FLTThreadSafeMethodChannel alloc] initWithMethodChannel:methodChannel];
 }
 
+- (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  [UIDevice.currentDevice endGeneratingDeviceOrientationNotifications];
+}
+
 - (void)startOrientationListener {
   [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -263,6 +267,9 @@
   // Create FLTCam only if granted camera access (and audio access if audio is enabled)
   __weak typeof(self) weakSelf = self;
   FLTRequestCameraPermissionWithCompletionHandler(^(FlutterError *error) {
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+
     if (error) {
       [result sendFlutterError:error];
     } else {
@@ -273,14 +280,17 @@
       if (audioEnabled) {
         // Setup audio capture session only if granted audio access.
         FLTRequestAudioPermissionWithCompletionHandler(^(FlutterError *error) {
+          // cannot use the outter `strongSelf`
+          typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) return;
           if (error) {
             [result sendFlutterError:error];
           } else {
-            [weakSelf createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+            [strongSelf createCameraOnSessionQueueWithCreateMethodCall:call result:result];
           }
         });
       } else {
-        [weakSelf createCameraOnSessionQueueWithCreateMethodCall:call result:result];
+        [strongSelf createCameraOnSessionQueueWithCreateMethodCall:call result:result];
       }
     }
   });

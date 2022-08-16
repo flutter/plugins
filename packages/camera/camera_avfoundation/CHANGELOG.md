@@ -1,6 +1,6 @@
 ## 0.9.8+4
 
-* Fixes a crash due to sending orientation change events when the plugin has been deallocated. 
+* Fixes a crash due to sending orientation change events when the engine is teared down. 
 
 ## 0.9.8+3
 
