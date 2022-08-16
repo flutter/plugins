@@ -1,3 +1,21 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
+## 2.9.3
+
+* Updates `webview_flutter_platform_interface` constraint to the correct minimum
+  version.
+
+## 2.9.2
+
+* Fixes crash when an Objective-C object in `FWFInstanceManager` is released, but the dealloc
+  callback is no longer available.
+
+## 2.9.1
+
+* Fixes regression where the behavior for the `UIScrollView` insets were removed.
+
 ## 2.9.0
 
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).

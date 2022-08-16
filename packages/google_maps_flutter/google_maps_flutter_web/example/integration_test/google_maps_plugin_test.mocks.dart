@@ -25,8 +25,8 @@ class _FakeStreamController_0<T> extends _i1.Fake
 
 class _FakeLatLngBounds_1 extends _i1.Fake implements _i3.LatLngBounds {}
 
-class _FakeScreenCoordinate_2 extends _i1.Fake implements _i3.ScreenCoordinate {
-}
+class _FakeScreenCoordinate_2 extends _i1.Fake
+    implements _i3.ScreenCoordinate {}
 
 class _FakeLatLng_3 extends _i1.Fake implements _i3.LatLng {}
 

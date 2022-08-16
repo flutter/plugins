@@ -21,10 +21,10 @@ import 'google_maps_controller_test.mocks.dart';
 const double _acceptableDelta = 0.0000000001;
 
 @GenerateMocks(<Type>[], customMocks: <MockSpec<dynamic>>[
-  MockSpec<CirclesController>(returnNullOnMissingStub: true),
-  MockSpec<PolygonsController>(returnNullOnMissingStub: true),
-  MockSpec<PolylinesController>(returnNullOnMissingStub: true),
-  MockSpec<MarkersController>(returnNullOnMissingStub: true),
+  MockSpec<CirclesController>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<PolygonsController>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<PolylinesController>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<MarkersController>(onMissingStub: OnMissingStub.returnDefault),
 ])
 
 /// Test Google Map Controller
@@ -450,8 +450,6 @@ void main() {
             initialCameraPosition: const CameraPosition(
               target: LatLng(43.308, -5.6910),
               zoom: 12,
-              bearing: 0,
-              tilt: 0,
             ),
           );
 

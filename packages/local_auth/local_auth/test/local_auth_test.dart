@@ -37,7 +37,6 @@ void main() {
         const AndroidAuthMessages(),
         const WindowsAuthMessages(),
       ],
-      options: const AuthenticationOptions(),
     )).called(1);
   });
 

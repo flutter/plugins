@@ -200,8 +200,7 @@ void main() {
   });
 
   testWidgets('Update non platform related attr', (WidgetTester tester) async {
-    Polyline p1 =
-        const Polyline(polylineId: PolylineId('polyline_1'), onTap: null);
+    Polyline p1 = const Polyline(polylineId: PolylineId('polyline_1'));
     final Set<Polyline> prev = <Polyline>{p1};
     p1 = Polyline(
         polylineId: const PolylineId('polyline_1'), onTap: () => print(2 + 2));

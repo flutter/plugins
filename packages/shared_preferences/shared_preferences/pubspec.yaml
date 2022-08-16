@@ -43,4 +43,3 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  pedantic: ^1.10.0

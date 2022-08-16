@@ -1,5 +1,6 @@
-## NEXT
+## 0.9.8+3
 
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 * Ignores missing return warnings in preparation for [upcoming analysis changes](https://github.com/flutter/flutter/issues/105750).
 
 ## 0.9.8+2

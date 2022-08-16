@@ -9,6 +9,8 @@ list(APPEND PLUGIN_SOURCES
   "file_dialog_controller.h"
   "file_selector_plugin.cpp"
   "file_selector_plugin.h"
+  "messages.g.cpp"
+  "messages.g.h"
   "string_utils.cpp"
   "string_utils.h"
 )
@@ -24,6 +26,9 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
+# Override apply_standard_settings for exceptions due to
+# https://developercommunity.visualstudio.com/t/stdany-doesnt-link-when-exceptions-are-disabled/376072
+target_compile_definitions(${PLUGIN_NAME} PRIVATE "_HAS_EXCEPTIONS=1")
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(file_selector_bundled_libraries
@@ -67,6 +72,9 @@ apply_standard_settings(${TEST_RUNNER})
 target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
 target_link_libraries(${TEST_RUNNER} PRIVATE gtest gmock)
+# Override apply_standard_settings for exceptions due to
+# https://developercommunity.visualstudio.com/t/stdany-doesnt-link-when-exceptions-are-disabled/376072
+target_compile_definitions(${TEST_RUNNER} PRIVATE "_HAS_EXCEPTIONS=1")
 # flutter_wrapper_plugin has link dependencies on the Flutter DLL.
 add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different

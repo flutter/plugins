@@ -32,10 +32,17 @@ class AnalyzeCommand extends PackageLoopingCommand {
         valueHelp: 'dart-sdk',
         help: 'An optional path to a Dart SDK; this is used to override the '
             'SDK used to provide analysis.');
+    argParser.addFlag(_downgradeFlag,
+        help: 'Runs "flutter pub downgrade" before analysis to verify that '
+            'the minimum constraints are sufficiently new for APIs used.');
+    argParser.addFlag(_libOnlyFlag,
+        help: 'Only analyze the lib/ directory of the main package, not the '
+            'entire package.');
   }
 
   static const String _customAnalysisFlag = 'custom-analysis';
-
+  static const String _downgradeFlag = 'downgrade';
+  static const String _libOnlyFlag = 'lib-only';
   static const String _analysisSdk = 'analysis-sdk';
 
   late String _dartBinaryPath;
@@ -104,23 +111,33 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
-    // Analysis runs over the package and all subpackages, so all of them need
-    // `flutter pub get` run before analyzing. `example` packages can be
-    // skipped since 'flutter packages get' automatically runs `pub get` in
-    // examples as part of handling the parent directory.
+    final bool libOnly = getBoolArg(_libOnlyFlag);
+
+    if (libOnly && !package.libDirectory.existsSync()) {
+      return PackageResult.skip('No lib/ directory.');
+    }
+
+    if (getBoolArg(_downgradeFlag)) {
+      if (!await _runPubCommand(package, 'downgrade')) {
+        return PackageResult.fail(<String>['Unable to downgrade dependencies']);
+      }
+    }
+
+    // Analysis runs over the package and all subpackages (unless only lib/ is
+    // being analyzed), so all of them need `flutter pub get` run before
+    // analyzing. `example` packages can be skipped since 'flutter packages get'
+    // automatically runs `pub get` in examples as part of handling the parent
+    // directory.
     final List<RepositoryPackage> packagesToGet = <RepositoryPackage>[
       package,
-      ...await getSubpackages(package).toList(),
+      if (!libOnly) ...await getSubpackages(package).toList(),
     ];
     for (final RepositoryPackage packageToGet in packagesToGet) {
       if (packageToGet.directory.basename != 'example' ||
           !RepositoryPackage(packageToGet.directory.parent)
               .pubspecFile
               .existsSync()) {
-        final int exitCode = await processRunner.runAndStream(
-            flutterCommand, <String>['pub', 'get'],
-            workingDir: packageToGet.directory);
-        if (exitCode != 0) {
+        if (!await _runPubCommand(packageToGet, 'get')) {
           return PackageResult.fail(<String>['Unable to get dependencies']);
         }
       }
@@ -129,12 +146,19 @@ class AnalyzeCommand extends PackageLoopingCommand {
     if (_hasUnexpecetdAnalysisOptions(package)) {
       return PackageResult.fail(<String>['Unexpected local analysis options']);
     }
-    final int exitCode = await processRunner.runAndStream(
-        _dartBinaryPath, <String>['analyze', '--fatal-infos'],
+    final int exitCode = await processRunner.runAndStream(_dartBinaryPath,
+        <String>['analyze', '--fatal-infos', if (libOnly) 'lib'],
         workingDir: package.directory);
     if (exitCode != 0) {
       return PackageResult.fail();
     }
     return PackageResult.success();
+  }
+
+  Future<bool> _runPubCommand(RepositoryPackage package, String command) async {
+    final int exitCode = await processRunner.runAndStream(
+        flutterCommand, <String>['pub', command],
+        workingDir: package.directory);
+    return exitCode == 0;
   }
 }
