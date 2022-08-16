@@ -22,13 +22,9 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   google_maps: ^6.1.0
-  google_maps_flutter_platform_interface: ^2.2.0
+  google_maps_flutter_platform_interface: ^2.2.2
   sanitize_html: ^2.0.0
   stream_transform: ^2.0.0
-
-dependency_overrides:
-  google_maps_flutter_platform_interface:
-    path: ../google_maps_flutter_platform_interface
 
 dev_dependencies:
   flutter_test:
