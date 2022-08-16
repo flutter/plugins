@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
@@ -22,6 +21,7 @@ void main() {
   runApp(_MyApp());
 }
 
+// To try without auto-consume, change `true` to `false` here.
 const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
@@ -282,7 +282,6 @@ class _MyAppState extends State<_MyApp> {
                       final GooglePlayPurchaseParam purchaseParam =
                           GooglePlayPurchaseParam(
                               productDetails: productDetails,
-                              applicationUserName: null,
                               changeSubscriptionParam: oldSubscription != null
                                   ? ChangeSubscriptionParam(
                                       oldPurchaseDetails: oldSubscription,
@@ -292,7 +291,8 @@ class _MyAppState extends State<_MyApp> {
                       if (productDetails.id == _kConsumableId) {
                         _inAppPurchasePlatform.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: _kAutoConsume || Platform.isIOS);
+                            // ignore: avoid_redundant_argument_values
+                            autoConsume: _kAutoConsume);
                       } else {
                         _inAppPurchasePlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);

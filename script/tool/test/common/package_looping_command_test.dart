@@ -373,11 +373,9 @@ void main() {
 
     test('skips unsupported Dart versions when requested', () async {
       final RepositoryPackage excluded = createFakePackage(
-          'excluded_package', packagesDir,
-          isFlutter: false, dartConstraint: '>=2.17.0 <3.0.0');
+          'excluded_package', packagesDir, dartConstraint: '>=2.17.0 <3.0.0');
       final RepositoryPackage included = createFakePackage(
-          'a_package', packagesDir,
-          isFlutter: false, dartConstraint: '>=2.14.0 <3.0.0');
+          'a_package', packagesDir);
 
       final TestPackageLoopingCommand command = createTestCommand(
           packageLoopingType: PackageLoopingType.includeAllSubpackages,
@@ -409,7 +407,7 @@ void main() {
       createFakePackage('package_b', packagesDir);
 
       final TestPackageLoopingCommand command =
-          createTestCommand(hasLongOutput: true);
+          createTestCommand();
       final List<String> output = await runCommand(command);
 
       const String separator =
@@ -443,7 +441,7 @@ void main() {
       createFakePackage('package_b', packagesDir);
 
       final TestPackageLoopingCommand command =
-          createTestCommand(hasLongOutput: true);
+          createTestCommand();
       final List<String> output =
           await runCommand(command, arguments: <String>['--log-timing']);
 
@@ -595,7 +593,7 @@ void main() {
       createFakePackage('package_b', packagesDir);
 
       final TestPackageLoopingCommand command =
-          createTestCommand(hasLongOutput: true, captureOutput: true);
+          createTestCommand(captureOutput: true);
       final List<String> output = await runCommand(command);
 
       expect(output, isEmpty);
@@ -786,7 +784,7 @@ void main() {
       createFakePackage('package_f', packagesDir);
 
       final TestPackageLoopingCommand command =
-          createTestCommand(hasLongOutput: true);
+          createTestCommand();
       final List<String> output = await runCommand(command);
 
       expect(
@@ -812,7 +810,7 @@ void main() {
       createFakePackage('package_a', packagesDir);
 
       final TestPackageLoopingCommand command =
-          createTestCommand(hasLongOutput: true);
+          createTestCommand();
       final List<String> output =
           await runCommand(command, arguments: <String>['--exclude=package_a']);
 
