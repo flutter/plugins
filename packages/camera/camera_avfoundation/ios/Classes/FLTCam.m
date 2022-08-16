@@ -254,11 +254,11 @@ NSString *const errorMethod = @"error";
            initWithPath:path
                 ioQueue:self.photoIOQueue
       completionHandler:^(NSString *_Nullable path, NSError *_Nullable error) {
-        typeof(weakSelf) strongSelf = weakSelf;
+        typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         dispatch_async(strongSelf.captureSessionQueue, ^{
           // cannot use the outter `strongSelf`
-          typeof(weakSelf) strongSelf = weakSelf;
+          typeof(self) strongSelf = weakSelf;
           if (!strongSelf) return;
           // Dispatch back to capture session queue to delete reference.
           // Retain cycle is broken after the dictionary entry is cleared.
@@ -930,12 +930,12 @@ NSString *const errorMethod = @"error";
     __weak typeof(self) weakSelf = self;
     [threadSafeEventChannel setStreamHandler:_imageStreamHandler
                                   completion:^{
-                                    typeof(weakSelf) strongSelf = weakSelf;
+                                    typeof(self) strongSelf = weakSelf;
                                     if (!strongSelf) return;
 
                                     dispatch_async(strongSelf.captureSessionQueue, ^{
                                       // cannot use the outter strongSelf
-                                      typeof(weakSelf) strongSelf = weakSelf;
+                                      typeof(self) strongSelf = weakSelf;
                                       if (!strongSelf) return;
 
                                       strongSelf.isStreamingImages = YES;

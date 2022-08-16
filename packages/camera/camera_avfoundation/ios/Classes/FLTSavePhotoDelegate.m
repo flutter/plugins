@@ -33,7 +33,7 @@
   }
   __weak typeof(self) weakSelf = self;
   dispatch_async(self.ioQueue, ^{
-    typeof(weakSelf) strongSelf = weakSelf;
+    typeof(self) strongSelf = weakSelf;
     if (!strongSelf) return;
 
     NSData *data = photoDataProvider();

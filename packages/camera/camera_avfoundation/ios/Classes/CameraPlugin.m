@@ -290,7 +290,7 @@
                                                 result:(FLTThreadSafeFlutterResult *)result {
   __weak typeof(self) weakSelf = self;
   dispatch_async(self.captureSessionQueue, ^{
-    typeof(weakSelf) strongSelf = weakSelf;
+    typeof(self) strongSelf = weakSelf;
     if (!strongSelf) return;
 
     NSString *cameraName = createMethodCall.arguments[@"cameraName"];
