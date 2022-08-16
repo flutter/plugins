@@ -40,6 +40,9 @@ class UnknownMapObjectIdError extends Error {
 }
 
 /// Android specific settings for [GoogleMap].
+// TODO(stuartmorgan): Deprecate this in favor of pointing people who want to
+// change this to using the Android implementation Dart class directly. This
+// should be done as part of switching the default to hybrid composition.
 class AndroidGoogleMapsFlutter {
   AndroidGoogleMapsFlutter._();
 
@@ -55,7 +58,7 @@ class AndroidGoogleMapsFlutter {
   static bool get useAndroidViewSurface {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
+    if (platform is GoogleMapsFlutterAndroid) {
       return platform.useAndroidViewSurface;
     }
     return false;
@@ -73,7 +76,7 @@ class AndroidGoogleMapsFlutter {
   static set useAndroidViewSurface(bool useAndroidViewSurface) {
     final GoogleMapsFlutterPlatform platform =
         GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
+    if (platform is GoogleMapsFlutterAndroid) {
       platform.useAndroidViewSurface = useAndroidViewSurface;
     }
   }

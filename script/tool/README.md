@@ -105,6 +105,8 @@ cd <repository root>
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages plugin_name
 # Run all tests for macOS:
 dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages plugin_name
+# Run all tests for Windows:
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --windows --packages plugin_name
 ```
 
 ### Update README.md from Example Sources

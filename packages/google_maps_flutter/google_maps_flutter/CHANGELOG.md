@@ -1,6 +1,17 @@
 ## 2.2.0
 
 * Adds support for heatmap layers.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Moves Android and iOS implementations to federated packages.
+
+## 2.1.10
+
+* Avoids map shift when scrolling on iOS.
+
+## 2.1.9
+
+* Updates integration tests to use the new inspector interface.
+* Removes obsolete test-only method for accessing a map controller's method channel.
 * Ignores unnecessary import warnings in preparation for [upcoming Flutter changes](https://github.com/flutter/flutter/pull/106316).
 
 ## 2.1.8

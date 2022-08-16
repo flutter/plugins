@@ -43,7 +43,7 @@ android {
     }
     dependencies {
         testImplementation 'junit:junit:4.13.2'
-        testImplementation 'org.mockito:mockito-inline:3.9.0'
+        testImplementation 'org.mockito:mockito-inline:4.7.0'
     }
 
 

@@ -186,7 +186,7 @@ void main() {
         extraFiles: <String>['example/build.excerpt.yaml']);
 
     processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-      MockProcess(exitCode: 0), // dart pub get
+      MockProcess(), // dart pub get
       MockProcess(exitCode: 1), // dart run build_runner ...
     ];
 
@@ -211,8 +211,8 @@ void main() {
         extraFiles: <String>['example/build.excerpt.yaml']);
 
     processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-      MockProcess(exitCode: 0), // dart pub get
-      MockProcess(exitCode: 0), // dart run build_runner ...
+      MockProcess(), // dart pub get
+      MockProcess(), // dart run build_runner ...
       MockProcess(exitCode: 1), // dart run code_excerpt_updater ...
     ];
 

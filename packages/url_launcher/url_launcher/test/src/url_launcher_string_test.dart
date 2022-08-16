@@ -83,8 +83,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrlString(urlString, mode: LaunchMode.platformDefault),
-          isTrue);
+      expect(await launchUrlString(urlString), isTrue);
     });
 
     test('explicit default launch mode with non-web URL', () async {
@@ -100,8 +99,7 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launchUrlString(urlString, mode: LaunchMode.platformDefault),
-          isTrue);
+      expect(await launchUrlString(urlString), isTrue);
     });
 
     test('in-app webview', () async {
@@ -246,7 +244,7 @@ void main() {
       expect(await launchUrlString(emailLaunchUrlString), isTrue);
     });
 
-    test('allows non-parseable url', () async {
+    test('allows non-parsable url', () async {
       // Not a valid Dart [Uri], but a valid URL on at least some platforms.
       const String urlString =
           'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1';

@@ -1,6 +1,7 @@
 ## 0.4.1
 
 * Adds support for heatmap layers.
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
 ## 0.4.0+1
 

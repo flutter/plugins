@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -90,11 +91,17 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
+    int allowedAuthenticators =
+        BiometricManager.Authenticators.BIOMETRIC_WEAK
+            | BiometricManager.Authenticators.BIOMETRIC_STRONG;
+
     if (allowCredentials) {
-      promptBuilder.setDeviceCredentialAllowed(true);
+      allowedAuthenticators |= BiometricManager.Authenticators.DEVICE_CREDENTIAL;
     } else {
       promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
+
+    promptBuilder.setAllowedAuthenticators(allowedAuthenticators);
     this.promptInfo = promptBuilder.build();
   }
 
@@ -141,7 +148,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         break;
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
-        if (promptInfo.isDeviceCredentialAllowed()) return;
         if (call.argument("useErrorDialogs")) {
           showGoToSettingsDialog(
               (String) call.argument("biometricRequired"),
