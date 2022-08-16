@@ -2,8 +2,6 @@ name: camera_android_camerax
 description: A new Flutter plugin project.
 repository: https://github.com/flutter/plugins/tree/main/packages/camera/camera_android_camerax
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+camera%22
-version: 0.0.0
-homepage:
 publish_to: 'none'
 
 environment:
@@ -31,6 +29,7 @@ flutter:
       android:
         package: io.flutter.plugins.camerax
         pluginClass: CameraAndroidCameraxPlugin
+        dartPluginClass: AndroidCameraCameraX
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
@@ -64,11 +63,10 @@ flutter:
   # https://flutter.dev/custom-fonts/#from-packages
 
 dependencies:
-  camera_platform_interface: ^2.0.2
+  camera_platform_interface: ^2.2.0
   flutter:
     sdk: flutter
   pigeon: ^3.2.6
-  plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0

@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:camera_android_camerax/camera_android_camerax.dart';
+// import 'package:camera_android_camerax/camera_android_camerax.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 
 late List<CameraDescription> _cameras;
 
 Future<void> main() async {
-  _cameras = await availableCameras();
+  WidgetsFlutterBinding.ensureInitialized();
+  _cameras = await CameraPlatform.instance.availableCameras();
   runApp(const MyApp());
 }
 

@@ -2,15 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 
 import 'camera_info.dart';
 import 'camera_selector.dart';
 import 'process_camera_provider.dart';
 
-class AndroidCameraCameraX {
+class AndroidCameraCameraX extends CameraPlatform {
+  /// Registers this calss as the default instance of [CameraPlatform].
+  static void registerWith() {
+    CameraPlatform.instance = AndroidCameraCamerax();
+
+    CameraInfoFlutterApi.setup(CameraInfoFlutterApiImpl());
+    CameraSelectorFlutterApi.setup(CameraSelectorFlutterApiImpl());
+    ProcessCameraProviderFlutterApi.setup(ProcessCameraProviderFlutterApiImpl());
+  }
+
   /// Returns list of all available cameras and their descriptions.
-  Future<List<CameraDescription>> availableCameras() {
+  @override
+  Future<List<CameraDescription>> availableCameras() async {
     ProcessCameraProvider provider = provider.getInstance();
     List<CameraInfo>? availableCameraInfos = provider.getAvailableCameras();
 
@@ -53,6 +65,10 @@ class AndroidCameraCameraX {
         'cam' + lensDirection.toString().toUpperCase();
     int sensorOrientation = cameraInfo.getSensorRotationDegrees();
 
-    return CameraDescription(name: name, lensDirection: lensDirection, sensorOrientation: sensorOrientation);
+    return CameraDescription(
+      name: name,
+      lensDirection: lensDirection,
+      sensorOrientation: sensorOrientation
+    );
   }
 }
