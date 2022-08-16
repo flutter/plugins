@@ -73,7 +73,7 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
-    directory: "/packages/google_maps_flutter/google_maps_flutter/android"
+    directory: "/packages/google_maps_flutter/google_maps_flutter/example/android/app"
     commit-message:
       prefix: "[google_maps]"
     schedule:
@@ -81,7 +81,15 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "gradle"
-    directory: "/packages/google_maps_flutter/google_maps_flutter/example/android/app"
+    directory: "/packages/google_maps_flutter/google_maps_flutter_android/android"
+    commit-message:
+      prefix: "[google_maps]"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "gradle"
+    directory: "/packages/google_maps_flutter/google_maps_flutter_android/example/android/app"
     commit-message:
       prefix: "[google_maps]"
     schedule:
