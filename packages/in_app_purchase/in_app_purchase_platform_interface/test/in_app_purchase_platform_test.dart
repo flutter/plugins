@@ -133,7 +133,7 @@ void main() {
       InAppPurchasePlatformAddition.instance = null;
     });
 
-    test('Cannot be implemented with `implements`', () {
+    test('Default instance is null', () {
       expect(InAppPurchasePlatformAddition.instance, isNull);
     });
 
