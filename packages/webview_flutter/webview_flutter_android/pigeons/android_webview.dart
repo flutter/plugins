@@ -51,6 +51,24 @@ class WebResourceErrorData {
   String description;
 }
 
+/// Handles methods calls to the native Java Object class.
+///
+/// Also handles calls to remove the reference to an instance with `dispose`.
+///
+/// See https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html.
+@HostApi(dartHostTestHandler: 'TestJavaObjectHostApi')
+abstract class JavaObjectHostApi {
+  void dispose(int identifier);
+}
+
+/// Handles callbacks methods for the native Java Object class.
+///
+/// See https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html.
+@FlutterApi()
+abstract class JavaObjectFlutterApi {
+  void dispose(int identifier);
+}
+
 @HostApi()
 abstract class CookieManagerHostApi {
   @async

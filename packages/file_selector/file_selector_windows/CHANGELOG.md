@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Converts the method channel to Pigeon.
+
 ## 0.9.0
 
 * **BREAKING CHANGE**: Methods that take `XTypeGroup`s now throw an

@@ -1,3 +1,7 @@
+## 3.0.7
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+
 ## 3.0.6
 
 * Ignores deprecation warnings for upcoming styleFrom button API changes.

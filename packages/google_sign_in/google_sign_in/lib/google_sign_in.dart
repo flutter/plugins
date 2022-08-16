@@ -192,10 +192,7 @@ class GoogleSignIn {
     List<String> scopes = const <String>[],
     String? hostedDomain,
   }) {
-    return GoogleSignIn(
-        signInOption: SignInOption.standard,
-        scopes: scopes,
-        hostedDomain: hostedDomain);
+    return GoogleSignIn(scopes: scopes, hostedDomain: hostedDomain);
   }
 
   /// Factory for creating sign in suitable for games. This option is only

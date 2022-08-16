@@ -1,3 +1,8 @@
+## NEXT
+
+* Fixes avoid_redundant_argument_values lint warnings and minor typos.
+* Moves Android and iOS implementations to federated packages.
+
 ## 2.1.10
 
 * Avoids map shift when scrolling on iOS.
