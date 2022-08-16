@@ -1,3 +1,7 @@
+## 2.0.20
+
+* Reverts changes in versions 2.0.18 and 2.0.19.
+
 ## 2.0.19
 
 * Bumps kotlin to 1.7.10
