@@ -1,6 +1,6 @@
 ## 2.3.9
 
-* Updates exoplayer-dash to 2.18.1.
+* Updates ExoPlayer to 2.18.1.
 
 ## 2.3.8
 
