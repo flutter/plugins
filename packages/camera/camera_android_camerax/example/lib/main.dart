@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:camera_android_camerax/camera_android_camerax.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 
-void main() {
+late List<CameraDescription> _cameras;
+
+Future<void> main() async {
+  _cameras = await availableCameras();
   runApp(const MyApp());
 }
 
@@ -23,10 +28,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Available cameras:'),
         ),
-        body: const Center(
-          child: Text('Hello, world!'),
+        body: Center(
+          child: (_cameras.isEmpty ? Text('RIP') : Text('YAY')),
         ),
       ),
     );

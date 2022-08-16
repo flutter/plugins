@@ -4,7 +4,18 @@
 
 package io.flutter.plugins.camerax;
 
-public class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
+import androidx.annotation.NonNull;
+import androidx.camera.core.CameraInfo;
+import androidx.camera.core.CameraSelector;
+import io.flutter.plugins.camerax.CameraInfoFlutterApiImpl;
+import io.flutter.plugins.camerax.CameraSelectorFlutterApiImpl;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraSelectorHostApi;
+import io.flutter.plugins.camerax.InstanceManager;
+import io.flutter.plugin.common.BinaryMessenger;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CameraSelectorHostApiImpl implements CameraSelectorHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
@@ -15,40 +26,40 @@ public class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
     this.instanceManager = instanceManager;
   }
 
-  @override
-  Long requireLensFacing(@NonNull Long instanceId, @NonNull Long lensDirection) {
+  @Override
+  public Long requireLensFacing(@NonNull Long instanceId, @NonNull Long lensDirection) {
     CameraSelector cameraSelector =
-      (CameraSelector) instanceManager.getInstance(instanceId); // may be null?
+      (CameraSelector) instanceManager.getInstance(instanceId); // may be null? // TODO(cs): this is not necessary? remove identifier
     CameraSelector cameraSelectorWithLensSpecified =
-      cameraSelector.requireLensFacing(lensDirection).build(); //TODO(cs): make sure values align with Dart
+      (new CameraSelector.Builder()).requireLensFacing(Math.toIntExact(lensDirection)).build();
     
-    final CameraSelectorFlutterApi cameraInfoFlutterApi =
-        CameraSelectorFlutterApi(binaryMessenger, instanceManager);
+    final CameraSelectorFlutterApiImpl cameraInfoFlutterApi =
+        new CameraSelectorFlutterApiImpl(binaryMessenger, instanceManager);
     cameraInfoFlutterApi.create(cameraSelectorWithLensSpecified, result -> {});
-    int cameraSelectorWithLensSpecifiedId = instanceManager.getIdentifierForStrongReference(cameraSelectorWithLensSpecified);
+    Long cameraSelectorWithLensSpecifiedId = instanceManager.getIdentifierForStrongReference(cameraSelectorWithLensSpecified);
 
     return cameraSelectorWithLensSpecifiedId;
   }
 
-  @override
-  List<Long> filter(@NonNull Long instanceId, @NonNull List<Long> cameraInfos) { //TODO(cs): change argument to cameraInfosId
+  @Override
+  public List<Long> filter(@NonNull Long instanceId, @NonNull List<Long> cameraInfos) { //TODO(cs): change argument to cameraInfosId
     CameraSelector cameraSelector =
       (CameraSelector) instanceManager.getInstance(instanceId); // may be null?
-    List<CameraInfo> cameraInfosForFilter = new List<CameraInfo>();
+    List<CameraInfo> cameraInfosForFilter = new ArrayList<CameraInfo>();
 
-    for (int cameraInfoId : cameraInfos) {
+    for (Long cameraInfoId : cameraInfos) {
       CameraInfo cameraInfo = (CameraInfo) instanceManager.getInstance(cameraInfoId);
-      cameraInfosForFilter.add(cameraInfosForFilter);
+      cameraInfosForFilter.add(cameraInfo);
     }
  
     List<CameraInfo> filteredCameraInfos = cameraSelector.filter(cameraInfosForFilter);
-    final CameraSelectorFlutterApi cameraInfoFlutterApi =
-      CameraSelectorFlutterApi(binaryMessenger, instanceManager);
-    List<Long> filteredCameraInfosIds = new List<Long>();
+    final CameraInfoFlutterApiImpl cameraInfoFlutterApiImpl =
+      new CameraInfoFlutterApiImpl(binaryMessenger, instanceManager);
+    List<Long> filteredCameraInfosIds = new ArrayList<Long>();
 
     for (CameraInfo cameraInfo : filteredCameraInfos) {
-      cameraInfoFlutterApi.create(cameraInfo, result -> {});
-      int cameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
+      cameraInfoFlutterApiImpl.create(cameraInfo, result -> {});
+      Long cameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
       filteredCameraInfosIds.add(cameraInfoId);
     }
 

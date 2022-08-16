@@ -2,42 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'camera_filter.dart';
+import 'package:flutter/services.dart';
+
+import 'camera_info.dart';
+import 'camerax.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
-
-//TODO(cs):match these to android constants
-enum CameraXLensDirection {
-  facing_front,
-  facing_back,
-}
 
 class CameraSelector extends JavaObject {
   CameraSelector({
     super.binaryMessenger,
     super.instanceManager,
-    int? lensFacing}) : super.detached() {
+    int? lensFacing}) :
+    super.detached(),
     _api = CameraSelectorHostApiImpl(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
-    ),
-    _api.create(this, lensFacing); // ???
-  }
+    );
+    // _api.create(this, lensFacing); // ???
+  // }
 
   CameraSelector.detached() : super.detached();
 
-  static CameraSelectorHostApiImpl _api;
+  final BinaryMessenger? binaryMessenger;
 
+  final InstanceManager instanceManager;
+
+  static late final CameraSelectorHostApiImpl _api;
+
+  static final int LENS_FACING_BACK = 1;
   /// Selector for default front facing camera.
   static final CameraSelector defaultFrontCamera =
-      requireLensFacing(CameraXLensDirection.facing_front);
+    CameraSelector().requireLensFacing(LENS_FACING_BACK);
 
+  static final int LENS_FACING_FRONT = 0;
   /// Selector for default back facing camera.
   static final CameraSelector defaultBackCamera =
-      requireLensFacing(CameraXLensDirection.facing_back);
+    CameraSelector().requireLensFacing(LENS_FACING_FRONT);
 
   /// Returns selector with the lens direction specified.
-  CameraSelector requireLensFacing(int lensFacing) {
+  Future<CameraSelector> requireLensFacing(int lensFacing) {
     CameraSelectorFlutterApi.setup(
       CameraSelectorFlutterApiImpl(
         binaryMessenger: binaryMessenger,
@@ -51,7 +55,7 @@ class CameraSelector extends JavaObject {
   }
 
   /// Filters available cameras based on provided [CameraInfo]s.
-  List<CameraInfo> filter(List<CameraInfo> cameraInfos) {
+  Future<List<CameraInfo>> filter(List<CameraInfo> cameraInfos) {
     return _api.filterFromInstance(
       instanceManager.getIdentifier(this)!,
       cameraInfos,
@@ -76,24 +80,22 @@ class CameraSelectorHostApiImpl extends CameraSelectorHostApi {
   /// Maintains instances stored to communicate with native language objects.
   final InstanceManager instanceManager;
 
-  CameraSelector requireLensFacingInInstance(
+  Future<CameraSelector> requireLensFacingInInstance(
     int instanceId,
-    List<CameraInfo> cameraInfos,
+    int lensFacing,
   ) async {
-    List<int> cameraInfoIds = cameraInfos.map<CameraInfo>(
-        (CameraInfo info) => instanceManager.getIdentifier(info)!);
-    int cameraSelectorId = await requireLensFacing(instanceId, cameraInfoIds);
+    int cameraSelectorId = await requireLensFacing(instanceId, lensFacing);
 
     CameraSelector? cameraSelector = instanceManager
         .getInstanceWithWeakReference(cameraSelectorId) as CameraSelector;
     return cameraSelector;
   }
 
-  List<CameraInfo> filterFromInstance(
+  Future<List<CameraInfo>> filterFromInstance(
     int instanceId,
     List<CameraInfo> cameraInfos,
-  ) {
-    List<int> cameraInfoIds = cameraInfos.map<CameraInfo>(
+  ) async {
+    List<int> cameraInfoIds = cameraInfos.map<int>(
         (CameraInfo info) => instanceManager.getIdentifier(info)!);
     List<int> filteredCameraInfoIds = await filter(instanceId, cameraInfoIds);
     return filteredCameraInfoIds.map<CameraInfo>((int id) =>
@@ -121,13 +123,13 @@ class CameraSelectorFlutterApiImpl
   @override
   void create(int identifier, int? lensFacing) {
     instanceManager.addHostCreatedInstance(
-      CameraSelector.detached(lensFacing),
+      CameraSelector.detached(lensFacing: lensFacing),
       identifier,
       onCopy: (CameraSelector original) =>
           CameraSelector.detached(
-            lensFacing: lensFacing,
             binaryMessenger: binaryMessenger,
             instanceManager: instanceManager,
+            lensFacing: lensFacing,
       ),
     );
   }

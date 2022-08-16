@@ -5,6 +5,8 @@
 library camera_android_camerax;
 
 import 'src/camerax.pigeon.dart';
+import 'src/camera_info.dart';
+import 'src/camera_selector.dart';
 import 'src/process_camera_provider.dart';
 
 export 'src/android_camerax_camera.dart';
@@ -12,6 +14,8 @@ export 'src/android_camerax_camera.dart';
 /// Android Camera implented with the CameraX library.
 class CameraAndroidCamerax {
   static void registerWith() {
-    ProcessCameraProviderFlutterApi.setup(ProcessCameraProviderFlutterApi());
+    CameraInfoFlutterApi.setup(CameraInfoFlutterApiImpl());
+    CameraSelectorFlutterApi.setup(CameraSelectorFlutterApiImpl());
+    ProcessCameraProviderFlutterApi.setup(ProcessCameraProviderFlutterApiImpl());
   }
 }

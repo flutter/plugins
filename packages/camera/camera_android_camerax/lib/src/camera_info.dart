@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'camera_selector.dart';
+import 'package:flutter/services.dart';
+
+import 'camerax.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
 class CameraInfo extends JavaObject {
-  CameraInfo.detached({super.binaryMessenger, super.instanceManager})
-    : _api = CameraInfoHostApiImpl(
+  CameraInfo.detached({super.binaryMessenger, super.instanceManager}) {
+    super.detached();
+    _api = CameraInfoHostApiImpl(
       binaryMessenger: binaryMessenger,
       instanceManager: instanceManager,
-      ), 
-      super.detached();
+      );
+  }
 
-  static final CameraInfoHostApiImpl _api;
+  static late final CameraInfoHostApiImpl _api;
 
-  /// Gets selector used to retieve information about a camera.
-  Future<int> getSensorOrientationDegrees() =>
-      _api.getSensorOrientationDegreesFromInstance(this);
+  /// Gets sensor orientation degrees of camera.
+  Future<int> getSensorRotationDegrees() =>
+      _api.getSensorRotationDegreesFromInstance(this);
 }
 
 class CameraInfoHostApiImpl extends CameraInfoHostApi {
@@ -39,8 +42,8 @@ class CameraInfoHostApiImpl extends CameraInfoHostApi {
   final InstanceManager instanceManager;
 
   /// Gets sensor orientation degrees of [CameraInfo].
-  int getSensorOrientationDegreesFromInstance(CameraInfo instance) async {
-    return getSensorOrientationDegrees(
+  Future<int> getSensorRotationDegreesFromInstance(CameraInfo instance) async {
+    return getSensorRotationDegrees(
         instanceManager.getIdentifier(instance)!);
   }
 }

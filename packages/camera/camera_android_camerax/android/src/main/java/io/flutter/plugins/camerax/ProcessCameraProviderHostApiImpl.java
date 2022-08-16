@@ -4,7 +4,20 @@
 
 package io.flutter.plugins.camerax;
 
-public class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostApi {
+import android.app.Activity;
+import androidx.annotation.NonNull;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.core.CameraInfo;
+import androidx.core.content.ContextCompat;
+import com.google.common.util.concurrent.ListenableFuture;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.ProcessCameraProviderHostApi;
+import io.flutter.plugins.camerax.InstanceManager;
+import io.flutter.plugin.common.BasicMessageChannel;
+import io.flutter.plugin.common.BinaryMessenger;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProcessCameraProviderHostApiImpl implements ProcessCameraProviderHostApi {
   private final BinaryMessenger binaryMessenger;
   private final InstanceManager instanceManager;
 
@@ -20,10 +33,10 @@ public class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostA
   }
 
   // Returns the instance of the ProcessCameraProvider.
-  @override
-  void getInstance(Result<Long> result) {
+  @Override
+  public void getInstance(GeneratedCameraXLibrary.Result<Long> result) {
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
-      ProcessCameraProvider.getInstance(activity.getContext());
+      ProcessCameraProvider.getInstance(activity);
 
     cameraProviderFuture.addListener(
       () -> {
@@ -31,33 +44,32 @@ public class ProcessCameraProviderHostApiImpl extends ProcessCameraProviderHostA
           // Camera provider is now guaranteed to be available
           ProcessCameraProvider processCameraProvider = cameraProviderFuture.get();
 
-          if (!instanceManager.containsInstance(cameraProvider)) {
+          if (!instanceManager.containsInstance(processCameraProvider)) {
             // If cameraProvider is already defined, this method will have no effect.
             final ProcessCameraProviderFlutterApiImpl flutterApi =
-                ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
-            flutterApi.create(processCameraProvider, result -> {});
+              new ProcessCameraProviderFlutterApiImpl(binaryMessenger, instanceManager);
+            flutterApi.create(processCameraProvider, reply -> {});
           }
         } catch (Exception e) {
           result.error(e);
         }
-      }
-    );
+      }, ContextCompat.getMainExecutor(activity));
   }
 
   // Returns cameras available to the ProcessCameraProvider.
-  @override
-  List<Long> getAvailableCameras(@NonNull Long instanceId) {
+  @Override
+  public List<Long> getAvailableCameraInfos(@NonNull Long instanceId) {
     ProcessCameraProvider processCameraProvider =
-        (ProcessCameraProvider) instanceManager.getInstance(instancedId); // may return null?
+        (ProcessCameraProvider) instanceManager.getInstance(instanceId); // may return null?
 
-    List<CameraInfo> availableCameras = processCameraProvider.getAvailableCameras();
-    List<Long> availableCamerasIds = new List<Long>();
+    List<CameraInfo> availableCameras = processCameraProvider.getAvailableCameraInfos();
+    List<Long> availableCamerasIds = new ArrayList<Long>();
     final CameraInfoFlutterApiImpl cameraInfoFlutterApi =
-        CameraInfoFlutterApiImpl(binaryMessenger, instanceManager);
+      new CameraInfoFlutterApiImpl(binaryMessenger, instanceManager);
 
     for (CameraInfo cameraInfo : availableCameras) {
       cameraInfoFlutterApi.create(cameraInfo, result -> {});
-      int cameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
+      Long cameraInfoId = instanceManager.getIdentifierForStrongReference(cameraInfo);
       availableCamerasIds.add(cameraInfoId);
     }
     return availableCamerasIds;

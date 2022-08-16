@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart';
+
+import 'camera_info.dart';
+import 'camerax.pigeon.dart';
 import 'instance_manager.dart';
 import 'java_object.dart';
 
 class ProcessCameraProvider extends JavaObject {
-  ProcessCameraProvider.detached({super.binaryMessenger, super.instanceManager})
-      : _api = ProcessCameraProviderHostApiImpl(
+  ProcessCameraProvider.detached({super.binaryMessenger, super.instanceManager}) {
+    _api = ProcessCameraProviderHostApiImpl(
           binaryMessenger: binaryMessenger,
           instanceManager: instanceManager,
-        ),
-        super.detached();
+        );
+    super.detached();
+  }
 
-  static final ProcessCameraProviderHostApiImpl _api;
+  static late final ProcessCameraProviderHostApiImpl _api;
 
   static Future<ProcessCameraProvider> getInstance(
       {BinaryMessenger? binaryMessenger, InstanceManager? instanceManager}) {
@@ -29,7 +34,7 @@ class ProcessCameraProvider extends JavaObject {
     ).getInstancefromInstances();
   }
 
-  Future<List<CameraProvider>> getAvailableCameras() {
+  Future<List<CameraInfo>> getAvailableCameras() {
     return _api.getAvailableCamerasFromIntances();
   }
 }

@@ -4,6 +4,12 @@
 
 package io.flutter.plugins.camerax;
 
+import androidx.camera.core.CameraInfo;
+import io.flutter.plugins.camerax.GeneratedCameraXLibrary.CameraInfoFlutterApi;
+import io.flutter.plugins.camerax.InstanceManager;
+import io.flutter.plugin.common.BasicMessageChannel;
+import io.flutter.plugin.common.BinaryMessenger;
+
 public class CameraInfoFlutterApiImpl extends CameraInfoFlutterApi {
   private final InstanceManager instanceManager;
 

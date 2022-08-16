@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
+
+import 'camera_info.dart';
+import 'camera_selector.dart';
 import 'process_camera_provider.dart';
 
 class AndroidCameraCameraX {
@@ -27,7 +31,7 @@ class AndroidCameraCameraX {
         return;
       }
 
-      //Check if it is a back camera.
+      // Check if it is a back camera.
       List<CameraInfo>? backCameras =
           CameraSelector.DEFAULT_BACK_CAMERA.filter(<CameraInfo>[info]);
 
@@ -35,7 +39,7 @@ class AndroidCameraCameraX {
         description = createCameraDescription(backCameras.get(0),
             CameraLensDirection.back); // There should only be one?
         cameraDescriptions
-            .add(description); // Might need to avoid duplicates here
+            .add(description); // Might need to avoid duplicates here?
       }
     });
 
@@ -46,9 +50,9 @@ class AndroidCameraCameraX {
   CameraDescription createCameraDescription(
       CameraInfo cameraInfo, CameraLensDirection lensDirection) {
     String name =
-        lensDirection.toString() + '-camera'; //TODO(cs): check actual format
+        'cam' + lensDirection.toString().toUpperCase();
     int sensorOrientation = cameraInfo.getSensorRotationDegrees();
 
-    return CameraDescription(name, lensDirection, sensorOrientation);
+    return CameraDescription(name: name, lensDirection: lensDirection, sensorOrientation: sensorOrientation);
   }
 }

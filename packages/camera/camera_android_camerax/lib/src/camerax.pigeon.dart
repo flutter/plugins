@@ -184,9 +184,9 @@ class CameraInfoHostApi {
 
   static const MessageCodec<Object?> codec = _CameraInfoHostApiCodec();
 
-  Future<int> getSensorOrientationDegrees(int arg_instanceId) async {
+  Future<int> getSensorRotationDegrees(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.CameraInfoHostApi.getSensorOrientationDegrees', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.CameraInfoHostApi.getSensorRotationDegrees', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -314,7 +314,7 @@ class _CameraSelectorFlutterApiCodec extends StandardMessageCodec {
 abstract class CameraSelectorFlutterApi {
   static const MessageCodec<Object?> codec = _CameraSelectorFlutterApiCodec();
 
-  void create(int instanceId);
+  void create(int instanceId, int? lensFacing);
   static void setup(CameraSelectorFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -327,7 +327,8 @@ abstract class CameraSelectorFlutterApi {
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.CameraSelectorFlutterApi.create was null, expected non-null int.');
-          api.create(arg_instanceId!);
+          final int? arg_lensFacing = (args[1] as int?);
+          api.create(arg_instanceId!, arg_lensFacing);
           return;
         });
       }

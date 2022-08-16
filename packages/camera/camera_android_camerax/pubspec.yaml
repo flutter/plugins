@@ -2,12 +2,12 @@ name: camera_android_camerax
 description: A new Flutter plugin project.
 repository: https://github.com/flutter/plugins/tree/main/packages/camera/camera_android_camerax
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+camera%22
-version: 0.0.1
+version: 0.0.0
 homepage:
 publish_to: 'none'
 
 environment:
-  sdk: '>=2.14.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
   flutter: ">=2.5.0"
 
 # For information on the generic Dart part of this file, see the
@@ -64,6 +64,7 @@ flutter:
   # https://flutter.dev/custom-fonts/#from-packages
 
 dependencies:
+  camera_platform_interface: ^2.0.2
   flutter:
     sdk: flutter
   pigeon: ^3.2.6

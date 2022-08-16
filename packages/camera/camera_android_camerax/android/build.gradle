@@ -33,3 +33,8 @@ android {
         minSdkVersion 16
     }
 }
+
+dependencies {
+    implementation "androidx.camera:camera-core:1.2.0-alpha04"
+    implementation "androidx.camera:camera-lifecycle:1.2.0-alpha04"
+}

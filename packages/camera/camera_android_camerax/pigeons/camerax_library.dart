@@ -16,7 +16,7 @@ import 'package:pigeon/pigeon.dart';
     javaOut:
         'android/src/main/java/io/flutter/plugins/camerax/GeneratedCameraXLibrary.java',
     javaOptions: JavaOptions(
-      package: 'io.flutter.plugins.camera',
+      package: 'io.flutter.plugins.camerax',
       className: 'GeneratedCameraXLibrary',
       copyrightHeader: <String>[
         'Copyright 2013 The Flutter Authors. All rights reserved.',
@@ -51,7 +51,7 @@ abstract class ProcessCameraProviderFlutterApi {
 
 @HostApi()
 abstract class CameraInfoHostApi {
-  int getSensorOrientationDegrees(int instanceId);
+  int getSensorRotationDegrees(int instanceId);
 }
 
 @FlutterApi()
