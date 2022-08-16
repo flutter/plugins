@@ -273,7 +273,7 @@ class _ControlsOverlay extends StatelessWidget {
     Duration(seconds: -3),
     Duration(seconds: -1, milliseconds: -500),
     Duration(milliseconds: -250),
-    Duration(milliseconds: 0),
+    Duration(),
     Duration(milliseconds: 250),
     Duration(seconds: 1, milliseconds: 500),
     Duration(seconds: 3),
@@ -419,7 +419,6 @@ class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 0,
       child: Center(
         child: FutureBuilder<bool>(
           future: started(),

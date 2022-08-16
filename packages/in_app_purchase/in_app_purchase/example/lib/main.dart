@@ -18,7 +18,9 @@ void main() {
   runApp(_MyApp());
 }
 
-const bool _kAutoConsume = true;
+// Auto-consume must be true on iOS.
+// To try without auto-consume on another platform, change `true` to `false` here.
+final bool _kAutoConsume = Platform.isIOS || true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
@@ -277,7 +279,6 @@ class _MyAppState extends State<_MyApp> {
 
                       purchaseParam = GooglePlayPurchaseParam(
                           productDetails: productDetails,
-                          applicationUserName: null,
                           changeSubscriptionParam: (oldSubscription != null)
                               ? ChangeSubscriptionParam(
                                   oldPurchaseDetails: oldSubscription,
@@ -288,14 +289,13 @@ class _MyAppState extends State<_MyApp> {
                     } else {
                       purchaseParam = PurchaseParam(
                         productDetails: productDetails,
-                        applicationUserName: null,
                       );
                     }
 
                     if (productDetails.id == _kConsumableId) {
                       _inAppPurchase.buyConsumable(
                           purchaseParam: purchaseParam,
-                          autoConsume: _kAutoConsume || Platform.isIOS);
+                          autoConsume: _kAutoConsume);
                     } else {
                       _inAppPurchase.buyNonConsumable(
                           purchaseParam: purchaseParam);
@@ -358,7 +358,6 @@ class _MyAppState extends State<_MyApp> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           TextButton(

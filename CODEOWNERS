@@ -30,7 +30,7 @@ packages/**/*_web/**                                     @ditman
 packages/camera/camera_android/**                        @camsim99
 packages/espresso/**                                     @GaryQian
 packages/flutter_plugin_android_lifecycle/**             @GaryQian
-packages/google_maps_flutter/google_maps_flutter/android/**  @GaryQian
+packages/google_maps_flutter/google_maps_flutter_android/**  @GaryQian
 packages/google_sign_in/google_sign_in_android/**        @camsim99
 packages/image_picker/image_picker_android/**            @GaryQian
 packages/in_app_purchase/in_app_purchase_android/**      @GaryQian
@@ -42,7 +42,7 @@ packages/video_player/video_player_android/**            @camsim99
 
 # - iOS
 packages/camera/camera_avfoundation/**                   @hellohuanlin
-packages/google_maps_flutter/google_maps_flutter/ios/**  @cyanglaz
+packages/google_maps_flutter/google_maps_flutter_ios/**  @cyanglaz
 packages/google_sign_in/google_sign_in_ios/**            @jmagman
 packages/image_picker/image_picker_ios/**                @cyanglaz
 packages/in_app_purchase/in_app_purchase_storekit/**     @cyanglaz
