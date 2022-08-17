@@ -1,3 +1,7 @@
+## 2.9.5
+
+* Adds dispose methods for HostApi and FlutterApi of JavaObject.
+
 ## 2.9.4
 
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.

@@ -1,6 +1,10 @@
 ## NEXT
 
 * Added setMaxVideoResolution method to support different video resolutions while picking a video stream from a source with different tracks
+
+## 2.3.9
+
+* Updates ExoPlayer to 2.18.1.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
 
 ## 2.3.8
