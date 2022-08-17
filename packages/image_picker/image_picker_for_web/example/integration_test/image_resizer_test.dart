@@ -117,7 +117,7 @@ Future<Size> _getImageSize(XFile file) async {
     completer.complete(Size(image.width!.toDouble(), image.height!.toDouble()));
   });
   image.onError.listen((html.Event event) {
-    completer.complete(const Size(0, 0));
+    completer.complete(Size.zero);
   });
   return completer.future;
 }
