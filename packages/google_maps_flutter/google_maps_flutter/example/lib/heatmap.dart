@@ -111,7 +111,6 @@ class HeatmapBodyState extends State<HeatmapBody> {
                       ],
                     ),
                     maxIntensity: 1,
-                    opacity: 0.7,
                     // Radius behaves differently on web and Android/iOS.
                     radius: kIsWeb ? 10 : 20,
                   )
