@@ -1,8 +1,11 @@
-
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:math';
 
-// TODO:
+// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
+// ignore: unnecessary_import
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -11,14 +14,21 @@ import 'package:webview_flutter_platform_interface/v4/webview_flutter_platform_i
 /// Controls a WebView provided by the host platform.
 class WebViewController {
   /// Constructs a [WebViewController].
-  WebViewController({
-    PlatformWebViewControllerCreationParams params =
-        const PlatformWebViewControllerCreationParams(),
-  }) : this.fromPlatform(platform: PlatformWebViewController(params));
+  WebViewController()
+      : this.withPlatform(
+          platform: PlatformWebViewController(
+            const PlatformWebViewControllerCreationParams(),
+          ),
+        );
 
-  // TODO: should specify how
-  /// Constructor for the plugin to write platform agnostic unit tests by mocking `delegate`.
-  WebViewController.fromPlatform({required this.platform});
+  /// Constructs a [WebViewController] with creation params for a specific
+  /// platform.
+  WebViewController.withPlatformCreationParams(
+    PlatformWebViewControllerCreationParams params,
+  ) : this.withPlatform(platform: PlatformWebViewController(params));
+
+  /// Constructs a [WebViewController] with a specific platform implementation.
+  WebViewController.withPlatform({required this.platform});
 
   /// Implementation of [PlatformWebViewController] for the current platform.
   final PlatformWebViewController platform;
