@@ -1,4 +1,4 @@
-## 2.1.11
+## Next
 
 * Fixes violations of new analysis option use_named_constants.
 * Fixes avoid_redundant_argument_values lint warnings and minor typos.
