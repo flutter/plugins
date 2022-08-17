@@ -194,6 +194,7 @@ class WebViewController {
     String name, {
     required void Function(JavaScriptMessage) onMessageReceived,
   }) {
+    assert(name.isNotEmpty);
     return platform.addJavaScriptChannel(JavaScriptChannelParams(
       name: name,
       onMessageReceived: onMessageReceived,
